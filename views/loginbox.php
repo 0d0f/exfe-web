@@ -9,9 +9,9 @@
 <p class="t">Set password to keep track of<br />
 RSVP status and conversations.</o>
 <div class="account"><p>Authorize with your <br/> existing accounts </p>
-<span><img src="images/facebook.png" alt="" width="32" height="32" />
-<img src="images/twitter.png" alt="" width="32" height="32" />
-<img src="images/google.png" alt="" width="32" height="32" /></span>
+<span><img src="/static/images/facebook.png" alt="" width="32" height="32" />
+<img src="/static/images/twitter.png" alt="" width="32" height="32" />
+<img src="/static/images/google.png" alt="" width="32" height="32" /></span>
 <h4>Enter your identity information</h4>
 </div>
 <form accept-charset="UTF-8" action="" method="post">

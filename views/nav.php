@@ -10,7 +10,7 @@
 <span>271</span>
 exfes attended
 </p>
-<img src="images/img.jpg">
+<img src="/static/images/img.jpg">
 </div>
 <p class="info">
 <span>Upcoming:</span><br />
