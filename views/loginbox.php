@@ -1,13 +1,9 @@
-<script type="text/javascript" src="js/login.js"></script>
+<script type="text/javascript" src="/static/js/login.js"></script>
 <div id="fBox" class="loginMask">
 <h5><a href="/" onclick="cancel()">关闭</a><em class="tl">Registeration</em></h5>
 <div class="overFramel">
 <div class="overFramelogin">
 <div class="login">
-<h4>Hi Virushuo !</h4>
-<h4>Welcome to <span>exfe</span> !</h4>
-<p class="t">Set password to keep track of<br />
-RSVP status and conversations.</o>
 <div class="account"><p>Authorize with your <br/> existing accounts </p>
 <span><img src="/static/images/facebook.png" alt="" width="32" height="32" />
 <img src="/static/images/twitter.png" alt="" width="32" height="32" />

@@ -20,16 +20,22 @@ class IdentityModels extends DataModel{
 	if(intval($row["id"])>0)
 	    return  intval($row["id"]);
 
-	$sql="insert into identities (user_id,provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ($user_id,'$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
+	$sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
     	$result=$this->query($sql);
-	if(intval($result["insert_id"])>0)
-	    return intval($result["insert_id"]);
+	$identityid=intval($result["insert_id"]);
+	if($identityid>0)
+	{
+	    //TOdO: commit as a transaction
+	    $sql="insert into user_identity (identityid,userid,created_at) values ($identityid,$user_id,FROM_UNIXTIME($time))";
+	    $this->query($sql);
+	    return $identityid;
+	}
     }
     public function ifIdentityExist($external_identity)
     {
-	$sql="select user_id from  identities where external_identity='$external_identity'";
+	$sql="select id from  identities where external_identity='$external_identity'";
 	$row=$this->getRow($sql);
-	if (intval($row["user_id"])>0)
+	if (intval($row["id"])>0)
 	    return  TRUE;
 	else 
 	    return FALSE;
@@ -41,15 +47,22 @@ class IdentityModels extends DataModel{
 	$sql="select * from identities where external_identity='$identity' limit 1";
 	#update last_sign_in_at,last_sign_in_ip...
     	$row=$this->getRow($sql);
-	if($row["user_id"]>0)
+	if(intval($row["id"])>0)
 	{
-	   $userid=$row["user_id"];
-	   $sql="select encrypted_password from users where id=$userid"; 
+	   $identityid=intval($row["id"]);
+	   $sql="select userid from user_identity where identityid=$identityid";
 	   $row=$this->getRow($sql);
-	   if($row["encrypted_password"]==$password)
-	   {
-		$_SESSION["userid"]=$userid;
-		return $userid;
+    
+	   if(intval($row["userid"])>0)
+	   {	
+		$userid=intval($row["userid"]);
+		$sql="select encrypted_password from users where id=$userid"; 
+	    	$row=$this->getRow($sql);
+	    	if($row["encrypted_password"]==$password)
+	    	{
+	    	     $_SESSION["userid"]=$userid;
+	    	     return $userid;
+	    	}
 	   }
 	}
 	return 0;

@@ -2,7 +2,8 @@ $(document).ready(function(){
     $('#identity').blur(function() {
 	$.ajax({
 	  type: "GET",
-	  url: "http://localhost/exfe/index.php?class=s&action=IfIdentityExist&identity="+$('#identity').val(),
+	  //url: "http://localhost/exfe/index.php?class=s&action=IfIdentityExist&identity="+$('#identity').val(),
+	  url: "http://local.exfe.com/s/IfIdentityExist?identity="+$('#identity').val(),
 	  //data: "examid="+$(this).val(),
 	  dataType:"json",
 	  success: function(data){
