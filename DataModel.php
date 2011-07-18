@@ -63,6 +63,9 @@ abstract class DataModel{
 		#print $sql;
 		#print mysql_error();
 		if(!mysql_error()) {
+			$insert_id=mysql_insert_id();
+			if($insert_id>0)
+			    return array("insert_id" => strval($insert_id));
 			return mysql_affected_rows();
 		}
 		else
