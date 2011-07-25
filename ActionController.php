@@ -43,28 +43,29 @@ abstract class ActionController {
     }
   }
 
-  #public function displayViewByNameAction($name,$action) {
-  #  if (!is_file(VIEW_DIR . "/" . $name . "/" . $action . "View.php")) {
-  #    exit("Page not found:".$name."::". $action . "View.php");
-  #  }
-  #  //Create variables for the template
-  #  foreach ($this->viewData as $key => $value) {
-  #    $key = $value;
-  #  }
-  #  include VIEW_DIR . "/" . $name . "/" . $action . "View.php";
-  #  exit(0);
-  #}
-
-  public function displayViewByAction($action) {
-    if (!is_file(VIEW_DIR . "/" . $action . "View.php")) {
-      exit("Page not found:" . $action . "View.php");
+  public function displayViewByNameAction($name,$action) {
+    if (!is_file(VIEW_DIR . "/" . $name . "/" . $action . "View.php")) {
+      exit("Page not found:".$name."::". $action . "View.php");
     }
     //Create variables for the template
     foreach ($this->viewData as $key => $value) {
       $key = $value;
     }
-    include VIEW_DIR . "/" . $action . "View.php";
+    include VIEW_DIR . "/" . $name . "/" . $action . "View.php";
     exit(0);
+  }
+
+  public function displayViewByAction($action) {
+    $this->displayViewByNameAction($this->getName(),$action);
+  #  if (!is_file(VIEW_DIR . "/" . $action . "View.php")) {
+  #    exit("Page not found:" . $action . "View.php");
+  #  }
+  #  //Create variables for the template
+  #  foreach ($this->viewData as $key => $value) {
+  #    $key = $value;
+  #  }
+  #  include VIEW_DIR . "/" . $action . "View.php";
+  #  exit(0);
   }
 
   public function displayView()
@@ -91,6 +92,7 @@ abstract class ActionController {
     $modelfile = MODEL_DIR . "/" .  $class.  ".php";
     include_once $modelfile;
     $this->model=new $class;
+    return $this->model;
   }
 
   public function dispatchAction($action) {

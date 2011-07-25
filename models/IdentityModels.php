@@ -31,12 +31,36 @@ class IdentityModels extends DataModel{
 	    return $identityid;
 	}
     }
+
+    public function addIdentityWithoutUser($provider,$external_identity,$identityDetail=array())
+    {
+
+	$name=$identityDetail["name"];
+    	$bio=$identityDetail["bio"];
+    	$avatar_file_name=$identityDetail["avatar_file_name"];
+    	$avatar_content_type=$identityDetail["avatar_content_type"];
+    	$avatar_file_size=$identityDetail["avatar_file_size"];
+    	$avatar_updated_at=$identityDetail["avatar_updated_at"];
+    	$external_username=$identityDetail["external_username"];
+	$time=time();
+	$sql="select id from identities where external_identity='$external_identity' limit 1";
+    	$row=$this->getRow($sql);
+	if(intval($row["id"])>0)
+	    return  intval($row["id"]);
+
+	$sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
+    	$result=$this->query($sql);
+	$identityid=intval($result["insert_id"]);
+	return $identityid;
+    }
+
+
     public function ifIdentityExist($external_identity)
     {
 	$sql="select id from  identities where external_identity='$external_identity'";
 	$row=$this->getRow($sql);
 	if (intval($row["id"])>0)
-	    return  TRUE;
+	    return  intval($row["id"]);
 	else 
 	    return FALSE;
     }

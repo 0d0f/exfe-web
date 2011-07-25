@@ -1,5 +1,4 @@
 <?php
-
 class UserModels extends DataModel{
 
     private $salt="_4f9g18t9VEdi2if";

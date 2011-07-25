@@ -34,7 +34,7 @@ class SActions extends ActionController {
     //$responobj["meta"]["errType"]="Bad Request";
     //$responobj["meta"]["errorDetail"]="invalid_auth";
 
-    if($exist===TRUE)
+    if($exist!==FALSE)
 	$responobj["response"]["identity_exist"]="true";
     else
 	$responobj["response"]["identity_exist"]="false";
