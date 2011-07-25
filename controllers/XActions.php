@@ -3,7 +3,7 @@ class XActions extends ActionController {
 
   public function doGather()
   {
-    $identity_id=2;
+    $identity_id=$_SESSION["identity_id"];
     #$crossid=int_to_base62($crossid);
     #echo "redirect...to cross edit page: /$crossid/edit";
     if($_POST["title"]!="")
@@ -29,11 +29,39 @@ class XActions extends ActionController {
   }
   public function doIndex()
   {
-    $crossdata=$this->getDataModel("x");
-    $result=$crossdata->getCross(base62_to_int($_GET["id"]));
-    //print_r($result);
-    $this->setVar("cross", $result);
+    $Data=$this->getModelByName("X");
+    $cross=$Data->getCross(base62_to_int($_GET["id"]));
+    if($cross)
+    {
+	$place_id=$cross["place_id"];
+	$cross_id=$cross["id"];
+	if(intval($place_id)>0)
+	{
+	    $placeData=$this->getModelByName("place");
+	    $place=$placeData->getPlace($place_id);
+	    $cross["place"]=$place;
+
+	    
+	    $invitationData=$this->getModelByName("invitation");
+	    $invitations=$invitationData->getInvitation_Identities($cross_id);
+
+
+	    $host_exfee=array();
+	    $normal_exfee=array();
+	    foreach ($invitations as $invitation)
+	    {
+		if ($invitation["identity_id"]==$cross["host_id"])
+		    array_push($host_exfee,$invitation);
+		else
+		    array_push($normal_exfee,$invitation);
+	    }
+
+	    $cross["host_exfee"]=$host_exfee;
+	    $cross["normal_exfee"]=$normal_exfee;
+	}
+    $this->setVar("cross", $cross);
     $this->displayView();
+    }
   }
   //public function doGather()
   //{

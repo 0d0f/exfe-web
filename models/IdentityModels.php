@@ -85,6 +85,7 @@ class IdentityModels extends DataModel{
 	    	if($row["encrypted_password"]==$password)
 	    	{
 	    	     $_SESSION["userid"]=$userid;
+	    	     $_SESSION["identity_id"]=$identityid;
 	    	     return $userid;
 	    	}
 	   }
