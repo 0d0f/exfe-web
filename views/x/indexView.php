@@ -1,10 +1,8 @@
 <?php include "share/header.php"; ?>
 <body>
 <?php include "share/nav.php"; ?>
-
 <?php 
 $cross=$this->getVar("cross");
-print_r($cross);
 $description_lines=preg_split ("/\r\n|\r|\n/", $cross["description"]);
 $description="";
 foreach($description_lines as $line)
@@ -15,6 +13,22 @@ $place_line1=$cross["place"]["line1"];
 $place_line2= str_replace('\r',"<br/>",$cross["place"]["line2"]);
 $host_exfee=$cross["host_exfee"];
 $normal_exfee=$cross["normal_exfee"];
+$confirmed=0;
+$allinvitation=count($host_exfee)+count($normal_exfee);
+foreach($host_exfee as $exfee)
+{
+    if($exfee["state"]==INVITATION_YES)
+	$confirmed=$confirmed+1;
+}
+foreach($normal_exfee as $exfee)
+{
+    if($exfee["state"]==INVITATION_YES)
+	$confirmed=$confirmed+1;
+}
+
+$begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
+$begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
+
 ?>
 <div class="centerbg">
 <div class="fsuo">
@@ -64,15 +78,15 @@ only attendees could see details.</p>
 
 
 <div class="exfer">
-<h3>Tomorrow</h3>
+<h3><?php echo $begin_at_relativetime;?></h3>
 <p class="tm">
-6:30pm, April 8
+<?php echo $begin_at_humandatetime;?>
 </p>
 <h3><?php echo $place_line1; ?></h3>
 <p class="tm"><?php echo $place_line2; ?></p>
 
 <div class="exfee">
-<div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb">3</em> <em class="malnb">5 of <br />confirmed</em></p></div>
+<div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"><?php echo $allinvitation; ?> of <br />confirmed</em></p></div>
 <ul class="samlcommentlist">
 
 <?php 
@@ -83,12 +97,11 @@ foreach($host_exfee as $exfee)
 <li>
 <p class="pic20"><img src="/eimgs/<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
 <p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
-<p class="cs"><em class="c1"></em></p>
+<p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
 </li>
 <?php
 }
 ?>
-
 <?php
 foreach($normal_exfee as $exfee)
 {
@@ -96,7 +109,7 @@ foreach($normal_exfee as $exfee)
 <li>
 <p class="pic20"><img src="/eimgs/<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
 <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
-<p class="cs"><em class="c2"></em></p>
+<p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
 </li>
 <?php
 }
