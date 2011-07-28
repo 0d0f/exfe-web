@@ -1,6 +1,18 @@
 <?php
 class InvitationModels extends DataModel{
 
+    public function rsvp($cross_id,$identity_id,$state)
+    {
+	$sql="update invitations set state=$state where identity_id=$identity_id and cross_id=$cross_id;";	
+    	$this->query($sql);
+
+	$sql="select state from invitations where identity_id=$identity_id and cross_id=$cross_id;";
+	$result=$this->getRow($sql);
+	if(intval($result["state"])==intval($state))
+	    return TRUE;
+	else
+	    return FALSE;
+    }
     public function addInvitation($cross_id,$identity_id,$state=INVITATION_MAYBE)
     {
 	//TODO: ADD token

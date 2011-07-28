@@ -73,7 +73,7 @@ class SActions extends ActionController {
     	$userid=$Data->login($identity,$password);
 	if(intval($userid)>0)
 	{
-	    $_SESSION["userid"]=$userid;
+	    //$_SESSION["userid"]=$userid;
 	    if($isNewIdentity===TRUE)
 		$this->setVar("isNewIdentity", TRUE);
 

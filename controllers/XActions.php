@@ -29,6 +29,11 @@ class XActions extends ActionController {
   }
   public function doIndex()
   {
+    if(checklogin()===FALSE)
+    {
+	header( 'Location: /s/login' ) ;
+	exit(0);
+    }
     $Data=$this->getModelByName("X");
     $cross=$Data->getCross(base62_to_int($_GET["id"]));
     if($cross)

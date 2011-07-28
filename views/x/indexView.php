@@ -29,6 +29,7 @@ foreach($normal_exfee as $exfee)
 $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
 $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
 
+print_r($_SESSION);
 ?>
 <div class="centerbg">
 <div class="fsuo">
@@ -44,9 +45,9 @@ only attendees could see details.</p>
 <a href="">Expand</a>
 
 <ul class="ynbtn">
-<li><a href="" class="yes">Yes</a></li>
-<li><a href="" class="no">No</a></li>
-<li><a href="" class="maybe">Maybe</a><li>
+<li><a href="/<?php echo $cross["id"];?>/rsvp/yes" class="yes">Yes</a></li>
+<li><a href="/<?php echo $cross["id"];?>/rsvp/no" class="no">No</a></li>
+<li><a href="/<?php echo $cross["id"];?>/rsvp/maybe" class="maybe">Maybe</a><li>
 </ul>
 
 <div class="Conversation">

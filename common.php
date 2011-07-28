@@ -1,4 +1,12 @@
 <?php
+function checklogin()
+{
+    if(intval($_SESSION["userid"])>0 && intval($_SESSION["identity_id"]))
+	return TRUE;
+    else
+	return FALSE;
+}
+
 function humanDateTime($timestamp,$lang='en')
 {
     if($lang=='en')
