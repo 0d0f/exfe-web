@@ -70,10 +70,10 @@ class IdentityModels extends DataModel{
 	$password=md5($password.$this->salt);
 	$sql="select * from identities where external_identity='$identity' limit 1";
 	#update last_sign_in_at,last_sign_in_ip...
-    	$row=$this->getRow($sql);
-	if(intval($row["id"])>0)
+    	$identityrow=$this->getRow($sql);
+	if(intval($identityrow["id"])>0)
 	{
-	   $identityid=intval($row["id"]);
+	   $identityid=intval($identityrow["id"]);
 	   $sql="select userid from user_identity where identityid=$identityid";
 	   $row=$this->getRow($sql);
     
@@ -86,11 +86,25 @@ class IdentityModels extends DataModel{
 	    	{
 	    	     $_SESSION["userid"]=$userid;
 	    	     $_SESSION["identity_id"]=$identityid;
+		     $identity=array();
+		     $identity["external_identity"]=$identityrow["external_identity"];
+		     $identity["name"]=$identityrow["name"];
+		     if($identity["name"]=="")
+			$identity["name"]=$identityrow["external_identity"];
+		     $identity["bio"]=$identityrow["bio"];
+		     $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+		     $_SESSION["identity"]=$identity;
 	    	     return $userid;
 	    	}
 	   }
 	}
 	return 0;
+    }
+    public function getIdentity($identity)
+    {
+	$sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";
+	$row=$this->getRow($sql);
+	return $row;
     }
 }
 

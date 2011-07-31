@@ -38,8 +38,8 @@ class SActions extends ActionController {
 	$responobj["response"]["identity_exist"]="true";
     else
 	$responobj["response"]["identity_exist"]="false";
-	echo json_encode($responobj);
-	exit();
+    echo json_encode($responobj);
+    exit();
   }
   public function doLogin()
   {

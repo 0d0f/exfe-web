@@ -70,7 +70,7 @@ class FrontController {
 		#	$this->checkOauthToken();
 		#}
 
-		$file = CONTROLLER_DIR. "/" . $class . ".php";
+		$file = APICONTROLLER_DIR. "/" . $class . ".php";
 		if (!is_file($file)) {
 			exit("Page not found:".$file);
 		}

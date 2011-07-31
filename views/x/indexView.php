@@ -28,8 +28,6 @@ foreach($normal_exfee as $exfee)
 
 $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
 $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
-
-print_r($_SESSION);
 ?>
 <div class="centerbg">
 <div class="fsuo">
@@ -53,25 +51,30 @@ only attendees could see details.</p>
 <div class="Conversation">
 <h3>Conversation</h3>
 <div class="commenttext">
-<img src="images/img.jpg"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+<form action="/<?php echo $cross["id"];?>/conversation/add" method="post">
+<img style="width:40px;height:40px" src="/eimgs/<?php echo $_SESSION["identity"]["avatar_file_name"];?>"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+<input id="post_submit" name="commit" title="Say!" type="submit" value="Say!">
+</form>
 </div>
 
 <ul class="commentlist">
+<?php 
+if($cross["conversation"])
+{
+    foreach($cross["conversation"] as $conversation)
+    {
+	$posttime=RelativeTime(strtotime($conversation["updated_at"]));
+	$identity=$conversation["identity"];
+	if($identity["name"]=="")
+	    $identity["name"]=$identity["external_identity"];
+?>
 <li>
-<p class="pic40"><img src="images/img.jpg" alt=""></p>
-<p class="comment"><span>Arthur369:</span>My only missing food in US, dudes! yummy Lorem ipsum dolorsit amet, ligula suspendisse nulla.</p>
-<p class="times">1 min</p>
+<p class="pic40"><img src="/eimgs/<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
 </li>
-<li>
-<p class="pic40"><img src="images/img.jpg" alt=""></p>
-<p class="comment"><span>Arthur369:</span> Muhahaha,I’ll eat an big apple!</p>
-<p class="times">3 hour</p>
-</li>
-<li>
-<p class="pic40"><img src="images/img.jpg" alt=""></p>
-<p class="comment"><span>Arthur369:</span>My only missing food in US, dudes! yummy Lorem ipsum dolorsit amet, ligula suspendisse nulla.</p>
-<p class="times">06/03</p>
-</li>
+<?php
+    }
+}
+?>
 </ul>
 
 </div>

@@ -155,7 +155,12 @@ em.h3{font-size:24px;font-family:Verdana; }
 .Conversation h3{background:url(/static/images/incobtn.png) no-repeat 1px 14px;text-indent:40px;font-size:24px;height:50px;line-height:50px;font-weight:normal;}
 .Conversation .commenttext{margin:15px 0;height:60px}
 .Conversation .commenttext img{float:left;}
-.Conversation .commenttext .ctext{width:422px;height:42px;border:#afafaf 1px solid;float:right;font-size:12px;background:url("/static/images/enter.png") no-repeat scroll right bottom #fff}
+.Conversation .commenttext .ctext{width:422px;height:42px;border:#afafaf 1px solid;float:right;font-size:12px; no-repeat scroll right bottom #fff}
+.Conversation .commenttext #post_submit {float: right; width: 20px; height: 20px; position: relative; bottom: 22px; right: 2px; background: url(/static/images/enter.png) no-repeat scroll right bottom white; border: none; text-indent: -99999px}
+ 
+
+
+
 .commentlist {margin: 10px 0px;line-height: 130%;}
 .commentlist li {margin:20px 0;overflow:hidden;line-height:20px;}
 .comment {float:left;font-size:13px;width:360px;}

@@ -1,43 +1,8 @@
 <?php
 class XActions extends ActionController {
 
-  public function doGather()
-  {
-    $identity_id=$_SESSION["identity_id"];
-    #$crossid=int_to_base62($crossid);
-    #echo "redirect...to cross edit page: /$crossid/edit";
-    if($_POST["title"]!="")
-    {
-	$crossdata=$this->getDataModel("x");
-	$placedata=$this->getModelByName("place");
-
-	//TODO: package as a translaction
-	if(trim($_POST["place"])!="")
-	    $placeid=$placedata->savePlace($_POST["place"]);
-	else 
-	    $placeid=0;
-
-	$_POST["place_id"]=$placeid;
-    	$cross_id=$crossdata->gatherCross($identity_id,$_POST);
-
-	$helper=$this->getHelperByName("exfee");
-	$helper->addExfeeIdentify($cross_id,$_POST["exfee"]);
-	//TODO: redirect to this exfe page
-	//cross_id
-	$cross_id_base62=int_to_base62($cross_id);
-	header( 'Location: /!'.$cross_id_base62 ) ;
-	exit(0);
-
-    }
-    $this->displayView();
-  }
   public function doIndex()
   {
-    if(checklogin()===FALSE)
-    {
-	header( 'Location: /s/login' ) ;
-	exit(0);
-    }
     $Data=$this->getModelByName("X");
     $cross=$Data->getCross(base62_to_int($_GET["id"]));
     if($cross)
