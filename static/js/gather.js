@@ -47,6 +47,51 @@ $(document).ready(function(){
         $('#g_description').keyup(function(e){
 	    $('#pv_description').html($('#g_description').val());
 	});
+
+        $('#g_place').keyup(function(e){
+	    var place_lines=$('#g_place').val();
+	    var lines = place_lines.split("\r\n");
+	    if(lines.length<=1)
+	    {
+		lines = place_lines.split("\n");
+	    }
+	    if(lines.length<=1)
+	    {
+		lines = place_lines.split("\r");
+	    }
+	    var trim_lines=new Array();
+	    if(lines.length>1)
+	    {
+		    for (var i=0;i<lines.length;i++)
+		    {
+			if(lines[i]!="")
+			{
+			    trim_lines.push(lines[i]);
+			}
+		    }
+		
+	    }
+
+	    if(trim_lines.length<=1)
+	    {
+		$('#pv_place_line1').html(place_lines);
+		$('#pv_place_line2').html("");
+	    }
+	    else
+		{
+		    $('#pv_place_line1').html(trim_lines[0]);
+		    var place_line2="";
+		    for (var i=1;i<trim_lines.length;i++)
+		    {
+			if(i==trim_lines.length-1)
+			    place_line2=place_line2+trim_lines[i];
+			else
+			    place_line2=place_line2+trim_lines[i]+"<br />";
+
+		    }
+		    $('#pv_place_line2').html(place_line2);
+		}
+	});
 //    $('#identity').blur(function() {
 //	$.ajax({
 //	  type: "GET",

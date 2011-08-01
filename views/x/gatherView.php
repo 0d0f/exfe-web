@@ -7,7 +7,7 @@
 <label>Title:</label><input type="text"  name="title" id="g_title" class="inputText"/><br/>
 <label>Description:</label><input type="text"  name="description" id="g_description" class="inputText"/><br/>
 <label>Date & time:</label><input type="text"  name="datetime" id="datetime" class="inputText"/><br/>
-<label>place:</label><textarea name="place" id="place"></textarea><br/>
+<label>place:</label><textarea name="place" id="g_place"></textarea><br/>
 <label>exfee:</label><input type="text"  name="exfee" id="exfee" clas="inputText"/><br/>
 <div id="exfee_pv">
 </div>
@@ -35,8 +35,8 @@
 <h3>3 months later</h3>
 <p class="tm">
 12:00 AM, Oct 20, 2011 </p>
-<h3>huoju's home</h3>
-<p class="tm">shanghai<br>pudong</p>
+<h3 id="pv_place_line1">huoju's home</h3>
+<p class="tm" id="pv_place_line2">shanghai<br>pudong</p>
 
 <div class="exfee">
 <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb">2</em> <em class="malnb">3 of <br>confirmed</em></p></div>

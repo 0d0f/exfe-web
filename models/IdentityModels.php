@@ -104,7 +104,20 @@ class IdentityModels extends DataModel{
     {
 	$sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";
 	$row=$this->getRow($sql);
-	return $row;
+	if($row)
+	    return $row;
+	else
+	{
+	    $time=time();
+	    $provider="email";
+	    $name="";
+	    $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$identity',FROM_UNIXTIME($time),'$name','','','','','','')";
+    	    $result=$this->query($sql);
+	    $identityid=intval($result["insert_id"]);
+	    $sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";
+	    $row=$this->getRow($sql);
+	    return $row;  
+	}
     }
 }
 
