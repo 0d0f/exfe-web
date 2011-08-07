@@ -22,7 +22,7 @@ em.h3{font-size:24px;font-family:Verdana; }
 .fbg{background:#d5e6e9}
 
 /**header**/
-#header {width:1000px;height:49px;margin:0 auto;position:relative;background:url(/stat/static/images/header.png) no-repeat;
+#header {width:1000px;height:49px;margin:0 auto;position:relative;background:url(/static/images/header.png) no-repeat;
 }
 #header .hl{width:67px;height:49px;float:left;background:url(/static/images/header_l.jpg) no-repeat;
 }
@@ -40,7 +40,7 @@ em.h3{font-size:24px;font-family:Verdana; }
 }
 #header .hr .name #goldLink a.nameh{color:#000000;background:url(/static/images/user.png) no-repeat;text-decoration:none;position:relative;z-index:300;padding-left:8px;margin-right:8px;
 }
-#header .hr .mygear{width:228px;padding:5px 0px 0;display:none;background:url(/static/images/user.png) no-repeat 0 -40px;font-size:13px;position:absolute;right:0px;top:5px;
+#header .hr .myexfe{width:228px;padding:5px 0px 0;display:none;background:url(/static/images/user.png) no-repeat 0 -40px;font-size:13px;position:absolute;right:0px;top:5px;
 }
 
 #header .hr .message{width:190px;padding:50px 19px 10px;
@@ -63,11 +63,11 @@ em.h3{font-size:24px;font-family:Verdana; }
 #header .hr .message .creatbtn a{color:#ffffff;font-size:18px;font-family:Verdana;text-decoration:none; padding-left:20px}
 
 
-#header .hr .mygearfoot{width:190px;height:30px;padding:0 19px;background:url(/static/images/user.png) no-repeat left bottom;line-height:30px;
+#header .hr .myexfefoot{width:190px;height:30px;padding:0 19px;background:url(/static/images/user.png) no-repeat left bottom;line-height:30px;
 }
-#header .hr .mygearfoot a.l{float:left
+#header .hr .myexfefoot a.l{float:left
 }
-#header .hr .mygearfoot a.r{float:right;
+#header .hr .myexfefoot a.r{float:right;
 }
 
 .menu_iframe{
@@ -115,11 +115,23 @@ em.h3{font-size:24px;font-family:Verdana; }
 }
 .exfel ul.ynbtn li{width:150px;float:left;
 }
-.exfel ul.ynbtn li a{width:131px;height:31px;color:#ffffff;text-align:center;background:url(/static/images/btn.png) no-repeat left top;display:block;font-size:24px;line-height:30px;text-decoration:none;
+.exfel ul.ynbtn li a{width:131px;height:31px;color:#ffffff;text-align:center;display:block;font-size:24px;line-height:30px;text-decoration:none;
 }
-.exfel ul.ynbtn li a.yes{background-position:left top
+.exfel ul.ynbtn li a.yes{background:url(/static/images/btn.png) no-repeat left top;
 }
-.exfel ul.ynbtn li a.no{background-position:right top
+.exfel ul.ynbtn li a.no{background:url(/static/images/btn.png) no-repeat -150px top;
+}
+.exfel ul.ynbtn li a:hover.yes{background:url(/static/images/btn.png) no-repeat -300px top;
+}
+.exfel ul.ynbtn li a:hover.no{background:url(/static/images/btn.png) no-repeat -450px top;
+}
+.exfel ul.ynbtn li a:visited.yes{background:url(/static/images/btn.png) no-repeat -600px top;
+}
+.exfel ul.ynbtn li a:visited.no{background:url(/static/images/btn.png) no-repeat -750px top;
+}
+.exfel ul.ynbtn li a.yes_readonly{background:url(/static/images/btn.png) no-repeat -900px top;
+}
+.exfel ul.ynbtn li a.no_readonly{background:url(/static/images/btn.png) no-repeat -1050px top;
 }
 .exfel ul.ynbtn li a.maybe{background:none;color:#838383;text-decoration: underline;font-size:18px;text-align:left;
 }
@@ -155,12 +167,8 @@ em.h3{font-size:24px;font-family:Verdana; }
 .Conversation h3{background:url(/static/images/incobtn.png) no-repeat 1px 14px;text-indent:40px;font-size:24px;height:50px;line-height:50px;font-weight:normal;}
 .Conversation .commenttext{margin:15px 0;height:60px}
 .Conversation .commenttext img{float:left;}
-.Conversation .commenttext .ctext{width:422px;height:42px;border:#afafaf 1px solid;float:right;font-size:12px; no-repeat scroll right bottom #fff}
-.Conversation .commenttext #post_submit {float: right; width: 20px; height: 20px; position: relative; bottom: 22px; right: 2px; background: url(/static/images/enter.png) no-repeat scroll right bottom white; border: none; text-indent: -99999px}
- 
-
-
-
+.Conversation .commenttext .ctext{width:422px;height:42px;border:#afafaf 1px solid;float:right;font-size:12px;background:#fff;resize: none; z-index:-10}
+.Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:25px 0 0 415px; }
 .commentlist {margin: 10px 0px;line-height: 130%;}
 .commentlist li {margin:20px 0;overflow:hidden;line-height:20px;}
 .comment {float:left;font-size:13px;width:360px;}
@@ -251,7 +259,7 @@ b.r3{margin: 0px}
 .login .account span img{ padding:2px 6px }
 .login .account h4{ font-size:14px; font-weight:normal; text-align:left; margin-top:30px}
 .login input.sub{height:26px; border:0;border-right:#8fb9d0 solid 1px;background:url(/static/images/btn.png) no-repeat left -44px;width:60px;font-size:14px; float:right;margin-top:15px}
-.login input.changepassword{height:26px; border:0;border-right:#8fb9d0 solid 1px;background:url(/static/images/btn.png) no-repeat left -44px;width:130px;font-size:14px; float:left;margin-top:15px}}
+.login input.changepassword{height:26px; border:0;border-right:#8fb9d0 solid 1px;background:url(/static/images/btn.png) no-repeat left -44px;width:120px;font-size:14px; float:left;margin-top:15px}}
 .login ul li p{height:26px;width:60px;margin:0 auto;}
 .login ul li em{float:left;width:30px;height:20px;background:url(/static/images/incobtn.png) no-repeat;cursor:pointer;}
 .login ul li em.ic1{background-position:8px -284px;}

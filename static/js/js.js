@@ -51,13 +51,15 @@ function cancel(){
 var $=jQuery;
 
 $(document).ready(function(){
-  $('.name').mousemove(function(){
-	$('#mygear').show();
-	//$('.fjiao').show();
+//$('.name').mousemove(function(){
+$('#goldLink').mousemove(function(){
+  $('#goldLink a').addClass('nameh');
+    $('#myexfe').show();
 });
-  $('.name').mouseout(function(){
-	$('#mygear').hide();
-	//$('.fjiao').hide();
+//  $('.name').mouseout(function(){
+  $('#goldLink').mouseout(function(){
+    $('#goldLink a').removeClass('nameh');
+    $('#myexfe').hide();
 });
 
   $('.newbg').mousemove(function(){
@@ -143,6 +145,13 @@ $('.coming').mousemove(function(){
 
   $('.coming').mouseout(function(){
 	$(this).removeClass('bgcom');
+});
+
+$('#private_icon').mousemove(function(){
+    $('#private_hint').show();
+});
+  $('#private_icon').mouseout(function(){
+    $('#private_hint').hide();
 });
 
 });

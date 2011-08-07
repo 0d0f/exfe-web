@@ -31,8 +31,8 @@ $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
 ?>
 <div class="centerbg">
 <div class="fsuo">
-<p class="suobtn"></p>
-<p class="xfc"><span>Private exfe,</span><br />
+<p class="suobtn" id="private_icon"></p>
+<p class="xfc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />
 only attendees could see details.</p>
 </div><!--锁-->
 <div id="content" class="albg">
@@ -52,8 +52,7 @@ only attendees could see details.</p>
 <h3>Conversation</h3>
 <div class="commenttext">
 <form action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-<img style="width:40px;height:40px" src="/eimgs/<?php echo $_SESSION["identity"]["avatar_file_name"];?>"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
-<input id="post_submit" name="commit" title="Say!" type="submit" value="Say!">
+<img style="width:40px;height:40px" src="/eimgs/<?php echo $_SESSION["identity"]["avatar_file_name"];?>"><input type="submit" value="" title="Say!" name="commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
 </form>
 </div>
 

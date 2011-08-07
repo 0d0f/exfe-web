@@ -31,26 +31,28 @@ class TestActions extends ActionController {
   }
   public function doTest()
   {
-    $Data=$this->getModelByName("X");
-    $cross=$Data->getCross(2);
-    if($cross)
-    {
-	$place_id=$cross["place_id"];
-	$cross_id=$cross["id"];
-	if(intval($place_id)>0)
-	{
-	    $placeData=$this->getModelByName("place");
-	    $place=$placeData->getPlace($place_id);
-	    $cross["place"]=$place;
-
-	    
-	    $invitationData=$this->getModelByName("invitation");
-	    $invitations=$invitationData->getInvitation_Identities($cross_id);
-	    $cross["invitation"]=$invitations;
-
-	}
-    }
-    print_r($cross);
+  $helper=$this->getHelperByName("exfee");
+  $result=$helper->sendInvitation(8);
+#    $Data=$this->getModelByName("X");
+#    $cross=$Data->getCross(2);
+#    if($cross)
+#    {
+#	$place_id=$cross["place_id"];
+#	$cross_id=$cross["id"];
+#	if(intval($place_id)>0)
+#	{
+#	    $placeData=$this->getModelByName("place");
+#	    $place=$placeData->getPlace($place_id);
+#	    $cross["place"]=$place;
+#
+#	    
+#	    $invitationData=$this->getModelByName("invitation");
+#	    $invitations=$invitationData->getInvitation_Identities($cross_id);
+#	    $cross["invitation"]=$invitations;
+#
+#	}
+#    }
+#    print_r($cross);
 #    $Data=$this->getModelByName("place");
 #    $place="line1\r\nline2\r\nline3\rline4\nline5";
 #    $places=$Data->savePlace($place);

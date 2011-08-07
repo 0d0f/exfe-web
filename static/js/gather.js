@@ -1,8 +1,22 @@
-var exfee_list=new Array;
-function addexfee(identity)
+//var exfee_list=new Array;
+var new_identity_id=0;
+//function addexfee(identity)
+//{
+//    exfee_list.push(identity);
+//}
+
+function getexfee()
 {
-    //exfee_list.put(identity);
-    alert(identity);
+    var result="";
+    $('.exfee_item').each(function(e){
+	var exfee_identity=$(this).attr("value");
+	if(typeof(exfee_identity)!= 'undefined')
+	{
+	    result=result+exfee_identity+",";
+	//    alert(exfee_identity);
+	}
+    });
+    return result;
 }
 $(document).ready(function(){
         var code =null;
@@ -22,19 +36,27 @@ $(document).ready(function(){
 		    var id=data.response.identity.id;
 		    var name=data.response.identity.name;
 		    var avatar_file_name=data.response.identity.avatar_file_name;
-		    addexfee(identity);
 
+		    //addexfee(identity);
 		    if($('#exfee_'+id).attr("id")==null)
 		    {
 			if(name=="")
 		    	    name=identity;
 		    	var exfee_pv=$('#exfee_pv').html();
-		    	exfee_pv=exfee_pv+"<div id='exfee_"+id+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
+		    	exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_"+id+"' value='"+identity+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
 		    	$('#exfee_pv').html(exfee_pv);
 		    }
 		}
+		else
+		{
+			var name=$('#exfee').val();
+		    	var exfee_pv=$('#exfee_pv').html();
+			new_identity_id=new_identity_id+1;
+			//addexfee(name);
+		    	exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_new_"+new_identity_id+"' value='"+name+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
+		    	$('#exfee_pv').html(exfee_pv);
+		}
 	     }
-
 	     });
 	    e.preventDefault();
 	    }
@@ -92,37 +114,32 @@ $(document).ready(function(){
 		    $('#pv_place_line2').html(place_line2);
 		}
 	});
-//    $('#identity').blur(function() {
-//	$.ajax({
-//	  type: "GET",
-//	  //url: "http://localhost/exfe/index.php?class=s&action=IfIdentityExist&identity="+$('#identity').val(),
-//	  url: "http://local.exfe.com/s/IfIdentityExist?identity="+$('#identity').val(),
-//	  //data: "examid="+$(this).val(),
-//	  dataType:"json",
-//	  success: function(data){
-//		  if(data!=null)
-//		  {
-//		    if(data.response.identity_exist=="false")
-//		    {
-//		    //identity
-//			$('#hint').show();
-//			$('#retype').show();
-//			$('#displayname').show();
-//			$('#resetpwd').hide();
-//		    }
-//		    else if(data.response.identity_exist=="true")
-//		    {
-//			$('#hint').hide();
-//			$('#retype').hide();
-//			$('#displayname').hide();
-//			$('#resetpwd').show();
-//		    }
-//		}
-//	}
-//	});
-//
-//
-//    });
+
+        $('#gather_x').click(function(e){
+	  //
+	  $('#exfee_list').val(getexfee());
+	  $('#gatherxform').submit();  
+	});
+        //$('#gatherxform').submit(function(e){
+	//    alert("aa");
+	//    return false;
+	//});
+    $('#datetime').datepicker({
+    	duration: '',
+        showTime: true,
+        constrainInput: false,
+	time24h: true,
+	dateFormat: 'yy-mm-dd',
+
+    	beforeShow: function(input, inst)
+    	{
+    	    //inst.dpDiv.css({marginTop: -input.offsetHeight + 'px', marginLeft: input.offsetWidth + 'px'});
+	    $.datepicker._pos = $.datepicker._findPos(input);
+	     $.datepicker._pos[0] =280;
+	     $.datepicker._pos[1] = 50;
+    	}
+     });
+	
 });
 
 

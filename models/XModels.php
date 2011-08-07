@@ -29,6 +29,7 @@ class XModels extends DataModel{
 	if(intval($result["insert_id"])>0)
 	    return intval($result["insert_id"]);
     }
+
     public function getCross($crossid)
     {
 	$sql="select * from crosses where id=$crossid";

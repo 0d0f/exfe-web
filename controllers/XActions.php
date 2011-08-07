@@ -3,6 +3,7 @@ class XActions extends ActionController {
 
   public function doGather()
   {
+   // print_r($_POST);die();
     $identity_id=$_SESSION["identity_id"];
     #$crossid=int_to_base62($crossid);
     #echo "redirect...to cross edit page: /$crossid/edit";
@@ -21,7 +22,17 @@ class XActions extends ActionController {
     	$cross_id=$crossdata->gatherCross($identity_id,$_POST);
 
 	$helper=$this->getHelperByName("exfee");
-	$helper->addExfeeIdentify($cross_id,$_POST["exfee"]);
+	//$exfee_list=explode(",", $_POST["exfee_list"]); 
+	//foreach ($exfee_list as $exfee)
+	//{
+	//    if($exfee!="")
+	//    {
+		$helper->addExfeeIdentify($cross_id,$_POST["exfee_list"]);
+		$helper->sendInvitation($cross_id);
+	//    }
+
+	//}
+	
 	//TODO: redirect to this exfe page
 	//cross_id
 	$cross_id_base62=int_to_base62($cross_id);
