@@ -109,18 +109,31 @@ class IdentityModels extends DataModel{
 	$row=$this->getRow($sql);
 	if($row)
 	    return $row;
-	//else
-	//{
-	//    $time=time();
-	//    $provider="email";
-	//    $name="";
-	//    $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$identity',FROM_UNIXTIME($time),'$name','','','','','','')";
-    	//    $result=$this->query($sql);
-	//    $identityid=intval($result["insert_id"]);
-	//    $sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";
-	//    $row=$this->getRow($sql);
-	//    return $row;  
-	//}
+    }
+
+    public function loginWithXToken($cross_id,$token)
+    {
+	$sql="select identity_id from invitations where cross_id=$cross_id and token='$token';";	
+	$row=$this->getRow($sql);
+	$identity_id=intval($row["identity_id"]);
+	if($identity_id > 0)
+	{
+
+		     $tokenSession=array();
+	    	     //$tokenSession["userid"]=$userid;
+	    	     $tokenSession["identity_id"]=$identity_id;
+		     $identity=array();
+		     $identity["external_identity"]=$identityrow["external_identity"];
+		     $identity["name"]=$identityrow["name"];
+		     if($identity["name"]=="")
+		        $identity["name"]=$identityrow["external_identity"];
+		     $identity["bio"]=$identityrow["bio"];
+		     $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+		     $tokenSession["identity"]=$identity;
+		     $tokenSession["auth_type"]="mailtoken";
+		     $_SESSION["tokenIdentity"]=$tokenSession;
+	}
+	return $identity_id;
     }
 }
 

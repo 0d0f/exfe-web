@@ -33,6 +33,8 @@ class ExfeeHelper extends ActionController {
     	$invitationdata=$this->getModelByName("invitation");
     	$invitations=$invitationdata->getInvitation_Identities($cross_id);
 
+	$crossData=$this->getModelByName("X");
+	$cross=$crossData->getCross($cross_id);
 
 	require 'lib/Resque.php';
 	date_default_timezone_set('GMT');
@@ -42,7 +44,11 @@ class ExfeeHelper extends ActionController {
 	{
 
 	    $args = array(
+	    	'title' => $cross["title"],
+	    	'description' => $cross["description"],
+	    	'cross_id_base62' => int_to_base62($cross_id),
 	    	'invitation_id' => $invitation["invitation_id"],
+	    	'token' => $invitation["token"],
 	    	'identity_id' => $invitation["identity_id"],
 	    	'provider' => $invitation["provider"],
 	    	'external_identity' => $invitation["external_identity"],

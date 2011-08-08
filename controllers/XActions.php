@@ -46,8 +46,19 @@ class XActions extends ActionController {
   {
     if(checklogin()===FALSE)
     {
-	header( 'Location: /s/login' ) ;
-	exit(0);
+	$identityData=$this->getModelByName("identity");
+	$cross_id=base62_to_int($_GET["id"]);
+	$token=$_GET["token"];
+	if(intval($cross_id)>0 && $token!="")
+	{
+	    $identity_id=$identityData->loginWithXToken($cross_id, $token);
+	}
+
+	if(checkIdentityLogin($identity_id)===FALSE)
+	{
+	    header( 'Location: /s/login' ) ;
+	    exit(0);
+	}
     }
     $Data=$this->getModelByName("X");
     $cross=$Data->getCross(base62_to_int($_GET["id"]));

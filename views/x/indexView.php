@@ -28,6 +28,7 @@ foreach($normal_exfee as $exfee)
 
 $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
 $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
+$token=$_GET["token"];
 ?>
 <div class="centerbg">
 <div class="fsuo">
@@ -43,9 +44,9 @@ only attendees could see details.</p>
 <a href="">Expand</a>
 
 <ul class="ynbtn">
-<li><a href="/<?php echo $cross["id"];?>/rsvp/yes" class="yes">Yes</a></li>
-<li><a href="/<?php echo $cross["id"];?>/rsvp/no" class="no">No</a></li>
-<li><a href="/<?php echo $cross["id"];?>/rsvp/maybe" class="maybe">Maybe</a><li>
+<li><a href="/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
+<li><a href="/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
+<li><a href="/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a><li>
 </ul>
 
 <div class="Conversation">

@@ -41,6 +41,15 @@ class SActions extends ActionController {
     echo json_encode($responobj);
     exit();
   }
+
+  public function doLogout()
+  {
+	unset($_SESSION["userid"]);
+	unset($_SESSION["identity_id"]);
+	unset($_SESSION["identity"]);
+	unset($_SESSION["tokenIdentity"]);
+  }
+
   public function doLogin()
   {
     $identity=$_POST["identity"];

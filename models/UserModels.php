@@ -29,4 +29,5 @@ class UserModels extends DataModel{
 	#update last_sign_in_at,last_sign_in_ip...
     	return $this->getRow($sql);
     }
+    
 }

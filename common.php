@@ -6,6 +6,13 @@ function checklogin()
     else
 	return FALSE;
 }
+function checkIdentityLogin($identity_id)
+{
+    if(intval($_SESSION["tokenIdentity"]["identity_id"])>0 &&  intval($_SESSION["tokenIdentity"]["identity_id"])==$identity_id)
+	return TRUE;
+    else
+	return FALSE;
+}
 
 function humanDateTime($timestamp,$lang='en')
 {
