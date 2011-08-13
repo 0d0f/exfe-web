@@ -91,10 +91,10 @@ class XActions extends ActionController {
 	foreach ($invitations as $invitation)
     	{
 
-	    if($invitation["name"]=="")
-		$invitation["name"]=$user["name"];
-	    if($invitation["avatar_file_name"]=="")
-		$invitation["avatar_file_name"]=$user["avatar_file_name"];
+	//    if($invitation["name"]=="")
+	//	$invitation["name"]=$user["name"];
+	//    if($invitation["avatar_file_name"]=="")
+	//	$invitation["avatar_file_name"]=$user["avatar_file_name"];
 	    
 
     	    if ($invitation["identity_id"]==$cross["host_id"])

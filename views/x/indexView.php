@@ -66,10 +66,10 @@ if($cross["conversation"])
     {
 	$posttime=RelativeTime(strtotime($conversation["updated_at"]));
 	$identity=$conversation["identity"];
-	if($identity["name"]=="")
-	    $identity["name"]=$user["name"];
-	if($identity["avatar_file_name"]=="")
-	    $identity["avatar_file_name"]=$user["avatar_file_name"];
+	//if($identity["name"]=="")
+	//    $identity["name"]=$user["name"];
+	//if($identity["avatar_file_name"]=="")
+	//    $identity["avatar_file_name"]=$user["avatar_file_name"];
 
 	if($identity["name"]=="")
 	    $identity["name"]=$identity["external_identity"];
