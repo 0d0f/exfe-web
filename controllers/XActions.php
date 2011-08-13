@@ -60,7 +60,7 @@ class XActions extends ActionController {
 	    exit(0);
 	}
     }
-    $Data=$this->getModelByName("X");
+    $Data=$this->getModelByName("x");
     $cross=$Data->getCross(base62_to_int($_GET["id"]));
     if($cross)
     {
