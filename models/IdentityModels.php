@@ -97,6 +97,7 @@ class IdentityModels extends DataModel{
 		     $identity["bio"]=$identityrow["bio"];
 		     $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
 		     $_SESSION["identity"]=$identity;
+		     unset($_SESSION["tokenIdentity"]);
 	    	     return $userid;
 	    	}
 	   }
@@ -135,5 +136,28 @@ class IdentityModels extends DataModel{
 	}
 	return $identity_id;
     }
+
+    public function getIdentitiesByUser($userid)
+    {
+        $sql="select identityid from user_identity where userid=$userid";
+        $rows=$this->getAll($sql);
+        $identities=array();
+        foreach($rows as $row)
+        {
+            if(intval($row["identityid"])>0)
+            {
+
+                $identity_id=$row["identityid"];
+                $sql="select * from identities where id=$identity_id";
+                $identity=$this->getRow($sql);
+                array_push($identities,$identity);
+                //$identity=;
+            }
+        }
+        return $identities;
+
+    }
+
+
 }
 

@@ -13,15 +13,26 @@ class UserModels extends DataModel{
 	    return intval($result["insert_id"]);
     }
 
-    #public function addUser($email,$password)
-    #{
-    #    $password=md5($password.$this->salt);
-    #    $time=time();
-    #    $sql="insert into users (email,encrypted_password,created_at) values('$email','$password',FROM_UNIXTIME($time));";
-    #	$result=$this->query($sql);
-    #    if(intval($result["insert_id"])>0)
-    #        return intval($result["insert_id"]);
-    #}
+    public function getUser($userid)
+    {
+	$sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
+    	$row=$this->getRow($sql);
+	return $row;
+    }
+    
+    public function saveUser($name,$userid)
+    {
+	$sql="update users set name='$name' where id=$userid";	
+	$this->query($sql);
+	return $this->getUser($userid);
+    }
+    public function saveUserAvatar($avatar,$userid)
+    {
+	$sql="update users set avatar_file_name='$avatar' where id=$userid";	
+	$this->query($sql);
+	return $this->getUser($userid);
+    }
+
     public function login($email,$password)
     {
 	$password=md5($password.$this->salt);
