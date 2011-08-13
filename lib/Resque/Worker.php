@@ -535,10 +535,10 @@ class Resque_Worker
 	public function log($message)
 	{
 		if($this->logLevel == self::LOG_NORMAL) {
-			fwrite(STDOUT, "*** " . $message . "\n");
+			fwrite( "php://stdout" , "*** " . $message . "\n");
 		}
 		else if($this->logLevel == self::LOG_VERBOSE) {
-			fwrite(STDOUT, "** [" . strftime('%T %Y-%m-%d') . "] " . $message . "\n");
+			fwrite("php://stdout", "** [" . strftime('%T %Y-%m-%d') . "] " . $message . "\n");
 		}
 	}
 

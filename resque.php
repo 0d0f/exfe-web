@@ -55,7 +55,7 @@ if($count > 1) {
 			$queues = explode(',', $QUEUE);
 			$worker = new Resque_Worker($queues);
 			$worker->logLevel = $logLevel;
-			fwrite(STDOUT, '*** Starting worker '.$worker."\n");
+			fwrite("php://stdout" , '*** Starting worker '.$worker."\n");
 			$worker->work($interval);
 			break;
 		}
@@ -73,7 +73,7 @@ else {
 			die('Could not write PID information to ' . $PIDFILE);
 	}
 
-	fwrite(STDOUT, '*** Starting worker '.$worker."\n");
+	fwrite("php://stdout" , '*** Starting worker '.$worker."\n");
 	$worker->work($interval);
 }
 ?>
