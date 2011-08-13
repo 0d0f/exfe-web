@@ -4,7 +4,7 @@ function saveUsername(name)
      $.ajax({
      type: "POST",
      data: poststr,
-     url: "http://local.exfe.com/s/SaveUserIdentity", 
+     url: site_url+"/s/SaveUserIdentity", 
      dataType:"json",
      success: function(data){
 	if(data.response.user!=null)
@@ -20,7 +20,7 @@ function updateavatar(name)
 {
      $.ajax({
      type: "GET",
-     url: "http://local.exfe.com/s/GetUserProfile", 
+     url: site_url+"/s/GetUserProfile", 
      dataType:"json",
      success: function(data){
 	if(data.response.user!=null)

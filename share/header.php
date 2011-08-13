@@ -5,6 +5,7 @@
 <title>exfe</title>
 <script type="text/javascript" src="/static/js/jquery-1.5.1.min.js"></script>
 <script type="text/javascript" src="/static/js/js.js"></script>
+<script type="text/javascript" src="/static/js/c.js"></script>
 <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
 
 <!--[if IE 6]>

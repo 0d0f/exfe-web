@@ -3,7 +3,7 @@ $(document).ready(function(){
 	$.ajax({
 	  type: "GET",
 	  //url: "http://localhost/exfe/index.php?class=s&action=IfIdentityExist&identity="+$('#identity').val(),
-	  url: "http://local.exfe.com/s/IfIdentityExist?identity="+$('#identity').val(),
+	  url: site_url+"/s/IfIdentityExist?identity="+$('#identity').val(),
 	  //data: "examid="+$(this).val(),
 	  dataType:"json",
 	  success: function(data){

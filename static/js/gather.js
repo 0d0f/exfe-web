@@ -27,7 +27,7 @@ $(document).ready(function(){
 	    //a="http://api.local.exfe.com/v1/identity/get?identity="+$('#exfee').val();
 	     $.ajax({
     	     type: "GET",
-    	     url: "http://local.exfe.com/v1/identity/get?identity="+$('#exfee').val(), 
+    	     url: site_url+"/v1/identity/get?identity="+$('#exfee').val(), 
     	     dataType:"json",
     	     success: function(data){
 		if(data.response.identity!=null)
