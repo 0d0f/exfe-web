@@ -77,12 +77,26 @@ class XActions extends ActionController {
     $invitationData=$this->getModelByName("invitation");
     $invitations=$invitationData->getInvitation_Identities($cross_id);
     
-    
+    if(intval($_SESSION["userid"])>0)
+    {    
+    	$userData = $this->getModelByName("user");
+    	$user=$userData->getUser($_SESSION["userid"]);
+	$this->setVar("user", $user);
+    }
+
     $host_exfee=array();
     $normal_exfee=array();
+
     if($invitations)
 	foreach ($invitations as $invitation)
     	{
+
+	    if($invitation["name"]=="")
+		$invitation["name"]=$user["name"];
+	    if($invitation["avatar_file_name"]=="")
+		$invitation["avatar_file_name"]=$user["avatar_file_name"];
+	    
+
     	    if ($invitation["identity_id"]==$cross["host_id"])
     	        array_push($host_exfee,$invitation);
     	    else

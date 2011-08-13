@@ -51,13 +51,11 @@ function cancel(){
 var $=jQuery;
 
 $(document).ready(function(){
-//$('.name').mousemove(function(){
-$('#goldLink').mousemove(function(){
+  $('#goldLink').mousemove(function(){
   $('#goldLink a').addClass('nameh');
-    $('#myexfe').show();
+   $('#myexfe').show();
 });
-//  $('.name').mouseout(function(){
-  $('#goldLink').mouseout(function(){
+   $('#myexfe').mouseleave(function(){
     $('#goldLink a').removeClass('nameh');
     $('#myexfe').hide();
 });

@@ -3,6 +3,7 @@
 <?php include "share/nav.php"; ?>
 <?php 
 $cross=$this->getVar("cross");
+$user=$this->getVar("user");
 $description_lines=preg_split ("/\r\n|\r|\n/", $cross["description"]);
 $description="";
 foreach($description_lines as $line)
@@ -65,6 +66,11 @@ if($cross["conversation"])
     {
 	$posttime=RelativeTime(strtotime($conversation["updated_at"]));
 	$identity=$conversation["identity"];
+	if($identity["name"]=="")
+	    $identity["name"]=$user["name"];
+	if($identity["avatar_file_name"]=="")
+	    $identity["avatar_file_name"]=$user["avatar_file_name"];
+
 	if($identity["name"]=="")
 	    $identity["name"]=$identity["external_identity"];
 ?>
