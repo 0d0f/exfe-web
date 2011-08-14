@@ -30,6 +30,19 @@ class InvitationModels extends DataModel{
     {
 	$sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b   where b.id=a.identity_id and a.cross_id=$cross_id";
     	$invitations=$this->getAll($sql);
+	for($i=0;$i<sizeof($invitations);$i++)
+	{
+	    if(trim($invitations[$i]["name"])==""  ||  trim($invitations[$i]["b.avatar_file_name"])=="")
+	    {
+		$indentity_id=$invitations[$i]["identity_id"];
+		$sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$indentity_id";
+		$user=$this->getRow($sql);
+		if(trim($invitations[$i]["name"])=="" )
+		    $invitations[$i]["name"]=$user["name"];
+		if(trim($invitations[$i]["b.avatar_file_name"])=="")
+		    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
+	    }
+	}
 	return $invitations;
 
     }
