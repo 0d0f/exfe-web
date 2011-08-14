@@ -71,8 +71,6 @@ class XActions extends ActionController {
 	    $placeData=$this->getModelByName("place");
 	    $place=$placeData->getPlace($place_id);
 	    $cross["place"]=$place;
-
-	    
 	}
     $invitationData=$this->getModelByName("invitation");
     $invitations=$invitationData->getInvitation_Identities($cross_id);
@@ -90,13 +88,6 @@ class XActions extends ActionController {
     if($invitations)
 	foreach ($invitations as $invitation)
     	{
-
-	//    if($invitation["name"]=="")
-	//	$invitation["name"]=$user["name"];
-	//    if($invitation["avatar_file_name"]=="")
-	//	$invitation["avatar_file_name"]=$user["avatar_file_name"];
-	    
-
     	    if ($invitation["identity_id"]==$cross["host_id"])
     	        array_push($host_exfee,$invitation);
     	    else

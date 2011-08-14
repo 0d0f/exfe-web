@@ -39,7 +39,7 @@ class InvitationModels extends DataModel{
 		$user=$this->getRow($sql);
 		if(trim($invitations[$i]["name"])=="" )
 		    $invitations[$i]["name"]=$user["name"];
-		if(trim($invitations[$i]["b.avatar_file_name"])=="")
+		if(trim($invitations[$i]["avatar_file_name"])=="")
 		    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
 	    }
 	}

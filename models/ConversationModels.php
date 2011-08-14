@@ -27,6 +27,15 @@ class ConversationModels extends DataModel{
 		    $identity=$this->getRow($sql);
 		    if($identity)
 		    {
+
+			$sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$identity_id";
+			$user=$this->getRow($sql);
+			if(trim($identity["name"])=="" )
+			    $identity["name"]=$user["name"];
+			if(trim($identity["avatar_file_name"])=="")
+			    $identity["avatar_file_name"]=$user["avatar_file_name"];
+
+
 		        $post["identity"]=$identity;
 		        $identity[$identity_id]=$identity;
 		    }
