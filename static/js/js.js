@@ -60,6 +60,13 @@ $(document).ready(function(){
     $('#myexfe').hide();
 });
 
+$('#private_icon').mousemove(function(){
+    $('#private_hint').show();
+});
+  $('#private_icon').mouseout(function(){
+    $('#private_hint').hide();
+});
+
   $('.newbg').mousemove(function(){
 	$(this).addClass('fbg');
 	$('.fbg button').show();
@@ -145,12 +152,6 @@ $('.coming').mousemove(function(){
 	$(this).removeClass('bgcom');
 });
 
-$('#private_icon').mousemove(function(){
-    $('#private_hint').show();
-});
-  $('#private_icon').mouseout(function(){
-    $('#private_hint').hide();
-});
 
 });
 

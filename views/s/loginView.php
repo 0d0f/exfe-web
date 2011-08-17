@@ -6,7 +6,7 @@ $isNewIdentity=$this->getVar("isNewIdentity");
 if($isNewIdentity===true)
     include "welcomebox.php"; 
 else
-    include "loginbox.php"; 
+    include "share/loginbox.php"; 
 ?>
 </body>
 </html>

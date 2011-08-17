@@ -60,8 +60,6 @@ abstract class DataModel{
 	//check insert or delete is Error
 	public function query($sql) {
 		mysql_query($sql);
-		#print $sql;
-		#print mysql_error();
 		if(!mysql_error()) {
 			$insert_id=mysql_insert_id();
 			if($insert_id>0)
@@ -70,7 +68,6 @@ abstract class DataModel{
 		}
 		else
 			return false;
-	
 	}
 	
 	//get all

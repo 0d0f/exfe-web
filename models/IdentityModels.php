@@ -83,7 +83,7 @@ class IdentityModels extends DataModel{
 	   if(intval($row["userid"])>0)
 	   {	
 		$userid=intval($row["userid"]);
-		$sql="select encrypted_password from users where id=$userid"; 
+		$sql="select encrypted_password,name,avatar_file_name from users where id=$userid"; 
 	    	$row=$this->getRow($sql);
 	    	if($row["encrypted_password"]==$password)
 	    	{
@@ -92,11 +92,19 @@ class IdentityModels extends DataModel{
 		     $identity=array();
 		     $identity["external_identity"]=$identityrow["external_identity"];
 		     $identity["name"]=$identityrow["name"];
-		     if($identity["name"]=="")
+		     if(trim($identity["name"]==""))
+			$identity["name"]=$row["name"];
+		     if(trim($identity["name"]==""))
 			$identity["name"]=$identityrow["external_identity"];
+
 		     $identity["bio"]=$identityrow["bio"];
 		     $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+		     if(trim($identity["avatar_file_name"])=="")
+			$identity["avatar_file_name"]=$row["avatar_file_name"];
 		     $_SESSION["identity"]=$identity;
+		     #$user["name"]=$row["name"];
+		     #$user["avatar_file_name"]=$row["avatar_file_name"];
+		     #$_SESSION["user"]=$user;
 		     unset($_SESSION["tokenIdentity"]);
 	    	     return $userid;
 	    	}
@@ -137,6 +145,18 @@ class IdentityModels extends DataModel{
 	return $identity_id;
     }
 
+    public function getIdentitiesIdsByUser($userid)
+    {
+        $sql="select identityid from user_identity where userid=$userid";
+        $rows=$this->getAll($sql);
+	$ids=array();
+	if($rows)
+	foreach ($rows as $row)
+	{
+	    array_push($ids,$row["identityid"]);
+	}
+        return $ids;
+    }
     public function getIdentitiesByUser($userid)
     {
         $sql="select identityid from user_identity where userid=$userid";
@@ -158,6 +178,64 @@ class IdentityModels extends DataModel{
 
     }
 
+    public function checkIdentityStatus($identity_id)
+    {
+	$sql="select status from identities where id=$identity_id;";
+	$result=$this->getRow($sql);
+	return intval($result["status"]);
+    }
+
+    public function setRelation($identity_id,$status=0)
+    {
+	if(intval($identity_id)>0 )
+	{
+	    $token=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+	    $sql="select userid from user_identity where identityid=$identity_id;";
+            $user=$this->getRow($sql);
+	    if(intval($user["userid"])==0)
+	    {
+	        $sql="select name,bio,avatar_file_name from identities where id=$identity_id;";
+		$identity=$this->getRow($sql);
+		$name=$identity["name"];
+		$bio=$identity["bio"];
+		$avatar_file_name=$identity["avatar_file_name"];
+		$sql="insert into users (name,bio,avatar_file_name) values ('$name','$bio','$avatar_file_name');";
+		$result=$this->query($sql);
+		if(intval($result["insert_id"])>0)
+		{
+		   $time=time();
+		   $userid=intval($result["insert_id"]);
+		   $sql="insert into user_identity (identityid,userid,created_at) values ($identity_id,$userid,$FROM_UNIXTIME($time));";
+		   $this->query($sql);
+		   
+		    //set identity state to verifying, set identity activecode
+		    	
+		    
+		   if($status==STATUS_CONNECTED)
+		    $sql="update identities set status=$status where id=$identity_id;";
+		   else
+		    $sql="update identities set status=2 where id=$identity_id;";
+
+		   $this->query($sql);
+		}
+	    }
+
+	    $sql="select status from identities where id=$identity_id;";
+	    $row=$this->getRow($sql);
+	    if(intval($row["status"])==2)// if status is verifying, set identity activecode ,send active email ,
+	    {
+		$sql="update identities set activecode='$token' where  id=$identity_id;";
+		$this->query($sql);
+	    }
+	    else if(intval($row["status"])==1)	//if disconnect, change to verifying, set identity activecode ,send active email
+	    {
+		$sql="update identities set status='2',activecode='$token' where  id=$identity_id;";
+		$this->query($sql);
+	    }
+	 }
+
+
+    }
 
 }
 

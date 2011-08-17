@@ -1,6 +1,12 @@
 <?php
 
 class SActions extends ActionController {
+  public function doTestUser()
+  {
+    $identityData = $this->getModelByName("identity");
+    $identityData->setRelation($_GET["identity_id"]);
+    
+  }
   public function doAdd()
   {
     $identity= $_GET["identity"];
@@ -154,7 +160,7 @@ class SActions extends ActionController {
 	}
 	else
     	{
-    	    header( 'Location: /s/login' ) ;
+		header( 'Location: /s/login' ) ;
     	    exit(0);
     	}
   }
@@ -281,7 +287,11 @@ class SActions extends ActionController {
 		//TODO: set cookie
 		//set cookie
 	    }
-	    $this->displayView();
+
+	    if($_GET["url"]!="")
+		header( 'Location:'.$_GET["url"] ) ;
+	    else
+		$this->displayView();
 	}
 	else
 	{
