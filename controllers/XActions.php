@@ -70,16 +70,28 @@ class XActions extends ActionController {
     {
 	$identity_id=intval($_SESSION["identity_id"]);
     }
-    else if(checkIdentityLogin($identity_id)===FALSE)
+    //TODO: check if current identity in session can view this cross
+    if(checkIdentityLogin($identity_id)===FALSE)
     {
 	header( 'Location: /s/login' ) ;
 	exit(0);
     }
 
+    $showlogin="";
     if($identity_id!=$_SESSION["identity_id"])
-	$this->setVar("showlogin", "1");
+    {
+	$identityData=$this->getModelByName("user");
+	$user=$identityData->getUserByIdentityId($identity_id);
+	if(trim($user["encrypted_password"])=="")
+	    $showlogin= "setpassword";
+	//if user password="" then show set password box
+	//else show login
+	else
+	    $showlogin= "login";
+    }
+    
+    $this->setVar("showlogin", $showlogin);
 	
-    //	}
     $Data=$this->getModelByName("x");
     $cross=$Data->getCross(base62_to_int($_GET["id"]));
     if($cross)

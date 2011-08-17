@@ -40,5 +40,17 @@ class UserModels extends DataModel{
 	#update last_sign_in_at,last_sign_in_ip...
     	return $this->getRow($sql);
     }
+    public function getUserByIdentityId($identity_id)
+    {
+	$sql="select userid from user_identity where identityid=$identity_id";	
+	$result=$this->getRow($sql);
+	if(intval($result["userid"])>0)
+	{
+	    $userid=$result["userid"];
+	    $sql="select * from users where id=$userid";
+	    $user=$this->getRow($sql);
+	    return $user;
+	}
+    }
     
 }

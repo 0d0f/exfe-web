@@ -1,7 +1,6 @@
 <?php include "share/header.php"; ?>
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
-<script type="text/javascript" src="/static/js/cross.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
 <?php 
@@ -14,12 +13,16 @@ $interested=$this->getVar("interested");
 
 echo "<script type='text/javascript'>\r\n ";
 
-    if ($this->getVar("showlogin")=='1')
-	echo "var show_idbox=1; \r\n";
+    if ($this->getVar("showlogin")!='')
+	echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
     if ($interested=='yes')
 	echo "var interested=1; \r\n";
 echo "</script>\r\n";
-
+?>
+<script type='text/javascript' src='/static/js/login.js'></script>
+<script type="text/javascript" src="/static/js/dialog.js"></script>
+<script type="text/javascript" src="/static/js/cross.js"></script>
+<?php
 $description_lines=preg_split ("/\r\n|\r|\n/", $cross["description"]);
 $description="";
 foreach($description_lines as $line)
@@ -150,9 +153,8 @@ foreach($normal_exfee as $exfee)
 </div><!--/#index-->
 </div><!--/#content-->
 </div>
-<div id="loginbox" style="display:none">
-<?php include "share/loginbox.php"; ?>
-<div>
+
+<div id="loginbox" >123</div>
 
 <div id="footerBao">
 
