@@ -1,0 +1,12 @@
+1 权限检查
+
+先检查 tokenidentity 权限
+然后检查 identity 权限
+
+如果都不存在，则试图login
+
+2 先尝试用 token login
+
+然后尝试cookie 
+
+如果都没有，就转向登录页面或者弹出登录窗口。
