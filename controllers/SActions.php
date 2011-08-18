@@ -320,8 +320,12 @@ class SActions extends ActionController {
 	$userData=$this->getModelByName("user");
 	$r=$userData->setPassword($identity_id,$password,$displayname);
 	if(intval($r)==1)
+	{
 	    $result="true";
+	    $userid=$identityData->loginByIdentityId($identity_id);
+	}
     }
+
     $responobj["response"]["success"]=$result;
     echo json_encode($responobj);
     exit();

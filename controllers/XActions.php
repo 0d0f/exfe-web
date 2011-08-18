@@ -52,33 +52,27 @@ class XActions extends ActionController {
     $identityData=$this->getModelByName("identity");
     $cross_id=base62_to_int($_GET["id"]);
     $token=$_GET["token"];
-    if(intval($cross_id)>0 && $token!="")
-    {
-	$identity_id=$identityData->loginWithXToken($cross_id, $token);
-	if(intval($identity_id)>0)
-	{
-	    $status=$identityData->checkIdentityStatus($identity_id);
-	    if($status!=STATUS_CONNECTED)
-	    {
-		$identityData->setRelation($identity_id,STATUS_CONNECTED);
-	    }
-	}
-		//checkIdentityStatus
-    }
 
-    if($identity_id==0)
-    {
-	$identity_id=intval($_SESSION["identity_id"]);
-    }
-    //TODO: check if current identity in session can view this cross
-    if(checkIdentityLogin($identity_id)===FALSE)
+    $checkhelper=$this->getHelperByName("check");
+    $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
+    if($check["allow"]=="false")
     {
 	header( 'Location: /s/login' ) ;
 	exit(0);
     }
-
+    if($check["type"]=="token")
+    {
+	    $identity_id=$identityData->loginWithXToken($cross_id, $token);
+            $status=$identityData->checkIdentityStatus($identity_id);
+            if($status!=STATUS_CONNECTED)
+            {
+        	$identityData->setRelation($identity_id,STATUS_CONNECTED);
+            }
+    }
+    else if($check["type"]=="session")
+	$identity_id=$_SESSION["identity_id"];
     $showlogin="";
-    if($identity_id!=$_SESSION["identity_id"])
+    if($check["type"]=="token")
     {
 	$identityData=$this->getModelByName("user");
 	$user=$identityData->getUserByIdentityId($identity_id);
@@ -86,12 +80,10 @@ class XActions extends ActionController {
 	    $showlogin= "setpassword";
 	//if user password="" then show set password box
 	//else show login
-	else
+	else if($identity_id!=$_SESSION["identity_id"])
 	    $showlogin= "login";
     }
-    
     $this->setVar("showlogin", $showlogin);
-
     $this->setVar("token", $_GET["token"]);
 
     $Data=$this->getModelByName("x");
@@ -125,14 +117,6 @@ class XActions extends ActionController {
     $myidentity=$identityData->getIdentityById($identity_id);
     $this->setVar("myidentity", $myidentity);
 
-    //if($_SESSION["tokenIdentity"]["identity"]!="")
-    //{
-    //    $this->setVar("myidentity", $_SESSION["tokenIdentity"]["identity"]);
-    //}
-    //else if($_SESSION["identity"]!="")
-    //{
-    //    $this->setVar("myidentity", $_SESSION["identity"]);
-    //}
     $host_exfee=array();
     $normal_exfee=array();
 

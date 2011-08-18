@@ -46,4 +46,22 @@ class InvitationModels extends DataModel{
 	return $invitations;
 
     }
+    public function ifIdentityHasInvitation($identity_id,$cross_id)
+    {
+	$sql="select id from invitations where identity_id=$identity_id and  cross_id=$cross_id;";
+	$row=$this->getRow($sql);
+	if(intval($row["id"])>0)
+	    return true;
+	
+	return false;
+    }
+    public function ifIdentityHasInvitationByToken($token,$cross_id)
+    {
+	$sql="select id from invitations where token='$token' and  cross_id=$cross_id;";
+	$row=$this->getRow($sql);
+	if(intval($row["id"])>0)
+	    return true;
+	
+	return false;
+    }
 }

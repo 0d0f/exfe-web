@@ -27,6 +27,7 @@ class IdentityModels extends DataModel{
 	if($identityid>0)
 	{
 	    //TOdO: commit as a transaction
+	    $time=time();
 	    $sql="insert into user_identity (identityid,userid,created_at) values ($identityid,$user_id,FROM_UNIXTIME($time))";
 	    $this->query($sql);
 	    return $identityid;
@@ -68,6 +69,43 @@ class IdentityModels extends DataModel{
 	    return FALSE;
     }
 
+    public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL)
+    {
+	   if($userid==0)
+	   {
+	    $sql="select userid from user_identity where identityid=$identity_id";
+	    $trow=$this->getRow($sql);
+	    if(intval($trow["userid"])>0)
+		$userid=intval($trow["userid"]);
+	   }
+	   if($userrow==NULL)
+	   {
+		$sql="select name,bio,avatar_file_name from users where id=$userid"; 
+	    	$userrow=$this->getRow($sql);
+	   }
+	   if($identityrow==NULL)
+	   {
+		$sql="select * from identities where external_identity='$identity' limit 1";
+    		$identityrow=$this->getRow($sql);
+	   }
+	   $_SESSION["userid"]=$userid;
+	   $_SESSION["identity_id"]=$identity_id;
+	   $identity=array();
+	   $identity["external_identity"]=$identityrow["external_identity"];
+	   $identity["name"]=$identityrow["name"];
+	   if(trim($identity["name"]==""))
+	      $identity["name"]=$userrow["name"];
+	   if(trim($identity["name"]==""))
+	      $identity["name"]=$identityrow["external_identity"];
+
+	   $identity["bio"]=$identityrow["bio"];
+	   $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+	   if(trim($identity["avatar_file_name"])=="")
+	      $identity["avatar_file_name"]=$userrow["avatar_file_name"];
+	   $_SESSION["identity"]=$identity;
+	   unset($_SESSION["tokenIdentity"]);
+	   return $userid;
+    }
     public function login($identity,$password)
     {
 	$password=md5($password.$this->salt);
@@ -76,10 +114,10 @@ class IdentityModels extends DataModel{
     	$identityrow=$this->getRow($sql);
 	if(intval($identityrow["id"])>0)
 	{
-	   $identityid=intval($identityrow["id"]);
-	   $sql="select userid from user_identity where identityid=$identityid";
+	   $identity_id=intval($identityrow["id"]);
+	   $userid=0;
+	   $sql="select userid from user_identity where identityid=$identity_id";
 	   $row=$this->getRow($sql);
-    
 	   if(intval($row["userid"])>0)
 	   {	
 		$userid=intval($row["userid"]);
@@ -87,28 +125,28 @@ class IdentityModels extends DataModel{
 	    	$row=$this->getRow($sql);
 	    	if($row["encrypted_password"]==$password)
 	    	{
-	    	     $_SESSION["userid"]=$userid;
-	    	     $_SESSION["identity_id"]=$identityid;
-		     $identity=array();
-		     $identity["external_identity"]=$identityrow["external_identity"];
-		     $identity["name"]=$identityrow["name"];
-		     if(trim($identity["name"]==""))
-			$identity["name"]=$row["name"];
-		     if(trim($identity["name"]==""))
-			$identity["name"]=$identityrow["external_identity"];
+		    $this->loginByIdentityId($identity_id,$userid,$row,$identityrow);
+	    	     //$_SESSION["userid"]=$userid;
+	    	     //$_SESSION["identity_id"]=$identity_id;
+		     //$identity=array();
+		     //$identity["external_identity"]=$identityrow["external_identity"];
+		     //$identity["name"]=$identityrow["name"];
+		     //if(trim($identity["name"]==""))
+		     //   $identity["name"]=$row["name"];
+		     //if(trim($identity["name"]==""))
+		     //   $identity["name"]=$identityrow["external_identity"];
 
-		     $identity["bio"]=$identityrow["bio"];
-		     $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
-		     if(trim($identity["avatar_file_name"])=="")
-			$identity["avatar_file_name"]=$row["avatar_file_name"];
-		     $_SESSION["identity"]=$identity;
-		     #$user["name"]=$row["name"];
-		     #$user["avatar_file_name"]=$row["avatar_file_name"];
-		     #$_SESSION["user"]=$user;
-		     unset($_SESSION["tokenIdentity"]);
-	    	     return $userid;
-	    	}
+		     //$identity["bio"]=$identityrow["bio"];
+		     //$identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+		     //if(trim($identity["avatar_file_name"])=="")
+		     //   $identity["avatar_file_name"]=$row["avatar_file_name"];
+		     //$_SESSION["identity"]=$identity;
+		     //unset($_SESSION["tokenIdentity"]);
+		    
+		}
+
 	   }
+	   return $userid;
 	}
 	return 0;
     }

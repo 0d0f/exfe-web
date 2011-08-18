@@ -1,4 +1,5 @@
 <?php
+
 function checklogin()
 {
     if(intval($_SESSION["userid"])>0 && intval($_SESSION["identity_id"]))
