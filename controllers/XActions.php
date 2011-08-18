@@ -91,7 +91,9 @@ class XActions extends ActionController {
     }
     
     $this->setVar("showlogin", $showlogin);
-	
+
+    $this->setVar("token", $_GET["token"]);
+
     $Data=$this->getModelByName("x");
     $cross=$Data->getCross(base62_to_int($_GET["id"]));
     if($cross)
@@ -106,6 +108,7 @@ class XActions extends ActionController {
 	}
     $invitationData=$this->getModelByName("invitation");
     $invitations=$invitationData->getInvitation_Identities($cross_id);
+    $identityData=$this->getModelByName("identity");
     
     if(intval($_SESSION["userid"])>0)
     {    
@@ -113,22 +116,23 @@ class XActions extends ActionController {
     	$user=$userData->getUser($_SESSION["userid"]);
 	$this->setVar("user", $user);
 
-	$identityData=$this->getModelByName("identity");
 	$myidentities=$identityData->getIdentitiesIdsByUser($_SESSION["userid"]);
     }
     else
     {
 	$myidentities=array($identity_id);
     }
+    $myidentity=$identityData->getIdentityById($identity_id);
+    $this->setVar("myidentity", $myidentity);
 
-    if($_SESSION["tokenIdentity"]["identity"]!="")
-    {
-	$this->setVar("myidentity", $_SESSION["tokenIdentity"]["identity"]);
-    }
-    else if($_SESSION["identity"]!="")
-    {
-	$this->setVar("myidentity", $_SESSION["identity"]);
-    }
+    //if($_SESSION["tokenIdentity"]["identity"]!="")
+    //{
+    //    $this->setVar("myidentity", $_SESSION["tokenIdentity"]["identity"]);
+    //}
+    //else if($_SESSION["identity"]!="")
+    //{
+    //    $this->setVar("myidentity", $_SESSION["identity"]);
+    //}
     $host_exfee=array();
     $normal_exfee=array();
 

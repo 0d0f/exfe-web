@@ -52,5 +52,25 @@ class UserModels extends DataModel{
 	    return $user;
 	}
     }
+    public function setPassword($identity_id,$password,$displayname)
+    {
+	$sql="select userid from user_identity where identityid=$identity_id";	
+	$result=$this->getRow($sql);
+	if(intval($result["userid"])>0)
+	{
+	    $userid=intval($result["userid"]);
+	    $password=md5($password.$this->salt);
+	    $sql="update users set encrypted_password ='$password',name='$displayname' where id=$userid;";
+	    $result=$this->query($sql);
+	    if($result==1)
+	    {
+		$sql="update identities set name='$displayname' where id=$identity_id";
+		$result=$this->query($sql);
+		return true;
+	    }
+	}
+	return false;
+	//$sql="update ";
+    }
     
 }

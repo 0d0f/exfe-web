@@ -13,6 +13,9 @@ $interested=$this->getVar("interested");
 
 echo "<script type='text/javascript'>\r\n ";
 
+    echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
+    echo "var cross_id=".$cross["id"].";\r\n";
+
     if ($this->getVar("showlogin")!='')
 	echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
     if ($interested=='yes')

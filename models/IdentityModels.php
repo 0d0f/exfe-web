@@ -112,6 +112,13 @@ class IdentityModels extends DataModel{
 	}
 	return 0;
     }
+    public function getIdentityById($identity_id)
+    {
+	$sql="select id,external_identity,name,bio,avatar_file_name from identities where id='$identity_id'";
+	$row=$this->getRow($sql);
+	if($row)
+	    return $row;
+    }
     public function getIdentity($identity)
     {
 	$sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";

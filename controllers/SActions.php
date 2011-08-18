@@ -303,5 +303,32 @@ class SActions extends ActionController {
 	$this->displayView();
     }
   }
+  public function doSetpwd()
+  {
+    $cross_id=base62_to_int($_POST["cross_id"]);
+    $token=$_POST["token"];
+    $password=$_POST["password"];
+    $displayname=$_POST["displayname"];
+    
+    $identityData=$this->getModelByName("identity");
+    $identity_id=$identityData->loginWithXToken($cross_id, $token);
+    $responobj["meta"]["code"]=200;
+    $result="false";
+
+    if(intval($identity_id)>0)
+    {
+	$userData=$this->getModelByName("user");
+	$r=$userData->setPassword($identity_id,$password,$displayname);
+	if(intval($r)==1)
+	    $result="true";
+    }
+    $responobj["response"]["success"]=$result;
+    echo json_encode($responobj);
+    exit();
+    
+    //$responobj["meta"]["errType"]="Bad Request";
+    //$responobj["meta"]["errorDetail"]="invalid_auth";
+    //setPassword($identity_id,$password)
+  }
 }
 
