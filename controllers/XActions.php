@@ -125,7 +125,8 @@ class XActions extends ActionController {
     	{
 	    if(in_array($invitation["identity_id"],$myidentities)==true)
 	    {
-		$this->setVar("interested","yes");	
+		if(intval($invitation["state"])>0)
+		    $this->setVar("interested","yes");	
 	    }
 	    //$invitation["identity_id"]
 	   // $invitation["state"];

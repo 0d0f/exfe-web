@@ -18,8 +18,8 @@ echo "<script type='text/javascript'>\r\n ";
 
     //if ($this->getVar("showlogin")!='')
     echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
-    if ($interested=='yes')
-	echo "var interested=1; \r\n";
+//    if ($interested=='yes')
+//	echo "var interested=1; \r\n";
 echo "</script>\r\n";
 ?>
 <script type='text/javascript' src='/static/js/login.js'></script>
@@ -71,7 +71,7 @@ only attendees could see details.</p>
 <li><a href="/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
 <li><a href="/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a><li>
 </ul>
-<div id="rsvp_submitted"  <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>You are interested in this <strong style="color:#0591af;">X</strong>.</span> <a href="#" id="changersvp">change?</a></div>
+<div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>You are interested in this <strong style="color:#0591af;">X</strong>.</span> <a href="#" id="changersvp">change?</a></div>
 
 <div class="Conversation">
 <h3>Conversation</h3>
