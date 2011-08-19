@@ -67,16 +67,16 @@ only attendees could see details.</p>
 <a href="">Expand</a>
 
 <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
-<li><a href="/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
-<li><a href="/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-<li><a href="/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a><li>
+<li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
+<li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
+<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a><li>
 </ul>
 <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>You are interested in this <strong style="color:#0591af;">X</strong>.</span> <a href="#" id="changersvp">change?</a></div>
 
 <div class="Conversation">
 <h3>Conversation</h3>
 <div class="commenttext">
-<form action="/<?php echo $cross["id"];?>/conversation/add" method="post">
+<form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
 <img style="width:40px;height:40px" src="/eimgs/64_64_<?php echo $avatar_file_name;?>"><input type="submit" value="" title="Say!" name="commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
 </form>
 </div>
@@ -127,7 +127,7 @@ if($cross["conversation"])
 foreach($host_exfee as $exfee)
 {
 ?>
-<li>
+<li id="exfee_<?php echo $exfee["identity_id"];?>">
 <p class="pic20"><img src="/eimgs/<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
 <p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
 <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
@@ -139,7 +139,7 @@ foreach($host_exfee as $exfee)
 foreach($normal_exfee as $exfee)
 {
 ?>
-<li>
+<li id="exfee_<?php echo $exfee["identity_id"];?>">
 <p class="pic20"><img src="/eimgs/<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
 <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
 <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>

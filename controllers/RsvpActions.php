@@ -23,6 +23,52 @@ class RSVPActions extends ActionController {
 	$identity_id=$_SESSION["identity_id"];
     return $identity_id;
   }
+  public function doSave()
+  {
+	$rsvp=$_POST["rsvp"];
+	$cross_id=$_POST["cross_id"];
+    //if(isset($identity) && isset($password))
+    //{
+	if($rsvp=="yes")
+	    $state=INVITATION_YES;
+	if($rsvp=="no")
+	    $state=INVITATION_NO;
+	if($rsvp=="maybe")
+	    $state=INVITATION_MAYBE;
+
+	$responobj["meta"]["code"]=200;
+	
+	$identity_id=$_SESSION["tokenIdentity"]["identity_id"];
+	if(intval($state)>0 && intval($identity_id)>0 )
+	{
+	   $responobj["response"]["identity_id"]=$identity_id;
+	   $responobj["response"]["state"]=$rsvp;
+
+	   $invitationData=$this->getModelByName("Invitation");
+    	   $r=$invitationData->rsvp($cross_id,$identity_id,$state);
+	   if($r===true)
+	    $responobj["response"]["success"]="true";
+	   else
+	    $responobj["response"]["success"]="false";
+	}
+	else
+	    $responobj["response"]["success"]="false";
+    	#$userid=$Data->login($identity,$password);
+
+	#if(intval($userid)>0)
+	#{
+	#    $responobj["response"]["success"]="true";
+	#    $responobj["response"]["userid"]=$userid;
+	#}
+	#else
+	#    $responobj["response"]["success"]="false";
+    //}
+    #else
+    #    $responobj["response"]["success"]="false";
+    echo json_encode($responobj);
+    exit();
+
+  }
   public function doYES()
   {
     $cross_id=intval($_GET["id"]);

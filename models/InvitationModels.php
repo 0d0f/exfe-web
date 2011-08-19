@@ -9,9 +9,9 @@ class InvitationModels extends DataModel{
 	$sql="select state from invitations where identity_id=$identity_id and cross_id=$cross_id;";
 	$result=$this->getRow($sql);
 	if(intval($result["state"])==intval($state))
-	    return TRUE;
+	    return true;
 	else
-	    return FALSE;
+	    return false;
     }
     public function addInvitation($cross_id,$identity_id,$state=INVITATION_MAYBE)
     {
