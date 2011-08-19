@@ -253,8 +253,6 @@ class SActions extends ActionController {
     $repassword=$_POST["retypepassword"];
     $displayname=$_POST["displayname"];
     $autosignin=$_POST["auto_signin"];
-    
-
 
     $isNewIdentity=FALSE;
 
@@ -303,8 +301,27 @@ class SActions extends ActionController {
 	$this->displayView();
     }
   }
-  public function doAlogin()
+  public function doDialoglogin()
   {
+    $identity=$_POST["identity"];
+    $password=$_POST["password"];
+    if(isset($identity) && isset($password))
+    {
+	$Data=$this->getModelByName("identity");
+    	$userid=$Data->login($identity,$password);
+
+	if(intval($userid)>0)
+	{
+	    $responobj["response"]["success"]="true";
+	    $responobj["response"]["userid"]=$userid;
+	}
+	else
+	    $responobj["response"]["success"]="false";
+    }
+    else
+	$responobj["response"]["success"]="false";
+    echo json_encode($responobj);
+    exit();
   }
   public function doSetpwd()
   {
