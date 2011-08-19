@@ -303,6 +303,9 @@ class SActions extends ActionController {
 	$this->displayView();
     }
   }
+  public function doAlogin()
+  {
+  }
   public function doSetpwd()
   {
     $cross_id=base62_to_int($_POST["cross_id"]);

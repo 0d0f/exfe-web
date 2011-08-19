@@ -157,10 +157,7 @@ foreach($normal_exfee as $exfee)
 </div><!--/#content-->
 </div>
 
-<div id="loginbox" >123</div>
-
 <div id="footerBao">
-
 </div><!--/#footerBao-->
 </body>
 </html>
