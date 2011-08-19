@@ -5,10 +5,10 @@
 <?php
     if(intval($_SESSION["userid"])>0)
     {
-    $userData = $this->getModelByName("user");
-    $user=$userData->getUser($_SESSION["userid"]);
-    $name=$user["name"];
-    $avatar_file_name=$user["avatar_file_name"];
+	$userData = $this->getModelByName("user");
+    	$user=$userData->getUser($_SESSION["userid"]);
+    	$name=$user["name"];
+    	$avatar_file_name=$user["avatar_file_name"];
 ?>
 <div class="hr"><div class="name" ><div id="goldLink"><a href="#" ><?php echo $name?></a></div>
 <div class="myexfe" id="myexfe" >
