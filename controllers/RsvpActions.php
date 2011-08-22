@@ -39,6 +39,8 @@ class RSVPActions extends ActionController {
 	$responobj["meta"]["code"]=200;
 	
 	$identity_id=$_SESSION["tokenIdentity"]["identity_id"];
+	if(intval($identity_id)==0)
+	    $identity_id=$_SESSION["identity_id"];
 	if(intval($state)>0 && intval($identity_id)>0 )
 	{
 	   $responobj["response"]["identity_id"]=$identity_id;
@@ -53,18 +55,6 @@ class RSVPActions extends ActionController {
 	}
 	else
 	    $responobj["response"]["success"]="false";
-    	#$userid=$Data->login($identity,$password);
-
-	#if(intval($userid)>0)
-	#{
-	#    $responobj["response"]["success"]="true";
-	#    $responobj["response"]["userid"]=$userid;
-	#}
-	#else
-	#    $responobj["response"]["success"]="false";
-    //}
-    #else
-    #    $responobj["response"]["success"]="false";
     echo json_encode($responobj);
     exit();
 

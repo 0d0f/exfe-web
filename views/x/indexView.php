@@ -77,11 +77,11 @@ only attendees could see details.</p>
 <h3>Conversation</h3>
 <div class="commenttext">
 <form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-<img style="width:40px;height:40px" src="/eimgs/64_64_<?php echo $avatar_file_name;?>"><input type="submit" value="" title="Say!" name="commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+<img style="width:40px;height:40px" src="/eimgs/64_64_<?php echo $avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
 </form>
 </div>
 
-<ul class="commentlist">
+<ul id="commentlist" class="commentlist">
 <?php 
 if($cross["conversation"])
 {

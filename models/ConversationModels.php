@@ -2,13 +2,25 @@
 class ConversationModels extends DataModel{
     public function addConversion($postable_id,$postable_type,$identity_id,$title,$content)
     {
-	$time=time();
-	$content=mysql_real_escape_string($content);
-	$title=mysql_real_escape_string($title);
-	$sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
-    	$result=$this->query($sql);
-	if(intval($result["insert_id"])>0)
-	    return intval($result["insert_id"]);
+	if(intval($postable_id)>0 & $postable_type=="cross")
+	{
+	    //TODO:check if identity_id belongs this cross
+	    
+	    $sql="select id,state from  invitations where identity_id=$identity_id and cross_id=$postable_id;";
+	    $row=$this->getRow($sql);
+	    if(intval($row["id"])>0)
+	    {
+		$time=time();
+		$content=mysql_real_escape_string($content);
+		$title=mysql_real_escape_string($title);
+		$sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
+    		$result=$this->query($sql);
+		if(intval($result["insert_id"])>0)
+		    return intval($result["insert_id"]);
+	    }
+
+	}
+	return false;
     }
 
     public function getConversion($postable_id,$postable_type)
