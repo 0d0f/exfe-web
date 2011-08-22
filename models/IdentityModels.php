@@ -167,11 +167,14 @@ class IdentityModels extends DataModel{
 
     public function loginWithXToken($cross_id,$token)
     {
-	$sql="select identity_id from invitations where cross_id=$cross_id and token='$token';";	
+	$sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";	
 	$row=$this->getRow($sql);
 	$identity_id=intval($row["identity_id"]);
 	if($identity_id > 0)
 	{
+	    
+		     $sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";	
+		     $this->query($sql);
 
 		     $tokenSession=array();
 	    	     //$tokenSession["userid"]=$userid;
@@ -185,6 +188,8 @@ class IdentityModels extends DataModel{
 		     $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
 		     $tokenSession["identity"]=$identity;
 		     $tokenSession["auth_type"]="mailtoken";
+		     if($row["tokenexpired"]=="1")
+			$tokenSession["token_expired"]="true";
 		     $_SESSION["tokenIdentity"]=$tokenSession;
 	}
 	return $identity_id;

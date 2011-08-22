@@ -76,12 +76,19 @@ class XActions extends ActionController {
     {
 	$identityData=$this->getModelByName("user");
 	$user=$identityData->getUserByIdentityId($identity_id);
-	if(trim($user["encrypted_password"])=="")
-	    $showlogin= "setpassword";
-	//if user password="" then show set password box
-	//else show login
-	else if($identity_id!=$_SESSION["identity_id"])
-	    $showlogin= "login";
+	if($_SESSION["tokenIdentity"]["token_expired"]=="true")
+	{
+	    if(trim($user["encrypted_password"])=="")
+	        $showlogin= "setpassword";
+	    //if user password="" then show set password box
+	    //else show login
+	    else if($identity_id!=$_SESSION["identity_id"])
+	        $showlogin= "login";
+	}
+
+	//$tokenSession["token_expired"]="true";
+        //               $_SESSION["tokenIdentity"]=$tokenSession;
+
     }
     $this->setVar("showlogin", $showlogin);
     $this->setVar("token", $_GET["token"]);
