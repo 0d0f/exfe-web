@@ -11,20 +11,23 @@ $user=$this->getVar("user");
 $myidentity=$this->getVar("myidentity");
 $interested=$this->getVar("interested");
 
-echo "<script type='text/javascript'>\r\n ";
+$token_expired=$this->getVar("token_expired");
 
+echo "<script type='text/javascript'>\r\n ";
     echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
     echo "var cross_id=".$cross["id"].";\r\n";
 
     //if ($this->getVar("showlogin")!='')
     echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
+    if($token_expired == "true")
+	echo "var token_expired='".$token_expired."'; \r\n";
 //    if ($interested=='yes')
 //	echo "var interested=1; \r\n";
 echo "</script>\r\n";
 ?>
 <script type='text/javascript' src='/static/js/login.js'></script>
 <script type="text/javascript" src="/static/js/dialog.js"></script>
-<script type="text/javascript" src="/static/js/cross.js"></script>
+<script type="text/javascript" src="/static/js/crossdialog.js"></script>
 <?php
 $description_lines=preg_split ("/\r\n|\r|\n/", $cross["description"]);
 $description="";
@@ -77,7 +80,7 @@ only attendees could see details.</p>
 <h3>Conversation</h3>
 <div class="commenttext">
 <form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-<img style="width:40px;height:40px" src="/eimgs/64_64_<?php echo $avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+<img style="width:40px;height:40px" src="/eimgs/64_64_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
 </form>
 </div>
 
@@ -151,6 +154,7 @@ foreach($normal_exfee as $exfee)
 </ul>
 </div><!--exfee-->
 </div><!--exfer-->
+<script type="text/javascript" src="/static/js/cross.js"></script>
 
 
 </div><!--/#index-->

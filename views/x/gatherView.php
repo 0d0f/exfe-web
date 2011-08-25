@@ -5,20 +5,58 @@
 <script type="text/javascript" src="/static/js/timepicker.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
-<h3>Gather for your X</h3>
+<div class="centerbg">
+  <div class="createset">
+  <!--<h3>Gather for your <span>X</span></h3>-->
+
+<ul>
 <form action="" method="post" id="gatherxform">
-<label>Title:</label><input type="text"  name="title" id="g_title" class="inputText"/><br/>
-<label>Description:</label><textarea name="description" id="g_description"></textarea> <br/>
-<label>Date & time:</label><input type="text"  name="datetime" id="datetime" class="inputText"/><br/>
-<label>place:</label><textarea name="place" id="g_place"></textarea><br/>
-<label>exfee:</label><input type="text"  name="exfee" id="exfee" clas="inputText"/><br/>
-<input type="text"  name="exfee_list" id="exfee_list" clas="inputText"/>
-<div id="exfee_pv">
+<li><label class="title">Title:</label><input type="text"  name="title" id="g_title" onfocus="this.str='Edit title here'; if(this.value==this.str){this.value=''}" onblur="if(this.value==''){this.value=this.str}"  value="Edit title here"/></li>
+
+<li><label class="description">Description:</label><textarea name="comment2" id="g_description" onfocus="if(this.className.indexOf('description')!=-1){quickreplytxt=this.value;this.value='';this.style.color='#696969'}" onblur="if(this.value==''){this.value=quickreplytxt;this.style.color='#d2d2d2'}">Write some description for your exfe. (optional)</textarea>
+</li>
+       
+<li><label class="date">Date &amp; Time</label>  <input type="text"  name="title" id="datetime" onfocus="this.str='6:30PM, this Friday'; if(this.value==this.str){this.value='';this.style.color='#696969'}" onblur="if(this.value==''){this.value=this.str;this.style.color='#d2d2d2'}" value="6:30PM, this Friday"/>
+<p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011 </p>
+</li>
+
+<li><label class="location">Location:</label>  <textarea name="comment2" id="g_place"  onfocus="if(this.className.indexOf('location')!=-1){quickreplytxt=this.value;this.value='';this.style.color='#696969'}" onblur="if(this.value==''){this.value=quickreplytxt;this.style.color='#d2d2d2'}">Crab House
+Pier 39, 203 C
+San Francisco, CA
+(555) 434-2722</textarea></li>
+
+<li><label class="exfee">exfee:</label>  
+<p class="count"> <a href="#"> Mark all as confirmed</a> count: <span>16</span></p>
+<input type="submit" id="post_submit" name="commit" title="Say!" value="">
+<textarea name="comment" id="exfee" onfocus="if(this.className.indexOf('exfee')!=-1){quickreplytxt=this.value;this.value='';this.style.color='#696969'}" onblur="if(this.value==''){this.value=quickreplytxt;this.style.color='#d2d2d2'}" >Enter attendees’ email or id</textarea>        
+<div class="creattext">
+  <div class="selecetafri">
+    <div class="sover" id="exfee_pv">
+      <ul class="samlcommentlist">
+        <li class="addjn">
+          <p class="pic20"><img src="/eimgs/<?php echo $global_avatar_file_name;?>" alt="" /></p>
+          <p class="smcomment"><span><?php echo $global_name;?></span><span class="lb">host</span></p>
+          <button type="button"></button>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
+</li>
+
+ <li>
+<label class="privacy">Privacy:</label><p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
+        <button type="button" class="submit">Submit</button> <a href="#" class="discard"> Discard </a> </li>
+</form>
+  </ul>
+
+  
+  </div>  
+
+
 <a href="#" id="gather_x">submit</a>
 <!--input id="user_submit" name="commit"  type="submit" value="Submit" /-->
 
-</form>
 
 <div class="albg" id="content">
 <div class="step" id="index">

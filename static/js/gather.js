@@ -30,32 +30,49 @@ $(document).ready(function(){
     	     url: site_url+"/v1/identity/get?identity="+$('#exfee').val(), 
     	     dataType:"json",
     	     success: function(data){
+		//test
+		var exfee_pv="";
 		if(data.response.identity!=null)
 		{
 		    var identity=data.response.identity.external_identity;
 		    var id=data.response.identity.id;
 		    var name=data.response.identity.name;
 		    var avatar_file_name=data.response.identity.avatar_file_name;
-
 		    //addexfee(identity);
 		    if($('#exfee_'+id).attr("id")==null)
 		    {
 			if(name=="")
 		    	    name=identity;
-		    	var exfee_pv=$('#exfee_pv').html();
-		    	exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_"+id+"' value='"+identity+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
-		    	$('#exfee_pv').html(exfee_pv);
+		    	//var exfee_pv=$('#exfee_pv').html();
+		    	//exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_"+id+"' value='"+identity+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
+
+			exfee_pv=exfee_pv+'<li class="addjn"> <p class="pic20"><img src="static/images/img.jpg" alt="" /></p> <p class="smcomment"><span>'+name+'</span><span class="lb">host</span></p> <button type="button"></button> </li>';
+
+		   // 	$('#exfee_pv').html(exfee_pv);
 		    }
 		}
 		else
 		{
 			var name=$('#exfee').val();
-		    	var exfee_pv=$('#exfee_pv').html();
+		    	//var exfee_pv=$('#exfee_pv').html();
 			new_identity_id=new_identity_id+1;
 			//addexfee(name);
-		    	exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_new_"+new_identity_id+"' value='"+name+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
-		    	$('#exfee_pv').html(exfee_pv);
+		    	//exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_new_"+new_identity_id+"' value='"+name+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
+			exfee_pv=exfee_pv+'<li class="addjn"> <p class="pic20"><img src="static/images/'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span>'+name+'</span><span class="lb">host</span></p> <button type="button"></button> </li>';
+	//	    	$('#exfee_pv').html(exfee_pv);
 		}
+
+		var inserted=false;
+		$("#exfee_pv > ul").each(function( intIndex ){
+		    var li=$(this).children('li');
+		    if(li.length<4)
+		    {
+			$(this).append(exfee_pv);
+			inserted=true;
+		    }
+		});
+		if(inserted==false)
+		   $("#exfee_pv").append('<ul class="samlcommentlist">'+exfee_pv+'</ul>');
 	     }
 	     });
 	    e.preventDefault();

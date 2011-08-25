@@ -1,13 +1,14 @@
-if(show_idbox!="")
+if(token_expired=='true')
+    setreadonly();
+
+function setreadonly()
 {
-
-  var html=showdialog(show_idbox);
-  $(html).modal({
-      position: ['20',]
-  });
-
+    $('textarea[name=comment]').attr("disabled","disabled");
+    $('textarea[name=comment]').val("pls login");
+    $('#rsvp_yes , #rsvp_no , #rsvp_maybe ').click(function(e){
+	alert("pls login");
+    });
 }
-
 $(document).ready(function(){
 
     $('#formconversation').submit(function(e){
