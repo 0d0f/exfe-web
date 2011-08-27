@@ -3,7 +3,7 @@ class XActions extends ActionController {
 
   public function doGather()
   {
-   // print_r($_POST);die();
+#  print_r($_POST);die();
     $identity_id=$_SESSION["identity_id"];
     #$crossid=int_to_base62($crossid);
     #echo "redirect...to cross edit page: /$crossid/edit";

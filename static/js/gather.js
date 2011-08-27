@@ -35,6 +35,17 @@ function getexfee()
     return result;
 }
 $(document).ready(function(){
+
+     $('input[type="text"], textarea').focus(function () {
+         defaultText = $(this).val();
+         $(this).val('');
+     });
+     $('input[type="text"], textarea').blur(function () {
+         if ($(this).val() == "") {
+             $(this).val(defaultText);
+         }
+     });
+
      $('.addjn').mousemove(function(){
         hide_exfeedel($(this));
     });
@@ -111,6 +122,7 @@ $(document).ready(function(){
 	});
     
         $('#g_description').keyup(function(e){
+	    $(this).attr("enter","1");
 	    $('#pv_description').html($('#g_description').val());
 	});
 
@@ -160,6 +172,7 @@ $(document).ready(function(){
 	});
 
         $('#gather_x').click(function(e){
+
 	  $('#gatherxform').submit();  
 	});
     $('#datetime').datepicker({
@@ -178,6 +191,10 @@ $(document).ready(function(){
     	}
      });
     $('#gatherxform').submit(function(e){
+    alert($('#g_description').attr("enter"));
+	  if($('#g_description').attr("enter")=="0")
+	    $('#g_description').html("");
+
 	  $('#exfee_list').val(getexfee());
 //	  $('#gatherxform').submit();  
     });
