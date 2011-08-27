@@ -1,4 +1,14 @@
-//var exfee_list=new Array;
+function hide_exfeedel(e)
+{
+      e.addClass('bgrond');
+      $('.bgrond .exfee_del').show();
+}
+function show_exfeedel(e)
+{
+      e.removeClass('bgrond');
+      $('.exfee_del').hide();
+}
+
 var new_identity_id=0;
 //function addexfee(identity)
 //{
@@ -7,24 +17,38 @@ var new_identity_id=0;
 
 function getexfee()
 {
+ //   alert("getexfee");
+
+
     var result="";
-    $('.exfee_item').each(function(e){
-	var exfee_identity=$(this).attr("value");
-	if(typeof(exfee_identity)!= 'undefined')
-	{
-	    result=result+exfee_identity+",";
-	//    alert(exfee_identity);
-	}
+    $('.exfee_exist').each(function(e){
+        var exfee_identity=$(this).attr("value");
+        var exfee_id=$(this).attr("identityid");
+	result+=exfee_id+":"+exfee_identity+",";
     });
+    $('.exfee_new').each(function(e){
+        var exfee_identity=$(this).attr("value");
+        //var exfee_id=$(this).attr("identityid");
+	result+=exfee_identity+",";
+    });
+
     return result;
 }
 $(document).ready(function(){
+     $('.addjn').mousemove(function(){
+        hide_exfeedel($(this));
+    });
+      $('.addjn').mouseout(function(){
+      show_exfeedel($(this));
+    });
+
         var code =null;
         $('#exfee').keypress(function(e){
             code= (e.keyCode ? e.keyCode : e.which);
             if (code == 13)
 	    {
 	    //a="http://api.local.exfe.com/v1/identity/get?identity="+$('#exfee').val();
+	     var input_identity=$('#exfee').val();
 	     $.ajax({
     	     type: "GET",
     	     url: site_url+"/v1/identity/get?identity="+$('#exfee').val(), 
@@ -46,7 +70,7 @@ $(document).ready(function(){
 		    	//var exfee_pv=$('#exfee_pv').html();
 		    	//exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_"+id+"' value='"+identity+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
 
-			exfee_pv=exfee_pv+'<li class="addjn"> <p class="pic20"><img src="static/images/img.jpg" alt="" /></p> <p class="smcomment"><span>'+name+'</span><span class="lb">host</span></p> <button type="button"></button> </li>';
+			exfee_pv=exfee_pv+'<li class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="static/images/img.jpg" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span></p> <button class="exfee_del" type="button"></button> </li>';
 
 		   // 	$('#exfee_pv').html(exfee_pv);
 		    }
@@ -58,7 +82,7 @@ $(document).ready(function(){
 			new_identity_id=new_identity_id+1;
 			//addexfee(name);
 		    	//exfee_pv=exfee_pv+"<div class='exfee_item' id='exfee_new_"+new_identity_id+"' value='"+name+"'>"+"<img width=16 height=16 src='/eimgs/"+avatar_file_name+"'>"+name+"  <span id='rmexfee'>X</span></div>";
-			exfee_pv=exfee_pv+'<li class="addjn"> <p class="pic20"><img src="static/images/'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span>'+name+'</span><span class="lb">host</span></p> <button type="button"></button> </li>';
+			exfee_pv=exfee_pv+'<li class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="static/images/'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_new" value="'+input_identity+'">'+name+'</span></p> <button class="exfee_del" type="button"></button> </li>';
 	//	    	$('#exfee_pv').html(exfee_pv);
 		}
 
@@ -73,8 +97,11 @@ $(document).ready(function(){
 		});
 		if(inserted==false)
 		   $("#exfee_pv").append('<ul class="samlcommentlist">'+exfee_pv+'</ul>');
+
+		$('#exfee').val("");
 	     }
 	     });
+	    $("#exfee_count").html($("span.exfee_exist").length+$("span.exfee_new").length+1);
 	    e.preventDefault();
 	    }
         });
@@ -133,14 +160,8 @@ $(document).ready(function(){
 	});
 
         $('#gather_x').click(function(e){
-	  //
-	  $('#exfee_list').val(getexfee());
 	  $('#gatherxform').submit();  
 	});
-        //$('#gatherxform').submit(function(e){
-	//    alert("aa");
-	//    return false;
-	//});
     $('#datetime').datepicker({
     	duration: '',
         showTime: true,
@@ -156,7 +177,11 @@ $(document).ready(function(){
 	     $.datepicker._pos[1] = 50;
     	}
      });
-	
+    $('#gatherxform').submit(function(e){
+	  $('#exfee_list').val(getexfee());
+//	  $('#gatherxform').submit();  
+    });
+
 });
 
 

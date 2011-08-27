@@ -8,19 +8,33 @@ class ExfeeHelper extends ActionController {
 	foreach($exfees as $exfee)
 	{
 	    //TODO:parser exfee format
-	    
+	   $identity_id=0; 
 
 	    if(trim($exfee)!="")
 	    {
 		$identityData = $this->getModelByName("identity"); 
 	    	// if exfee exist?
-	    	$identity_id=$identityData->ifIdentityExist($exfee);
-	    	if($identity_id===FALSE)
-	    	{
-	    	    //TODO: add new Identity, need check this identity provider, now default "email"
-	    	    // add identity
-	    	    $identity_id=$identityData->addIdentityWithoutUser("email",$exfee);
-	    	}
+		//13:hj@exfe.com
+		$exfee_split=explode(":",$exfee);
+		if(sizeof($exfee_split)==2)
+		{
+		    $identity_id=intval($exfee_split[0]);
+		    $identity=$exfee_split[1];
+		}
+		else
+		{
+		    $identity=$exfee;
+		}
+		if(intval($identity_id)==0)
+		{
+		   $identity_id=$identityData->ifIdentityExist($identity);
+		   if($identity_id===FALSE)
+	    	   {
+	    	       //TODO: add new Identity, need check this identity provider, now default "email"
+	    	       // add identity
+	    	       $identity_id=$identityData->addIdentityWithoutUser("email",$identity);
+	    	   }
+		}
 
 	    	// add invitation
 	    	$invitationdata=$this->getModelByName("invitation");

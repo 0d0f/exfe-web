@@ -21,6 +21,8 @@ function humanDateTime($timestamp,$lang='en')
 	return date("g:i A, M j, Y ", $timestamp);
 }
 function RelativeTime($timestamp){
+    if($timestamp<0)
+	return 0;
     $difference = time() - $timestamp;
     $periods = array("sec", "min", "hour", "day", "week",
     "month", "year", "decade");

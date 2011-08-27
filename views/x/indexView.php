@@ -19,8 +19,7 @@ echo "<script type='text/javascript'>\r\n ";
 
     //if ($this->getVar("showlogin")!='')
     echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
-    if($token_expired == "true")
-	echo "var token_expired='".$token_expired."'; \r\n";
+    echo "var token_expired='".$token_expired."'; \r\n";
 //    if ($interested=='yes')
 //	echo "var interested=1; \r\n";
 echo "</script>\r\n";

@@ -13,7 +13,7 @@ class InvitationModels extends DataModel{
 	else
 	    return false;
     }
-    public function addInvitation($cross_id,$identity_id,$state=INVITATION_MAYBE)
+    public function addInvitation($cross_id,$identity_id,$state=0)
     {
 	//TODO: ADD token
 	$time=time();

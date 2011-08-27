@@ -1,3 +1,4 @@
+
 function getBak(){
 		var oall = document.getElementById("oall");
 		var lightBox = document.getElementById("fBox");
@@ -60,51 +61,51 @@ $('.name').mousemove(function(){
     $('#myexfe').hide();
 });
 
-  $('.newbg').mousemove(function(){
-	$(this).addClass('fbg');
-	$('.fbg button').show();
-});
-
-  $('.newbg').mouseout(function(){
-	$(this).removeClass('fbg');
-	$('button').hide();
-});
-
-  $('.bnone').mousemove(function(){
-	$(this).addClass('bdown');
-	$('.bdown button').show();
-});
-
-  $('.bnone').mouseout(function(){
-	$(this).removeClass('bdown');
-	$('dd button').hide();
-});
-
-
-  $('.lb').mousemove(function(){
-	  $(this).addClass('labtn');
-	  $('.labtn button').show();
-	  $('.lb span').hide()
-});
-
-  $('.lb').mouseout(function(){
-	  $(this).removeClass('labtn');
-	  $('button').hide();
-	  $('.lb span').show()
-
-});
-
-  $('.uplb').mousemove(function(){
-	$(this).addClass('uabtn');
-	  $('.uabtn button').show();
-	  $('.uplb span').hide()
-});
-
-  $('.uplb').mouseout(function(){
-	  $(this).removeClass('uabtn');
-	  $('button').hide();
-	  $('.uplb span').show()
-});
+//  $('.newbg').mousemove(function(){
+//	$(this).addClass('fbg');
+//	$('.fbg button').show();
+//});
+//
+//  $('.newbg').mouseout(function(){
+//	$(this).removeClass('fbg');
+//	$('button').hide();
+//});
+//
+//  $('.bnone').mousemove(function(){
+//	$(this).addClass('bdown');
+//	$('.bdown button').show();
+//});
+//
+//  $('.bnone').mouseout(function(){
+//	$(this).removeClass('bdown');
+//	$('dd button').hide();
+//});
+//
+//
+//  $('.lb').mousemove(function(){
+//	  $(this).addClass('labtn');
+//	  $('.labtn button').show();
+//	  $('.lb span').hide()
+//});
+//
+//  $('.lb').mouseout(function(){
+//	  $(this).removeClass('labtn');
+//	  $('button').hide();
+//	  $('.lb span').show()
+//
+//});
+//
+//  $('.uplb').mousemove(function(){
+//	$(this).addClass('uabtn');
+//	  $('.uabtn button').show();
+//	  $('.uplb span').hide()
+//});
+//
+//  $('.uplb').mouseout(function(){
+//	  $(this).removeClass('uabtn');
+//	  $('button').hide();
+//	  $('.uplb span').show()
+//});
 
  $('.lbl').mousemove(function(){
 	$('.lt').addClass('lton');
@@ -119,15 +120,15 @@ $('.name').mousemove(function(){
 	$('.rt').removeClass('rton');
 });
 
- $('.addjn').mousemove(function(){
-	$(this).addClass('bgrond');
-	$('.bgrond button').show();
-});
-
-  $('.addjn').mouseout(function(){
-	$(this).removeClass('bgrond');
-	$('button').hide();
-});
+// $('.addjn').mousemove(function(){
+//	$(this).addClass('bgrond');
+//	$('.bgrond .exfee_del').show();
+//});
+//
+//  $('.addjn').mouseout(function(){
+//	$(this).removeClass('bgrond');
+//	$('.exfee_del').hide();
+//});
 
  $('.redate').mousemove(function(){
 	$(this).addClass('bgdq');
@@ -137,7 +138,7 @@ $('.name').mousemove(function(){
 	$(this).removeClass('bgdq');
 });
 
-$('.coming').mousemove(function(){
+  $('.coming').mousemove(function(){
 	$(this).addClass('bgcom');
 });
 

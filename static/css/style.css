@@ -280,7 +280,7 @@ b.r3{margin: 0px}
 .createset h3{ color:#020202; font:Arial, Helvetica, sans-serif; font-size:22px; font-weight:bold; margin-bottom:30px}
 .createset h3 span{ color:#0591af}
 .createset ul li{margin:0 0 10px 0; list-style:none; }
-.createset ul li input#title{border:#c5c5c5 1px solid;background:#ffffff;width:480px;height:20px; color:#020202; font-size:16px}
+.createset ul li input#g_title{border:#c5c5c5 1px solid;background:#ffffff;width:480px;height:20px; color:#020202; font-size:16px}
 .createset ul li textarea#g_description{border:#c5c5c5 1px solid;background:#ffffff;width:480px; height:60px; }
 .createset ul li input#date{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:20px;}
 .createset ul li textarea#g_place{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:80px;}
