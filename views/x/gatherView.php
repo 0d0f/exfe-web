@@ -47,15 +47,12 @@ San Francisco, CA
  <li>
  <input type=hidden id="exfee_list" name="exfee_list"  value="" />
 <label class="privacy">Privacy:</label><p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
-        <button type="button" class="submit">Submit</button> <a href="#" class="discard"> Discard </a> </li>
+        <button type="button" id="gather_x" class="submit">Submit</button> <a href="#" class="discard"> Discard </a> </li>
 </form>
   </ul>
 
   
   </div>  
-
-
-<a href="#" id="gather_x">submit</a>
 <!--input id="user_submit" name="commit"  type="submit" value="Submit" /-->
 
 

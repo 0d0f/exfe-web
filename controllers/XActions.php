@@ -67,6 +67,9 @@ class XActions extends ActionController {
     if($check["type"]=="token")
     {
 	    $identity_id=$identityData->loginWithXToken($cross_id, $token);
+	    if($_SESSION["identity_id"]==$identity_id)
+		$check["type"]="session";
+
             $status=$identityData->checkIdentityStatus($identity_id);
             if($status!=STATUS_CONNECTED)
             {
