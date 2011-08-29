@@ -327,6 +327,8 @@ class SActions extends ActionController {
   {
     $cross_id=base62_to_int($_POST["cross_id"]);
     $token=$_POST["token"];
+    if(strlen($token)>32)
+	$token=substr($token,0,32);
     $password=$_POST["password"];
     $displayname=$_POST["displayname"];
     
