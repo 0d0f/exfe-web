@@ -94,7 +94,7 @@ $(document).ready(function(){
 	    	    }
 	    	    else if(data.response.success=="true")
 	    	    {
-			window.location.href=window.location.href;
+			window.location.replace(window.location.href);
 	    	    }
 	    	}
 	    }
@@ -132,7 +132,8 @@ $(document).ready(function(){
 	    	    }
 	    	    else if(data.response.success=="true")
 	    	    {
-			window.location.href=window.location.href;
+			//window.location.href=window.location.href;
+			window.location.replace(window.location.href);
 	    	    }
 	    	}
 	    }
