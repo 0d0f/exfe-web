@@ -325,16 +325,30 @@ class SActions extends ActionController {
   }
   public function doSetpwd()
   {
+    $responobj["meta"]["code"]=200;
     $cross_id=base62_to_int($_POST["cross_id"]);
     $token=$_POST["token"];
     if(strlen($token)>32)
 	$token=substr($token,0,32);
     $password=$_POST["password"];
     $displayname=$_POST["displayname"];
+    if($password=="")
+    {
+	$responobj["response"]["success"]=$result;
+    	$responobj["response"]["error"]="must set password";
+    	echo json_encode($responobj);
+    	exit();
+    }
+    if($displayname=="")
+    {
+	$responobj["response"]["success"]=$result;
+    	$responobj["response"]["error"]="must set display name";
+    	echo json_encode($responobj);
+    	exit();
+    }
     
     $identityData=$this->getModelByName("identity");
     $identity_id=$identityData->loginWithXToken($cross_id, $token);
-    $responobj["meta"]["code"]=200;
     $result="false";
 
     if(intval($identity_id)>0)

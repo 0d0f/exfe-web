@@ -110,9 +110,16 @@ $(document).ready(function(){
 	var retypepassword=$('input[name=retypepassword]').val();
 	var displayname=$('input[name=displayname]').val();
 
-	if(password!=retypepassword)
+	
+	if(password!=retypepassword && password!="" )
 	{
 	    $('#pwd_hint').html("<span>Check Password</span>");
+	    $('#pwd_hint').show();
+	    return false;
+	}
+	if(displayname=="")
+	{
+	    $('#pwd_hint').html("<span>set your display name</span>");
 	    $('#pwd_hint').show();
 	    return false;
 	}
