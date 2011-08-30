@@ -1,6 +1,7 @@
 <?php include "share/header.php"; ?>
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
+<script type="text/javascript" src="/static/js/activity-indicator.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
 <?php 
@@ -14,14 +15,10 @@ $interested=$this->getVar("interested");
 $token_expired=$this->getVar("token_expired");
 
 echo "<script type='text/javascript'>\r\n ";
-    echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
-    echo "var cross_id=".$cross["id"].";\r\n";
-
-    //if ($this->getVar("showlogin")!='')
-    echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
-    echo "var token_expired='".$token_expired."'; \r\n";
-//    if ($interested=='yes')
-//	echo "var interested=1; \r\n";
+echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
+echo "var cross_id=".$cross["id"].";\r\n";
+echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
+echo "var token_expired='".$token_expired."'; \r\n";
 echo "</script>\r\n";
 ?>
 <script type='text/javascript' src='/static/js/login.js'></script>
@@ -71,7 +68,7 @@ only attendees could see details.</p>
 <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
 <li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
 <li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a><li>
+<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a> <span style="display:none" id="rsvp_loading" ></span> <li>
 </ul>
 <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>You are interested in this <strong style="color:#0591af;">X</strong>.</span> <a href="#" id="changersvp">change?</a></div>
 

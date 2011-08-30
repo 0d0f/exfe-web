@@ -1,15 +1,16 @@
-if(token_expired=='true')
-    setreadonly();
 
 function setreadonly()
 {
     $('textarea[name=comment]').attr("disabled","disabled");
     $('textarea[name=comment]').val("pls login");
+    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe ').click(function(e){
-	alert("pls login");
+        alert("pls login");
     });
 }
 $(document).ready(function(){
+
+    $('#rsvp_loading').activity({segments: 8, steps: 3, opacity: 0.3, width: 4, space: 0, length: 5, color: '#0b0b0b', speed: 1.5});
 
     $('#formconversation').submit(function(e){
 //	alert("a");
@@ -25,7 +26,10 @@ $(document).ready(function(){
 
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe ').click(function(e){
     
+	    $("#rsvp_loading").ajaxStart(function(){  $(this).show(); });
+	    $("#rsvp_loading").ajaxStop(function(){  $(this).hide(); });
 	    var poststr="cross_id="+cross_id+"&rsvp="+$(this).attr("value");
+
 	    $.ajax({
 	      type: "POST",
 	      data: poststr,
@@ -56,6 +60,13 @@ $(document).ready(function(){
 			$('#rsvp_submitted').show();
 	    	    }
 	    	}
+		$("#rsvp_loading").hide();
+		$("#rsvp_loading").unbind("ajaxStart ajaxStop");
+	    },
+
+	    error:function(data){
+		$("#rsvp_loading").hide();
+		$("#rsvp_loading").unbind("ajaxStart ajaxStop");
 	    }
 	    });
     e.preventDefault();	
@@ -96,4 +107,7 @@ $(document).ready(function(){
     	//e.preventDefault();	
         return false;
     });
+
+    if(token_expired=='true')
+        setreadonly();
 });

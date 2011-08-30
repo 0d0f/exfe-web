@@ -23,7 +23,6 @@ function showdialog(type)
 	form="<form id='identityform' accept-charset='UTF-8' action='' method='post'>"
 	+"<ul>"
 	+"<li><label>Identity:</label><input id='identity' name='identity' type='text' class='inputText' disabled='disabled' value='"+external_identity+"'><em class='ic1'></em></li>"
-	//+"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
     	+"<li><label>Password:</label><input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
     	+"<li id='retype' ><label>Re-type:</label><input type='text'  name='retypepassword' class='inputText'/><em class='ic3'></em></li>"
     	+"<li id='displayname'><label>Names:</label><input type='text'  name='displayname' class='inputText'/><em class='warning'></em></li>"
@@ -41,8 +40,7 @@ function showdialog(type)
 	    +"</span> <h4>Enter your identity information</h4></div>";
 	form="<form id='loginform' accept-charset='UTF-8' action='' method='post'>"
 	+"<ul>"
-	+"<li><label>Identity:</label><input id='loginidentity' name='loginidentity' type='text' class='inputText' ><em class='ic1'></em></li>"
-	//+"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
+	+"<li><label>Identity:</label><input id='loginidentity' name='loginidentity' type='text' class='inputText' value='"+external_identity+"' ><em class='ic1'></em></li>"
     	+"<li><label>Password:</label><input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
     	+"<li id='login_hint' style='display:none' class='notice'><span>Error identity or password</span></li>"
     	//+"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
@@ -146,9 +144,6 @@ $(document).ready(function(){
 	    });
 	}
         return false;
-	//e.preventDefault();
-	//return false;
-	
     });
 
 });

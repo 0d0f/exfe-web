@@ -48,7 +48,7 @@ Mary and Virushuo’s Birthday Party
 </p>
 <p class="creatbtn"><a href="/x/gather">Gather X</a></p>
 </div>
-<div class="myexfefoot"><a href="/s/profile" class="l">Setting</a><a href="" class="r">Sign out</a></div>
+<div class="myexfefoot"><a href="/s/profile" class="l">Setting</a><a href="/s/logout" class="r">Sign out</a></div>
 <p class="fjiao"></p>
 </div><!--#myexfe-->
 <iframe class="menu_iframe"></iframe>
