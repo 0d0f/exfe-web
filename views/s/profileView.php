@@ -5,14 +5,12 @@
 <?php 
 $identities=$this->getVar("identities");
 //print_r($identities);
-
 $user=$this->getVar("user");
-print_r($user);
 ?>
 <!--profile_for_develop-->
 <div class="centerbg">
 <div class="edit_user">
-<div id="profile_avatar"><img class="big_header" src="/eimgs/64_64_<?php echo $user["avatar_file_name"];?>" alt="" /></div>
+<div id="profile_avatar"><img class="big_header" src="/eimgs/80_80_<?php echo $user["avatar_file_name"];?>" alt="" /></div>
 <button style="display:none" id="changeavatar">Change...</button>
 <div class="u_con">
 <h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>

@@ -46,15 +46,19 @@ class SActions extends ActionController {
 	    $large_image_name=$_SESSION["upload_imgname"];
 	$max_file = "1148576"; 						// Approx 1MB
 	$max_width = "500";							// Max width allowed for the large image
-	$thumb_width = "64";						// Width of thumbnail image
-	$thumb_height = "64";						// Height of thumbnail image
+	$thumb_width = "80";						// Width of thumbnail image
+	$thumb_height = "80";						// Height of thumbnail image
+	$big_thumb_width = "240";						// Width of thumbnail image
+	$big_thumb_height = "240";						// Height of thumbnail image
 	$this->setVar("thumb_width", $thumb_width);
 	$this->setVar("thumb_height", $thumb_height);
 
 	$thumb_image_name = $thumb_width.'_'.$thumb_height."_".$large_image_name; 	// New name of the thumbnail image
+	$big_thumb_image_name = $big_thumb_width.'_'.$big_thumb_height."_".$large_image_name; 	// New name of the thumbnail image
 	//Image Locations
 	$large_image_location = $upload_path.$large_image_name;
 	$thumb_image_location = $upload_path.$thumb_image_name;
+	$big_thumb_image_location = $upload_path.$big_thumb_image_name;
 
 	$this->setVar("large_image_location", $large_image_location);
 	$this->setVar("thumb_image_location", $thumb_image_location);
@@ -121,6 +125,9 @@ class SActions extends ActionController {
 					$scale = 1;
 					$uploaded = resizeImage($large_image_location,$width,$height,$scale,$extension);
 				}
+
+
+
 				//Delete the thumbnail file so the user can create a new one
 				if (file_exists($thumb_image_location)) {
 					unlink($thumb_image_location);
@@ -142,12 +149,14 @@ class SActions extends ActionController {
 		$w = $_POST["w"];
 		$h = $_POST["h"];
 		//Scale the image to the thumb_width set above
+		$big_scale = $big_thumb_width/$w;
 		$scale = $thumb_width/$w;
 	
 	 	$filename = stripslashes($large_image_location);
 	        $extension = getExtension($filename);
 	  	$extension = strtolower($extension);
 	
+		$cropped = resizeThumbnailImage($big_thumb_image_location, $large_image_location,$w,$h,$x1,$y1,$big_scale,$extension);
 		$cropped = resizeThumbnailImage($thumb_image_location, $large_image_location,$w,$h,$x1,$y1,$scale,$extension);
 		$userData = $this->getModelByName("user");
 		$userData->saveUserAvatar($large_image_name,$_SESSION["userid"]);

@@ -76,7 +76,7 @@ only attendees could see details.</p>
 <h3>Conversation</h3>
 <div class="commenttext">
 <form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-<img style="width:40px;height:40px" src="/eimgs/64_64_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+<img style="width:40px;height:40px" src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
 </form>
 </div>
 
@@ -97,7 +97,7 @@ if($cross["conversation"])
 	    $identity["name"]=$identity["external_identity"];
 ?>
 <li>
-<p class="pic40"><img src="/eimgs/<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
+<p class="pic40"><img src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
 </li>
 <?php
     }
@@ -139,7 +139,7 @@ foreach($normal_exfee as $exfee)
 {
 ?>
 <li id="exfee_<?php echo $exfee["identity_id"];?>">
-<p class="pic20"><img src="/eimgs/<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+<p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
 <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
 <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
 </li>
