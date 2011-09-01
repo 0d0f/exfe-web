@@ -1,3 +1,4 @@
+<?php $page="cross";?>
 <?php include "share/header.php"; ?>
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>

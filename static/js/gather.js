@@ -37,13 +37,21 @@ function getexfee()
 $(document).ready(function(){
 
      $('input[type="text"], textarea').focus(function () {
-         defaultText = $(this).val();
-         $(this).val('');
+
+	 if($(this).attr("enter")!="true")
+	 {
+	    defaultText = $(this).val();
+            $(this).val('');
+	 }
      });
      $('input[type="text"], textarea').blur(function () {
          if ($(this).val() == "") {
              $(this).val(defaultText);
          }
+	 else
+	 {
+	    $(this).attr("enter","true");
+	 }
      });
 
      $('.addjn').mousemove(function(){
