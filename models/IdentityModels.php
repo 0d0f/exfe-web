@@ -176,6 +176,27 @@ class IdentityModels extends DataModel{
 		     $sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";	
 		     $this->query($sql);
 
+		     $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
+    		     $identityrow=$this->getRow($sql);
+		     if($identityrow["name"]=="" || $identityrow["avatar_file_name"]=="" || $identityrow["bio"]=="")
+		     {
+       				$sql="select userid from user_identity where identityid=$identity_id";
+        			$result=$this->getRow($sql);
+        			if(intval($result["userid"])>0)
+        			{
+        			    $userid=$result["userid"];
+        			    $sql="select name,avatar_file_name,bio from users where id=$userid";
+        			    $user=$this->getRow($sql);
+				    if($identityrow["name"]=="")
+					$identityrow["name"]=$user["name"];
+				    if($identityrow["avatar_file_name"]=="")
+					$identityrow["avatar_file_name"]=$user["avatar_file_name"];
+				    if($identityrow["bio"]=="")
+					$identityrow["bio"]=$user["bio"];
+        			}
+		     }
+
+
 		     $tokenSession=array();
 	    	     //$tokenSession["userid"]=$userid;
 	    	     $tokenSession["identity_id"]=$identity_id;
