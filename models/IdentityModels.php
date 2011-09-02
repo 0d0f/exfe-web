@@ -142,11 +142,11 @@ class IdentityModels extends DataModel{
 		     //   $identity["avatar_file_name"]=$row["avatar_file_name"];
 		     //$_SESSION["identity"]=$identity;
 		     //unset($_SESSION["tokenIdentity"]);
+		    return $userid;
 		    
 		}
 
 	   }
-	   return $userid;
 	}
 	return 0;
     }

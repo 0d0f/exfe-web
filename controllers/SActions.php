@@ -310,6 +310,58 @@ class SActions extends ActionController {
 	$this->displayView();
     }
   }
+  public function doDialogaddidentity()
+  {
+    $identity=$_POST["identity"];
+    $password=$_POST["password"];
+    $repassword=$_POST["retypepassword"];
+    $displayname=$_POST["displayname"];
+    $autosignin=$_POST["auto_signin"];
+
+    if(isset($identity) && isset($password) && isset($displayname) )
+    {
+   	 $identityData = $this->getModelByName("identity");
+   	 $exist=$identityData->ifIdentityExist($identity);
+	if($exist===FALSE)
+	{
+        	$Data = $this->getModelByName("user");
+        	$userid = $Data->AddUser($password);
+        	$identityData = $this->getModelByName("identity");
+        	$provider= $_POST["provider"];
+        	if($provider=="")
+        	    $provider="email";
+        	$identity_id=$identityData->addIdentity($userid,$provider,$identity);
+    		$userid=$identityData->login($identity,$password);
+		if(intval($userid)>0)
+		{
+		    $responobj["response"]["success"]="true";
+		    $responobj["response"]["userid"]=$userid;
+		    $responobj["response"]["identity_id"]=$identity_id;
+		    $responobj["response"]["identity"]=$identity;
+		    echo json_encode($responobj);
+    		    exit();
+		}
+	}
+        //TODO: check return value
+        //$isNewIdentity=TRUE;
+
+
+	    //$_SESSION["userid"]=$userid;
+	//    if($isNewIdentity===TRUE)
+	//	$this->setVar("isNewIdentity", TRUE);
+
+	//    if(intval($autosignin)>0)
+	//    {
+	//	//TODO: set cookie
+	//	//set cookie
+	//    }
+
+	//}
+	}
+	$responobj["response"]["success"]="false";
+	echo json_encode($responobj);
+    	exit();
+  }
   public function doDialoglogin()
   {
     $identity=$_POST["identity"];

@@ -1,8 +1,14 @@
 <?php include "share/header.php"; ?>
 <link type="text/css" href="/static/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="/static/js/gather.js"></script>
 <script type="text/javascript" src="/static/js/timepicker.js"></script>
+<script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
+<script type="text/javascript" src="/static/js/activity-indicator.js"></script>
+<script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
+<script type="text/javascript" src="/static/js/activity-indicator.js"></script>
+<script type="text/javascript" src="/static/js/dialog.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
 <div class="centerbg">
@@ -24,6 +30,7 @@
 Pier 39, 203 C
 San Francisco, CA
 (555) 434-2722</textarea></li>
+<li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" value="Enter your email"/></li>
 
 <li><label class="exfee">exfee:</label>  
 <p class="count"> <a href="#"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>

@@ -54,6 +54,14 @@ $(document).ready(function(){
 	 }
      });
 
+     $("#hostby").click(function(){
+	var html=showdialog("reg");
+         $(html).modal();
+
+	bindDialogEvent("reg");
+	
+     });
+
      $('.addjn').mousemove(function(){
         hide_exfeedel($(this));
     });

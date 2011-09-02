@@ -10,6 +10,7 @@ function getUrlVars()
     }
     return vars;
 }
+
 function showdialog(type)
 {
     var title="";
@@ -51,6 +52,31 @@ function showdialog(type)
     	+"</form>"
 
     }
+    else if(type=="reg")
+    {
+	title="Identification";
+
+
+	desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
+		+"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
+		+"<img src='/static/images/twitter.png' alt='' width='32' height='32' />"
+		+"<img src='/static/images/google.png' alt='' width='32' height='32' /></span>"
+		+"<h4>Enter your identity information</h4>"
+		+"</div>";
+	form="<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+	+"<ul>"
+	+"<li><label>Identity:</label><input id='identity' name='identity' type='text' class='inputText' ><em class='ic1'></em></li>"
+	+"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
+	+"<li><label>Password:</label><input type='password'  name='password' class='inputText' /><em class='ic2'></em></li>"
+    	+"<li id='login_hint' style='display:none' class='notice'><span>Error identity or password</span></li>"
+	+"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
+    	+"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
+	+"<li id='displayname' style='display:none'><label>Names:</label><input  type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
+	+"<li class='logincheck'><input type='hidden' value='0' name='auto_signin'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+	+"<li><input id='resetpwd' type='submit' value='Reset Password...' class='changepassword'/><input type='submit' value='Sign In' class='sub'/></li>"
+	+"</ul>"
+	+"</form>";
+    }
     var html="<div id='fBox' class='loginMask' style='display:none'>"
     +"<h5><a href='/' onclick='cancel()'>关闭</a><em class='tl'>"+title+"</em></h5>"
     +"<div class='overFramel'>"
@@ -65,12 +91,127 @@ function showdialog(type)
     +"</div>";
     return html;
 }
+//function processLogin()
+//{
+//    //show navbar
+//    //refresh role
+//}
 
+function bindDialogEvent(type)
+{
+    if(type=="reg")
+    {
+	    $('#identity').blur(function() {
+	   $.ajax({
+    	     type: "GET",
+    	     url: site_url+"/s/IfIdentityExist?identity="+$('#identity').val(),
+    	     dataType:"json",
+    	     success: function(data){
+    	   	  if(data!=null)
+    	   	  {
+    	   	    if(data.response.identity_exist=="false")
+    	   	    {
+    	   	    //identity
+    	   		$('#hint').show();
+    	   		$('#retype').show();
+    	   		$('#displayname').show();
+    	   		$('#resetpwd').hide();
+    	   	    }
+    	   	    else if(data.response.identity_exist=="true")
+    	   	    {
+    	   		$('#hint').hide();
+    	   		$('#retype').hide();
+    	   		$('#displayname').hide();
+    	   		$('#resetpwd').show();
+    	   	    }
+    	   	}
+    	   }
+    	   });
+	});
 
+        $('#identificationform').submit(function() {
+	var params=getUrlVars();
+	//ajax set password
+	//var token=params["token"];
+	var identity=$('input[name=identity]').val();
+	var password=$('input[name=password]').val();
+	var retypepassword=$('input[name=retypepassword]').val();
+	var displayname=$('input[name=displayname]').val();
+
+	
+	if($('#retype').is(':visible')==true &&  password!=retypepassword && password!="" )
+	{
+	    $('#pwd_hint').html("<span>Check Password</span>");
+	    $('#pwd_hint').show();
+	    return false;
+	}
+	if($('#displayname').is(':visible')==true && displayname=="")
+	{
+	    $('#pwd_hint').html("<span>set your display name</span>");
+	    $('#pwd_hint').show();
+	    return false;
+	}
+	if(password!=""&& identity!="" && $('#displayname').is(':visible')==false)
+	{
+	    var poststr="identity="+identity+"&password="+encodeURIComponent(password);
+	    $.ajax({
+	      type: "POST",
+	      data: poststr,
+	      url: site_url+"/s/dialoglogin",
+	      dataType:"json",
+	      success: function(data){
+	    	if(data!=null)
+	    	{
+	    	    if(data.response.success=="false")
+	    	    {
+	    		$('#login_hint').show();
+	    	    }
+	    	    else if(data.response.success=="true")
+	    	    {
+			$("#hostby").val(identity);
+			$("#hostby").attr("enter","true");
+			$.modal.close();
+	    	    }
+	    	}
+	    }
+	    });
+	}
+	else if(password!=""&& identity!="" && retypepassword==password &&  displayname!="")
+	{
+	    var poststr="identity="+identity+"&password="+encodeURIComponent(password)+"&repassword="+encodeURIComponent(retypepassword)+"&displayname="+encodeURIComponent(displayname);
+	    $.ajax({
+	      type: "POST",
+	      data: poststr,
+	      url: site_url+"/s/dialogaddidentity",
+	      dataType:"json",
+	      success: function(data){
+	    	if(data!=null)
+	    	{
+	    	    if(data.response.success=="false")
+	    	    {
+	    		$('#login_hint').show();
+	    	    }
+	    	    else if(data.response.success=="true")
+	    	    {
+			$("#hostby").val(identity);
+			$("#hostby").attr("enter","true");
+			$.modal.close();
+	    	    }
+	    	}
+	    }
+	    });
+	//reg
+	}
+	
+        return false;
+    });
+
+    }
+
+}
 
 $(document).ready(function(){
 
-    //$('input[name=setpwddone]').click(function(e){
     $('#loginform').submit(function() {
 	var identity=$('input[name=loginidentity]').val();
 	var password=$('input[name=password]').val();
