@@ -424,6 +424,13 @@ class SActions extends ActionController {
     }
 
     $responobj["response"]["success"]=$result;
+    if($result==false)
+    {
+	$responobj["response"]["error"]["identity_id"]=$identity_id;
+	$responobj["response"]["error"]["user_id"]=$user_id;
+	$responobj["response"]["error"]["setpassword"]=$r;
+    }
+
     echo json_encode($responobj);
     exit();
     
