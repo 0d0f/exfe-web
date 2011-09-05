@@ -423,6 +423,16 @@ class SActions extends ActionController {
 	    $userid=$identityData->loginByIdentityId($identity_id);
 	}
     }
+    else if(intval($identity_id)==0)
+    {
+	$userData=$this->getModelByName("user");
+	$identity_id=$userData->setPasswordByToken($cross_id,$token,$password,$displayname);
+	if(intval($identity_id)>0)
+	{
+	    $result="true";
+	    $userid=$identityData->loginByIdentityId($identity_id);
+	}
+    }
 
     $responobj["response"]["success"]=$result;
     if($result=="false")

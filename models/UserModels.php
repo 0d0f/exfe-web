@@ -85,5 +85,30 @@ class UserModels extends DataModel{
 	return false;
 	//$sql="update ";
     }
+    public function setPasswordByToken($cross_id,$token,$password,$displayname)
+    {
+        $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
+        $row=$this->getRow($sql);
+        $identity_id=intval($row["identity_id"]);
+        if($identity_id > 0)
+	{
+		$sql="select userid from user_identity where identityid=$identity_id";	
+		$result=$this->getRow($sql);
+		if(intval($result["userid"])>0)
+		{
+		    $userid=intval($result["userid"]);
+		    $password=md5($password.$this->salt);
+		    $sql="update users set encrypted_password ='$password',name='$displayname' where id=$userid;";
+		    $result=$this->query($sql);
+		    if($result==1)
+		    {
+			$sql="update identities set name='$displayname' where id=$identity_id";
+			$result=$this->query($sql);
+			return true;
+		    }
+		}
+	}
+	return false;
+    }
     
 }
