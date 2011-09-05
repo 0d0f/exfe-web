@@ -21,13 +21,15 @@ class TestActions extends ActionController {
   }
   public function doIndex()
   {
-	$Data=$this->getModel();
-	$events=$Data->getEvents();
-//	print_r($events);
-
-	$this->setVar("notice", $events[0]["title"]);
-	$this->displayView();
-	echo "index";
+        $r=$external_identity=mysql_real_escape_string("123");;
+	var_dump($r);
+//	$Data=$this->getModel();
+//	$events=$Data->getEvents();
+////	print_r($events);
+//
+//	$this->setVar("notice", $events[0]["title"]);
+//	$this->displayView();
+//	echo "index";
   }
   public function doTest()
   {
