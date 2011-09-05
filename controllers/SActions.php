@@ -387,7 +387,8 @@ class SActions extends ActionController {
   public function doSetpwd()
   {
     $responobj["meta"]["code"]=200;
-    $cross_id=base62_to_int($_POST["cross_id"]);
+    #$cross_id=base62_to_int($_POST["cross_id"]);
+    $cross_id=intval($_POST["cross_id"]);
     $token=$_POST["token"];
     if(strlen($token)>32)
 	$token=substr($token,0,32);
