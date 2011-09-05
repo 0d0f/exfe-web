@@ -424,11 +424,12 @@ class SActions extends ActionController {
     }
 
     $responobj["response"]["success"]=$result;
-    if($result==false)
+    if($result=="false")
     {
 	$responobj["response"]["error"]["identity_id"]=$identity_id;
 	$responobj["response"]["error"]["user_id"]=$user_id;
 	$responobj["response"]["error"]["setpassword"]=$r;
+	$responobj["response"]["error"]["action"]="login with $cross_id and $token";
     }
 
     echo json_encode($responobj);
