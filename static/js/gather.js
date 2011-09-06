@@ -8,7 +8,10 @@ function show_exfeedel(e)
     e.removeClass('bgrond');
     $('.exfee_del').hide();
 }
-
+function exfee_del(e)
+{
+    e.remove();
+}
 var new_identity_id=0;
 
 function getexfee()
@@ -83,14 +86,14 @@ $(document).ready(function(){
                         {
                             if(name=="")
                             name=identity;
-                            exfee_pv=exfee_pv+'<li class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="static/images/img.jpg" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span></p> <button class="exfee_del" type="button"></button> </li>';
+                            exfee_pv=exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="static/images/img.jpg" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>';
                         }
                     }
                     else
                     {
                         var name=$('#exfee').val();
                         new_identity_id=new_identity_id+1;
-                        exfee_pv=exfee_pv+'<li class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="static/images/'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_new" value="'+input_identity+'">'+name+'</span></p> <button class="exfee_del" type="button"></button> </li>';
+                        exfee_pv=exfee_pv+'<li id="newexfee_'+new_identity_id+'" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="static/images/'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_new" value="'+input_identity+'">'+name+'</span></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_'+new_identity_id+'\'))" type="button"></button> </li>';
                     }
 
                     var inserted=false;
