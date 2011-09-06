@@ -4,7 +4,7 @@
 <div class="hc"><a href="/"  class="logo" >LOGO</a></div>
 <?php
 
-if($_SESSION["tokenIdentity"]!="")
+if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
 {
     $global_name=$_SESSION["tokenIdentity"]["identity"]["name"];	
     $global_avatar_file_name=$_SESSION["tokenIdentity"]["identity"]["avatar_file_name"];	
