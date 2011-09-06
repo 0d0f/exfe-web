@@ -2,26 +2,26 @@
 class PlaceModels extends DataModel{
     public function savePlace($place)
     {
-	$place_lines=preg_split ("/\r\n|\r|\n/", $place);
-	$place_line1=$place_lines[0];
-	array_shift($place_lines);
-	$place_line2 = implode ('\r',$place_lines ); 
-	$time=time();
+        $place_lines=preg_split ("/\r\n|\r|\n/", $place);
+        $place_line1=$place_lines[0];
+        array_shift($place_lines);
+        $place_line2 = implode ('\r',$place_lines ); 
+        $time=time();
 
-	$place_line1=mysql_real_escape_string($place_line1);
-	$place_line2=mysql_real_escape_string($place_line2);
-	
-	$sql="insert into places (description_line1,description_line2,created_at,updated_at) values('$place_line1','$place_line2',FROM_UNIXTIME($time),FROM_UNIXTIME($time));";
-    	$result=$this->query($sql);
-	if(intval($result["insert_id"])>0)
-	    return intval($result["insert_id"]);
+        $place_line1=mysql_real_escape_string($place_line1);
+        $place_line2=mysql_real_escape_string($place_line2);
+
+        $sql="insert into places (description_line1,description_line2,created_at,updated_at) values('$place_line1','$place_line2',FROM_UNIXTIME($time),FROM_UNIXTIME($time));";
+        $result=$this->query($sql);
+        if(intval($result["insert_id"])>0)
+            return intval($result["insert_id"]);
 
     }
     public function getPlace($place_id)
     {
-	$sql="select description_line1 as line1, description_line2 as line2 from places where id=$place_id;";
-    	$place=$this->getRow($sql);
-	return $place;
+        $sql="select description_line1 as line1, description_line2 as line2 from places where id=$place_id;";
+        $place=$this->getRow($sql);
+        return $place;
     }
 
 }

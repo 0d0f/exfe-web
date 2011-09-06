@@ -52,57 +52,57 @@ class FrontController {
 #	}
 #	}
 
-	public static function createInstance() {
-		if (!defined("PAGE_DIR")) {
-			exit("Critical error: Cannot proceed without PAGE_DIR.");
-		}
-		$instance = new self();
-		return $instance;
-	}
+    public static function createInstance() {
+        if (!defined("PAGE_DIR")) {
+            exit("Critical error: Cannot proceed without PAGE_DIR.");
+        }
+        $instance = new self();
+        return $instance;
+    }
 
-	public function dispatch() {
-		$classname = !empty($_GET["class"]) ? $_GET["class"] : "home";
-		$action = !empty($_GET["action"]) ? $_GET["action"] : "index";
+    public function dispatch() {
+        $classname = !empty($_GET["class"]) ? $_GET["class"] : "home";
+        $action = !empty($_GET["action"]) ? $_GET["action"] : "index";
 
-		$class = ucfirst($classname) . "Actions";
+        $class = ucfirst($classname) . "Actions";
 
-		#if(!($class=="UserActions" && ($action=="loginweb" || $action=="auth" || $action == 'register'))) {
-		#	$this->checkOauthToken();
-		#}
+#if(!($class=="UserActions" && ($action=="loginweb" || $action=="auth" || $action == 'register'))) {
+#	$this->checkOauthToken();
+#}
 
-		$file = CONTROLLER_DIR. "/" . $class . ".php";
-		if (!is_file($file)) {
-			exit("Page not found:".$file);
-		}
+        $file = CONTROLLER_DIR. "/" . $class . ".php";
+        if (!is_file($file)) {
+            exit("Page not found:".$file);
+        }
 
-		require_once $file;
+        require_once $file;
 
-		$controller = new $class();
-		$controller->setName($classname);
-		$controller->dispatchAction($action);
-	}
+        $controller = new $class();
+        $controller->setName($classname);
+        $controller->dispatchAction($action);
+    }
 
-	#private function logRequest() {
+#private function logRequest() {
 
-	#	$handle=fopen("/tmp/qieke_request", "a");
+#	$handle=fopen("/tmp/qieke_request", "a");
 
-	#	if(isset($_GET)) {
-	#		fwrite($handle, "GET: ");
-	#		foreach($_GET as $key=>$value) {
-	#			fwrite($handle, "$key=>$value,");
-	#		}
-	#		fwrite($handle, "\n");
-	#	}
+#	if(isset($_GET)) {
+#		fwrite($handle, "GET: ");
+#		foreach($_GET as $key=>$value) {
+#			fwrite($handle, "$key=>$value,");
+#		}
+#		fwrite($handle, "\n");
+#	}
 
-	#	if(isset($_POST)) {
-	#		fwrite($handle, "POST: ");
-	#		foreach($_POST as $key=>$value) {
-	#			fwrite($handle, "$key=>$value,");
-	#		}
-	#		fwrite($handle, "\n");
-	#	}
-	#	fclose($handle);
-	#}
+#	if(isset($_POST)) {
+#		fwrite($handle, "POST: ");
+#		foreach($_POST as $key=>$value) {
+#			fwrite($handle, "$key=>$value,");
+#		}
+#		fwrite($handle, "\n");
+#	}
+#	fclose($handle);
+#}
 
 
 }

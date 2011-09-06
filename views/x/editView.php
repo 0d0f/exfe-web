@@ -3,7 +3,6 @@
 <?php include "share/nav.php"; ?>
 <?php 
 $cross=$this->getVar("cross");
-print_r($cross);
 ?>
 </body>
 </html>

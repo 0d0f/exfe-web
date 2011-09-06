@@ -1,8 +1,8 @@
 <?php
 class HomeActions extends ActionController {
 
-  public function doIndex() {
-    $this->displayView();
-  }
+    public function doIndex() {
+        $this->displayView();
+    }
 }
 

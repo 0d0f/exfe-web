@@ -1,126 +1,126 @@
 <?php
 class RSVPActions extends ActionController {
-  public function checkallow($cross_id,$token)
-  {
-    $checkhelper=$this->getHelperByName("check");
-    $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-    if($check["allow"]=="false")
+    public function checkallow($cross_id,$token)
     {
-	header( 'Location: /s/login' ) ;
-	exit(0);
-    }
-    if($check["type"]=="token")
-    {
-    		$identityData=$this->getModelByName("identity");
-	    $identity_id=$identityData->loginWithXToken($cross_id, $token);
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
+        if($check["allow"]=="false")
+        {
+            header( 'Location: /s/login' ) ;
+            exit(0);
+        }
+        if($check["type"]=="token")
+        {
+            $identityData=$this->getModelByName("identity");
+            $identity_id=$identityData->loginWithXToken($cross_id, $token);
             $status=$identityData->checkIdentityStatus($identity_id);
             if($status!=STATUS_CONNECTED)
             {
-        	$identityData->setRelation($identity_id,STATUS_CONNECTED);
+                $identityData->setRelation($identity_id,STATUS_CONNECTED);
             }
+        }
+        else if($check["type"]=="session")
+            $identity_id=$_SESSION["identity_id"];
+        return $identity_id;
     }
-    else if($check["type"]=="session")
-	$identity_id=$_SESSION["identity_id"];
-    return $identity_id;
-  }
-  public function doSave()
-  {
-	$rsvp=$_POST["rsvp"];
-	$cross_id=$_POST["cross_id"];
-    //if(isset($identity) && isset($password))
-    //{
-	if($rsvp=="yes")
-	    $state=INVITATION_YES;
-	if($rsvp=="no")
-	    $state=INVITATION_NO;
-	if($rsvp=="maybe")
-	    $state=INVITATION_MAYBE;
-
-	$responobj["meta"]["code"]=200;
-	
-	$identity_id=$_SESSION["tokenIdentity"]["identity_id"];
-	if(intval($identity_id)==0)
-	    $identity_id=$_SESSION["identity_id"];
-	if(intval($state)>0 && intval($identity_id)>0 )
-	{
-	   $responobj["response"]["identity_id"]=$identity_id;
-	   $responobj["response"]["state"]=$rsvp;
-
-	   $invitationData=$this->getModelByName("Invitation");
-    	   $r=$invitationData->rsvp($cross_id,$identity_id,$state);
-	   if($r===true)
-	    $responobj["response"]["success"]="true";
-	   else
-	    $responobj["response"]["success"]="false";
-	}
-	else
-	    $responobj["response"]["success"]="false";
-    echo json_encode($responobj);
-    exit();
-
-  }
-  public function doYES()
-  {
-    $cross_id=intval($_GET["id"]);
-    $token=$_GET["token"];
-
-    $identity_id=$this->checkallow($cross_id,$token);
-
-
-    if(intval($identity_id)>0)
+    public function doSave()
     {
-    $state=INVITATION_YES;
-    $invitationData=$this->getModelByName("Invitation");
-    $invitationData->rsvp($cross_id,$identity_id,$state);
-    $cross_id_base62=int_to_base62($cross_id);
+        $rsvp=$_POST["rsvp"];
+        $cross_id=$_POST["cross_id"];
+        //if(isset($identity) && isset($password))
+        //{
+        if($rsvp=="yes")
+            $state=INVITATION_YES;
+        if($rsvp=="no")
+            $state=INVITATION_NO;
+        if($rsvp=="maybe")
+            $state=INVITATION_MAYBE;
+
+        $responobj["meta"]["code"]=200;
+
+        $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
+        if(intval($identity_id)==0)
+            $identity_id=$_SESSION["identity_id"];
+        if(intval($state)>0 && intval($identity_id)>0 )
+        {
+            $responobj["response"]["identity_id"]=$identity_id;
+            $responobj["response"]["state"]=$rsvp;
+
+            $invitationData=$this->getModelByName("Invitation");
+            $r=$invitationData->rsvp($cross_id,$identity_id,$state);
+            if($r===true)
+                $responobj["response"]["success"]="true";
+            else
+                $responobj["response"]["success"]="false";
+        }
+        else
+            $responobj["response"]["success"]="false";
+        echo json_encode($responobj);
+        exit();
+
     }
-    if($token!="")
-	header( "Location: /!$cross_id_base62?token=$token" ) ;
-    else
-	header( "Location: /!$cross_id_base62" ) ;
-    exit(0);
-  }
-  public function doNO()
-  {
-
-    $cross_id=intval($_GET["id"]);
-    $token=$_GET["token"];
-
-    $identity_id=$this->checkallow($cross_id,$token);
-
-    if(intval($identity_id)>0)
+    public function doYES()
     {
-    $state=INVITATION_NO;
-    $invitationData=$this->getModelByName("Invitation");
-    $invitationData->rsvp($cross_id,$identity_id,$state);
-    $cross_id_base62=int_to_base62($cross_id);
-    if($token!="")
-	header( "Location: /!$cross_id_base62?token=$token" ) ;
-    else
-	header( "Location: /!$cross_id_base62" ) ;
-   }
-    exit(0);
-  }
-  public function doMaybe()
-  {
+        $cross_id=intval($_GET["id"]);
+        $token=$_GET["token"];
 
-    $cross_id=intval($_GET["id"]);
-    $token=$_GET["token"];
+        $identity_id=$this->checkallow($cross_id,$token);
 
-    $identity_id=$this->checkallow($cross_id,$token);
 
-    if(intval($identity_id)>0)
-    {
-    $state=INVITATION_MAYBE;
-    $invitationData=$this->getModelByName("Invitation");
-    $invitationData->rsvp($cross_id,$identity_id,$state);
-    $cross_id_base62=int_to_base62($cross_id);
-    if($token!="")
-	header( "Location: /!$cross_id_base62?token=$token" ) ;
-    else
-	header( "Location: /!$cross_id_base62" ) ;
+        if(intval($identity_id)>0)
+        {
+            $state=INVITATION_YES;
+            $invitationData=$this->getModelByName("Invitation");
+            $invitationData->rsvp($cross_id,$identity_id,$state);
+            $cross_id_base62=int_to_base62($cross_id);
+        }
+        if($token!="")
+            header( "Location: /!$cross_id_base62?token=$token" ) ;
+        else
+            header( "Location: /!$cross_id_base62" ) ;
+        exit(0);
     }
-    exit(0);
-  }
-}
+    public function doNO()
+    {
+
+        $cross_id=intval($_GET["id"]);
+        $token=$_GET["token"];
+
+        $identity_id=$this->checkallow($cross_id,$token);
+
+        if(intval($identity_id)>0)
+        {
+            $state=INVITATION_NO;
+            $invitationData=$this->getModelByName("Invitation");
+            $invitationData->rsvp($cross_id,$identity_id,$state);
+            $cross_id_base62=int_to_base62($cross_id);
+            if($token!="")
+                header( "Location: /!$cross_id_base62?token=$token" ) ;
+            else
+                header( "Location: /!$cross_id_base62" ) ;
+        }
+        exit(0);
+    }
+    public function doMaybe()
+    {
+
+        $cross_id=intval($_GET["id"]);
+        $token=$_GET["token"];
+
+        $identity_id=$this->checkallow($cross_id,$token);
+
+        if(intval($identity_id)>0)
+        {
+            $state=INVITATION_MAYBE;
+            $invitationData=$this->getModelByName("Invitation");
+            $invitationData->rsvp($cross_id,$identity_id,$state);
+            $cross_id_base62=int_to_base62($cross_id);
+            if($token!="")
+                header( "Location: /!$cross_id_base62?token=$token" ) ;
+            else
+                header( "Location: /!$cross_id_base62" ) ;
+        }
+        exit(0);
+    }
+    }
 
