@@ -11,6 +11,9 @@
 <script type="text/javascript" src="/static/js/dialog.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
+<?php 
+    $external_identity=$this->getVar("external_identity");
+?>
 <div class="centerbg">
   <div class="createset">
   <!--<h3>Gather for your <span>X</span></h3>-->
@@ -30,7 +33,7 @@
 Pier 39, 203 C
 San Francisco, CA
 (555) 434-2722</textarea></li>
-<li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" value="Enter your email"/></li>
+<li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
 <li><label class="exfee">exfee:</label>  
 <p class="count"> <a href="#"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>

@@ -54,11 +54,13 @@ $(document).ready(function(){
 	 }
      });
 
-     $("#hostby").click(function(){
-	var html=showdialog("reg");
+     $("#hostby").focus(function(){
+	if($(this).attr("enter")!="true")
+	{
+	 var html=showdialog("reg");
          $(html).modal();
-
-	bindDialogEvent("reg");
+	 bindDialogEvent("reg");
+	}
 	
      });
 

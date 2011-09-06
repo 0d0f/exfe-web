@@ -7,6 +7,14 @@ class XActions extends ActionController {
     $identity_id=$_SESSION["identity_id"];
     #$crossid=int_to_base62($crossid);
     #echo "redirect...to cross edit page: /$crossid/edit";
+    $external_identity=$_SESSION["identity"]["external_identity"];
+    if($external_identity=="")
+	$external_identity=$_SESSION["tokenIdentity"]["external_identity"];
+    
+    if($external_identity!="")
+	$this->setVar("external_identity", $external_identity);
+	
+
     if($_POST["title"]!="")
     {
 	$crossdata=$this->getDataModel("x");
