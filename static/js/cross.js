@@ -73,6 +73,7 @@ $('#formconversation').submit(function() {
 
         var comment=$('textarea[name=comment]').val();
         var poststr="cross_id="+cross_id+"&comment="+comment;
+        $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 10, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
         $.ajax({
             type: "POST",
             data: poststr,
@@ -96,6 +97,7 @@ $('#formconversation').submit(function() {
                     $("textarea[name=comment]").val("");
                 }
             }
+            $('textarea[name=comment]').activity(false);
         }
     });
 return false;
