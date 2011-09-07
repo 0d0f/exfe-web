@@ -15,15 +15,21 @@ class ExfeeHelper extends ActionController {
                 $identityData = $this->getModelByName("identity"); 
                 // if exfee exist?
                 //13:hj@exfe.com
+                //13:1:hj@exfe.com
+                //abcd@ddd.com:1
+                $confirmed==0;
                 $exfee_split=explode(":",$exfee);
-                if(sizeof($exfee_split)==2)
+                if(sizeof($exfee_split)==3)
                 {
                     $identity_id=intval($exfee_split[0]);
-                    $identity=$exfee_split[1];
+                    $confirmed=intval($exfee_split[1]);
+                    $identity=$exfee_split[2];
                 }
-                else
+                else if(sizeof($exfee_split)==2)
                 {
-                    $identity=$exfee;
+                    $identity=$exfee_split[0];
+                    $confirmed=intval($exfee_split[1]);
+
                 }
                 if(intval($identity_id)==0)
                 {
@@ -38,7 +44,7 @@ class ExfeeHelper extends ActionController {
 
                 // add invitation
                 $invitationdata=$this->getModelByName("invitation");
-                $invitationdata->addInvitation($cross_id,$identity_id);
+                $invitationdata->addInvitation($cross_id,$identity_id,$confirmed);
             }
         }
     }

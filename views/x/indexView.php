@@ -119,7 +119,7 @@ if($cross["conversation"])
 <p class="tm"><?php echo $place_line2; ?></p>
 
 <div class="exfee">
-<div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"><?php echo $allinvitation; ?> of <br />confirmed</em></p></div>
+<div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
 <ul class="samlcommentlist">
 
 <?php

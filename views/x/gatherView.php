@@ -33,8 +33,13 @@ San Francisco, CA
 (555) 434-2722</textarea></li>
 <li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
+<<<<<<< HEAD
 <li><label class="exfee">exfee:</label>
 <p class="count"> <a href="#"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+=======
+<li><label class="exfee">exfee:</label>  
+<p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+>>>>>>> 7f84a0f41b654482234532f45610c4fb1f73a3f9
 <input type="submit" id="post_submit" name="commit" title="Say!" value="">
 <textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea>
 <div class="creattext">
@@ -43,7 +48,7 @@ San Francisco, CA
       <ul class="samlcommentlist">
         <li class="addjn">
           <p class="pic20"><img src="/eimgs/<?php echo $global_avatar_file_name;?>" alt="" /></p>
-          <p class="smcomment"><span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span><span class="lb">host</span></p>
+          <p class="smcomment"><span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span><input id='confirmed_exfee_<?php echo $global_identity_id;?>' checked=true type="checkbox" /> <span class="lb">host</span></p>
           <button type="button" class="exfee_del"></button>
         </li>
       </ul>
