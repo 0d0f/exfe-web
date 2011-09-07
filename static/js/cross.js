@@ -38,45 +38,47 @@ $(document).ready(function(){
                 data: poststr,
                 url: site_url+"/rsvp/save",
                 dataType:"json",
-                success: function(data){
-                    if(data!=null)
-                    {
-                        if(data.response.success=="false")
-                        {
-                            //$('#pwd_hint').html("<span>Error identity </span>");
-                            //$('#login_hint').show();
-                        }
-                        else if(data.response.success=="true")
-                        {
-                            if(data.response.state=="yes")
-                            {
-                                $("li#exfee_"+data.response.identity_id+" > .cs > em").removeClass("c2");
-                                $("li#exfee_"+data.response.identity_id+" > .cs > em").addClass("c1");
+                success: function(data) {
+                    if (data != null) {
+                        if (data.response.success === 'true') {
+                            switch (data.response.state) {
+                                case 'yes':
+                                    $("li#exfee_"+data.response.identity_id+" > .cs > em").removeClass("c2");
+                                    $("li#exfee_"+data.response.identity_id+" > .cs > em").addClass("c1");
+                                    if (myrsvp !== 1) {
+                                        $('.bignb').html(parseInt($('.bignb').html()) + 1);
+                                    }
+                                    break;
+                                case 'no':
+                                case 'maybe':
+                                    $("li#exfee_"+data.response.identity_id+" > .cs > em").removeClass("c1");
+                                    $("li#exfee_"+data.response.identity_id+" > .cs > em").addClass("c2");
+                                    if (myrsvp === 1) {
+                                        $('.bignb').html(parseInt($('.bignb').html()) - 1);
+                                    }
                             }
-                            else if(data.response.state=="no" || data.response.state=="maybe")
-                            {
-                                $("li#exfee_"+data.response.identity_id+" > .cs > em").removeClass("c1");
-                                $("li#exfee_"+data.response.identity_id+" > .cs > em").addClass("c2");
-                            }
+                            myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
                             $('#rsvp_options').hide();
                             $('#rsvp_submitted').show();
+                        } else {
+                            //$('#pwd_hint').html("<span>Error identity </span>");
+                            //$('#login_hint').show();
                         }
                     }
                     $("#rsvp_loading").hide();
                     $("#rsvp_loading").unbind("ajaxStart ajaxStop");
             },
-
-            error:function(data){
-                      $("#rsvp_loading").hide();
-                      $("#rsvp_loading").unbind("ajaxStart ajaxStop");
-                  }
-            });
-            e.preventDefault();
+            error : function(data) {
+                $("#rsvp_loading").hide();
+                $("#rsvp_loading").unbind("ajaxStart ajaxStop");
+            }
+        });
+        e.preventDefault();
     });
 
 $('#formconversation').submit(function() {
 
-    if (submitting) { return false; }    
+    if (submitting) { return false; }
 
     submitting = true;
 
@@ -103,7 +105,7 @@ $('#formconversation').submit(function() {
                     var name=data.response.identity.name;
                     if(name=="")
                         name=data.response.identity.external_identity;
-                    var html='<li><p class="pic40"><img src="/eimgs/'+data.response.identity.avatar_file_name+'" alt=""></p> <p class="comment"><span>'+name+':</span>'+data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>'; 
+                    var html='<li><p class="pic40"><img src="/eimgs/'+data.response.identity.avatar_file_name+'" alt=""></p> <p class="comment"><span>'+name+':</span>'+data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
                     $("#commentlist").prepend(html);
                     $("textarea[name=comment]").val("");
                 }
