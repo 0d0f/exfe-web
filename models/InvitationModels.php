@@ -28,7 +28,7 @@ class InvitationModels extends DataModel{
 
     public function getInvitation_Identities($cross_id)
     {
-        $sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b   where b.id=a.identity_id and a.cross_id=$cross_id";
+        $sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
         $invitations=$this->getAll($sql);
         for($i=0;$i<sizeof($invitations);$i++)
         {
