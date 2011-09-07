@@ -2,7 +2,7 @@
 
 $dbhost="localhost";
 $dbuser="root";
-$dbpasswd="zatyy3926az";
+$dbpasswd="";
 $dbname="exfe_dev";
 
 $resque_server="127.0.0.1:6379";
