@@ -20,7 +20,6 @@ else if($_SESSION["identity"]!="")
     $global_identity_id=$_SESSION["identity_id"];	
 }
 
-
 if(intval($_SESSION["userid"])>0)
 {
     $userData = $this->getModelByName("user");
