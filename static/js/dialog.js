@@ -201,9 +201,37 @@ function bindDialogEvent(type)
                                 }
                             }
                         }
-                });
+                    });
 //reg
-            }
+                }
+                else 
+                    return false;
+
+                $.ajax({
+                    type: "GET",
+                    url: site_url+"/identity/get?identity="+identity, 
+                    dataType:"json",
+                    success: function(data){
+                    var exfee_pv="";
+                    if(data.response.identity!=null)
+                    {
+                        var identity=data.response.identity.external_identity;
+                        var id=data.response.identity.id;
+                        var name=data.response.identity.name;
+                        var avatar_file_name=data.response.identity.avatar_file_name;
+                        if($('#exfee_'+id).attr("id")==null)
+                        {
+                            if(name=="")
+                                name=identity;
+                            exfee_pv=exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>';
+                        }
+                    }
+
+                    $("ul.samlcommentlist").append(exfee_pv);
+                    }
+            });
+            $("#exfee_count").html($("span.exfee_exist").length+$("span.exfee_new").length+1);
+
             return false;
         });
     }
