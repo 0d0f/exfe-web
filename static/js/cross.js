@@ -21,6 +21,12 @@ $(document).ready(function(){
 
         window.submitting = false;
 
+        $('textarea[name=comment]').keydown(function(e){
+            if (e.keyCode === 13 && !e.shiftKey) {
+                $('#formconversation').submit();
+            }
+        });
+
         $('#rsvp_yes , #rsvp_no , #rsvp_maybe ').click(function(e){
 
             $("#rsvp_loading").ajaxStart(function(){  $(this).show(); });
