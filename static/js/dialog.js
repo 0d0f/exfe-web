@@ -230,8 +230,6 @@ function bindDialogEvent(type)
                     $("ul.samlcommentlist").append(exfee_pv);
                     }
             });
-            $("#exfee_count").html($("span.exfee_exist").length+$("span.exfee_new").length+1);
-
             return false;
         });
     }

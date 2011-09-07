@@ -69,7 +69,7 @@ class IdentityModels extends DataModel{
             return FALSE;
     }
 
-    public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL)
+    public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL,$type="password")
     {
         if($userid==0)
         {
@@ -80,7 +80,7 @@ class IdentityModels extends DataModel{
         }
         if($userrow==NULL)
         {
-            $sql="select name,bio,avatar_file_name from users where id=$userid"; 
+            $sql="select name,bio,avatar_file_name,current_sign_in_ip,cookie_logintoken,cookie_loginsequ,encrypted_password from users where id=$userid"; 
             $userrow=$this->getRow($sql);
         }
         if($identityrow==NULL)
@@ -88,6 +88,34 @@ class IdentityModels extends DataModel{
             $sql="select * from identities where external_identity='$identity' limit 1";
             $identityrow=$this->getRow($sql);
         }
+
+        //write some login info
+        //if new ip 
+            echo $type;
+            die();
+        if($type=="password")
+        {
+            $time=time();
+            $ipaddress=getRealIpAddr();
+            $cookie_logintoken=$userrow["cookie_logintoken"];
+            $cookie_loginsequ=$userrow["cookie_loginsequ"];
+            $encrypted_password=$userrow["encrypted_password"];
+            $encrypted_password_salt=md5($encrypted_password."3firwkF");
+            if($cookie_logintoken!=$encrypted_password_salt)
+            {
+                $cookie_logintoken=$encrypted_password_salt;
+                //update logintoken and sqeu
+            }
+                
+            $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time)  where id=$userid;";
+            $this->query($sql);
+        }
+        else if($type="cookie")
+        {
+
+        }
+        //set cookie
+
         $_SESSION["userid"]=$userid;
         $_SESSION["identity_id"]=$identity_id;
         $identity=array();

@@ -122,7 +122,7 @@ $(document).ready(function(){
                     $('#exfee').val("");
                     }
             });
-        $("#exfee_count").html($("span.exfee_exist").length+$("span.exfee_new").length+1);
+        $("#exfee_count").html($("span.exfee_exist").length+$("span.exfee_new").length);
         e.preventDefault();
         }
     });

@@ -11,6 +11,7 @@
 $cross=$this->getVar("cross");
 $user=$this->getVar("user");
 $myidentity=$this->getVar("myidentity");
+$myrsvp=$this->getVar("myrsvp");
 $interested=$this->getVar("interested");
 
 $token_expired=$this->getVar("token_expired");
@@ -20,6 +21,7 @@ echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
 echo "var cross_id=".$cross["id"].";\r\n";
 echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
 echo "var token_expired='".$token_expired."'; \r\n";
+echo "var myrsvp='".$myrsvp."'; \r\n";
 echo "</script>\r\n";
 ?>
 <script type='text/javascript' src='/static/js/login.js'></script>
