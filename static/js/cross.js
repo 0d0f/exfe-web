@@ -4,7 +4,7 @@ function setreadonly()
     $('textarea[name=comment]').val("pls login");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe ').click(function(e){
-            alert("pls login");
+        alert("pls login");
     });
 }
 $(document).ready(function(){
@@ -12,15 +12,14 @@ $(document).ready(function(){
 
         $('#formconversation').submit(function(e){
             //	alert("a");
-            });
+        });
 
         $('#changersvp').click(function(e){
-
             $('#rsvp_options').show();
             $('#rsvp_submitted').hide();
+        });
 
-
-            });
+        window.submitting = false;
 
         $('#rsvp_yes , #rsvp_no , #rsvp_maybe ').click(function(e){
 
@@ -71,15 +70,21 @@ $(document).ready(function(){
 
 $('#formconversation').submit(function() {
 
-        var comment=$('textarea[name=comment]').val();
-        var poststr="cross_id="+cross_id+"&comment="+comment;
-        $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 10, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
-        $.ajax({
-            type: "POST",
-            data: poststr,
-            url: site_url+"/conversation/save",
-            dataType:"json",
-            success: function(data){
+    if (submitting) { return false; }    
+
+    submitting = true;
+
+    var comment=$('textarea[name=comment]').val();
+    var poststr="cross_id="+cross_id+"&comment="+comment;
+    $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 10, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
+    $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+
+    $.ajax({
+        type: "POST",
+        data: poststr,
+        url: site_url+"/conversation/save",
+        dataType:"json",
+        success: function(data){
             if(data!=null)
             {
                 if(data.response.success=="false")
@@ -98,9 +103,16 @@ $('#formconversation').submit(function() {
                 }
             }
             $('textarea[name=comment]').activity(false);
+            $('#post_submit').css('background', 'url("/static/images/enter.png")');
+            submitting = false;
+        },
+        error: function(date){
+            $('textarea[name=comment]').activity(false);
+            $('#post_submit').css('background', 'url("/static/images/enter.png")');
+            submitting = false;
         }
     });
-return false;
+    return false;
 });
 
 if(token_expired=='true')
