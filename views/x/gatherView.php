@@ -6,12 +6,10 @@
 <script type="text/javascript" src="/static/js/timepicker.js"></script>
 <script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
 <script type="text/javascript" src="/static/js/activity-indicator.js"></script>
-<script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
-<script type="text/javascript" src="/static/js/activity-indicator.js"></script>
 <script type="text/javascript" src="/static/js/dialog.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
-<?php 
+<?php
     $external_identity=$this->getVar("external_identity");
 ?>
 <div class="centerbg">
@@ -35,10 +33,15 @@ San Francisco, CA
 (555) 434-2722</textarea></li>
 <li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
+<<<<<<< HEAD
+<li><label class="exfee">exfee:</label>
+<p class="count"> <a href="#"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+=======
 <li><label class="exfee">exfee:</label>  
 <p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+>>>>>>> 7f84a0f41b654482234532f45610c4fb1f73a3f9
 <input type="submit" id="post_submit" name="commit" title="Say!" value="">
-<textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea>        
+<textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea>
 <div class="creattext">
   <div class="selecetafri">
     <div class="sover" id="exfee_pv">
@@ -61,8 +64,8 @@ San Francisco, CA
 </form>
   </ul>
 
-  
-  </div>  
+
+  </div>
 <!--input id="user_submit" name="commit"  type="submit" value="Submit" /-->
 
 

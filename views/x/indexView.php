@@ -5,9 +5,9 @@
 <script type="text/javascript" src="/static/js/activity-indicator.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
-<?php 
+<?php
 ?>
-<?php 
+<?php
 $cross=$this->getVar("cross");
 $user=$this->getVar("user");
 $myidentity=$this->getVar("myidentity");
@@ -82,7 +82,7 @@ only attendees could see details.</p>
 </div>
 
 <ul id="commentlist" class="commentlist">
-<?php 
+<?php
 if($cross["conversation"])
 {
     foreach($cross["conversation"] as $conversation)
@@ -122,7 +122,7 @@ if($cross["conversation"])
 <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
 <ul class="samlcommentlist">
 
-<?php 
+<?php
 
 foreach($host_exfee as $exfee)
 {
