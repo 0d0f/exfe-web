@@ -51,15 +51,21 @@ function cancel(){
 
 var $=jQuery;
 
-$(document).ready(function(){
-        $('.name').mousemove(function(){
+$(document).ready(function() {
+        $('.name').mousemove(function() {
             $('#goldLink a').addClass('nameh');
             $('#myexfe').show();
-            });
-        $('.name').mouseout(function(){
+        });
+        $('.name').mouseout(function() {
             $('#goldLink a').removeClass('nameh');
             $('#myexfe').hide();
-            });
+        });
+        $('#private_icon').mousemove(function() {
+            $('#private_hint').show();
+        });
+        $('#private_icon').mouseout(function() {
+            $('#private_hint').hide();
+        });
 
         //  $('.newbg').mousemove(function(){
         //	$(this).addClass('fbg');
@@ -147,4 +153,3 @@ $(document).ready(function(){
                 });
 
 });
-
