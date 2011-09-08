@@ -35,7 +35,7 @@ San Francisco, CA
 
 <li><label class="exfee">exfee:</label>
 <p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
-<input type="submit" id="post_submit" name="commit" title="Say!" value="">
+<span id="post_submit" title="Invite!"></span>
 <textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea><div id="identity_ajax"></div>
 <div class="creattext">
   <div class="selecetafri">

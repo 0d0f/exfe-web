@@ -285,7 +285,7 @@ b.r3{margin: 0px}
 .createset ul li input#date{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:20px;}
 .createset ul li textarea#g_place{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:80px;}
 .createset ul li textarea#exfee{border:#c5c5c5 1px solid;background:#ffffff;width:250px; height:20px; }
-.createset ul li #post_submit{background:url("../images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:2px 0 0 230px; }
+.createset ul li #post_submit{background:url("../images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:3px 0 0 234px; }
 .createset ul li p.redbtn{height:25px;background:url(../images/btn.png) no-repeat left -500px; float:right; padding:3px 0 0 20px; margin:6px 32px 0 0; color:#fc6306}
 .createset ul li label{width:105px;height:25px; margin:0 8px 0 0; line-height:25px;float:left;text-align:right;background:url(../images/icons.png) no-repeat;padding-right:30px;color:#020202;font-size:14px;}
 .createset ul li .title{background-position:right -475px;}
