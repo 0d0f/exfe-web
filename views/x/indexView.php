@@ -16,7 +16,7 @@ $interested=$this->getVar("interested");
 
 $token_expired=$this->getVar("token_expired");
 
-echo "<script type='text/javascript'>\r\n ";
+echo "<script type='text/javascript'>\r\n";
 echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
 echo "var cross_id=".$cross["id"].";\r\n";
 echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
@@ -168,5 +168,3 @@ foreach($normal_exfee as $exfee)
 </div><!--/#footerBao-->
 </body>
 </html>
-
-
