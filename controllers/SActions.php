@@ -252,6 +252,7 @@ class SActions extends ActionController {
         unset($_SESSION["identity_id"]);
         unset($_SESSION["identity"]);
         unset($_SESSION["tokenIdentity"]);
+        //logout session
         session_destroy();
     }
 
