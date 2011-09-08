@@ -6,18 +6,18 @@
 
 if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
 {
-    $global_name=$_SESSION["tokenIdentity"]["identity"]["name"];	
-    $global_avatar_file_name=$_SESSION["tokenIdentity"]["identity"]["avatar_file_name"];	
-    $global_external_identity=$_SESSION["tokenIdentity"]["identity"]["external_identity"];	
-    $global_identity_id=$_SESSION["tokenIdentity"]["identity_id"];	
+    $global_name=$_SESSION["tokenIdentity"]["identity"]["name"];
+    $global_avatar_file_name=$_SESSION["tokenIdentity"]["identity"]["avatar_file_name"];
+    $global_external_identity=$_SESSION["tokenIdentity"]["identity"]["external_identity"];
+    $global_identity_id=$_SESSION["tokenIdentity"]["identity_id"];
 
 }
 else if($_SESSION["identity"]!="")
 {
-    $global_name=$_SESSION["identity"]["name"];	
-    $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];	
-    $global_external_identity=$_SESSION["identity"]["external_identity"];	
-    $global_identity_id=$_SESSION["identity_id"];	
+    $global_name=$_SESSION["identity"]["name"];
+    $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
+    $global_external_identity=$_SESSION["identity"]["external_identity"];
+    $global_identity_id=$_SESSION["identity_id"];
 }
 
 if(intval($_SESSION["userid"])>0)
@@ -50,7 +50,6 @@ if(intval($_SESSION["userid"])>0)
         <div class="myexfefoot"><a href="/s/profile" class="l">Setting</a><a href="/s/logout" class="r">Sign out</a></div>
         <?php if($page=="cross") {?><p class="fjiao"></p><?php }?>
         </div><!--#myexfe-->
-        <iframe class="menu_iframe"></iframe>
         </div>
         <em class="light"></em>
         </div><!--.hr-->

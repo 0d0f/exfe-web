@@ -21,7 +21,7 @@ function getexfee()
             var exfee_identity=$(this).attr("value");
             var exfee_id=$(this).attr("identityid");
             var element_id=$(this).attr("id");
-            
+
             var confirmed=0;
             if($('#confirmed_'+element_id).attr("checked")==true)
                 var confirmed=1;
@@ -41,6 +41,11 @@ function getexfee()
 }
 
 $(document).ready(function(){
+
+        $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
+        $('#identity_ajax').hide();
+        $("#identity_ajax").ajaxStart(function(){  $(this).show(); });
+        $("#identity_ajax").ajaxStop(function(){  $(this).hide(); });
 
         $('input[type="text"], textarea').focus(function () {
             if($(this).attr("enter")!="true")
@@ -83,7 +88,7 @@ $(document).ready(function(){
                 var input_identity=$('#exfee').val();
                 $.ajax({
                     type: "GET",
-                    url: site_url+"/identity/get?identity="+$('#exfee').val(), 
+                    url: site_url+"/identity/get?identity="+$('#exfee').val(),
                     dataType:"json",
                     success: function(data){
                     var exfee_pv="";
@@ -130,7 +135,7 @@ $(document).ready(function(){
     $('#g_title').keyup(function(e){
             $('#pv_title').html($('#g_title').val());
     });
-    
+
     $('#g_description').keyup(function(e){
             $(this).attr("enter","1");
             $('#pv_description').html($('#g_description').val());
@@ -148,7 +153,7 @@ $(document).ready(function(){
                 for (var i=0;i<lines.length;i++)
                     if(lines[i]!="")
                         trim_lines.push(lines[i]);
-    
+
             if(trim_lines.length<=1)
             {
                 $('#pv_place_line1').html(place_lines);
@@ -164,23 +169,23 @@ $(document).ready(function(){
                         place_line2=place_line2+trim_lines[i];
                     else
                         place_line2=place_line2+trim_lines[i]+"<br />";
-            
+
                 }
                 $('#pv_place_line2').html(place_line2);
             }
     });
 
     $('#gather_x').click(function(e){
-            $('#gatherxform').submit();  
+            $('#gatherxform').submit();
     });
-    
+
     $('#datetime').datepicker({
         duration: '',
         showTime: true,
         constrainInput: false,
         time24h: true,
         dateFormat: 'yy-mm-dd',
-    
+
         beforeShow: function(input, inst)
         {
             $.datepicker._pos = $.datepicker._findPos(input);
@@ -193,7 +198,7 @@ $(document).ready(function(){
             $('#g_description').html("");
             $('#exfee_list').val(getexfee());
     });
-    
+
     $('#confirmed_all').click(function(e){
         var check=false;
         if($(this).attr("check")=="false")

@@ -16,7 +16,7 @@ $interested=$this->getVar("interested");
 
 $token_expired=$this->getVar("token_expired");
 
-echo "<script type='text/javascript'>\r\n ";
+echo "<script type='text/javascript'>\r\n";
 echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
 echo "var cross_id=".$cross["id"].";\r\n";
 echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
@@ -71,7 +71,7 @@ only attendees could see details.</p>
 <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
 <li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
 <li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a> <span style="display:none" id="rsvp_loading" ></span> <li>
+<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a> <div style="display:none" id="rsvp_loading" ></div> <li>
 </ul>
 <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>You are interested in this <strong style="color:#0591af;">X</strong>.</span> <a href="#" id="changersvp">change?</a></div>
 
@@ -168,5 +168,3 @@ foreach($normal_exfee as $exfee)
 </div><!--/#footerBao-->
 </body>
 </html>
-
-
