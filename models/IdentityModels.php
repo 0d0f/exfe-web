@@ -76,26 +76,29 @@ class IdentityModels extends DataModel{
             $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip from users where id=$userid"; 
             $userrow=$this->getRow($sql);
             $encrypted_password=$userrow["encrypted_password"];
+            $current_ip=$userrow["current_sign_in_ip"];
 
             $cookie_logintoken=md5($encrypted_password."3firwkF");
             $cookie_loginsequ=md5($time."glkfFDks.F");
 
-            //if($cookie_logintoken!=$encrypted_password_salt)
-            //{
-            //    $cookie_logintoken=$encrypted_password_salt;
-            //    //update logintoken and sqeu
-            //}
-            //normal set cokie
-
             $ipaddress=getRealIpAddr();
-            $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
-            $this->query($sql);
 
+            if( $userrow["cookie_loginsequ"]=="" ||  $userrow["cookie_logintoken"]=="") //first time login, setup cookie
+            {
 
-            setcookie('uid', $userid, time()+86400, "/",".exfe.com");
-            setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
-            setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
-            setcookie('logintoken', $cookie_logintoken, time()+86400, "/",".exfe.com");
+                $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
+                $this->query($sql);
+            }
+            else
+            {
+                    $cookie_logintoken=$userrow["cookie_logintoken"];
+                    $cookie_loginsequ=$userrow["cookie_loginsequ"];
+            }
+            
+                setcookie('uid', $userid, time()+86400, "/",".exfe.com");
+                setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
+                setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
+                setcookie('logintoken', $cookie_logintoken, time()+86400, "/",".exfe.com");
     }
 
     public function loginByCookie()
@@ -108,6 +111,27 @@ class IdentityModels extends DataModel{
         {
             $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
             $logindata=$this->getRow($sql);
+
+            $ipaddress=getRealIpAddr();
+            if($ipaddress!=$logindata["current_sign_in_ip"])
+            {
+                unset($_SESSION["userid"]);
+                unset($_SESSION["identity_id"]);
+                unset($_SESSION["identity"]);
+                unset($_SESSION["tokenIdentity"]);
+                session_destroy();
+
+                unset($_COOKIE["uid"]); 
+                unset($_COOKIE["id"]); 
+                unset($_COOKIE["loginsequ"]); 
+                unset($_COOKIE["logintoken"]); 
+                setcookie('uid', NULL, -1,"/",".exfe.com");
+                setcookie('id', NULL, -1,"/",".exfe.com");
+                setcookie('loginsequ', NULL,-1,"/",".exfe.com");
+                setcookie('logintoken',NULL,-1,"/",".exfe.com");
+                header( 'Location: /s/login' ) ;
+                exit(0);
+            }
 
             if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
             {
@@ -143,8 +167,15 @@ class IdentityModels extends DataModel{
         }
 
 
-        if($setcookie==true)
+        if($setcookie==true && $type=="password")
             $this->setLoginCookie($userid,$identity_id);
+
+    
+        $ipaddress=getRealIpAddr();
+        $time=time();
+        $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time) where id=$userid;";
+        $this->query($sql);
+
 
         $_SESSION["userid"]=$userid;
         $_SESSION["identity_id"]=$identity_id;
@@ -201,7 +232,6 @@ class IdentityModels extends DataModel{
                     //$_SESSION["identity"]=$identity;
                     //unset($_SESSION["tokenIdentity"]);
                     return $userid;
-
                 }
 
             }
