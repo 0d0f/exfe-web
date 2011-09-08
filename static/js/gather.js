@@ -136,6 +136,7 @@ $(document).ready(function() {
         $('#gatherxform').submit();
     });
 
+    /* //modified by handaoliang..
     $('#datetime').datepicker({
         duration: '',
         showTime: true,
@@ -150,6 +151,7 @@ $(document).ready(function() {
             $.datepicker._pos[1] = 50;
         }
     });
+    */
     $('#gatherxform').submit(function(e) {
         if($('#g_description').attr('enter') == '0')
             $('#g_description').html('');

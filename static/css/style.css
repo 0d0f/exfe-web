@@ -283,7 +283,7 @@ b.r3{margin: 0px}
 .createset ul li input#g_title{border:#c5c5c5 1px solid;background:#ffffff;width:480px;height:20px; color:#020202; font-size:16px}
 .createset ul li textarea#g_description{border:#c5c5c5 1px solid;background:#ffffff;width:480px; height:60px; }
 .createset ul li input#date{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:20px;}
-.createset ul li textarea#g_place{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:80px;}
+.createset ul li textarea#g_place{border:#c5c5c5 1px solid;background:#ffffff;width:163px;height:80px;}
 .createset ul li textarea#exfee{border:#c5c5c5 1px solid;background:#ffffff;width:250px; height:20px; }
 .createset ul li #post_submit{background:url("../images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:3px 0 0 234px; }
 .createset ul li p.redbtn{height:25px;background:url(../images/btn.png) no-repeat left -500px; float:right; padding:3px 0 0 20px; margin:6px 32px 0 0; color:#fc6306}
@@ -331,6 +331,12 @@ b.r3{margin: 0px}
 .createset .exfend p.tp em{color:#696969;font-style:italic}
 .createset .exfend p.sl{width:25px;height:25px;margin:0 auto;margin-top:15px;background:url(../images/btn.png) no-repeat right -543px;text-indent:-9999px; }
 .createset .exfend p.tf{line-height:25px;color:#adadad;font-size:14px;margin-top:75px}
+
+.createset #calendar_map_container{
+    display:block; position:absolute;
+    width: 310px; height: 165px; z-index: 100;
+    margin-top: 120px; margin-left: 325px; 
+}
 
 /*laicp*/
 .centerbg_pro{ padding-top:33px;}
