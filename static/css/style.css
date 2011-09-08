@@ -308,7 +308,7 @@ b.r3{margin: 0px}
 .createset .creattext input.inputText{padding:1px;border:#c5c5c5 1px solid;background:#ffffff;width:478px;color:#1f1f1f;height:24px;margin-top:10px}
 .createset .creattext textarea{color:#d0d0d0;padding:1px;border:#c5c5c5 1px solid;background:#ffffff;width:485px;height:198px;margin-top:30px}
 .createset .creattext textarea.ctext_1{height:72px;margin:0}
-.createset .creattext .selecetafri{padding:0;border:#c5c5c5 1px solid;background:#ffffff;width:485px;color:#1f1f1f;height:115px;margin-top:3px;overflow:auto;overflow-x:scroll}
+.createset .creattext .selecetafri{padding:0;border:#c5c5c5 1px dashed;background:#e7e7e7;width:485px;color:#1f1f1f;height:115px;margin-top:3px;overflow:auto;overflow-x:scroll}
 .createset .creattext .sover{width:960px;}
 .createset .creattext .selecetafri .samlcommentlist{width:275px;float:left;margin:2px;}
 .createset .creattext .selecetafri .samlcommentlist li{margin:3px 0 0px 5px;}
