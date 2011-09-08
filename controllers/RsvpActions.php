@@ -38,23 +38,33 @@ class RSVPActions extends ActionController {
 
         $responobj["meta"]["code"]=200;
 
-        $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
-        if(intval($identity_id)==0)
-            $identity_id=$_SESSION["identity_id"];
-        if(intval($state)>0 && intval($identity_id)>0 )
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAllow("conversion","",array("cross_id"=>$cross_id,"token"=>$token));
+        if($check["allow"]!="false")
         {
-            $responobj["response"]["identity_id"]=$identity_id;
-            $responobj["response"]["state"]=$rsvp;
+            $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
+            if(intval($identity_id)==0)
+                $identity_id=$_SESSION["identity_id"];
+            if(intval($state)>0 && intval($identity_id)>0 )
+            {
+                $responobj["response"]["identity_id"]=$identity_id;
+                $responobj["response"]["state"]=$rsvp;
 
-            $invitationData=$this->getModelByName("Invitation");
-            $r=$invitationData->rsvp($cross_id,$identity_id,$state);
-            if($r===true)
-                $responobj["response"]["success"]="true";
+                $invitationData=$this->getModelByName("Invitation");
+                $r=$invitationData->rsvp($cross_id,$identity_id,$state);
+                if($r===true)
+                    $responobj["response"]["success"]="true";
+                else
+                    $responobj["response"]["success"]="false";
+            }
             else
                 $responobj["response"]["success"]="false";
         }
         else
-            $responobj["response"]["success"]="false";
+        {
+                $responobj["response"]["success"]="false";
+                $responobj["response"]["error"]="need login";
+        }
         echo json_encode($responobj);
         exit();
 

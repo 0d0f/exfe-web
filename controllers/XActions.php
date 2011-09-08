@@ -65,7 +65,7 @@ class XActions extends ActionController {
                 $identityData->setRelation($identity_id,STATUS_CONNECTED);
             }
         }
-        else if($check["type"]=="session")
+        else if($check["type"]=="session" || $check["type"]=="cookie")
             $identity_id=$_SESSION["identity_id"];
         $showlogin="";
         if($check["type"]=="token")

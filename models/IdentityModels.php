@@ -69,7 +69,60 @@ class IdentityModels extends DataModel{
             return FALSE;
     }
 
-    public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL,$type="password")
+    public function setLoginCookie($userid,$identity_id)
+    {
+            $time=time();
+
+            $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip from users where id=$userid"; 
+            $userrow=$this->getRow($sql);
+            $encrypted_password=$userrow["encrypted_password"];
+
+            $cookie_logintoken=md5($encrypted_password."3firwkF");
+            $cookie_loginsequ=md5($time."glkfFDks.F");
+
+            //if($cookie_logintoken!=$encrypted_password_salt)
+            //{
+            //    $cookie_logintoken=$encrypted_password_salt;
+            //    //update logintoken and sqeu
+            //}
+            //normal set cokie
+
+            $ipaddress=getRealIpAddr();
+            $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
+            $this->query($sql);
+
+
+            setcookie('uid', $userid, time()+86400, "/",".exfe.com");
+            setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
+            setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
+            setcookie('logintoken', $cookie_logintoken, time()+86400, "/",".exfe.com");
+    }
+
+    public function loginByCookie()
+    {
+        $uid=intval($_COOKIE['uid']);
+        $identity_id=intval($_COOKIE['id']);
+        $loginsequ=$_COOKIE['loginsequ'];
+        $logintoken=$_COOKIE['logintoken'];
+        if($uid>0)
+        {
+            $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
+            $logindata=$this->getRow($sql);
+
+            if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
+            {
+               $this->loginByIdentityId($identity_id,$uid,$type="cookie",$setcookie=false);
+    //do login 
+               return $user_id;
+            }
+            else
+            {
+                return 0;
+            }
+            
+        }
+    }
+    public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false)
     {
         if($userid==0)
         {
@@ -80,41 +133,18 @@ class IdentityModels extends DataModel{
         }
         if($userrow==NULL)
         {
-            $sql="select name,bio,avatar_file_name,current_sign_in_ip,cookie_logintoken,cookie_loginsequ,encrypted_password from users where id=$userid"; 
+            $sql="select name,bio,avatar_file_name from users where id=$userid"; 
             $userrow=$this->getRow($sql);
         }
         if($identityrow==NULL)
         {
-            $sql="select * from identities where external_identity='$identity' limit 1";
+            $sql="select * from identities where id='$identity_id' limit 1";
             $identityrow=$this->getRow($sql);
         }
 
-        //write some login info
-        //if new ip 
-            echo $type;
-            die();
-        if($type=="password")
-        {
-            $time=time();
-            $ipaddress=getRealIpAddr();
-            $cookie_logintoken=$userrow["cookie_logintoken"];
-            $cookie_loginsequ=$userrow["cookie_loginsequ"];
-            $encrypted_password=$userrow["encrypted_password"];
-            $encrypted_password_salt=md5($encrypted_password."3firwkF");
-            if($cookie_logintoken!=$encrypted_password_salt)
-            {
-                $cookie_logintoken=$encrypted_password_salt;
-                //update logintoken and sqeu
-            }
-                
-            $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time)  where id=$userid;";
-            $this->query($sql);
-        }
-        else if($type="cookie")
-        {
 
-        }
-        //set cookie
+        if($setcookie==true)
+            $this->setLoginCookie($userid,$identity_id);
 
         $_SESSION["userid"]=$userid;
         $_SESSION["identity_id"]=$identity_id;
@@ -134,7 +164,7 @@ class IdentityModels extends DataModel{
         unset($_SESSION["tokenIdentity"]);
         return $userid;
     }
-    public function login($identity,$password)
+    public function login($identity,$password,$setcookie=false)
     {
         $password=md5($password.$this->salt);
         $sql="select * from identities where external_identity='$identity' limit 1";
@@ -153,7 +183,7 @@ class IdentityModels extends DataModel{
                 $row=$this->getRow($sql);
                 if($row["encrypted_password"]==$password)
                 {
-                    $this->loginByIdentityId($identity_id,$userid,$row,$identityrow);
+                    $this->loginByIdentityId($identity_id,$userid,$row,$identityrow,"password",$setcookie);
                     //$_SESSION["userid"]=$userid;
                     //$_SESSION["identity_id"]=$identity_id;
                     //$identity=array();

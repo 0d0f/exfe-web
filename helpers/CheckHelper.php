@@ -4,7 +4,14 @@ class CheckHelper extends ActionController {
 
     function isAllow($class,$action,$args="")
     {
-        if(($class=='x' && $action=='index') || $class=='rsvp')
+        $type="session";
+        if($_SESSION["identity_id"]=="")
+        {
+            $indentityData=$this->getModelByName("identity");
+            $indentityData->loginByCookie();
+            $type="cookie";
+        }
+        if(($class=='x' && $action=='index') || $class=='rsvp' || $class=='conversion')
         {
             $token=$args["token"];
             $cross_id=$args["cross_id"];
@@ -22,7 +29,9 @@ class CheckHelper extends ActionController {
                 {
                     $result=$invitationdata->ifIdentityHasInvitation($_SESSION["identity_id"],$cross_id);
                     if($result===true)
-                        return array("allow"=>"true","type"=>"session");
+                    {
+                        return array("allow"=>"true","type"=>$type);
+                    }
                 }
             }
             return array("allow"=>'false');

@@ -246,6 +246,15 @@ class SActions extends ActionController {
             exit();
         }
     }
+    public function doLogoutsession()
+    {
+        unset($_SESSION["userid"]);
+        unset($_SESSION["identity_id"]);
+        unset($_SESSION["identity"]);
+        unset($_SESSION["tokenIdentity"]);
+        session_destroy();
+    }
+
 
     public function doLogout()
     {
@@ -253,6 +262,17 @@ class SActions extends ActionController {
         unset($_SESSION["identity_id"]);
         unset($_SESSION["identity"]);
         unset($_SESSION["tokenIdentity"]);
+        session_destroy();
+
+        unset($_COOKIE["uid"]); 
+        unset($_COOKIE["id"]); 
+        unset($_COOKIE["loginsequ"]); 
+        unset($_COOKIE["logintoken"]); 
+        setcookie('uid', NULL, -1,"/",".exfe.com");
+        setcookie('id', NULL, -1,"/",".exfe.com");
+        setcookie('loginsequ', NULL,-1,"/",".exfe.com");
+        setcookie('logintoken',NULL,-1,"/",".exfe.com");
+
     }
 
     public function doLogin()
@@ -262,6 +282,8 @@ class SActions extends ActionController {
         $repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
+        if(intval($autosignin)==1)
+            $autosignin==true;
 
         $isNewIdentity=FALSE;
 
@@ -282,7 +304,7 @@ class SActions extends ActionController {
         if(isset($identity) && isset($password))
         {
             $Data=$this->getModelByName("identity");
-            $userid=$Data->login($identity,$password);
+            $userid=$Data->login($identity,$password,$autosignin);
             if(intval($userid)>0)
             {
                 //$_SESSION["userid"]=$userid;
