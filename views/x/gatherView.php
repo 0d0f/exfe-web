@@ -33,10 +33,10 @@ San Francisco, CA
 (555) 434-2722</textarea></li>
 <li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
-<li><label class="exfee">exfee:</label>  
+<li><label class="exfee">exfee:</label>
 <p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
 <input type="submit" id="post_submit" name="commit" title="Say!" value="">
-<textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea>
+<textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea><div id="identity_ajax"></div>
 <div class="creattext">
   <div class="selecetafri">
     <div class="sover" id="exfee_pv">

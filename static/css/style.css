@@ -407,4 +407,6 @@ b.r3{margin: 0px}
 
 
 
-#rsvp_loading{position:absolute; margin-left: 100px; margin-top: -15px;}
+#rsvp_loading{ margin-left: 100px; margin-top: -15px; }
+#identity_ajax{ margin-left: 170px; margin-top: -18px; }
+.creattext{ margin-top: 25px; }
