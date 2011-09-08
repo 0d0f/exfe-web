@@ -71,7 +71,7 @@ San Francisco, CA
 <h2 id="pv_title">Title</h2>
 <div class="exfel">
 <p class="text" id="pv_description">new cross for test</p><a href="">Expand</a>
-
+<p class="Preview"></p>
 <ul class="ynbtn">
 <li><a class="yes" href="/3/rsvp/yes">Yes</a></li>
 <li><a class="no" href="/3/rsvp/no">No</a></li>
