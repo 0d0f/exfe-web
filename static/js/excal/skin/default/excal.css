@@ -1,13 +1,14 @@
-#exCalendarIframe{ display:none; left:0px; top:0px; position:absolute; z-index:99; }
-.exCalendarContainer{ clear:both; display:none; position:absolute; margin:0; padding:0; width:310px; height:165px; z-index: 100; font-size: 9pt;  }
-.exCalendarContainer .exCalDays{ display:block; position:relative; float:left; width:218px; }
-.exCalendarContainer .exCalDays table{ background:#D3D4D4; }
-.exCalendarContainer .exCalDays table a{ text-decoration:none; color:#868686; }
-.exCalendarContainer .exCalDays table th{ font-weight: bold; height:25px; }
+#exCalendarIframe { display:none; left:0px; top:0px; position:absolute; z-index:99; }
+.exCalendarContainer { clear:both; display:none; position:absolute; margin:0; padding:0; width:310px; height:165px; z-index: 100; font-size: 9pt;  }
+.exCalendarContainer .exCalDays { display:block; position:relative; float:left; width:218px; }
+.exCalendarContainer .exCalDays table { background:#D3D4D4; }
+.exCalendarContainer .exCalDays table a { text-decoration:none; color:#868686; }
+.exCalendarContainer .exCalDays table th { font-weight: bold; height:25px; }
 .exCalendarContainer .exCalDays table th a { font-weight: normal; text-decoration: none; color: #FFF; padding: 1px; }
 .exCalendarContainer .exCalDays table td { height:20px; width:30px; text-align: center; background-color:#E5E6E9; overflow:hidden; }
-.exCalendarContainer .exCalDays table td a{ display:block; width:30px; height:15px; padding-top:5px; line-height:9pt; }
-.exCalendarContainer .exCalDays table td a.current{ background-color:#A8B7D2; color:#FFFFFF; }
+.exCalendarContainer .exCalDays table td a { display:block; width:30px; height:15px; padding-top:5px; line-height:9pt; }
+.exCalendarContainer .exCalDays table td a:hover { background-color:#A8B7D2; color:#FFFFFF; }
+.exCalendarContainer .exCalDays table td a.current { background-color:#A8B7D2; color:#FFFFFF; }
 
 .exCalendarContainer .exCalTimes{
     display:block; position:relative; float:left;
@@ -15,7 +16,7 @@
     border-right:1px solid #D6D6D5;
     border-bottom:1px solid #D6D6D5;
 }
-.exCalendarContainer .exCalTimes ul{ clear:both; list-style:none; padding:0px; margin:0px; }
-.exCalendarContainer .exCalTimes ul.list{ height:150px; overflow:hidden; overflow-x: hidden; overflow-y: scroll;}
-.exCalendarContainer .exCalTimes ul li{ clear:both; list-style:none; padding:6px 0; margin:0px; text-align:center; }
-.exCalendarContainer .exCalTimes ul li.header{ height:18px; padding:5px 0 0 0; background:#D6D6D5; }
+.exCalendarContainer .exCalTimes ul { clear:both; list-style:none; padding:0px; margin:0px; }
+.exCalendarContainer .exCalTimes ul.list { height:150px; overflow:hidden; overflow-x: hidden; overflow-y: scroll;}
+.exCalendarContainer .exCalTimes ul li { clear:both; list-style:none; padding:6px 0; margin:0px; text-align:center; }
+.exCalendarContainer .exCalTimes ul li.header { height:18px; padding:5px 0 0 0; background:#D6D6D5; }
