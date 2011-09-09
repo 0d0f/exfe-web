@@ -7,6 +7,10 @@
 <script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
 <script type="text/javascript" src="/static/js/activity-indicator.js"></script>
 <script type="text/javascript" src="/static/js/dialog.js"></script>
+
+<link type="text/css" href="/static/js/excal/skin/default/excal.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/excal/excal.js"></script>
+
 <body>
 <?php include "share/nav.php"; ?>
 <?php
@@ -17,13 +21,14 @@
   <!--<h3>Gather for your <span>X</span></h3>-->
 
 <ul>
+<li id="calendar_map_container"></li>
 <form action="" method="post" id="gatherxform">
 <li><label class="title">Title:</label><input type="text"  name="title" id="g_title"  value="Edit title here"/></li>
 
 <li><label class="description">Description:</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
 </li>
 
-<li><label class="date">Date &amp; Time</label>  <input type="text"  name="datetime" id="datetime" value="6:30PM, this Friday"/>
+<li><label class="date">Date &amp; Time</label>  <input type="text"  name="datetime" onclick="exfeCalendar(this, 'calendar_map_container');" />
 <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011 </p>
 </li>
 
