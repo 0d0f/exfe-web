@@ -37,10 +37,11 @@ class InvitationModels extends DataModel{
                 $indentity_id=$invitations[$i]["identity_id"];
                 $sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$indentity_id";
                 $user=$this->getRow($sql);
-                if(trim($invitations[$i]["name"])=="" )
-                    $invitations[$i]["name"]=$user["name"];
-                if(trim($invitations[$i]["avatar_file_name"])=="")
-                    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
+                $invitations[$i]=humanIdentity($invitations[$i],$user);
+                #if(trim($invitations[$i]["name"])=="" )
+                #    $invitations[$i]["name"]=$user["name"];
+                #if(trim($invitations[$i]["avatar_file_name"])=="")
+                #    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
             }
         }
         return $invitations;

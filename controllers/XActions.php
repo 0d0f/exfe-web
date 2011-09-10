@@ -120,7 +120,9 @@ class XActions extends ActionController {
                 $myidentities=array($identity_id);
             }
             $myidentity=$identityData->getIdentityById($identity_id);
-            $this->setVar("myidentity", $myidentity);
+
+            $humanMyIdentity=humanIdentity($myidentity,$user);
+            $this->setVar("myidentity", $humanMyIdentity);
 
             $host_exfee=array();
             $normal_exfee=array();

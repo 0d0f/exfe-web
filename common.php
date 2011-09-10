@@ -11,6 +11,9 @@ function humanIdentity($identity,$user)
     {
         if($identity["name"]=="")
             $identity["name"]=$identity["external_identity"];
+
+        if($identity["avatar_file_name"]=="")
+            $identity["avatar_file_name"]="default.png";
     }
     return $identity;
 }
