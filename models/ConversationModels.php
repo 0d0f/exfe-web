@@ -35,21 +35,22 @@ class ConversationModels extends DataModel{
                 $identity_id=$post["identity_id"];
                 if($identity[$identity_id]=="")
                 {	
-                    $sql="select external_identity,name,bio,avatar_file_name from identities where id=$identity_id;";
+                    $sql="select provider,external_identity,external_username,name,bio,avatar_file_name from identities where id=$identity_id;";
                     $identity=$this->getRow($sql);
                     if($identity)
                     {
-
                         $sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$identity_id";
                         $user=$this->getRow($sql);
-                        if(trim($identity["name"])=="" )
-                            $identity["name"]=$user["name"];
-                        if(trim($identity["avatar_file_name"])=="")
-                            $identity["avatar_file_name"]=$user["avatar_file_name"];
+                        //if(trim($identity["name"])=="" )
+                        //    $identity["name"]=$user["name"];
+                        //if(trim($identity["avatar_file_name"])=="")
+                        //    $identity["avatar_file_name"]=$user["avatar_file_name"];
 
-
-                        $post["identity"]=$identity;
-                        $identity[$identity_id]=$identity;
+                        //$post["identity"]=$identity;
+                        //$post["user"]=$user;
+                        $humanidentity=humanIdentity($identity,$user);
+                        $post["identity"]=$humanidentity;
+                        $identity[$identity_id]=$humanidentity;
                     }
                 }
                 else
