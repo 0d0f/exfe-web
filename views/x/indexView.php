@@ -96,11 +96,11 @@ if($cross["conversation"])
 	//if($identity["avatar_file_name"]=="")
 	//    $identity["avatar_file_name"]=$user["avatar_file_name"];
 
-	if($identity["name"]=="")
-	    $identity["name"]=$identity["external_identity"];
+	//if($identity["name"]=="")
+	//    $identity["name"]=$identity["external_identity"];
 ?>
 <li>
-<p class="pic40"><img src="/eimgs/80_80_<?php if($identity["avatar_file_name"]=="") echo "default.png"; else echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
+<p class="pic40"><img src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
 </li>
 <?php
     }
@@ -128,8 +128,10 @@ if($cross["conversation"])
 
 foreach($host_exfee as $exfee)
 {
-    if($exfee["avatar_file_name"]=="")
-        $exfee["avatar_file_name"]="default.png"
+      if($exfee["name"]==$exfee["external_identity"])
+        $exfee["name"]="";
+//    if($exfee["avatar_file_name"]=="")
+//        $exfee["avatar_file_name"]="default.png"
 ?>
 <li id="exfee_<?php echo $exfee["identity_id"];?>">
 <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
@@ -142,8 +144,8 @@ foreach($host_exfee as $exfee)
 <?php
 foreach($normal_exfee as $exfee)
 {
-    if($exfee["avatar_file_name"]=="")
-        $exfee["avatar_file_name"]="default.png"
+      if($exfee["name"]==$exfee["external_identity"])
+        $exfee["name"]="";
 ?>
 <li id="exfee_<?php echo $exfee["identity_id"];?>">
 <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>

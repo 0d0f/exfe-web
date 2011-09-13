@@ -1,5 +1,22 @@
 <?php
+function humanIdentity($identity,$user)
+{
+    $provider=$identity["provider"];
 
+    if($identity["name"]=="")
+        $identity["name"]=$user["name"];
+    if($identity["avatar_file_name"]=="")
+        $identity["avatar_file_name"]=$user["avatar_file_name"];
+    if($provider=="email")
+    {
+        if($identity["name"]=="")
+            $identity["name"]=$identity["external_identity"];
+
+        if($identity["avatar_file_name"]=="")
+            $identity["avatar_file_name"]="default.png";
+    }
+    return $identity;
+}
 function humanDateTime($timestamp,$lang='en')
 {
     if($lang=='en')

@@ -12,14 +12,15 @@ class IdentityActions extends ActionController {
                 $userData=$this->getModelByName("user");
                 $user=$userData->getUserProfileByIdentityId($identity["id"]);
 
+                $identity=humanIdentity($identity,$user);
                 //get user default
-                if($identity["avatar_file_name"]=="")
-                    $identity["avatar_file_name"]=$user["avatar_file_name"];    
-                if($identity["avatar_file_name"]=="")
-                    $identity["avatar_file_name"]="default.png";
+                //if($identity["avatar_file_name"]=="")
+                //    $identity["avatar_file_name"]=$user["avatar_file_name"];    
+                //if($identity["avatar_file_name"]=="")
+                //    $identity["avatar_file_name"]="default.png";
 
-                if($identity["name"]=="")
-                    $identity["name"]=$user["name"];    
+                //if($identity["name"]=="")
+                //    $identity["name"]=$user["name"];    
             }
         $responobj["meta"]["code"]=200;
         //$responobj["meta"]["errType"]="Bad Request";

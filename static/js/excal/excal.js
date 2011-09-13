@@ -125,7 +125,7 @@ function exCal() {
             if (month < 10) {month = "0" + month;}
             if (day < 10) {day = "0" + day;}
 
-            var dateString = month+"-"+day+"-"+year;
+            var dateString = month + "-" + day + "-" + year;
             dateField.value = dateString;
             //hide();
         }
@@ -221,14 +221,20 @@ function exCal() {
 
         //当前时间。
         if(currentMinutes < 30){
-            timeList.push(currentHours + ":30" + dayNow);
+            var showHours = currentHours > 12 ? parseInt(currentHours-12) : currentHours;
+            showHours = showHours >= 10 ? showHours : "0"+showHours;
+            timeList.push(showHours + ":30" + dayNow);
         }
 
-        //在此之后的时间。
-        for(i=currentHours+1; i<=23; i++){
-            if(i < 12){ dayNow = " AM"; }else{ dayNow = " PM"; }
-            timeList.push(i + ":00" + dayNow);
-            timeList.push(i + ":30" + dayNow);
+        //在此之后的时间。往后显示24个小时的时间。
+        for(j=0,i=currentHours+1; j<24; j++, i++){
+            h = i>=24 ? parseInt(i-24) : i;
+            dayNow = h>=12 ? " PM" : " AM";
+            var showHours = h > 12 ? h-12 : h;
+            showHours = showHours >= 10 ? showHours : "0"+showHours;
+
+            timeList.push(showHours + ":00" + dayNow);
+            timeList.push(showHours + ":30" + dayNow);
         }
         return timeList;
     }
@@ -303,6 +309,7 @@ function exCal() {
             }
             excalCon += "</tr>";
         }
+
         excalCon += "</table></div>";
 
         var timeList = createTimeList();
