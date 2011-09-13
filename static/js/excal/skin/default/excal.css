@@ -16,7 +16,7 @@
     border-right:1px solid #D6D6D5;
     border-bottom:1px solid #D6D6D5;
 }
-.exCalendarContainer .exCalTimes ul { clear:both; list-style:none; padding:0px; margin:0px; }
+.exCalendarContainer .exCalTimes ul { clear:both; list-style:none; padding:0px; margin:0px; background:#F2F2F2; }
 .exCalendarContainer .exCalTimes ul.list { height:150px; overflow:hidden; overflow-x: hidden; overflow-y: scroll;}
 .exCalendarContainer .exCalTimes ul li { clear:both; list-style:none; padding:6px 0; margin:0px; text-align:center; }
 .exCalendarContainer .exCalTimes ul li.header { height:18px; padding:5px 0 0 0; background:#D6D6D5; }
