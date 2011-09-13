@@ -71,7 +71,7 @@ San Francisco, CA
 <!--input id="user_submit" name="commit"  type="submit" value="Submit" /-->
 
 
-<div class="albg" id="content">
+<div class="albg" id="content_x">
 <div class="step" id="index">
 <h2 id="pv_title">Title</h2>
 <div class="exfel">

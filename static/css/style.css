@@ -84,14 +84,11 @@ em.h3{font-size:24px;font-family:Verdana; }
 }
 
 /*header*/
-#content{width:880px;margin: 70px auto;
-}
-#content:after { content: ".";display: block;height: 0;clear: both;visibility: hidden;
-}
-#index{width:800px;margin:0 auto;padding:30px 0;
-}
-#index h2{color:#0591af;font-size:40px;height:80px;line-height:80px;font-family:Verdana;font-weight:normal;
-}
+#content{width:880px;margin: auto;}
+#content_x{width:880px;margin: 70px auto;}
+#content:after { content: ".";display: block;height: 0;clear: both;visibility: hidden;}
+#index{width:800px;margin:0 auto;padding:30px 0;}
+#index h2{color:#0591af;font-size:40px;height:80px;line-height:80px;font-family:Verdana;font-weight:normal;}
 
 /*fuo*/
 .fsuo{position:relative;}
@@ -335,7 +332,7 @@ b.r3{margin: 0px}
 .createset #calendar_map_container{
     display:block; position:absolute;
     width: 310px; height: 165px; z-index: 100;
-    margin-top: 120px; margin-left: 325px; 
+    margin-top: 120px; margin-left: 325px;
 }
 
 /*laicp*/
