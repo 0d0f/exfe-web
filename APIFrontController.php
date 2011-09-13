@@ -66,20 +66,60 @@ class FrontController {
 
         $class = ucfirst($classname) . "Actions";
 
-#if(!($class=="UserActions" && ($action=="loginweb" || $action=="auth" || $action == 'register'))) {
-#	$this->checkOauthToken();
-#}
-
         $file = APICONTROLLER_DIR. "/" . $class . ".php";
         if (!is_file($file)) {
             exit("Page not found:".$file);
         }
-
+        $path=$_GET["path"];
+        $paths=explode("?",$path);
+        $params=array();
+        if(sizeof($paths)>=2)
+        {
+            $p=explode("=",$paths[1]);
+            $params[$p[0]]=$p[1];
+            $action=$paths[0];
+        }
+        else 
+            $action=$paths[0];
+        
+        foreach($_GET as $k=>$v)
+        {
+            if($k!="v" && $k!="class" && $k!=path)
+                $params[$k]=$v;
+        }
         require_once $file;
-
+        
         $controller = new $class();
         $controller->setName($classname);
-        $controller->dispatchAction($action);
+        $actions=explode("/",$action);
+        if(sizeof($actions)==2)
+        {
+            if(preg_match("/![a-zA-Z0-9]+|[0-9]+/",$actions[0])==1)
+            {
+                $params["id"]=$actions[0];
+                $action=$actions[1];
+            }
+        }
+        else if(sizeof($actions)==1)
+        {
+            if(preg_match("/![a-zA-Z0-9]+|[0-9]+/",$actions[0])==1)
+            {
+                $params["id"]=$actions[0];
+                $action="index";
+            }
+        }
+
+
+        //print_r($actions);
+        //if($classname=='x')
+        //{
+        //    if(preg_match("/![a-zA-Z0-9]+/",$action)==1)
+        //    {
+        //        $params["id"]=$action;
+        //        $action="index";
+        //    }
+        //}
+        $controller->dispatchAPIAction($action,$params);
     }
 
 #private function logRequest() {
