@@ -95,6 +95,16 @@ abstract class ActionController {
         return $this->model;
     }
 
+    public function dispatchAPIAction($action,$params)
+    {
+        $actionMethod = "do" . ucfirst($action);
+        if (!method_exists($this, $actionMethod)) {
+            exit("Action not found:".$actionMethod);
+        }
+        $this->action=$action;
+        $this->params=$params;
+        $this->$actionMethod();
+    }
     public function dispatchAction($action) {
         $actionMethod = "do" . ucfirst($action);
         if (!method_exists($this, $actionMethod)) {
