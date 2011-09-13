@@ -3,10 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>exfe</title>
-<script type="text/javascript" src="/static/js/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-1.6.3.js"></script>
 <script type="text/javascript" src="/static/js/js.js"></script>
-<script type="text/javascript" src="/static/js/c.js"></script>
 <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+var site_url = "<?php echo SITE_URL; ?>";
+</script>
 
 <!--[if IE 6]>
 <script type="text/javascript" src="style/PNG.js"></script>

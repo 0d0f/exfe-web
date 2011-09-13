@@ -283,6 +283,9 @@ class SActions extends ActionController {
         $repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
+
+        print_r($_POST);
+        exit;
         if(intval($autosignin)==1)
             $autosignin==true;
 
