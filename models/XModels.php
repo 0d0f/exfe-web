@@ -35,5 +35,35 @@ class XModels extends DataModel{
         return $result;
     }
 
+    public function getCrossByUserId($userid,$updated_since)
+    {
+        //get all identityid
+        $sql="select identityid from user_identity where userid=$userid;";
+        $identity_id_list=$this->getColumn($sql);
+        for($i=0;$i<sizeof($identity_id_list);$i++)
+        {
+            $identity_id_list[$i]= "identity_id=".$identity_id_list[$i];
+        }
+        $str=implode(" or ",$identity_id_list);
+
+        //get my invitations
+        //find cross_id
+        $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
+        $cross_id_list=$this->getColumn($sql);
+        if(sizeof($cross_id_list)>0)
+        {
+            for($i=0;$i<sizeof($cross_id_list);$i++)
+            {
+                $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
+            }
+            $str=implode(" or ",$cross_id_list);
+            $sql="select c.*,places.description_line1,places.description_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at;";
+            $crosses=$this->getAll($sql);
+            return $crosses;
+        }
+
+        //get my host cross or cross_id
+        //now, if a cross related with you, you must have a invitation.
+    }
 }
 
