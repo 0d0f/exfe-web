@@ -44,8 +44,8 @@ $(document).ready(function() {
 
     $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
     $('#identity_ajax').hide();
-    $("#identity_ajax").ajaxStart(function(){ $(this).show(); });
-    $("#identity_ajax").ajaxStop(function(){ $(this).hide(); });
+    $("#identity_ajax").ajaxStart(function(){$(this).show();});
+    $("#identity_ajax").ajaxStop(function(){$(this).hide();});
 
     $('input[type="text"], textarea').focus(function () {
         if($(this).attr("enter") != "true")
@@ -184,30 +184,55 @@ $(document).ready(function() {
 
 });
 
+
+function trim(str)
+{
+    return str.replace(/(^s*)|(s*$)/g, '');
+}
+
+
 function identity()
 {
-    var input_identity = $('#exfee').val();
+    var arrIdentityOri = $('#exfee').val().split(/,\r\t/),
+        arrIdentitySub = [];
+
+    for (var i in arrIdentityOri) {
+        if ((arrIdentityOri[i] = trim(arrIdentityOri[i]))) {
+            if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(arrIdentityOri[i])) {
+                var iLt = arrIdentityOri[i].indexOf('<'),
+                    iGt = arrIdentityOri[i].indexOf('>');
+                arrIdentitySub.push({name : trim(arrIdentityOri[i].substring(0,   iLt)),
+                                     id   : trim(arrIdentityOri[i].substring(iLt, iGt)),
+                                     type : 'email'});
+            } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(arrIdentityOri[i])) {
+                arrIdentitySub.push({id   : trim(arrIdentityOri[i]),
+                                     type : 'email'});
+            } else {
+                arrIdentitySub.push({id   : trim(arrIdentityOri[i]),
+                                     type : 'unknow'});
+            }
+        }
+    }
+
     $.ajax({
         type: 'GET',
-        url: site_url + '/identity/get?identity=' + $('#exfee').val(),
+        url: site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
         dataType: 'json',
         success: function(data) {
+            console.log(data);
+            return;
             var exfee_pv = '';
-            if(data.response.identity != null)
-            {
+            if(data.response.identity != null) {
                 var identity = data.response.identity.external_identity;
                 var id = data.response.identity.id;
                 var name = data.response.identity.name;
                 var avatar_file_name = data.response.identity.avatar_file_name;
-                if($('#exfee_' + id).attr('id') == null)
-                {
+                if ($('#exfee_' + id).attr('id') == null) {
                     if(name == '')
                         name = identity;
                     exfee_pv += '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>';
                 }
-            }
-            else
-            {
+            } else {
                 name = $('#exfee').val();
                 new_identity_id = new_identity_id + 1;
                 exfee_pv += '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_'+new_identity_id+'" value="'+input_identity+'">'+name+'</span><input id="confirmed_newexfee_'+ new_identity_id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_'+new_identity_id+'\'))" type="button"></button> </li>';
@@ -216,8 +241,7 @@ function identity()
             var inserted=false;
             $('#exfee_pv > ul').each(function(intIndex) {
                 var li=$(this).children('li');
-                if(li.length < 4)
-                {
+                if(li.length < 4) {
                     $(this).append(exfee_pv);
                     inserted = true;
                 }

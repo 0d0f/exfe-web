@@ -80,7 +80,7 @@ San Francisco, CA
 <ul class="ynbtn">
 <li><a class="yes" href="/3/rsvp/yes">Yes</a></li>
 <li><a class="no" href="/3/rsvp/no">No</a></li>
-<li><a class="maybe" href="/3/rsvp/maybe">Maybe</a></li><li>
+<li><a class="maybe" href="/3/rsvp/maybe">Interested</a></li><li>
 </li></ul>
 
 
