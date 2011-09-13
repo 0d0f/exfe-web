@@ -193,8 +193,8 @@ function trim(str)
 
 function identity()
 {
-    var arrIdentityOri = $('#exfee').val().split(/,\r\t/),
-        arrIdentitySub = [];
+    window.arrIdentitySub = [];
+    var arrIdentityOri = $('#exfee').val().split(/,|;|\r|\n|\t/);
 
     for (var i in arrIdentityOri) {
         if ((arrIdentityOri[i] = trim(arrIdentityOri[i]))) {
@@ -219,35 +219,53 @@ function identity()
         url: site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
         dataType: 'json',
         success: function(data) {
-            console.log(data);
-            return;
-            var exfee_pv = '';
-            if(data.response.identity != null) {
-                var identity = data.response.identity.external_identity;
-                var id = data.response.identity.id;
-                var name = data.response.identity.name;
-                var avatar_file_name = data.response.identity.avatar_file_name;
+            var exfee_pv     = [],
+                name         = '',
+                identifiable = {};
+            for (var i in data.response.identities) {
+                var identity         = data.response.identities[i].external_identity,
+                    id               = data.response.identities[i].id,
+                    avatar_file_name = data.response.identities[i].avatar_file_name;
+                    name             = data.response.identities[i].name;
                 if ($('#exfee_' + id).attr('id') == null) {
-                    if(name == '')
-                        name = identity;
-                    exfee_pv += '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>';
+                    name = name ? name : identity;
+                    exfee_pv.push(
+                        '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>'
+                    );
                 }
-            } else {
-                name = $('#exfee').val();
-                new_identity_id = new_identity_id + 1;
-                exfee_pv += '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_'+new_identity_id+'" value="'+input_identity+'">'+name+'</span><input id="confirmed_newexfee_'+ new_identity_id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_'+new_identity_id+'\'))" type="button"></button> </li>';
+                identifiable[identity] = true;
+            }
+            for (i in arrIdentitySub) {
+                if (!identifiable[arrIdentitySub[i].id]) {
+                    switch (arrIdentitySub[i].type) {
+                        case 'email':
+                            name =  arrIdentitySub[i].name
+                                 ? (arrIdentitySub[i].name + ' <'  + arrIdentitySub[i].id + '>')
+                                 :  arrIdentitySub[i].id;
+                            break;
+                        default:
+                            name =  arrIdentitySub[i].id;
+                    }
+                    new_identity_id++;
+                    exfee_pv.push(
+                        '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">' + name + '</span><input id="confirmed_newexfee_' + new_identity_id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button> </li>'
+                    );
+                }
             }
 
-            var inserted=false;
-            $('#exfee_pv > ul').each(function(intIndex) {
-                var li=$(this).children('li');
-                if(li.length < 4) {
-                    $(this).append(exfee_pv);
-                    inserted = true;
+            while (exfee_pv.length) {
+                var inserted = false;
+                $('#exfee_pv > ul').each(function(intIndex) {
+                    var li = $(this).children('li');
+                    if (li.length < 4) {
+                        $(this).append(exfee_pv.shift());
+                        inserted = true;
+                    }
+                });
+                if (!inserted) {
+                    $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv.shift() + '</ul>');
                 }
-            });
-            if(inserted == false)
-                $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv + '</ul>');
+            }
 
             $('#exfee').val('');
         }
