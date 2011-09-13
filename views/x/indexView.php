@@ -71,9 +71,9 @@ only attendees could see details.</p>
 <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
 <li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
 <li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">Maybe</a> <div style="display:none" id="rsvp_loading" ></div> <li>
+<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
 </ul>
-<div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>You are interested in this <strong style="color:#0591af;">X</strong>.</span> <a href="#" id="changersvp">change?</a></div>
+<div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="#" id="changersvp">Change?</a></div>
 
 <div class="Conversation">
 <h3>Conversation</h3>
