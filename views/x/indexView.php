@@ -55,13 +55,12 @@ $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
 $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
 $token=$_GET["token"];
 ?>
-<div class="centerbg">
-<div class="fsuo">
-<p class="suobtn" id="private_icon"></p>
-<p class="xfc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />
-only attendees could see details.</p>
-</div><!--锁-->
-<div id="content" class="albg">
+<div class="gather_view_centerbg">
+<div id="content" class="gather_view_container">
+    <div class="menu_bar">
+        <p class="lock_icon" id="private_icon"></p>
+        <p class="xfc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
+    </div>
 <div id="index" class="step">
 <h2><?php echo $cross["title"]; ?></h2>
 <div class="exfel">
