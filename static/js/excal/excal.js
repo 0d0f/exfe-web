@@ -149,8 +149,8 @@ function exCal() {
             currentYear--;
         }
 
-        calendar = document.getElementById(calendarId);
-        calendar.innerHTML = drawCalendar();
+        exCalendarObj = document.getElementById(calendarId);
+        exCalendarObj.innerHTML = drawCalendar();
     }
 
     /**
@@ -258,19 +258,32 @@ function exCal() {
                 var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
                 var dateString = new String(dateField.value);
                 var dateTimeRegMatchArr = dateString.match(objRegExpDateTime);
-                //console.log(dateTimeRegMatchArr);
                 if(dateTimeRegMatchArr != null){
                     var dateArr = dateString.split(" ");
                     if(dateArr.length > 0){
                         fieldString = dateArr[0] + " " + timeStr;
                     }
                 }
-            } catch(e) {
-                alert(e);
-            }
+            } catch(e) { /*alert(e);*/ }
         }
         dateField.value = fieldString;
+        refreshTimeList(timeStr);
     }
+
+    /**
+     * Refresh time list display style
+     *
+     * */
+    this.refreshTimeList = refreshTimeList;
+    function refreshTimeList(currentTime){
+        var timeArr = document.getElementsByName("exCalTimeList");
+        for(i=0; i<timeArr.length; i++){
+            timeArr[i].className = "";
+        }
+        var currentTimeListObj = document.getElementById(currentTime);
+        currentTimeListObj.className = "current";
+    }
+
     /**
      * Refresh date tables display
      *
@@ -282,9 +295,25 @@ function exCal() {
         for(i=0; i<dateArr.length; i++){
             if(dateArr[i].className == "current"){
                 dateArr[i].className = "";
+            }else{
+                classNameArr = dateArr[i].className.split(" ");
+                if(classNameArr.length >= 2){
+                    for(j=0; j<classNameArr.length; j++){
+                        if(classNameArr[j] == "current"){
+                            classNameArr.splice(j,1);
+                        }
+                    }
+                }
+                curClassName = classNameArr.join(" ");
+                dateArr[i].className = curClassName;
             }
         }
-        document.getElementById(dateString).className = "current";
+        var currentDateLinkObj = document.getElementById(dateString);
+        if(currentDateLinkObj.className == ""){
+            currentDateLinkObj.className = "current";
+        }else{
+            currentDateLinkObj.className = currentDateLinkObj.className + " current";
+        }
     }
 
     /**
@@ -292,6 +321,13 @@ function exCal() {
      *
      * */
     function drawCalendar() {
+        //当天
+        var thisYear = getCurrentYear();
+        var thisMonth = getCurrentMonth();
+        var thisDay = getCurrentDay();
+        var todayTimestamp = Date.parse(thisYear + '/' + thisMonth + '/' + thisDay + ' 00:00:00');
+
+        //计算一月内的时间。
         var dayOfMonth = 1;
         var validDay = 0;
         var startDayOfWeek = getDayOfWeek(currentYear, currentMonth, dayOfMonth);
@@ -316,15 +352,39 @@ function exCal() {
                 }
 
                 if(validDay) {
-                    if (dayOfMonth == selectedDay && currentYear == selectedYear && currentMonth == selectedMonth) {
-                        css_class = 'current';
-                    } else if (dayOfWeek == 0 || dayOfWeek == 6) {
-                        css_class = 'weekend';
+                    var curTimestamp = Date.parse(currentYear + '/' + currentMonth + '/' + dayOfMonth + ' 00:00:00');
+                    //console.log(curTimestamp);
+                    if (dayOfWeek == 0 || dayOfWeek == 6) {
+                        cssClass = 'weekend';
+                        if(curTimestamp < todayTimestamp){
+                            cssClass = 'weekend invalid';
+                        }else{
+                            if(dayOfMonth == thisDay && currentMonth == thisMonth && currentYear == thisYear
+                                    && dayOfMonth == selectedDay && currentYear == selectedYear && currentMonth == selectedMonth ){
+                                cssClass = 'weekend current today';
+                            }else if (dayOfMonth == selectedDay && currentYear == selectedYear && currentMonth == selectedMonth) {
+                                cssClass = 'weekend current';
+                            }else if(dayOfMonth == thisDay && currentMonth == thisMonth && currentYear == thisYear){
+                                cssClass = 'weekend today';
+                            }
+                        }
                     } else {
-                        css_class = 'weekday';
+                        cssClass = 'weekday';
+                        if(curTimestamp < todayTimestamp){
+                            cssClass = 'weekday invalid';
+                        }else{
+                            if(dayOfMonth == thisDay && currentMonth == thisMonth && currentYear == thisYear
+                                    && dayOfMonth == selectedDay && currentYear == selectedYear && currentMonth == selectedMonth ){
+                                cssClass = 'weekday current today';
+                            }else if (dayOfMonth == selectedDay && currentYear == selectedYear && currentMonth == selectedMonth) {
+                                cssClass = 'weekday current';
+                            }else if(dayOfMonth == thisDay && currentMonth == thisMonth && currentYear == thisYear){
+                                cssClass = 'weekday today';
+                            }
+                        }
                     }
 
-                    excalCon += "<td><a class='"+css_class+"' id='"+currentYear+"-"+currentMonth+"-"+dayOfMonth+"' name='exCalDateLink' href=\"javascript:setCalendarDate("+currentYear+","+currentMonth+","+dayOfMonth+")\">"+dayOfMonth+"</a></td>";
+                    excalCon += "<td><a class='"+cssClass+"' id='"+currentYear+"-"+currentMonth+"-"+dayOfMonth+"' name='exCalDateLink' onclick=\"javascript:setCalendarDate("+currentYear+","+currentMonth+","+dayOfMonth+")\" href='javascript:;'>"+dayOfMonth+"</a></td>";
                     dayOfMonth++;
                 } else {
                     excalCon += "<td class='empty'>&nbsp;</td>";
@@ -338,7 +398,7 @@ function exCal() {
         var timeList = createTimeList();
         excalCon += "<div class='exCalTimes'><ul><li class='header'>" + exLang.timeAllDay + "</li></ul><ul class='list'>";
         for(i=0; i<timeList.length; i++){
-            excalCon += "<li onclick='setCalendarTime(\""+ timeList[i] +"\");'>"+ timeList[i] +"</li>";
+            excalCon += "<li onclick='setCalendarTime(\""+ timeList[i] +"\");' name='exCalTimeList' id='" + timeList[i] + "'>"+ timeList[i] +"</li>";
         }
         excalCon += "</ul></div>";
 
@@ -352,12 +412,14 @@ function exCal() {
     this.show = show;
     function show(field) {
         can_hide = 0;
-        if (dateField == field) { // If the calendar is visible and associated with, this field do not do anything.
+        // If the calendar is visible and associated with, this field do not do anything.
+        if (dateField == field) {
             return;
         } else {
             dateField = field;
         }
 
+        //如果当前填充字段不为空，则取过来。
         if(dateField) {
             try {
                 var dateString = new String(dateField.value);
@@ -369,6 +431,7 @@ function exCal() {
             } catch(e) {}
         }
 
+        //如果当前填充字段为空，则取当天日期。
         if (!(selectedYear && selectedMonth && selectedDay)) {
             selectedMonth = getCurrentMonth();
             selectedDay = getCurrentDay();
@@ -381,7 +444,7 @@ function exCal() {
 
         if(document.getElementById){
             calendar = document.getElementById(calendarId);
-            calendar.innerHTML = drawCalendar(currentYear, currentMonth);
+            calendar.innerHTML = drawCalendar();
             setProperty('display', 'block');
         }
     }
