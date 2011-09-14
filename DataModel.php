@@ -83,7 +83,7 @@ abstract class DataModel{
     public function getRow($sql) {
         if($query = mysql_query($sql)) {
             if($return = mysql_fetch_array($query,MYSQL_ASSOC)) {
-                return $this->convertDataTypeForRow($return);
+                return $return;
             }
         }
     }
