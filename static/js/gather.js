@@ -35,7 +35,6 @@ function getexfee()
                      confirmed      : confirmed,
                      identity_type  : parseId(exfee_identity).type});
     });
-
     return JSON.stringify(result);
 }
 

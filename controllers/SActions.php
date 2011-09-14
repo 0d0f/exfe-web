@@ -86,7 +86,7 @@ class SActions extends ActionController {
             }
             $this->setVar("large_photo_exists", $large_photo_exists);
 
-            if (isset($_POST["upload"])) { 
+            if (isset($_POST["upload"])) {
                 //Get the file information
                 $userfile_name = $_FILES['image']['name'];
                 $userfile_tmp = $_FILES['image']['tmp_name'];
@@ -265,10 +265,10 @@ class SActions extends ActionController {
         unset($_SESSION["tokenIdentity"]);
         session_destroy();
 
-        unset($_COOKIE["uid"]); 
-        unset($_COOKIE["id"]); 
-        unset($_COOKIE["loginsequ"]); 
-        unset($_COOKIE["logintoken"]); 
+        unset($_COOKIE["uid"]);
+        unset($_COOKIE["id"]);
+        unset($_COOKIE["loginsequ"]);
+        unset($_COOKIE["logintoken"]);
         setcookie('uid', NULL, -1,"/",".exfe.com");
         setcookie('id', NULL, -1,"/",".exfe.com");
         setcookie('loginsequ', NULL,-1,"/",".exfe.com");
@@ -283,9 +283,6 @@ class SActions extends ActionController {
         $repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
-
-        print_r($_POST);
-        exit;
         if(intval($autosignin)==1)
             $autosignin==true;
 
