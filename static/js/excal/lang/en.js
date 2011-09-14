@@ -4,5 +4,6 @@ var exLang={
     monthArr: ["January","February","March","April","May","June","July","August","September","October","November","December"],
     todayBtnStr: "Today",
     timeBtnStr: "Time",
+    timeAllDay: "All-day",
     errorMsg: []
 };
