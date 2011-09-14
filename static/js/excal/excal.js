@@ -120,14 +120,15 @@ function exCal() {
      * 
      * */
     this.setDate = setDate;
-    function setDate(year, month, day) {
+    function setDate(curYear, curMonth, curDay) {
         if (dateField) {
-            if (month < 10) {month = "0" + month;}
-            if (day < 10) {day = "0" + day;}
-
-            var dateString = month + "-" + day + "-" + year;
+            monthVar = curMonth >= 10 ? curMonth : "0"+curMonth;
+            dayVar = curDay >= 10 ? curDay : "0"+curDay;
+            var dateString = monthVar + "-" + dayVar + "-" + curYear;
             dateField.value = dateString;
             //hide();
+            //Refresh date table display
+            refreshDateTables(curYear, curMonth, curDay);
         }
         return;
     }
@@ -254,14 +255,36 @@ function exCal() {
         var fieldString = currentMonth + "-" + currentDay + "-" + currentYear + " " + timeStr;
         if(dateField.value) {
             try {
+                var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
                 var dateString = new String(dateField.value);
-                var dateArr = dateString.split(" ");
-                if(dateArr.length > 0){
-                    fieldString = dateArr[0] + " " + timeStr;
+                var dateTimeRegMatchArr = dateString.match(objRegExpDateTime);
+                //console.log(dateTimeRegMatchArr);
+                if(dateTimeRegMatchArr != null){
+                    var dateArr = dateString.split(" ");
+                    if(dateArr.length > 0){
+                        fieldString = dateArr[0] + " " + timeStr;
+                    }
                 }
-            } catch(e) {}
+            } catch(e) {
+                alert(e);
+            }
         }
         dateField.value = fieldString;
+    }
+    /**
+     * Refresh date tables display
+     *
+     * */
+    this.refreshDateTables = refreshDateTables;
+    function refreshDateTables(currentYear,currentMonth,currentDay){
+        var dateString = currentYear + "-" + currentMonth + "-" + currentDay;
+        var dateArr = document.getElementsByName("exCalDateLink");
+        for(i=0; i<dateArr.length; i++){
+            if(dateArr[i].className == "current"){
+                dateArr[i].className = "";
+            }
+        }
+        document.getElementById(dateString).className = "current";
     }
 
     /**
@@ -275,7 +298,7 @@ function exCal() {
         var daysInMonth = getDaysInMonth(currentYear, currentMonth);
         var css_class = null; //CSS class for each day
 
-        var excalCon = "<div class='exCalDays'><table cellspacing='1' cellpadding='0' border='0'>";
+        var excalCon = "<div class='exCalDays'><table cellspacing='1' cellpadding='0' border='0' id='exCalDateTable'>";
         excalCon += "<tr class='header'>";
         excalCon += "  <td class='previous'><a href='javascript:changeCalendarMonth(-1);'>&lt;</a></td>";
         excalCon += "  <td colspan='5' class='title'>" + monthArr[currentMonth-1] + "&nbsp;&nbsp;" + currentYear + "</td>";
@@ -301,7 +324,7 @@ function exCal() {
                         css_class = 'weekday';
                     }
 
-                    excalCon += "<td><a class='"+css_class+"' href=\"javascript:setCalendarDate("+currentYear+","+currentMonth+","+dayOfMonth+")\">"+dayOfMonth+"</a></td>";
+                    excalCon += "<td><a class='"+css_class+"' id='"+currentYear+"-"+currentMonth+"-"+dayOfMonth+"' name='exCalDateLink' href=\"javascript:setCalendarDate("+currentYear+","+currentMonth+","+dayOfMonth+")\">"+dayOfMonth+"</a></td>";
                     dayOfMonth++;
                 } else {
                     excalCon += "<td class='empty'>&nbsp;</td>";
@@ -313,9 +336,9 @@ function exCal() {
         excalCon += "</table></div>";
 
         var timeList = createTimeList();
-        excalCon += "<div class='exCalTimes'><ul><li class='header'>All-day</li></ul><ul class='list'>";
+        excalCon += "<div class='exCalTimes'><ul><li class='header'>" + exLang.timeAllDay + "</li></ul><ul class='list'>";
         for(i=0; i<timeList.length; i++){
-            excalCon += "<li style='cursor:pointer;' onclick='setCalendarTime(\""+ timeList[i] +"\");'>"+ timeList[i] +"</li>";
+            excalCon += "<li onclick='setCalendarTime(\""+ timeList[i] +"\");'>"+ timeList[i] +"</li>";
         }
         excalCon += "</ul></div>";
 
@@ -371,7 +394,6 @@ function exCal() {
     function hide() {
         if(dateField) {
             setProperty('display', 'none');
-            setElementProperty('display', 'none', 'exCalendarIframe');
             dateField = null;
         }
     }
@@ -430,5 +452,4 @@ function changeCalendarMonth(change) {
     exCalObj.changeMonth(change);
 }
 
-document.write("<iframe id='exCalendarIframe' src='javascript:false;' frameBorder='0' scrolling='no'></iframe>");
 document.write("<div id='exCalendarContainer'></div>");

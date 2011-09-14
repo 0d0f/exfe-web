@@ -23,9 +23,11 @@ class ConversationModels extends DataModel{
         return false;
     }
 
-    public function getConversion($postable_id,$postable_type)
+    public function getConversion($postable_id,$postable_type,$limit=0)
     {
         $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc; ";
+        if($limit>0)
+            $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc limit $limit; ";
         $result=$this->getAll($sql);
         $identity=array();
         $posts=array();

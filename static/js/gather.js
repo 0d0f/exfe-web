@@ -16,28 +16,27 @@ var new_identity_id = 0;
 
 function getexfee()
 {
-    var result = "";
+    var result = [];
     $('.exfee_exist').each(function(e) {
-            var exfee_identity = $(this).attr("value");
-            var exfee_id = $(this).attr("identityid");
-            var element_id = $(this).attr("id");
+        var exfee_identity = $(this).attr("value");
+        var exfee_id = $(this).attr("identityid");
+        var element_id = $(this).attr("id");
+        var confirmed = $('#confirmed_' + element_id).attr("checked") == true ? 1 : 0;
+        result.push({exfee_id       : exfee_id,
+                     confirmed      : confirmed,
+                     exfee_identity : exfee_identity,
+                     identity_type  : parseId(exfee_identity).type});
+    });
+    $('.exfee_new').each(function(e) {
+        var exfee_identity = $(this).attr("value");
+        var element_id = $(this).attr("id");
+        var confirmed = $('#confirmed_' + element_id).attr("checked") == true ? 1 : 0;
+        result.push({exfee_identity : exfee_identity,
+                     confirmed      : confirmed,
+                     identity_type  : parseId(exfee_identity).type});
+    });
 
-            var confirmed = 0;
-            if($('#confirmed_' + element_id).attr("checked") == true)
-                confirmed = 1;
-
-            result += exfee_id + ":" + confirmed + ":" + exfee_identity + ",";
-            });
-    $('.exfee_new').each(function(e){
-            var exfee_identity = $(this).attr("value");
-            var element_id = $(this).attr("id");
-            var confirmed = 0;
-            if($('#confirmed_' + element_id).attr("checked") == true)
-                confirmed=1;
-            result += exfee_identity + ":" + confirmed + ",";
-            });
-
-    return result;
+    return JSON.stringify(result);
 }
 
 $(document).ready(function() {
@@ -191,6 +190,25 @@ function trim(str)
 }
 
 
+function parseId(strId)
+{
+    if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
+        var iLt = strId.indexOf('<'),
+            iGt = strId.indexOf('>');
+            console.log(strId.substring(0,   iLt));
+        return {name : trim(strId.substring(0,     iLt)),
+                id   : trim(strId.substring(++iLt, iGt)),
+                type : 'email'};
+    } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
+        return {id   : trim(strId),
+                type : 'email'};
+    } else {
+        return {id   : trim(strId),
+                type : 'unknow'};
+    }
+}
+
+
 function identity()
 {
     window.arrIdentitySub = [];
@@ -198,19 +216,7 @@ function identity()
 
     for (var i in arrIdentityOri) {
         if ((arrIdentityOri[i] = trim(arrIdentityOri[i]))) {
-            if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(arrIdentityOri[i])) {
-                var iLt = arrIdentityOri[i].indexOf('<'),
-                    iGt = arrIdentityOri[i].indexOf('>');
-                arrIdentitySub.push({name : trim(arrIdentityOri[i].substring(0,   iLt)),
-                                     id   : trim(arrIdentityOri[i].substring(iLt, iGt)),
-                                     type : 'email'});
-            } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(arrIdentityOri[i])) {
-                arrIdentitySub.push({id   : trim(arrIdentityOri[i]),
-                                     type : 'email'});
-            } else {
-                arrIdentitySub.push({id   : trim(arrIdentityOri[i]),
-                                     type : 'unknow'});
-            }
+            arrIdentitySub.push(parseId(arrIdentityOri[i]));
         }
     }
 
@@ -228,7 +234,7 @@ function identity()
                     avatar_file_name = data.response.identities[i].avatar_file_name;
                     name             = data.response.identities[i].name;
                 if ($('#exfee_' + id).attr('id') == null) {
-                    name = name ? name : identity;
+                    name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>'
                     );
@@ -239,9 +245,10 @@ function identity()
                 if (!identifiable[arrIdentitySub[i].id]) {
                     switch (arrIdentitySub[i].type) {
                         case 'email':
-                            name =  arrIdentitySub[i].name
+                            console.log(arrIdentitySub[i].id);
+                            name = (arrIdentitySub[i].name
                                  ? (arrIdentitySub[i].name + ' <'  + arrIdentitySub[i].id + '>')
-                                 :  arrIdentitySub[i].id;
+                                 :  arrIdentitySub[i].id).replace('<', '&lt;').replace('>', '&gt;');
                             break;
                         default:
                             name =  arrIdentitySub[i].id;

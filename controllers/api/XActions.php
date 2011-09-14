@@ -1,6 +1,11 @@
 <?php
 class XActions extends ActionController {
 
+    public function doComments()
+    {
+        print "doComments params:";
+        print_r($this->params);
+    }
     public function doIndex()
     {
         $Data=$this->getModelByName("X");
@@ -14,8 +19,6 @@ class XActions extends ActionController {
                 $placeData=$this->getModelByName("place");
                 $place=$placeData->getPlace($place_id);
                 $cross["place"]=$place;
-
-
             }
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id);
@@ -52,5 +55,6 @@ class XActions extends ActionController {
     // // echo "do edit:".base62_to_int($_GET["id"]);
     //  
     //}
+
 
 }

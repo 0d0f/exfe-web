@@ -99,7 +99,7 @@ San Francisco, CA
 <ul class="samlcommentlist">
 
 <li>
-<p class="pic20"><img alt="" src="/eimgs/1.png"></p>
+<!-- p class="pic20"><img alt="" src="/eimgs/1.png"></p -->
 <p class="smcomment"><span></span> <span class="lb">host</span>virushuo@gmail.com</p>
 <p class="cs"><em class="c1"></em></p>
 </li>
