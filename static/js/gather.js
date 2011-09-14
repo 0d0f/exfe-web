@@ -195,7 +195,6 @@ function parseId(strId)
     if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
         var iLt = strId.indexOf('<'),
             iGt = strId.indexOf('>');
-            console.log(strId.substring(0,   iLt));
         return {name : trim(strId.substring(0,     iLt)),
                 id   : trim(strId.substring(++iLt, iGt)),
                 type : 'email'};
@@ -245,14 +244,14 @@ function identity()
                 if (!identifiable[arrIdentitySub[i].id]) {
                     switch (arrIdentitySub[i].type) {
                         case 'email':
-                            console.log(arrIdentitySub[i].id);
-                            name = (arrIdentitySub[i].name
+                            name =  arrIdentitySub[i].name
                                  ? (arrIdentitySub[i].name + ' <'  + arrIdentitySub[i].id + '>')
-                                 :  arrIdentitySub[i].id).replace('<', '&lt;').replace('>', '&gt;');
+                                 :  arrIdentitySub[i].id;
                             break;
                         default:
                             name =  arrIdentitySub[i].id;
                     }
+                    name = name.replace('<', '&lt;').replace('>', '&gt;');
                     new_identity_id++;
                     exfee_pv.push(
                         '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">' + name + '</span><input id="confirmed_newexfee_' + new_identity_id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button> </li>'

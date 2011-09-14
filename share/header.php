@@ -7,7 +7,7 @@
 <script type="text/javascript" src="/static/js/js.js"></script>
 <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
-var site_url = "<?php echo SITE_URL; ?>";
+var site_url = "<?php echo $site_url; ?>";
 </script>
 
 <!--[if IE 6]>
@@ -17,4 +17,3 @@ DD_belatedPNG.fix('#header .logo,#header .mygear');
 </script>
 <![endif]-->
 </head>
-
