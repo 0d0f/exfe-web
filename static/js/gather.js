@@ -186,7 +186,7 @@ $(document).ready(function() {
 
 function trim(str)
 {
-    return str.replace(/(^s*)|(s*$)/g, '');
+    return str.replace(/^\s+|\s+$/g, '');
 }
 
 
