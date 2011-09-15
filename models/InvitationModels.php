@@ -3,7 +3,7 @@ class InvitationModels extends DataModel{
 
     public function rsvp($cross_id,$identity_id,$state)
     {
-        $sql="update invitations set state=$state where identity_id=$identity_id and cross_id=$cross_id;";	
+        $sql="update invitations set state=$state where identity_id=$identity_id and cross_id=$cross_id;";
         $this->query($sql);
 
         $sql="select state from invitations where identity_id=$identity_id and cross_id=$cross_id;";
