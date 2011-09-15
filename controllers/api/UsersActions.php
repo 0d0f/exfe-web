@@ -10,11 +10,11 @@ class UsersActions extends ActionController {
         $userData=$this->getModelByName("user");
         $user=$_POST["user"];
         $password=$_POST["password"];
-        $auth_token=$userData->loginForAuthToken($user,$password);
-        if($auth_token!="")
+        $result=$userData->loginForAuthToken($user,$password);
+        if($result)
         {
             $responobj["meta"]["code"]=200;
-            $responobj["response"]["auth_token"]=$auth_token;
+            $responobj["response"]=$result;;
         }
         else
         {
