@@ -1,53 +1,34 @@
 <?php
 
-class ExfeeHelper extends ActionController { 
-    public function addExfeeIdentify($cross_id,$exfee_list)
+class ExfeeHelper extends ActionController
+{
+
+    public function addExfeeIdentify($cross_id, $exfee_list)
     {
+        print_r($exfee_list);
         //TODO: package as a transaction
-        $exfees=explode(",",$exfee_list);
-        foreach($exfees as $exfee)
-        {
-            //TODO:parser exfee format
-            $identity_id=0; 
+        foreach (json_decode($exfee_list, true) as $exfeeI => $exfeeItem) {
+            $identity_id   = isset($exfeeItem['exfee_id'])       ? $exfeeItem['exfee_id']       : null;
+            $confirmed     = isset($exfeeItem['confirmed'])      ? $exfeeItem['confirmed']      : 0;
+            $identity      = isset($exfeeItem['exfee_identity']) ? $exfeeItem['exfee_identity'] : null;
+            $identity_type = isset($exfeeItem['identity_type'])  ? $exfeeItem['identity_type']  : 'unknow';
 
-            if(trim($exfee)!="")
-            {
-                $identityData = $this->getModelByName("identity"); 
-                // if exfee exist?
-                //13:hj@exfe.com
-                //13:1:hj@exfe.com
-                //abcd@ddd.com:1
-                $confirmed==0;
-                $exfee_split=explode(":",$exfee);
-                if(sizeof($exfee_split)==3)
-                {
-                    $identity_id=intval($exfee_split[0]);
-                    $confirmed=intval($exfee_split[1]);
-                    $identity=$exfee_split[2];
+            if (!$identity_id) {
+                $identityData = $this->getModelByName("identity");
+                $identity_id  = $identityData->ifIdentityExist($identity);
+                if($identity_id === false) {
+                    //TODO: add new Identity, need check this identity provider, now default "email"
+                    // add identity
+                    $identity_id = $identityData->addIdentityWithoutUser('email', $identity);
                 }
-                else if(sizeof($exfee_split)==2)
-                {
-                    $identity=$exfee_split[0];
-                    $confirmed=intval($exfee_split[1]);
-
-                }
-                if(intval($identity_id)==0)
-                {
-                    $identity_id=$identityData->ifIdentityExist($identity);
-                    if($identity_id===FALSE)
-                    {
-                        //TODO: add new Identity, need check this identity provider, now default "email"
-                        // add identity
-                        $identity_id=$identityData->addIdentityWithoutUser("email",$identity);
-                    }
-                }
-
-                // add invitation
-                $invitationdata=$this->getModelByName("invitation");
-                $invitationdata->addInvitation($cross_id,$identity_id,$confirmed);
             }
+
+            // add invitation
+            $invitationdata = $this->getModelByName('invitation');
+            $invitationdata->addInvitation($cross_id, $identity_id, $confirmed);
         }
     }
+
     public function sendInvitation($cross_id)
     {
         $invitationdata=$this->getModelByName("invitation");
