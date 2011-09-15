@@ -11,6 +11,7 @@ function show_exfeedel(e)
 function exfee_del(e)
 {
     e.remove();
+    updateExfeeList();
 }
 var new_identity_id = 0;
 
@@ -18,19 +19,19 @@ function getexfee()
 {
     var result = [];
     $('.exfee_exist').each(function(e) {
-        var exfee_identity = $(this).attr("value");
-        var exfee_id = $(this).attr("identityid");
-        var element_id = $(this).attr("id");
-        var confirmed = $('#confirmed_' + element_id).attr("checked") == true ? 1 : 0;
+        var exfee_identity = $(this).attr("value"),
+            exfee_id       = $(this).attr("identityid"),
+            element_id     = $(this).attr("id"),
+            confirmed      = $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0;
         result.push({exfee_id       : exfee_id,
                      confirmed      : confirmed,
                      exfee_identity : exfee_identity,
                      identity_type  : parseId(exfee_identity).type});
     });
     $('.exfee_new').each(function(e) {
-        var exfee_identity = $(this).attr("value");
-        var element_id = $(this).attr("id");
-        var confirmed = $('#confirmed_' + element_id).attr("checked") == true ? 1 : 0;
+        var exfee_identity = $(this).attr("value"),
+            element_id     = $(this).attr("id"),
+            confirmed      = $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0;
         result.push({exfee_identity : exfee_identity,
                      confirmed      : confirmed,
                      identity_type  : parseId(exfee_identity).type});
@@ -178,8 +179,11 @@ $(document).ready(function() {
 
     $('#post_submit').click(function(e) {
         identity();
-    })
+    });
 
+    $('.confirmed_box').live('change', updateExfeeList);
+
+    updateExfeeList();
 });
 
 
@@ -234,7 +238,7 @@ function identity()
                 if ($('#exfee_' + id).attr('id') == null) {
                     name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
                     exfee_pv.push(
-                        '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>'
+                        '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" class="confirmed_box" type="checkbox"/></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>'
                     );
                 }
                 identifiable[identity] = true;
@@ -253,7 +257,7 @@ function identity()
                     name = name.replace('<', '&lt;').replace('>', '&gt;');
                     new_identity_id++;
                     exfee_pv.push(
-                        '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">' + name + '</span><input id="confirmed_newexfee_' + new_identity_id +'" type="checkbox" /></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button> </li>'
+                        '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">' + name + '</span><input id="confirmed_newexfee_' + new_identity_id +'" class="confirmed_box" type="checkbox"/></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button> </li>'
                     );
                 }
             }
@@ -272,8 +276,49 @@ function identity()
                 }
             }
 
-            $('#exfee').val('');
+            updateExfeeList();
         }
     });
     $('#exfee_count').html($('span.exfee_exist').length + $('span.exfee_new').length);
+}
+
+function updateExfeeList()
+{
+    var htmExfeeList = '',
+        numConfirmed = 0,
+        numSummary   = 0;
+    $('.exfee_exist').each(function(e) {
+        var exfee_name  = $(this).html(),
+            element_id  = $(this).attr("id"),
+            confirmed   = $('#confirmed_' + element_id)[0].checked == true ? 1 : 0,
+            spanHost    = $(this).parent().children('.lb'),
+            htmSpanHost = spanHost && spanHost.html() === 'host'
+                        ? '<span class="lb">host</span>' : '';
+        numConfirmed += confirmed;
+        numSummary++;
+        htmExfeeList += '<li>'
+                      +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
+                      +     '<span class="smcomment">' + exfee_name + htmSpanHost + '</span>'
+                      +     '<p class="cs"><em class="c' + (confirmed ? 1 : 2) + '"></em></p>'
+                      + '</li>';
+    });
+    $('.exfee_new').each(function(e) {
+        var exfee_name  = $(this).html(),
+            element_id  = $(this).attr("id"),
+            confirmed   = $('#confirmed_' + element_id)[0].checked == true ? 1 : 0,
+            spanHost    = $(this).parent().children('.lb'),
+            htmSpanHost = spanHost && spanHost.html() === 'host'
+                        ? '<span class="lb">host</span>' : '';
+        numConfirmed += confirmed;
+        numSummary++;
+        htmExfeeList += '<li>'
+                      +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
+                      +     '<span class="smcomment">' + exfee_name + htmSpanHost + '</span>'
+                      +     '<p class="cs"><em class="c' + (confirmed ? 1 : 2) + '"></em></p>'
+                      + '</li>';
+    });
+    $('#samlcommentlist').html(htmExfeeList);
+    $('#exfee_confirmed').html(numConfirmed);
+    $('#exfee_summary').html(numSummary);
+    $('#exfee').val('');
 }
