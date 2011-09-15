@@ -414,3 +414,17 @@ b.r3{margin: 0px}
 #rsvp_loading{ margin-left: 100px; margin-top: -15px; }
 #identity_ajax{ margin-left: 170px; margin-top: -18px; }
 .creattext{ margin-top: 25px; }
+
+/* ----------------------------------- modified by handaoliang --------------------------*/
+.gather_view_centerbg{ width:1000px; margin:0 auto; padding:30px 0 45px; }
+.gather_view_container{
+    background-color:#ffffff; border:1px solid #DDDDDD;
+    -webkit-border-radius:6px;
+    -moz-border-radius:6px;
+    border-radius:6px;
+    -webkit-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
+    box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+.gather_view_centerbg .menu_bar{ position:relative; height:30px; padding-top:5px; }
+.gather_view_centerbg .menu_bar .lock_icon{ float:right; background:url("../images/icons.png") no-repeat left -250px; height:20px; width:20px; margin-right:10px; cursor:pointer; }
