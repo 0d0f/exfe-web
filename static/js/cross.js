@@ -21,7 +21,7 @@ $(document).ready(function() {
     });
 
     window.submitting = false;
-    window.arrRvsp    = ['interested', 'yes', 'no', 'interested'];
+    window.arrRvsp    = ['Interested', 'Accepted', 'Declined', 'Interested'];
 
     $('#rsvp_status').html(arrRvsp[myrsvp]);
 
