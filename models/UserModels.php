@@ -33,6 +33,30 @@ class UserModels extends DataModel{
         return $this->getUser($userid);
     }
 
+    public function loginForAuthToken($user,$password)
+    {
+        $password=md5($password.$this->salt);
+        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
+        $row=$this->getRow($sql);
+        $result=array();
+        if(intval($row["uid"])>0)
+        {
+            $uid=intval($row["uid"]);
+            $result["userid"]=$uid;
+            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password'";
+            $row=$this->getRow($sql);
+            if($uid>0 && $row["auth_token"]=="")
+            {
+                $auth_token=md5($time.uniqid());
+                $sql="update users set auth_token='$auth_token'  where id=$uid";
+                $this->query($sql);
+                $result["auto_token"]=$auth_token;
+            }
+            else if($row["auth_token"]!="")
+                $result["auth_token"]=$row["auth_token"];
+        }
+        return $result;
+    }
     public function login($email,$password)
     {
         $password=md5($password.$this->salt);

@@ -50,6 +50,7 @@ class XActions extends ActionController {
         $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
         if($check["allow"]=="false")
         {
+            echo "err"; die();
             header( 'Location: /s/login' ) ;
             exit(0);
         }

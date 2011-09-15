@@ -5,6 +5,26 @@ class UsersActions extends ActionController {
     {
 
     }
+    public function doLogin()
+    {
+        $userData=$this->getModelByName("user");
+        $user=$_POST["user"];
+        $password=$_POST["password"];
+        $result=$userData->loginForAuthToken($user,$password);
+        if($result)
+        {
+            $responobj["meta"]["code"]=200;
+            $responobj["response"]=$result;;
+        }
+        else
+        {
+            $responobj["meta"]["code"]=404;
+            $responobj["meta"]["err"]="login error";
+        }
+
+        echo json_encode($responobj);
+        exit(0);
+    }
     public function doX()
     {
         //print "user/x";
@@ -16,14 +36,21 @@ class UsersActions extends ActionController {
         $Data=$this->getModelByName("X");
         $crosses=$Data->getCrossByUserId(intval($params["id"]),intval($params["updated_since"]));
         
-        $ConversationData=$this->getModelByName("conversation");
+        $conversationData=$this->getModelByName("conversation");
+        $identityData=$this->getModelByName("identity");
+        $invitationData=$this->getModelByName("invitation");
         for($i=0;$i<sizeof($crosses);$i++)
         {
             $cross_id=intval($crosses[$i]["id"]);
             if($cross_id>0)
             {
-                $conversations=$ConversationData->getConversion($cross_id,'cross',10);
+                $conversations=$conversationData->getConversion($cross_id,'cross',10);
                 $crosses[$i]["conversation"]=$conversations;
+                $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
+                $crosses[$i]["host"]=$identity;
+                $invitations=$invitationData->getInvitation_Identities($crosses[$i]["id"],true);
+                $crosses[$i]["invitations"]=$invitations;
+                //invitations
             }
         }
 
