@@ -1,0 +1,13 @@
+#home { background:#000 url(../images/global_header_bg.jpg) repeat-x 0 0; }
+#global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
+#global_header .logo{ position:relative; float:left; width:567px; height:47px; }
+#global_header .user_info{ position:relative; float:right; width:500px; height:32px; padding-top:15px; font-size:11pt; text-align:right; padding-right:30px; }
+#global_header .user_info a{ color:#FFF; text-decoration:none; }
+
+#home .home_banner{ width:100%; height:534px; min-width:1160px; margin:auto; background:#EEEEEE url(../images/home_banner.jpg) no-repeat center 0; }
+
+#home .home_bottom{ width:760px; height:200px; margin:auto; margin-top:30px; }
+#home .home_bottom p{ clear:both; }
+#home .home_bottom p.gather_btn{ width:238px; height:57px; margin:auto; }
+#home .home_bottom p.gather_btn a{ display:block; width:230px; height:57px; padding:0px; cursor:pointer; }
+#home .home_bottom p.bottom_btn{ width:760px; height:55px; margin:auto; margin-top:50px; background:url(../images/home_bottom_btn.jpg) no-repeat 0 0; }
