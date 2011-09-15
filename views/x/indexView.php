@@ -3,6 +3,7 @@
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
 <script type="text/javascript" src="/static/js/activity-indicator.js"></script>
+<script type="text/javascript" src="/static/js/ExfeUtil.js"></script>
 <body>
 <?php include "share/nav.php"; ?>
 <?php
@@ -59,7 +60,9 @@ $token=$_GET["token"];
 <div id="content" class="gather_view_container">
     <div class="menu_bar">
         <p class="lock_icon" id="private_icon"></p>
-        <p class="xfc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
+        <p class="lock_icon_desc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
+        <p class="edit_icon" id="edit_icon"></p>
+        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
     </div>
 <div id="index" class="step">
 <h2><?php echo $cross["title"]; ?></h2>

@@ -48,7 +48,9 @@ if(intval($_SESSION["userid"])>0)
         <p class="creatbtn"><a href="/x/gather">Gather X</a></p>
         </div>
         <div class="myexfefoot"><a href="/s/profile" class="l">Setting</a><a href="/s/logout" class="r">Sign out</a></div>
+        <!--
         <?php if($page=="cross") {?><p class="fjiao"></p><?php }?>
+        -->
         </div><!--#myexfe-->
         </div>
         <em class="light"></em>

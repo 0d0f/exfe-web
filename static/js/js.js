@@ -66,6 +66,13 @@ $(document).ready(function() {
         $('#private_icon').mouseout(function() {
             $('#private_hint').hide();
         });
+        $('#edit_icon').mousemove(function() {
+            $('#edit_icon_desc').show();
+        });
+        $('#edit_icon').mouseout(function() {
+            $('#edit_icon_desc').hide();
+        });
+
 
         //  $('.newbg').mousemove(function(){
         //	$(this).addClass('fbg');

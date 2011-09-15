@@ -431,3 +431,12 @@ b.r3{margin: 0px}
 }
 .gather_view_centerbg .menu_bar{ position:relative; height:30px; padding-top:5px; }
 .gather_view_centerbg .menu_bar .lock_icon{ float:right; background:url("../images/icons.png") no-repeat left -250px; height:20px; width:20px; margin-right:10px; cursor:pointer; }
+.gather_view_centerbg .menu_bar .edit_icon{ float:right; background:url("../images/icons.png") no-repeat left -285px; height:20px; width:20px; margin-right:10px; cursor:pointer; }
+.gather_view_centerbg .menu_bar .lock_icon_desc, .gather_view_centerbg .menu_bar .edit_icon_desc{
+    right:10px;top:32px;width:220px;padding:8px;z-index:10
+    background:#f4fcfe; border:#90c3ce 1px solid;
+    line-height:20px; position:absolute;
+}
+.gather_view_centerbg .menu_bar .lock_icon_desc span, .gather_view_centerbg .menu_bar .edit_icon_desc{
+    font-size:14px;
+}
