@@ -5,7 +5,6 @@ class ExfeeHelper extends ActionController
 
     public function addExfeeIdentify($cross_id, $exfee_list)
     {
-        print_r($exfee_list);
         //TODO: package as a transaction
         foreach (json_decode($exfee_list, true) as $exfeeI => $exfeeItem) {
             $identity_id   = isset($exfeeItem['exfee_id'])       ? $exfeeItem['exfee_id']       : null;
