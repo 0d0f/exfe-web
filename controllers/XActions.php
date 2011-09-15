@@ -17,19 +17,19 @@ class XActions extends ActionController {
             //TODO: package as a translaction
             if(trim($_POST["place"])!="")
                 $placeid=$placedata->savePlace($_POST["place"]);
-            else 
+            else
                 $placeid=0;
 
             $_POST["place_id"]=$placeid;
-            $cross_id=$crossdata->gatherCross($identity_id,$_POST);
+            $cross_id = $crossdata->gatherCross($identity_id, $_POST);
 
             $helper=$this->getHelperByName("exfee");
             $helper->addExfeeIdentify($cross_id,$_POST["exfee_list"]);
             $helper->sendInvitation($cross_id);
 
             //TODO: redirect to this exfe page
-            $cross_id_base62=int_to_base62($cross_id);
-            header( 'Location: /!'.$cross_id_base62 ) ;
+            $cross_id_base62 = int_to_base62($cross_id);
+            header( 'Location: /!' . $cross_id_base62 ) ;
             exit(0);
 
         }
@@ -109,7 +109,7 @@ class XActions extends ActionController {
             $identityData=$this->getModelByName("identity");
 
             if(intval($_SESSION["userid"])>0)
-            {    
+            {
                 $userData = $this->getModelByName("user");
                 $user=$userData->getUser($_SESSION["userid"]);
                 $this->setVar("user", $user);
@@ -133,9 +133,9 @@ class XActions extends ActionController {
                 {
                     if(in_array($invitation["identity_id"],$myidentities)==true)
                     {
-                        $this->setVar("myrsvp",$invitation["state"]);    
+                        $this->setVar("myrsvp",$invitation["state"]);
                         if(intval($invitation["state"])>0)
-                            $this->setVar("interested","yes");    
+                            $this->setVar("interested","yes");
                     }
                     //$invitation["identity_id"]
                     // $invitation["state"];
