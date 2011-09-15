@@ -1,6 +1,6 @@
 <?php
 
-class CheckHelper extends ActionController { 
+class CheckHelper extends ActionController {
 
     function isAllow($class,$action,$args="")
     {
