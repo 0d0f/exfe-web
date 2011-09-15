@@ -49,7 +49,7 @@ San Francisco, CA
       <?php if($external_identity!="") { ?>
         <li class="addjn">
           <p class="pic20"><img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" /></p>
-          <p class="smcomment"><span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span><input id='confirmed_exfee_<?php echo $global_identity_id;?>' checked=true type="checkbox" /> <span class="lb">host</span></p>
+          <p class="smcomment"><span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span><input id='confirmed_exfee_<?php echo $global_identity_id;?>' class="confirmed_box" checked=true type="checkbox" /> <span class="lb">host</span></p>
           <button type="button" class="exfee_del"></button>
         </li>
         <?php } ?>
@@ -95,21 +95,8 @@ San Francisco, CA
 <p class="tm" id="pv_place_line2">shanghai<br>pudong</p>
 
 <div class="exfee">
-<div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb">2</em> <em class="malnb">3 of <br>confirmed</em></p></div>
-<ul class="samlcommentlist">
-
-<li>
-<!-- p class="pic20"><img alt="" src="/eimgs/1.png"></p -->
-<p class="smcomment"><span></span> <span class="lb">host</span>virushuo@gmail.com</p>
-<p class="cs"><em class="c1"></em></p>
-</li>
-<li>
-<p class="pic20"><img alt="" src="/eimgs/"></p>
-<p class="smcomment"><span></span> gokeeper@gmail.com </p>
-<p class="cs"><em class="c1"></em></p>
-</li>
-
-</ul>
+<div class="feetop"><h3>exfee</h3>  <p class="of"><em id="exfee_confirmed" class="bignb">0</em> of <span id="exfee_summary">0</span><br>confirmed</p></div>
+<ul id="samlcommentlist" class="samlcommentlist"></ul>
 </div><!--exfee-->
 </div><!--exfer-->
 

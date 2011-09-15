@@ -2,6 +2,17 @@
 
 class CheckHelper extends ActionController {
 
+    function isAPIAllow($api,$token,$args)
+    {
+        $userData=$this->getModelByName("user");
+        $uid=$userData->getUserIdByToken($token);
+        if($api="user_x")
+        {
+            if($uid==$args["user_id"])
+                return true;
+        }
+        return false;
+    }
     function isAllow($class,$action,$args="")
     {
         $type="session";

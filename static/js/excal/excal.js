@@ -23,7 +23,7 @@ function exInclude(fileName){
 var languageFile = exCalLangPath + "/" + exCalLang + ".js";
 exInclude(languageFile);
 
-//exCalendar main class. 
+//exCalendar main class.
 function exCal() {
     var currentYear = 0;
     var currentMonth = 0;
@@ -117,7 +117,7 @@ function exCal() {
 
     /**
      * set text field data.
-     * 
+     *
      * */
     this.setDate = setDate;
     function setDate(curYear, curMonth, curDay) {
@@ -181,7 +181,7 @@ function exCal() {
      * */
     function getCurrentMonth() {
         return new Date().getMonth() + 1;
-    } 
+    }
 
     /**
      * get current day

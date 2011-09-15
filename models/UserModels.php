@@ -33,6 +33,12 @@ class UserModels extends DataModel{
         return $this->getUser($userid);
     }
 
+    public function getUserIdByToken($token)
+    {
+        $sql="select id from users where auth_token='$token';";
+        $row=$this->getRow($sql);
+        return intval($row["id"]);
+    }
     public function loginForAuthToken($user,$password)
     {
         $password=md5($password.$this->salt);
