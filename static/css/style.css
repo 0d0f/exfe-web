@@ -1,6 +1,9 @@
 *{ margin:0; padding:0;
 }
-body {font:13px Lucida Grande, Verdana, LucidaSansUnicode,Helvetica,Arial,sans-serif;background:#ffffff url(../images/bodybg.png) repeat-x    ;color:#696969
+body {
+    font:13px Lucida Grande, Verdana, LucidaSansUnicode,Helvetica,Arial,sans-serif;
+    background:url(../images/global_header_bg.jpg) repeat-x 0 0;
+    color:#696969
 }
 a {text-decoration:none; color:#3f3f3f;outline:none;
 }

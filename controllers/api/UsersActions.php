@@ -27,8 +27,18 @@ class UsersActions extends ActionController {
     }
     public function doX()
     {
-        //print "user/x";
+        //check if this token allow 
         $params=$this->params;
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAPIAllow("user_x",$params["token"],array("user_id"=>$params["id"]));
+        if($check==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+        //print "user/x";
         //print $params["id"];
         //print "<br/>";
         //print $params["updated_since"];
