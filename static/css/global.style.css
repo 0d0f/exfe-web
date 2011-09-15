@@ -44,3 +44,16 @@ table { border-collapse: collapse; border-spacing: 0; }
 	outline: none; /* for firefox 1.5 + */
 }
 .fixed{ clear:both; font-size:0px; height:0px; width:0px; padding:0px; margin:0px; }
+
+/** global body style control **/
+body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
+
+/** global header **/
+#global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
+#global_header .logo{ position:relative; float:left; width:567px; height:47px; }
+#global_header .user_info{ position:relative; float:right; width:500px; height:32px; padding-top:15px; font-size:11pt; text-align:right; padding-right:30px; }
+#global_header .user_info a{ color:#FFF; }
+
+/** 404 error page style control **/
+#error_404_page { background-color:#F2F2F2; }
+#error_404_page .img_404{ width:500px; height:600px; margin:auto; margin-top:20px; background:url(../images/404.jpg) no-repeat 0 0; }
