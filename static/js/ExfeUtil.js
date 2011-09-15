@@ -1,0 +1,775 @@
+/**
+ * @Description:    The base common function
+ * @createDate:     Sup 15,2011
+ * @CopyRights:		http://www.exfe.com
+ **/
+var exfe = {
+    version:"0.1",
+    Browser: (function(){
+        var ua = navigator.userAgent;
+        var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]';
+        return {
+            IE:             !!window.attachEvent && !isOpera,
+            Opera:          isOpera,
+            WebKit:         ua.indexOf('AppleWebKit/') > -1,
+            Gecko:          ua.indexOf('Gecko') > -1 && ua.indexOf('KHTML') === -1,
+            MobileSafari:   /Apple.*Mobile/.test(ua)
+        }
+    })()
+};
+
+(function(base){
+    /**
+     * Create Util
+     **/
+    var util = null;
+    if(base && typeof base == "object"){
+        if(!base.util){
+            base.util = {};
+        }
+        util = base.util;
+    }else{
+        window.util = {};
+        util = window.util;
+    }
+
+    /**
+     * -----------------------------------------------------------------
+     * - The function blew will be used to:
+     * -     manage the namespace
+     * -     analyze string, host
+     * -     optimize the array
+     * -----------------------------------------------------------------
+    **/
+
+    /**
+     * Create the namespace if not existed
+     * @router, the namespace string, for example "abc.de"
+     **/
+    util.initNameSpace = function(router)
+    {
+        if(!router || router == '') {
+            return;
+        }
+        var p = window, arrNS = router.split('.');
+        for(var i=0,len=arrNS.length; i<len; i++) {
+            if(!p[ arrNS[i] ]){
+                p[ arrNS[i] ] = {};
+            }
+            p = p[ arrNS[i] ];
+        }
+    };
+
+    /*
+     * Analyze URI
+     * @uri, this value must be absolute URI, if not, the string will not be analyze correctly
+     * return one object, which contains {http, domain, port, parameter, command}
+     *  http's value should be https or http, which will be used to check whether this is on the SSL level
+     */
+    util.analyzeURI = function(uri)
+    {
+        var match = uri.match(/^(([^:\/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/i);
+        // Example of "https://www.autodesk.com:90/labs/domain.aspx?test=1&value=2#mm=1"
+        // 0 : https://www.autodesk.com:90/labs/domain.aspx?test=1&value=2#mm=1
+        // 1 : https:
+        // 2 : https
+        // 3 : //www.autodesk.com:90
+        // 4 : www.autodesk.com:90
+        // 5 : /labs/domain.aspx
+        // 6 : ?test=1&value=2
+        // 7 : test=1&value=2
+        // 8 : #mm=1
+        // 9 : mm=1
+        var ret = {};
+        var arr = match[4].split(":");
+        if(arr.length == 2){
+            ret.domain = arr[0];
+            ret.port = arr[1];
+        }else if(arr.length == 1){
+            ret.domain = arr[0];
+            ret.port = "80";
+        }
+        ret.http = match[2];
+        ret.param = match[7];
+        ret.command = match[9];
+        return ret;
+    };
+
+
+    /*
+     * This function will be used to get one value from the URI
+     * @url, the URI string
+     * @name, the key which you want to get
+     */
+    util.getUrlParam = function(url, name)
+    {
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var tmpURL = url;
+        var results = regex.exec( tmpURL );
+        if (results){
+            return results[1];
+        }
+        return null;
+    };
+
+
+    /*
+     * This function will get the value from the object
+     * @obj, the JSON format of the object, for example {a:{b:[1,2,3]}}
+     * @arrPath, the path of the object, for example ["a", "b"]
+     * if using the value in the example, the result should be [1,2,3]
+     */
+    util.getValueFromObj = function(obj, arrPath){
+        var ret = obj;
+        if(!ret){
+            return null;
+        }
+        for(var i=0;i<arrPath.length;++i){
+            if(!ret[arrPath[i]]){
+                return null;
+            }
+            ret = ret[arrPath[i]];
+        }
+        return ret;
+    };
+
+
+    /*
+     * This function will be used to remove the blank space from the head and tail of the string
+     * @s, the string whose space will be removed
+     */
+    util.trim = function(s) {
+        return s.replace(/^\s+/, '').replace(/\s+$/, '');
+    };
+
+
+    /*
+     * This function will be used to encode the string with XML
+     * @str, the string to be encoded
+     */
+    util.escapeXml = function(str){
+        if (!str){
+            return "";
+        }
+        return str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
+    };
+
+
+    /*
+     * This function will be used to decode the string with XML
+     * @str, the string to be decoded
+     */
+    util.unescapeXml = function(str)
+    {
+        if (!str){
+            return "";
+        }
+        return str.replace(/&quot;/gm, "\"").replace(/&gt;/gm, ">").replace(/&lt;/gm, "<").replace(/&amp;/gm, "&");
+    };
+
+
+    /*
+     * This function will be used to decode the string with HTML
+     * @str, the string to be decoded
+     */
+    util.decodeHTML = function(str){
+        str = "" + str;
+        return str.replace(/&nbsp;/g, " ")
+            .replace(/&amp/g, "&")
+            .replace(/&gt;/g, ">")
+            .replace(/&lt;/g, "<")
+            .replace(/&quot;/g, "'");
+    };
+
+    /*
+     * This function will be used to encode the string with HTML
+     * @str, the string to be encoded
+     */
+    util.encodeHTML = function(text){
+        return text.replace(/&/g, '&amp').replace(/'/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    };
+
+
+    /**
+     * -----------------------------------------------------------------
+     * - The function blew Manage the Cookie:
+     * -     setCookie
+     * -     delCookie
+     * -     getCookie
+     -----------------------------------------------------------------
+    **/
+
+    /*
+     * This function will be used to get the cookie according to the given name
+     * @name, the name of the cookie
+     */
+    util.getCookie = function(name) {
+        var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+        if(arr != null){
+            return unescape(arr[2]); 
+        }
+        return null;
+    };
+
+
+    /*
+     * This function will be used to set the cookie by given data and expire date
+     * @name, the name of the cookie
+     * @value, the value of the cookie
+     * @expires, the expire time of the cookie, counting by DAY
+     * @domainValue, the domain of the Cookie
+     */
+    util.setCookie = function(name, value, expires, domainValue) {
+        var cookieValue = name + "="+ escape(value);
+
+        if(domainValue!=null) {
+            cookieValue += ";domain="+domainValue;
+        }
+        if(expires !=null && expires !=0){
+            var exp  = new Date(); 
+            exp.setTime(exp.getTime() + expires*24*60*60*1000);
+            cookieValue += ";expires=" + exp.toGMTString();	
+        }
+        document.cookie = cookieValue;
+    };
+
+    /*
+     * This function will be used to delete the cookie by given name
+     * @name, the name of the cookie
+     */
+    util.delCookie = function(name) 
+    {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval=this.getCookie(name);
+        if(cval!=null) {
+            document.cookie= name + "="+cval+";expires="+exp.toGMTString();
+        }
+    };
+
+
+    /**
+     * -----------------------------------------------------------------
+     * - The function blew will be used the event:
+     * -     bind Events for a DOM object
+     * -     init eveything when DOM ready
+     * -     prepare the function for the callback function
+     * -----------------------------------------------------------------
+    **/
+
+    /*
+     * This function will create the callback function by given value and scope
+     * @fun, the function
+     * @scope, the scope of the function
+     * @param1~param5, the parameter that this functin will be used
+     */
+    util.bind = function(func, scope, param1, param2, param3, param4, param5){
+        return function(){
+            return func.call(scope, param1, param2, param3, param4, param5);
+        }
+    };
+
+    /*
+     * This function will be fired when the DOM tree ready for multipulate, different with onload
+     * @fn, the function you want to add
+     */
+    util.domReady = function(fn){
+        if(document.addEventListener){ //W3C
+            document.addEventListener("DOMContentLoaded", fn, false);
+        }else{ //IE
+            var oldfun = document.onreadystatechange;
+            document.onreadystatechange = function(){
+                if(typeof oldfun == "function"){
+                    oldfun();
+                }
+                if(document.readyState == "interactive" 
+                    || document.readyState == "complete"){
+                    if(typeof fn == "function"){
+                        fn();
+                    }
+                    fn = null;
+                }
+            }
+        }
+    };
+
+
+
+    /*
+     * This function will be used to add the function and trigger it after the document ready
+     * @func, the function callback
+     */
+    util.addLoadEvent = function(func){
+        if(util.loadReady
+            || document.readyState == "complete"
+            /*|| document.readyState == "interactive"*/){
+            func();
+            util.loadReady = true;
+            return;
+        }
+        if(!util.loadReadyCbQueue){
+            util.loadReadyCbQueue = [func];
+        }else{
+            util.loadReadyCbQueue.push(func);
+        }
+    };
+
+    var _loadComplete = function(){
+        util.loadReady = true;
+        for(var i=0;!!util.loadReadyCbQueue && i<util.loadReadyCbQueue.length;++i){
+            util.loadReadyCbQueue[i]();
+        }
+        util.loadReadyCbQueue = [];
+    };
+
+    util.domReady(_loadComplete);
+
+
+    /*
+     * This function will be used to bind the event for the element
+     * @el, the element which dom will be binded
+     * @evType, the event name, for example "mousedown"
+     * @useCapture, is capture or buble, default is buble
+     */
+    util.bindEvent = function(el, evType, callback, useCapture){
+        el = util.id(el);
+        if (el.addEventListener) {
+            el.addEventListener(evType, callback, useCapture);
+            return true;
+        } else if (el.attachEvent) {
+            var r = el.attachEvent('on' + evType, callback);
+            return r;
+        } else {
+            el['on' + evType] = callback;
+        }
+    };
+
+
+    /*
+     * This function will be used to get the position of the mouse
+     * @e, the event object
+     * return {x,y}
+     */
+    util.getCurPos = function(e)
+    {
+        e = e || window.event;
+        var D = document.documentElement;
+        if( e.pageX ){
+            return {
+                "x": e.pageX, 
+                "y": e.pageY
+            };
+        }
+        return {
+            "x": e.clientX + D.scrollLeft - D.clientLeft,
+            "y": e.clientY + D.scrollTop - D.clientTop
+        };
+    };
+
+
+    /*
+     * This function will be used to check whether the mouse is in the given DOM Elememnt
+     * @e, the event object
+     * @el, the element
+     */
+    util.isMouseIn = function(e, el){
+        var c = util.getCurPos(e);
+        var p = util.getObjPos(el);
+        if(c.x >= p.x && c.x <= p.x + el.offsetWidth && c.y >= p.y && c.y <= p.y + el.offsetHeight){
+            return true;
+        }
+        return false;
+    };
+
+
+    util.makeDrag = function(sender, container, fnMousedown, fnMousemove, fnMouseup)
+    {
+        if(!container){
+            container = sender;
+        }
+        this.makeDrag_flag = false;
+        if(typeof fnMousedown == "function"){
+            this.fnMousedown = fnMousedown;
+        }
+        if(typeof fnMousemove == "function"){
+            this.fnMousemove = fnMousemove;
+        }
+        if(typeof fnMouseup == "function"){
+            this.fnMouseup = fnMouseup;
+        }
+        var mousemoveEvent = document.onmousemove;
+        var mouseupEvent = document.onmouseup;
+        var me = this;
+        util.bindEvent(sender, "mousedown", function(e){
+            if(me.fnMousedown){
+                me.fnMousedown(e);
+            }
+            var oPos = util.getObjPos(container);
+            var cPos = util.getCurPos(e);
+            me.makeDrag_flag = true;
+            document.onmouseup = function(e){
+                me.makeDrag_flag = false;
+                // Problem: should we store the events
+                document.onmousemove =mousemoveEvent;
+                document.onmouseup = mouseupEvent;
+                if(me.fnMouseup){
+                    me.fnMouseup(e);
+                }
+                return false;
+            };
+            document.onmousemove = function(e){
+                if(me.makeDrag_flag){
+                    if(me.fnMousemove){
+                        me.fnMousemove(e);
+                    }
+                    document.body.appendChild(container);
+                    container.style.position = "absolute";
+                    container.style.zIndex = "99999";
+                    var Pos = util.getCurPos(e);
+                    container.style.left = Pos.x - cPos.x + oPos.x + "px";
+                    container.style.top = Pos.y - cPos.y + oPos.y + "px";
+                }
+                return false;
+            };
+            try{
+                // Firefox is different with IE
+                e.preventDefault();
+            }catch(e){}
+            return false;
+        });
+    };
+        
+    // -----------------------------------------------------------------
+    // - The function blew will be used to manage the DOM ELement:
+    // -     selector of the Element
+    // -     find position or something else like this
+    // -     manage the CSS and style
+    // -----------------------------------------------------------------
+
+
+    /*
+     * Check whether the element has the given class
+     * @el, the DOM elemenet
+     * @name, the name of the class
+     */
+    util.hasClass = function(el, name){
+        var className = "" + util.id(el).className;
+        var arr = className.split(" ");
+        for(var i=0;i<arr.length;++i){
+            if(arr[i] == name){
+                return true;
+            }
+        }
+        return false;
+    };
+
+
+    /*
+     * This function will be used to add the class to the element
+     * @el, the DOM elemenet
+     * @name, the class name
+     */
+    util.addClass = function(el, name){
+        var className = "" + util.id(el).className;
+        var arr = className.split(" ");
+        for(var i=0;i<arr.length;++i){
+            if(arr[i] == name){
+                return;
+            }
+        }
+        arr.push(name);
+        el.className = arr.join(" ");
+    };
+
+
+    /*
+     * This function will be used to remove the class from the given element
+     * @el, the DOM element
+     * @name, the name of the class
+     */
+    util.removeClass = function(el, name){
+        var className = "" + util.id(el).className;
+        var arr = className.split(" ");
+        for(var i=arr.length-1;i>=0;--i){
+            if(arr[i] == name){
+                arr.splice(i, 1);
+            }
+        }
+        el.className = arr.join(" ");
+    };
+
+
+    /*
+     * This function will be used to find the element deeply
+     * @el, the root DOM element
+     * @config, the path, for example:[{"tagName", "class"},{},...]
+     * This function will return one Error that match the condition
+     */
+    util.findElements = function(el, config){
+        var findEls = function(el, config){
+            var els = el.children;
+            var ret = [];
+            for(var i=0;i<els.length;++i){
+                if(els[i].tagName 
+                    && (!config.tagName || config.tagName.length == 0 || els[i].tagName.toLowerCase() == config.tagName.toLowerCase())
+                    && (!config.className || config.className.length == 0 || util.hasClass(els[i], config.className))){
+                        ret.push(els[i]);
+                }
+            }
+            return ret;
+        };
+        var els = [];
+        if(!config || config.length == 0){
+            return 
+        }
+        els = findEls(el, config[0]);
+        for(var i=1;i<config.length;++i){
+            if(els.length > 0){
+                els = findEls(els[0], config[i]);
+            }else{
+                break;
+            }
+        }
+        return els;
+    };
+
+    util.hideFlash = function() {
+        if(util.flashHide){
+            return;
+        }
+        util.flashHide = true;
+        var objs = document.getElementsByTagName("object");
+        for (var i = 0, n = objs.length; i < n; i++) {
+            objs[i]._width = objs[i].width;
+            objs[i]._height = objs[i].height;
+            objs[i].width = 1;
+            objs[i].height = 1;
+        }
+        objs = document.getElementsByTagName("embed");
+        for (var j = 0, l = objs.length; j < l; j++) {
+            objs[j]._width = objs[j].width;
+            objs[j]._height = objs[j].height;
+            objs[j].width = 1;
+            objs[j].height = 1;
+        }
+        objs = document.getElementsByTagName("iframe");
+        for (var j = 0, l = objs.length; j < l; j++) {
+            objs[j]._visibility = objs[j].style.visibility;
+            objs[j].style.visibility = "hidden";
+        }
+        objs = document.getElementsByTagName("select");
+        for (var j = 0, l = objs.length; j < l; j++) {
+            objs[j]._visibility = objs[j].style.visibility;
+            objs[j].style.visibility = "hidden";
+        }
+        objs = null;
+    };
+
+    util.restoreFlash = function() {
+        if(!util.flashHide){
+            return;
+        }
+        util.flashHide = false;
+        var objs = document.getElementsByTagName("object");
+        for (var i = 0, n = objs.length; i < n; i++) {
+            if(objs[i]._width){
+                objs[i].width = objs[i]._width;
+            }
+            if(objs[i]._height){
+                objs[i].height = objs[i]._height;
+            }
+        }
+        
+        objs = document.getElementsByTagName("embed");
+        for (var j = 0, l = objs.length; j < l; j++) {
+            if(objs[j]._width){
+                objs[j].width = objs[j]._width;
+            }
+            if(objs[j]._height){
+                objs[j].height = objs[j]._height;
+            }
+        }
+        
+        objs = document.getElementsByTagName("iframe");
+        for (var j = 0, l = objs.length; j < l; j++) {
+            if(typeof objs[j]._visibility == "string"){
+                objs[j].style.visibility = objs[j]._visibility;
+            }
+        }
+        objs = document.getElementsByTagName("select");
+        for (var j = 0, l = objs.length; j < l; j++) {
+            if(typeof objs[j]._visibility == "string"){
+                objs[j].style.visibility = objs[j]._visibility;
+            }
+        }
+        objs = null;
+    };
+
+    /*
+     * This function will be used to find the element by given tagName and className
+     * @tag, the tag name of the elements
+     * @className, the classname of the elements
+     */
+    util.getElementsByClass = function(tag, className){
+        var arr = document.getElementsByTagName(tag);
+        var ret = [];
+        for(var i=0;i<arr.length;++i){
+            if(util.hasClass(arr[i], className)){
+                ret.push(arr[i]);
+            }
+        }
+        return ret;
+    };
+
+
+    /*
+     * This function will get the position of the object
+     * @obj, the element, or the element id
+     * @bFixed, if this value is true, we will try to give out the position against the first parent whose position is fixed or absolute
+     * This funcrion will return the result by {x, y}
+     */
+    util.getObjPos = function(obj, bFixed){
+        obj = util.id(obj);
+        var x = y = 0;
+        if(!bFixed && obj.getBoundingClientRect){
+            var box = obj.getBoundingClientRect();
+            var D = document.documentElement;
+            x = box.left + Math.max(D.scrollLeft, document.body.scrollLeft) - D.clientLeft;
+            y = box.top + Math.max(D.scrollTop, document.body.scrollTop) - D.clientTop;
+        }else{
+            for(;obj!= document.body; obj = obj.offsetParent){
+                if(bFixed && (obj.style.position.toLowerCase() == "fixed" || obj.style.position.toLowerCase() == "absolute")){
+                    break;
+                }
+                x += obj.offsetLeft;
+                y += obj.offsetTop;
+            }
+        }
+        return {
+            "x": x,
+            "y": y
+        };
+    };
+
+
+
+    /*
+     * This function will be used to check whether the parent is descendant of the node
+     * @parent, the parent node
+     * @node, the child node
+     */
+    util.isDescendant = function(parent, node){
+        if ( !parent || !node ){
+            return true;
+        }
+        while ( node = node.parentNode ){
+            if ( node == parent ){
+                return true;
+            }
+        }
+        return false;
+    };
+
+
+    /*
+     * This function will be used to remove all the Child under one element
+     * @e, the element whose children will be removed
+     */
+    util.deleteChildNodes = function(e){
+        while(e.hasChildNodes()){
+            e.removeChild(e.lastChild);
+        }
+    };
+
+
+    /*
+     * This function will be used to get the Document Object by ID
+     * @id, the DOM object or it's ID
+     */
+    util.id = function(id)
+    {
+        if(typeof id === "string"){
+            return document.getElementById(id);
+        }
+        return id;
+    };
+
+    /*
+     * This function will be used to get the value or set the value
+     * @el, the element
+     * @styleName, the style name
+     * @styleValue, the style value
+     */
+    util.css = function(el, styleName, styleValue){
+        el = util.id(el);
+        try{
+            el.style[styleName] = styleValue;
+        }catch(e){
+            alert(e);
+        }
+        if(styleName.toLowerCase() == "opacity"){
+            el.style.filter = 'alpha(opacity=' + (100 * styleValue) + ')';
+        }
+        return el.style[styleName];
+    };
+
+
+    /*
+     * This function will be used to get the destance of the scoll top to Document top
+     */
+    util.getScrollTop = function() {   
+        return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+    };
+
+
+    /*
+     * This function will be used to get the destance of the scoll left to Document left
+     */
+    util.getScrollLeft = function() {
+        return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft;
+    };
+
+
+    /*
+     * Get the Height of the Window
+     */
+    util.getClientHeight = function() {   
+        return (document.compatMode == "CSS1Compat")? document.documentElement.clientHeight : document.body.clientHeight; 
+    };
+
+
+    /*
+     * Get the Width of the Window
+     */
+    util.getClientWidth = function() {
+        return (document.compatMode == "CSS1Compat")? document.documentElement.clientWidth : document.body.clientWidth; 
+    };
+
+    util.getScrollWidth = function() {   
+        return (document.compatMode == "CSS1Compat")? document.documentElement.scrollWidth : document.body.scrollWidth;  
+    };
+
+    util.getScrollHeight = function() {   
+        return (document.compatMode == "CSS1Compat")? document.documentElement.scrollHeight : document.body.scrollHeight;  
+    };
+
+    /*
+     * Get if the scroll on bottom
+     */
+    util.scrollBottom = function(divScroll){
+        if(!divScroll){
+            if(util.getScrollTop()+util.getClientHeight()==util.getScrollHeight()){
+                return true;	
+            }
+            return false;	
+        }else{
+            if($(divScroll)[0].scrollTop==0&&$(divScroll)[0].clientHeight+$(divScroll)[0].scrollTop==$(divScroll)[0].scrollHeight){
+                return false; //no scroll
+            }else if($(divScroll)[0].clientHeight+$(divScroll)[0].scrollTop==$(divScroll)[0].scrollHeight){
+                return true; //The scroll is on bottom
+            }
+            return false;
+        }
+    };
+})(exfe);
