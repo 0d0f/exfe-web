@@ -50,10 +50,10 @@ class UserModels extends DataModel{
                 $auth_token=md5($time.uniqid());
                 $sql="update users set auth_token='$auth_token'  where id=$uid";
                 $this->query($sql);
-                $result["userid"]=$auth_token;
+                $result["auto_token"]=$auth_token;
             }
             else if($row["auth_token"]!="")
-                $result["userid"]=$row["auth_token"];
+                $result["auth_token"]=$row["auth_token"];
         }
         return $result;
     }
