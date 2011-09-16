@@ -18,25 +18,28 @@ var new_identity_id = 0;
 function getexfee()
 {
     var result = [];
+    function collect(obj, exist)
+    {
+        var exfee_identity = $(obj).attr("value"),
+            element_id     = $(obj).attr("id"),
+            spanHost       = $(obj).parent().children('.lb'),
+            item           = {exfee_name     : $(obj).html(),
+                              exfee_identity : exfee_identity,
+                              confirmed      : $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0,
+                              identity_type  : parseId(exfee_identity).type,
+                              isHost         : spanHost && spanHost.html() === 'host'};
+        if (exist) {
+            item.exfee_id  = $(obj).attr('identityid');
+        }
+        result.push(item);
+    }
     $('.exfee_exist').each(function(e) {
-        var exfee_identity = $(this).attr("value"),
-            exfee_id       = $(this).attr("identityid"),
-            element_id     = $(this).attr("id"),
-            confirmed      = $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0;
-        result.push({exfee_id       : exfee_id,
-                     confirmed      : confirmed,
-                     exfee_identity : exfee_identity,
-                     identity_type  : parseId(exfee_identity).type});
+        collect(this, true);
     });
     $('.exfee_new').each(function(e) {
-        var exfee_identity = $(this).attr("value"),
-            element_id     = $(this).attr("id"),
-            confirmed      = $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0;
-        result.push({exfee_identity : exfee_identity,
-                     confirmed      : confirmed,
-                     identity_type  : parseId(exfee_identity).type});
+        collect(this);
     });
-    return JSON.stringify(result);
+    return result;
 }
 
 $(document).ready(function() {
@@ -154,7 +157,7 @@ $(document).ready(function() {
     $('#gatherxform').submit(function(e) {
         if($('#g_description').attr('enter') == '0')
             $('#g_description').html('');
-            $('#exfee_list').val(getexfee());
+            $('#exfee_list').val(JSON.stringify(getexfee()));
     });
 
     $('#confirmed_all').click(function(e) {
@@ -284,41 +287,37 @@ function identity()
 
 function updateExfeeList()
 {
-    var htmExfeeList = '',
+    var exfees = getexfee(),
+        htmExfeeList = '',
         numConfirmed = 0,
         numSummary   = 0;
-    $('.exfee_exist').each(function(e) {
-        var exfee_name  = $(this).html(),
-            element_id  = $(this).attr("id"),
-            confirmed   = $('#confirmed_' + element_id)[0].checked == true ? 1 : 0,
-            spanHost    = $(this).parent().children('.lb'),
-            htmSpanHost = spanHost && spanHost.html() === 'host'
-                        ? '<span class="lb">host</span>' : '';
-        numConfirmed += confirmed;
+    for (var i in exfees) {
+        numConfirmed += exfees[i].confirmed;
         numSummary++;
         htmExfeeList += '<li>'
                       +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
-                      +     '<span class="smcomment">' + exfee_name + htmSpanHost + '</span>'
-                      +     '<p class="cs"><em class="c' + (confirmed ? 1 : 2) + '"></em></p>'
+                      +     '<span class="smcomment">'
+                      +         exfees[i].exfee_name
+                      +        (exfees[i].isHost ? '<span class="lb">host</span>' : '')
+                      +     '</span>'
+                      +     '<p class="cs"><em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em></p>'
                       + '</li>';
-    });
-    $('.exfee_new').each(function(e) {
-        var exfee_name  = $(this).html(),
-            element_id  = $(this).attr("id"),
-            confirmed   = $('#confirmed_' + element_id)[0].checked == true ? 1 : 0,
-            spanHost    = $(this).parent().children('.lb'),
-            htmSpanHost = spanHost && spanHost.html() === 'host'
-                        ? '<span class="lb">host</span>' : '';
-        numConfirmed += confirmed;
-        numSummary++;
-        htmExfeeList += '<li>'
-                      +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
-                      +     '<span class="smcomment">' + exfee_name + htmSpanHost + '</span>'
-                      +     '<p class="cs"><em class="c' + (confirmed ? 1 : 2) + '"></em></p>'
-                      + '</li>';
-    });
+    }
     $('#samlcommentlist').html(htmExfeeList);
     $('#exfee_confirmed').html(numConfirmed);
     $('#exfee_summary').html(numSummary);
     $('#exfee').val('');
+}
+
+function saveDraft()
+{
+    var cross = {title       : $("#g_title").val(),
+                 description : $("#g_description").val(),
+                 datetime    : $("input[name='datetime']").val(),
+                 place       : $('#g_place').val(),
+                 hostby      : $("#hostby").val(),
+                 exfee       : getexfee()};
+
+console.log(cross);
+
 }
