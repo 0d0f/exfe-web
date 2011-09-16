@@ -1,4 +1,4 @@
-<script type="text/javascript" src="/static/js/login.js"></script>
+<script type="text/javascript" src="/static/js/user/login.js"></script>
 <div id="fBox" class="loginMask">
 <h5><a href="/" onclick="cancel()">关闭</a><em class="tl">Registeration</em></h5>
 <div class="overFramel">

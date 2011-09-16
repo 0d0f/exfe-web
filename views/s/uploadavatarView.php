@@ -1,5 +1,6 @@
 <?php include "share/header.php"; ?>
-<script type="text/javascript" src="/static/js/jquery.imgareaselect-0.3.min.js"></script>
+<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect-0.3.min.js"></script>
+</head>
 <body>
 <?php include "share/nav.php"; ?>
 <?php

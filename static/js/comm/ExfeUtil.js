@@ -3,7 +3,7 @@
  * @createDate:     Sup 15,2011
  * @CopyRights:		http://www.exfe.com
  **/
-var exfe = {
+var odof = {
     version:"0.1",
     Browser: (function(){
         var ua = navigator.userAgent;
@@ -44,20 +44,27 @@ var exfe = {
 
     /**
      * Create the namespace if not existed
-     * @router, the namespace string, for example "abc.de"
+     * @ns, the namespace string, for example "abc.de"
      **/
-    util.initNameSpace = function(router)
-    {
-        if(!router || router == '') {
-            return;
-        }
-        var p = window, arrNS = router.split('.');
-        for(var i=0,len=arrNS.length; i<len; i++) {
-            if(!p[ arrNS[i] ]){
-                p[ arrNS[i] ] = {};
+    util.initNameSpace = function(ns) {
+        var parentObj = window;
+        var arNs = ns.split('.');
+        do {
+            var nowNs = arNs.shift();
+            if (typeof parentObj[nowNs] != 'object') {
+                parentObj[nowNs] = {};
             }
-            p = p[ arrNS[i] ];
-        }
+            parentObj = parentObj[nowNs];
+        } while (arNs.length > 0)
+        return util.decode(ns);
+    };
+
+    /**
+     * Decode a json string
+     * @param {String} json '{name: "Lucy", age: 18}'
+     */
+    util.decode = function(json) {
+        return eval("(" + json + ")");
     };
 
     /*
@@ -772,4 +779,4 @@ var exfe = {
             return false;
         }
     };
-})(exfe);
+})(odof);

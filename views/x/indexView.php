@@ -1,13 +1,13 @@
 <?php $page="cross";?>
 <?php include "share/header.php"; ?>
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/jquery.simplemodal.1.4.1.min.js"></script>
-<script type="text/javascript" src="/static/js/activity-indicator.js"></script>
-<script type="text/javascript" src="/static/js/ExfeUtil.js"></script>
+<script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
+<script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
+<script type="text/javascript" src="/static/js/apps/gatherEdit.js"></script>
+</head>
+
 <body>
 <?php include "share/nav.php"; ?>
-<?php
-?>
 <?php
 $cross=$this->getVar("cross");
 $user=$this->getVar("user");
@@ -25,9 +25,9 @@ echo "var token_expired='".$token_expired."'; \r\n";
 echo "var myrsvp=".intval($myrsvp)."; \r\n";
 echo "</script>\r\n";
 ?>
-<script type='text/javascript' src='/static/js/login.js'></script>
-<script type="text/javascript" src="/static/js/dialog.js"></script>
-<script type="text/javascript" src="/static/js/crossdialog.js"></script>
+<script type='text/javascript' src='/static/js/user/login.js'></script>
+<script type="text/javascript" src="/static/js/comm/dialog.js"></script>
+<script type="text/javascript" src="/static/js/apps/crossdialog.js"></script>
 <?php
 $description_lines=preg_split ("/\r\n|\r|\n/", $cross["description"]);
 $description="";
@@ -161,7 +161,7 @@ foreach($normal_exfee as $exfee)
 </ul>
 </div><!--exfee-->
 </div><!--exfer-->
-<script type="text/javascript" src="/static/js/cross.js"></script>
+<script type="text/javascript" src="/static/js/apps/cross.js"></script>
 
 
 </div><!--/#index-->

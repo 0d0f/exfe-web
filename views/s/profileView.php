@@ -1,5 +1,6 @@
 <?php include "share/header.php"; ?>
-<script type="text/javascript" src="/static/js/profile.js"></script>
+<script type="text/javascript" src="/static/js/user/profile.js"></script>
+</head>
 <body>
 <?php include "share/nav.php"; ?>
 <?php 

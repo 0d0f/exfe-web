@@ -334,7 +334,7 @@ function exCal() {
         var daysInMonth = getDaysInMonth(currentYear, currentMonth);
         var css_class = null; //CSS class for each day
 
-        var excalCon = "<div class='exCalDays'><table cellspacing='1' cellpadding='0' border='0' id='exCalDateTable'>";
+        var excalCon = "<div class='exCalDays'><table cellspacing='0' cellpadding='0' border='1' bordercolor='D3D4D4' id='exCalDateTable'>";
         excalCon += "<tr class='header'>";
         excalCon += "  <td class='previous'><a href='javascript:changeCalendarMonth(-1);'>&lt;</a></td>";
         excalCon += "  <td colspan='5' class='title'>" + monthArr[currentMonth-1] + "&nbsp;&nbsp;" + currentYear + "</td>";
