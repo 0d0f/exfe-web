@@ -49,6 +49,7 @@ class UsersActions extends ActionController {
         $conversationData=$this->getModelByName("conversation");
         $identityData=$this->getModelByName("identity");
         $invitationData=$this->getModelByName("invitation");
+        $userData=$this->getModelByName("user");
         for($i=0;$i<sizeof($crosses);$i++)
         {
             $cross_id=intval($crosses[$i]["id"]);
@@ -57,7 +58,8 @@ class UsersActions extends ActionController {
                 $conversations=$conversationData->getConversion($cross_id,'cross',10);
                 $crosses[$i]["conversation"]=$conversations;
                 $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
-                $crosses[$i]["host"]=$identity;
+                $user=$userData->getUserByIdentityId(intval($crosses[$i]["host_id"]));
+                $crosses[$i]["host"]=humanIdentity($identity,$user);
                 $invitations=$invitationData->getInvitation_Identities($crosses[$i]["id"],true);
                 $crosses[$i]["invitations"]=$invitations;
                 //invitations

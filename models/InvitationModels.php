@@ -46,6 +46,7 @@ class InvitationModels extends DataModel{
                 #if(trim($invitations[$i]["avatar_file_name"])=="")
                 #    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
             }
+                $invitations[$i]["state"]=intval($invitations[$i]["state"]);
         }
         return $invitations;
     }
