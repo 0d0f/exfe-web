@@ -39,7 +39,10 @@ function RelativeTime($timestamp){
     for($j = 0; $difference >= $lengths[$j]; $j++)
     {
         if ($lengths[$j]==0)
+        {
             $difference = 0;
+            break;
+        }
         else
             $difference /= $lengths[$j];
     }
