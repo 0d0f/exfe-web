@@ -6,6 +6,48 @@ class XActions extends ActionController {
         print "doComments params:";
         print_r($this->params);
     }
+    function rsvp($rsvp)
+    {
+        $params=$this->params;
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAPIAllow("x_rsvp",$params["token"],array("cross_id"=>$params["id"]));
+        if($check["check"]==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+
+        //$r=$invitationData->rsvpByUser($cross_id,$userid,$state);
+        if($rsvp=="yes")
+            $state=INVITATION_YES;
+        if($rsvp=="no")
+            $state=INVITATION_NO;
+        if($rsvp=="maybe")
+            $state=INVITATION_MAYBE;
+
+    
+        $invitationData=$this->getModelByName("Invitation");
+        $result=$invitationData->rsvpIdentities($params["id"],$check["identity_id_list"],$state);
+        $responobj["meta"]["code"]=200;
+        $responobj["response"]=$result;;
+        echo json_encode($responobj);
+        exit(0);
+
+    }
+    public function doYes()
+    {
+       $this->rsvp("yes");
+    }
+    public function doNo()
+    {
+       $this->rsvp("no");
+    }
+    public function doMaybe()
+    {
+       $this->rsvp("maybe");
+    }
     public function doIndex()
     {
         $Data=$this->getModelByName("X");

@@ -31,7 +31,7 @@ class UsersActions extends ActionController {
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_x",$params["token"],array("user_id"=>$params["id"]));
-        if($check==false)
+        if($check["check"]==false)
         {
             $responobj["meta"]["code"]=403;
             $responobj["meta"]["error"]="forbidden";

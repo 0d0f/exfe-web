@@ -1,6 +1,22 @@
 <?php
 class InvitationModels extends DataModel{
 
+    public function rsvpIdentities($cross_id,$identity_id_list,$state)
+    {
+
+        for($i=0;$i<sizeof($identity_id_list);$i++)
+        {
+            $identity_id_list[$i]= "identity_id=".$identity_id_list[$i];
+        }
+        $str=implode(" or ",$identity_id_list);
+
+        $sql="update invitations set state=$state where ($str) and cross_id=$cross_id;";
+        $this->query($sql);
+
+        $sql="select identity_id,state from invitations where ($str) and cross_id=$cross_id;";
+        $result=$this->getAll($sql);
+        return $result;
+    }
     public function rsvp($cross_id,$identity_id,$state)
     {
         $sql="update invitations set state=$state where identity_id=$identity_id and cross_id=$cross_id;";
@@ -24,6 +40,27 @@ class InvitationModels extends DataModel{
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
 
+    }
+    public function getInvitatedIdentityByUserid($userid,$cross_id)
+    {
+
+        $sql="select identityid from user_identity where userid=$userid;";
+        $identity_id_list=$this->getColumn($sql);
+        for($i=0;$i<sizeof($identity_id_list);$i++)
+        {
+            $identity_id_list[$i]= "identity_id=".$identity_id_list[$i];
+        }
+        $str=implode(" or ",$identity_id_list);
+
+        $sql="select identity_id from invitations where cross_id=$cross_id and ($str);";
+        $identity_id_list=$this->getColumn($sql);
+        return $identity_id_list;
+        //get my invitations
+        //find cross_id
+        //if (intval($updated_since)==0)
+        //    $sql="select distinct cross_id from invitations where  ($str)  order by created_at limit 50";
+        //else
+        //    $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
     }
 
     public function getInvitation_Identities($cross_id,$without_token=false)
