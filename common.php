@@ -37,7 +37,12 @@ function RelativeTime($timestamp){
         $ending = "later";
     }
     for($j = 0; $difference >= $lengths[$j]; $j++)
-        $difference /= $lengths[$j];
+    {
+        if ($lengths[$j]==0)
+            $difference = 0;
+        else
+            $difference /= $lengths[$j];
+    }
     $difference = round($difference);
     if($difference != 1) $periods[$j].= "s";
     $text = "$difference $periods[$j] $ending";
