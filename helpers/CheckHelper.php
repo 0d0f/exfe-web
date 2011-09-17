@@ -9,12 +9,12 @@ class CheckHelper extends ActionController {
         if(intval($uid)==0)
             return array("check"=>false);
 
-        if($api="user_x")
+        if($api=="user_x" || $api=="user_regdevicetoken")
         {
             if($uid==$args["user_id"])
                 return array("check"=>true,"uid"=>$uid);
         }
-        if($api="x_rsvp")
+        if($api=="x_rsvp")
         {
             //if this uid's identity has invitation for this cross?
             $cross_id=$args["cross_id"];
@@ -24,6 +24,16 @@ class CheckHelper extends ActionController {
             $identity_list=$invitationdata->getInvitatedIdentityByUserid($uid,$cross_id);
             if(sizeof($identity_list)>0)
                 return array("check"=>true,"identity_id_list"=>$identity_list,"user_id"=>$uid);
+        }
+        if($api=="x_post")
+        {
+            //$cross_id=$args["cross_id"];
+            //if(intval($cross_id)==0)
+            //    return array("check"=>false);
+            //$invitationdata=$this->getModelByName("invitation");
+            //$identity_list=$invitationdata->getInvitatedIdentityByUserid($uid,$cross_id);
+            //if(sizeof($identity_list)>0)
+            //    return array("check"=>true,"identity_id_list"=>$identity_list,"user_id"=>$uid);
         }
         return array("check"=>false);
     }

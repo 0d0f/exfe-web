@@ -75,4 +75,28 @@ class UsersActions extends ActionController {
         //get x by id and updated_since
         
     }
+    
+    public function doRegdevicetoken()
+    {
+        //check if this token allow 
+        $params=$this->params;
+        $checkhelper=$this->getHelperByName("check");
+        $uid=$params["id"];
+        $check=$checkhelper->isAPIAllow("user_regdevicetoken",$params["token"],array("user_id"=>$params["id"]));
+        if($check["check"]==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+        print_r($check);
+        $devicetoken=$_POST["devicetoken"];
+        $provider=$_POST["provider"];
+        $userData=$this->getModelByName("user");
+        $identity_id=$userData->regDeviceToken($devicetoken,$provider,$uid);
+        echo $identity_id;
+        //add devicetoken with $check["uid"]
+    }
+
 }

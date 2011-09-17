@@ -140,5 +140,43 @@ class UserModels extends DataModel{
         }
         return false;
     }
+    public function regDeviceToken($devicetoken,$provider,$uid)
+    {
 
+        $sql="select id,status from identities where external_identity='$devicetoken' and  provider='$provider';";
+        $row=$this->getRow($sql);
+        $time=time();
+        $identity_id=0;
+        if(intval($row["id"])==0)
+        {
+            //insert new identity, set status connect
+            $sql="insert into identities (provider,external_identity,created_at,status) values('iOSAPN','$devicetoken',FROM_UNIXTIME($time),3);";
+            $result=$this->query($sql);
+            if(intval($result["insert_id"])>0)
+                $identity_id=$result["insert_id"];
+        }
+        else if(intval($row["id"])>0)
+        {
+            $identity_id=$row["id"];
+
+        }
+        $sql="select identityid from user_identity where identityid=$identity_id and userid=$uid;";
+        $row=$this->getRow($sql);
+
+        if(intval($row["identityid"])==0) // if dose not bind with any user?
+        {
+            $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+            $this->query($sql);
+        }
+        else if(intval($row["identityid"])>0 && intval($row["identityid"])!=$identity_id) // bind with other user?
+        {
+            $sql="update user_identity set userid=$uid where identityid=$identity_id";
+            $this->query($sql);
+        }
+        //check identity_user relationship
+        //update connect status
+        $sql="update identities set status=3 where id=$identity_id";
+        $this->query($sql);
+        return $identity_id;
+    }
 }

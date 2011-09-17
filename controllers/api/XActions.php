@@ -1,11 +1,6 @@
 <?php
 class XActions extends ActionController {
 
-    public function doComments()
-    {
-        print "doComments params:";
-        print_r($this->params);
-    }
     function rsvp($rsvp)
     {
         $params=$this->params;
@@ -48,55 +43,61 @@ class XActions extends ActionController {
     {
        $this->rsvp("maybe");
     }
-    public function doIndex()
+    //public function doIndex()
+    //{
+    //    $Data=$this->getModelByName("X");
+    //    $cross=$Data->getCross(base62_to_int($_GET["id"]));
+    //    if($cross)
+    //    {
+    //        $place_id=$cross["place_id"];
+    //        $cross_id=$cross["id"];
+    //        if(intval($place_id)>0)
+    //        {
+    //            $placeData=$this->getModelByName("place");
+    //            $place=$placeData->getPlace($place_id);
+    //            $cross["place"]=$place;
+    //        }
+    //        $invitationData=$this->getModelByName("invitation");
+    //        $invitations=$invitationData->getInvitation_Identities($cross_id);
+
+
+    //        $host_exfee=array();
+    //        $normal_exfee=array();
+    //        if($invitations)
+    //            foreach ($invitations as $invitation)
+    //            {
+    //                if ($invitation["identity_id"]==$cross["host_id"])
+    //                    array_push($host_exfee,$invitation);
+    //                else
+    //                    array_push($normal_exfee,$invitation);
+    //            }
+
+    //        $cross["host_exfee"]=$host_exfee;
+    //        $cross["normal_exfee"]=$normal_exfee;
+
+    //        $ConversionData=$this->getModelByName("conversation");
+    //        $conversationPosts=$ConversionData->getConversion(base62_to_int($_GET["id"]),'cross');
+    //        $cross["conversation"]=$conversationPosts;
+
+    //        $this->setVar("cross", $cross);
+    //        $this->displayView();
+    //    }
+    //}
+    public function doPost()
     {
-        $Data=$this->getModelByName("X");
-        $cross=$Data->getCross(base62_to_int($_GET["id"]));
-        if($cross)
+        $params=$this->params;
+        $checkhelper=$this->getHelperByName("check");
+        print_r($_POST["content"]);
+        $check=$checkhelper->isAPIAllow("x_post",$params["token"],array("cross_id"=>$params["id"]));
+        var_dump($check);
+        if($check["check"]==false)
         {
-            $place_id=$cross["place_id"];
-            $cross_id=$cross["id"];
-            if(intval($place_id)>0)
-            {
-                $placeData=$this->getModelByName("place");
-                $place=$placeData->getPlace($place_id);
-                $cross["place"]=$place;
-            }
-            $invitationData=$this->getModelByName("invitation");
-            $invitations=$invitationData->getInvitation_Identities($cross_id);
-
-
-            $host_exfee=array();
-            $normal_exfee=array();
-            if($invitations)
-                foreach ($invitations as $invitation)
-                {
-                    if ($invitation["identity_id"]==$cross["host_id"])
-                        array_push($host_exfee,$invitation);
-                    else
-                        array_push($normal_exfee,$invitation);
-                }
-
-            $cross["host_exfee"]=$host_exfee;
-            $cross["normal_exfee"]=$normal_exfee;
-
-            $ConversionData=$this->getModelByName("conversation");
-            $conversationPosts=$ConversionData->getConversion(base62_to_int($_GET["id"]),'cross');
-            $cross["conversation"]=$conversationPosts;
-
-            $this->setVar("cross", $cross);
-            $this->displayView();
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
         }
     }
-    //public function doGather()
-    //{
-    //  $crossdata=$this->getDataModel("x");
-    //  $result=$crossdata->getCross(base62_to_int($_GET["id"]));
-    //  $this->setVar("cross", $result);
-    //  $this->displayView();
-    // // echo "do edit:".base62_to_int($_GET["id"]);
-    //  
-    //}
 
 
 }
