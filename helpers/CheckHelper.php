@@ -23,7 +23,7 @@ class CheckHelper extends ActionController {
             $invitationdata=$this->getModelByName("invitation");
             $identity_list=$invitationdata->getInvitatedIdentityByUserid($uid,$cross_id);
             if(sizeof($identity_list)>0)
-                return array("check"=>true,"identity_id_list"=>$identity_list);
+                return array("check"=>true,"identity_id_list"=>$identity_list,"user_id"=>$uid);
         }
         return array("check"=>false);
     }

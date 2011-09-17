@@ -29,9 +29,9 @@ class XActions extends ActionController {
 
     
         $invitationData=$this->getModelByName("Invitation");
-        $result=$invitationData->rsvpIdentities($params["id"],$check["identity_id_list"],$state);
+        $result=$invitationData->rsvpIdentities($params["id"],$check["identity_id_list"],$state,$check["user_id"]);
         $responobj["meta"]["code"]=200;
-        $responobj["response"]=$result;;
+        $responobj["response"]["invitations"]=$result;;
         echo json_encode($responobj);
         exit(0);
 
