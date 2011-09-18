@@ -59,16 +59,13 @@ $(document).ready(function() {
     $('input[type="text"], textarea').blur(function () {
         if ($(this).val() == "") {
             $(this).val(defaultText);
-        }
-        else
-        {
+        } else {
             $(this).attr("enter", "true");
         }
     });
 
     $("#hostby").focus(function() {
-        if($(this).attr("enter") != "true")
-        {
+        if ($(this).attr("enter") != "true") {
             var html = showdialog("reg");
             $(html).modal();
             bindDialogEvent("reg");
@@ -114,21 +111,18 @@ $(document).ready(function() {
                 if(lines[i] != "")
                     trim_lines.push(lines[i]);
 
-        if(trim_lines.length <= 1)
-        {
+        if (trim_lines.length <= 1) {
             $('#pv_place_line1').html(place_lines);
             $('#pv_place_line2').html('');
-        }
-        else
-        {
+        } else {
             $('#pv_place_line1').html(trim_lines[0]);
             var place_line2 = '';
-            for (i = 1; i < trim_lines.length; i++)
-            {
-                if(i == trim_lines.length-1)
+            for (i = 1; i < trim_lines.length; i++) {
+                if(i == trim_lines.length-1) {
                     place_line2 = place_line2 + trim_lines[i];
-                else
+                } else {
                     place_line2 = place_line2 + trim_lines[i] + '<br />';
+                }
             }
             $('#pv_place_line2').html(place_line2);
         }
@@ -162,13 +156,12 @@ $(document).ready(function() {
 
     $('#confirmed_all').click(function(e) {
         var check=false;
-        if($(this).attr('check')== 'false')
-        {
+        if ($(this).attr('check')== 'false') {
             $(this).attr('check', 'true');
             check=true;
-        }
-        else
+        } else {
             $(this).attr('check', 'false');
+        }
 
         $('.exfee_exist').each(function(e) {
             var element_id = $(this).attr('id');
@@ -184,7 +177,13 @@ $(document).ready(function() {
         identity();
     });
 
+    window.curCross = '';
+
+    setInterval('saveDraft()', 10000);
+
     $('.confirmed_box').live('change', updateExfeeList);
+
+    getDraft();
 
     updateExfeeList();
 });
@@ -226,10 +225,10 @@ function identity()
     }
 
     $.ajax({
-        type: 'GET',
-        url: site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
-        dataType: 'json',
-        success: function(data) {
+        type     : 'GET',
+        url      : site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
+        dataType : 'json',
+        success  : function(data) {
             var exfee_pv     = [],
                 name         = '',
                 identifiable = {};
@@ -311,13 +310,42 @@ function updateExfeeList()
 
 function saveDraft()
 {
-    var cross = {title       : $("#g_title").val(),
-                 description : $("#g_description").val(),
-                 datetime    : $("input[name='datetime']").val(),
-                 place       : $('#g_place').val(),
-                 hostby      : $("#hostby").val(),
-                 exfee       : getexfee()};
+    var cross    = {title       : $('#g_title').val(),
+                    description : $('#g_description').val(),
+                    datetime    : $("input[name='datetime']").val(),
+                    place       : $('#g_place').val(),
+                    hostby      : $('#hostby').val(),
+                    exfee       : $('#exfee_pv').html()},
+        strCross = JSON.stringify(cross);
 
-console.log(cross);
+    if (strCross !== curCross) {
+        $.ajax({
+            type     : 'POST',
+            url      : site_url + '/x/savedraft',
+            dataType : 'json',
+            data     : {cross : strCross}
+        });
+        curCross = strCross;
+    }
+}
 
+function getDraft()
+{
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/x/getdraft',
+        dataType : 'json',
+        success  : function(draft) {
+            if (!draft) { return; }
+
+            $('#g_title').val(draft.title);
+            $('#g_description').val(draft.description);
+            $("input[name='datetime']").val(draft.datetime);
+            $('#g_place').val(draft.place);
+            $('#hostby').val(draft.hostby);
+            $('#exfee_pv').html(draft.exfee);
+
+            updateExfeeList();
+        }
+    });
 }

@@ -38,7 +38,7 @@ class XActions extends ActionController {
 
     public function doSaveDraft()
     {
-        $identity_id = $_SESSION["identity_id"];
+        $identity_id = $_SESSION['identity_id'];
 
         if (!$identity_id) {
             return;
@@ -52,14 +52,10 @@ class XActions extends ActionController {
 
     public function doGetDraft()
     {
-        $identity_id = $_SESSION["identity_id"];
-
-        if (!$identity_id) {
-            return;
-        }
+        $identity_id = $_SESSION['identity_id'];
 
         $XDraft = $this->getModelByName('XDraft');
-        //echo
+        echo $identity_id ? $XDraft->getDraft($identity_id) : json_encode(null);
     }
 
 
