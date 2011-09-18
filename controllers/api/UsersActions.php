@@ -31,7 +31,7 @@ class UsersActions extends ActionController {
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_x",$params["token"],array("user_id"=>$params["id"]));
-        if($check==false)
+        if($check["check"]==false)
         {
             $responobj["meta"]["code"]=403;
             $responobj["meta"]["error"]="forbidden";
@@ -75,4 +75,39 @@ class UsersActions extends ActionController {
         //get x by id and updated_since
         
     }
+    
+    public function doRegdevicetoken()
+    {
+        //check if this token allow 
+        $params=$this->params;
+        $checkhelper=$this->getHelperByName("check");
+        $uid=$params["id"];
+        $check=$checkhelper->isAPIAllow("user_regdevicetoken",$params["token"],array("user_id"=>$params["id"]));
+        if($check["check"]==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+        $devicetoken=$_POST["devicetoken"];
+        $provider=$_POST["provider"];
+        $userData=$this->getModelByName("user");
+        $identity_id=$userData->regDeviceToken($devicetoken,$provider,$uid);
+        if(intval($identity_id)>0)
+        {
+            $responobj["meta"]["code"]=200;
+            $responobj["response"]["device_token"]=$devicetoken;
+            $responobj["response"]["identity_id"]=$identity_id;
+        }
+        else
+        {
+            $responobj["meta"]["code"]=500;
+            $responobj["meta"]["error"]="reg device token error";
+        }
+        echo json_encode($responobj);
+        exit(0);
+        //add devicetoken with $check["uid"]
+    }
+
 }
