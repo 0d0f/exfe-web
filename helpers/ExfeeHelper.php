@@ -39,26 +39,26 @@ class ExfeeHelper extends ActionController
         require 'lib/Resque.php';
         date_default_timezone_set('GMT');
         Resque::setBackend('127.0.0.1:6379');
+        if($invitations)
+            foreach($invitations as $invitation)
+            {
 
-        foreach($invitations as $invitation)
-        {
+                $args = array(
+                        'title' => $cross["title"],
+                        'description' => $cross["description"],
+                        'cross_id_base62' => int_to_base62($cross_id),
+                        'invitation_id' => $invitation["invitation_id"],
+                        'token' => $invitation["token"],
+                        'identity_id' => $invitation["identity_id"],
+                        'provider' => $invitation["provider"],
+                        'external_identity' => $invitation["external_identity"],
+                        'name' => $invitation["name"],
+                        'avatar_file_name' => $invitation["avatar_file_name"]
+                        );
 
-            $args = array(
-                    'title' => $cross["title"],
-                    'description' => $cross["description"],
-                    'cross_id_base62' => int_to_base62($cross_id),
-                    'invitation_id' => $invitation["invitation_id"],
-                    'token' => $invitation["token"],
-                    'identity_id' => $invitation["identity_id"],
-                    'provider' => $invitation["provider"],
-                    'external_identity' => $invitation["external_identity"],
-                    'name' => $invitation["name"],
-                    'avatar_file_name' => $invitation["avatar_file_name"]
-                    );
-
-            $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
-            //echo "Queued job ".$jobId."\n\n";
-        }
+                $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+                //echo "Queued job ".$jobId."\n\n";
+            }
     }
 
 }

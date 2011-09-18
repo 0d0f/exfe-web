@@ -95,7 +95,19 @@ class UsersActions extends ActionController {
         $provider=$_POST["provider"];
         $userData=$this->getModelByName("user");
         $identity_id=$userData->regDeviceToken($devicetoken,$provider,$uid);
-        echo $identity_id;
+        if(intval($identity_id)>0)
+        {
+            $responobj["meta"]["code"]=200;
+            $responobj["response"]["device_token"]=$devicetoken;
+            $responobj["response"]["identity_id"]=$identity_id;
+        }
+        else
+        {
+            $responobj["meta"]["code"]=500;
+            $responobj["meta"]["error"]="reg device token error";
+        }
+        echo json_encode($responobj);
+        exit(0);
         //add devicetoken with $check["uid"]
     }
 
