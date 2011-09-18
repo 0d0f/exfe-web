@@ -90,7 +90,6 @@ class UsersActions extends ActionController {
             echo json_encode($responobj);
             exit(0);
         }
-        print_r($check);
         $devicetoken=$_POST["devicetoken"];
         $provider=$_POST["provider"];
         $userData=$this->getModelByName("user");
