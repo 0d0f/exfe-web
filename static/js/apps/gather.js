@@ -65,11 +65,47 @@ $(document).ready(function() {
     });
 
     $("#hostby").focus(function() {
-        if ($(this).attr("enter") != "true") {
-            var html = showdialog("reg");
-            $(html).modal();
-            bindDialogEvent("reg");
-        }
+        if ($(this).attr('enter') == "true") { return; }
+        var html = showdialog("reg");
+        $(html).modal({onClose : function() {
+            $("#hostby").attr('disabled', true);
+            var exfee_pv = [];
+            $.ajax({
+                type     : 'GET',
+                url      : site_url + '/identity/get?identities=' + JSON.stringify([parseId($("#hostby").val())]),
+                dataType : 'json',
+                success  : function(data) {
+                    for (var i in data.response.identities) {
+                        var identity         = data.response.identities[i].external_identity,
+                            id               = data.response.identities[i].id,
+                            avatar_file_name = data.response.identities[i].avatar_file_name,
+                            name             = data.response.identities[i].name;
+                        if ($('#exfee_' + id).attr('id') == null) {
+                            name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
+                            exfee_pv.push(
+                                '<li class="addjn" ><p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" class="confirmed_box" checked=true type="checkbox"/><span class="lb">host</span></p> <button class="exfee_del" type="button"></button> </li>'
+                            );
+                        }
+                    }
+                    while (exfee_pv.length) {
+                        var inserted = false;
+                        $('#exfee_pv > ul').each(function(intIndex) {
+                            var li = $(this).children('li');
+                            if (li.length < 4) {
+                                $(this).append(exfee_pv.shift());
+                                inserted = true;
+                            }
+                        });
+                        if (!inserted) {
+                            $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv.shift() + '</ul>');
+                        }
+                    }
+                    updateExfeeList();
+                }
+            });
+            $.modal.close();
+        }});
+        bindDialogEvent("reg");
     });
 
     $('.addjn').mousemove(function() {
@@ -286,10 +322,10 @@ function identity()
 
 function updateExfeeList()
 {
-    var exfees = getexfee(),
-        htmExfeeList = '',
-        numConfirmed = 0,
-        numSummary   = 0;
+    var exfees        = getexfee(),
+        htmExfeeList  = '',
+        numConfirmed  = 0,
+        numSummary    = 0;
     for (var i in exfees) {
         numConfirmed += exfees[i].confirmed;
         numSummary++;
