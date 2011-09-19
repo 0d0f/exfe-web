@@ -78,8 +78,8 @@ function showdialog(type)
             +"</form>";
     }
     var html="<div id='fBox' class='loginMask' style='display:none'>"
-        +"<h5><a href='/' onclick='odof.comm.func.cancel()'>关闭</a><em class='tl'>"+title+"</em></h5>"
-        +"<div class='overFramel'>"
+        +"<h5 id='fBoxHeader'><a href='/' id='closeFBox' onclick='odof.comm.func.cancel()'>关闭</a><em class='tl'>"+title+"</em></h5>"
+        +"<div id='overFramel' class='overFramel'>"
         +"<div class='overFramelogin'>"
         +"<div class='login'>"
         + desc
