@@ -164,7 +164,25 @@ $(document).ready(function() {
         }
     });
 
+    function switchDateTime(){
+        var origialDateTime = jQuery("#datetime_original").val();
+        try {
+            var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
+            var dateTimeRegMatchArr = origialDateTime.match(objRegExpDateTime);
+            if(dateTimeRegMatchArr != null){
+                var dateArr = origialDateTime.split(" ");
+                var curDateTime = dateArr[0];
+                var curDateTimeArr = curDateTime.split("-");
+                var newDateTime = curDateTimeArr[2] + "-" + curDateTimeArr[0] + "-" + curDateTimeArr[1];
+                newDateTime += " " + dateArr[1] + " " + dateArr[2];
+                jQuery("#datetime").val(newDateTime);
+            }
+        } catch(e) { /*alert(e);*/ }
+
+
+    }
     $('#gather_x').click(function(e) {
+        switchDateTime();
         $('#gatherxform').submit();
     });
 
