@@ -170,7 +170,7 @@ class XActions extends ActionController {
             $cross["normal_exfee"]=$normal_exfee;
 
             $ConversionData=$this->getModelByName("conversation");
-            $conversationPosts=$ConversionData->getConversion(base62_to_int($_GET["id"]),'cross');
+            $conversationPosts=$ConversionData->getConversation(base62_to_int($_GET["id"]),'cross');
             $cross["conversation"]=$conversationPosts;
 
             $this->setVar("cross", $cross);

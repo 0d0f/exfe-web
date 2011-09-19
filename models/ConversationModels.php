@@ -1,6 +1,6 @@
 <?php
 class ConversationModels extends DataModel{
-    public function addConversion($postable_id,$postable_type,$identity_id,$title,$content)
+    public function addConversation($postable_id,$postable_type,$identity_id,$title,$content)
     {
         if(intval($postable_id)>0 & $postable_type=="cross")
         {
@@ -23,7 +23,7 @@ class ConversationModels extends DataModel{
         return false;
     }
 
-    public function getConversion($postable_id,$postable_type,$limit=0)
+    public function getConversation($postable_id,$postable_type,$limit=0)
     {
         $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc; ";
         if($limit>0)
