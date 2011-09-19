@@ -10,9 +10,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
     ns.showEditBar = function(){
-        alert("test handaoliang");
+        jQuery("#edit_gather_bar").css({"display":"block"});
+        jQuery("#submit_data").click(function(){ odof.gather.edit.submitData(); });
     };
+    ns.submitData = function(){
+        jQuery("#edit_gather_bar").css({"display":"none"});
+    };
+
 })(ns);
 
-odof.gather.edit.showEditBar();
+jQuery(document).ready(function(){
+    jQuery("#edit_icon").click(function(){
+        odof.gather.edit.showEditBar();
+    });
+});
 
