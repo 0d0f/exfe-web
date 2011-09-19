@@ -6,11 +6,11 @@ class XActions extends ActionController {
         $identity_id=$_SESSION["identity_id"];
         $external_identity=$_SESSION["identity"]["external_identity"];
 
-        if($external_identity!="")
+        if ($external_identity!="") {
             $this->setVar("external_identity", $external_identity);
+        }
 
-        if($_POST["title"]!="")
-        {
+        if ($_POST["title"]!="") {
             $crossdata=$this->getDataModel("x");
             $placedata=$this->getModelByName("place");
 
@@ -31,9 +31,31 @@ class XActions extends ActionController {
             $cross_id_base62 = int_to_base62($cross_id);
             header( 'Location: /!' . $cross_id_base62 ) ;
             exit(0);
-
         }
         $this->displayView();
+    }
+
+
+    public function doSaveDraft()
+    {
+        $identity_id = $_SESSION['identity_id'];
+
+        if (!$identity_id) {
+            return;
+        }
+
+        $cross  = json_decode($_POST['cross'], true);
+        $XDraft = $this->getModelByName('XDraft');
+        $XDraft->saveDraft($identity_id, $cross['title'], $_POST['cross']);
+    }
+
+
+    public function doGetDraft()
+    {
+        $identity_id = $_SESSION['identity_id'];
+
+        $XDraft = $this->getModelByName('XDraft');
+        echo $identity_id ? $XDraft->getDraft($identity_id) : json_encode(null);
     }
 
 

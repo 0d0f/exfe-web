@@ -30,7 +30,8 @@
 <li><label class="description">Description:</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
 </li>
 
-<li><label class="date">Date &amp; Time</label>  <input type="text"  name="datetime" onclick="exfeCalendar(this, 'calendar_map_container');" />
+<input type="hidden" name="datetime" id="datetime" value="" />
+<li><label class="date">Date &amp; Time</label>  <input type="text" name="datetime_original" id="datetime_original" onfocus="exfeCalendar(this, 'calendar_map_container');" />
 <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011 </p>
 </li>
 

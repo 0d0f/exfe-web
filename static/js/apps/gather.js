@@ -18,25 +18,28 @@ var new_identity_id = 0;
 function getexfee()
 {
     var result = [];
+    function collect(obj, exist)
+    {
+        var exfee_identity = $(obj).attr("value"),
+            element_id     = $(obj).attr("id"),
+            spanHost       = $(obj).parent().children('.lb'),
+            item           = {exfee_name     : $(obj).html(),
+                              exfee_identity : exfee_identity,
+                              confirmed      : $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0,
+                              identity_type  : parseId(exfee_identity).type,
+                              isHost         : spanHost && spanHost.html() === 'host'};
+        if (exist) {
+            item.exfee_id  = $(obj).attr('identityid');
+        }
+        result.push(item);
+    }
     $('.exfee_exist').each(function(e) {
-        var exfee_identity = $(this).attr("value"),
-            exfee_id       = $(this).attr("identityid"),
-            element_id     = $(this).attr("id"),
-            confirmed      = $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0;
-        result.push({exfee_id       : exfee_id,
-                     confirmed      : confirmed,
-                     exfee_identity : exfee_identity,
-                     identity_type  : parseId(exfee_identity).type});
+        collect(this, true);
     });
     $('.exfee_new').each(function(e) {
-        var exfee_identity = $(this).attr("value"),
-            element_id     = $(this).attr("id"),
-            confirmed      = $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0;
-        result.push({exfee_identity : exfee_identity,
-                     confirmed      : confirmed,
-                     identity_type  : parseId(exfee_identity).type});
+        collect(this);
     });
-    return JSON.stringify(result);
+    return result;
 }
 
 $(document).ready(function() {
@@ -56,20 +59,53 @@ $(document).ready(function() {
     $('input[type="text"], textarea').blur(function () {
         if ($(this).val() == "") {
             $(this).val(defaultText);
-        }
-        else
-        {
+        } else {
             $(this).attr("enter", "true");
         }
     });
 
     $("#hostby").focus(function() {
-        if($(this).attr("enter") != "true")
-        {
-            var html = showdialog("reg");
-            $(html).modal();
-            bindDialogEvent("reg");
-        }
+        if ($(this).attr('enter') == "true") { return; }
+        var html = showdialog("reg");
+        $(html).modal({onClose : function() {
+            $("#hostby").attr('disabled', true);
+            var exfee_pv = [];
+            $.ajax({
+                type     : 'GET',
+                url      : site_url + '/identity/get?identities=' + JSON.stringify([parseId($("#hostby").val())]),
+                dataType : 'json',
+                success  : function(data) {
+                    for (var i in data.response.identities) {
+                        var identity         = data.response.identities[i].external_identity,
+                            id               = data.response.identities[i].id,
+                            avatar_file_name = data.response.identities[i].avatar_file_name,
+                            name             = data.response.identities[i].name;
+                        if ($('#exfee_' + id).attr('id') == null) {
+                            name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
+                            exfee_pv.push(
+                                '<li class="addjn" ><p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" class="confirmed_box" checked=true type="checkbox"/><span class="lb">host</span></p> <button class="exfee_del" type="button"></button> </li>'
+                            );
+                        }
+                    }
+                    while (exfee_pv.length) {
+                        var inserted = false;
+                        $('#exfee_pv > ul').each(function(intIndex) {
+                            var li = $(this).children('li');
+                            if (li.length < 4) {
+                                $(this).append(exfee_pv.shift());
+                                inserted = true;
+                            }
+                        });
+                        if (!inserted) {
+                            $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv.shift() + '</ul>');
+                        }
+                    }
+                    updateExfeeList();
+                }
+            });
+            $.modal.close();
+        }});
+        bindDialogEvent("reg");
     });
 
     $('.addjn').mousemove(function() {
@@ -111,27 +147,42 @@ $(document).ready(function() {
                 if(lines[i] != "")
                     trim_lines.push(lines[i]);
 
-        if(trim_lines.length <= 1)
-        {
+        if (trim_lines.length <= 1) {
             $('#pv_place_line1').html(place_lines);
             $('#pv_place_line2').html('');
-        }
-        else
-        {
+        } else {
             $('#pv_place_line1').html(trim_lines[0]);
             var place_line2 = '';
-            for (i = 1; i < trim_lines.length; i++)
-            {
-                if(i == trim_lines.length-1)
+            for (i = 1; i < trim_lines.length; i++) {
+                if(i == trim_lines.length-1) {
                     place_line2 = place_line2 + trim_lines[i];
-                else
+                } else {
                     place_line2 = place_line2 + trim_lines[i] + '<br />';
+                }
             }
             $('#pv_place_line2').html(place_line2);
         }
     });
 
+    function switchDateTime(){
+        var origialDateTime = jQuery("#datetime_original").val();
+        try {
+            var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
+            var dateTimeRegMatchArr = origialDateTime.match(objRegExpDateTime);
+            if(dateTimeRegMatchArr != null){
+                var dateArr = origialDateTime.split(" ");
+                var curDateTime = dateArr[0];
+                var curDateTimeArr = curDateTime.split("-");
+                var newDateTime = curDateTimeArr[2] + "-" + curDateTimeArr[0] + "-" + curDateTimeArr[1];
+                newDateTime += " " + dateArr[1] + " " + dateArr[2];
+                jQuery("#datetime").val(newDateTime);
+            }
+        } catch(e) { /*alert(e);*/ }
+
+
+    }
     $('#gather_x').click(function(e) {
+        switchDateTime();
         $('#gatherxform').submit();
     });
 
@@ -154,18 +205,17 @@ $(document).ready(function() {
     $('#gatherxform').submit(function(e) {
         if($('#g_description').attr('enter') == '0')
             $('#g_description').html('');
-            $('#exfee_list').val(getexfee());
+            $('#exfee_list').val(JSON.stringify(getexfee()));
     });
 
     $('#confirmed_all').click(function(e) {
         var check=false;
-        if($(this).attr('check')== 'false')
-        {
+        if ($(this).attr('check')== 'false') {
             $(this).attr('check', 'true');
             check=true;
-        }
-        else
+        } else {
             $(this).attr('check', 'false');
+        }
 
         $('.exfee_exist').each(function(e) {
             var element_id = $(this).attr('id');
@@ -181,7 +231,13 @@ $(document).ready(function() {
         identity();
     });
 
+    window.curCross = '';
+
+    setInterval('saveDraft()', 10000);
+
     $('.confirmed_box').live('change', updateExfeeList);
+
+    getDraft();
 
     updateExfeeList();
 });
@@ -223,10 +279,10 @@ function identity()
     }
 
     $.ajax({
-        type: 'GET',
-        url: site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
-        dataType: 'json',
-        success: function(data) {
+        type     : 'GET',
+        url      : site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
+        dataType : 'json',
+        success  : function(data) {
             var exfee_pv     = [],
                 name         = '',
                 identifiable = {};
@@ -284,41 +340,66 @@ function identity()
 
 function updateExfeeList()
 {
-    var htmExfeeList = '',
-        numConfirmed = 0,
-        numSummary   = 0;
-    $('.exfee_exist').each(function(e) {
-        var exfee_name  = $(this).html(),
-            element_id  = $(this).attr("id"),
-            confirmed   = $('#confirmed_' + element_id)[0].checked == true ? 1 : 0,
-            spanHost    = $(this).parent().children('.lb'),
-            htmSpanHost = spanHost && spanHost.html() === 'host'
-                        ? '<span class="lb">host</span>' : '';
-        numConfirmed += confirmed;
+    var exfees        = getexfee(),
+        htmExfeeList  = '',
+        numConfirmed  = 0,
+        numSummary    = 0;
+    for (var i in exfees) {
+        numConfirmed += exfees[i].confirmed;
         numSummary++;
         htmExfeeList += '<li>'
                       +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
-                      +     '<span class="smcomment">' + exfee_name + htmSpanHost + '</span>'
-                      +     '<p class="cs"><em class="c' + (confirmed ? 1 : 2) + '"></em></p>'
+                      +     '<span class="smcomment">'
+                      +         exfees[i].exfee_name
+                      +        (exfees[i].isHost ? '<span class="lb">host</span>' : '')
+                      +     '</span>'
+                      +     '<p class="cs"><em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em></p>'
                       + '</li>';
-    });
-    $('.exfee_new').each(function(e) {
-        var exfee_name  = $(this).html(),
-            element_id  = $(this).attr("id"),
-            confirmed   = $('#confirmed_' + element_id)[0].checked == true ? 1 : 0,
-            spanHost    = $(this).parent().children('.lb'),
-            htmSpanHost = spanHost && spanHost.html() === 'host'
-                        ? '<span class="lb">host</span>' : '';
-        numConfirmed += confirmed;
-        numSummary++;
-        htmExfeeList += '<li>'
-                      +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
-                      +     '<span class="smcomment">' + exfee_name + htmSpanHost + '</span>'
-                      +     '<p class="cs"><em class="c' + (confirmed ? 1 : 2) + '"></em></p>'
-                      + '</li>';
-    });
+    }
     $('#samlcommentlist').html(htmExfeeList);
     $('#exfee_confirmed').html(numConfirmed);
     $('#exfee_summary').html(numSummary);
     $('#exfee').val('');
+}
+
+function saveDraft()
+{
+    var cross    = {title       : $('#g_title').val(),
+                    description : $('#g_description').val(),
+                    datetime    : $("input[name='datetime']").val(),
+                    place       : $('#g_place').val(),
+                    hostby      : $('#hostby').val(),
+                    exfee       : $('#exfee_pv').html()},
+        strCross = JSON.stringify(cross);
+
+    if (strCross !== curCross) {
+        $.ajax({
+            type     : 'POST',
+            url      : site_url + '/x/savedraft',
+            dataType : 'json',
+            data     : {cross : strCross}
+        });
+        curCross = strCross;
+    }
+}
+
+function getDraft()
+{
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/x/getdraft',
+        dataType : 'json',
+        success  : function(draft) {
+            if (!draft) { return; }
+
+            $('#g_title').val(draft.title);
+            $('#g_description').val(draft.description);
+            $("input[name='datetime']").val(draft.datetime);
+            $('#g_place').val(draft.place);
+            $('#hostby').val(draft.hostby);
+            $('#exfee_pv').html(draft.exfee);
+
+            updateExfeeList();
+        }
+    });
 }
