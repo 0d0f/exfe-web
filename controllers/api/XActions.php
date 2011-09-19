@@ -83,7 +83,7 @@ class XActions extends ActionController {
     //        $this->displayView();
     //    }
     //}
-    public function doPost()
+    public function doPosts()
     {
         $params=$this->params;
          
