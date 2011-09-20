@@ -8,7 +8,7 @@
 .exCalendarContainer .exCalDays table td { height:20px; width:30px; text-align:center; background-color:#E5E6E9; overflow:hidden; }
 .exCalendarContainer .exCalDays table td a { display:block; width:30px; height:15px; padding-top:5px; line-height:9pt; }
 .exCalendarContainer .exCalDays table td a:hover { background-color:#01A5B4; color:#FFFFFF; }
-.exCalendarContainer .exCalDays table td a.invalid { text-decoration:line-through; color:#999999; font-weight:normal; }
+.exCalendarContainer .exCalDays table td a.invalid { color:#888888; font-weight:normal; }
 .exCalendarContainer .exCalDays table td a.current { background-color:#057FA3; color:#FFFFFF; }
 /*.exCalendarContainer .exCalDays table td a.today { background-color:#004154; color:#FFFFFF; }*/
 
