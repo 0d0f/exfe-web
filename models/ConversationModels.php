@@ -24,6 +24,13 @@ class ConversationModels extends DataModel{
         return false;
     }
 
+    public function getConversationById($post_id)
+    {
+        $sql="select * from posts where id=$post_id;";
+        $result=$this->getRow($sql);
+        return $result;
+    }
+
     public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
         $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
