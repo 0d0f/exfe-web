@@ -56,7 +56,7 @@ class UsersActions extends ActionController {
             if($cross_id>0)
             {
                 $conversations=$conversationData->getConversation($cross_id,'cross',10);
-                $crosses[$i]["conversation"]=$conversations;
+                $crosses[$i]["conversations"]=$conversations;
                 $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
                 $user=$userData->getUserByIdentityId(intval($crosses[$i]["host_id"]));
                 $crosses[$i]["host"]=humanIdentity($identity,$user);
