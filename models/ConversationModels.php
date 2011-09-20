@@ -28,6 +28,16 @@ class ConversationModels extends DataModel{
     {
         $sql="select * from posts where id=$post_id;";
         $result=$this->getRow($sql);
+        $identity_id=intval($result["identity_id"]);
+        if($identity_id>0)
+        {
+            $sql="select provider,external_identity,external_username,name,bio,avatar_file_name from identities where id=$identity_id;";
+            $identity=$this->getRow($sql);
+            $sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$identity_id";
+            $user=$this->getRow($sql);
+            $humanidentity=humanIdentity($identity,$user);
+            $result["identity"]=$humanidentity;
+        }
         return $result;
     }
 
