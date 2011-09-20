@@ -22,7 +22,7 @@ class XModels extends DataModel{
         $title=mysql_real_escape_string($title);
         $description=mysql_real_escape_string($description);
 
-        $sql="insert into crosses (host_id,created_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),'1','$title','$description','$begin_at','$end_at','$duration',$place_id);";	
+        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','$title','$description','$begin_at','$end_at','$duration',$place_id);";	
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);

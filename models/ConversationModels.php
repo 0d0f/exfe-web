@@ -13,8 +13,9 @@ class ConversationModels extends DataModel{
                 $time=time();
                 $content=mysql_real_escape_string($content);
                 $title=mysql_real_escape_string($title);
-                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
-                $result=$this->query($sql);
+                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))"; 
+
+		        $result=$this->query($sql);
                 if(intval($result["insert_id"])>0)
                     return intval($result["insert_id"]);
             }
