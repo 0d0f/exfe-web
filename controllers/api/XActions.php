@@ -119,7 +119,7 @@ class XActions extends ActionController {
                 $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["content"]);
                 if($insert_id>0)
                 {
-                    $post=$postData->getConversationById(insert_id);
+                    $post=$postData->getConversationById($insert_id);
                     $responobj["meta"]["code"]=200;
                     $responobj["response"]["conversation"]=$post;
                     echo json_encode($responobj);
