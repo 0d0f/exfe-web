@@ -5,7 +5,7 @@ class XModels extends DataModel{
         // gather a empty cross, state=draft
         // state=1 draft
         $time=time();
-        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";	
+        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
 
         $title=$cross["title"];
         $description=$cross["description"];
@@ -22,7 +22,7 @@ class XModels extends DataModel{
         $title=mysql_real_escape_string($title);
         $description=mysql_real_escape_string($description);
 
-        $sql="insert into crosses (host_id,created_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),'1','$title','$description','$begin_at','$end_at','$duration',$place_id);";	
+        $sql="insert into crosses (host_id,created_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),'1','$title','$description','$begin_at','$end_at','$duration',$place_id);";
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
@@ -35,7 +35,7 @@ class XModels extends DataModel{
         return $result;
     }
 
-    public function getCrossByUserId($userid,$updated_since=0)
+    public function getCrossByUserId($userid, $updated_since = 0, $opening = false, $order_by = 'created_at', $limit = 50)
     {
         //get all identityid
         $sql="select identityid from user_identity where userid=$userid;";
@@ -48,11 +48,13 @@ class XModels extends DataModel{
 
         //get my invitations
         //find cross_id
-        if (intval($updated_since)==0)
-            $sql="select distinct cross_id from invitations where  ($str)  order by created_at limit 50";
-        else
-            $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
-        $cross_id_list=$this->getColumn($sql);
+        if (intval($updated_since) == 0) {
+            $sql = "select distinct cross_id from invitations where ({$str}) order by {$order_by} limit {$limit}";
+        } else {
+            $sql = "select distinct cross_id from invitations where ({$str}) and created_at>FROM_UNIXTIME({$updated_since}) order by {$order_by} limit {$limit}";
+        }
+        $strTime = $opening ? ' and begin_at > NOW()' : '';
+        $cross_id_list = $this->getColumn($sql);
         if(sizeof($cross_id_list)>0)
         {
             for($i=0;$i<sizeof($cross_id_list);$i++)
@@ -60,7 +62,7 @@ class XModels extends DataModel{
                 $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
             }
             $str=implode(" or ",$cross_id_list);
-            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at;";
+            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ({$str}) and c.place_id=places.id{$strTime} order by {$order_by};";
             $crosses=$this->getAll($sql);
             return $crosses;
         }
