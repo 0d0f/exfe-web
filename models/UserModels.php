@@ -187,4 +187,22 @@ class UserModels extends DataModel{
         return $identity_id;
     }
 
+    public function ifIdentityBelongsUser($external_identity,$user_id)
+    {
+        $sql="select id from identities where external_identity='$external_identity';";
+        $row=$this->getRow($sql);
+        if(intval($row["id"])>0)
+        {
+                $identity_id=intval($row["id"]);
+                $sql="select identityid from user_identity where identityid =$identity_id and userid=$user_id;";
+                $row=$this->getRow($sql);
+                if(intval($row["identityid"])>0)
+                {
+                    return $row["identityid"];
+                }
+
+        }
+        return FALSE;
+    }
+
 }

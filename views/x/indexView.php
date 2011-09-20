@@ -57,6 +57,12 @@ $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
 $token=$_GET["token"];
 ?>
 <div class="gather_view_centerbg">
+<div id="edit_gather_bar" style="display:none;">
+    <p class="titles">Editing <span>X</span></p>
+    <p id="error_msg" class="error_msg"></p>
+    <p class="done_btn"><a href="javascript:void(0);" id="submit_data">Done</a></p>
+    <p class="revert">Revert</p>
+</div>
 <div id="content" class="gather_view_container">
     <div class="menu_bar">
         <p class="lock_icon" id="private_icon"></p>

@@ -186,9 +186,9 @@ class SActions extends ActionController {
             $this->setVar('user', $user);
 
             ///////////////////////////////////////
-            $crossdata = $this->getModelByName('x');
-            var_dump($crossdata->getCrossByUserId($identities[0]['id'], 0, true, 'begin_at', 20));
-            return;
+            //$crossdata = $this->getModelByName('x');
+            //var_dump($crossdata->getCrossByUserId($identities[0]['id'], 0, true, 'begin_at', 20));
+            //return;
 
             ///////////////////////////////////////
             $this->displayView();

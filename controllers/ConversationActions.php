@@ -14,7 +14,7 @@ class ConversationActions extends ActionController {
         $postData=$this->getModelByName("conversation");
         $cross_id=intval($_GET["id"]);
         $identity_id=$_SESSION["identity_id"];
-        $postData->addConversion($cross_id,"cross",$identity_id,"",$_POST["comment"]);
+        $postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["comment"]);
 
         $cross_id=intval($_GET["id"]);
         $cross_id_base62=int_to_base62($cross_id);
@@ -37,7 +37,7 @@ class ConversationActions extends ActionController {
             if(trim($comment)!="" && intval($identity_id)>0 )
             {
                 $postData=$this->getModelByName("conversation");
-                $r=$postData->addConversion($cross_id,"cross",$identity_id,"",$_POST["comment"]);
+                $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["comment"]);
                 if($r===false)
                 {
                     $responobj["response"]["success"]="false";

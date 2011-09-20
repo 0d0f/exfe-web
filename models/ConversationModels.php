@@ -1,6 +1,6 @@
 <?php
 class ConversationModels extends DataModel{
-    public function addConversion($postable_id,$postable_type,$identity_id,$title,$content)
+    public function addConversation($postable_id,$postable_type,$identity_id,$title,$content)
     {
         if(intval($postable_id)>0 & $postable_type=="cross")
         {
@@ -13,8 +13,9 @@ class ConversationModels extends DataModel{
                 $time=time();
                 $content=mysql_real_escape_string($content);
                 $title=mysql_real_escape_string($title);
-                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
-                $result=$this->query($sql);
+                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))"; 
+
+		        $result=$this->query($sql);
                 if(intval($result["insert_id"])>0)
                     return intval($result["insert_id"]);
             }
@@ -23,11 +24,16 @@ class ConversationModels extends DataModel{
         return false;
     }
 
-    public function getConversion($postable_id,$postable_type,$limit=0)
+    public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
-        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc; ";
+        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        if($updated_since>0)
+            $sql=$sql." and created_at>FROM_UNIXTIME($updated_since) ";
+
+        $sql=$sql." order by updated_at desc ";
         if($limit>0)
-            $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc limit $limit; ";
+            $sql=$sql." limit $limit;";
+
         $result=$this->getAll($sql);
         $identity=array();
         $posts=array();
