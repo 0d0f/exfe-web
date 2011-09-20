@@ -1,30 +1,58 @@
+/**
+ * @Description:    EXFE Calendar control.
+ * @Author:         HanDaoliang <handaoliang@gmail.com>
+ * @createDate:     Sup 15,2011
+ * @CopyRights:		http://www.exfe.com
+**/
+
+//Set exCalendar container.
+var calendarId = 'exCalendarContainer';
+var calendarContainerClassName = 'exCalendarContainer';
 //exCalendar config.
 var exCalPath = "/static/js/excal";
 var exCalLangPath = exCalPath + "/lang";
 var exCalLang = "en";
 
-//Set exCalendar container.
-var calendarId = 'exCalendarContainer';
-var calendarContainerClassName = 'exCalendarContainer';
-
-/**
- * Include a javascript file
- *
- **/
-function exInclude(fileName){
-    var headElementObject = document.getElementsByTagName('head')[0];
-    var scriptObj = document.createElement('script');
-    scriptObj.src = fileName;
-    scriptObj.type = 'text/javascript';
-    headElementObject.appendChild(scriptObj)
-}
-
-// Include language file..
+//language file..
 var languageFile = exCalLangPath + "/" + exCalLang + ".js";
-exInclude(languageFile);
+
+var exCal = {
+    version:"0.1",
+    /**
+     * Include a javascript file
+     *
+     **/
+    exInclude:function(fileName){
+        var headElementObject = document.getElementsByTagName('head')[0];
+        var scriptObj = document.createElement('script');
+        scriptObj.src = fileName;
+        scriptObj.type = 'text/javascript';
+        headElementObject.appendChild(scriptObj)
+    },
+
+    /**
+     * switch user selected datetime to standard datetime format
+     *
+     * */
+    switchDateTime:function(orgialDateTimeContainer, curDateTimeContainer){
+        var origialDateTime = jQuery(origialDateTime).val();
+        try {
+            var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
+            var dateTimeRegMatchArr = origialDateTime.match(objRegExpDateTime);
+            if(dateTimeRegMatchArr != null){
+                var dateArr = origialDateTime.split(" ");
+                var curDateTime = dateArr[0];
+                var curDateTimeArr = curDateTime.split("-");
+                var newDateTime = curDateTimeArr[2] + "-" + curDateTimeArr[0] + "-" + curDateTimeArr[1];
+                newDateTime += " " + dateArr[1] + " " + dateArr[2];
+                jQuery(curDateTimeContainer).val(newDateTime);
+            }
+        } catch(e) { /*alert(e);*/ }
+    }
+};
 
 //exCalendar main class.
-function exCal() {
+function exCalendar() {
     var currentYear = 0;
     var currentMonth = 0;
     var currentDay = 0;
@@ -36,28 +64,34 @@ function exCal() {
     var weekArr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     var monthArr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     var dateField = null;
+    //支持多个地方同时显示。
+    var dateDisplayField = null;
+    //支持隐藏域添加标准时间。
+    var dateHiddenField = null;
 
     /**
      * Exfe Calendar initialize function
      **/
-    this.init = initialize;
-    function initialize(textField, calendarContainer) {
+    this.initialize = initialize;
+    function initialize(textFieldContainer, calendarContainer, hiddenFieldContainer) {
         //set language...
         weekArr = exLang.weekArr;
         monthArr = exLang.monthArr;
 
         //set container id
-        if (typeof calendarContainer == "undefined"){
-            calendarId = 'exCalendarContainer';
-        }else{
+        if (typeof calendarContainer != "undefined"){
             calendarId = calendarContainer;
+        }
+        
+        if (typeof hiddenFieldContainer != "undefined"){
+            dateHiddenField = document.getElementById(hiddenFieldContainer);
         }
 
         //设置统一的ClassName以方便样式控制。
         calendarContainerObj = document.getElementById(calendarId);
         calendarContainerObj.className = calendarContainerClassName;
 
-        this.show(textField);
+        this.show(textFieldContainer);
     }
 
 
@@ -125,12 +159,35 @@ function exCal() {
             monthVar = curMonth >= 10 ? curMonth : "0"+curMonth;
             dayVar = curDay >= 10 ? curDay : "0"+curDay;
             var dateString = monthVar + "-" + dayVar + "-" + curYear;
+
+            //save standard time.
+            var standardDateString = curYear + "-" + monthVar + "-" + dayVar;
+            saveStandardDateTime(standardDateString);
+
+            //set dateField value.
             dateField.value = dateString;
+
+            //other field display datetime
+            if(dateDisplayField){
+                for(i=0; i < dateDisplayField.length; i++){
+                    dateDisplayField[i].innerHTML = dateString;
+                }
+            }
             //hide();
             //Refresh date table display
             refreshDateTables(curYear, curMonth, curDay);
         }
         return;
+    }
+
+    /**
+     * * save standard datetime string.
+     *
+     * */
+    function saveStandardDateTime(standardDateTime){
+        if(dateHiddenField){
+            dateHiddenField.value = standardDateTime;
+        }
     }
 
     /**
@@ -224,7 +281,8 @@ function exCal() {
         if(currentMinutes < 30){
             var showHours = currentHours > 12 ? parseInt(currentHours-12) : currentHours;
             showHours = showHours >= 10 ? showHours : "0"+showHours;
-            timeList.push(showHours + ":30" + dayNow);
+            standardHours = currentHours >= 10 ? currentHours : "0"+currentHours;
+            timeList.push({"displayTime":showHours + ":30" + dayNow, "standardTime":standardHours+":30:00"});
         }
 
         //在此之后的时间。往后显示24个小时的时间。
@@ -233,9 +291,10 @@ function exCal() {
             dayNow = h>=12 ? " PM" : " AM";
             var showHours = h > 12 ? h-12 : h;
             showHours = showHours >= 10 ? showHours : "0"+showHours;
+            standardHours = h >= 10 ? h : "0"+h;
 
-            timeList.push(showHours + ":00" + dayNow);
-            timeList.push(showHours + ":30" + dayNow);
+            timeList.push({"displayTime":showHours + ":00" + dayNow, "standardTime":standardHours+":00:00"});
+            timeList.push({"displayTime":showHours + ":30" + dayNow, "standardTime":standardHours+":30:00"});
         }
         return timeList;
     }
@@ -245,7 +304,7 @@ function exCal() {
      *
      * */
     this.setTimeData = setTimeData;
-    function setTimeData(timeStr){
+    function setTimeData(timeStr,standardTimeStr){
         var currentYear = getCurrentYear();
         var currentMonth = getCurrentMonth();
         if(currentMonth < 10){ currentMonth = "0" + currentMonth; }
@@ -253,20 +312,38 @@ function exCal() {
         if(currentDay < 10){ currentDay = "0" + currentDay; }
 
         var fieldString = currentMonth + "-" + currentDay + "-" + currentYear + " " + timeStr;
+
+        //standard date string.
+        var standardDateTimeString = currentYear + "-" + currentMonth + "-" + currentDay + " " + standardTimeStr;
+
         if(dateField.value) {
             try {
                 var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
                 var dateString = new String(dateField.value);
                 var dateTimeRegMatchArr = dateString.match(objRegExpDateTime);
                 if(dateTimeRegMatchArr != null){
-                    var dateArr = dateString.split(" ");
-                    if(dateArr.length > 0){
-                        fieldString = dateArr[0] + " " + timeStr;
+                    var datetimeArr = dateString.split(" ");
+                    if(datetimeArr.length > 0){
+                        fieldString = datetimeArr[0] + " " + timeStr;
+                        //save the standard date time string.
+                        var dateArr = datetimeArr[0].split("-");
+                        standardDateTimeString = dateArr[2] + "-" + dateArr[0] + "-" + dateArr[1] + " "  + standardTimeStr;
                     }
                 }
             } catch(e) { /*alert(e);*/ }
         }
+        //do save the standard date time string.
+        saveStandardDateTime(standardDateTimeString);
+
         dateField.value = fieldString;
+        //other field display datetime
+        if(dateDisplayField){
+            for(i=0; i < dateDisplayField.length; i++){
+                dateDisplayField[i].innerHTML = fieldString;
+            }
+        }
+
+        //refresh time list
         refreshTimeList(timeStr);
     }
 
@@ -336,9 +413,9 @@ function exCal() {
 
         var excalCon = "<div class='exCalDays'><table cellspacing='0' cellpadding='0' border='1' bordercolor='D3D4D4' id='exCalDateTable'>";
         excalCon += "<tr class='header'>";
-        excalCon += "  <td class='previous'><a href='javascript:changeCalendarMonth(-1);'>&lt;</a></td>";
+        excalCon += "  <td class='previous'><a href='javascript:exCal.changeCalendarMonth(-1);'>&lt;</a></td>";
         excalCon += "  <td colspan='5' class='title'>" + monthArr[currentMonth-1] + "&nbsp;&nbsp;" + currentYear + "</td>";
-        excalCon += "  <td class='next'><a href='javascript:changeCalendarMonth(1);'>&gt;</a></td>";
+        excalCon += "  <td class='next'><a href='javascript:exCal.changeCalendarMonth(1);'>&gt;</a></td>";
         excalCon += "</tr>";
         excalCon += "<tr><th>"+ weekArr[0] +"</th><th>"+ weekArr[1] +"</th><th>"+ weekArr[2] +"</th><th>"+ weekArr[3] +"</th><th>"+ weekArr[4] +"</th><th>"+ weekArr[5] +"</th><th>"+ weekArr[6] +"</th></tr>";
 
@@ -384,7 +461,7 @@ function exCal() {
                         }
                     }
 
-                    excalCon += "<td><a class='"+cssClass+"' id='"+currentYear+"-"+currentMonth+"-"+dayOfMonth+"' name='exCalDateLink' onclick=\"javascript:setCalendarDate("+currentYear+","+currentMonth+","+dayOfMonth+")\" href='javascript:;'>"+dayOfMonth+"</a></td>";
+                    excalCon += "<td><a class='"+cssClass+"' id='"+currentYear+"-"+currentMonth+"-"+dayOfMonth+"' name='exCalDateLink' onclick=\"javascript:exCal.setCalendarDate("+currentYear+","+currentMonth+","+dayOfMonth+")\" href='javascript:;'>"+dayOfMonth+"</a></td>";
                     dayOfMonth++;
                 } else {
                     excalCon += "<td class='empty'>&nbsp;</td>";
@@ -398,7 +475,7 @@ function exCal() {
         var timeList = createTimeList();
         excalCon += "<div class='exCalTimes'><ul><li class='header'>" + exLang.timeAllDay + "</li></ul><ul class='list'>";
         for(i=0; i<timeList.length; i++){
-            excalCon += "<li onclick='setCalendarTime(\""+ timeList[i] +"\");' name='exCalTimeList' id='" + timeList[i] + "'>"+ timeList[i] +"</li>";
+            excalCon += "<li onclick='exCal.setCalendarTime(\""+ timeList[i].displayTime +"\",\"" + timeList[i].standardTime + "\");' name='exCalTimeList' id='" + timeList[i].displayTime + "'>"+ timeList[i].displayTime +"</li>";
         }
         excalCon += "</ul></div>";
 
@@ -406,12 +483,45 @@ function exCal() {
     }
 
     /**
+     * Check if object is array.
+     *
+     * */
+    function isArray(obj) {
+        if(obj.constructor.toString().indexOf("Array") == -1){
+            return false;
+        }else{
+            return true;
+        }   
+    };
+
+    /**
+     * remove a item from array by item id.
+     *
+     * */
+    function removeItemById(myArray, itemIDToRemove) {
+        if(!isArray(myArray) || isNaN(itemIDToRemove)){
+            return false;
+        }   
+        myArray.splice(itemIDToRemove, 1); 
+        return myArray;
+    };
+
+    /**
      * show calendar..
      *
      * */
     this.show = show;
-    function show(field) {
+    function show(textFieldContainer) {
         can_hide = 0;
+
+        //支持多个时间显示框。
+        if(isArray(textFieldContainer)){
+            field = textFieldContainer[0];
+            dateDisplayField = removeItemById(textFieldContainer,0);
+        }else{
+            field = textFieldContainer;
+        }
+
         // If the calendar is visible and associated with, this field do not do anything.
         if (dateField == field) {
             return;
@@ -475,44 +585,49 @@ function exCal() {
 
 }
 
-//new calendar object.
-var exCalObj = new exCal();
+(function(){
+    exCal.exInclude(languageFile);
 
-//main function
-var exfeCalendar = function(textField, calendarContainer){
-    exCalObj.init(textField, calendarContainer);
-};
+    //new calendar object.
+    var exCalObj = new exCalendar();
 
-//clear calendar..
-function clearCalendar() {
-    exCalObj.clearDate();
-}
+    //main function
+    exCal.initCalendar = function(textFieldContainer, calendarContainer, hiddenFieldContainer){
+        exCalObj.initialize(textFieldContainer, calendarContainer, hiddenFieldContainer);
+    };
 
-//hidden calendar
-function hideCalendar() {
-    if (exCalObj.visible()) {
-        exCalObj.hide();
-    }
-}
+    //clear calendar..
+    exCal.clearCalendar = function() {
+        exCalObj.clearDate();
+    };
 
-//set calendar date
-function setCalendarDate(year, month, day) {
-    exCalObj.setDate(year, month, day);
-}
+    //hidden calendar
+    exCal.hideCalendar = function() {
+        if (exCalObj.visible()) {
+            exCalObj.hide();
+        }
+    };
 
-//set calendar time
-function setCalendarTime(timeStr) {
-    exCalObj.setTimeData(timeStr);
-}
+    //set calendar date
+    exCal.setCalendarDate = function(year, month, day) {
+        exCalObj.setDate(year, month, day);
+    };
 
-//while user change year
-function changeCalendarYear(change) {
-    exCalObj.changeYear(change);
-}
+    //set calendar time
+    exCal.setCalendarTime = function(timeStr,standardTimeStr) {
+        exCalObj.setTimeData(timeStr,standardTimeStr);
+    };
 
-//while user change month.
-function changeCalendarMonth(change) {
-    exCalObj.changeMonth(change);
-}
+    //while user change year
+    exCal.changeCalendarYear = function(change) {
+        exCalObj.changeYear(change);
+    };
 
-document.write("<div id='exCalendarContainer'></div>");
+    //while user change month.
+    exCal.changeCalendarMonth = function(change) {
+        exCalObj.changeMonth(change);
+    };
+
+    document.write("<div id='exCalendarContainer'></div>");
+
+})();

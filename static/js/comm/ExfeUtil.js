@@ -33,6 +33,162 @@ var odof = {
         util = window.util;
     }
 
+
+    /**
+     * -----------------------------------------------------------------
+     * - The Base common function:
+     * -     create Element
+     * -     createRandElementID
+     * -     createTimeStamp
+     * -     etc......
+     * -----------------------------------------------------------------
+    **/
+    /**
+     * Create a html element
+     * @htmlTagName, the name string, for example "div"
+     **/
+    util.createElement = function(htmlTagName) {
+        var obj = document.createElement(htmlTagName);
+        Element.extend(obj);
+        return (obj);
+    };
+
+    /**
+     * Create a rand element id (string)
+     * @None 
+     **/
+    util.createRandElementID = function() {
+        var now = new Date().getTime ();
+        return now + ":" + Math.floor(Math.random() * 100000000);
+    };
+
+    /**
+     * Create a time stamp
+     * @None 
+     **/
+    util.createTimeStamp = function() {
+        var now = new Date().getTime();;
+        return (now - now % 1000) / 1000;
+    };
+
+    /**
+     * Parse json date
+     * @JSONData, string
+     * @Return JSON Object.
+     **/
+    util.parseJSON = function(JSONData) {
+        var returnJSON = false;
+        if (String.prototype.parseJSON)
+        {
+            var s = String("(" + JSONData.responseText + ")");
+            returnJSON = s.parseJSON(function(k,v){return v;});
+        }else{
+            returnJSON = eval("(" + JSONData.responseText.unfilterJSON() + ")");
+        }
+        if (!returnJSON.timestamp){
+            returnJSON.timestamp = createTimeStamp();
+        }
+        return returnJSON;
+    };
+
+    /**
+     * Parse json date
+     * @Array Object
+     * @Return bool value
+     **/
+    util.isArray = function(obj) {
+        if(obj.constructor.toString().indexOf("Array") == -1){
+            return false;
+        }else{
+            return true;
+        }
+    };
+
+    /**
+     * Check if item in array
+     * @Array, items;
+     * @Return True or False
+     **/
+    util.inArray = function(myArray, item) {
+        var i;
+        for (i=0; i < myArray.length; i++) {
+            if (myArray[i] === item) {
+                return true;
+            }
+        }
+        return false;
+    }; 
+
+    /**
+     * Remove a item from Array by item value
+     * @Array, items;
+     * @Return Array
+     **/
+    util.removeItemByVal = function(myArray, itemToRemove) {
+        var j = 0;
+        while (j < myArray.length) {
+            if (myArray[j] == itemToRemove) {
+                myArray.splice(j, 1);
+            }
+            j++;
+        }
+        return myArray;
+    };
+
+    /**
+     * Remove a item from Array by item ID 
+     * @Array, items id;
+     * @Return Array
+     **/
+    util.removeItemById = function(myArray, itemIDToRemove){
+        if(!util.isArray(myArray) || isNaN(itemIDToRemove)){
+            return false;
+        }
+        myArray.splice(itemIDToRemove, 1);
+        return myArray;
+    };
+
+    /**
+     * check if string contain special chars
+     * @str, string
+     * @Return bool value
+     **/
+    util.checkSpecialString = function(str) {
+        var specialStringReg = RegExp(/[(\ )(\~)(\!)(\@)(\#)(\$)(\%)(\^)(\&)(\*)(\()(\))(\-)(\_)(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\')(\")(\,)(\.)(\/)(\<)(\>)(\?)(\)]+/);
+        return (specialStringReg.test(str));
+    };
+
+    /**
+     * trim
+     * @string.trim;
+     * @Return String
+     **/
+    util.trim = function(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    };
+
+    /**
+     * toDBC
+     * @string.trim;
+     * @Return String
+     **/
+    util.toDBC = function(str) {
+        var DBCStr = "";
+        for(var i=0; i<str.length; i++){
+            var c = str.charCodeAt(i);
+            if(c == 12288) {
+                DBCStr += String.fromCharCode(32);
+                continue;
+            }
+            if (c > 65280 && c < 65375) {
+                DBCStr += String.fromCharCode(c - 65248);
+                continue;
+            }
+            DBCStr += String.fromCharCode(c);
+        }
+        return DBCStr;
+    };
+
     /**
      * -----------------------------------------------------------------
      * - The function blew will be used to:
@@ -352,7 +508,6 @@ var odof = {
         }
     };
 
-
     /*
      * This function will be used to get the position of the mouse
      * @e, the event object
@@ -374,7 +529,6 @@ var odof = {
         };
     };
 
-
     /*
      * This function will be used to check whether the mouse is in the given DOM Elememnt
      * @e, the event object
@@ -388,7 +542,6 @@ var odof = {
         }
         return false;
     };
-
 
     util.makeDrag = function(sender, container, fnMousedown, fnMousemove, fnMouseup)
     {
@@ -454,7 +607,6 @@ var odof = {
     // -     manage the CSS and style
     // -----------------------------------------------------------------
 
-
     /*
      * Check whether the element has the given class
      * @el, the DOM elemenet
@@ -470,7 +622,6 @@ var odof = {
         }
         return false;
     };
-
 
     /*
      * This function will be used to add the class to the element
@@ -489,7 +640,6 @@ var odof = {
         el.className = arr.join(" ");
     };
 
-
     /*
      * This function will be used to remove the class from the given element
      * @el, the DOM element
@@ -505,7 +655,6 @@ var odof = {
         }
         el.className = arr.join(" ");
     };
-
 
     /*
      * This function will be used to find the element deeply
@@ -629,7 +778,6 @@ var odof = {
         return ret;
     };
 
-
     /*
      * This function will get the position of the object
      * @obj, the element, or the element id
@@ -659,8 +807,6 @@ var odof = {
         };
     };
 
-
-
     /*
      * This function will be used to check whether the parent is descendant of the node
      * @parent, the parent node
@@ -678,7 +824,6 @@ var odof = {
         return false;
     };
 
-
     /*
      * This function will be used to remove all the Child under one element
      * @e, the element whose children will be removed
@@ -688,7 +833,6 @@ var odof = {
             e.removeChild(e.lastChild);
         }
     };
-
 
     /*
      * This function will be used to get the Document Object by ID
@@ -721,14 +865,12 @@ var odof = {
         return el.style[styleName];
     };
 
-
     /*
      * This function will be used to get the destance of the scoll top to Document top
      */
     util.getScrollTop = function() {   
         return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     };
-
 
     /*
      * This function will be used to get the destance of the scoll left to Document left
@@ -737,14 +879,12 @@ var odof = {
         return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft;
     };
 
-
     /*
      * Get the Height of the Window
      */
     util.getClientHeight = function() {   
         return (document.compatMode == "CSS1Compat")? document.documentElement.clientHeight : document.body.clientHeight; 
     };
-
 
     /*
      * Get the Width of the Window

@@ -3,7 +3,10 @@
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
 <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
-<script type="text/javascript" src="/static/js/apps/gatherEdit.js"></script>
+<script type="text/javascript" src="/static/js/apps/CrossEdit.js"></script>
+<!-- Exfe Calendar -->
+<link type="text/css" href="/static/js/excal/skin/default/excal.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/excal/excal.js"></script>
 </head>
 
 <body>
@@ -56,119 +59,122 @@ $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
 $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
 $token=$_GET["token"];
 ?>
-<div class="gather_view_centerbg">
-<div id="edit_gather_bar" style="display:none;">
+<div class="cross_view_centerbg">
+<div id="edit_cross_bar" style="display:none;">
     <p class="titles">Editing <span>X</span></p>
     <p id="error_msg" class="error_msg"></p>
     <p class="done_btn"><a href="javascript:void(0);" id="submit_data">Done</a></p>
     <p class="revert">Revert</p>
 </div>
-<div id="content" class="gather_view_container">
+<div id="content" class="cross_view_container">
+    <div class="exfe_bubble" id="cross_time_bubble">
+        <div class="cross_dt_input"><input name="cross_datetime_original" id="cross_datetime_original" value="" /></div>
+        <div class="cross_dt_msg"></div>
+        <div id="cross_time_container"></div>
+    </div>
+
     <div class="menu_bar">
         <p class="lock_icon" id="private_icon"></p>
         <p class="lock_icon_desc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
         <p class="edit_icon" id="edit_icon"></p>
-        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
+        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit your cross.</p>
     </div>
-<div id="index" class="step">
-<h2><?php echo $cross["title"]; ?></h2>
-<div class="exfel">
-<?php echo $description; ?>
-<a href="">Expand</a>
+    <div id="index" class="step">
+        <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
+        <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
+        <div class="exfel">
+            <?php echo $description; ?>
+            <a href="">Expand</a>
+            <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
+                <li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
+                <li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
+                <li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
+            </ul>
+            <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="#" id="changersvp">Change?</a></div>
 
-<ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
-<li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
-<li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-<li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
-</ul>
-<div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="#" id="changersvp">Change?</a></div>
+            <div class="Conversation">
+            <h3>Conversation</h3>
+                <div class="commenttext">
+                <form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
+                <img style="width:40px;height:40px" src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+                </form>
+                </div>
+                <ul id="commentlist" class="commentlist">
+                <?php
+                if($cross["conversation"])
+                {
+                    foreach($cross["conversation"] as $conversation)
+                    {
+                    $posttime=RelativeTime(strtotime($conversation["updated_at"]));
+                    $identity=$conversation["identity"];
+                    //if($identity["name"]=="")
+                    //    $identity["name"]=$user["name"];
+                    //if($identity["avatar_file_name"]=="")
+                    //    $identity["avatar_file_name"]=$user["avatar_file_name"];
 
-<div class="Conversation">
-<h3>Conversation</h3>
-<div class="commenttext">
-<form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-<img style="width:40px;height:40px" src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
-</form>
-</div>
+                    //if($identity["name"]=="")
+                    //    $identity["name"]=$identity["external_identity"];
+                ?>
+                <li>
+                <p class="pic40"><img src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
+                </li>
+                <?php
+                    }
+                }
+                ?>
+                </ul>
 
-<ul id="commentlist" class="commentlist">
-<?php
-if($cross["conversation"])
-{
-    foreach($cross["conversation"] as $conversation)
-    {
-	$posttime=RelativeTime(strtotime($conversation["updated_at"]));
-	$identity=$conversation["identity"];
-	//if($identity["name"]=="")
-	//    $identity["name"]=$user["name"];
-	//if($identity["avatar_file_name"]=="")
-	//    $identity["avatar_file_name"]=$user["avatar_file_name"];
+            </div>
+       </div><!--exfel-->
+       <div class="exfer">
+           <div id="cross_times_area">
+               <h3><?php echo $begin_at_relativetime;?></h3>
+               <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
+           </div>
+           <h3><?php echo $place_line1; ?></h3>
+           <p class="tm"><?php echo $place_line2; ?></p>
 
-	//if($identity["name"]=="")
-	//    $identity["name"]=$identity["external_identity"];
-?>
-<li>
-<p class="pic40"><img src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
-</li>
-<?php
-    }
-}
-?>
-</ul>
+           <div class="exfee">
+               <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
+   <ul class="samlcommentlist">
 
-</div>
-</div><!--exfel-->
+               <?php
 
+               foreach($host_exfee as $exfee)
+               {
+                     if($exfee["name"]==$exfee["external_identity"])
+                       $exfee["name"]="";
+               //    if($exfee["avatar_file_name"]=="")
+               //        $exfee["avatar_file_name"]="default.png"
+               ?>
+               <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                   <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+                   <p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
+                   <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
+               </li>
+               <?php
+               }
+               ?>
+               <?php
+               foreach($normal_exfee as $exfee)
+               {
+                   if($exfee["name"]==$exfee["external_identity"]){
+                       $exfee["name"]="";
+                   }
+               ?>
+               <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                   <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+                   <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
+                   <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
+               </li>
+               <?php
+               }
+               ?>
 
-<div class="exfer">
-<h3><?php echo $begin_at_relativetime;?></h3>
-<p class="tm">
-<?php echo $begin_at_humandatetime;?>
-</p>
-<h3><?php echo $place_line1; ?></h3>
-<p class="tm"><?php echo $place_line2; ?></p>
-
-<div class="exfee">
-<div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
-<ul class="samlcommentlist">
-
-<?php
-
-foreach($host_exfee as $exfee)
-{
-      if($exfee["name"]==$exfee["external_identity"])
-        $exfee["name"]="";
-//    if($exfee["avatar_file_name"]=="")
-//        $exfee["avatar_file_name"]="default.png"
-?>
-<li id="exfee_<?php echo $exfee["identity_id"];?>">
-<p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-<p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
-<p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
-</li>
-<?php
-}
-?>
-<?php
-foreach($normal_exfee as $exfee)
-{
-      if($exfee["name"]==$exfee["external_identity"])
-        $exfee["name"]="";
-?>
-<li id="exfee_<?php echo $exfee["identity_id"];?>">
-<p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-<p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
-<p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
-</li>
-<?php
-}
-?>
-
-</ul>
-</div><!--exfee-->
-</div><!--exfer-->
+            </ul>
+        </div><!--exfee-->
+    </div><!--exfer-->
 <script type="text/javascript" src="/static/js/apps/cross.js"></script>
-
 
 </div><!--/#index-->
 </div><!--/#content-->
