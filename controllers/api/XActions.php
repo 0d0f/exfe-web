@@ -98,37 +98,53 @@ class XActions extends ActionController {
             exit(0);
         }
         $cross_id=$params["id"];
-        $external_identity=$_POST["external_identity"];
-
-        //check if this identity belongs user
-        
-        $userData=$this->getModelByName("user");
-        $identity_id=$userData->ifIdentityBelongsUser($external_identity,$check["user_id"]);
-        if($identity_id===FALSE)
+        if($_POST)
         {
-            $responobj["meta"]["code"]=403;
-            $responobj["meta"]["error"]="forbidden";
+            $external_identity=$_POST["external_identity"];
+
+            //check if this identity belongs user
+            
+            $userData=$this->getModelByName("user");
+            $identity_id=$userData->ifIdentityBelongsUser($external_identity,$check["user_id"]);
+            if($identity_id===FALSE)
+            {
+                $responobj["meta"]["code"]=403;
+                $responobj["meta"]["error"]="forbidden";
+                echo json_encode($responobj);
+                exit(0);
+            }
+            else if(intval($identity_id)>0)
+            {
+                $postData=$this->getModelByName("conversation");
+                $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["content"]);
+                if($insert_id>0)
+                {
+                    $responobj["meta"]["code"]=200;
+                    $responobj["meta"]["response"]["post_id"]=$insert_id;
+                    echo json_encode($responobj);
+                    exit(0);
+                }
+                else
+                {
+                    $responobj["meta"]["code"]=500;
+                    $responobj["meta"]["error"]="can't post";
+                    echo json_encode($responobj);
+                    exit(0);
+                }
+
+            }
+        }
+        else
+        {
+            //echo "get conversation";
+            //echo $params["updated_since"];
+            $postData=$this->getModelByName("conversation");
+            $result=$postData->getConversation($cross_id,"cross",intval($params["updated_since"]));
+            $responobj["meta"]["code"]=200;
+            $responobj["meta"]["response"]["conversation"]=$result;
             echo json_encode($responobj);
             exit(0);
-        }
-        else if(intval($identity_id)>0)
-        {
-            $postData=$this->getModelByName("conversation");
-            $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["content"]);
-            if($insert_id>0)
-            {
-                $responobj["meta"]["code"]=200;
-                $responobj["meta"]["response"]["post_id"]=$insert_id;
-                echo json_encode($responobj);
-                exit(0);
-            }
-            else
-            {
-                $responobj["meta"]["code"]=500;
-                $responobj["meta"]["error"]="can't post";
-                echo json_encode($responobj);
-                exit(0);
-            }
+
 
         }
 

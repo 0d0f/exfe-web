@@ -23,11 +23,16 @@ class ConversationModels extends DataModel{
         return false;
     }
 
-    public function getConversation($postable_id,$postable_type,$limit=0)
+    public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
-        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc; ";
+        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        if($updated_since>0)
+            $sql=$sql." and created_at>FROM_UNIXTIME($updated_since) ";
+
+        $sql=$sql." order by updated_at desc ";
         if($limit>0)
-            $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type' order by updated_at desc limit $limit; ";
+            $sql=$sql." limit $limit;";
+
         $result=$this->getAll($sql);
         $identity=array();
         $posts=array();
