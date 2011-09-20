@@ -141,10 +141,9 @@ class XActions extends ActionController {
             $postData=$this->getModelByName("conversation");
             $result=$postData->getConversation($cross_id,"cross",intval($params["updated_since"]));
             $responobj["meta"]["code"]=200;
-            $responobj["meta"]["response"]["conversations"]=$result;
+            $responobj["response"]["conversations"]=$result;
             echo json_encode($responobj);
             exit(0);
-
 
         }
 
