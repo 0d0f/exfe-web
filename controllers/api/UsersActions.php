@@ -45,6 +45,8 @@ class UsersActions extends ActionController {
 
         $Data=$this->getModelByName("X");
         $crosses=$Data->getCrossByUserId(intval($params["id"]),intval($params["updated_since"]));
+        if($crosses=="")
+            $crosses=array();
         
         $conversationData=$this->getModelByName("conversation");
         $identityData=$this->getModelByName("identity");
