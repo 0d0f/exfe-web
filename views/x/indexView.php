@@ -83,7 +83,10 @@ $token=$_GET["token"];
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
         <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
+        <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
+            <div id="cross_desc">
             <?php echo $description; ?>
+            </div>
             <a href="">Expand</a>
             <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
                 <li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
@@ -127,6 +130,7 @@ $token=$_GET["token"];
             </div>
        </div><!--exfel-->
        <div class="exfer">
+       <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
            <div id="cross_times_area">
                <h3><?php echo $begin_at_relativetime;?></h3>
                <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>

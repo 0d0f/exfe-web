@@ -161,7 +161,7 @@ function exCalendar() {
             var dateString = monthVar + "-" + dayVar + "-" + curYear;
 
             //save standard time.
-            var standardDateString = curYear + "-" + monthVar + "-" + dayVar;
+            var standardDateString = curYear + "-" + monthVar + "-" + dayVar + " 00:00:00";
             saveStandardDateTime(standardDateString);
 
             //set dateField value.

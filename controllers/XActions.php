@@ -21,7 +21,15 @@ class XActions extends ActionController {
                 $placeid=0;
 
             $_POST["place_id"]=$placeid;
-            $cross_id = $crossdata->gatherCross($identity_id, $_POST);
+
+            $cross = array(
+                "title"         =>mysql_real_escape_string($_POST["title"]),
+                "description"   =>mysql_real_escape_string($_POST["description"]),
+                "place_id"      =>$place_id,
+                "datetime"      =>$_POST["datetime"]
+            );
+            
+            $cross_id = $crossdata->gatherCross($identity_id, $cross);
 
             $helper=$this->getHelperByName("exfee");
             $helper->addExfeeIdentify($cross_id,$_POST["exfee_list"]);
@@ -49,13 +57,51 @@ class XActions extends ActionController {
         $XDraft->saveDraft($identity_id, $cross['title'], $_POST['cross']);
     }
 
-
     public function doGetDraft()
     {
         $identity_id = $_SESSION['identity_id'];
 
         $XDraft = $this->getModelByName('XDraft');
         echo $identity_id ? $XDraft->getDraft($identity_id) : json_encode(null);
+    }
+
+    //编辑Cross功能。
+    public function doCrossEdit()
+    {
+        $crossDataObj = $this->getDataModel("x");
+
+        $identity_id = $_SESSION['identity_id'];
+        $cross_id = base62_to_int($_GET["id"]);
+        $return_data = array("error"=>0,"msg"=>"");
+        if(!array_key_exists("ctitle", $_POST) || trim($_POST["ctitle"]) == ""){
+            $return_data["error"] = 1;
+            $return_data["msg"] = "The title can not be empty.";
+
+            header("Content-Type:application/json; charset=UTF-8");
+            echo json_encode($return_data);
+            exit();
+        }
+
+        $cross = array(
+                "id"            =>$cross_id,
+                "title"         =>mysql_real_escape_string($_POST["ctitle"]),
+                "desc"          =>mysql_real_escape_string($_POST["cdesc"]),
+                "start_time"    =>$_POST["ctime"],
+                "identity_id"   =>$identity_id
+        );
+
+        $result = $crossDataObj->updateCross($cross);
+        if(!$result){
+            $return_data["error"] = 2;
+            $return_data["msg"] = "System error.";
+
+            header("Content-Type:application/json; charset=UTF-8");
+            echo json_encode($return_data);
+            exit(0);
+        }
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($return_data);
+        exit(0);
     }
 
 
