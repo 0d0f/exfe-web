@@ -70,24 +70,29 @@ class XModels extends DataModel{
 
     public function fetchCross($userid, $begin_at = 0, $opening = true, $order_by = 'begin_at', $limit = 20)
     {
+        // Get user identities
         $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
         $identity_id_list = $this->getColumn($sql);
+
+        // Get crosses id
         for ($i=0; $i < sizeof($identity_id_list); $i++) {
             $identity_id_list[$i] = 'identity_id = ' . $identity_id_list[$i];
         }
         $str = implode(' or ', $identity_id_list);
         $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
         $cross_id_list = $this->getColumn($sql);
-        $crosses = array();
-        if (sizeof($cross_id_list) > 0) {
-            for($i = 0; $i < sizeof($cross_id_list); $i++) {
-                $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
-            }
-            $str     = implode(' or ', $cross_id_list);
-            $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . ' ' . $begin_at;
-            $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
-            $crosses = $this->getAll($sql);
+
+        // Get crosses
+        if (!sizeof($cross_id_list)) {
+            return array();
         }
+        for($i = 0; $i < sizeof($cross_id_list); $i++) {
+            $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
+        }
+        $str     = implode(' or ', $cross_id_list);
+        $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . ' ' . $begin_at;
+        $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+        $crosses = $this->getAll($sql);
         return $crosses;
     }
 

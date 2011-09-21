@@ -40,6 +40,7 @@ class InvitationModels extends DataModel{
         //$result=$this->getAll($sql);
         //return $result;
     }
+
     public function rsvp($cross_id,$identity_id,$state)
     {
         $sql="update invitations set state=$state where identity_id=$identity_id and cross_id=$cross_id;";
@@ -52,6 +53,7 @@ class InvitationModels extends DataModel{
         else
             return false;
     }
+
     public function addInvitation($cross_id,$identity_id,$state=0)
     {
         //TODO: ADD token
@@ -64,6 +66,7 @@ class InvitationModels extends DataModel{
             return intval($result["insert_id"]);
 
     }
+
     public function getInvitatedIdentityByUserid($userid,$cross_id)
     {
 
@@ -110,6 +113,7 @@ class InvitationModels extends DataModel{
         }
         return $invitations;
     }
+
     public function ifIdentityHasInvitation($identity_id,$cross_id)
     {
         $sql="select id from invitations where identity_id=$identity_id and cross_id=$cross_id;";
@@ -119,6 +123,7 @@ class InvitationModels extends DataModel{
 
         return false;
     }
+
     public function ifIdentityHasInvitationByToken($token,$cross_id)
     {
         $sql="select id from invitations where token='$token' and  cross_id=$cross_id;";
@@ -128,4 +133,16 @@ class InvitationModels extends DataModel{
 
         return false;
     }
+
+    public function getConfirmedIdentityIdsByCrossIds($cross_ids)
+    {
+        if ($cross_ids) {
+            $cross_ids = implode(' OR `cross_id` = ', $cross_ids);
+            $sql       = "SELECT `identity_id`, `cross_id` FROM `invitations` WHERE (`cross_id` = {$cross_ids}) AND `state` = 1;";
+            return $this->getAll($sql);
+        } else {
+            return array();
+        }
+    }
+
 }

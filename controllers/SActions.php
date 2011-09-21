@@ -176,39 +176,77 @@ class SActions extends ActionController {
 
     public function doProfile()
     {
-        if (intval($_SESSION['userid']) > 0) {
-            $identityData = $this->getModelByName('identity');
-            $identities = $identityData->getIdentitiesByUser($_SESSION['userid']);
-            $this->setVar('identities', $identities);
-
-            $userData = $this->getModelByName('user');
-            $user = $userData->getUser($_SESSION['userid']);
-            $this->setVar('user', $user);
-
-            $today     = strtotime(date('Y-m-d'));
-            $upcoming  = $today + 60 * 60 * 24 * 3;
-            $sevenDays = $today + 60 * 60 * 24 * 7;
-            $crossdata = $this->getModelByName('x');
-            $crosses   = $crossdata->fetchCross($identities[0]['id'], $today);
-            $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, false, 'begin_at DESC', 20 - count($crosses));
-            foreach ($crosses as $crossI => $crossItem) {
-                $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
-                if ($crosses[$crossI]['timestamp'] < $upcoming) {
-                    $crosses[$crossI]['sort'] = 'upcoming';
-                } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
-                    $crosses[$crossI]['sort'] = 'sevenDays';
-                } else {
-                    $crosses[$crossI]['sort'] = 'later';
-                }
-            }
-            $this->setVar('crosses', $crosses);
-            $this->setVar('pastXs',  $pastXs);
-
-            $this->displayView();
-        } else {
+        if (intval($_SESSION['userid']) <= 0) {
             header( 'Location: /s/login' ) ;
             exit(0);
         }
+
+        // Get identity
+        $identityData = $this->getModelByName('identity');
+        $identities   = $identityData->getIdentitiesByUser($_SESSION['userid']);
+        $this->setVar('identities', $identities);
+
+        // Get user informations
+        $userData = $this->getModelByName('user');
+        $user = $userData->getUser($_SESSION['userid']);
+        $this->setVar('user', $user);
+
+        // Get crosses
+        $today     = strtotime(date('Y-m-d'));
+        $upcoming  = $today + 60 * 60 * 24 * 3;
+        $sevenDays = $today + 60 * 60 * 24 * 7;
+        $crossdata = $this->getModelByName('x');
+        $crosses   = $crossdata->fetchCross($identities[0]['id'], $today);
+        $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, false, 'begin_at DESC', 20 - count($crosses));
+        foreach ($crosses as $crossI => $crossItem) {
+            $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
+            if ($crosses[$crossI]['timestamp'] < $upcoming) {
+                $crosses[$crossI]['sort'] = 'upcoming';
+            } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
+                $crosses[$crossI]['sort'] = 'sevenDays';
+            } else {
+                $crosses[$crossI]['sort'] = 'later';
+            }
+        }
+        foreach ($pastXs as $pastXI => $pastXItem) {
+            $pastXItem['sort'] = 'past';
+            array_push($crosses, $pastXItem);
+        }
+
+        // Get confirmed identity ids
+        $cfedIds = array();
+        foreach ($crosses as $crossI => $crossItem) {
+            array_push($cfedIds, $crossItem['id']);
+        }
+        $modIvit = $this->getModelByName('invitation');
+        $cfedIds = $modIvit->getConfirmedIdentityIdsByCrossIds($cfedIds);
+
+        // Get identities
+        $idents  = array();
+        foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
+            array_push($idents, $cfedIdItem['identity_id']);
+        }
+        $idents  = $identityData->getIdentitiesByIdentityIds(array_flip(array_flip($idents)));
+
+        // Get human identity
+        $hmIdent = array();
+        $modUser = $this->getModelByName('user');
+        foreach ($idents as $identI => $identItem) {
+            $hmIdent[$identItem['id']] = humanIdentity($identItem, $modUser->getUserByIdentityId($identItem['identity_id']));
+        }
+
+        // Add confirmed informations into crosses
+        foreach ($crosses as $crossI => $crossItem) {
+            $crosses[$crossI]['confirmed'] = array();
+            foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
+                if ($cfedIdItem['cross_id'] === $crossItem['id']) {
+                    array_push($crosses[$crossI]['confirmed'], $hmIdent[$cfedIdItem['identity_id']]);
+                }
+            }
+        }
+
+        $this->setVar('crosses', $crosses);
+        $this->displayView();
     }
 
     public function doIfIdentityExist()

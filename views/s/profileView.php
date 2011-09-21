@@ -7,7 +7,6 @@
 $identities = $this->getVar('identities');
 $user       = $this->getVar('user');
 $crosses    = $this->getVar('crosses');
-$pastXs     = $this->getVar('pastXs');
 ?>
 <div class="centerbg">
 <div class="edit_user">
@@ -34,14 +33,23 @@ $pastXs     = $this->getVar('pastXs');
     $later     = '';
     $past      = '';
     foreach ($crosses as $crossI => $crossItem) {
-        $strCross = '<div class="coming">'
-                  .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
-                  .     '<div class="maringbt">'
-                  .         "<p>{$crossItem['begin_at']}</p>"
-                  .         "<p>{$crossItem['place_line1']}" . ($crossItem['place_line2'] ? " <span>({$crossItem['place_line2']})</span>" : '') . '</p>'
-                  .         "<p>4 confirmed: gkp, dm, Virushuo x2</p>"
-                  .     '</div>'
-                  . '</div>';
+        if ($crossItem['confirmed']) {
+            $arrConfirmed = array();
+            foreach ($crossItem['confirmed'] as $cfmI => $cfmItem) {
+                array_push($arrConfirmed, $cfmItem['name']);
+            }
+            $strConfirmed = count($crossItem['confirmed']) . ' confirmed: ' . implode(', ', $arrConfirmed);
+        } else {
+            $strConfirmed = '0 confirmed';
+        }
+        $strCross =  '<div class="coming">'
+         .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
+         .     '<div class="maringbt">'
+         .         "<p>{$crossItem['begin_at']}</p>"
+         .         "<p>{$crossItem['place_line1']}" . ($crossItem['place_line2'] ? " <span>({$crossItem['place_line2']})</span>" : '') . '</p>'
+         .         "<p>{$strConfirmed}</p>"
+         .     '</div>'
+         . '</div>';
         switch ($crossItem['sort']) {
             case 'upcoming':
                 $upcoming  = ($upcoming  ?: '<div class="p_right"><img src="images/translation.gif" class="l_icon"/>Today & Upcoming<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
@@ -51,18 +59,10 @@ $pastXs     = $this->getVar('pastXs');
                 break;
             case 'later':
                 $later     = ($later     ?: '<div class="p_right">Later<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
+                break;
+            case 'past':
+                $past      = ($past      ?: '<div class="p_right">Past<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
         }
-    }
-    foreach ($pastXs as $crossI => $crossItem) {
-        $past     = ($past ?: '<div class="p_right">Past<img src="images/translation.gif" class="arrow"/></div>')
-                  . '<div class="coming">'
-                  .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
-                  .     '<div class="maringbt">'
-                  .         "<p>{$crossItem['begin_at']}</p>"
-                  .         "<p>{$crossItem['place_line1']}" . ($crossItem['place_line2'] ? " <span>({$crossItem['place_line2']})</span>" : '') . '</p>'
-                  .         "<p>4 confirmed: gkp, dm, Virushuo x2</p>"
-                  .     '</div>'
-                  . '</div>';
     }
     echo $upcoming . $sevenDays . $later . $past;
 ?>
