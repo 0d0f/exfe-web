@@ -37,7 +37,7 @@ class XModels extends DataModel{
     public function getCrossByUserId($userid,$updated_since=0)
     {
         //get all identityid
-        $sql="select identityid from user_identity where userid=$userid;";
+        $sql="select identityid from user_identity where userid=$userid ;";
         $identity_id_list=$this->getColumn($sql);
         for($i=0;$i<sizeof($identity_id_list);$i++)
         {
@@ -59,7 +59,7 @@ class XModels extends DataModel{
                 $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
             }
             $str=implode(" or ",$cross_id_list);
-            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at;";
+            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at desc;";
             $crosses=$this->getAll($sql);
             return $crosses;
         }
