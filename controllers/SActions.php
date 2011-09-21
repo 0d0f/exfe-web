@@ -201,6 +201,8 @@ class SActions extends ActionController {
                     $crosses[$crossI]['sort'] = 'later';
                 }
             }
+            $this->setVar('crosses', $crosses);
+            $this->setVar('pastXs',  $pastXs);
 
             $this->displayView();
         } else {
