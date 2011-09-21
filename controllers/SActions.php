@@ -193,15 +193,14 @@ class SActions extends ActionController {
 
         // Get crosses
         $today     = strtotime(date('Y-m-d'));
-        print_r($today);
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crossdata = $this->getModelByName('x');
-        $crosses   = $crossdata->fetchCross($identities[0]['id'], $today);
-        $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, false, 'begin_at DESC', 20 - count($crosses));
+        $crosses   = $crossdata->fetchCross($identities[0]['id'], $today); // Why "0"? @virushuo says "no mulit-identity" in one user now
+        $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
+        //$recenUpdt = $crossdata->fetchCross($identities[0]['id'], 0, null, 'updated_at DESC', 10);
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
-            print_r('/' . $crosses[$crossI]['timestamp']);
             if ($crosses[$crossI]['timestamp'] < $upcoming) {
                 $crosses[$crossI]['sort'] = 'upcoming';
             } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
@@ -214,7 +213,10 @@ class SActions extends ActionController {
             $pastXItem['sort'] = 'past';
             array_push($crosses, $pastXItem);
         }
-
+        //foreach ($recenUpdt as $recenUpdtI => $recenUpdtItem) {
+        //    $recenUpdtItem['sort'] = 'updated';
+        //    array_push($crosses, $pastXItem);
+        //}
         // Get confirmed identity ids
         $cfedIds = array();
         foreach ($crosses as $crossI => $crossItem) {
@@ -222,21 +224,18 @@ class SActions extends ActionController {
         }
         $modIvit = $this->getModelByName('invitation');
         $cfedIds = $modIvit->getConfirmedIdentityIdsByCrossIds($cfedIds);
-
         // Get identities
         $idents  = array();
         foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
             array_push($idents, $cfedIdItem['identity_id']);
         }
         $idents  = $identityData->getIdentitiesByIdentityIds(array_flip(array_flip($idents)));
-
         // Get human identity
         $hmIdent = array();
         $modUser = $this->getModelByName('user');
         foreach ($idents as $identI => $identItem) {
             $hmIdent[$identItem['id']] = humanIdentity($identItem, $modUser->getUserByIdentityId($identItem['identity_id']));
         }
-
         // Add confirmed informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['confirmed'] = array();
@@ -246,8 +245,22 @@ class SActions extends ActionController {
                 }
             }
         }
-
         $this->setVar('crosses', $crosses);
+
+        // Get new invitations
+        $idents = array();
+        foreach ($identities as $identI => $identItem) {
+            array_push($idents, $identItem['id']);
+        }
+        $newInvt = $modIvit->getNewInvitationsByIdentityIds($idents);
+        // Get crosses of invitations
+        foreach ($newInvt as $newInvtI => $newInvtItem) {
+            $identity = $identityData->getIdentityById($newInvtItem['identity_id']);
+            $newInvt[$newInvtI]['sender'] = humanIdentity($identity, $modUser->getUserByIdentityId($newInvtItem['identity_id']));
+            $newInvt[$newInvtI]['cross']  = $crossdata->getCross($newInvtItem['cross_id']);
+        }
+        $this->setVar('newInvt', $newInvt);
+
         $this->displayView();
     }
 

@@ -4,9 +4,10 @@
 <body>
 <?php include "share/nav.php"; ?>
 <?php
-$identities = $this->getVar('identities');
-$user       = $this->getVar('user');
-$crosses    = $this->getVar('crosses');
+    $identities = $this->getVar('identities');
+    $user       = $this->getVar('user');
+    $crosses    = $this->getVar('crosses');
+    $newInvt    = $this->getVar('newInvt');
 ?>
 <div class="centerbg">
 <div class="edit_user">
@@ -68,20 +69,18 @@ $crosses    = $this->getVar('crosses');
 ?>
 </div>
 <div class="right">
-<div class="invitations">
-<div class="p_right"><img class="text" src="images/translation.gif"/><a href="#">invitations</a></div>
-<dl class="bnone">
-<dt><a href="#">Bay Area VC Talk</a></dt>
-<dd><a href="#">10AM Tuesday by gkp</a></dd>
-<dd><button type='button'>Accept</button></dd>
-</dl>
-<dl class="bnone">
-<dt><a href="#">Film Kungfu Panda</a></dt>
-<dd><a href="#">4 Jun at Mountain View by Xin Li</a></dd>
-<dd><button type='button'>Accept</button></dd>
-</dl>
-</div>
-<div class="shadow_310"></div>
+<?php
+    $strInvt = $newInvt ? '<div class="invitations"><div class="p_right"><img class="text" src="images/translation.gif"/><a href="#">invitations</a></div>' : '';
+    foreach ($newInvt as $newInvtI => $newInvtItem) {
+        $strInvt .= '<dl class="bnone">'
+                  .     "<dt><a href=\"#\">{$newInvtItem['cross']['title']}</a></dt>"
+                  .     "<dd><a href=\"#\">{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</a></dd>"
+                  .     '<dd><button type="button">Accept</button></dd>'
+                  . '</dl>';
+    }
+    $strInvt .= $newInvt ? '</div><div class="shadow_310"></div>' : '';
+    echo $strInvt;
+?>
 <div class="Recently_updates">
 <div class="p_right"><img class="update" src="images/translation.gif"/><a href="#">Recently updates</a></div>
 <div class="redate">

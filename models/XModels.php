@@ -1,5 +1,6 @@
 <?php
-class XModels extends DataModel{
+class XModels extends DataModel {
+
     public function gatherCross($identityId,$cross)
     {
         // gather a empty cross, state=draft
@@ -68,7 +69,7 @@ class XModels extends DataModel{
         //now, if a cross related with you, you must have a invitation.
     }
 
-    public function fetchCross($userid, $begin_at = 0, $opening = true, $order_by = 'begin_at', $limit = 20)
+    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20)
     {
         // Get user identities
         $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
@@ -90,11 +91,19 @@ class XModels extends DataModel{
             $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
         }
         $str     = implode(' or ', $cross_id_list);
-        $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . " FROM_UNIXTIME({$begin_at})";
+        switch ($opening) {
+            case 'yes':
+                $strTime = " and begin_at >= FROM_UNIXTIME({$begin_at})";
+                break;
+            case 'no':
+                $strTime = " and begin_at <  FROM_UNIXTIME({$begin_at})";
+                break;
+            default:
+                $strTime = '';
+        }
         $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
         $crosses = $this->getAll($sql);
         return $crosses;
     }
 
 }
-

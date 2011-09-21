@@ -145,4 +145,11 @@ class InvitationModels extends DataModel{
         }
     }
 
+    public function getNewInvitationsByIdentityIds($identity_ids, $limit = 10)
+    {
+        $identity_ids = implode(' OR `identity_id` = ', $identity_ids);
+        $sql = "SELECT * FROM `invitations` WHERE (`identity_id` = {$identity_ids}) AND `state` = 0 ORDER by `updated_at` DESC LIMIT {$limit};";
+        return $this->getAll($sql);
+    }
+
 }
