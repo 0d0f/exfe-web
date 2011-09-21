@@ -193,6 +193,7 @@ class SActions extends ActionController {
 
         // Get crosses
         $today     = strtotime(date('Y-m-d'));
+        print_r($today);
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crossdata = $this->getModelByName('x');
@@ -200,6 +201,7 @@ class SActions extends ActionController {
         $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, false, 'begin_at DESC', 20 - count($crosses));
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
+            print_r('/' . $crosses[$crossI]['timestamp']);
             if ($crosses[$crossI]['timestamp'] < $upcoming) {
                 $crosses[$crossI]['sort'] = 'upcoming';
             } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {

@@ -11,7 +11,7 @@ class XModels extends DataModel{
         //$end_at=$cross["end_at"];
         //$duration=$cross["duration"];
 
-        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";	
+        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";
 
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
@@ -90,7 +90,7 @@ class XModels extends DataModel{
             $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
         }
         $str     = implode(' or ', $cross_id_list);
-        $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . ' ' . $begin_at;
+        $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . " FROM_UNIXTIME({$begin_at})";
         $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
         $crosses = $this->getAll($sql);
         return $crosses;
