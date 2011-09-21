@@ -7,21 +7,12 @@ class XModels extends DataModel{
         $time=time();
         //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
 
-        $title=$cross["title"];
-        $description=$cross["description"];
-
-        $datetime=$cross["datetime"];
-
-        $begin_at=$datetime;
         //$begin_at=$cross["begin_at"];
         //$end_at=$cross["end_at"];
         //$duration=$cross["duration"];
-        $place_id=intval($cross["place_id"]);
 
-        $title=mysql_real_escape_string($title);
-        $description=mysql_real_escape_string($description);
+        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";	
 
-        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','$title','$description','$begin_at','$end_at','$duration',$place_id);";
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
@@ -31,6 +22,15 @@ class XModels extends DataModel{
     {
         $sql="select * from crosses where id=$crossid";
         $result=$this->getRow($sql);
+        return $result;
+    }
+
+    //update cross
+    public function updateCross($cross)
+    {
+        $time=time();
+        $sql = "UPDATE crosses SET updated_at=FROM_UNIXTIME($time), title='".$cross["title"]."', description='".$cross["desc"]."', begin_at='".$cross["start_time"]."' WHERE id=".$cross["id"];
+        $result = $this->query($sql);
         return $result;
     }
 
