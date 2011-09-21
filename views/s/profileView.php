@@ -3,20 +3,20 @@
 </head>
 <body>
 <?php include "share/nav.php"; ?>
-<?php 
-$identities=$this->getVar("identities");
-//print_r($identities);
-$user=$this->getVar("user");
+<?php
+$identities = $this->getVar('identities');
+$user       = $this->getVar('user');
+$crosses    = $this->getVar('crosses');
+$pastXs     = $this->getVar('pastXs');
 ?>
-<!--profile_for_develop-->
 <div class="centerbg">
 <div class="edit_user">
-<div id="profile_avatar"><img class="big_header" src="/eimgs/80_80_<?php echo $user["avatar_file_name"];?>" alt="" /></div>
+<div id="profile_avatar"><img class="big_header" src="/eimgs/80_80_<?php echo $user["avatar_file_name"];?>" alt=""/></div>
 <button style="display:none" id="changeavatar">Change...</button>
 <div class="u_con">
 <h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>
-<p><img class="s_header" src="" alt="" /><b><span class="name">SteveE</span> @<em>stevexfee</em></b> <i><img class="worning" src="images/translation.gif" alt="" />Authorization failed <button type='button' class="boright">Re-Authorize</button></i></p>
-<p><img class="s_header" src="images/user_header_2.jpg" alt="" /><em>steve@0d0f.com</em><i><img class="worning" src="images/translation.gif" alt="" />Authorization failed <button type='button' class="boright">Resend</button></i></p>
+<p><img class="s_header" src="" alt="" /><b><span class="name">SteveE</span> @<em>stevexfee</em></b> <i><img class="worning" src="images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Re-Authorize</button></i></p>
+<p><img class="s_header" src="images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p>
 </div>
 <div class="u_num">
 <p>57</p>
@@ -28,58 +28,48 @@ $user=$this->getVar("user");
 <div class="shadow_840"></div>
 <div class="profile_main">
 <div class="left">
-<div class="p_right"><img src="images/translation.gif" class="l_icon"  />Upcoming<img src="images/translation.gif" class="arrow"  /></div>
-<div class="coming">
-<div class="a_tltle">Dinner in SF</div>
-<div class="maringbt">
-<p>6:30PM Tomorrow, Friday April 8 </p>
-<p>Crab House <span>(Pier 39, 203 C, San Francis…)</span></p>
-<p>4 confirmed: gkp, dm, Virushuo x2</p>
-</div>
-</div>
-<div class="coming">
-<div class="a_tltle">Ferry famers market</div>
-<div class="maringbt">
-<p>10AM, Saturday April 9  </p>
-<p>Ferry market <span>(1 Ferry Building, San Francisco…)</span></p>
-<p>6 confirmed: gkp, dm, Virushuo x2, delphij, Rainux</p>
-</div>
-</div>
-<div class="coming">
-<div class="a_tltle">0d0f team con call</div>
-<div class="maringbt">
-<p>11PM, Saturday April 9</p>
-<p>4 confirmed: gkp, dm, Virushuo, Rainux</p>
-</div>
-</div>
-<div class="p_right">Next 7 days<img src="images/translation.gif" class="arrow"  /></div>
-<div class="coming">
-<div class="a_tltle">0d0f team con call</div>
-<div class="maringbt">
-<p>11PM, Saturday April 24 </p>
-<p>4 confirmed: gkp, dm, Virushuo, Rainux</p>
-</div>
-</div>
-<div class="p_right">Later<img src="images/translation.gif" class="arrow"  /></div>
-<div class="coming">
-<div class="a_tltle">Farewell party</div>
-<div class="maringbt">
-<p>5PM, Friday April 1</p>
-<p>12 confirmed: gkp, dm, Virushuo x2, Rainux, joexfee@0d0f.com …</p>
-</div>
-</div>
-<div class="p_right">Past<img src="images/translation.gif" class="arrow"  /></div>
-<div class="coming">
-<div class="a_tltle">0d0f team con call</div>
-<div class="maringbt">
-<p>11PM, Saturday April 16</p>
-<p>4 confirmed: gkp, dm, Virushuo, Rainux</p>
-</div>
-</div>
+<?php
+    $upcoming  = '';
+    $sevenDays = '';
+    $later     = '';
+    $past      = '';
+    foreach ($crosses as $crossI => $crossItem) {
+        $strCross = '<div class="coming">'
+                  .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
+                  .     '<div class="maringbt">'
+                  .         "<p>{$crossItem['begin_at']}</p>"
+                  .         "<p>{$crossItem['place_line1']}" . ($crossItem['place_line2'] ? " <span>({$crossItem['place_line2']})</span>" : '') . '</p>'
+                  .         "<p>4 confirmed: gkp, dm, Virushuo x2</p>"
+                  .     '</div>'
+                  . '</div>';
+        switch ($crossItem['sort']) {
+            case 'upcoming':
+                $upcoming  = ($upcoming  ?: '<div class="p_right"><img src="images/translation.gif" class="l_icon"/>Today & Upcoming<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
+                break;
+            case 'sevenDays':
+                $sevenDays = ($sevenDays ?: '<div class="p_right">Next 7 days<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
+                break;
+            case 'later':
+                $later     = ($later     ?: '<div class="p_right">Later<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
+        }
+    }
+    foreach ($pastXs as $crossI => $crossItem) {
+        $past     = ($past ?: '<div class="p_right">Past<img src="images/translation.gif" class="arrow"/></div>')
+                  . '<div class="coming">'
+                  .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
+                  .     '<div class="maringbt">'
+                  .         "<p>{$crossItem['begin_at']}</p>"
+                  .         "<p>{$crossItem['place_line1']}" . ($crossItem['place_line2'] ? " <span>({$crossItem['place_line2']})</span>" : '') . '</p>'
+                  .         "<p>4 confirmed: gkp, dm, Virushuo x2</p>"
+                  .     '</div>'
+                  . '</div>';
+    }
+    echo $upcoming . $sevenDays . $later . $past;
+?>
 </div>
 <div class="right">
 <div class="invitations">
-<div class="p_right"><img class="text" src="images/translation.gif"  /><a href="#">invitations</a></div>
+<div class="p_right"><img class="text" src="images/translation.gif"/><a href="#">invitations</a></div>
 <dl class="bnone">
 <dt><a href="#">Bay Area VC Talk</a></dt>
 <dd><a href="#">10AM Tuesday by gkp</a></dd>
@@ -93,7 +83,7 @@ $user=$this->getVar("user");
 </div>
 <div class="shadow_310"></div>
 <div class="Recently_updates">
-<div class="p_right"><img class="update" src="images/translation.gif"  /><a href="#">Recently updates</a></div>
+<div class="p_right"><img class="update" src="images/translation.gif"/><a href="#">Recently updates</a></div>
 <div class="redate">
 <h5>Dinner in SF</h5>
 <div class="maringbt">
@@ -123,17 +113,9 @@ $user=$this->getVar("user");
 </div>
 </div>
 
-
-
-
-
 <!--/#content-->
 <div id="footerBao">
-
 </div><!--/#footerBao-->
-
-
 
 </body>
 </html>
-

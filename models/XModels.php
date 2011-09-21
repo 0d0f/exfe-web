@@ -5,13 +5,14 @@ class XModels extends DataModel{
         // gather a empty cross, state=draft
         // state=1 draft
         $time=time();
-        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";	
+        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
 
         //$begin_at=$cross["begin_at"];
         //$end_at=$cross["end_at"];
         //$duration=$cross["duration"];
 
         $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";	
+
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
@@ -66,5 +67,29 @@ class XModels extends DataModel{
         //get my host cross or cross_id
         //now, if a cross related with you, you must have a invitation.
     }
+
+    public function fetchCross($userid, $begin_at = 0, $opening = true, $order_by = 'begin_at', $limit = 20)
+    {
+        $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
+        $identity_id_list = $this->getColumn($sql);
+        for ($i=0; $i < sizeof($identity_id_list); $i++) {
+            $identity_id_list[$i] = 'identity_id = ' . $identity_id_list[$i];
+        }
+        $str = implode(' or ', $identity_id_list);
+        $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
+        $cross_id_list = $this->getColumn($sql);
+        $crosses = array();
+        if (sizeof($cross_id_list) > 0) {
+            for($i = 0; $i < sizeof($cross_id_list); $i++) {
+                $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
+            }
+            $str     = implode(' or ', $cross_id_list);
+            $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . ' ' . $begin_at;
+            $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+            $crosses = $this->getAll($sql);
+        }
+        return $crosses;
+    }
+
 }
 
