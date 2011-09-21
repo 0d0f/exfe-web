@@ -185,12 +185,23 @@ class SActions extends ActionController {
             $user = $userData->getUser($_SESSION['userid']);
             $this->setVar('user', $user);
 
-            ///////////////////////////////////////
-            //$crossdata = $this->getModelByName('x');
-            //var_dump($crossdata->getCrossByUserId($identities[0]['id'], 0, true, 'begin_at', 20));
-            //return;
+            $today     = strtotime(date('Y-m-d'));
+            $upcoming  = $today + 60 * 60 * 24 * 3;
+            $sevenDays = $today + 60 * 60 * 24 * 7;
+            $crossdata = $this->getModelByName('x');
+            $crosses   = $crossdata->fetchCross($identities[0]['id'], $today);
+            $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, false, 'begin_at DESC', 20 - count($crosses));
+            foreach ($crosses as $crossI => $crossItem) {
+                $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
+                if ($crosses[$crossI]['timestamp'] < $upcoming) {
+                    $crosses[$crossI]['sort'] = 'upcoming';
+                } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
+                    $crosses[$crossI]['sort'] = 'sevenDays';
+                } else {
+                    $crosses[$crossI]['sort'] = 'later';
+                }
+            }
 
-            ///////////////////////////////////////
             $this->displayView();
         } else {
             header( 'Location: /s/login' ) ;

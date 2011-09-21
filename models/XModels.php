@@ -34,7 +34,7 @@ class XModels extends DataModel{
         return $result;
     }
 
-    public function getCrossByUserId($userid, $updated_since = 0, $opening = false, $order_by = 'created_at', $limit = 50)
+    public function getCrossByUserId($userid,$updated_since=0)
     {
         //get all identityid
         $sql="select identityid from user_identity where userid=$userid;";
@@ -47,13 +47,11 @@ class XModels extends DataModel{
 
         //get my invitations
         //find cross_id
-        if (intval($updated_since) == 0) {
-            $sql = "select distinct cross_id from invitations where ({$str}) order by {$order_by} limit {$limit}";
-        } else {
-            $sql = "select distinct cross_id from invitations where ({$str}) and created_at>FROM_UNIXTIME({$updated_since}) order by {$order_by} limit {$limit}";
-        }
-        $strTime = $opening ? ' and begin_at > NOW()' : '';
-        $cross_id_list = $this->getColumn($sql);
+        if (intval($updated_since)==0)
+            $sql="select distinct cross_id from invitations where  ($str)  order by created_at limit 50";
+        else
+            $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
+        $cross_id_list=$this->getColumn($sql);
         if(sizeof($cross_id_list)>0)
         {
             for($i=0;$i<sizeof($cross_id_list);$i++)
@@ -61,7 +59,7 @@ class XModels extends DataModel{
                 $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
             }
             $str=implode(" or ",$cross_id_list);
-            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ({$str}) and c.place_id=places.id{$strTime} order by {$order_by};";
+            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at;";
             $crosses=$this->getAll($sql);
             return $crosses;
         }
@@ -69,5 +67,29 @@ class XModels extends DataModel{
         //get my host cross or cross_id
         //now, if a cross related with you, you must have a invitation.
     }
+
+    public function fetchCross($userid, $begin_at = 0, $opening = true, $order_by = 'begin_at', $limit = 20)
+    {
+        $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
+        $identity_id_list = $this->getColumn($sql);
+        for ($i=0; $i < sizeof($identity_id_list); $i++) {
+            $identity_id_list[$i] = 'identity_id = ' . $identity_id_list[$i];
+        }
+        $str = implode(' or ', $identity_id_list);
+        $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
+        $cross_id_list = $this->getColumn($sql);
+        $crosses = array();
+        if (sizeof($cross_id_list) > 0) {
+            for($i = 0; $i < sizeof($cross_id_list); $i++) {
+                $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
+            }
+            $str     = implode(' or ', $cross_id_list);
+            $strTime = ' and begin_at ' . ($opening ? '>=' : '<') . ' ' . $begin_at;
+            $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+            $crosses = $this->getAll($sql);
+        }
+        return $crosses;
+    }
+
 }
 
