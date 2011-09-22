@@ -50,18 +50,21 @@ class UserModels extends DataModel{
         if(intval($row["uid"])>0)
         {
             $uid=intval($row["uid"]);
-            $result["userid"]=$uid;
             $sql="select id,auth_token from users where id=$uid and encrypted_password='$password'";
             $row=$this->getRow($sql);
-            if(intval($row["id"])==$uid && $row["auth_token"]=="")
+            if(intval($row["id"])==$uid )
             {
-                $auth_token=md5($time.uniqid());
-                $sql="update users set auth_token='$auth_token'  where id=$uid";
-                $this->query($sql);
-                $result["auth_token"]=$auth_token;
+                if($row["auth_token"]=="")
+                {
+                    $auth_token=md5($time.uniqid());
+                    $sql="update users set auth_token='$auth_token'  where id=$uid";
+                    $this->query($sql);
+                    $result["userid"]=$uid;
+                    $result["auth_token"]=$auth_token;
+                }
+                else
+                    $result["auth_token"]=$row["auth_token"];
             }
-            else if($row["auth_token"]!="")
-                $result["auth_token"]=$row["auth_token"];
         }
         return $result;
     }
