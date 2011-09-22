@@ -115,3 +115,20 @@ function getRealIpAddr()
     }
     return $ip;
 }
+
+/**
+ * 依据指定长度截取字符串
+ * 传入值：$sourceStr　－　源字符串，即需要截取的字符串。
+           $outStrLen　－　输出字符串的长度！
+ * 返回值：经过处理后的字符串！
+**/
+function mbString($sourceStr,$outStrLen)
+{
+    $curStrLen = mb_strlen($sourceStr,"UTF-8");
+    if($curStrLen > $outStrLen){
+        $echoStr = mb_substr($sourceStr, 0, $outStrLen, "UTF-8")."...";
+    }else{
+        $echoStr = $sourceStr;
+    }
+    return $echoStr;
+}

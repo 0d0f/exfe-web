@@ -3,6 +3,7 @@
 <link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
 <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
+<script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
 <script type="text/javascript" src="/static/js/apps/CrossEdit.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" href="/static/js/excal/skin/default/excal.css" rel="stylesheet" />
@@ -32,12 +33,27 @@ echo "</script>\r\n";
 <script type="text/javascript" src="/static/js/comm/dialog.js"></script>
 <script type="text/javascript" src="/static/js/apps/crossdialog.js"></script>
 <?php
-$description_lines=preg_split ("/\r\n|\r|\n/", $cross["description"]);
+$original_desc_str = $cross["description"];
+$desc_str_len = mb_strlen($original_desc_str);
+$define_str_len = 300;
+
+$description_lines=preg_split ("/\r\n|\r|\n/", $original_desc_str);
+
 $description="";
 foreach($description_lines as $line)
 {
     $description.='<p class="text">'.$line.'</p>';
 }
+//=============================================================
+$short_desc_str = mbString($original_desc_str, $define_str_len);
+$temp_lines=preg_split ("/\r\n|\r|\n/", $short_desc_str);
+$display_desc = "";
+foreach($temp_lines as $s)
+{
+    $display_desc .= '<p class="text">'.$s.'</p>';
+}
+//=============================================================
+
 $place_line1=$cross["place"]["line1"];
 $place_line2= str_replace('\r',"<br/>",$cross["place"]["line2"]);
 $host_exfee=$cross["host_exfee"];
@@ -64,7 +80,7 @@ $token=$_GET["token"];
     <p class="titles">Editing <span>X</span></p>
     <p id="error_msg" class="error_msg"></p>
     <p class="done_btn"><a href="javascript:void(0);" id="submit_data">Done</a></p>
-    <p class="revert">Revert</p>
+    <p class="revert"><a id="revert_cross_btn" href="javascript:;">Revert</a></p>
 </div>
 <div id="content" class="cross_view_container">
     <div class="exfe_bubble" id="cross_time_bubble">
@@ -77,23 +93,26 @@ $token=$_GET["token"];
         <p class="lock_icon" id="private_icon"></p>
         <p class="lock_icon_desc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
         <p class="edit_icon" id="edit_icon"></p>
-        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit your cross.</p>
+        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit exfe.</p>
     </div>
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
         <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
-            <div id="cross_desc">
+            <div id="cross_desc"<?php if($desc_str_len > $define_str_len){ ?> style="display:none"<?php } ?>>
             <?php echo $description; ?>
             </div>
-            <a href="">Expand</a>
+            <div id="cross_desc_short"<?php if($desc_str_len <= $define_str_len){ ?> style="display:none"<?php } ?>>
+            <?php echo $display_desc; ?>
+            <a id="desc_expand_btn" href="javascript:void(0);">Expand</a>
+            </div>
             <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
-                <li><a id='rsvp_yes' value="yes" href="#" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
-                <li><a id='rsvp_no' value="no" href="#" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-                <li><a id='rsvp_maybe' value="maybe" href="#" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
+                <li><a id='rsvp_yes' value="yes" href="javascript:void(0);" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
+                <li><a id='rsvp_no' value="no" href="javascript:void(0);" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
+                <li><a id='rsvp_maybe' value="maybe" href="javascript:void(0);" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
             </ul>
-            <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="#" id="changersvp">Change?</a></div>
+            <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="javascript:void(0);" id="changersvp">Change?</a></div>
 
             <div class="Conversation">
             <h3>Conversation</h3>

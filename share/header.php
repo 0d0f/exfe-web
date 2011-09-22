@@ -18,7 +18,7 @@
     <script type="text/javascript" src="/static/js/comm/func.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     <script type="text/javascript">
-        var site_url = "<?php echo $site_url; ?>";
+        var site_url = "<?php echo SITE_URL; ?>";
     </script>
 
     <!--[if IE 6]>
