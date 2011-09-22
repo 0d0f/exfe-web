@@ -54,12 +54,12 @@ class UserModels extends DataModel{
             $row=$this->getRow($sql);
             if(intval($row["id"])==$uid )
             {
+                $result["userid"]=$uid;
                 if($row["auth_token"]=="")
                 {
                     $auth_token=md5($time.uniqid());
                     $sql="update users set auth_token='$auth_token'  where id=$uid";
                     $this->query($sql);
-                    $result["userid"]=$uid;
                     $result["auth_token"]=$auth_token;
                 }
                 else
