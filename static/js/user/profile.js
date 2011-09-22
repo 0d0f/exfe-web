@@ -7,7 +7,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $.ajax({
         type: "POST",
         data: poststr,
-        url: site_url+"/s/SaveUserIdentity", 
+        url: site_url+"/s/SaveUserIdentity",
         dataType:"json",
         success: function(data){
             if(data.response.user!=null)
@@ -22,7 +22,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.updateavatar = function(name) {
         $.ajax({
             type: "GET",
-            url: site_url+"/s/GetUserProfile", 
+            url: site_url+"/s/GetUserProfile",
             dataType:"json",
             success: function(data){
                 if(data.response.user!=null)
@@ -38,7 +38,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 })(ns);
 
 $(document).ready(function(){
-    $('#editprofile').click(function(e){
+
+    $('#editprofile').click(function(e) {
         if($('#profile_name').attr("status")=='view')
         {
             $('#profile_name').html("<input id='edit_profile_name' value='"+$('#profile_name').html()+"'>");
@@ -54,8 +55,22 @@ $(document).ready(function(){
             $('#changeavatar').hide();
         }
     });
-    $('#changeavatar').click(function(e){
+
+    $('#changeavatar').click(function(e) {
         var AWnd=window.open('/s/uploadavatar','fwId','resizable=yes,scrollbars=yes,width=600,height=600');
         AWnd.focus();
     });
+
+    $('.p_right').click(function(e) {
+        var strXType = e.target.id.split('_')[1],
+            objArrow = null;
+        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
+            objArrow.removeClass('arrow').addClass('arrow_up');
+            $('.x_' + strXType).hide();
+        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
+            objArrow.removeClass('arrow_up').addClass('arrow');
+            $('.x_' + strXType).show();
+        }
+    });
+
 });

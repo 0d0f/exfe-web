@@ -37,7 +37,7 @@ if(intval($_SESSION["userid"])>0)
         <span>271</span>
         exfes attended
         </p>
-        <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>">
+        <a href="/s/profile" class="l"><img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>"></a>
         </div>
         <p class="info">
         <span>Upcoming:</span><br />
