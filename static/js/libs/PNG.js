@@ -1,7 +1,7 @@
 /*
  * code from DD_belatedPNG(0.0.8a) , fix one bug and make it support spaceholder that has png background image.
  * by dexbol@6.cn
- * 
+ *
  * About DD_belatedPNG: http://www.dillerdesign.com/experiment/DD_belatedPNG/
  * Licensed under the MIT License
  */
