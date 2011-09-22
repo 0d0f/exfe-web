@@ -22,13 +22,14 @@ class UserModels extends DataModel{
 
     public function saveUser($name,$userid)
     {
-        $sql="update users set name='$name' where id=$userid";	
+        $sql="update users set name='$name' where id=$userid";
         $this->query($sql);
         return $this->getUser($userid);
     }
+
     public function saveUserAvatar($avatar,$userid)
     {
-        $sql="update users set avatar_file_name='$avatar' where id=$userid";	
+        $sql="update users set avatar_file_name='$avatar' where id=$userid";
         $this->query($sql);
         return $this->getUser($userid);
     }
@@ -39,6 +40,7 @@ class UserModels extends DataModel{
         $row=$this->getRow($sql);
         return intval($row["id"]);
     }
+
     public function loginForAuthToken($user,$password)
     {
         $password=md5($password.$this->salt);
@@ -63,6 +65,7 @@ class UserModels extends DataModel{
         }
         return $result;
     }
+
     public function login($email,$password)
     {
         $password=md5($password.$this->salt);
@@ -70,9 +73,10 @@ class UserModels extends DataModel{
 #update last_sign_in_at,last_sign_in_ip...
         return $this->getRow($sql);
     }
+
     public function getUserProfileByIdentityId($identity_id)
     {
-        $sql="select userid from user_identity where identityid=$identity_id";	
+        $sql="select userid from user_identity where identityid=$identity_id";
         $result=$this->getRow($sql);
         if(intval($result["userid"])>0)
         {
@@ -85,7 +89,7 @@ class UserModels extends DataModel{
 
     public function getUserByIdentityId($identity_id)
     {
-        $sql="select userid from user_identity where identityid=$identity_id";	
+        $sql="select userid from user_identity where identityid=$identity_id";
         $result=$this->getRow($sql);
         if(intval($result["userid"])>0)
         {
@@ -95,9 +99,10 @@ class UserModels extends DataModel{
             return $user;
         }
     }
+
     public function setPassword($identity_id,$password,$displayname)
     {
-        $sql="select userid from user_identity where identityid=$identity_id";	
+        $sql="select userid from user_identity where identityid=$identity_id";
         $result=$this->getRow($sql);
         if(intval($result["userid"])>0)
         {
@@ -115,6 +120,7 @@ class UserModels extends DataModel{
         return false;
         //$sql="update ";
     }
+
     public function setPasswordByToken($cross_id,$token,$password,$displayname)
     {
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
@@ -122,7 +128,7 @@ class UserModels extends DataModel{
         $identity_id=intval($row["identity_id"]);
         if($identity_id > 0)
         {
-            $sql="select userid from user_identity where identityid=$identity_id";	
+            $sql="select userid from user_identity where identityid=$identity_id";
             $result=$this->getRow($sql);
             if(intval($result["userid"])>0)
             {
@@ -140,6 +146,7 @@ class UserModels extends DataModel{
         }
         return false;
     }
+
     public function regDeviceToken($devicetoken,$provider,$uid)
     {
 
@@ -179,20 +186,20 @@ class UserModels extends DataModel{
         $this->query($sql);
         return $identity_id;
     }
+
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $sql="select id from identities where external_identity='$external_identity';";
         $row=$this->getRow($sql);
         if(intval($row["id"])>0)
         {
-                $identity_id=intval($row["id"]);
-                $sql="select identityid from user_identity where identityid =$identity_id and userid=$user_id;";
-                $row=$this->getRow($sql);
-                if(intval($row["identityid"])>0)
-                {
-                    return $row["identityid"];
-                }
-
+            $identity_id=intval($row["id"]);
+            $sql="select identityid from user_identity where identityid =$identity_id and userid=$user_id;";
+            $row=$this->getRow($sql);
+            if(intval($row["identityid"])>0)
+            {
+                return $row["identityid"];
+            }
         }
         return FALSE;
     }

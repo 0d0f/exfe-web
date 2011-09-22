@@ -1,28 +1,19 @@
 <?php
-class XModels extends DataModel{
+class XModels extends DataModel {
+
     public function gatherCross($identityId,$cross)
     {
         // gather a empty cross, state=draft
         // state=1 draft
         $time=time();
-        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";	
+        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
 
-        $title=$cross["title"];
-        $description=$cross["description"];
-
-        $datetime=$cross["datetime"];
-
-        $begin_at=$datetime;
         //$begin_at=$cross["begin_at"];
         //$end_at=$cross["end_at"];
         //$duration=$cross["duration"];
-        $place_id=intval($cross["place_id"]);
 
+        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";
 
-        $title=mysql_real_escape_string($title);
-        $description=mysql_real_escape_string($description);
-
-        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','$title','$description','$begin_at','$end_at','$duration',$place_id);";	
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
@@ -32,6 +23,15 @@ class XModels extends DataModel{
     {
         $sql="select * from crosses where id=$crossid";
         $result=$this->getRow($sql);
+        return $result;
+    }
+
+    //update cross
+    public function updateCross($cross)
+    {
+        $time=time();
+        $sql = "UPDATE crosses SET updated_at=FROM_UNIXTIME($time), title='".$cross["title"]."', description='".$cross["desc"]."', begin_at='".$cross["start_time"]."' WHERE id=".$cross["id"];
+        $result = $this->query($sql);
         return $result;
     }
 
@@ -68,5 +68,42 @@ class XModels extends DataModel{
         //get my host cross or cross_id
         //now, if a cross related with you, you must have a invitation.
     }
-}
 
+    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20)
+    {
+        // Get user identities
+        $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
+        $identity_id_list = $this->getColumn($sql);
+
+        // Get crosses id
+        for ($i=0; $i < sizeof($identity_id_list); $i++) {
+            $identity_id_list[$i] = 'identity_id = ' . $identity_id_list[$i];
+        }
+        $str = implode(' or ', $identity_id_list);
+        $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
+        $cross_id_list = $this->getColumn($sql);
+
+        // Get crosses
+        if (!sizeof($cross_id_list)) {
+            return array();
+        }
+        for($i = 0; $i < sizeof($cross_id_list); $i++) {
+            $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
+        }
+        $str     = implode(' or ', $cross_id_list);
+        switch ($opening) {
+            case 'yes':
+                $strTime = " and begin_at >= FROM_UNIXTIME({$begin_at})";
+                break;
+            case 'no':
+                $strTime = " and begin_at <  FROM_UNIXTIME({$begin_at})";
+                break;
+            default:
+                $strTime = '';
+        }
+        $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+        $crosses = $this->getAll($sql);
+        return $crosses;
+    }
+
+}

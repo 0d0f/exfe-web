@@ -33,7 +33,6 @@ var odof = {
         util = window.util;
     }
 
-
     /**
      * -----------------------------------------------------------------
      * - The Base common function:

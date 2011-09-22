@@ -65,7 +65,7 @@ class IdentityModels extends DataModel{
         $row=$this->getRow($sql);
         if (intval($row["id"])>0)
             return  intval($row["id"]);
-        else 
+        else
             return FALSE;
     }
 
@@ -73,7 +73,7 @@ class IdentityModels extends DataModel{
     {
             $time=time();
 
-            $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip from users where id=$userid"; 
+            $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip from users where id=$userid";
             $userrow=$this->getRow($sql);
             $encrypted_password=$userrow["encrypted_password"];
             $current_ip=$userrow["current_sign_in_ip"];
@@ -94,7 +94,7 @@ class IdentityModels extends DataModel{
                     $cookie_logintoken=$userrow["cookie_logintoken"];
                     $cookie_loginsequ=$userrow["cookie_loginsequ"];
             }
-            
+
                 setcookie('uid', $userid, time()+86400, "/",".exfe.com");
                 setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
                 setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
@@ -121,10 +121,10 @@ class IdentityModels extends DataModel{
                 unset($_SESSION["tokenIdentity"]);
                 session_destroy();
 
-                unset($_COOKIE["uid"]); 
-                unset($_COOKIE["id"]); 
-                unset($_COOKIE["loginsequ"]); 
-                unset($_COOKIE["logintoken"]); 
+                unset($_COOKIE["uid"]);
+                unset($_COOKIE["id"]);
+                unset($_COOKIE["loginsequ"]);
+                unset($_COOKIE["logintoken"]);
                 setcookie('uid', NULL, -1,"/",".exfe.com");
                 setcookie('id', NULL, -1,"/",".exfe.com");
                 setcookie('loginsequ', NULL,-1,"/",".exfe.com");
@@ -136,14 +136,14 @@ class IdentityModels extends DataModel{
             if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
             {
                $this->loginByIdentityId($identity_id,$uid,$type="cookie",$setcookie=false);
-    //do login 
+    //do login
                return $user_id;
             }
             else
             {
                 return 0;
             }
-            
+
         }
     }
     public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false)
@@ -157,7 +157,7 @@ class IdentityModels extends DataModel{
         }
         if($userrow==NULL)
         {
-            $sql="select name,bio,avatar_file_name from users where id=$userid"; 
+            $sql="select name,bio,avatar_file_name from users where id=$userid";
             $userrow=$this->getRow($sql);
         }
         if($identityrow==NULL)
@@ -170,7 +170,7 @@ class IdentityModels extends DataModel{
         if($setcookie==true && $type=="password")
             $this->setLoginCookie($userid,$identity_id);
 
-    
+
         $ipaddress=getRealIpAddr();
         $time=time();
         $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time) where id=$userid;";
@@ -208,9 +208,9 @@ class IdentityModels extends DataModel{
             $sql="select userid from user_identity where identityid=$identity_id";
             $row=$this->getRow($sql);
             if(intval($row["userid"])>0)
-            {	
+            {
                 $userid=intval($row["userid"]);
-                $sql="select encrypted_password,name,avatar_file_name from users where id=$userid"; 
+                $sql="select encrypted_password,name,avatar_file_name from users where id=$userid";
                 $row=$this->getRow($sql);
                 if($row["encrypted_password"]==$password)
                 {
@@ -255,13 +255,13 @@ class IdentityModels extends DataModel{
 
     public function loginWithXToken($cross_id,$token)
     {
-        $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";	
+        $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
         if($identity_id > 0)
         {
 
-            $sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";	
+            $sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";
             $this->query($sql);
 
             $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
@@ -381,19 +381,25 @@ class IdentityModels extends DataModel{
 
             $sql="select status from identities where id=$identity_id;";
             $row=$this->getRow($sql);
-            if(intval($row["status"])==2)// if status is verifying, set identity activecode ,send active email ,
-                {
-                    $sql="update identities set activecode='$token' where  id=$identity_id;";
-                    $this->query($sql);
-                }
-            else if(intval($row["status"])==1)	//if disconnect, change to verifying, set identity activecode ,send active email
-            {
+            if (intval($row["status"]) == 2) { // if status is verifying, set identity activecode ,send active email ,
+                $sql="update identities set activecode='$token' where  id=$identity_id;";
+                $this->query($sql);
+            } else if(intval($row["status"]) == 1) {	//if disconnect, change to verifying, set identity activecode ,send active email
                 $sql="update identities set status='2',activecode='$token' where  id=$identity_id;";
                 $this->query($sql);
             }
         }
+    }
 
-
+    public function getIdentitiesByIdentityIds($identity_ids)
+    {
+        if ($identity_ids) {
+            $identity_ids = implode(' OR `id` = ', $identity_ids);
+            $sql          = "SELECT * FROM `identities` WHERE `id` = {$identity_ids}";
+            return $this->getAll($sql);
+        } else {
+            return array();
+        }
     }
 
 }
