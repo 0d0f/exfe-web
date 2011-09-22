@@ -433,7 +433,7 @@ b.r3{margin: 0px}
 .cross_view_centerbg .menu_bar .lock_icon{ float:right; background:url("../images/icons.png") no-repeat left -250px; height:20px; width:20px; margin-right:10px; cursor:pointer; }
 .cross_view_centerbg .menu_bar .edit_icon{ float:right; background:url("../images/icons.png") no-repeat left -285px; height:20px; width:20px; margin-right:10px; cursor:pointer; }
 .cross_view_centerbg .menu_bar .lock_icon_desc, .cross_view_centerbg .menu_bar .edit_icon_desc{
-    right:10px;top:32px;width:220px;padding:8px;z-index:10 
+    right:10px;top:32px;width:220px;padding:8px;z-index:10
     background:#f4fcfe; border:#90c3ce 1px solid;
     line-height:20px; position:absolute; background-color:#FFF;
 }
@@ -454,7 +454,7 @@ b.r3{margin: 0px}
 #edit_cross_bar p.titles span{ color:#0591AC; }
 #edit_cross_bar p.error_msg{ padding-left:10px; color:#FF0000; padding-top:10px; line-height:0px; }
 #edit_cross_bar p.done_btn{ padding-right:10px; float:right; }
-#edit_cross_bar p.done_btn a{ 
+#edit_cross_bar p.done_btn a{
     display:block; width:50px; height:18px; background:#EEEEEE;text-decoration:none;
     text-align:center; padding-top:3px; cursor:pointer; border:1px solid #999; color:#666666;
     -webkit-border-radius:3px -moz-border-radius:3px; border-radius:3px;
