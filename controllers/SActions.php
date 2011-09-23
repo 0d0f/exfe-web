@@ -523,7 +523,19 @@ class SActions extends ActionController {
 
         echo json_encode($responobj);
         exit();
+    }
 
+    public function doCheckLogin(){
+        //header("Content-Type:application/json; charset=UTF-8");
+        if(intval($_SESSION["userid"])>0)
+        {
+            echo 1;
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($_SESSION["userid"]);
+        }else{
+            echo 0;
+        }
+    
     }
 }
 
