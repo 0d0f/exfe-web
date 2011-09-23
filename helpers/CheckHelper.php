@@ -37,6 +37,7 @@ class CheckHelper extends ActionController {
         }
         return array("check"=>false);
     }
+
     function isAllow($class,$action,$args="")
     {
         $type="session";

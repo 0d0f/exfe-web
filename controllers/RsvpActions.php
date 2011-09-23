@@ -1,5 +1,7 @@
 <?php
+
 class RSVPActions extends ActionController {
+
     public function checkallow($cross_id,$token)
     {
         $checkhelper=$this->getHelperByName("check");
@@ -23,6 +25,7 @@ class RSVPActions extends ActionController {
             $identity_id=$_SESSION["identity_id"];
         return $identity_id;
     }
+
     public function doSave()
     {
         $rsvp=$_POST["rsvp"];
@@ -69,6 +72,7 @@ class RSVPActions extends ActionController {
         exit();
 
     }
+
     public function doYES()
     {
         $cross_id=intval($_GET["id"]);
@@ -90,6 +94,7 @@ class RSVPActions extends ActionController {
             header( "Location: /!$cross_id_base62" ) ;
         exit(0);
     }
+
     public function doNO()
     {
 
@@ -111,6 +116,7 @@ class RSVPActions extends ActionController {
         }
         exit(0);
     }
+
     public function doMaybe()
     {
 
@@ -132,5 +138,21 @@ class RSVPActions extends ActionController {
         }
         exit(0);
     }
+
+    public function doAccept()
+    {
+        $invitationData = $this->getModelByName("Invitation");
+
+        if (intval($_SESSION['userid']) > 0
+         && intval($identity_id = $_SESSION["identity_id"]) > 0
+         && ($cross_id = base62_to_int($_GET["xid"]))
+         && $invitationData->rsvp($cross_id, $identity_id, INVITATION_YES) === true) {
+            header("Location: /s/profile");
+        } else {
+            header('Location: /s/login');
+        }
+
+        exit(0);
     }
 
+}
