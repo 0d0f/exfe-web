@@ -223,7 +223,7 @@ class SActions extends ActionController {
             array_push($cfedIds, $crossItem['id']);
         }
         $modIvit = $this->getModelByName('invitation');
-        $cfedIds = $modIvit->getConfirmedIdentityIdsByCrossIds($cfedIds);
+        $cfedIds = $modIvit->getIdentitiesIdsByCrossIds($cfedIds);
         // Get identities
         $idents  = array();
         foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
@@ -239,9 +239,13 @@ class SActions extends ActionController {
         // Add confirmed informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['confirmed'] = array();
+            $crosses[$crossI]['numExfee']  = 0;
             foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
                 if ($cfedIdItem['cross_id'] === $crossItem['id']) {
-                    array_push($crosses[$crossI]['confirmed'], $hmIdent[$cfedIdItem['identity_id']]);
+                    if ($cfedIdItem['state'] === '1') {
+                        array_push($crosses[$crossI]['confirmed'], $hmIdent[$cfedIdItem['identity_id']]);
+                    }
+                    $crosses[$crossI]['numExfee']++;
                 }
             }
         }
@@ -535,7 +539,7 @@ class SActions extends ActionController {
         }else{
             echo 0;
         }
-    
+
     }
 }
 

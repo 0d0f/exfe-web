@@ -134,11 +134,11 @@ class InvitationModels extends DataModel{
         return false;
     }
 
-    public function getConfirmedIdentityIdsByCrossIds($cross_ids)
+    public function getIdentitiesIdsByCrossIds($cross_ids)
     {
         if ($cross_ids) {
             $cross_ids = implode(' OR `cross_id` = ', $cross_ids);
-            $sql       = "SELECT `identity_id`, `cross_id` FROM `invitations` WHERE (`cross_id` = {$cross_ids}) AND `state` = 1;";
+            $sql       = "SELECT `identity_id`, `cross_id`, `state` FROM `invitations` WHERE `cross_id` = {$cross_ids};";
             return $this->getAll($sql);
         } else {
             return array();

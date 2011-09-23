@@ -39,9 +39,9 @@
             foreach ($crossItem['confirmed'] as $cfmI => $cfmItem) {
                 array_push($arrConfirmed, $cfmItem['name']);
             }
-            $strConfirmed = count($crossItem['confirmed']) . ' confirmed: ' . implode(', ', $arrConfirmed);
+            $strConfirmed = count($crossItem['confirmed']) . " of {$crossItem['numExfee']} confirmed: " . implode(', ', $arrConfirmed);
         } else {
-            $strConfirmed = '0 confirmed';
+            $strConfirmed = "0 of {$crossItem['numExfee']} confirmed";
         }
         $strCross = '<a class="cross_link x_' . $crossItem['sort'] . '" href="/!' . int_to_base62($crossItem['id']) . '"><div class="coming">'
                   .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
