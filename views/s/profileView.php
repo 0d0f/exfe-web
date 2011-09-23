@@ -43,7 +43,7 @@
         } else {
             $strConfirmed = '0 confirmed';
         }
-        $strCross = '<a class="cross_link" href="/!' . int_to_base62($crossItem['id']) . '"><div class="coming">'
+        $strCross = '<a class="cross_link x_' . $crossItem['sort'] . '" href="/!' . int_to_base62($crossItem['id']) . '"><div class="coming">'
                   .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
                   .     '<div class="maringbt">'
                   .         "<p>{$crossItem['begin_at']}</p>"
@@ -53,16 +53,16 @@
                   . '</div></a>';
         switch ($crossItem['sort']) {
             case 'upcoming':
-                $upcoming  = ($upcoming  ?: '<div class="p_right"><img src="/static/images/translation.gif" class="l_icon"/>Today & Upcoming<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
+                $upcoming  = ($upcoming  ?: '<div class="p_right" id="xType_upcoming"><img src="/static/images/translation.gif" class="l_icon"/>Today & Upcoming<img src="images/translation.gif" class="arrow"/></div>') . $strCross;
                 break;
             case 'sevenDays':
-                $sevenDays = ($sevenDays ?: '<div class="p_right">Next 7 days<img src="/static/images/translation.gif" class="arrow"/></div>') . $strCross;
+                $sevenDays = ($sevenDays ?: '<div class="p_right" id="xType_sevenDays">Next 7 days<img src="/static/images/translation.gif" class="arrow"/></div>') . $strCross;
                 break;
             case 'later':
-                $later     = ($later     ?: '<div class="p_right">Later<img src="/static/images/translation.gif" class="arrow"/></div>') . $strCross;
+                $later     = ($later     ?: '<div class="p_right" id="xType_later">Later<img src="/static/images/translation.gif" class="arrow"/></div>') . $strCross;
                 break;
             case 'past':
-                $past      = ($past      ?: '<div class="p_right">Past<img src="/static/images/translation.gif" class="arrow"/></div>') . $strCross;
+                $past      = ($past      ?: '<div class="p_right" id="xType_past">Past<img src="/static/images/translation.gif" class="arrow"/></div>') . $strCross;
         }
     }
     echo $upcoming . $sevenDays . $later . $past;

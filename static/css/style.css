@@ -375,9 +375,10 @@ b.r3{margin: 0px}
 .profile_main .left .a_tltle{ font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#020202; clear:both;}
 .profile_main .left  p{ font:13px/18px Verdana;line-height:20px;}
 .profile_main .left  p span{color:#a0a0a0;}
-.profile_main .left .p_right{ width:200px; border-bottom:solid 1px #ccc; height:20px; line-height:20px; margin-left:275px; text-align:right;}
+.profile_main .left .p_right{ width:200px; border-bottom:solid 1px #ccc; height:20px; line-height:20px; margin-left:275px; text-align:right; cursor: default;}
 .profile_main .left .p_right img.l_icon{ width:15px; height:15px; background:url(/static/images/icons.png) no-repeat 0 -418px; margin-right:8px; vertical-align:middle;}
 .profile_main .left .p_right img.arrow{ width:15px; height:15px; background:url(/static/images/icons.png) no-repeat -20px -660px; margin:0 5px; vertical-align:middle;}
+.profile_main .left .p_right img.arrow_up{ width:15px; height:15px; background:url(/static/images/icons.png) no-repeat -20px -680px; margin:0 5px; vertical-align:middle;}
 .profile_main .right{ width:310px; float:right;}
 .profile_main .right .invitations{ border:solid 1px #eaedee; background:#edf8fe; padding:10px 7px 3px 7px;}
 .profile_main .right .p_right{ width:190px; margin-left:100px; text-align:right; height:28px; font: 12px/28px; }
@@ -387,7 +388,7 @@ b.r3{margin: 0px}
 .profile_main .right .invitations .p_right a{ color:#0591af;}
 .profile_main .right .invitations dl{ margin:4px auto; height:45px; padding:5px 13px; position:relative;}
 .profile_main .right .invitations dl dt a{ font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#0591af;}
-.profile_main .right .invitations dl button{ background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:12px; cursor:pointer;}
+.profile_main .right .invitations dl button{ background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:5px; cursor:pointer;}
 .profile_main .right .invitations dl.bdown{ background:#ffffff;}
 
 .profile_main .right .Recently_updates{ background:#ffffff; border:solid 1px #eaedee; padding:10px 10px;}

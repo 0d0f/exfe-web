@@ -1,46 +1,35 @@
-/**
- * @Description:    user profile module
- * @createDate:     Sup 23,2011
- * @LastModified:   handaoliang
- * @CopyRights:		http://www.exfe.com
- **/
-
 var moduleNameSpace = "odof.user.profile";
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
-    /**
-     * save user name
-     *
-     * */
     ns.saveUsername = function(name) {
         var poststr="name="+name;
-        jQuery.ajax({
+        $.ajax({
         type: "POST",
         data: poststr,
-        url: site_url+"/s/SaveUserIdentity", 
+        url: site_url+"/s/SaveUserIdentity",
         dataType:"json",
         success: function(data){
             if(data.response.user!=null)
             {
                 var name=data.response.identity.name;
-                jQuery('#profile_name').html(name);
+                $('#profile_name').html(name);
             }
         }
         });
     };
 
-    ns.updateAvatar = function(name) {
-        jQuery.ajax({
+    ns.updateavatar = function(name) {
+        $.ajax({
             type: "GET",
-            url: site_url+"/s/GetUserProfile", 
+            url: site_url+"/s/GetUserProfile",
             dataType:"json",
             success: function(data){
                 if(data.response.user!=null)
                 {
                 var name=data.response.user.avatar_file_name;
                 var Timer=new Date();
-                jQuery('#profile_avatar').html("<img class=big_header src='/eimgs/80_80_"+name+"?"+Timer.getTime()+"'/>");
+                $('#profile_avatar').html("<img class=big_header src='/eimgs/80_80_"+name+"?"+Timer.getTime()+"'/>");
                 //<div id="profile_avatar"><img class="big_header" src=
                 }
             }
@@ -48,23 +37,44 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 })(ns);
 
-jQuery(document).ready(function(){
-    jQuery('#editprofile').click(function(e){
-        if(jQuery('#profile_name').attr("status")=='view')
+$(document).ready(function(){
+
+    $('#editprofile').click(function(e) {
+        if($('#profile_name').attr("status")=='view')
         {
-            jQuery('#profile_name').html("<input id='edit_profile_name' value='"+jQuery('#profile_name').html()+"'>");
-            jQuery('#profile_name').attr("status","edit");
-            jQuery('#changeavatar').show();
-        } else {
-            var name_val=jQuery("#edit_profile_name").val();
-            jQuery('#profile_name').html(name_val);
+            $('#profile_name').html("<input id='edit_profile_name' value='"+$('#profile_name').html()+"'>");
+            $('#profile_name').attr("status","edit");
+            $('#changeavatar').show();
+        }
+        else
+        {
+            var name_val=$("#edit_profile_name").val();
+            $('#profile_name').html(name_val);
             odof.user.profile.saveUsername(name_val);
-            jQuery('#profile_name').attr("status","view");
-            jQuery('#changeavatar').hide();
+            $('#profile_name').attr("status","view");
+            $('#changeavatar').hide();
         }
     });
-    jQuery('#changeavatar').click(function(e){
+
+    $('#changeavatar').click(function(e) {
         var AWnd=window.open('/s/uploadavatar','fwId','resizable=yes,scrollbars=yes,width=600,height=600');
         AWnd.focus();
     });
+
+    $('.p_right').click(function(e) {
+        var strXType = e.target.id.split('_')[1],
+            objArrow = null;
+        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
+            objArrow.removeClass('arrow').addClass('arrow_up');
+            $('.x_' + strXType).hide();
+        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
+            objArrow.removeClass('arrow_up').addClass('arrow');
+            $('.x_' + strXType).show();
+        }
+    });
+
+    $('.acpbtn').click(function(e) {
+
+    });
+
 });
