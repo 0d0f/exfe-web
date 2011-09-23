@@ -39,9 +39,9 @@
             foreach ($crossItem['confirmed'] as $cfmI => $cfmItem) {
                 array_push($arrConfirmed, $cfmItem['name']);
             }
-            $strConfirmed = count($crossItem['confirmed']) . ' confirmed: ' . implode(', ', $arrConfirmed);
+            $strConfirmed = count($crossItem['confirmed']) . " of {$crossItem['numExfee']} confirmed: " . implode(', ', $arrConfirmed);
         } else {
-            $strConfirmed = '0 confirmed';
+            $strConfirmed = "0 of {$crossItem['numExfee']} confirmed";
         }
         $strCross = '<a class="cross_link x_' . $crossItem['sort'] . '" href="/!' . int_to_base62($crossItem['id']) . '"><div class="coming">'
                   .     "<div class=\"a_tltle\">{$crossItem['title']}</div>"
@@ -72,10 +72,11 @@
 <?php
     $strInvt = $newInvt ? '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>' : '';
     foreach ($newInvt as $newInvtI => $newInvtItem) {
+        $xid62 = int_to_base62($newInvtItem['cross']['id']);
         $strInvt .= '<dl class="bnone">'
-                  .     "<dt><a href=\"#\">{$newInvtItem['cross']['title']}</a></dt>"
-                  .     "<dd><a href=\"#\">{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</a></dd>"
-                  .     '<dd><button type="button">Accept</button></dd>'
+                  .     "<dt><a href=\"/!{$xid62}\">{$newInvtItem['cross']['title']}</a></dt>"
+                  .     "<dd>{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</dd>"
+                  .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"
                   . '</dl>';
     }
     $strInvt .= $newInvt ? '</div><div class="shadow_310"></div>' : '';

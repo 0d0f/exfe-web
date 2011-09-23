@@ -74,7 +74,7 @@ $(document).ready(function(){
     });
 
     $('.acpbtn').click(function(e) {
-
+        location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
     });
 
 });
