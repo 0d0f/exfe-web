@@ -65,17 +65,20 @@ abstract class DataModel{
             if($insert_id>0)
                 return array("insert_id" => strval($insert_id));
             return mysql_affected_rows();
-        }
-        else
+        }else{
             return false;
+        }
     }
 
     //get all
     public function getAll($sql) {
         if($query = mysql_query($sql)) {
-            if($return = $this->mysql_fetch_all($query)) {
+            $return = $this->mysql_fetch_all($query);
+            if(count($return)) {
                 return $this->convertDataTypeForAll($return);
             }
+            //Return NULL Bug Fix
+            return $return;
         }
     }
 
