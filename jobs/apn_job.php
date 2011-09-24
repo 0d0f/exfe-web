@@ -17,7 +17,7 @@ class Apn_Job
         //$sound = $_GET['sound'] or $sound = $argv[3];
         $sound ="default";
         $args = array('t' => 'i','eid'=>'85');
-        $deviceToken = $this->$args["identity"]["external_identity"];
+        $deviceToken = $this->args["identity"]["external_identity"];
         $badge=1;
 
         $this->send($deviceToken,$message,$sound,$badge,$args);
