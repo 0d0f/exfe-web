@@ -28,12 +28,15 @@ class TestActions extends ActionController {
     {
         #$helper=$this->getHelperByName("exfee");
         #$result=$helper->sendInvitation(8);
-        $id=int_to_base62(68);
-        print $id;
+        //$id=int_to_base62(68);
+        //print $id;
 
-        $id=base62_to_int(16);
-        print "<br/>\r\n";
-        print $id;
+        //$id=base62_to_int(16);
+        //print "<br/>\r\n";
+        //print $id;
+        $data=$this->getModelByName("invitation");
+        $a=$data->getInvitation_Identities(74);
+        print_r($a);
     }
 
 }

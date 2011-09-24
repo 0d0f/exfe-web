@@ -18,7 +18,7 @@ class Email_Job
 
 	    $mailer = new PHPMailer();
 	    $mailer->CharSet = 'UTF-8';
-    	    $mailer->IsSMTP();
+    	$mailer->IsSMTP();
 	    $mailer->IsHTML(true);
     	    $mailer->Host = 'ssl://smtp.gmail.com:465';
     	    $mailer->SMTPAuth = TRUE;

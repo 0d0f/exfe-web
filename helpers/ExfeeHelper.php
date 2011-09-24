@@ -54,6 +54,21 @@ class ExfeeHelper extends ActionController
                         'avatar_file_name' => $invitation["avatar_file_name"]
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+
+                $identities=$invitation["identities"];
+                if($identities)
+                {
+                    foreach ($identities as $identity)
+                    {
+                        if($identity["provider"]=="iOSAPN")
+                        {
+                            $args["identity"]=$identity;
+                            $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
+                        }
+                    
+                    }
+                }
+
                 //echo "Queued job ".$jobId."\n\n";
             }
     }

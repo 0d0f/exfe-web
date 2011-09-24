@@ -93,7 +93,7 @@ class InvitationModels extends DataModel{
     {
         $sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
         if($without_token==true)
-            $sql="select a.id invitation_id, a.state ,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
+            $sql="select a.id invitation_id, a.state ,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
 
         $invitations=$this->getAll($sql);
         for($i=0;$i<sizeof($invitations);$i++)
@@ -101,9 +101,22 @@ class InvitationModels extends DataModel{
             if(trim($invitations[$i]["name"])==""  ||  trim($invitations[$i]["b.avatar_file_name"])=="")
             {
                 $indentity_id=$invitations[$i]["identity_id"];
-                $sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$indentity_id";
+                $sql="select name,avatar_file_name,userid from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$indentity_id";
                 $user=$this->getRow($sql);
                 $invitations[$i]=humanIdentity($invitations[$i],$user);
+
+                $userid=$user["userid"];
+                if(intval($userid)>0)
+                {
+                    //$sql="select identityId from user_identity where userid=$userid;";
+                    $sql="select b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
+                    $identities=$this->getAll($sql);
+                    $invitations[$i]["identities"]=$identities;
+
+                }
+                //$sql="select userid from user_identity where identityid=1;";
+                //$user=$this->getRow($sql);
+
                 #if(trim($invitations[$i]["name"])=="" )
                 #    $invitations[$i]["name"]=$user["name"];
                 #if(trim($invitations[$i]["avatar_file_name"])=="")
@@ -112,6 +125,10 @@ class InvitationModels extends DataModel{
                 $invitations[$i]["state"]=intval($invitations[$i]["state"]);
         }
         return $invitations;
+    }
+
+    public function getInvitation_APNIdentities($cross_id)
+    {
     }
 
     public function ifIdentityHasInvitation($identity_id,$cross_id)
