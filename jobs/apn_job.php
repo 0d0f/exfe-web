@@ -1,5 +1,4 @@
 <?php
-require("../lib/class.phpmailer.php");
 require("../config.php");
 
 class Apn_Job
