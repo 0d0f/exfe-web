@@ -1,19 +1,21 @@
+
 function hide_exfeedel(e)
 {
     e.addClass('bgrond');
     $('.bgrond .exfee_del').show();
 }
+
 function show_exfeedel(e)
 {
     e.removeClass('bgrond');
     $('.exfee_del').hide();
 }
+
 function exfee_del(e)
 {
     e.remove();
     updateExfeeList();
 }
-var new_identity_id = 0;
 
 function getexfee()
 {
@@ -49,6 +51,8 @@ $(document).ready(function() {
     $("#identity_ajax").ajaxStart(function(){$(this).show();});
     $("#identity_ajax").ajaxStop(function(){$(this).hide();});
 
+    $('#g_title').focus();
+
     $('input[type="text"], textarea').focus(function () {
         if($(this).attr("enter") != "true")
         {
@@ -56,6 +60,7 @@ $(document).ready(function() {
             $(this).val('');
         }
     });
+
     $('input[type="text"], textarea').blur(function () {
         if ($(this).val() == "") {
             $(this).val(defaultText);
@@ -65,7 +70,7 @@ $(document).ready(function() {
     });
 
     $("#hostby").focus(function() {
-        if ($(this).attr('enter') == "true") { return; }
+        if ($(this).attr('enter') == "true") {return;}
         var html = showdialog("reg");
         $(html).modal({onClose : function() {
             $("#hostby").attr('disabled', true);
@@ -116,7 +121,6 @@ $(document).ready(function() {
         show_exfeedel($(this));
     });
 
-    var code = null;
     $('#exfee').keypress(function(e) {
         code = e.keyCode ? e.keyCode : e.which;
         if (code == 13) {
@@ -214,12 +218,14 @@ $(document).ready(function() {
     });
 
     window.curCross = '';
+    window.code     = null;
+    window.new_identity_id = 0;
 
     setInterval('saveDraft()', 10000);
 
     $('.confirmed_box').live('change', updateExfeeList);
 
-    getDraft();
+    //getDraft();
 
     updateExfeeList();
 });
@@ -354,17 +360,26 @@ function saveDraft()
                     exfee       : $('#exfee_pv').html()},
         strCross = JSON.stringify(cross);
 
-    if (strCross !== curCross) {
+    if (curCross !== strCross) {
         $.ajax({
             type     : 'POST',
             url      : site_url + '/x/savedraft',
             dataType : 'json',
-            data     : {cross : strCross}
+            data     : {draft_id : parseInt($('#draft_id').val()),
+                        cross    : strCross},
+            success  : function (data) {
+                if (data.draft_id) {
+                    $('#draft_id').val(data.draft_id);
+                }
+            }
         });
         curCross = strCross;
     }
 }
 
+/**
+ * disable currently
+ *
 function getDraft()
 {
     $.ajax({
@@ -372,7 +387,7 @@ function getDraft()
         url      : site_url + '/x/getdraft',
         dataType : 'json',
         success  : function(draft) {
-            if (!draft) { return; }
+            if (!draft) {return;}
 
             $('#g_title').val(draft.title);
             $('#g_description').val(draft.description);
@@ -385,3 +400,5 @@ function getDraft()
         }
     });
 }
+ *
+ */

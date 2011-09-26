@@ -25,7 +25,7 @@
 <ul>
 <li id="calendar_map_container"></li>
 <form action="" method="post" id="gatherxform">
-<li><label class="title">Title:</label><input type="text"  name="title" id="g_title"  value="Edit title here"/></li>
+<li><label class="title">Title:</label><input type="text"  name="title" id="g_title"  value="Edit title here"/><input type="hidden"  name="draft_id" id="draft_id" value="0"/></li>
 
 <li><label class="description">Description:</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
 </li>
