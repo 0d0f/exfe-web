@@ -1,14 +1,13 @@
 <?php
 require("../config.php");
+require("connect.php");
 
 class Apn_Job
 {
     public function perform()
     {
-        //$message = $_GET['message'] or $message = $argv[1] or $message = '赞';
-        //$badge =5; //(int)$_GET['badge'] or $badge = (int)$argv[2];
-
-
+        global $apn_connect;
+        
 	    $title=$this->args['title'];
 	    $name=$this->args['name'];
 	    if($this->args['name']=="")
@@ -19,12 +18,34 @@ class Apn_Job
         $args = array('t' => 'i','eid'=>'85');
         $deviceToken = $this->args["identity"]["external_identity"];
         $badge=1;
-
+        if($apn_connect=="")
+            $this->connect();
         $this->send($deviceToken,$message,$sound,$badge,$args);
-}
+    }
+    public function connect()
+    {
+        global $apn_connect;
+        print "init apn\r\n";
+
+        $ctx = stream_context_create();
+        stream_context_set_option($ctx, 'ssl', 'local_cert', 'apns-dev-exfe.pem');  
+        $apn_connect = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
+
+        if (!$apn_connect) {
+            print "Failed to connect $err $errstr\n";
+            return;
+        }
+        else {
+            $err=stream_set_blocking($apn_connect, 0); 
+            $err=stream_set_write_buffer($apn_connect, 0); 
+        }
+    }
 
     public function send($deviceToken,$message,$sound,$badge,$args)
     {
+        global $apn_connect;
+        global $connect_count;
+        //["$apn_connect"]
         $body = array();
         $body['aps'] = array('alert' => $message);
         if ($badge)
@@ -32,23 +53,20 @@ class Apn_Job
         if ($sound)
           $body['aps']['sound'] = $sound;
         $body['args']=$args;
-        $ctx = stream_context_create();
-        stream_context_set_option($ctx, 'ssl', 'local_cert', 'apns-dev-exfe.pem');  
-        $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
-        if (!$fp) {
-            print "Failed to connect $err $errstr\n";
-            return;
-        }
-        else {
-           print "Connection OK\n<br/>";
-        }
+
         
         // send message
         $payload = json_encode($body);
         $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
-        print "Sending message :" . $payload . "\n";  
-        fwrite($fp, $msg);
-        fclose($fp);
+        $err=fwrite($apn_connect, $msg);
+        var_dump($err);
+        if($err==0)
+        {
+            $this->connect();
+            $err=fwrite($apn_connect, $msg);
+        }
+        $connect_count["apn_connect"]=time();
+#        fclose($apn_connect);
     }
 }
 

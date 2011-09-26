@@ -162,12 +162,14 @@ class Resque_Worker
 				break;
 			}
 
+
 			// Attempt to find and reserve a job
 			$job = false;
 			if(!$this->paused) {
 				$job = $this->reserve();
 			}
 
+            $this->checkConnect();
 			if(!$job) {
 				// For an interval of 0, break now - helps with unit testing etc
 				if($interval == 0) {
@@ -568,5 +570,30 @@ class Resque_Worker
 	{
 		return Resque_Stat::get($stat . ':' . $this);
 	}
+    public function checkConnect()
+    {
+        global $apn_connect;
+        global $connect_count;
+        //set a count
+        $type=gettype($apn_connect);
+        if($type=="resource")
+        {
+            if(get_resource_type ($apn_connect)=="stream")
+            {
+                //check count
+                $result=stream_get_meta_data($apn_connect);
+                $duration=time()-intval($connect_count["apn_connect"]);
+                if(intval($connect_count["apn_connect"])>0 && $duration>60*5)
+                {
+                    //close connect
+                    //cleanup count
+                     $connect_count["apn_connect"]=0;
+                     fclose($apn_connect);
+                     $apn_connect="";
+                     print "idle timeout, close connetion. \n";
+                }
+            }
+        }
+    }
 }
 ?>
