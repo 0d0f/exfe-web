@@ -26,12 +26,16 @@ class XActions extends ActionController {
                 "place_id"      =>$placeid,
                 "datetime"      =>$_POST["datetime"]
             );
-            
+
             $cross_id = $crossdata->gatherCross($identity_id, $cross);
 
             $helper=$this->getHelperByName("exfee");
-            $helper->addExfeeIdentify($cross_id,$_POST["exfee_list"]);
+            $helper->addExfeeIdentify($cross_id, $_POST["exfee_list"]);
             $helper->sendInvitation($cross_id);
+
+            // remove draft
+            $XDraft = $this->getModelByName('XDraft');
+            $XDraft->delDraft($_POST['draft_id']);
 
             //TODO: redirect to this exfe page
             $cross_id_base62 = int_to_base62($cross_id);
@@ -40,7 +44,6 @@ class XActions extends ActionController {
         }
         $this->displayView();
     }
-
 
     public function doSaveDraft()
     {
@@ -52,7 +55,8 @@ class XActions extends ActionController {
 
         $cross  = json_decode($_POST['cross'], true);
         $XDraft = $this->getModelByName('XDraft');
-        $XDraft->saveDraft($identity_id, $cross['title'], $_POST['cross']);
+        $result = $XDraft->saveDraft($identity_id, $cross['title'], $_POST['cross'], $_POST['draft_id'] ?: null);
+        echo json_encode(array('draft_id' => $result));
     }
 
     public function doGetDraft()
@@ -60,7 +64,7 @@ class XActions extends ActionController {
         $identity_id = $_SESSION['identity_id'];
 
         $XDraft = $this->getModelByName('XDraft');
-        echo $identity_id ? $XDraft->getDraft($identity_id) : json_encode(null);
+        echo $identity_id && $_POST['draft_id'] ? $XDraft->getDraft($identity_id, $_POST['draft_id']) : json_encode(null);
     }
 
     //编辑Cross功能。

@@ -3,21 +3,26 @@
 class XDraftModels extends DataModel
 {
 
-    public function delDraft($identity_id)
+    public function delDraft($draft_id)
     {
-        return $this->query("DELETE FROM `cross_drafts` WHERE `creator_id` = {$identity_id}");
+        return $this->query("DELETE FROM `cross_drafts` WHERE `id` = {$draft_id}");
     }
 
-    public function saveDraft($identity_id, $title, $json)
+    public function saveDraft($identity_id, $title, $json, $draft_id = null)
     {
-        $this->delDraft($identity_id);
         $json = addslashes($json);
-        return $this->query("INSERT INTO `cross_drafts` SET `creator_id` = {$identity_id}, `title` = '{$title}', `json` = '{$json}'");
+        if ($draft_id) {
+            $result = $this->query("UPDATE `cross_drafts` SET `creator_id` = {$identity_id}, `title` = '{$title}', `json` = '{$json}' WHERE `id` = $draft_id");
+            return $result ? $draft_id : null;
+        } else {
+            $result = $this->query("INSERT INTO `cross_drafts` SET `creator_id` = {$identity_id}, `title` = '{$title}', `json` = '{$json}'");
+            return $result && isset($result['insert_id']) ? $result['insert_id'] : null;
+        }
     }
 
-    public function getDraft($identity_id)
+    public function getDraft($draft_id)
     {
-        $draft = $this->getRow("SELECT `json` FROM `cross_drafts` WHERE `creator_id` = {$identity_id}");
+        $draft = $this->getRow("SELECT `json` FROM `cross_drafts` WHERE `id` = {$draft_id}");
         return $draft ? $draft['json'] : null;
     }
 

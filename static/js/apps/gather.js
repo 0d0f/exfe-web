@@ -1,19 +1,21 @@
+
 function hide_exfeedel(e)
 {
     e.addClass('bgrond');
     $('.bgrond .exfee_del').show();
 }
+
 function show_exfeedel(e)
 {
     e.removeClass('bgrond');
     $('.exfee_del').hide();
 }
+
 function exfee_del(e)
 {
     e.remove();
     updateExfeeList();
 }
-var new_identity_id = 0;
 
 function getexfee()
 {
@@ -119,7 +121,6 @@ $(document).ready(function() {
         show_exfeedel($(this));
     });
 
-    var code = null;
     $('#exfee').keypress(function(e) {
         code = e.keyCode ? e.keyCode : e.which;
         if (code == 13) {
@@ -217,12 +218,14 @@ $(document).ready(function() {
     });
 
     window.curCross = '';
+    window.code     = null;
+    window.new_identity_id = 0;
 
     setInterval('saveDraft()', 10000);
 
     $('.confirmed_box').live('change', updateExfeeList);
 
-    getDraft();
+    //getDraft();
 
     updateExfeeList();
 });
@@ -357,17 +360,26 @@ function saveDraft()
                     exfee       : $('#exfee_pv').html()},
         strCross = JSON.stringify(cross);
 
-    if (strCross !== curCross) {
+    if (curCross !== strCross) {
         $.ajax({
             type     : 'POST',
             url      : site_url + '/x/savedraft',
             dataType : 'json',
-            data     : {cross : strCross}
+            data     : {draft_id : parseInt($('#draft_id').val()),
+                        cross    : strCross},
+            success  : function (data) {
+                if (data.draft_id) {
+                    $('#draft_id').val(data.draft_id);
+                }
+            }
         });
         curCross = strCross;
     }
 }
 
+/**
+ * disable currently
+ *
 function getDraft()
 {
     $.ajax({
@@ -388,3 +400,5 @@ function getDraft()
         }
     });
 }
+ *
+ */
