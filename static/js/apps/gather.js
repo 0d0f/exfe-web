@@ -49,6 +49,8 @@ $(document).ready(function() {
     $("#identity_ajax").ajaxStart(function(){$(this).show();});
     $("#identity_ajax").ajaxStop(function(){$(this).hide();});
 
+    $('#g_title').focus();
+
     $('input[type="text"], textarea').focus(function () {
         if($(this).attr("enter") != "true")
         {
@@ -56,6 +58,7 @@ $(document).ready(function() {
             $(this).val('');
         }
     });
+
     $('input[type="text"], textarea').blur(function () {
         if ($(this).val() == "") {
             $(this).val(defaultText);
@@ -65,7 +68,7 @@ $(document).ready(function() {
     });
 
     $("#hostby").focus(function() {
-        if ($(this).attr('enter') == "true") { return; }
+        if ($(this).attr('enter') == "true") {return;}
         var html = showdialog("reg");
         $(html).modal({onClose : function() {
             $("#hostby").attr('disabled', true);
@@ -372,7 +375,7 @@ function getDraft()
         url      : site_url + '/x/getdraft',
         dataType : 'json',
         success  : function(draft) {
-            if (!draft) { return; }
+            if (!draft) {return;}
 
             $('#g_title').val(draft.title);
             $('#g_description').val(draft.description);
