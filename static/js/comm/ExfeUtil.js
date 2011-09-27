@@ -54,7 +54,7 @@ var odof = {
 
     /**
      * Create a rand element id (string)
-     * @None 
+     * @None
      **/
     util.createRandElementID = function() {
         var now = new Date().getTime ();
@@ -63,7 +63,7 @@ var odof = {
 
     /**
      * Create a time stamp
-     * @None 
+     * @None
      **/
     util.createTimeStamp = function() {
         var now = new Date().getTime();;
@@ -116,7 +116,7 @@ var odof = {
             }
         }
         return false;
-    }; 
+    };
 
     /**
      * Remove a item from Array by item value
@@ -135,7 +135,7 @@ var odof = {
     };
 
     /**
-     * Remove a item from Array by item ID 
+     * Remove a item from Array by item ID
      * @Array, items id;
      * @Return Array
      **/
@@ -369,7 +369,7 @@ var odof = {
     util.getCookie = function(name) {
         var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
         if(arr != null){
-            return unescape(arr[2]); 
+            return unescape(arr[2]);
         }
         return null;
     };
@@ -389,9 +389,9 @@ var odof = {
             cookieValue += ";domain="+domainValue;
         }
         if(expires !=null && expires !=0){
-            var exp  = new Date(); 
+            var exp  = new Date();
             exp.setTime(exp.getTime() + expires*24*60*60*1000);
-            cookieValue += ";expires=" + exp.toGMTString();	
+            cookieValue += ";expires=" + exp.toGMTString();
         }
         document.cookie = cookieValue;
     };
@@ -400,7 +400,7 @@ var odof = {
      * This function will be used to delete the cookie by given name
      * @name, the name of the cookie
      */
-    util.delCookie = function(name) 
+    util.delCookie = function(name)
     {
         var exp = new Date();
         exp.setTime(exp.getTime() - 1);
@@ -445,7 +445,7 @@ var odof = {
                 if(typeof oldfun == "function"){
                     oldfun();
                 }
-                if(document.readyState == "interactive" 
+                if(document.readyState == "interactive"
                     || document.readyState == "complete"){
                     if(typeof fn == "function"){
                         fn();
@@ -518,7 +518,7 @@ var odof = {
         var D = document.documentElement;
         if( e.pageX ){
             return {
-                "x": e.pageX, 
+                "x": e.pageX,
                 "y": e.pageY
             };
         }
@@ -598,7 +598,7 @@ var odof = {
             return false;
         });
     };
-        
+
     // -----------------------------------------------------------------
     // - The function blew will be used to manage the DOM ELement:
     // -     selector of the Element
@@ -666,7 +666,7 @@ var odof = {
             var els = el.children;
             var ret = [];
             for(var i=0;i<els.length;++i){
-                if(els[i].tagName 
+                if(els[i].tagName
                     && (!config.tagName || config.tagName.length == 0 || els[i].tagName.toLowerCase() == config.tagName.toLowerCase())
                     && (!config.className || config.className.length == 0 || util.hasClass(els[i], config.className))){
                         ret.push(els[i]);
@@ -676,7 +676,7 @@ var odof = {
         };
         var els = [];
         if(!config || config.length == 0){
-            return 
+            return
         }
         els = findEls(el, config[0]);
         for(var i=1;i<config.length;++i){
@@ -735,7 +735,7 @@ var odof = {
                 objs[i].height = objs[i]._height;
             }
         }
-        
+
         objs = document.getElementsByTagName("embed");
         for (var j = 0, l = objs.length; j < l; j++) {
             if(objs[j]._width){
@@ -745,7 +745,7 @@ var odof = {
                 objs[j].height = objs[j]._height;
             }
         }
-        
+
         objs = document.getElementsByTagName("iframe");
         for (var j = 0, l = objs.length; j < l; j++) {
             if(typeof objs[j]._visibility == "string"){
@@ -867,7 +867,7 @@ var odof = {
     /*
      * This function will be used to get the destance of the scoll top to Document top
      */
-    util.getScrollTop = function() {   
+    util.getScrollTop = function() {
         return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     };
 
@@ -881,23 +881,23 @@ var odof = {
     /*
      * Get the Height of the Window
      */
-    util.getClientHeight = function() {   
-        return (document.compatMode == "CSS1Compat")? document.documentElement.clientHeight : document.body.clientHeight; 
+    util.getClientHeight = function() {
+        return (document.compatMode == "CSS1Compat")? document.documentElement.clientHeight : document.body.clientHeight;
     };
 
     /*
      * Get the Width of the Window
      */
     util.getClientWidth = function() {
-        return (document.compatMode == "CSS1Compat")? document.documentElement.clientWidth : document.body.clientWidth; 
+        return (document.compatMode == "CSS1Compat")? document.documentElement.clientWidth : document.body.clientWidth;
     };
 
-    util.getScrollWidth = function() {   
-        return (document.compatMode == "CSS1Compat")? document.documentElement.scrollWidth : document.body.scrollWidth;  
+    util.getScrollWidth = function() {
+        return (document.compatMode == "CSS1Compat")? document.documentElement.scrollWidth : document.body.scrollWidth;
     };
 
-    util.getScrollHeight = function() {   
-        return (document.compatMode == "CSS1Compat")? document.documentElement.scrollHeight : document.body.scrollHeight;  
+    util.getScrollHeight = function() {
+        return (document.compatMode == "CSS1Compat")? document.documentElement.scrollHeight : document.body.scrollHeight;
     };
 
     /*
@@ -906,9 +906,9 @@ var odof = {
     util.scrollBottom = function(divScroll){
         if(!divScroll){
             if(util.getScrollTop()+util.getClientHeight()==util.getScrollHeight()){
-                return true;	
+                return true;
             }
-            return false;	
+            return false;
         }else{
             if($(divScroll)[0].scrollTop==0&&$(divScroll)[0].clientHeight+$(divScroll)[0].scrollTop==$(divScroll)[0].scrollHeight){
                 return false; //no scroll
@@ -918,4 +918,13 @@ var odof = {
             return false;
         }
     };
+
+    /**
+     * trim string by Leask
+     */
+    util.trim = function(str)
+    {
+        return str.replace(/^\s+|\s+$/g, '');
+    };
+
 })(odof);

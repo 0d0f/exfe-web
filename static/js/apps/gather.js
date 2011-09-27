@@ -88,7 +88,7 @@ $(document).ready(function() {
                         if ($('#exfee_' + id).attr('id') == null) {
                             name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
                             exfee_pv.push(
-                                '<li class="addjn" ><p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" class="confirmed_box" checked=true type="checkbox"/><span class="lb">host</span></p> <button class="exfee_del" type="button"></button> </li>'
+                                '<li class="addjn" ><p class="pic20"><img src="/eimgs/80_80_' + avatar_file_name + '" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '"value="' + identity + '">' + name + '</span><input id="confirmed_exfee_' + id + '" class="confirmed_box" checked=true type="checkbox"/><span class="lb">host</span></p> <button class="exfee_del" type="button"></button> </li>'
                             );
                         }
                     }
@@ -189,6 +189,7 @@ $(document).ready(function() {
     });
     */
     $('#gatherxform').submit(function(e) {
+        ////////////////////////////////
         if($('#g_description').attr('enter') == '0')
             $('#g_description').html('');
             $('#exfee_list').val(JSON.stringify(getexfee()));
@@ -376,6 +377,20 @@ function saveDraft()
         curCross = strCross;
     }
 }
+
+/**
+ * Pending
+ *
+function adjustExfeeBox()
+{
+    var maxLen = [];
+    $('#exfee_pv > ul').each(function() {
+        maxLen.push($(this).children('li').length);
+    });
+    maxLen = Math.max.apply(Math, maxLen);
+    console.log(maxLen);
+}
+ */
 
 /**
  * disable currently

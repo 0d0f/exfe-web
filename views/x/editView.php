@@ -2,9 +2,8 @@
 </head>
 <body>
 <?php include "share/nav.php"; ?>
-<?php 
+<?php
 $cross=$this->getVar("cross");
 ?>
 </body>
-</html>
-
+</html
