@@ -147,54 +147,62 @@ $token=$_GET["token"];
                 </ul>
 
             </div>
-       </div><!--exfel-->
-       <div class="exfer">
-       <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
-           <div id="cross_times_area">
-               <h3><?php echo $begin_at_relativetime;?></h3>
-               <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
-           </div>
-           <h3><?php echo $place_line1; ?></h3>
-           <p class="tm"><?php echo $place_line2; ?></p>
+        </div><!--exfel-->
+        <div class="exfer">
+        <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
+            <div id="cross_times_area">
+                <h3><?php echo $begin_at_relativetime;?></h3>
+                <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
+            </div>
+            <h3><?php echo $place_line1; ?></h3>
+            <p class="tm"><?php echo $place_line2; ?></p>
 
-           <div class="exfee">
-               <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
-   <ul class="samlcommentlist">
+            <div id="exfee_area" class="exfee">
+                <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
+                <div id="exfee_edit_box">
+                    <input type="text" id="exfee_input" value=""/>
+                    <button id="exfee_revert"   type="button">Revert</button>
+                    <button id="exfee_done" type="button">Done</button>
+                </div>
+                <ul class="samlcommentlist">
 
-               <?php
+                <?php
+                foreach($host_exfee as $exfee)
+                {
+                      if($exfee["name"]==$exfee["external_identity"])
+                        $exfee["name"]="";
+                //    if($exfee["avatar_file_name"]=="")
+                //        $exfee["avatar_file_name"]="default.png"
+                ?>
+                <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                    <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+                    <p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
+                    <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
+                </li>
+                <?php
+                }
+                ?>
+                <?php
+                foreach($normal_exfee as $exfee)
+                {
+                    if($exfee["name"]==$exfee["external_identity"]){
+                        $exfee["name"]="";
+                    }
+                ?>
+                <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                    <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+                    <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
+                    <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
+                </li>
+                <?php
+                }
+                ?>
 
-               foreach($host_exfee as $exfee)
-               {
-                     if($exfee["name"]==$exfee["external_identity"])
-                       $exfee["name"]="";
-               //    if($exfee["avatar_file_name"]=="")
-               //        $exfee["avatar_file_name"]="default.png"
-               ?>
-               <li id="exfee_<?php echo $exfee["identity_id"];?>">
-                   <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                   <p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
-                   <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
-               </li>
-               <?php
-               }
-               ?>
-               <?php
-               foreach($normal_exfee as $exfee)
-               {
-                   if($exfee["name"]==$exfee["external_identity"]){
-                       $exfee["name"]="";
-                   }
-               ?>
-               <li id="exfee_<?php echo $exfee["identity_id"];?>">
-                   <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                   <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
-                   <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
-               </li>
-               <?php
-               }
-               ?>
-
-            </ul>
+                </ul>
+            <div>
+                <button id="exfee_edit"   type="button">Edit...</button>
+                <button id="exfee_remove" type="button">Remove...</button>
+            </div>
         </div><!--exfee-->
     </div><!--exfer-->
 <script type="text/javascript" src="/static/js/apps/cross.js"></script>
