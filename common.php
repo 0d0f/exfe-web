@@ -1,4 +1,50 @@
 <?php
+
+function buildICS($args)
+{
+    require_once 'lib/iCalcreator.class.php';
+
+    $v = new vcalendar( array( 'unique_id' => 'exfe' ));
+
+    $v->setProperty( 'X-WR-CALNAME'
+                   , $args['title'] );          // set some X-properties, name, content.. .
+    $v->setProperty( 'X-WR-CALDESC'
+                   , "exfe cal" );
+    $v->setProperty( 'X-WR-TIMEZONE'
+                   , 'Asia/Shanghai' );
+
+    $e = & $v->newComponent( 'vevent' );           // initiate a new EVENT
+    //$e->setProperty( 'categories'
+    //               , 'FAMILY' );                   // catagorize
+    $begin_at=$args['begin_at'];
+    $year=date("Y",strtotime($begin_at));
+    $month=date("m",strtotime($begin_at));
+    $day=date("d",strtotime($begin_at));
+    $hour=date("H",strtotime($begin_at));
+    $minute=date("i",strtotime($begin_at));
+    $e->setProperty( 'dtstart' 
+                   , $year, $month, $day, $hour, $minute, 00 );   // 24 dec 2007 19.30
+    //$e->setProperty( 'duration'
+    //               , 0, 0, 3 );                    // 3 hours
+    $e->setProperty( 'summary'
+                   , $args['title'] );    // describe the event
+    $e->setProperty( 'description'
+                   , $args['description'] );    // describe the event
+    $e->setProperty( 'location'
+                   , $args['place_line1']."\r\n".$args['place_line2']  );                     // locate the event
+
+    $a = & $e->newComponent( 'valarm' );           // initiate ALARM
+    $a->setProperty( 'action'
+                   , 'DISPLAY' );                  // set what to do
+    $a->setProperty( 'description'
+                   , "exfe:".$args['title'] );          // describe alarm
+    $a->setProperty( 'trigger'
+                   , array( 'week' => 1 ));        // set trigger one week before
+
+    $str = $v->createCalendar();                   // generate and get output in string, for testing?
+    return $str;
+}
+
 function humanIdentity($identity,$user)
 {
     $provider=$identity["provider"];
