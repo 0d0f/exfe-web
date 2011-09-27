@@ -6,6 +6,7 @@ class Email_Job
 {
     public function perform()
     {
+        print_r($this->args);
         $title="来自 Exfe 的活动邀请：".$this->args['title'];
         $name=$this->args['name'];
         if($this->args['name']=="")
@@ -16,7 +17,7 @@ class Email_Job
         $link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
         $body=$name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
         $body=$body.$this->args['description'];
-        $icsstr=$this->buildICS($this->args);
+        $icsstr=buildICS($this->args);
 
         if($email_connect=="")
             $this->connect();
