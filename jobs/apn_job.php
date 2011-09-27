@@ -64,8 +64,9 @@ class Apn_Job
         {
             $this->connect();
             $err=fwrite($apn_connect, $msg);
+            if($err>0)
+                $connect_count["apn_connect"]=time();
         }
-        $connect_count["apn_connect"]=time();
 #        fclose($apn_connect);
     }
 }
