@@ -6,7 +6,6 @@ class Email_Job
 {
     public function perform()
     {
-        print_r($this->args);
         $title="来自 Exfe 的活动邀请：".$this->args['title'];
         $name=$this->args['name'];
         if($this->args['name']=="")
