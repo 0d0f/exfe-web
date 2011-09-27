@@ -16,8 +16,7 @@ class Email_Job
         $link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
         $body=$name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
         $body=$body.$this->args['description'];
-        $this->buildICS($this->args);
-        $icsstr=buildICS($this->args);
+        $icsstr=$this->buildICS($this->args);
 
         if($email_connect=="")
             $this->connect();
@@ -52,7 +51,6 @@ class Email_Job
     	    $email_connect->Body = $body;
     	    $email_connect->Subject = $title;
     	    $email_connect->AddAddress($args['external_identity']);  // This is where you put the email adress of the person you want to mail
-            
             $email_connect->AddStringAttachment($attachment, "exfe_".$args['cross_id_base62'].".ics");
     	    if(!$email_connect->Send())
     	    {
