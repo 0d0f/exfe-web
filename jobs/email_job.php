@@ -1,5 +1,6 @@
 <?php
 require("../lib/class.phpmailer.php");
+require("../common.php");
 require("../config.php");
 
 class Email_Job
@@ -12,6 +13,7 @@ class Email_Job
         $name=$this->args['external_identity'];
     
         global $site_url;
+        global $email_connect;
         
         $link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
         $body=$name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
