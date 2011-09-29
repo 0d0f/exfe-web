@@ -26,17 +26,43 @@ class TestActions extends ActionController {
     }
     public function doTest()
     {
-        #$helper=$this->getHelperByName("exfee");
-        #$result=$helper->sendInvitation(8);
-        //$id=int_to_base62(68);
-        //print $id;
+        $invitationdata=$this->getModelByName("invitation");
+        $invitations=$invitationdata->getInvitation_Identities(3);
 
-        //$id=base62_to_int(16);
-        //print "<br/>\r\n";
-        //print $id;
-        $data=$this->getModelByName("invitation");
-        $a=$data->getInvitation_Identities(74);
-        print_r($a);
+        $crossData=$this->getModelByName("X");
+        $cross=$crossData->getCross(3);
+        $place_id=$cross["place_id"];
+        if(intval($place_id)>0)
+        {
+            $placeData=$this->getModelByName("place");
+            $place=$placeData->getPlace($place_id);
+            $cross["place"]=$place;
+        }
+        print_r($cross);
+        $invitation=$invitations[0];
+        $args = array(
+                 'title' => $cross["title"],
+                 'description' => $cross["description"],
+                 'begin_at' => $cross["begin_at"],
+                 'place_line1' => $cross["place"]["line1"],
+                 'place_line2' => $cross["place"]["line2"],
+                 'cross_id_base62' => int_to_base62($cross_id),
+                 'invitation_id' => $invitation["invitation_id"],
+                 'token' => $invitation["token"],
+                 'identity_id' => $invitation["identity_id"],
+                 'provider' => $invitation["provider"],
+                 'external_identity' => $invitation["external_identity"],
+                 'name' => $invitation["name"],
+                 'avatar_file_name' => $invitation["avatar_file_name"]
+         );
+
+        require 'lib/Resque.php';
+        date_default_timezone_set('GMT');
+        Resque::setBackend('127.0.0.1:6379');
+
+
+        print $str;
+
     }
 
 }

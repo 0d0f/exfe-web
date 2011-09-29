@@ -573,26 +573,39 @@ class Resque_Worker
     public function checkConnect()
     {
         global $apn_connect;
+        global $email_connect;
         global $connect_count;
-        //set a count
+
         $type=gettype($apn_connect);
         if($type=="resource")
         {
             if(get_resource_type ($apn_connect)=="stream")
             {
                 //check count
-                $result=stream_get_meta_data($apn_connect);
                 $duration=time()-intval($connect_count["apn_connect"]);
                 if(intval($connect_count["apn_connect"])>0 && $duration>60*5)
                 {
-                    //close connect
-                    //cleanup count
                      $connect_count["apn_connect"]=0;
                      fclose($apn_connect);
                      $apn_connect="";
-                     print "idle timeout, close connetion. \n";
+                     print "idle timeout, close apn connetion. \n";
                 }
             }
+        }
+        $type=gettype($email_connect);
+        if($type=="object" )
+        {
+                if(get_class($email_connect)=="PHPMailer")
+                {
+                    $duration=time()-intval($connect_count["email_connect"]);
+                    if(intval($connect_count["email_connect"])>0 && $duration>60*5)
+                    {
+                         $connect_count["email_connect"]=0;
+                         $email_connect->SmtpClose();
+                         $email_connect="";
+                         print "idle timeout, close smtp connetion. \n";
+                    }
+                }
         }
     }
 }

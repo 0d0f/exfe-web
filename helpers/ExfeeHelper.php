@@ -35,6 +35,13 @@ class ExfeeHelper extends ActionController
 
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
+        $place_id=$cross["place_id"];
+        if(intval($place_id)>0)
+        {
+            $placeData=$this->getModelByName("place");
+            $place=$placeData->getPlace($place_id);
+            $cross["place"]=$place;
+        }
 
         require 'lib/Resque.php';
         date_default_timezone_set('GMT');
@@ -44,6 +51,9 @@ class ExfeeHelper extends ActionController
                $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
+                        'begin_at' => $cross["begin_at"],
+                        'place_line1' => $cross["place"]["line1"],
+                        'place_line2' => $cross["place"]["line2"],
                         'cross_id_base62' => int_to_base62($cross_id),
                         'invitation_id' => $invitation["invitation_id"],
                         'token' => $invitation["token"],
