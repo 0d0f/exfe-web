@@ -48,8 +48,6 @@ $(document).ready(function() {
 
     $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
     $('#identity_ajax').hide();
-    $("#identity_ajax").ajaxStart(function(){$(this).show();});
-    $("#identity_ajax").ajaxStop(function(){$(this).hide();});
 
     $('#g_title').focus();
 
@@ -189,7 +187,6 @@ $(document).ready(function() {
     });
     */
     $('#gatherxform').submit(function(e) {
-        ////////////////////////////////
         if($('#g_description').attr('enter') == '0')
             $('#g_description').html('');
             $('#exfee_list').val(JSON.stringify(getexfee()));
@@ -258,6 +255,8 @@ function parseId(strId)
 
 function identity()
 {
+    $('#identity_ajax').show();
+
     window.arrIdentitySub = [];
     var arrIdentityOri = $('#exfee').val().split(/,|;|\r|\n|\t/);
 
@@ -272,6 +271,7 @@ function identity()
         url      : site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
         dataType : 'json',
         success  : function(data) {
+            $('#identity_ajax').hide();
             var exfee_pv     = [],
                 name         = '',
                 identifiable = {};
@@ -322,6 +322,9 @@ function identity()
             }
 
             updateExfeeList();
+        },
+        error: function() {
+            $('#identity_ajax').hide();
         }
     });
     $('#exfee_count').html($('span.exfee_exist').length + $('span.exfee_new').length);
