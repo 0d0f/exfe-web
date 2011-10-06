@@ -55,6 +55,10 @@ class RSVPActions extends ActionController {
 
                 $invitationData=$this->getModelByName("Invitation");
                 $r=$invitationData->rsvp($cross_id,$identity_id,$state);
+
+                $logdata=$this->getModelByName("log");
+                $logdata->addLog("identity",$identity_id,"rsvp","cross",$cross_id,"",$rsvp,"");
+
                 if($r===true)
                     $responobj["response"]["success"]="true";
                 else
