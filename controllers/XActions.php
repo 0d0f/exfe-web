@@ -75,8 +75,12 @@ class XActions extends ActionController {
     {
         $crossDataObj = $this->getDataModel("x");
 
+
+
         $identity_id = $_SESSION['identity_id'];
         $cross_id = base62_to_int($_GET["id"]);
+        $old_cross=$crossDataObj->getCross($cross_id);
+
         $return_data = array("error"=>0,"msg"=>"");
         if(!array_key_exists("ctitle", $_POST) || trim($_POST["ctitle"]) == ""){
             $return_data["error"] = 1;
@@ -104,6 +108,10 @@ class XActions extends ActionController {
             echo json_encode($return_data);
             exit(0);
         }
+
+        $xhelper=$this->getHelperByName("x");
+
+        $xhelper->addCrossDiffLog($identity_id,$old_cross, $cross);
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($return_data);
         exit(0);
