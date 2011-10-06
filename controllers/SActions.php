@@ -286,6 +286,52 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
+    /**
+     * check user login status.
+     * 
+     * */
+    public function doCheckUserLogin()
+    {
+        $returnData = array(
+            "user_status"    => 0,
+            "user_name"      => "",
+            "user_avatar"    => ""
+        );
+
+        if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
+        {
+            $global_name=$_SESSION["tokenIdentity"]["identity"]["name"];
+            $global_avatar_file_name=$_SESSION["tokenIdentity"]["identity"]["avatar_file_name"];
+            $global_external_identity=$_SESSION["tokenIdentity"]["identity"]["external_identity"];
+            $global_identity_id=$_SESSION["tokenIdentity"]["identity_id"];
+
+        } else if($_SESSION["identity"]!="") {
+            $global_name=$_SESSION["identity"]["name"];
+            $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
+            $global_external_identity=$_SESSION["identity"]["external_identity"];
+            $global_identity_id=$_SESSION["identity_id"];
+        }
+
+        if(intval($_SESSION["userid"])>0)
+        {
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($_SESSION["userid"]);
+            if($global_name==""){
+                $global_name=$user["name"];
+            }
+            if($global_avatar_file_name==""){
+                $global_avatar_file_name=$user["avatar_file_name"];
+            }
+
+            $returnData["user_status"] = 1;
+            $returnData["user_name"] = $global_name;
+            $returnData["user_avatar"] = $global_avatar_file_name;
+        }
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
+        exit();
+    }
+
     public function doSaveUserIdentity()
     {
         //TODO: private API ,must check session

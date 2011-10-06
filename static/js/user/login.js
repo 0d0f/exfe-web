@@ -8,6 +8,10 @@ var moduleNameSpace = "odof.user.login";
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
+    /**
+     * 检查用户身份，用于弹出的登录框中#identity失去焦点时。
+     * 这一块需要整理，将登录、注册、用户信息整合到一起。。
+     * */
     ns.checkIdentity = function(){
         var getURI = site_url+"/s/IfIdentityExist?identity="+jQuery('#identity').val();
         jQuery.ajax({
@@ -22,8 +26,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         jQuery('#retype').show();
                         jQuery('#displayname').show();
                         jQuery('#resetpwd').hide();
-                    }
-                    else if(data.response.identity_exist=="true") {
+                    }else if(data.response.identity_exist=="true") {
                         jQuery('#hint').hide();
                         jQuery('#retype').hide();
                         jQuery('#displayname').hide();

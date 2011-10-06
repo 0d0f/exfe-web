@@ -51,14 +51,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 })(ns);
 
 jQuery(document).ready(function() {
-    jQuery('.name').mousemove(function() {
-        jQuery('#goldLink a').addClass('nameh');
-        jQuery('#myexfe').show();
-    });
-    jQuery('.name').mouseout(function() {
-        jQuery('#goldLink a').removeClass('nameh');
-        jQuery('#myexfe').hide();
-    });
     jQuery('#private_icon').mousemove(function() {
         jQuery('#private_hint').show();
     });

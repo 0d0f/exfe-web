@@ -27,3 +27,18 @@
         DD_belatedPNG.fix('#header .logo,#header .mygear');
     </script>
     <![endif]-->
+    <?php
+    if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
+    {
+        $global_name=$_SESSION["tokenIdentity"]["identity"]["name"];
+        $global_avatar_file_name=$_SESSION["tokenIdentity"]["identity"]["avatar_file_name"];
+        $global_external_identity=$_SESSION["tokenIdentity"]["identity"]["external_identity"];
+        $global_identity_id=$_SESSION["tokenIdentity"]["identity_id"];
+
+    } else if($_SESSION["identity"]!="") {
+        $global_name=$_SESSION["identity"]["name"];
+        $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
+        $global_external_identity=$_SESSION["identity"]["external_identity"];
+        $global_identity_id=$_SESSION["identity_id"];
+    }
+    ?>

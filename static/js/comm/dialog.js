@@ -165,13 +165,14 @@ function bindDialogEvent(type)
                                 if(data.response.success=="false")
                                 {
                                     $('#login_hint').show();
+                                } else if(data.response.success=="true") {
+                                    $("#hostby").val(identity);
+                                    $("#hostby").attr("enter","true");
+                                    $.modal.close();
                                 }
-                                else if(data.response.success=="true")
-                                {
-                                $("#hostby").val(identity);
-                                $("#hostby").attr("enter","true");
-                                $.modal.close();
-                                }
+                                //added by handaoliang
+                                //callback check UserLogin
+                                odof.user.status.checkUserLogin();
                             }
                         }
                     });

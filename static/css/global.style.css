@@ -51,8 +51,59 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 /** global header **/
 #global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
 #global_header .logo{ position:relative; float:left; width:567px; height:47px; }
-#global_header .user_info{ position:relative; float:right; width:500px; height:32px; padding-top:15px; font-size:11pt; text-align:right; padding-right:30px; }
+#global_header .user_info{
+    float:right; width:320px; height:47px;
+}
 #global_header .user_info a{ color:#FFF; }
+#global_header .user_info .global_sign_in_btn{
+    width:240px; height:20px; text-align:center; margin-top:13px; cursor:pointer;
+}
+
+#global_header .user_info .uinfo{ position:absolute; width:200px; height:47px; z-index:100; }
+#global_header .user_info .uinfo em.light{
+    float:left; width:72px;height:45px;background:url(/static/images/btn.png) no-repeat left -314px;
+}
+#global_header .user_info .uinfo .name{
+    float:left; height:35px; margin-top:5px; text-align:center; cursor:pointer;
+}
+
+#global_header .user_info .uinfo .name #goldLink a{
+    font-size:14px; color:#ffffff;font-weight:bold;font-family:Verdana;
+    height:40px;display:block;line-height:40px;padding-left:8px;margin-right:8px;
+}
+#global_header .user_info .uinfo .name #goldLink a.nameh{
+    position:absolute;color:#000000;background:url(/static/images/user.png) no-repeat;
+    text-decoration:none;z-index:300;padding-left:8px;margin-right:8px;
+}
+#global_header .user_info .uinfo .myexfe{
+    display:none;position:absolute;
+    width:228px;padding:5px 0px 0;
+    background:url(/static/images/user.png) no-repeat 0 -40px;
+    font-size:13px;right:0px;top:5px;
+}
+
+#global_header .user_info .uinfo .message{width:190px;padding:50px 19px 10px; }
+#global_header .user_info .uinfo .message .na{height:40px; }
+#global_header .user_info .uinfo .message .na p{float:left;color:#a0a0a0 }
+#global_header .user_info .uinfo .message .na p span{font-size:24px;color:#058fad;display:block; }
+#global_header .user_info .uinfo .message .na img{width:40px;height:40px;float:right; }
+#global_header .user_info .uinfo .message .info{line-height:20px;color:#202020;text-align:left;font-size:14px;margin-top:10px; }
+#global_header .user_info .uinfo .message .info span{color:#696969;font-weight:normal }
+#global_header .user_info .uinfo .message .info em{
+    background:url(/static/images/btn.png) no-repeat left -282px;
+    color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;
+}
+#global_header .user_info .uinfo .message .creatbtn{
+    width:180px;height:32px;background:url(/static/images/btn.png) no-repeat 2px -234px;margin-top:20px;line-height:32px;
+}
+#global_header .user_info .uinfo .message .creatbtn a{
+    color:#ffffff;font-size:18px;font-family:Verdana;text-decoration:none; padding-left:20px
+}
+#global_header .user_info .uinfo .myexfefoot{
+    width:190px;height:30px;padding:0 19px;background:url(/static/images/user.png) no-repeat left bottom;line-height:30px;
+}
+#global_header .user_info .uinfo .myexfefoot a.l{float:left }
+#global_header .user_info .uinfo .myexfefoot a.r{float:right; }
 
 /** 404 error page style control **/
 #error_404_page { background-color:#F2F2F2; }
