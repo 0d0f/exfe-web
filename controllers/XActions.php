@@ -29,6 +29,9 @@ class XActions extends ActionController {
 
             $cross_id = $crossdata->gatherCross($identity_id, $cross);
 
+            $logdata=$this->getModelByName("log");
+            $logdata->addLog("identity",$identity_id,"gather","cross",$cross_id,"",$_POST["title"],"");
+
             $helper=$this->getHelperByName("exfee");
             $helper->addExfeeIdentify($cross_id, $_POST["exfee_list"]);
             $helper->sendInvitation($cross_id);

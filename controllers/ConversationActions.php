@@ -38,6 +38,10 @@ class ConversationActions extends ActionController {
             {
                 $postData=$this->getModelByName("conversation");
                 $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["comment"]);
+
+                $logdata=$this->getModelByName("log");
+                $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
+
                 if($r===false)
                 {
                     $responobj["response"]["success"]="false";
