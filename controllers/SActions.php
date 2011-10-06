@@ -320,7 +320,11 @@ class SActions extends ActionController {
                 $global_name=$user["name"];
             }
             if($global_avatar_file_name==""){
-                $global_avatar_file_name=$user["avatar_file_name"];
+                if($user["avatar_file_name"] == ""){
+                    $global_avatar_file_name = "default.png";
+                }else{
+                    $global_avatar_file_name=$user["avatar_file_name"];
+                }
             }
 
             $returnData["user_status"] = 1;

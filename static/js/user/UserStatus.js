@@ -32,10 +32,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 bindDialogEvent("reg");
             });
         }else{
-            var user_avatar = "80_80_default.png";
-            if(userData.user_avatar != ""){
-                user_avatar = "80_80_"+userData.user_avatar;
-            }
             var userPanelHTML = '<div class="uinfo"><em class="light"></em><div class="name" ><div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
 
             userPanelHTML += '<div class="myexfe" id="myexfe" ><div class="message"><div class="na">';
@@ -43,7 +39,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '<span>271</span>';
             userPanelHTML += 'exfes attended';
             userPanelHTML += '</p>';
-            userPanelHTML += '<a href="/s/profile" class="l"><img src="/eimgs/'+ user_avatar +'"></a>';
+            userPanelHTML += '<a href="/s/profile" class="l"><img src="/eimgs/80_80_'+ userData.user_avatar +'"></a>';
             userPanelHTML += '</div>';
             userPanelHTML += '<p class="info">';
             userPanelHTML += '<span>Upcoming:</span><br />';
