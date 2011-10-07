@@ -1,5 +1,7 @@
 <?php include "share/header.php"; ?>
 <script type="text/javascript" src="/static/js/user/profile.js"></script>
+<script type="text/javascript" src="/static/js/user/ImageCropper.js"></script>
+<script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
 </head>
 <body>
 <?php include "share/nav.php"; ?>
@@ -11,19 +13,44 @@
 ?>
 <div class="centerbg">
 <div class="edit_user">
-<div id="profile_avatar"><img class="big_header" src="/eimgs/80_80_<?php echo $user["avatar_file_name"];?>" alt=""/></div>
-<button style="display:none" id="changeavatar">Change...</button>
-<div class="u_con">
-<h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>
-<p><img class="s_header" src="/static/images/user_header_2.jpg" alt="" /><b><span class="name">SteveE</span> @<em>stevexfee</em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Re-Authorize</button></i></p>
-<p><img class="s_header" src="/static/images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p>
-</div>
-<div class="u_num">
-<p>57</p>
-<span>exfes attended</span>
-<button id="editprofile">Edit</button>
-</div>
+    <div id="profile_avatar">
+        <img class="big_header" src="/eimgs/80_80_<?php echo $user["avatar_file_name"];?>" alt="" />
+        <button style="display:none" class="change" id="changeavatar">Change...</button>
 
+        <!-- upload avatar windows -->
+        <div id="upload_avatar_window" style="display:none;">
+            <div class="titles">
+                <p class="l"><a href="javascript:void(0);" id="close_upload_avatar_window_btn">Close Window</a></p>
+                <p class="r">Portrait</p>
+            </div>
+            <div id="container">
+                <a id="selectBtn" href="javascript:void(0);" onclick="document.getElementById('input').click();"></a>
+                <input type="file" id="input" size="10" style="visibility:hidden;" onchange="odof.user.uploadAvatar.selectImage(this.files)" />
+                <a id="rotateRightBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.rotateImage(event);"></a>
+                
+                <div id="wrapper">
+                    <canvas id="cropper"></canvas>
+                    <span id="upload_status" style="display:none;"></span>
+                    <div id="preview_container">
+                        <canvas id="preview80" width="80" height="80" style="position:absolute;left:10px;top:0px;" class="preview"></canvas>
+                        <span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>
+                        <a id="saveBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- upload avatar windows -->
+    </div>
+    <div class="u_con">
+        <h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>
+        <p><img class="s_header" src="/static/images/user_header_2.jpg" alt="" /><b><span class="name">SteveE</span> @<em>stevexfee</em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Re-Authorize</button></i></p>
+        <p><img class="s_header" src="/static/images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p>
+    </div>
+    <div class="u_num">
+        <p>57</p>
+        <span>exfes attended</span>
+        <button id="editprofile">Edit</button>
+    </div>
 </div>
 <div class="shadow_840"></div>
 <div class="profile_main">

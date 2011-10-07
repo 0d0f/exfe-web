@@ -93,7 +93,7 @@ $token=$_GET["token"];
         <p class="lock_icon" id="private_icon"></p>
         <p class="lock_icon_desc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
         <p class="edit_icon" id="edit_icon"></p>
-        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit exfe.</p>
+        <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit this cross.</p>
     </div>
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>

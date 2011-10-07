@@ -28,6 +28,12 @@ class SActions extends ActionController {
         $identityData->addIdentity($userid,$provider,$identity);
     }
 
+    public function doUploadAvatarNew(){
+        $upload_dir = "eimgs"; 				// The directory for the images to be saved in
+        $upload_path = $upload_dir."/";				// The path to where the image will be saved
+        $large_image_name = $_FILES['image']['name']; 		// New name of the large image
+    }
+
     public function doUploadavatar()
     {
 

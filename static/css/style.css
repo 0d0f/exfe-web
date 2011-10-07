@@ -290,10 +290,15 @@ b.r3{margin: 0px}
 
 /*laicp*/
 .centerbg_pro{ padding-top:33px;}
-.edit_user{ width:838px; border:solid 1px #e9e9e9; background:#fff; margin:0 auto; position: relative;z-index:10}
-.edit_user img.big_header{ width:79px; height:79px; position:absolute; left:20px; top:28px; border:solid 1px #e9e9e9}
-.edit_user button.change{font:11px/20px Verdana, Arial, Helvetica, sans-serif; width:83px; height:20px;color:#020202; position:absolute; left:20px; top:115px; border:0;background:url(/static/images/btn.png) no-repeat left -543px;padding-bottom:2px;}
-.edit_user .u_con{ padding:28px 140px 30px 130px;}
+.edit_user{ clear:both; width:838px; overflow:hidden; border:solid 1px #e9e9e9; background:#fff; margin:0 auto; }
+.edit_user #profile_avatar{ float:left; width:85px; height:110px; padding:5px; }
+.edit_user #profile_avatar .big_header{ display:block; background-color:#EEEEEE; width:79px; height:79px; border:solid 1px #e9e9e9; }
+.edit_user button.change{
+    width:81px; height:26px;color:#020202;cursor:pointer; margin-top:5px;
+    background:url(/static/images/btn.png) no-repeat -320px -45px;
+    padding-bottom:2px; border:1px solid #8FB9CF;
+}
+.edit_user .u_con{ float:left; width:590px; }
 .edit_user .u_con h1{ font:bold 18px/28px Verdana, Arial, Helvetica, sans-serif; color:#020202;}
 .edit_user .u_con h1 input{ width:200px; height:16px; font: bold 14px/20px Verdana, Arial, Helvetica, sans-serif;border:#c5c5c5 1px solid; }
 .edit_user .u_con p{ margin-top:6px; font:14px/20px Verdana, Arial, Helvetica, sans-serif; }
@@ -306,10 +311,16 @@ b.r3{margin: 0px}
 .edit_user .u_con p img.worning{ width:14px; height:14px; background: url(/static/images/icons.png) no-repeat 0 -664px; margin:0 8px 0 25px; vertical-align: baseline;}
 .edit_user .u_con p i{font:12px/20px Verdana, Arial, Helvetica, sans-serif;color:#a0a0a0;}
 .edit_user .u_con p button{ width:106px;text-align:center; font:11px/20px Verdana, Arial, Helvetica, sans-serif;color:#020202; margin-right:10px; background:url(/static/images/btn.png) no-repeat 0 -79px; border:0; line-height:17px;padding-bottom:2px;}
-.edit_user .u_num{ width:140px; text-align:right;position:absolute; right:5px; top:15px; text-align:center; }
+.edit_user .u_num{ float:right; width:140px; text-align:right; text-align:center; }
 .edit_user .u_num span{color:#aaaaaa ;font-size:12px;}
 .edit_user .u_num p{ font:bold 40px/45px Verdana, Arial, Helvetica, sans-serif bold; color:#0591af; padding-right:40px;text-align:right}
-.edit_user .u_num button{ width:59px; height:26px; background:url(/static/images/btn.png) no-repeat 0 -44px; text-align:center; font:14px/26px Verdana, Arial, Helvetica, sans-serif; color:#696969; border:0; margin-top:20px;}
+.edit_user .u_num button{
+    width:80px; height:26px;
+    background:url(/static/images/btn.png) no-repeat 0 -44px;
+    text-align:center; font:14px/26px Verdana, Arial, Helvetica, sans-serif;
+    color:#696969; border:0; margin-top:20px;
+    border-right:1px solid #8FB9CF; cursor:pointer;
+}
 .edit_user .u_con p button.boright{border-right:#adb9c2 1px solid;}
 .edit_user .u_num input{width:126px;height:18px;text-align:center;font:11px/20px Verdana, Arial, Helvetica, sans-serif;margin:10px 0;background:url(/static/images/btn.png) no-repeat 0 -79px;padding:0 0 2px 0;color:#020202;border:#adb9c2 1px solid;border-width:0 1px 0 0
 }
@@ -463,3 +474,53 @@ b.r3{margin: 0px}
     /* reduce the damage in FF3.0 */
     display:block; width:0;
 }
+/******************************************************************/
+
+/******* upload user avatar window style by handaoliang ***********/
+#upload_avatar_window{
+    position:absolute; width:450px; height:370px; z-index:100; background:#FFF; border:1px solid #000;
+}
+#upload_avatar_window .titles{ width:450px; height:25px; padding-top:5px; background-color:black; }
+#upload_avatar_window .titles p.l{ width:100px; height:25px; float:left; color:#FFF; padding-left:10px; }
+#upload_avatar_window .titles p.l a{ color:#FFF;}
+#upload_avatar_window .titles p.r{ width:100px; height:25px; float:right; color:#FFF; text-align:right; padding-right:10px; }
+
+#upload_avatar_window #container { position: absolute; left: 20px; top: 50px; }
+#upload_avatar_window #wrapper { position: absolute; left: 0px; top: 0px; }
+#upload_avatar_window #cropper {
+    position: absolute; left: 0px; top: 0px; border: 1px solid #999;
+    width:300px; height:300px;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#DDDDDD));
+    background:-moz-linear-gradient(#FFFFFF, #DDDDDD);
+    background:-o-linear-gradient(#FFFFFF, #DDDDDD);
+    background:linear-gradient(#FFFFFF, #DDDDDD);
+}
+#upload_avatar_window #preview_container {
+    position: absolute; width:100px;height:50px; left: 315px; top: 0px;
+}
+
+#upload_avatar_window .preview{ border: 1px solid #ccc; background:#EEEEEE; }
+#upload_avatar_window #selectBtn {
+    position: absolute; z-index:100;
+    left: 85px; top: 120px;
+    width: 119px; height: 27px;
+    background: url(../images/ic_select_img.png);
+}
+#upload_avatar_window #saveBtn {
+    position: absolute;
+    left: 10px; top: 275px;
+    width: 80px; height: 27px;
+    background: url(../images/ic_save_img.png);
+}
+
+#upload_avatar_window #rotateRightBtn {
+    position: absolute; left: 275px; top: 5px;
+    width: 22px; height: 22px; z-index:100;
+    background: url(../images/ic_turn_right.png) no-repeat right;
+}
+
+#upload_avatar_window #upload_status{
+    position:absolute;left:40px;top:120px;width:300px; height:30px; padding-top:15px;
+    border:1px solid #999; background:white; z-index:101; color:#FF0000; text-align:center;
+}
+/******************************************************************/

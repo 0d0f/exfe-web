@@ -56,10 +56,12 @@ $(document).ready(function(){
         }
     });
 
+    /*
     $('#changeavatar').click(function(e) {
         var AWnd=window.open('/s/uploadavatar','fwId','resizable=yes,scrollbars=yes,width=600,height=600');
         AWnd.focus();
     });
+    */
 
     $('.p_right').click(function(e) {
         var strXType = e.target.id.split('_')[1],
