@@ -51,10 +51,10 @@ class Email_Job
             global $connect_count;
 
     	    $email_connect->Body = $body;
-            $email_connect->ContentType="text/calendar";
     	    $email_connect->Subject = $title;
     	    $email_connect->AddAddress($args['external_identity']);  // This is where you put the email adress of the person you want to mail
             $email_connect->AddStringAttachment($attachment, "exfe_".$args['cross_id_base62'].".ics");
+            $email_connect->ContentType="text/calendar";
     	    if(!$email_connect->Send())
     	    {
     	        echo "Message was not sent<br/ >";
