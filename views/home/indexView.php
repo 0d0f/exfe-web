@@ -7,7 +7,6 @@
     <script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
     <script type="text/javascript" src="/static/js/libs/timepicker.js"></script>
     <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
-    <script type="text/javascript" src="/static/js/apps/gather.js"></script>
     <script type="text/javascript" src="/static/js/comm/dialog.js"></script>
 </head>
 <body id="home">

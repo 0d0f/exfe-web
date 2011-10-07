@@ -398,6 +398,8 @@ class SActions extends ActionController {
         setcookie('loginsequ', NULL,-1,"/",".exfe.com");
         setcookie('logintoken',NULL,-1,"/",".exfe.com");
 
+        header("location:".$_SERVER["HTTP_REFERER"]);
+
     }
 
     public function doLogin()
