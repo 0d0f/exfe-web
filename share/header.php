@@ -41,4 +41,7 @@
         $global_external_identity=$_SESSION["identity"]["external_identity"];
         $global_identity_id=$_SESSION["identity_id"];
     }
+    if(empty($global_avatar_file_name)){
+        $global_avatar_file_name = "default.png";
+    }
     ?>

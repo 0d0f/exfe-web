@@ -28,6 +28,12 @@ class SActions extends ActionController {
         $identityData->addIdentity($userid,$provider,$identity);
     }
 
+    public function doUploadAvatarNew(){
+        $upload_dir = "eimgs"; 				// The directory for the images to be saved in
+        $upload_path = $upload_dir."/";				// The path to where the image will be saved
+        $large_image_name = $_FILES['image']['name']; 		// New name of the large image
+    }
+
     public function doUploadavatar()
     {
 
@@ -320,7 +326,11 @@ class SActions extends ActionController {
                 $global_name=$user["name"];
             }
             if($global_avatar_file_name==""){
-                $global_avatar_file_name=$user["avatar_file_name"];
+                if($user["avatar_file_name"] == ""){
+                    $global_avatar_file_name = "default.png";
+                }else{
+                    $global_avatar_file_name=$user["avatar_file_name"];
+                }
             }
 
             $returnData["user_status"] = 1;
@@ -393,6 +403,8 @@ class SActions extends ActionController {
         setcookie('id', NULL, -1,"/",".exfe.com");
         setcookie('loginsequ', NULL,-1,"/",".exfe.com");
         setcookie('logintoken',NULL,-1,"/",".exfe.com");
+
+        header("location:".$_SERVER["HTTP_REFERER"]);
 
     }
 
