@@ -178,3 +178,46 @@ function mbString($sourceStr,$outStrLen)
     }
     return $echoStr;
 }
+/**
+ * 随机产生字符串。
+ * @param: string length
+ * @return: rand string.
+ */
+function randStr($len=5, $type="normal")
+{
+    switch($type){
+        case "num":
+            $chars = '0123456789';
+            $chars_len = 10;
+            break;
+        case "lowercase":
+            $chars = 'abcdefghijklmnopqrstuvwxyz';
+            $chars_len = 26;
+            break;
+        case "uppercase":
+            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $chars_len = 26;
+            break;
+        default:
+            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+            $chars_len = 62;
+            break;
+    }
+    $string = '';
+    for($len; $len>=1; $len--)
+    {
+        $position = rand() % $chars_len;//62 is the length of $chars
+        $string .= substr($chars, $position, 1);
+    }
+    return $string;
+}
+/**
+ * 取得微秒时间
+ * @param NULL
+ * @return: float microtime value.
+ **/
+function getMicrotime()
+{
+    list($usec, $sec) = explode(" ", microtime());
+    return ((float)$usec + (float)$sec);
+}

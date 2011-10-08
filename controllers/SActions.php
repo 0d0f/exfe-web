@@ -29,14 +29,65 @@ class SActions extends ActionController {
     }
 
     public function doUploadAvatarNew(){
-        $upload_dir = "eimgs"; 				// The directory for the images to be saved in
-        $upload_path = $upload_dir."/";				// The path to where the image will be saved
-        $large_image_name = $_FILES['image']['name']; 		// New name of the large image
+        require_once "imgcommon.php";
+        if(intval($_SESSION["userid"])>0)
+        {
+            $self_url="/s/uploadAvatarNew";
+            $upload_dir = "eimgs"; 				// The directory for the images to be saved in
+            $upload_path = $upload_dir."/";				// The path to where the image will be saved
+
+            $large_image_name = $_POST['iName']; 		// New name of the large image
+            $image_name = md5(randStr(20).$large_image_name.getMicrotime()).".jpg";
+
+            $return_data = array(
+                "status"    =>0,
+                "msg"       =>""
+            );
+
+           if(!empty($_POST["iSmallFile"])){
+                $image_base64_data = $_POST["iSmallFile"];
+                $image_encode_data = substr($image_base64_data, strpos($image_base64_data, ","), strlen($image_base64_data));
+                $image_data = base64_decode($image_encode_data);
+                $im = imagecreatefromstring($image_data);
+                $small_image_name = "80_80_".$image_name;
+                if($im !== false) {
+                    header('Content-Type: image/jpeg');
+                    imagejpeg($im,$upload_path.$small_image_name);
+                    imagedestroy($im);
+                } else {
+                    $return_data["status"] = 1;
+                    $return_data["msg"] = 'Save Image error.';
+                }
+            }
+
+           if(!empty($_POST["iBigFile"])){
+                $image_base64_data = $_POST["iBigFile"];
+                $image_encode_data = substr($image_base64_data, strpos($image_base64_data, ","), strlen($image_base64_data));
+                $image_data = base64_decode($image_encode_data);
+                $im = imagecreatefromstring($image_data);
+                $small_image_name = "240_240_".$image_name;
+                if($im !== false) {
+                    header('Content-Type: image/jpeg');
+                    imagejpeg($im,$upload_path.$small_image_name);
+                    imagedestroy($im);
+                } else {
+                    $return_data["status"] = 1;
+                    $return_data["msg"] = 'Save Image error.';
+                }
+            }
+
+            $userData = $this->getModelByName("user");
+            $userData->saveUserAvatar($image_name,$_SESSION["userid"]);
+
+            header("Content-Type:application/json; charset=UTF-8");
+            echo json_encode($return_data);
+            exit(0);
+        }
+
     }
 
     public function doUploadavatar()
     {
-
         if($_GET["a"]=="close")
         {
             $this->displayViewByAction("close");
