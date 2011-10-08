@@ -367,6 +367,15 @@ class SActions extends ActionController {
             $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
             $global_external_identity=$_SESSION["identity"]["external_identity"];
             $global_identity_id=$_SESSION["identity_id"];
+        } else
+        {
+            $indentityData=$this->getModelByName("identity");
+            $indentityData->loginByCookie();
+
+            $global_name=$_SESSION["identity"]["name"];
+            $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
+            $global_external_identity=$_SESSION["identity"]["external_identity"];
+            $global_identity_id=$_SESSION["identity_id"];
         }
 
         if(intval($_SESSION["userid"])>0)
@@ -467,7 +476,7 @@ class SActions extends ActionController {
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
         if(intval($autosignin)==1)
-            $autosignin==true;
+            $autosignin=true;
 
         $isNewIdentity=FALSE;
 
@@ -495,11 +504,11 @@ class SActions extends ActionController {
                 if($isNewIdentity===TRUE)
                     $this->setVar("isNewIdentity", TRUE);
 
-                if(intval($autosignin)>0)
-                {
-                    //TODO: set cookie
-                    //set cookie
-                }
+                //if(intval($autosignin)>0)
+                //{
+                //    //TODO: set cookie
+                //    //set cookie
+                //}
 
                 if($_GET["url"]!="")
                     header( 'Location:'.$_GET["url"] ) ;
@@ -523,6 +532,8 @@ class SActions extends ActionController {
         $repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
+        if(intval($autosignin)==1)
+            $autosignin=true;
 
         if(isset($identity) && isset($password) && isset($displayname) )
         {
@@ -537,7 +548,7 @@ class SActions extends ActionController {
                 if($provider=="")
                     $provider="email";
                 $identity_id=$identityData->addIdentity($userid,$provider,$identity);
-                $userid=$identityData->login($identity,$password);
+                $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
                     $responobj["response"]["success"]="true";
@@ -557,10 +568,13 @@ class SActions extends ActionController {
     {
         $identity=$_POST["identity"];
         $password=$_POST["password"];
+        $autosignin=$_POST["auto_signin"];
+        if(intval($autosignin)==1)
+            $autosignin=true;
         if(isset($identity) && isset($password))
         {
             $Data=$this->getModelByName("identity");
-            $userid=$Data->login($identity,$password);
+            $userid=$Data->login($identity,$password,$autosignin);
 
             if(intval($userid)>0)
             {

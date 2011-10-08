@@ -46,7 +46,7 @@ function showdialog(type)
             +"<li id='login_hint' style='display:none' class='notice'><span>Error identity or password</span></li>"
             //+"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
             //+"<li id='displayname' style='display:none'><label>Names:</label><input type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
-            +"<li class='logincheck'><input type='hidden' value='0' name='auto_signin'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+            +"<li class='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
             +"<li><input id='resetpwd' type='submit' value='Reset Password...' class='changepassword'/><input type='submit' value='Sign In' class='sub'/></li>"
             +"</ul>"
             +"</form>"
@@ -72,7 +72,7 @@ function showdialog(type)
             +"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
             +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
             +"<li id='displayname' style='display:none'><label>Names:</label><input  type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
-            +"<li class='logincheck'><input type='hidden' value='0' name='auto_signin'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+            +"<li class='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
             +"<li><input id='resetpwd' type='submit' value='Reset Password...' class='changepassword'/><input type='submit' value='Sign In' class='sub'/></li>"
             +"</ul>"
             +"</form>";
@@ -137,6 +137,7 @@ function bindDialogEvent(type)
                 var password=$('input[name=password]').val();
                 var retypepassword=$('input[name=retypepassword]').val();
                 var displayname=$('input[name=displayname]').val();
+                var auto_signin=$('input[name=auto_signin]').val();
         
         
                 if($('#retype').is(':visible')==true &&  password!=retypepassword && password!="" )
@@ -153,7 +154,7 @@ function bindDialogEvent(type)
                 }
                 if(password!=""&& identity!="" && $('#displayname').is(':visible')==false)
                 {
-                    var poststr="identity="+identity+"&password="+encodeURIComponent(password);
+                    var poststr="identity="+identity+"&password="+encodeURIComponent(password)+"&auto_signin="+auto_signin;
                     $.ajax({
                         type: "POST",
                         data: poststr,
@@ -241,7 +242,8 @@ $(document).ready(function(){
         $('#loginform').submit(function() {
             var identity=$('input[name=loginidentity]').val();
             var password=$('input[name=password]').val();
-            var poststr="identity="+identity+"&password="+encodeURIComponent(password);
+            var auto_signin=$('input[name=auto_signin]').val();
+            var poststr="identity="+identity+"&password="+encodeURIComponent(password)+"&auto_signin="+auto_signin;
             $('#login_hint').hide();
             $.ajax({
                 type: "POST",
