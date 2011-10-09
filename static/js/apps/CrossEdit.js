@@ -151,6 +151,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             //回调
             success:function(JSONData){
                 ns.callbackActions(JSONData);
+            },
+            error:function(){
+                alert('ll');
+        //console.log(JSONData);
             }
         });
         //jQuery("#edit_cross_bar").slideUp(300);
@@ -236,23 +240,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         name             = data.response.identities[i].name;
                     if ($('#exfee_' + id).attr('id') == null) {
                         name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
-                        '<li id="exfee_<?php echo $exfee["identity_id"];?>">'
-                        '<p class="pic20">'
-                            '<img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>'
-                    <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
-                    <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
-                </li>
-                        exfee_pv += '<li class="addjn">'
+                        exfee_pv += '<li id="exfee_' + id + '">'
+                                  +     '<button type="button" class="exfee_del"></button>'
                                   +     '<p class="pic20">'
-                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="" />'
+                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
                                   +     '</p>'
                                   +     '<p class="smcomment">'
-                                  +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '">' + name + '</span>'
-                                  +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" checked=true type="checkbox" />'
-                                  +         '<span class="lb">host</span>'
+                                  +         '<span>' + name + '</span>' + identity
                                   +     '</p>'
-                                  +     '<button type="button" class="exfee_del"></button>'
-                                  + '</li>';
+                                  +     '<p class="cs">'
+                                  +         '<em class="c2"></em>'
+                                  +     '</p>'
+                                  + '</li>'
                     }
                     identifiable[identity] = true;
                 }
@@ -269,21 +268,27 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                         name = name.replace('<', '&lt;').replace('>', '&gt;');
                         ns.numNewIdentity++;
-                        exfee_pv += '<li class="addjn">'
+                        exfee_pv += '<li id="exfee_new' + ns.numNewIdentity + '">'
+                                  +     '<button type="button" class="exfee_del"></button>'
                                   +     '<p class="pic20">'
-                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="" />'
+                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
                                   +     '</p>'
                                   +     '<p class="smcomment">'
-                                  +         '<span class="exfee_new" id="newexfee_' + ns.numNewIdentity + '" value="' + ns.arrIdentitySub[i].id + '">' + name + '</span>'
-                                  +         '<input id="confirmed_exfee_' + ns.numNewIdentity + '" class="confirmed_box" checked=true type="checkbox" />'
-                                  +         '<span class="lb">host</span>'
+                                  +         '<span>' + name + '</span>'
                                   +     '</p>'
-                                  +     '<button type="button" class="exfee_del"></button>'
-                                  + '</li>';
+                                  +     '<p class="cs">'
+                                  +         '<em class="c2"></em>'
+                                  +     '</p>'
+                                  + '</li>'
                     }
                 }
-                console.log($('#exfee_pv > .samlcommentlist'));
-                $('#exfee_pv > .samlcommentlist').html($('#exfee_pv > .samlcommentlist').html() + exfee_pv);
+                $('#exfee_area > .samlcommentlist').html($('#exfee_area > .samlcommentlist').html() + exfee_pv);
+                switch (ns.exfeeEdit) {
+                    case 'edit':
+                        
+                    case 'remove':
+
+                }
                 //updateExfeeList();
             }
         });
@@ -309,8 +314,20 @@ jQuery(document).ready(function(){
     $('#exfee_remove').hide();
     $('#exfee_edit').hide();
     $('#exfee_edit').bind('click', function() {
+        ns.exfeeEdit = 'edit';
         $('#exfee_edit_box').fadeIn();
-        $('#exfee_edit').fadeIn();
+        $('#exfee_remove').fadeIn();
+        $('#exfee_edit').hide();
+        $('#exfee_area').bind('clickoutside', function(event) {
+            $('#exfee_edit_box').fadeOut();
+            $('#exfee_remove').hide();
+            $('#exfee_edit').fadeIn();
+            $('#exfee_edit_box').unbind('clickoutside');
+        });
+    });
+    $('#exfee_remove').bind('click', function() {
+        ns.exfeeEdit = 'remove';
+        //$('.exfee_del').fadeIn();
     });
     $('#exfee_input').keypress(function(e) {
         if ((e.keyCode ? e.keyCode : e.which) == 13) {

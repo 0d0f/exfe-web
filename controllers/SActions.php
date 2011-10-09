@@ -253,9 +253,9 @@ class SActions extends ActionController {
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crossdata = $this->getModelByName('x');
-        $crosses   = $crossdata->fetchCross($identities[0]['id'], $today); // Why "0"? @virushuo says "no mulit-identity" in one user now
-        $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
-        //$recenUpdt = $crossdata->fetchCross($identities[0]['id'], 0, null, 'updated_at DESC', 10);
+        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today); // Why "0"? @virushuo says "no mulit-identity" in one user now
+        $pastXs    = $crossdata->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
+        //$recenUpdt = $crossdata->fetchCross($_SESSION['userid'], 0, null, 'updated_at DESC', 10);
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
             if ($crosses[$crossI]['timestamp'] < $upcoming) {
@@ -345,7 +345,7 @@ class SActions extends ActionController {
     }
     /**
      * check user login status.
-     * 
+     *
      * */
     public function doCheckUserLogin()
     {

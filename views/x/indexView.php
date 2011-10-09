@@ -148,8 +148,8 @@ $token=$_GET["token"];
 
             </div>
         </div><!--exfel-->
-        <div class="exfer">
-        <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
+        <div id="cross_container" class="exfer">
+            <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
             <div id="cross_times_area">
                 <h3><?php echo $begin_at_relativetime;?></h3>
                 <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
@@ -176,8 +176,8 @@ $token=$_GET["token"];
                 ?>
                 <li id="exfee_<?php echo $exfee["identity_id"];?>">
                     <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                    <p class="smcomment"><span><?php echo $exfee["name"];?></span> <span class="lb">host</span><?php echo $exfee["external_identity"];?></p>
-                    <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
+                    <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> <span class="lb">host</span></p>
+                    <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
                 </li>
                 <?php
                 }
@@ -190,9 +190,10 @@ $token=$_GET["token"];
                     }
                 ?>
                 <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                    <button type="button" class="exfee_del"></button>
                     <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
                     <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
-                    <p class="cs"><em class="<?php if($exfee["state"]==INVITATION_YES) echo "c1"; else echo "c2";?>"></em></p>
+                    <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
                 </li>
                 <?php
                 }
