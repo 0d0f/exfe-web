@@ -43,27 +43,33 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.saveImage = function(){
-        var imgData = ns.cropper.getCroppedImageData(240, 240);
-        
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function(e){
-            if(xhr.readyState == 4){
-                if(xhr.status == 200){
-                    jQuery("#upload_status").html("Upload Picture successful");
-                    jQuery("#upload_status").show();
-                    setTimeout(function(){
-                        jQuery("#upload_status").hide();
-                    },3000);
-                }
+        var bigImgData = ns.cropper.getCroppedImageData(240, 240);
+        var smallImgData = ns.cropper.getCroppedImageData(80, 80);
+
+        jQuery.ajax({
+            url:site_url+ "/s/uploadAvatarNew",
+            type:"POST",
+            dataType:"json",
+            data:{
+                jrand: Math.round(Math.random()*10000000000),
+                iName: "images",
+                iSize: 240,
+                iSmallFile: smallImgData,
+                iBigFile: bigImgData,
+            },
+            success:function(JSONData){
+                odof.user.uploadAvatar.callbackActions(JSONData);
             }
-        };
-        
-        xhr.open("post", site_url+"/s/uploadAvatarNew", true);
-        var data = new FormData();
-        //data.append("username", "");
-        data.append("size", 240);
-        data.append("file", imgData);
-        xhr.send(data);
+        });
+    };
+
+    ns.callbackActions = function(JSONData){
+        jQuery("#upload_status").html("Upload Picture successful");
+        jQuery("#upload_status").show();
+        setTimeout(function(){
+            jQuery("#upload_status").hide();
+            window.location.href=site_url+"/s/profile";
+        },1000);
     };
 
     ns.trace = function(){
