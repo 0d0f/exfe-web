@@ -377,7 +377,6 @@ class SActions extends ActionController {
             $global_external_identity=$_SESSION["identity"]["external_identity"];
             $global_identity_id=$_SESSION["identity_id"];
         }
-
         if(intval($_SESSION["userid"])>0)
         {
             $userData = $this->getModelByName("user");

@@ -135,7 +135,7 @@ class IdentityModels extends DataModel{
 
             if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
             {
-               $this->loginByIdentityId($identity_id,$uid,$type="cookie",$setcookie=false);
+               $user_id=$this->loginByIdentityId($identity_id,$uid,NULL,NULL,"cookie",$setcookie=false);
     //do login
                return $user_id;
             }
@@ -184,6 +184,7 @@ class IdentityModels extends DataModel{
         $identity["name"]=$identityrow["name"];
         if(trim($identity["name"]==""))
             $identity["name"]=$userrow["name"];
+
         if(trim($identity["name"]==""))
             $identity["name"]=$identityrow["external_identity"];
 
@@ -192,6 +193,7 @@ class IdentityModels extends DataModel{
         if(trim($identity["avatar_file_name"])=="")
             $identity["avatar_file_name"]=$userrow["avatar_file_name"];
         $_SESSION["identity"]=$identity;
+
         unset($_SESSION["tokenIdentity"]);
         return $userid;
     }
