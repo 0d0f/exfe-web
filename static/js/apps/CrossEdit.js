@@ -194,6 +194,59 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      *
      * by Leask
      * */
+    ns.exfeeEdit = function(status){
+        ns.exfeeEditStatus = status;
+        switch (status) {
+            case 'edit':
+                $('#exfee_edit_box').fadeIn();
+                $('#exfee_remove').fadeIn();
+                $('#exfee_edit').hide();
+                $('#exfee_remove').attr('disabled', false);
+                $('#exfee_area').bind('clickoutside', function(event) {
+                    if (event.target.id === '') {
+                        return;
+                    }
+                    odof.cross.edit.exfeeEdit();
+                });
+                $('.exfee_del').hide();
+                ns.exfees = $('#exfee_area > .samlcommentlist').html();
+                break;
+            case 'remove':
+                $('#exfee_remove').attr('disabled', true);
+                $('#exfee_area').bind('click', function(event) {
+                    if (event.target.id === 'exfee_remove' || event.target.className === 'exfee_del') {
+                        return;
+                    }
+                    odof.cross.edit.exfeeEdit('edit');
+                });
+                $('.exfee_del').show();
+                break;
+            default:
+                $('#exfee_edit_box').fadeOut();
+                $('#exfee_remove').hide();
+                $('#exfee_edit').fadeIn();
+                $('#exfee_edit_box').unbind('clickoutside');
+                $('.exfee_del').hide();
+        }
+        if (status !== 'remove') {
+            $('#exfee_area').unbind('click');
+        }
+        $('#exfee_input').val('');
+    };
+
+    /**
+     *
+     * by Leask
+     * */
+    ns.revertExfee = function() {
+        $('#exfee_area > .samlcommentlist').html(ns.exfees);
+        $('#exfee_input').val('');
+    };
+
+    /**
+     *
+     * by Leask
+     * */
     ns.parseId = function(strId) {
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
@@ -208,7 +261,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             return {id   : odof.util.trim(strId),
                     type : 'unknow'};
         }
-    }
+    };
 
     /**
      *
@@ -218,7 +271,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.arrIdentitySub = [];
         ns.numNewIdentity = 0;
         var arrIdentityOri = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
-
+        $('#exfee_input').val('');
         for (var i in arrIdentityOri) {
             if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
                 ns.arrIdentitySub.push(ns.parseId(arrIdentityOri[i]));
@@ -251,7 +304,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +     '<p class="cs">'
                                   +         '<em class="c2"></em>'
                                   +     '</p>'
-                                  + '</li>'
+                                  + '</li>';
                     }
                     identifiable[identity] = true;
                 }
@@ -279,21 +332,43 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +     '<p class="cs">'
                                   +         '<em class="c2"></em>'
                                   +     '</p>'
-                                  + '</li>'
+                                  + '</li>';
                     }
                 }
                 $('#exfee_area > .samlcommentlist').html($('#exfee_area > .samlcommentlist').html() + exfee_pv);
-                switch (ns.exfeeEdit) {
+                switch (ns.exfeeEditStatus) {
                     case 'edit':
-                        
+                        $('.exfee_del').hide();
+                        break;
                     case 'remove':
-
+                        $('.exfee_del').show();
                 }
+                ns.summaryExfee();
                 //updateExfeeList();
             }
         });
         //$('#exfee_count').html($('span.exfee_exist').length + $('span.exfee_new').length);
-    }
+    };
+
+    /**
+     *
+     * by Leask
+     * */
+    ns.summaryExfee = function() {
+        $('.bignb').html($('.cs > .c1').length);
+        $('.malnb').html($('.samlcommentlist > li').length);
+    };
+
+    /**
+     *
+     * by Leask
+     */
+    ns.changeRsvp = function(target) {
+        var intC = parseInt(target.className.substr(1)) + 1;
+     // target.className = 'c' + (intC > 4 ? 1 : intC);
+        target.className = 'c' + (intC > 2 ? 1 : intC);
+        ns.summaryExfee();
+    };
 
 })(ns);
 
@@ -314,26 +389,28 @@ jQuery(document).ready(function(){
     $('#exfee_remove').hide();
     $('#exfee_edit').hide();
     $('#exfee_edit').bind('click', function() {
-        ns.exfeeEdit = 'edit';
-        $('#exfee_edit_box').fadeIn();
-        $('#exfee_remove').fadeIn();
-        $('#exfee_edit').hide();
-        $('#exfee_area').bind('clickoutside', function(event) {
-            $('#exfee_edit_box').fadeOut();
-            $('#exfee_remove').hide();
-            $('#exfee_edit').fadeIn();
-            $('#exfee_edit_box').unbind('clickoutside');
-        });
+        odof.cross.edit.exfeeEdit('edit');
     });
     $('#exfee_remove').bind('click', function() {
-        ns.exfeeEdit = 'remove';
-        //$('.exfee_del').fadeIn();
+        odof.cross.edit.exfeeEdit('remove');
     });
     $('#exfee_input').keypress(function(e) {
         if ((e.keyCode ? e.keyCode : e.which) == 13) {
             odof.cross.edit.identityExfee();
             e.preventDefault();
         }
+    });
+    $('.exfee_del').live('click', function() {
+        $(this.parentNode).remove();
+    });
+    $('#exfee_revert').bind('click', function() {
+        odof.cross.edit.revertExfee();
+    });
+    $('#exfee_done').bind('click', function() {
+        odof.cross.edit.exfeeEdit();
+    });
+    $('.cs > em').live('click', function(event){
+        odof.cross.edit.changeRsvp(event.target);
     });
 
 });

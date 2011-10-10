@@ -254,7 +254,7 @@ class SActions extends ActionController {
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crossdata = $this->getModelByName('x');
-        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today); // Why "0"? @virushuo says "no mulit-identity" in one user now
+        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today);
         $pastXs    = $crossdata->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
         //$recenUpdt = $crossdata->fetchCross($_SESSION['userid'], 0, null, 'updated_at DESC', 10);
         foreach ($crosses as $crossI => $crossItem) {
