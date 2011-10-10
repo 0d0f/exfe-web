@@ -3,23 +3,30 @@
 class ExfeeHelper extends ActionController
 {
 
-    public function addExfeeIdentify($cross_id, $exfee_list)
+    public function addExfeeIdentify($cross_id, $exfee_list, $filter = null)
     {
+        $identityData = $this->getModelByName('identity');
+        $invitationDt = $this->getModelByName('invitation');
+
         //TODO: package as a transaction
-        foreach (json_decode($exfee_list, true) as $exfeeI => $exfeeItem) {
+        foreach ($exfee_list as $exfeeI => $exfeeItem) {
             $identity_id   = isset($exfeeItem['exfee_id'])       ? $exfeeItem['exfee_id']       : null;
             $confirmed     = isset($exfeeItem['confirmed'])      ? $exfeeItem['confirmed']      : 0;
             $identity      = isset($exfeeItem['exfee_identity']) ? $exfeeItem['exfee_identity'] : null;
             $identity_type = isset($exfeeItem['identity_type'])  ? $exfeeItem['identity_type']  : 'unknow';
 
             if (!$identity_id) {
-                $identityData = $this->getModelByName("identity");
                 $identity_id  = $identityData->ifIdentityExist($identity);
                 if ($identity_id === false) {
-                    //TODO: add new Identity, need check this identity provider, now default "email"
+                    // TODO: add new Identity, need check this identity provider, now default "email"
                     // add identity
                     $identity_id = $identityData->addIdentityWithoutUser('email', $identity);
                 }
+            }
+
+            if (is_array($filter) && in_array($identity_id, $filter)) {
+                $invitationDt->rsvp($cross_id, $identity_id, $confirmed);
+                continue;
             }
 
             // add invitation
@@ -28,10 +35,10 @@ class ExfeeHelper extends ActionController
         }
     }
 
-    public function sendInvitation($cross_id)
+    public function sendInvitation($cross_id, $filter)
     {
         $invitationdata=$this->getModelByName("invitation");
-        $invitations=$invitationdata->getInvitation_Identities($cross_id);
+        $invitations=$invitationdata->getInvitation_Identities($cross_id, false, $filter);
 
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
@@ -75,7 +82,7 @@ class ExfeeHelper extends ActionController
                             $args["identity"]=$identity;
                             $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
                         }
-                    
+
                     }
                 }
 

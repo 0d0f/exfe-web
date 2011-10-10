@@ -174,7 +174,7 @@ $token=$_GET["token"];
                 //    if($exfee["avatar_file_name"]=="")
                 //        $exfee["avatar_file_name"]="default.png"
                 ?>
-                <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"];?>" class="exfee_exist">
                     <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
                     <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> <span class="lb">host</span></p>
                     <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
@@ -189,7 +189,7 @@ $token=$_GET["token"];
                         $exfee["name"]="";
                     }
                 ?>
-                <li id="exfee_<?php echo $exfee["identity_id"];?>">
+                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"];?>" class="exfee_exist">
                     <button type="button" class="exfee_del"></button>
                     <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
                     <p class="smcomment"><span><?php echo $exfee["name"];?></span> <?php echo $exfee["external_identity"];?> </p>
