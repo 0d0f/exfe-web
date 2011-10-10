@@ -53,12 +53,16 @@ class IdentityModels extends DataModel{
                      'avatar_file_name' => $avatar_file_name,
                      'activecode' => $activecode
              );
-            require 'lib/Resque.php';
-            date_default_timezone_set('GMT');
-            Resque::setBackend('127.0.0.1:6379');
-
             if($provider=="email")
-                $jobId = Resque::enqueue("activecode","emailactivecode_job" , $args, true);
+            {
+                $helper=$this->getHelperByName("identity");
+                $helper->sentActiveEmail($args);
+            }
+            //require 'lib/Resque.php';
+            //date_default_timezone_set('GMT');
+            //Resque::setBackend('127.0.0.1:6379');
+
+            //    $jobId = Resque::enqueue("activecode","emailactivecode_job" , $args, true);
 
             return $identityid;
         }
