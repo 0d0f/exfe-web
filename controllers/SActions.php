@@ -7,6 +7,7 @@ class SActions extends ActionController {
         $identityData->setRelation($_GET["identity_id"]);
 
     }
+    
     public function doAdd()
     {
         $identity= $_GET["identity"];
@@ -663,5 +664,18 @@ class SActions extends ActionController {
         }
 
     }
+    public function doActive()
+    {
+        $identityData=$this->getModelByName("identity");
+        $identity_id=intval($_GET["id"]);
+        $activecode=$_GET["activecode"];
+        if($identity_id>0 && strlen($activecode)>0)
+        {
+            $result=$identityData->activeIdentity($identity_id,$activecode);
+        }
+        $this->setVar("result", $result);
+        $this->displayView();
+    }
+
 }
 

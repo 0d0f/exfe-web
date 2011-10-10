@@ -7,6 +7,7 @@ class IdentityModels extends DataModel{
     public function addIdentity($user_id,$provider,$external_identity,$identityDetail=array())
     {
 
+        $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
         $name=mysql_real_escape_string($identityDetail["name"]);
         $bio=mysql_real_escape_string($identityDetail["bio"]);
         $avatar_file_name=mysql_real_escape_string($identityDetail["avatar_file_name"]);
@@ -21,7 +22,7 @@ class IdentityModels extends DataModel{
             return  intval($row["id"]);
 
         $external_identity=mysql_real_escape_string($external_identity);
-        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
+        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,activecode) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username','$activecode')";
         $result=$this->query($sql);
         $identityid=intval($result["insert_id"]);
         if($identityid>0)
@@ -30,6 +31,21 @@ class IdentityModels extends DataModel{
             $time=time();
             $sql="insert into user_identity (identityid,userid,created_at) values ($identityid,$user_id,FROM_UNIXTIME($time))";
             $this->query($sql);
+
+            $args = array(
+                     'identityid' => $identityid,
+                     'external_identity' => $external_identity,
+                     'name' => $name,
+                     'avatar_file_name' => $avatar_file_name,
+                     'activecode' => $activecode
+             );
+            require 'lib/Resque.php';
+            date_default_timezone_set('GMT');
+            Resque::setBackend('127.0.0.1:6379');
+
+            if($provider=="email")
+                $jobId = Resque::enqueue("activecode","emailactivecode_job" , $args, true);
+
             return $identityid;
         }
     }
@@ -403,6 +419,22 @@ class IdentityModels extends DataModel{
             return array();
         }
     }
+    public function activeIdentity($identity_id,$activecode)
+    {
+        $sql="select id,status,external_identity from identities where id=$identity_id and activecode='$activecode';"; 
+        $row=$this->getRow($sql);
+        $external_identity=$row["external_identity"];
+        if(intval($row["id"])==$identity_id && intval($row["id"])>0)
+        {
+            $sql="update identities set status=3,activecode='' where id=$identity_id;";
+            $this->query($sql);
+            return array("result"=>"verified","external_identity"=>$external_identity);
+        }
+        $sql="select external_identity from identities where id=$identity_id;"; 
+        $row=$this->getRow($sql);
+        return array("result"=>"","external_identity"=>$row["external_identity"]);
+    }
+
 
 }
 
