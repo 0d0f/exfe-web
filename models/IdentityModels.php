@@ -8,9 +8,11 @@ class IdentityModels extends DataModel{
     {
 
         $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+
         $name=mysql_real_escape_string($identityDetail["name"]);
         $bio=mysql_real_escape_string($identityDetail["bio"]);
         $avatar_file_name=mysql_real_escape_string($identityDetail["avatar_file_name"]);
+
         $avatar_content_type=$identityDetail["avatar_content_type"];
         $avatar_file_size=$identityDetail["avatar_file_size"];
         $avatar_updated_at=$identityDetail["avatar_updated_at"];
@@ -27,6 +29,18 @@ class IdentityModels extends DataModel{
         $identityid=intval($result["insert_id"]);
         if($identityid>0)
         {
+            $sql="select name,bio,avatar_file_name from users where id=$user_id;";
+            $userrow=$this->getRow($sql);
+            if($userrow["name"]=="")
+                $userrow["name"]=$name;
+            if($userrow["bio"]=="")
+                $userrow["bio"]=$bio;
+            if($userrow["avatar_file_name"]=="")
+                $userrow["avatar_file_name"]=$avatar_file_name;
+           
+            $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."' where id=$user_id;";
+            $this->query($sql);
+
             //TOdO: commit as a transaction
             $time=time();
             $sql="insert into user_identity (identityid,userid,created_at) values ($identityid,$user_id,FROM_UNIXTIME($time))";
@@ -421,6 +435,7 @@ class IdentityModels extends DataModel{
     }
     public function activeIdentity($identity_id,$activecode)
     {
+        $activecode=mysql_real_escape_string($activecode);
         $sql="select id,status,external_identity from identities where id=$identity_id and activecode='$activecode';"; 
         $row=$this->getRow($sql);
         $external_identity=$row["external_identity"];

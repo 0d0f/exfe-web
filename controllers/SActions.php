@@ -483,7 +483,7 @@ class SActions extends ActionController {
         if(isset($identity) && isset($password)  && isset($repassword) && isset($displayname) )
         {
             $Data = $this->getModelByName("user");
-            $userid = $Data->AddUser($password);
+            $userid = $Data->addUser($password);
             $identityData = $this->getModelByName("identity");
             $provider= $_POST["provider"];
             if($provider=="")
@@ -542,12 +542,12 @@ class SActions extends ActionController {
             if($exist===FALSE)
             {
                 $Data = $this->getModelByName("user");
-                $userid = $Data->AddUser($password);
+                $userid = $Data->addUser($password);
                 $identityData = $this->getModelByName("identity");
                 $provider= $_POST["provider"];
                 if($provider=="")
                     $provider="email";
-                $identity_id=$identityData->addIdentity($userid,$provider,$identity);
+                $identity_id=$identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
