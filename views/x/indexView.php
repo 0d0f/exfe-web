@@ -158,11 +158,11 @@ $token=$_GET["token"];
             <p class="tm"><?php echo $place_line2; ?></p>
 
             <div id="exfee_area" class="exfee">
-                <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> <em class="malnb"> of <?php echo $allinvitation; ?><br />confirmed</em></p></div>
+                <div class="feetop"><h3>exfee</h3>  <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
                 <div id="exfee_edit_box">
                     <input type="text" id="exfee_input" value=""/>
-                    <button id="exfee_revert"   type="button">Revert</button>
-                    <button id="exfee_done" type="button">Done</button>
+                    <button id="exfee_revert" type="button">Revert</button>
+                    <button id="exfee_done"   type="button">Done</button>
                 </div>
                 <ul class="samlcommentlist">
 
