@@ -690,6 +690,10 @@ class SActions extends ActionController {
         {
             $identityData= $this->getModelByName("identity");
             $result=$identityData->activeIdentity($identity_id,$activecode);
+            if($result["result"]=="verified")
+            {
+                $identityData->loginByIdentityId($identity_id);
+            }
         }
         $this->setVar("result",$result);
         $this->displayView();
