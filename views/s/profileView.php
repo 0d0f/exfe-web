@@ -24,6 +24,8 @@
     $user       = $this->getVar('user');
     $crosses    = $this->getVar('crosses');
     $newInvt    = $this->getVar('newInvt');
+    if ($user["avatar_file_name"]=="")
+        $user["avatar_file_name"]="default.png";
 ?>
 <div class="centerbg">
 <div class="edit_user">
@@ -59,8 +61,29 @@
     </div>
     <div class="u_con">
         <h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>
-        <p><img class="s_header" src="/static/images/user_header_2.jpg" alt="" /><b><span class="name">SteveE</span> @<em>stevexfee</em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Re-Authorize</button></i></p>
-        <p><img class="s_header" src="/static/images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p>
+        <?php foreach($identities as $identity) {
+            $identity=humanIdentity($identity,NULL);
+            if($identity["name"]==$identity["external_identity"])  
+                $identity["name"]="";
+            if($identity["status"]!=3)
+            {
+                if($identity["status"]==2)
+                    $status="Verifying";
+                if($identity["provider"]=="email")
+                    $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
+            ?>
+            <p><img class="s_header" src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status;?> <?php echo $button?></i></p>
+            <?php 
+            }
+            else
+            {
+            ?>
+            <p><img class="s_header" src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> </p>
+            <?php 
+            } 
+        }
+        ?>
+        <!--p><img class="s_header" src="/static/images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p-->
     </div>
     <div class="u_num">
         <p>57</p>
@@ -114,14 +137,15 @@
 <div class="right">
 <?php
     $strInvt = $newInvt ? '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>' : '';
-    foreach ($newInvt as $newInvtI => $newInvtItem) {
-        $xid62 = int_to_base62($newInvtItem['cross']['id']);
-        $strInvt .= '<dl class="bnone">'
-                  .     "<dt><a href=\"/!{$xid62}\">{$newInvtItem['cross']['title']}</a></dt>"
-                  .     "<dd>{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</dd>"
-                  .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"
-                  . '</dl>';
-    }
+    if($newInvt)
+        foreach ($newInvt as $newInvtI => $newInvtItem) {
+            $xid62 = int_to_base62($newInvtItem['cross']['id']);
+            $strInvt .= '<dl class="bnone">'
+                      .     "<dt><a href=\"/!{$xid62}\">{$newInvtItem['cross']['title']}</a></dt>"
+                      .     "<dd>{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</dd>"
+                      .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"
+                      . '</dl>';
+        }
     $strInvt .= $newInvt ? '</div><div class="shadow_310"></div>' : '';
     echo $strInvt;
 ?>
