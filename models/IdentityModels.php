@@ -169,7 +169,7 @@ class IdentityModels extends DataModel{
 
             if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
             {
-               $user_id=$this->loginByIdentityId($identity_id,$uid,NULL,NULL,"cookie",$setcookie=false);
+               $user_id=$this->loginByIdentityId($identity_id,$uid,NULL,NULL,"cookie",false);
     //do login
                return $user_id;
             }
@@ -251,6 +251,7 @@ class IdentityModels extends DataModel{
                 if($row["encrypted_password"]==$password)
                 {
                     $this->loginByIdentityId($identity_id,$userid,$row,$identityrow,"password",$setcookie);
+
                     //$_SESSION["userid"]=$userid;
                     //$_SESSION["identity_id"]=$identity_id;
                     //$identity=array();
