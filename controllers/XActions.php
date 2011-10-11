@@ -33,7 +33,7 @@ class XActions extends ActionController {
             $logdata->addLog("identity",$identity_id,"gather","cross",$cross_id,"",$_POST["title"],"");
 
             $helper=$this->getHelperByName("exfee");
-            $helper->addExfeeIdentify($cross_id, $_POST["exfee_list"]);
+            $helper->addExfeeIdentify($cross_id, json_decode($_POST["exfee_list"], true));
             $helper->sendInvitation($cross_id);
 
             // remove draft
@@ -109,8 +109,22 @@ class XActions extends ActionController {
         }
 
         $xhelper=$this->getHelperByName("x");
-
         $xhelper->addCrossDiffLog($identity_id,$old_cross, $cross);
+
+        // exclude exfee identities that already in cross
+        $invitM = $this->getModelByName('invitation');
+        $idents = $invitM->getIdentitiesIdsByCrossIds(array($cross_id));
+        $invited = array();
+        foreach ($idents as $identI => $identItem) {
+            array_push($invited, $identItem['identity_id']);
+        }
+
+        $exfees=json_decode($_POST["exfee"], true);
+        $ehelper=$this->getHelperByName("exfee");
+        $ehelper->addExfeeIdentify($cross_id, $exfees, $invited);
+
+        $ehelper->sendInvitation($cross_id, $invited);
+
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($return_data);
         exit(0);

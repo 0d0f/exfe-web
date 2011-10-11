@@ -35,10 +35,10 @@ function getexfee()
         }
         result.push(item);
     }
-    $('.exfee_exist').each(function(e) {
+    $('.exfee_exist').each(function() {
         collect(this, true);
     });
-    $('.exfee_new').each(function(e) {
+    $('.exfee_new').each(function() {
         collect(this);
     });
     return result;
