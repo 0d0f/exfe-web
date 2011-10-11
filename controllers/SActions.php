@@ -1,5 +1,4 @@
 <?php
-
 class SActions extends ActionController {
     public function doTestUser()
     {
@@ -7,7 +6,6 @@ class SActions extends ActionController {
         $identityData->setRelation($_GET["identity_id"]);
 
     }
-    
     public function doAdd()
     {
         $identity= $_GET["identity"];
@@ -15,7 +13,7 @@ class SActions extends ActionController {
         $password = $_GET["password"];
 
 
-#package as a  transaction
+        //package as a  transaction
         if(intval($_SESSION["userid"])>0)
         {
             $userid=$_SESSION["userid"];
@@ -27,6 +25,25 @@ class SActions extends ActionController {
         }
         $identityData = $this->getModelByName("identity");
         $identityData->addIdentity($userid,$provider,$identity);
+    }
+
+    public function doUploadAvatarFile(){
+        //list of valid extensions, ex. array("jpeg", "xml", "bmp")
+        $allowedExtensions = array("jpeg", "gif", "png", "jpg", "bmp");
+        //max file size in bytes
+        $sizeLimit = 10 * 1024 * 1024;
+        //The directory for the images to be saved in
+        $upload_dir = "eimgs";
+        //The path to where the image will be saved
+        $upload_path = $upload_dir."/";
+
+        $exFileUploader = $this->getHelperByName("fileUploader");
+        $exFileUploader->initialize($allowedExtensions, $sizeLimit);
+        $result = $exFileUploader->handleUpload($upload_path);
+
+        // to pass data through iframe you will need to encode all html tags
+        //echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+        echo json_encode($result);
     }
 
     public function doUploadAvatarNew(){
@@ -254,9 +271,9 @@ class SActions extends ActionController {
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crossdata = $this->getModelByName('x');
-        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today);
-        $pastXs    = $crossdata->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
-        //$recenUpdt = $crossdata->fetchCross($_SESSION['userid'], 0, null, 'updated_at DESC', 10);
+        $crosses   = $crossdata->fetchCross($identities[0]['id'], $today); // Why "0"? @virushuo says "no mulit-identity" in one user now
+        $pastXs    = $crossdata->fetchCross($identities[0]['id'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
+        //$recenUpdt = $crossdata->fetchCross($identities[0]['id'], 0, null, 'updated_at DESC', 10);
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
             if ($crosses[$crossI]['timestamp'] < $upcoming) {
@@ -316,12 +333,11 @@ class SActions extends ActionController {
         }
         $newInvt = $modIvit->getNewInvitationsByIdentityIds($idents);
         // Get crosses of invitations
-        if($newInvt)
-            foreach ($newInvt as $newInvtI => $newInvtItem) {
-                $identity = $identityData->getIdentityById($newInvtItem['identity_id']);
-                $newInvt[$newInvtI]['sender'] = humanIdentity($identity, $modUser->getUserByIdentityId($newInvtItem['identity_id']));
-                $newInvt[$newInvtI]['cross']  = $crossdata->getCross($newInvtItem['cross_id']);
-            }
+        foreach ($newInvt as $newInvtI => $newInvtItem) {
+            $identity = $identityData->getIdentityById($newInvtItem['identity_id']);
+            $newInvt[$newInvtI]['sender'] = humanIdentity($identity, $modUser->getUserByIdentityId($newInvtItem['identity_id']));
+            $newInvt[$newInvtI]['cross']  = $crossdata->getCross($newInvtItem['cross_id']);
+        }
         $this->setVar('newInvt', $newInvt);
 
         $this->displayView();
@@ -347,7 +363,7 @@ class SActions extends ActionController {
     }
     /**
      * check user login status.
-     *
+     * 
      * */
     public function doCheckUserLogin()
     {
@@ -379,6 +395,7 @@ class SActions extends ActionController {
             $global_external_identity=$_SESSION["identity"]["external_identity"];
             $global_identity_id=$_SESSION["identity_id"];
         }
+
         if(intval($_SESSION["userid"])>0)
         {
             $userData = $this->getModelByName("user");
@@ -484,7 +501,7 @@ class SActions extends ActionController {
         if(isset($identity) && isset($password)  && isset($repassword) && isset($displayname) )
         {
             $Data = $this->getModelByName("user");
-            $userid = $Data->addUser($password);
+            $userid = $Data->AddUser($password);
             $identityData = $this->getModelByName("identity");
             $provider= $_POST["provider"];
             if($provider=="")
@@ -543,12 +560,12 @@ class SActions extends ActionController {
             if($exist===FALSE)
             {
                 $Data = $this->getModelByName("user");
-                $userid = $Data->addUser($password);
+                $userid = $Data->AddUser($password);
                 $identityData = $this->getModelByName("identity");
                 $provider= $_POST["provider"];
                 if($provider=="")
                     $provider="email";
-                $identity_id=$identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
+                $identity_id=$identityData->addIdentity($userid,$provider,$identity);
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
@@ -665,18 +682,5 @@ class SActions extends ActionController {
         }
 
     }
-    public function doActive()
-    {
-        $identityData=$this->getModelByName("identity");
-        $identity_id=intval($_GET["id"]);
-        $activecode=$_GET["activecode"];
-        if($identity_id>0 && strlen($activecode)>0)
-        {
-            $result=$identityData->activeIdentity($identity_id,$activecode);
-        }
-        $this->setVar("result", $result);
-        $this->displayView();
-    }
-
 }
 
