@@ -200,6 +200,7 @@ function bindDialogEvent(type)
                                     $("#hostby").val(identity);
                                     $("#hostby").attr("enter","true");
                                     $.modal.close();
+                                    odof.user.status.checkUserLogin();
                                 }
                             }
                         }

@@ -40,7 +40,6 @@ class XActions extends ActionController {
             $XDraft = $this->getModelByName('XDraft');
             $XDraft->delDraft($_POST['draft_id']);
 
-            //TODO: redirect to this exfe page
             $cross_id_base62 = int_to_base62($cross_id);
             header( 'Location: /!' . $cross_id_base62 ) ;
             exit(0);

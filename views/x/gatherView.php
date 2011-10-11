@@ -51,8 +51,14 @@ San Francisco, CA
       <ul class="samlcommentlist">
       <?php if($external_identity!="") { ?>
         <li class="addjn">
-          <p class="pic20"><img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" /></p>
-          <p class="smcomment"><span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span><input id='confirmed_exfee_<?php echo $global_identity_id;?>' class="confirmed_box" checked=true type="checkbox" /> <span class="lb">host</span></p>
+          <p class="pic20">
+              <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
+          </p>
+          <p class="smcomment">
+              <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span>
+              <input id="confirmed_exfee_<?php echo $global_identity_id;?>" class="confirmed_box" checked=true type="checkbox" />
+              <span class="lb">host</span>
+          </p>
           <button type="button" class="exfee_del"></button>
         </li>
         <?php } ?>

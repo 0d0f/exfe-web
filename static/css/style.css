@@ -130,13 +130,15 @@ em.h3{font-size:24px;font-family:Verdana; }
 
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
-.smcomment {float:left;font-size:12px;width:215px;}
+.smcomment {float:left;font-size:12px;width:210px;}
 .smcomment span{color:#020202;font-size:13px;padding-right:5px;}
 .smcomment span.lb{background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}
 .cs {float:right;width:20px;height:20px;}
 .cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
 .cs em.c1{background-position:-1px -82px}
-.cs em.c2{background-position:left -123px}
+.cs em.c2{background-position:left -124px}
+.cs em.c3{background-position:left -166px}
+.cs em.c4{background-position:left -208px}
 
 
 /*浮层*/
@@ -524,3 +526,15 @@ b.r3{margin: 0px}
     border:1px solid #999; background:white; z-index:101; color:#FF0000; text-align:center;
 }
 /******************************************************************/
+
+/** cross - edit - exfee **/
+.exfee_del {
+    margin:3px 5px 0 0;
+    border:0;
+    width:11px;
+    height:13px;
+    float:left;
+    background:url(/static/images/icons.png) no-repeat left -640px;
+    cursor:pointer;
+}
+/**************************/

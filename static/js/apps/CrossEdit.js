@@ -151,6 +151,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             //回调
             success:function(JSONData){
                 ns.callbackActions(JSONData);
+            },
+            error:function(){
+                alert('ll');
+        //console.log(JSONData);
             }
         });
         //jQuery("#edit_cross_bar").slideUp(300);
@@ -190,6 +194,59 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      *
      * by Leask
      * */
+    ns.exfeeEdit = function(status){
+        ns.exfeeEditStatus = status;
+        switch (status) {
+            case 'edit':
+                $('#exfee_edit_box').fadeIn();
+                $('#exfee_remove').fadeIn();
+                $('#exfee_edit').hide();
+                $('#exfee_remove').attr('disabled', false);
+                $('#exfee_area').bind('clickoutside', function(event) {
+                    if (event.target.id === '') {
+                        return;
+                    }
+                    odof.cross.edit.exfeeEdit();
+                });
+                $('.exfee_del').hide();
+                ns.exfees = $('#exfee_area > .samlcommentlist').html();
+                break;
+            case 'remove':
+                $('#exfee_remove').attr('disabled', true);
+                $('#exfee_area').bind('click', function(event) {
+                    if (event.target.id === 'exfee_remove' || event.target.className === 'exfee_del') {
+                        return;
+                    }
+                    odof.cross.edit.exfeeEdit('edit');
+                });
+                $('.exfee_del').show();
+                break;
+            default:
+                $('#exfee_edit_box').fadeOut();
+                $('#exfee_remove').hide();
+                $('#exfee_edit').fadeIn();
+                $('#exfee_edit_box').unbind('clickoutside');
+                $('.exfee_del').hide();
+        }
+        if (status !== 'remove') {
+            $('#exfee_area').unbind('click');
+        }
+        $('#exfee_input').val('');
+    };
+
+    /**
+     *
+     * by Leask
+     * */
+    ns.revertExfee = function() {
+        $('#exfee_area > .samlcommentlist').html(ns.exfees);
+        $('#exfee_input').val('');
+    };
+
+    /**
+     *
+     * by Leask
+     * */
     ns.parseId = function(strId) {
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
@@ -204,7 +261,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             return {id   : odof.util.trim(strId),
                     type : 'unknow'};
         }
-    }
+    };
 
     /**
      *
@@ -214,7 +271,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.arrIdentitySub = [];
         ns.numNewIdentity = 0;
         var arrIdentityOri = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
-
+        $('#exfee_input').val('');
         for (var i in arrIdentityOri) {
             if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
                 ns.arrIdentitySub.push(ns.parseId(arrIdentityOri[i]));
@@ -226,7 +283,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             url      : site_url + '/identity/get?identities=' + JSON.stringify(ns.arrIdentitySub),
             dataType : 'json',
             success  : function(data) {
-                var exfee_pv     = [],
+                var exfee_pv     = '',
                     name         = '',
                     identifiable = {};
                 for (var i in data.response.identities) {
@@ -234,12 +291,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         id               = data.response.identities[i].id,
                         avatar_file_name = data.response.identities[i].avatar_file_name;
                         name             = data.response.identities[i].name;
-//                    if ($('#exfee_' + id).attr('id') == null) {
-//                        name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
-//                        exfee_pv.push(
-//                            '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" class="confirmed_box" type="checkbox"/></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>'
-//                        );
-//                    }
+                    if ($('#exfee_' + id).attr('id') == null) {
+                        name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
+                        exfee_pv += '<li id="exfee_' + id + '">'
+                                  +     '<button type="button" class="exfee_del"></button>'
+                                  +     '<p class="pic20">'
+                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
+                                  +     '</p>'
+                                  +     '<p class="smcomment">'
+                                  +         '<span>' + name + '</span>' + identity
+                                  +     '</p>'
+                                  +     '<p class="cs">'
+                                  +         '<em class="c2"></em>'
+                                  +     '</p>'
+                                  + '</li>';
+                    }
                     identifiable[identity] = true;
                 }
                 for (i in ns.arrIdentitySub) {
@@ -255,31 +321,54 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                         name = name.replace('<', '&lt;').replace('>', '&gt;');
                         ns.numNewIdentity++;
-//                        exfee_pv.push(
-//                            '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">' + name + '</span><input id="confirmed_newexfee_' + new_identity_id +'" class="confirmed_box" type="checkbox"/></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button> </li>'
-//                        );
+                        exfee_pv += '<li id="exfee_new' + ns.numNewIdentity + '">'
+                                  +     '<button type="button" class="exfee_del"></button>'
+                                  +     '<p class="pic20">'
+                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
+                                  +     '</p>'
+                                  +     '<p class="smcomment">'
+                                  +         '<span>' + name + '</span>'
+                                  +     '</p>'
+                                  +     '<p class="cs">'
+                                  +         '<em class="c2"></em>'
+                                  +     '</p>'
+                                  + '</li>';
                     }
                 }
-
-//                while (exfee_pv.length) {
-//                    var inserted = false;
-//                    $('#exfee_pv > ul').each(function(intIndex) {
-//                        var li = $(this).children('li');
-//                        if (li.length < 4) {
-//                            $(this).append(exfee_pv.shift());
-//                            inserted = true;
-//                        }
-//                    });
-//                    if (!inserted) {
-//                        $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv.shift() + '</ul>');
-//                    }
-//                }
-
+                $('#exfee_area > .samlcommentlist').html($('#exfee_area > .samlcommentlist').html() + exfee_pv);
+                switch (ns.exfeeEditStatus) {
+                    case 'edit':
+                        $('.exfee_del').hide();
+                        break;
+                    case 'remove':
+                        $('.exfee_del').show();
+                }
+                ns.summaryExfee();
                 //updateExfeeList();
             }
         });
         //$('#exfee_count').html($('span.exfee_exist').length + $('span.exfee_new').length);
-    }
+    };
+
+    /**
+     *
+     * by Leask
+     * */
+    ns.summaryExfee = function() {
+        $('.bignb').html($('.cs > .c1').length);
+        $('.malnb').html($('.samlcommentlist > li').length);
+    };
+
+    /**
+     *
+     * by Leask
+     */
+    ns.changeRsvp = function(target) {
+        var intC = parseInt(target.className.substr(1)) + 1;
+     // target.className = 'c' + (intC > 4 ? 1 : intC);
+        target.className = 'c' + (intC > 2 ? 1 : intC);
+        ns.summaryExfee();
+    };
 
 })(ns);
 
@@ -300,14 +389,28 @@ jQuery(document).ready(function(){
     $('#exfee_remove').hide();
     $('#exfee_edit').hide();
     $('#exfee_edit').bind('click', function() {
-        $('#exfee_edit_box').fadeIn();
-        $('#exfee_edit').fadeIn();
+        odof.cross.edit.exfeeEdit('edit');
+    });
+    $('#exfee_remove').bind('click', function() {
+        odof.cross.edit.exfeeEdit('remove');
     });
     $('#exfee_input').keypress(function(e) {
         if ((e.keyCode ? e.keyCode : e.which) == 13) {
             odof.cross.edit.identityExfee();
             e.preventDefault();
         }
+    });
+    $('.exfee_del').live('click', function() {
+        $(this.parentNode).remove();
+    });
+    $('#exfee_revert').bind('click', function() {
+        odof.cross.edit.revertExfee();
+    });
+    $('#exfee_done').bind('click', function() {
+        odof.cross.edit.exfeeEdit();
+    });
+    $('.cs > em').live('click', function(event){
+        odof.cross.edit.changeRsvp(event.target);
     });
 
 });
