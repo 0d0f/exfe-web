@@ -21,15 +21,31 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.cropper.setCanvas("cropper");
         ns.cropper.addPreview("preview80");
 
-        if(!ns.cropper.isAvaiable()){
+        /*
+        if(!ns.cropper.isAvailable()){
             alert("Sorry, your browser doesn't support FileReader, please use Firefox3.6+ or Chrome10+ to run it.");
         }
+        */
     };
 
-    ns.selectImage = function(fileList){
-        ns.cropper.loadImage(fileList[0]);
+    /*
+    ns.imageSelect = function(evt){
+        var files = evt.target.files;
+        ns.cropper.loadImage(files[0]);
         document.getElementById("selectBtn").style.display = "none";
+        document.getElementById("dragdrop_info").style.display = "none";
     };
+
+    ns.dragImageSelect = function(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files;
+        ns.cropper.loadImage(files[0]);
+        document.getElementById("selectBtn").style.display = "none";
+        document.getElementById("dragdrop_info").style.display = "none";
+    };
+    */
 
     ns.rotateImage = function(e){
         switch(e.target.id){
@@ -72,15 +88,27 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         },1000);
     };
 
+    ns.handleDragOver = function(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+    };
+
     ns.trace = function(){
         if(typeof(console) != "undefined"){
             console.log(Array.prototype.slice.apply(arguments).join(" "));
         }
     };
+
 })(ns);
 
 jQuery(document).ready(function(){
-    jQuery('#changeavatar').click(function(e) {
+    var getElement = function(id) { return document.getElementById(id); };
+    //jQuery('#changeavatar').click(function(e) {
         odof.user.uploadAvatar.init();
-    });
+    //});
+    /*
+    getElement('avatar_files').addEventListener('change', odof.user.uploadAvatar.imageSelect, false);
+    getElement('cropper').addEventListener('dragover', odof.user.uploadAvatar.handleDragOver, false);
+    getElement('cropper').addEventListener('drop', odof.user.uploadAvatar.dragImageSelect, false);
+    */
 });

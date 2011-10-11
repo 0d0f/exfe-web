@@ -2,6 +2,20 @@
 <script type="text/javascript" src="/static/js/user/profile.js"></script>
 <script type="text/javascript" src="/static/js/user/ImageCropper.js"></script>
 <script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
+<script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
+<script type="text/javascript">
+    function createUploader(){
+        var uploader = new exFileUploader.initialize({
+            element: document.getElementById('upload_btn_container'),
+            action: '/s/uploadAvatarFile',
+            debug:true 
+        });
+    }
+    
+    // in your app create uploader as soon as the DOM is ready
+    // don't wait for the window to load  
+    window.onload = createUploader;     
+</script>
 </head>
 <body>
 <?php include "share/nav.php"; ?>
@@ -24,9 +38,11 @@
                 <p class="r">Portrait</p>
             </div>
             <div id="container">
-                <a id="selectBtn" href="javascript:void(0);" onclick="document.getElementById('input').click();"></a>
-                <input type="file" id="input" size="10" style="visibility:hidden;" onchange="odof.user.uploadAvatar.selectImage(this.files)" />
+                <div id="dragdrop_info">Drag and drop<br />your portrait here</div>
+                <!-- a id="selectBtn" href="javascript:void(0);" onclick="document.getElementById('avatar_files').click();"></a>
+                <input type="file" id="avatar_files" size="10" name="files[]" style="visibility:hidden;" / -->
                 <a id="rotateRightBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.rotateImage(event);"></a>
+                <div id="upload_btn_container"></div>
                 
                 <div id="wrapper">
                     <canvas id="cropper"></canvas>

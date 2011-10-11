@@ -1,9 +1,10 @@
 <?php
 date_default_timezone_set('GMT');
 #require 'bad_job.php';
-require 'email_job.php';
-require 'apn_job.php';
-require 'connect.php';
+require_once 'email_job.php';
+require_once 'emailactivecode_job.php';
+require_once 'apn_job.php';
+require_once 'connect.php';
 #require 'php_error_job.php';
 
 require '../resque.php';

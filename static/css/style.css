@@ -130,15 +130,13 @@ em.h3{font-size:24px;font-family:Verdana; }
 
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
-.smcomment {float:left;font-size:12px;width:210px;}
+.smcomment {float:left;font-size:12px;width:215px;}
 .smcomment span{color:#020202;font-size:13px;padding-right:5px;}
 .smcomment span.lb{background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}
 .cs {float:right;width:20px;height:20px;}
 .cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
 .cs em.c1{background-position:-1px -82px}
-.cs em.c2{background-position:left -124px}
-.cs em.c3{background-position:left -166px}
-.cs em.c4{background-position:left -208px}
+.cs em.c2{background-position:left -123px}
 
 
 /*浮层*/
@@ -488,6 +486,7 @@ b.r3{margin: 0px}
 #upload_avatar_window .titles p.r{ width:100px; height:25px; float:right; color:#FFF; text-align:right; padding-right:10px; }
 
 #upload_avatar_window #container { position: absolute; left: 20px; top: 50px; }
+
 #upload_avatar_window #wrapper { position: absolute; left: 0px; top: 0px; }
 #upload_avatar_window #cropper {
     position: absolute; left: 0px; top: 0px; border: 1px solid #999;
@@ -508,6 +507,20 @@ b.r3{margin: 0px}
     width: 119px; height: 27px;
     background: url(../images/ic_select_img.png);
 }
+#upload_avatar_window #file_select_btn{
+    position: absolute; z-index:100;
+    left: 35px; top: 120px;
+    width: 216px; height:35px; font-size:0px;
+    background:url(../images/ic_select_file_btn.png) no-repeat 0 0;;
+}
+
+#upload_avatar_window #dragdrop_info{
+    position:absolute; z-index:100;
+    left: 38px; top: 50px;
+    text-align:center; font-size:16pt; color:#999;
+    width:230px; height:60px;
+}
+
 #upload_avatar_window #saveBtn {
     position: absolute;
     left: 10px; top: 275px;
@@ -525,6 +538,53 @@ b.r3{margin: 0px}
     position:absolute;left:40px;top:120px;width:300px; height:30px; padding-top:15px;
     border:1px solid #999; background:white; z-index:101; color:#FF0000; text-align:center;
 }
+
+/* exFileUploader style control */
+#upload_avatar_window #upload_btn_container{
+    position: absolute; z-index:100;
+    left: 1px; top: 1px;
+    width:300px; height:300px;
+}
+#upload_avatar_window #upload_btn_container .ex-uploader { width:300px; height:300px; }
+#upload_avatar_window #upload_btn_container .ex-upload-button {
+    position:absolute; display:block; /* or inline-block */
+    top:140px; left:40px; z-index:100;
+    width: 216px; height:35px; text-align:center;font-size:0px;
+    background:url(../images/ic_select_file_btn.png) no-repeat 0 0;;
+}
+#upload_avatar_window #upload_btn_container .ex-upload-button-hover {}
+#upload_avatar_window #upload_btn_container .ex-upload-button-focus {}
+
+#upload_avatar_window #upload_btn_container .ex-upload-drop-area {
+    position:absolute; top:0; left:0; display:block;
+    width:294px; height:294px; z-index:102; font-size:0px;
+    border:3px dashed #999; text-align:center;
+}
+#upload_avatar_window #upload_btn_container .ex-upload-drop-area-active {border:3px dashed #999;}
+#upload_avatar_window #upload_btn_container .ex-upload-list .ex-upload-info{
+    display:block; margin-top:10px; width:300px; text-align:center;
+}
+#upload_avatar_window #upload_btn_container .ex-upload-list {
+    position:absolute; top:0; left:0; z-index:101;
+    width:300px; height:300px; background:#FFF;
+    filter: alpha(opacity = 80); -moz-opacity: 0.8; opacity: 0.8;
+}
+#upload_avatar_window #upload_btn_container .ex-upload-list span{ padding-left:5px; }
+
+#upload_avatar_window #upload_btn_container .ex-upload-spinner {
+    display:block; width:32px; height:32px; margin:auto; margin-top:100px;
+    background: url("../images/uploading.gif"); vertical-align:text-bottom;
+}
+#upload_avatar_window #upload_btn_container .ex-upload-file { font-size:10pt; color:#333; }
+#upload_avatar_window #upload_btn_container .ex-upload-size { font-size:10pt; color:#333; }
+#upload_avatar_window #upload_btn_container .ex-upload-cancel {
+    font-size:12pt; display:block; width:40px; padding-top:10px;
+    text-align:center; margin:auto; color:#3875D7;
+}
+
+#upload_avatar_window #upload_btn_container .ex-upload-failed-text {display:none; font-size:10pt; color:#FF0000;}
+#upload_avatar_window #upload_btn_container .ex-upload-fail .ex-upload-failed-text {display:inline;}
+/* exFileUploader style control */
 /******************************************************************/
 
 /** cross - edit - exfee **/
