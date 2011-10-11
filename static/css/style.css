@@ -587,7 +587,7 @@ b.r3{margin: 0px}
 /* exFileUploader style control */
 /******************************************************************/
 
-/** cross - edit - exfee **/
+/** cross - edit - exfee ** by Leask **/
 #exfee_area {
     padding: 10px;
     margin-bottom: 20px;
@@ -610,7 +610,7 @@ b.r3{margin: 0px}
     height:17px;
 }
 
-#post_submit {
+#exfee_submit {
     background:url("/static/images/enter.png") no-repeat scroll right bottom;
     width:25px;
     height:22px;
@@ -650,6 +650,33 @@ b.r3{margin: 0px}
     clear:both;
 }
 
+#check_all {
+    float: right;
+}
+
+#check_all span {
+    display: block;
+    float: left;
+    margin: 3px 7px 0 0;
+    cursor: pointer;
+}
+
+#check_all em {
+    float: right;
+    width:20px;
+    height:20px;
+    background:url(/static/images/icons.png) no-repeat;
+    display:block;
+}
+
+#check_all em.c1{
+    background-position: -1px -82px;
+}
+
+#check_all em.c2{
+    background-position: left -123px;
+}
+
 #exfee_edit {
     width: 55px;
 }
@@ -677,4 +704,4 @@ b.r3{margin: 0px}
     background: -moz-linear-gradient(top, rgb(255, 255, 255), rgb(235, 235, 235));
     background: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(255, 255, 255)), to(rgb(235, 235, 235)));
 }
-/**************************/
+/**********************************/

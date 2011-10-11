@@ -160,7 +160,7 @@ $token=$_GET["token"];
             <div id="exfee_area" class="exfee">
                 <div class="feetop"><h3>exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
                 <div id="exfee_edit_box">
-                    <span id="post_submit" title="Invite!"></span>
+                    <span id="exfee_submit" title="Invite!"></span>
                     <input type="text" id="exfee_input" value=""/><div id="identity_ajax"></div>
                     <span id="exfee_edit_buttons">
                         <span id="exfee_revert">Revert</span>
@@ -208,6 +208,7 @@ $token=$_GET["token"];
             <div>
                 <button id="exfee_edit"   type="button" class="edit_button">Edit...</button>
                 <button id="exfee_remove" type="button" class="edit_button">Remove...</button>
+                <span id="check_all"><span>Check all</span><em class="c1"></em></span>
             </div>
         </div><!--exfee-->
     </div><!--exfer-->
