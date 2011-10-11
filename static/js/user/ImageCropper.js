@@ -77,15 +77,21 @@
 
     ImageCropper.prototype.loadImage = function(file)
     {
-        if(!this.isAvaiable() || !this.isImage(file)) return;
-        var reader = new FileReader();
-        var me = this;
-        reader.readAsDataURL(file);
-        reader.onload = function(evt)
-        {
-            if(!me.image) me.image = new Image();
-            me.image.onload = function(e){me._init()};
-            me.image.src = evt.target.result;
+        //If safari...
+        if(typeof FileReader == "undefined"){
+            if(!this.isImage(file)) return;
+            odof.user.uploadAvatar.ajaxUploadFile(file);
+        }else{//Firefox 3.6+ and chrome
+            if(!this.isImage(file)) return;
+            var reader = new FileReader();
+            var me = this;
+            reader.readAsDataURL(file);
+            reader.onload = function(evt)
+            {
+                if(!me.image) me.image = new Image();
+                me.image.onload = function(e){me._init()};
+                me.image.src = evt.target.result;
+            }
         }
     }
 
@@ -297,7 +303,7 @@
         return output.toDataURL(mime || "image/jpeg");
     }
 
-    ImageCropper.prototype.isAvaiable = function()
+    ImageCropper.prototype.isAvailable = function()
     {
         return typeof(FileReader) !== "undefined";
     }
