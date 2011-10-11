@@ -70,7 +70,7 @@
                 if($identity["status"]==2)
                     $status="Verifying";
                 if($identity["provider"]=="email")
-                    $button="<button type='button' id='sendActiveEmail' class='boright'>ReSend</button>";
+                    $button="<button type='button' id='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
             ?>
             <p><img class="s_header" src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status;?> <?php echo $button?></i></p>
             <?php 

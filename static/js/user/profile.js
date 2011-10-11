@@ -56,6 +56,9 @@ $(document).ready(function(){
         }
     });
 
+    $('#sendactiveemail').click(function(e) {
+        alert("a");
+    });
     /*
     $('#changeavatar').click(function(e) {
         var AWnd=window.open('/s/uploadavatar','fwId','resizable=yes,scrollbars=yes,width=600,height=600');

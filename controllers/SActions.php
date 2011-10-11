@@ -683,5 +683,52 @@ class SActions extends ActionController {
         }
 
     }
+    public function doActive() {
+        $identity_id=intval($_GET["id"]);
+        $activecode=$_GET["activecode"];
+        if($identity_id>0)
+        {
+            $identityData= $this->getModelByName("identity");
+            $result=$identityData->activeIdentity($identity_id,$activecode);
+        }
+        $this->setVar("result",$result);
+        $this->displayView();
+    }
+    public function doSendActiveEmail() {
+        $responobj["response"]["success"]="false";
+        if(intval($_SESSION["userid"])>0)
+        {
+            $external_identity=$_GET["external_identity"];
+            $identityData= $this->getModelByName("identity");
+            $identity_id=$identityData->ifIdentityBelongsUser($external_identity,$_SESSION["userid"]);
+            if($identity_id>0)
+            {
+                $r=$identityData->reActiveIdentity($identity_id);
+                if($r!==FALSE)
+                {
+                }
+                //belongs this user, send activecode and update identities table.
+                $args = array(
+                         'identityid' => $r["id"],
+                         'external_identity' => $r["external_identity"],
+                         'name' => $r["name"],
+                         'avatar_file_name' => $r["avatar_file_name"],
+                         'activecode' => $r["activecode"]
+                 );
+                if($r["provider"]=="email")
+                {
+                    $helper=$this->getHelperByName("identity");
+                    $jobId=$helper->sentActiveEmail($args);
+                    if(intval($jobId)>0)
+                    {
+                        $responobj["response"]["success"]="true";
+                        $responobj["response"]["external_identity"]=$r["external_identity"];
+                    }
+                }
+            }
+
+        }
+        echo json_encode($responobj);
+    }
 }
 
