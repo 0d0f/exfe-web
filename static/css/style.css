@@ -537,4 +537,12 @@ b.r3{margin: 0px}
     background:url(/static/images/icons.png) no-repeat left -640px;
     cursor:pointer;
 }
+
+#exfee_input {border:#c5c5c5 1px solid;background:#ffffff;width:268px; height:17px; }
+
+#post_submit {background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:4px 0 0 252px; }
+
+/*#exfee_input {background:url(/static/images/icons.png) no-repeat left -28px;text-indent:35px;font-size:24px;height:40px;line-height:40px;font-weight:normal;float:left;width:100px;color:#696969;margin:0}
+/*.exfer .exfee p.of{float:right;width:95px;}
+.exfer .exfee p.of em.bignb{float:left;font-size:36px;color:#0591AF;width:30px;}
 /**************************/

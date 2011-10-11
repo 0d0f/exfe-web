@@ -3,10 +3,12 @@
 class ExfeeHelper extends ActionController
 {
 
-    public function addExfeeIdentify($cross_id, $exfee_list, $filter = null)
+    public function addExfeeIdentify($cross_id, $exfee_list, $invited = null)
     {
-        $identityData = $this->getModelByName('identity');
-        $invitationDt = $this->getModelByName('invitation');
+        $identityData   = $this->getModelByName('identity');
+        $invitationData = $this->getModelByName('invitation');
+
+        $curExfees = array();
 
         //TODO: package as a transaction
         foreach ($exfee_list as $exfeeI => $exfeeItem) {
@@ -24,14 +26,24 @@ class ExfeeHelper extends ActionController
                 }
             }
 
-            if (is_array($filter) && in_array($identity_id, $filter)) {
-                $invitationDt->rsvp($cross_id, $identity_id, $confirmed);
+            array_push($curExfees, $identity_id);
+
+            // update rsvp status
+            if (is_array($invited) && in_array($identity_id, $invited)) {
+                $invitationData->rsvp($cross_id, $identity_id, $confirmed);
                 continue;
             }
 
             // add invitation
-            $invitationdata = $this->getModelByName('invitation');
-            $invitationdata->addInvitation($cross_id, $identity_id, $confirmed);
+            $invitationData->addInvitation($cross_id, $identity_id, $confirmed);
+        }
+
+        if (is_array($invited)) {
+            foreach ($invited as $identity_id) {
+                if (!in_array($identity_id, $curExfees)) {
+                    $invitationData->delInvitation($cross_id, $identity_id);
+                }
+            }
         }
     }
 
