@@ -196,12 +196,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.exfeeEditStatus = status;
         switch (status) {
             case 'edit':
+                if (!$('.editing').length) {
+                    $('#exfee_area').toggleClass('editing');
+                }
                 $('#exfee_edit_box').fadeIn();
                 $('#exfee_remove').fadeIn();
                 $('#exfee_edit').hide();
                 $('#exfee_remove').attr('disabled', false);
                 $('#exfee_area').bind('clickoutside', function(event) {
-                    if (event.target.id === '') {
+                    if ($(event.target).hasClass('exfee_del')) {
                         return;
                     }
                     odof.cross.edit.exfeeEdit();
@@ -220,6 +223,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('.exfee_del').show();
                 break;
             default:
+                $('#exfee_area').toggleClass('editing', false);
                 $('#exfee_edit_box').fadeOut();
                 $('#exfee_remove').hide();
                 $('#exfee_edit').fadeIn();
