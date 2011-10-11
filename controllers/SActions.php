@@ -698,7 +698,7 @@ class SActions extends ActionController {
         $responobj["response"]["success"]="false";
         if(intval($_SESSION["userid"])>0)
         {
-            $external_identity=$_GET["external_identity"];
+            $external_identity=$_POST["external_identity"];
             $identityData= $this->getModelByName("identity");
             $identity_id=$identityData->ifIdentityBelongsUser($external_identity,$_SESSION["userid"]);
             if($identity_id>0)
@@ -719,7 +719,7 @@ class SActions extends ActionController {
                 {
                     $helper=$this->getHelperByName("identity");
                     $jobId=$helper->sentActiveEmail($args);
-                    if(intval($jobId)>0)
+                    if($jobId!="")
                     {
                         $responobj["response"]["success"]="true";
                         $responobj["response"]["external_identity"]=$r["external_identity"];

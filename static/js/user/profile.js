@@ -35,6 +35,30 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
     };
+
+    ns.sentActiveEmail=function (external_identity,button){
+
+        var poststr="external_identity="+external_identity;
+        $.ajax({
+        type: "POST",
+        data: poststr,
+        url: site_url+"/s/sendActiveEmail",
+        dataType:"json",
+        success: function(data){
+            if(data.response.success!=null)
+            {
+                var result=data.response.success;
+                if(result=="true")
+                {
+                    button.text("sent");
+                    button.unbind("click");
+                }
+            }
+        }
+        });
+
+    };
+
 })(ns);
 
 $(document).ready(function(){
@@ -56,8 +80,9 @@ $(document).ready(function(){
         }
     });
 
-    $('#sendactiveemail').click(function(e) {
-        alert("a");
+    $('.sendactiveemail').click(function(e) {
+        var external_identity=$(this).attr("external_identity");
+        odof.user.profile.sentActiveEmail(external_identity,$(this));
     });
     /*
     $('#changeavatar').click(function(e) {
