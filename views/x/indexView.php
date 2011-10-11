@@ -162,8 +162,10 @@ $token=$_GET["token"];
                 <div id="exfee_edit_box">
                     <span id="post_submit" title="Invite!"></span>
                     <input type="text" id="exfee_input" value=""/><div id="identity_ajax"></div>
-                    <button id="exfee_revert" type="button">Revert</button>
-                    <button id="exfee_done"   type="button">Done</button>
+                    <span id="exfee_edit_buttons">
+                        <span id="exfee_revert">Revert</span>
+                        <button id="exfee_done" type="button" class="edit_button">Done</button>
+                    </span>
                 </div>
                 <ul class="samlcommentlist">
 
@@ -204,8 +206,8 @@ $token=$_GET["token"];
 
                 </ul>
             <div>
-                <button id="exfee_edit"   type="button">Edit...</button>
-                <button id="exfee_remove" type="button">Remove...</button>
+                <button id="exfee_edit"   type="button" class="edit_button">Edit...</button>
+                <button id="exfee_remove" type="button" class="edit_button">Remove...</button>
             </div>
         </div><!--exfee-->
     </div><!--exfer-->
