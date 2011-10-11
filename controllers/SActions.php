@@ -333,11 +333,12 @@ class SActions extends ActionController {
         }
         $newInvt = $modIvit->getNewInvitationsByIdentityIds($idents);
         // Get crosses of invitations
-        foreach ($newInvt as $newInvtI => $newInvtItem) {
-            $identity = $identityData->getIdentityById($newInvtItem['identity_id']);
-            $newInvt[$newInvtI]['sender'] = humanIdentity($identity, $modUser->getUserByIdentityId($newInvtItem['identity_id']));
-            $newInvt[$newInvtI]['cross']  = $crossdata->getCross($newInvtItem['cross_id']);
-        }
+        if($newInvt)
+            foreach ($newInvt as $newInvtI => $newInvtItem) {
+                $identity = $identityData->getIdentityById($newInvtItem['identity_id']);
+                $newInvt[$newInvtI]['sender'] = humanIdentity($identity, $modUser->getUserByIdentityId($newInvtItem['identity_id']));
+                $newInvt[$newInvtI]['cross']  = $crossdata->getCross($newInvtItem['cross_id']);
+            }
         $this->setVar('newInvt', $newInvt);
 
         $this->displayView();
