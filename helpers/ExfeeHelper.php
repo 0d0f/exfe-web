@@ -55,8 +55,7 @@ class ExfeeHelper extends ActionController
     {
 
         $invitationdata=$this->getModelByName("invitation");
-        $invitations=$invitationdata->getInvitation_Identities($cross_id, false, $filter);
-
+        $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
 
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
@@ -67,6 +66,7 @@ class ExfeeHelper extends ActionController
             $place=$placeData->getPlace($place_id);
             $cross["place"]=$place;
         }
+
         require_once 'lib/Resque.php';
         date_default_timezone_set('GMT');
         Resque::setBackend('127.0.0.1:6379');
