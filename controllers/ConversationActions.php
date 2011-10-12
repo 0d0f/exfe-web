@@ -43,7 +43,7 @@ class ConversationActions extends ActionController {
                 $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
 
                 //base mail object
-                $link=$site_url.'/!'.int_to_base62($cross_id);
+                $link=SITE_URL.'/!'.int_to_base62($cross_id);
                 $mail["link"]=$link;
                 $mail["template_name"]="conversation";
                 $mail["action"]="post";
