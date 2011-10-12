@@ -57,18 +57,23 @@ class ConversationActions extends ActionController {
 
                 $invitationData=$this->getModelByName("invitation");
                 $invitation_identities=$invitationData->getInvitation_Identities($cross_id);
+                if($invitation_identities)
                 foreach($invitation_identities as $invitation_identity)
                 {
                     $identities=$invitation_identity["identities"];
+                    if($identitie)
                     foreach($identities as $identity)
                     {
                         if(intval($identity["status"])==3)
                         {
                             $identity=humanIdentity($identity,NULL);
-                            $mail["external_identity"]=$identity["external_identity"];
-                            $mail["exfee_name"]=$identity["name"];
-                            $mailhelper=$this->getHelperByName("mail");
-                            $mailhelper->sentTemplateEmail($mail);
+                            if($identity["provider"]=="email")
+                            {
+                                $mail["external_identity"]=$identity["external_identity"];
+                                $mail["exfee_name"]=$identity["name"];
+                                $mailhelper=$this->getHelperByName("mail");
+                                $mailhelper->sentTemplateEmail($mail);
+                            }
                         }
                     }
                 }
