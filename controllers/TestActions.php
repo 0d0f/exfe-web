@@ -46,12 +46,12 @@ class TestActions extends ActionController {
     public function doTest()
     {
 
-        $mail=array();
-        $mail["title"]="mail title";
-        $this->getMail($mail);
 
-#        $invitationdata=$this->getModelByName("invitation");
-#        $invitations=$invitationdata->getInvitation_Identities(3);
+        $invitationdata=$this->getModelByName("invitation");
+        //$invitations=$invitationdata->getInvitation_Identities(3);
+
+        $identities=$invitationdata->getInvitation_Identities_ByIdentities(83, array(1,42,13));
+        print_r($identities);
 #
 #        $crossData=$this->getModelByName("X");
 #        $cross=$crossData->getCross(3);
