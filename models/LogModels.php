@@ -1,7 +1,7 @@
 <?php
 class LogModels extends DataModel{
-    
-    public function addLog($from_obj,$from_id,$action,$to_obj,$to_id,$to_field,$change_summy,$meta)
+
+    public function addLog($from_obj, $from_id, $action, $to_obj, $to_id, $to_field, $change_summy, $meta = '')
     {
         $from_obj=mysql_real_escape_string($from_obj);
         $from_id=intval($from_id);

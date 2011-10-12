@@ -60,11 +60,16 @@ class InvitationModels extends DataModel{
         $time=time();
         $token=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
         //$state=INVITATION_MAYBE;
-        $sql="insert into invitations (identity_id,cross_id,state,created_at,updated_at,token) values($identity_id,$cross_id,$state,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'$token')";
+        $sql="insert into invitations (identity_id,cross_id,state,created_at,updated_at,token) values($identity_id,$cross_id,$state,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'$token');";
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
+    }
 
+    public function delInvitation($cross_id, $identity_id)
+    {
+        $sql="DELETE FROM `invitations` WHERE `cross_id` = '{$cross_id}' AND `identity_id` = {$identity_id};";
+        return $this->query($sql);
     }
 
     public function getInvitatedIdentityByUserid($userid,$cross_id)
@@ -89,16 +94,25 @@ class InvitationModels extends DataModel{
         //    $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
     }
 
-    public function getInvitation_Identities($cross_id,$without_token=false)
+    public function getInvitation_Identities($cross_id, $without_token=false, $filter=null)
     {
         $sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
         if($without_token==true)
             $sql="select a.id invitation_id, a.state ,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
 
         $invitations=$this->getAll($sql);
+
+        if (is_array($arrFilter)) {
+            foreach ($invitations as $invitationI => $invitationItem) {
+                if (in_array($invitationItem['identity_id'], $filter)) {
+                    unset($invitations[$invitationI]);
+                }
+            }
+        }
+
         for($i=0;$i<sizeof($invitations);$i++)
         {
-            if(trim($invitations[$i]["name"])==""  ||  trim($invitations[$i]["b.avatar_file_name"])=="")
+            if(trim($invitations[$i]["name"])=="" || trim($invitations[$i]["b.avatar_file_name"])=="")
             {
                 $indentity_id=$invitations[$i]["identity_id"];
                 $sql="select name,avatar_file_name,userid from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$indentity_id";
@@ -122,13 +136,14 @@ class InvitationModels extends DataModel{
                 #if(trim($invitations[$i]["avatar_file_name"])=="")
                 #    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
             }
-                $invitations[$i]["state"]=intval($invitations[$i]["state"]);
+            $invitations[$i]["state"]=intval($invitations[$i]["state"]);
         }
         return $invitations;
     }
 
     public function getInvitation_APNIdentities($cross_id)
     {
+
     }
 
     public function ifIdentityHasInvitation($identity_id,$cross_id)

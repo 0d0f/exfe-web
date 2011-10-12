@@ -6,7 +6,6 @@ class IdentityModels extends DataModel{
 
     public function addIdentity($user_id,$provider,$external_identity,$identityDetail=array())
     {
-
         $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
 
         $name=mysql_real_escape_string($identityDetail["name"]);
@@ -58,12 +57,6 @@ class IdentityModels extends DataModel{
                 $helper=$this->getHelperByName("identity");
                 $helper->sentActiveEmail($args);
             }
-            //require 'lib/Resque.php';
-            //date_default_timezone_set('GMT');
-            //Resque::setBackend('127.0.0.1:6379');
-
-            //    $jobId = Resque::enqueue("activecode","emailactivecode_job" , $args, true);
-
             return $identityid;
         }
     }
@@ -454,7 +447,35 @@ class IdentityModels extends DataModel{
         $row=$this->getRow($sql);
         return array("result"=>"","external_identity"=>$row["external_identity"]);
     }
-
-
+    public function ifIdentityBelongsUser($external_identity,$user_id)
+    {
+        $result=$this->ifIdentityExist($external_identity);
+        if($result>0 && intval($user_id)>0)
+        {
+            $identity_id=$result;
+            $sql="select identityid from user_identity where identityid=$identity_id and userid=$user_id;";
+            $row=$this->getRow($sql);
+            if(intval($row["identityid"])==$identity_id)
+                return $identity_id;
+        }
+        return FALSE;
+    }
+    public function reActiveIdentity($identity_id)
+    {
+        if(intval($identity_id)>0)
+        {
+            $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+            $sql="update identities set activecode='$activecode' where id=$identity_id";
+            $r=$this->query($sql);
+            if(intval($r)>0)
+            {
+                $sql="select id,provider,external_identity,name,avatar_file_name,activecode from identities where id=$identity_id;";
+                $r=$this->getRow($sql);
+                return $r;
+                //success
+            }
+        }
+        return FALSE;
+    }
 }
 

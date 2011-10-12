@@ -130,7 +130,7 @@ em.h3{font-size:24px;font-family:Verdana; }
 
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
-.smcomment {float:left;font-size:12px;width:215px;}
+.smcomment {float:left;font-size:12px;}
 .smcomment span{color:#020202;font-size:13px;padding-right:5px;}
 .smcomment span.lb{background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}
 .cs {float:right;width:20px;height:20px;}
@@ -561,7 +561,7 @@ b.r3{margin: 0px}
 #upload_avatar_window #upload_btn_container .ex-upload-drop-area {
     position:absolute; top:0; left:0; display:block;
     width:294px; height:294px; z-index:102; font-size:0px;
-    border:3px dashed #999; text-align:center; 
+    border:3px dashed #999; text-align:center;
 }
 #upload_avatar_window #upload_btn_container .ex-upload-drop-area-active {border:3px dashed #999;}
 #upload_avatar_window #upload_btn_container .ex-upload-list .ex-upload-info{
@@ -589,7 +589,6 @@ b.r3{margin: 0px}
 #upload_avatar_window #upload_btn_container .ex-upload-fail .ex-upload-failed-text {display:inline;}
 /* exFileUploader style control */
 /******************************************************************/
-
 /*
  * imgAreaSelect animated border style
  */
@@ -615,3 +614,121 @@ b.r3{margin: 0px}
 	opacity: 0.5;
 }
 .imgareaselect-selection { }
+/** cross - edit - exfee ** by Leask **/
+#exfee_area {
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.exfee_del {
+    margin:3px 5px 0 0;
+    border:0;
+    width:11px;
+    height:13px;
+    float:left;
+    background:url(/static/images/icons.png) no-repeat left -640px;
+    cursor:pointer;
+}
+
+#exfee_input {
+    border:#c5c5c5 1px solid;
+    background:#ffffff;
+    width:248px;
+    height:17px;
+}
+
+#exfee_submit {
+    background:url("/static/images/enter.png") no-repeat scroll right bottom;
+    width:25px;
+    height:22px;
+    border:none;
+    float: right;
+    z-index:2;
+    position: absolute;
+    margin:7px 0 0 232px;
+}
+
+#exfee_edit_buttons {
+    display: block;
+    margin: 7px 0 7px 0;
+    float: right;
+}
+
+#exfee_revert {
+    text-decoration:underline;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#exfee_done {
+    width: 55px;
+}
+
+.edit_button {
+    border:1px solid rgb(192, 192, 192);
+    background-color: rgb(249, 249, 249);
+    color: rgb(51, 51, 51);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.samlcommentlist {
+    clear:both;
+}
+
+#check_all {
+    float: right;
+}
+
+#check_all span {
+    display: block;
+    float: left;
+    margin: 3px 7px 0 0;
+    cursor: pointer;
+}
+
+#check_all em {
+    float: right;
+    width:20px;
+    height:20px;
+    background:url(/static/images/icons.png) no-repeat;
+    display:block;
+}
+
+#check_all em.c1{
+    background-position: -1px -82px;
+}
+
+#check_all em.c2{
+    background-position: left -123px;
+}
+
+#exfee_edit {
+    width: 55px;
+}
+
+#exfee_remove {
+    width: 80px;
+}
+
+.exfer .exfee p.of em.bignb{
+    float:left;
+    font-size:36px;
+    color:#0591AF;
+    width:30px;
+}
+
+.editing {
+    border: 1px;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    border-color: rgb(192, 192, 192);
+    border-style: solid;
+    background: rgb(245, 245, 245);
+    background: -moz-linear-gradient(top, rgb(255, 255, 255), rgb(235, 235, 235));
+    background: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(255, 255, 255)), to(rgb(235, 235, 235)));
+}
+/**********************************/
