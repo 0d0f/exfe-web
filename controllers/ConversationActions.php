@@ -61,7 +61,7 @@ class ConversationActions extends ActionController {
                 foreach($invitation_identities as $invitation_identity)
                 {
                     $identities=$invitation_identity["identities"];
-                    if($identitie)
+                    if($identities)
                     foreach($identities as $identity)
                     {
                         if(intval($identity["status"])==3)
