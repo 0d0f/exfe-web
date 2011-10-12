@@ -1,3 +1,4 @@
+//html5 图像截剪方法，已经废弃。BY:handaoliang
 (function(scope){
     var ImageCropper = function(width, height, cropWidth, cropHeight)
     {	
@@ -77,6 +78,14 @@
 
     ImageCropper.prototype.loadImage = function(file)
     {
+        /*
+        //直接使用URL的图片进行截翦。
+        var me = this;
+        if(!me.image) me.image = new Image();
+        me.image.onload = function(e){me._init()};
+        me.image.src = file;
+        return;
+        */
         //If safari...
         if(typeof FileReader == "undefined"){
             if(!this.isImage(file)) return;
