@@ -488,7 +488,7 @@ b.r3{margin: 0px}
 #upload_avatar_window #container { position: absolute; left: 20px; top: 50px; }
 
 #upload_avatar_window #wrapper { position: absolute; left: 0px; top: 0px; }
-#upload_avatar_window #cropper {
+#upload_avatar_window #div_upload_big {
     position: absolute; left: 0px; top: 0px; border: 1px solid #999;
     width:300px; height:300px;
     background:-webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#DDDDDD));
@@ -500,7 +500,10 @@ b.r3{margin: 0px}
     position: absolute; width:100px;height:50px; left: 315px; top: 0px;
 }
 
-#upload_avatar_window .preview{ border: 1px solid #ccc; background:#EEEEEE; }
+#upload_avatar_window .preview{
+    position:absolute; width:80px; height:80px; overflow:hidden;
+    left:10px;top:0px; border: 1px solid #ccc; background:#EEEEEE;
+}
 #upload_avatar_window #selectBtn {
     position: absolute; z-index:100;
     left: 85px; top: 120px;
@@ -586,8 +589,32 @@ b.r3{margin: 0px}
 #upload_avatar_window #upload_btn_container .ex-upload-fail .ex-upload-failed-text {display:inline;}
 /* exFileUploader style control */
 /******************************************************************/
+/*
+ * imgAreaSelect animated border style
+ */
 
-/** cross - edit - exfee **/
+.imgareaselect-border1 { background: url(../images/border-anim-v.gif) repeat-y left top; }
+.imgareaselect-border2 { background: url(../images/border-anim-h.gif) repeat-x left top; }
+.imgareaselect-border3 { background: url(../images/border-anim-v.gif) repeat-y right top; }
+.imgareaselect-border4 { background: url(../images/border-anim-h.gif) repeat-x left bottom; }
+.imgareaselect-border1, .imgareaselect-border2,
+.imgareaselect-border3, .imgareaselect-border4 {
+    filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+.imgareaselect-handle {
+    background-color: #fff;
+	border: solid 1px #000;
+    filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+.imgareaselect-outer {
+	background-color: #000;
+    filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+.imgareaselect-selection { }
+/** cross - edit - exfee ** by Leask **/
 #exfee_area {
     padding: 10px;
     margin-bottom: 20px;
@@ -610,7 +637,7 @@ b.r3{margin: 0px}
     height:17px;
 }
 
-#post_submit {
+#exfee_submit {
     background:url("/static/images/enter.png") no-repeat scroll right bottom;
     width:25px;
     height:22px;
@@ -650,6 +677,33 @@ b.r3{margin: 0px}
     clear:both;
 }
 
+#check_all {
+    float: right;
+}
+
+#check_all span {
+    display: block;
+    float: left;
+    margin: 3px 7px 0 0;
+    cursor: pointer;
+}
+
+#check_all em {
+    float: right;
+    width:20px;
+    height:20px;
+    background:url(/static/images/icons.png) no-repeat;
+    display:block;
+}
+
+#check_all em.c1{
+    background-position: -1px -82px;
+}
+
+#check_all em.c2{
+    background-position: left -123px;
+}
+
 #exfee_edit {
     width: 55px;
 }
@@ -677,4 +731,4 @@ b.r3{margin: 0px}
     background: -moz-linear-gradient(top, rgb(255, 255, 255), rgb(235, 235, 235));
     background: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(255, 255, 255)), to(rgb(235, 235, 235)));
 }
-/**************************/
+/**********************************/

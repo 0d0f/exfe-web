@@ -1,8 +1,8 @@
 /**
  * @Description:    Cross edit module
- * @Author:         HanDaoliang <handaoliang@gmail.com>
+ * @Author:         HanDaoliang <handaoliang@gmail.com>, Leask Huang <leask@exfe.com>
  * @createDate:     Sup 15,2011
- * @CopyRights:		http://www.exfe.com
+ * @CopyRights:     http://www.exfe.com
 **/
 
 var moduleNameSpace = "odof.cross.edit";
@@ -39,13 +39,33 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.cross.edit.bindEditDescEvent();
         });
 
-
-        /////////////////////////////////////////
+        // exfee edit begins
+        odof.cross.edit.numNewIdentity = 0;
         $('#exfee_edit').fadeIn();
-        //$('#exfee_area').addClass('enable_click');
-        //$('#exfee_area').bind('click', function() {
-        //    console.log('leask');
-        //});
+        $('#exfee_edit').bind('click', function() {
+            odof.cross.edit.exfeeEdit('edit');
+        });
+        $('#exfee_remove').bind('click', function() {
+            odof.cross.edit.exfeeEdit('remove');
+        });
+        $('#exfee_input').keypress(function(e) {
+            if ((e.keyCode ? e.keyCode : e.which) == 13) {
+                odof.cross.edit.identityExfee();
+                e.preventDefault();
+            }
+        });
+        $('#exfee_submit').bind('click', function() {
+            odof.cross.edit.identityExfee();
+        });
+        $('.exfee_del').live('click', function() {
+            $(this.parentNode).remove();
+        });
+        $('#exfee_revert').bind('click', function() {
+            odof.cross.edit.revertExfee();
+        });
+        $('#exfee_done').bind('click', function() {
+            odof.cross.edit.exfeeEdit();
+        });
 
     };
 
@@ -368,6 +388,36 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      // target.className = 'c' + (intC > 4 ? 1 : intC);
         target.className = 'c' + (intC > 2 ? 1 : intC);
         ns.summaryExfee();
+        ns.updateCheckAll();
+    };
+
+    /**
+     *
+     * by Leask
+     */
+    ns.updateCheckAll = function() {
+        if ($('.cs > .c2').length) {
+            $('#check_all > span').html('Check all');
+            $('#check_all > em').attr('class', 'c2');
+        } else {
+            $('#check_all > span').html('Uncheck all');
+            $('#check_all > em').attr('class', 'c1');
+        }
+    };
+
+    /**
+     *
+     * by Leask
+     */
+    ns.checkAll = function() {
+        switch ($('#check_all > em')[0].className) {
+            case 'c1':
+                $('.cs > .c1').attr('class', 'c2');
+                break;
+            case 'c2':
+                $('.cs > .c2').attr('class', 'c1');
+        }
+        ns.updateCheckAll();
     };
 
     /**
@@ -405,42 +455,26 @@ jQuery(document).ready(function() {
     jQuery("#edit_icon").bind("click",function() {
         odof.cross.edit.showEditBar();
     });
+
     jQuery("#revert_cross_btn").bind("click",function() {
         odof.cross.edit.revertCross();
     });
+
     jQuery("#desc_expand_btn").bind("click",function() {
         odof.cross.edit.expandDesc();
     });
 
     // exfee edit init
-    odof.cross.edit.numNewIdentity = 0;
     $('#exfee_edit_box').hide();
     $('#exfee_remove').hide();
     $('#exfee_edit').hide();
-    $('#exfee_edit').bind('click', function() {
-        odof.cross.edit.exfeeEdit('edit');
-    });
-    $('#exfee_remove').bind('click', function() {
-        odof.cross.edit.exfeeEdit('remove');
-    });
-    $('#exfee_input').keypress(function(e) {
-        if ((e.keyCode ? e.keyCode : e.which) == 13) {
-            odof.cross.edit.identityExfee();
-            e.preventDefault();
-        }
-    });
     $('.exfee_del').hide();
-    $('.exfee_del').live('click', function() {
-        $(this.parentNode).remove();
-    });
-    $('#exfee_revert').bind('click', function() {
-        odof.cross.edit.revertExfee();
-    });
-    $('#exfee_done').bind('click', function() {
-        odof.cross.edit.exfeeEdit();
-    });
+    odof.cross.edit.updateCheckAll();
     $('.cs > em').live('click', function(event) {
         odof.cross.edit.changeRsvp(event.target);
+    });
+    $('#check_all').bind('click', function() {
+        odof.cross.edit.checkAll();
     });
 
 });

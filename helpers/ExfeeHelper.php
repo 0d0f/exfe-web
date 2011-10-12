@@ -7,6 +7,7 @@ class ExfeeHelper extends ActionController
     {
         $identityData   = $this->getModelByName('identity');
         $invitationData = $this->getModelByName('invitation');
+        $logData        = $this->getModelByName('log');
 
         $curExfees = array();
 
@@ -31,17 +32,20 @@ class ExfeeHelper extends ActionController
             // update rsvp status
             if (is_array($invited) && in_array($identity_id, $invited)) {
                 $invitationData->rsvp($cross_id, $identity_id, $confirmed);
+                $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
                 continue;
             }
 
             // add invitation
             $invitationData->addInvitation($cross_id, $identity_id, $confirmed);
+            $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
         }
 
         if (is_array($invited)) {
             foreach ($invited as $identity_id) {
                 if (!in_array($identity_id, $curExfees)) {
                     $invitationData->delInvitation($cross_id, $identity_id);
+                    $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
                 }
             }
         }

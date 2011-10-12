@@ -27,6 +27,7 @@ class SActions extends ActionController {
         $identityData->addIdentity($userid,$provider,$identity);
     }
 
+    //上传头像文件。
     public function doUploadAvatarFile(){
         //list of valid extensions, ex. array("jpeg", "xml", "bmp")
         $allowedExtensions = array("jpeg", "gif", "png", "jpg", "bmp");
@@ -40,14 +41,61 @@ class SActions extends ActionController {
         $exFileUploader = $this->getHelperByName("fileUploader");
         $exFileUploader->initialize($allowedExtensions, $sizeLimit);
         $result = $exFileUploader->handleUpload($upload_path);
+        $img_name = $result["filename"];
+        $img_ext = $result["file_ext"];
+        $img_path = $result["file_path"];
+        //图片还要经过处理后再给客户端。
+        require_once "imgcommon.php";
+        $img_info = array(
+            "source_image"      =>$img_path.$img_name,
+            "target_image"      =>$img_path."300_300_".$img_name,
+            "width"             =>300,
+            "height"            =>300,
+        );
+        asidoResizeImg($img_info);
 
         // to pass data through iframe you will need to encode all html tags
         //echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
         echo json_encode($result);
     }
 
+    //截剪头像。
     public function doUploadAvatarNew(){
         require_once "imgcommon.php";
+        $img_name = $_POST["iName"];
+        $img_height = $_POST["iHeight"];
+        $img_width = $_POST["iWidth"];
+        $img_x = $_POST["iX"];
+        $img_y = $_POST["iY"];
+        $img_dir = "eimgs/";
+
+        $img_info = array(
+            "source_image"      =>$img_dir."300_300_".$img_name,
+            "target_image"      =>$img_dir."80_80_".$img_name,
+            "width"             =>80,
+            "height"            =>80,
+            "x"                 =>$img_x,
+            "y"                 =>$img_y
+        );
+        asidoResizeImg($img_info, $crop=true);
+
+        $return_data = array(
+            "status"    =>0,
+            "msg"       =>""
+        );
+
+        
+        $userData = $this->getModelByName("user");
+        $userData->saveUserAvatar($img_name,$_SESSION["userid"]);
+
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($return_data);
+        exit(0);
+    }
+
+    //HTML5图片的处理方法，废弃没用。
+    /*
+    public function doUploadAvatarNew_bak(){
         if(intval($_SESSION["userid"])>0)
         {
             $self_url="/s/uploadAvatarNew";
@@ -103,7 +151,9 @@ class SActions extends ActionController {
         }
 
     }
+    */
 
+    //霍炬之前的上传头像处理方法。也已经废弃。
     public function doUploadavatar()
     {
         if($_GET["a"]=="close")

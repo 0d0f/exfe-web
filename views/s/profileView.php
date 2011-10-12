@@ -1,21 +1,8 @@
 <?php include "share/header.php"; ?>
 <script type="text/javascript" src="/static/js/user/profile.js"></script>
-<script type="text/javascript" src="/static/js/user/ImageCropper.js"></script>
 <script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
 <script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
-<script type="text/javascript">
-    function createUploader(){
-        var uploader = new exFileUploader.initialize({
-            element: document.getElementById('upload_btn_container'),
-            action: '/s/uploadAvatarFile',
-            debug:true 
-        });
-    }
-    
-    // in your app create uploader as soon as the DOM is ready
-    // don't wait for the window to load  
-    window.onload = createUploader;     
-</script>
+<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
 </head>
 <body>
 <?php include "share/nav.php"; ?>
@@ -43,14 +30,22 @@
                 <div id="dragdrop_info">Drag and drop<br />your portrait here</div>
                 <!-- a id="selectBtn" href="javascript:void(0);" onclick="document.getElementById('avatar_files').click();"></a>
                 <input type="file" id="avatar_files" size="10" name="files[]" style="visibility:hidden;" / -->
-                <a id="rotateRightBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.rotateImage(event);"></a>
+                <!-- a id="rotateRightBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.rotateImage(event);"></a -->
                 <div id="upload_btn_container"></div>
                 
                 <div id="wrapper">
-                    <canvas id="cropper"></canvas>
+                	<div id="div_upload_big"></div>
+                    <input type="hidden" name="img_src" id="img_src" class="img_src" value="" /> 
+                    <input type="hidden" name="height" id="height" class="height" value="0" />
+                    <input type="hidden" name="width" id="width" class="width" value="0" />
+                    <input type="hidden" id="y1" class="y1" name="y" />
+                    <input type="hidden" id="x1" class="x1" name="x" />
+                    <input type="hidden" id="y2" class="y2" name="y1" />
+                    <input type="hidden" id="x2" class="x2" name="x1" />                         
+
                     <span id="upload_status" style="display:none;"></span>
                     <div id="preview_container">
-                        <canvas id="preview80" width="80" height="80" style="position:absolute;left:10px;top:0px;" class="preview"></canvas>
+                        <div id="preview" class="preview"></div>
                         <span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>
                         <a id="saveBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>
                     </div>
