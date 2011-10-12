@@ -34,7 +34,8 @@ class XActions extends ActionController {
 
             $helper=$this->getHelperByName("exfee");
             $helper->addExfeeIdentify($cross_id, json_decode($_POST["exfee_list"], true));
-            $helper->sendInvitation($cross_id,$identity_id);
+         // $helper->sendInvitation($cross_id, $identity_id);
+         // @todo: fix invitation feature
 
             // remove draft
             $XDraft = $this->getModelByName('XDraft');
@@ -74,8 +75,6 @@ class XActions extends ActionController {
     {
         $crossDataObj = $this->getDataModel("x");
 
-
-
         $identity_id = $_SESSION['identity_id'];
         $cross_id = base62_to_int($_GET["id"]);
         $old_cross=$crossDataObj->getCross($cross_id);
@@ -91,11 +90,11 @@ class XActions extends ActionController {
         }
 
         $cross = array(
-                "id"            =>$cross_id,
-                "title"         =>mysql_real_escape_string($_POST["ctitle"]),
-                "desc"          =>mysql_real_escape_string($_POST["cdesc"]),
-                "start_time"    =>$_POST["ctime"],
-                "identity_id"   =>$identity_id
+                "id"          => $cross_id,
+                "title"       => mysql_real_escape_string($_POST["ctitle"]),
+                "desc"        => mysql_real_escape_string($_POST["cdesc"]),
+                "start_time"  => $_POST['ctime'],
+                "identity_id" => $identity_id
         );
 
         $result = $crossDataObj->updateCross($cross);
@@ -109,7 +108,7 @@ class XActions extends ActionController {
         }
 
         $xhelper=$this->getHelperByName("x");
-        $xhelper->addCrossDiffLog($identity_id,$old_cross, $cross);
+        $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
 
         // exclude exfee identities that already in cross
         $invitM = $this->getModelByName('invitation');

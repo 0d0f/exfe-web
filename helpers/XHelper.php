@@ -2,7 +2,8 @@
 
 class XHelper extends ActionController
 {
-    public function addCrossDiffLog($identity_id,$old_cross, $crossobj)
+
+    public function addCrossDiffLog($cross_id, $identity_id, $old_cross, $crossobj)
     {
         $crossData=$this->getModelByName("X");
 

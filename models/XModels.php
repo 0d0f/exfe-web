@@ -1,7 +1,7 @@
 <?php
 class XModels extends DataModel {
 
-    public function gatherCross($identityId,$cross)
+    public function gatherCross($identityId, $cross)
     {
         // gather a empty cross, state=draft
         // state=1 draft
@@ -35,7 +35,7 @@ class XModels extends DataModel {
         return $result;
     }
 
-    public function getCrossByUserId($userid,$updated_since=0)
+    public function getCrossByUserId($userid, $updated_since=0)
     {
         //get all identityid
         $sql="select identityid from user_identity where userid=$userid ;";
@@ -101,9 +101,26 @@ class XModels extends DataModel {
             default:
                 $strTime = '';
         }
-        $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
-        $crosses = $this->getAll($sql);
+        $order_by = $order_by ? " ORDER BY {$order_by}" : '';
+        $limit    = $limit    ? " LIMIT {$limit}"       : '';
+        $sql      = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime}{$order_by}{$limit};";
+        $crosses  = $this->getAll($sql);
         return $crosses;
+    }
+
+    public function getAllCrossIdByUserId($userid)
+    {
+        // Get user identities
+        $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
+        $identity_id_list = $this->getColumn($sql);
+
+        // Get crosses id
+        foreach ($identity_id_list as $identityI => $identityId) {
+            $identity_id_list[$identityI] = "identity_id = {$identityId}";
+        }
+        $str = implode(' or ', $identity_id_list);
+        $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
+        return $this->getColumn($sql);
     }
 
 }
