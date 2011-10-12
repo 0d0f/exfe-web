@@ -41,18 +41,20 @@ class SActions extends ActionController {
         $exFileUploader = $this->getHelperByName("fileUploader");
         $exFileUploader->initialize($allowedExtensions, $sizeLimit);
         $result = $exFileUploader->handleUpload($upload_path);
-        $img_name = $result["filename"];
-        $img_ext = $result["file_ext"];
-        $img_path = $result["file_path"];
-        //图片还要经过处理后再给客户端。
-        require_once "imgcommon.php";
-        $img_info = array(
-            "source_image"      =>$img_path.$img_name,
-            "target_image"      =>$img_path."300_300_".$img_name,
-            "width"             =>300,
-            "height"            =>300,
-        );
-        asidoResizeImg($img_info);
+        if(!$result["error"]){
+            $img_name = $result["filename"];
+            $img_ext = $result["file_ext"];
+            $img_path = $result["file_path"];
+            //图片还要经过处理后再给客户端。
+            require_once "imgcommon.php";
+            $img_info = array(
+                "source_image"      =>$img_path.$img_name,
+                "target_image"      =>$img_path."300_300_".$img_name,
+                "width"             =>300,
+                "height"            =>300,
+            );
+            asidoResizeImg($img_info);
+        }
 
         // to pass data through iframe you will need to encode all html tags
         //echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
@@ -72,8 +74,8 @@ class SActions extends ActionController {
         $img_info = array(
             "source_image"      =>$img_dir."300_300_".$img_name,
             "target_image"      =>$img_dir."80_80_".$img_name,
-            "width"             =>80,
-            "height"            =>80,
+            "width"             =>$img_width,
+            "height"            =>$img_height,
             "x"                 =>$img_x,
             "y"                 =>$img_y
         );

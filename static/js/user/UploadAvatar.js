@@ -32,11 +32,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#upload_files_process_status").show();
     };
     ns.fileUploadCompleteCallBack = function(id, fileName, responseJSON){
+        if(responseJSON.error){
+            window.location.href = site_url + "/s/profile";
+        }
+        
         jQuery("#upload_btn_container").hide();
         jQuery("#dragdrop_info").hide();
-
-	    //jQuery('#big').imgAreaSelect({hide:false});	
-	    jQuery('#big').imgAreaSelect({show:true});	
 
 		var img = "/eimgs/300_300_"+responseJSON.filename;
 
@@ -46,19 +47,24 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 		jQuery('#div_upload_big').html('<img id="big" src="'+img+'" />');						
 
         jQuery('#upload_thumb').show();
-        jQuery('#big').imgAreaSelect({ 
-            aspectRatio: '1:1', 
-            handles: false,
+        jQuery('#big').imgAreaSelect({
+            aspectRatio: '1:1',
+            handles: true,
             hide:false,
+            show:true,
             fadeSpeed: 200,
             resizeable:false,
-            maxHeight:80,
-            maxWidth:80,			
+            maxHeight:300,
+            maxWidth:300,
             minHeight:80,
-            minWidth:80,			
+            minWidth:80,
+            x1: 0,
+            y1: 0,
+            x2: 300,
+            y2: 300,
             onSelectChange: ns.previewImages
         });
-
+        ns.previewImages(jQuery('#big'),{"width":300, "height":300});
     };
 
     ns.previewImages = function(img, selection) {
@@ -69,8 +75,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var scaleY = 80 / selection.height;
 
         jQuery('#preview img').css({
-            width: Math.round(scaleX * jQuery('#big').attr('width')),
-            height: Math.round(scaleY * jQuery('#big').attr('height')),
+            width: Math.round(scaleX * 300),
+            height: Math.round(scaleY * 300),
             marginLeft: -Math.round(scaleX * selection.x1),
             marginTop: -Math.round(scaleY * selection.y1)
         });
@@ -92,24 +98,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var imageY = jQuery("#y1").val();
         var imageX1 = jQuery("#x2").val();
         var imageY1 = jQuery("#y2").val();
-        jQuery.ajax({
-            url:site_url+ "/s/uploadAvatarNew",
-            type:"POST",
-            dataType:"json",
-            data:{
-                jrand: Math.round(Math.random()*10000000000),
-                iName: imageName,
-                iHeight: imageHeight,
-                iWidth: imageWidth,
-                iX: imageX,
-                iY: imageY,
-                iX1: imageX1,
-                iY1: imageY1
-            },
-            success:function(JSONData){
-                odof.user.uploadAvatar.callbackActions(JSONData);
-            }
-        });
+        if(imageHeight == 0 || imageWidth == 0 || imageY == "" || imageX == ""){
+            window.alert("Please select a area to cropper as a avatar");
+        }else{
+            jQuery.ajax({
+                url:site_url+ "/s/uploadAvatarNew",
+                type:"POST",
+                dataType:"json",
+                data:{
+                    jrand: Math.round(Math.random()*10000000000),
+                    iName: imageName,
+                    iHeight: imageHeight,
+                    iWidth: imageWidth,
+                    iX: imageX,
+                    iY: imageY
+                },
+                success:function(JSONData){
+                    odof.user.uploadAvatar.callbackActions(JSONData);
+                }
+            });
+        }
     };
     ns.callbackActions = function(JSONData){
         jQuery("#upload_status").html("Upload Picture successful");
