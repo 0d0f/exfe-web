@@ -141,6 +141,58 @@ class InvitationModels extends DataModel{
         return $invitations;
     }
 
+    public function getInvitation_Identities_ByIdentities($cross_id, $identities_id_list,$without_token=false, $filter=null)
+    {
+        $id_list=array();
+        for($i=0;$i<sizeof($identities_id_list);$i++)
+        {
+            if(intval($identities_id_list[$i])>0)
+                array_push($id_list, "identity_id=".$identities_id_list[$i]);
+        }
+
+        if(sizeof($id_list)>0)
+        {
+            $identities_sql="(";
+            $identities_sql.=implode(" or ",$id_list);
+            $identities_sql.=")";
+            //(identity_id=1 or identity_id=13);
+            $sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id and $identities_sql";
+            if($without_token==true)
+                $sql="select a.id invitation_id, a.state ,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
+
+            $invitations=$this->getAll($sql);
+
+            if (is_array($arrFilter)) {
+                foreach ($invitations as $invitationI => $invitationItem) {
+                    if (in_array($invitationItem['identity_id'], $filter)) {
+                        unset($invitations[$invitationI]);
+                    }
+                }
+            }
+
+            for($i=0;$i<sizeof($invitations);$i++)
+            {
+                if(trim($invitations[$i]["name"])=="" || trim($invitations[$i]["b.avatar_file_name"])=="")
+                {
+                    $indentity_id=$invitations[$i]["identity_id"];
+                    $sql="select name,avatar_file_name,userid from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$indentity_id";
+                    $user=$this->getRow($sql);
+                    $invitations[$i]=humanIdentity($invitations[$i],$user);
+
+                    $userid=$user["userid"];
+                    if(intval($userid)>0)
+                    {
+                        $sql="select b.id identity_id,b.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
+                        $identities=$this->getAll($sql);
+                        $invitations[$i]["identities"]=$identities;
+
+                    }
+                }
+                $invitations[$i]["state"]=intval($invitations[$i]["state"]);
+            }
+        }
+        return $invitations;
+    }
     public function getInvitation_APNIdentities($cross_id)
     {
 
