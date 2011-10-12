@@ -323,7 +323,7 @@ class SActions extends ActionController {
         $crossdata = $this->getModelByName('x');
         $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today); // @virushuo says "no mulit-identity" in one user now
         $pastXs    = $crossdata->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
-        $recenUpdt = $crossdata->fetchCross($_SESSION['userid'], 0, null, 'updated_at DESC', null);
+        $recenUpdt = $crossdata->fetchCross($_SESSION['userid'], 0, null, null, null);
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
             if ($crosses[$crossI]['timestamp'] < $upcoming) {
@@ -338,6 +338,7 @@ class SActions extends ActionController {
             $pastXItem['sort'] = 'past';
             array_push($crosses, $pastXItem);
         }
+        print_r($recenUpdt);
         //foreach ($recenUpdt as $recenUpdtI => $recenUpdtItem) {
         //    $recenUpdtItem['sort'] = 'updated';
         //    array_push($crosses, $pastXItem);

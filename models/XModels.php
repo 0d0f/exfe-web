@@ -108,19 +108,4 @@ class XModels extends DataModel {
         return $crosses;
     }
 
-    public function getAllCrossIdByUserId($userid)
-    {
-        // Get user identities
-        $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
-        $identity_id_list = $this->getColumn($sql);
-
-        // Get crosses id
-        foreach ($identity_id_list as $identityI => $identityId) {
-            $identity_id_list[$identityI] = "identity_id = {$identityId}";
-        }
-        $str = implode(' or ', $identity_id_list);
-        $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
-        return $this->getColumn($sql);
-    }
-
 }
