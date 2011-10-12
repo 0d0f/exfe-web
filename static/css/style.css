@@ -478,37 +478,31 @@ b.r3{margin: 0px}
 
 /******* upload user avatar window style by handaoliang ***********/
 #upload_avatar_window{
-    position:absolute; width:450px; height:370px; z-index:100; background:#FFF; border:1px solid #000;
+    position:absolute; width:460px; height:390px; z-index:100; background:#FFF; border:1px solid #000;
 }
-#upload_avatar_window .titles{ width:450px; height:25px; padding-top:5px; background-color:black; }
+#upload_avatar_window .titles{ width:460px; height:25px; padding-top:5px; background-color:black; }
 #upload_avatar_window .titles p.l{ width:100px; height:25px; float:left; color:#FFF; padding-left:10px; }
 #upload_avatar_window .titles p.l a{ color:#FFF;}
 #upload_avatar_window .titles p.r{ width:100px; height:25px; float:right; color:#FFF; text-align:right; padding-right:10px; }
 
-#upload_avatar_window #container { position: absolute; left: 20px; top: 50px; }
+#upload_avatar_window #container { position: absolute; left: 20px; top: 50px; width:420px; height:310px; }
 
 #upload_avatar_window #wrapper { position: absolute; left: 0px; top: 0px; }
 #upload_avatar_window #div_upload_big {
-    position: absolute; left: 0px; top: 0px; border: 1px solid #999;
-    width:300px; height:300px;
-    background:-webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#DDDDDD));
-    background:-moz-linear-gradient(#FFFFFF, #DDDDDD);
-    background:-o-linear-gradient(#FFFFFF, #DDDDDD);
-    background:linear-gradient(#FFFFFF, #DDDDDD);
+    position: absolute; left: 0px; top: 0px; border: 10px solid #CCC;
+    width:300px; height:300px; 
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#EEEEEE));
+    background:-moz-linear-gradient(#FFFFFF, #EEEEEE);
+    background:-o-linear-gradient(#FFFFFF, #EEEEEE);
+    background:linear-gradient(#FFFFFF, #EEEEEE);
 }
 #upload_avatar_window #preview_container {
-    position: absolute; width:100px;height:50px; left: 315px; top: 0px;
+    position: absolute; width:90px;height:50px; left: 330px; top: 0px;
 }
 
 #upload_avatar_window .preview{
     position:absolute; width:80px; height:80px; overflow:hidden;
     left:10px;top:0px; border: 1px solid #ccc; background:#EEEEEE;
-}
-#upload_avatar_window #selectBtn {
-    position: absolute; z-index:100;
-    left: 85px; top: 120px;
-    width: 119px; height: 27px;
-    background: url(../images/ic_select_img.png);
 }
 #upload_avatar_window #file_select_btn{
     position: absolute; z-index:100;
@@ -519,14 +513,14 @@ b.r3{margin: 0px}
 
 #upload_avatar_window #dragdrop_info{
     position:absolute; z-index:100;
-    left: 38px; top: 50px;
+    left: 48px; top: 50px;
     text-align:center; font-size:16pt; color:#999;
     width:230px; height:60px;
 }
 
 #upload_avatar_window #saveBtn {
     position: absolute;
-    left: 10px; top: 275px;
+    left: 10px; top: 290px;
     width: 80px; height: 27px;
     background: url(../images/ic_save_img.png);
 }
@@ -538,8 +532,8 @@ b.r3{margin: 0px}
 }
 
 #upload_avatar_window #upload_status{
-    position:absolute;left:40px;top:120px;width:300px; height:30px; padding-top:15px;
-    border:1px solid #999; background:white; z-index:101; color:#FF0000; text-align:center;
+    position:absolute;left:50px;top:170px;width:300px; height:20px; padding:15px; font-weight:bold;
+    border:1px solid #999; background:#FFF; z-index:110; color:#FF0000; text-align:center;
 }
 
 /* exFileUploader style control */
@@ -551,7 +545,7 @@ b.r3{margin: 0px}
 #upload_avatar_window #upload_btn_container .ex-uploader { width:300px; height:300px; }
 #upload_avatar_window #upload_btn_container .ex-upload-button {
     position:absolute; display:block; /* or inline-block */
-    top:140px; left:40px; z-index:100;
+    top:140px; left:50px; z-index:100;
     width: 216px; height:35px; text-align:center;font-size:0px;
     background:url(../images/ic_select_file_btn.png) no-repeat 0 0;;
 }
@@ -560,7 +554,7 @@ b.r3{margin: 0px}
 
 #upload_avatar_window #upload_btn_container .ex-upload-drop-area {
     position:absolute; top:0; left:0; display:block;
-    width:294px; height:294px; z-index:102; font-size:0px;
+    width:314px; height:314px; z-index:102; font-size:0px;
     border:3px dashed #999; text-align:center;
 }
 #upload_avatar_window #upload_btn_container .ex-upload-drop-area-active {border:3px dashed #999;}

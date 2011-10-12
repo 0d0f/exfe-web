@@ -72,8 +72,8 @@ class SActions extends ActionController {
         $img_info = array(
             "source_image"      =>$img_dir."300_300_".$img_name,
             "target_image"      =>$img_dir."80_80_".$img_name,
-            "width"             =>80,
-            "height"            =>80,
+            "width"             =>$img_width,
+            "height"            =>$img_height,
             "x"                 =>$img_x,
             "y"                 =>$img_y
         );
