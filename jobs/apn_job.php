@@ -1,6 +1,6 @@
 <?php
-require("../config.php");
-require("connect.php");
+require_once("../config.php");
+require_once("connect.php");
 
 class Apn_Job
 {
@@ -19,26 +19,9 @@ class Apn_Job
         $deviceToken = $this->args["identity"]["external_identity"];
         $badge=1;
         if($apn_connect=="")
-            $this->connect();
+            apn_connect();
+           // $this->connect();
         $this->send($deviceToken,$message,$sound,$badge,$args);
-    }
-    public function connect()
-    {
-        global $apn_connect;
-        print "init apn\r\n";
-
-        $ctx = stream_context_create();
-        stream_context_set_option($ctx, 'ssl', 'local_cert', 'apns-dev-exfe.pem');  
-        $apn_connect = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
-
-        if (!$apn_connect) {
-            print "Failed to connect $err $errstr\n";
-            return;
-        }
-        else {
-            $err=stream_set_blocking($apn_connect, 0); 
-            $err=stream_set_write_buffer($apn_connect, 0); 
-        }
     }
 
     public function send($deviceToken,$message,$sound,$badge,$args)
@@ -62,7 +45,8 @@ class Apn_Job
         var_dump($err);
         if($err==0)
         {
-            $this->connect();
+            apn_connect();
+            //$this->connect();
             $err=fwrite($apn_connect, $msg);
             if($err>0)
                 $connect_count["apn_connect"]=time();

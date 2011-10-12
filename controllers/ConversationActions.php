@@ -53,6 +53,15 @@ class ConversationActions extends ActionController {
                 $cross=$crossData->getCross($cross_id);
                 $mail["title"]=$cross["title"];
 
+                $identityData=$this->getModelByName("identity");
+                $exfee_identity=$identityData->getIdentityById($identity_id);
+                $exfee_identity=humanIdentity($exfee_identity,NULL);
+                $mail["exfee_name"]=$exfee_identity["name"];
+
+                $apnargs["exfee_name"]=$exfee_identity["name"];
+                $apnargs["comment"]=$comment;
+                $apnargs["cross_id"]=$cross_id;
+
 
 
                 $invitationData=$this->getModelByName("invitation");
@@ -67,25 +76,21 @@ class ConversationActions extends ActionController {
                         if(intval($identity["status"])==3)
                         {
                             $identity=humanIdentity($identity,NULL);
+                            $msghelper=$this->getHelperByName("msg");
                             if($identity["provider"]=="email")
                             {
                                 $mail["external_identity"]=$identity["external_identity"];
-                                $mail["exfee_name"]=$identity["name"];
-                                $mailhelper=$this->getHelperByName("mail");
-                                $mailhelper->sentTemplateEmail($mail);
+                                $msghelper->sentTemplateEmail($mail);
+                            }
+                            if($identity["provider"]=="iOSAPN")
+                            {
+                                $apnargs["external_identity"]=$identity["external_identity"];
+                                $msghelper->sentApnConversation($apnargs);
                             }
                         }
                     }
                 }
 
-                //$identityData=$this->getModelByName("identity");
-                //$identity=$identityData->getIdentityById($identity_id);
-
-                ////TODO: add more exfee email
-                //
-
-
-                //TODO: send push
 
                 if($r===false)
                 {
