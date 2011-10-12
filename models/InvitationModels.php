@@ -123,7 +123,7 @@ class InvitationModels extends DataModel{
                 if(intval($userid)>0)
                 {
                     //$sql="select identityId from user_identity where userid=$userid;";
-                    $sql="select b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
+                    $sql="select b.id identity_id,b.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
                     $identities=$this->getAll($sql);
                     $invitations[$i]["identities"]=$identities;
 

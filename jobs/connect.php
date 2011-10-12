@@ -24,3 +24,15 @@ function smtp_connect()
         $email_connect->SMTPKeepAlive = true;
     }
 }
+
+function cleanMailer()
+{
+        global $email_connect;
+        $email_connect->ClearAddresses();
+        $email_connect->ClearCCs();
+        $email_connect->ClearBCCs();
+        $email_connect->ClearReplyTos();
+        $email_connect->ClearAllRecipients();
+        $email_connect->ClearAttachments();
+        $email_connect->ClearCustomHeaders();
+}
