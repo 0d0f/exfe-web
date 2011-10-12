@@ -26,11 +26,9 @@
                 <p class="l"><a href="javascript:void(0);" id="close_upload_avatar_window_btn">Close Window</a></p>
                 <p class="r">Portrait</p>
             </div>
+            <div id="upload_status" style="display:none;"></div>
             <div id="container">
                 <div id="dragdrop_info">Drag and drop<br />your portrait here</div>
-                <!-- a id="selectBtn" href="javascript:void(0);" onclick="document.getElementById('avatar_files').click();"></a>
-                <input type="file" id="avatar_files" size="10" name="files[]" style="visibility:hidden;" / -->
-                <!-- a id="rotateRightBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.rotateImage(event);"></a -->
                 <div id="upload_btn_container"></div>
                 
                 <div id="wrapper">
@@ -43,9 +41,8 @@
                     <input type="hidden" id="y2" class="y2" name="y1" />
                     <input type="hidden" id="x2" class="x2" name="x1" />                         
 
-                    <span id="upload_status" style="display:none;"></span>
                     <div id="preview_container">
-                        <div id="preview" class="preview"></div>
+                        <div class="preview"><div id="preview"></div></div>
                         <span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>
                         <a id="saveBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>
                     </div>

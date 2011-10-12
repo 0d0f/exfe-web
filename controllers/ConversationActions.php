@@ -43,7 +43,7 @@ class ConversationActions extends ActionController {
                 $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
 
                 //base mail object
-                $link=$site_url.'/!'.int_to_base62($cross_id);
+                $link=SITE_URL.'/!'.int_to_base62($cross_id);
                 $mail["link"]=$link;
                 $mail["template_name"]="conversation";
                 $mail["action"]="post";
@@ -57,18 +57,23 @@ class ConversationActions extends ActionController {
 
                 $invitationData=$this->getModelByName("invitation");
                 $invitation_identities=$invitationData->getInvitation_Identities($cross_id);
+                if($invitation_identities)
                 foreach($invitation_identities as $invitation_identity)
                 {
                     $identities=$invitation_identity["identities"];
+                    if($identities)
                     foreach($identities as $identity)
                     {
                         if(intval($identity["status"])==3)
                         {
                             $identity=humanIdentity($identity,NULL);
-                            $mail["external_identity"]=$identity["external_identity"];
-                            $mail["exfee_name"]=$identity["name"];
-                            $mailhelper=$this->getHelperByName("mail");
-                            $mailhelper->sentTemplateEmail($mail);
+                            if($identity["provider"]=="email")
+                            {
+                                $mail["external_identity"]=$identity["external_identity"];
+                                $mail["exfee_name"]=$identity["name"];
+                                $mailhelper=$this->getHelperByName("mail");
+                                $mailhelper->sentTemplateEmail($mail);
+                            }
                         }
                     }
                 }
