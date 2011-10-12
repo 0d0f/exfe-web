@@ -32,6 +32,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#upload_files_process_status").show();
     };
     ns.fileUploadCompleteCallBack = function(id, fileName, responseJSON){
+        if(responseJSON.error){
+            window.location.href = site_url + "/s/profile";
+        }
+        
         jQuery("#upload_btn_container").hide();
         jQuery("#dragdrop_info").hide();
 
