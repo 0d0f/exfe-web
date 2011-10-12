@@ -42,6 +42,51 @@ class ConversationActions extends ActionController {
                 $logdata=$this->getModelByName("log");
                 $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
 
+                //base mail object
+                $link=SITE_URL.'/!'.int_to_base62($cross_id);
+                $mail["link"]=$link;
+                $mail["template_name"]="conversation";
+                $mail["action"]="post";
+                $mail["content"]=$comment;
+
+                $crossData=$this->getModelByName("x");
+                $cross=$crossData->getCross($cross_id);
+                $mail["title"]=$cross["title"];
+
+
+
+                $invitationData=$this->getModelByName("invitation");
+                $invitation_identities=$invitationData->getInvitation_Identities($cross_id);
+                if($invitation_identities)
+                foreach($invitation_identities as $invitation_identity)
+                {
+                    $identities=$invitation_identity["identities"];
+                    if($identities)
+                    foreach($identities as $identity)
+                    {
+                        if(intval($identity["status"])==3)
+                        {
+                            $identity=humanIdentity($identity,NULL);
+                            if($identity["provider"]=="email")
+                            {
+                                $mail["external_identity"]=$identity["external_identity"];
+                                $mail["exfee_name"]=$identity["name"];
+                                $mailhelper=$this->getHelperByName("mail");
+                                $mailhelper->sentTemplateEmail($mail);
+                            }
+                        }
+                    }
+                }
+
+                //$identityData=$this->getModelByName("identity");
+                //$identity=$identityData->getIdentityById($identity_id);
+
+                ////TODO: add more exfee email
+                //
+
+
+                //TODO: send push
+
                 if($r===false)
                 {
                     $responobj["response"]["success"]="false";
