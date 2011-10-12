@@ -540,7 +540,7 @@ b.r3{margin: 0px}
 #upload_avatar_window #upload_btn_container{
     position: absolute; z-index:100;
     left: 1px; top: 1px;
-    width:300px; height:300px;
+    width:320px; height:320px;
 }
 #upload_avatar_window #upload_btn_container .ex-uploader { width:300px; height:300px; }
 #upload_avatar_window #upload_btn_container .ex-upload-button {
@@ -563,7 +563,7 @@ b.r3{margin: 0px}
 }
 #upload_avatar_window #upload_btn_container .ex-upload-list {
     position:absolute; top:0; left:0; z-index:101;
-    width:300px; height:300px; background:#FFF;
+    width:318px; height:318px; background:#FFF;
     filter: alpha(opacity = 80); -moz-opacity: 0.8; opacity: 0.8;
 }
 #upload_avatar_window #upload_btn_container .ex-upload-list span{ padding-left:5px; }
