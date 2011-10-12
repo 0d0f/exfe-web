@@ -411,6 +411,11 @@ class IdentityModels extends DataModel{
 
             $sql="select status from identities where id=$identity_id;";
             $row=$this->getRow($sql);
+
+            if($status==STATUS_CONNECTED) {
+                $sql="update identities set status=$status where id=$identity_id;";
+                $this->query($sql);
+            }
             if (intval($row["status"]) == 2) { // if status is verifying, set identity activecode ,send active email ,
                 $sql="update identities set activecode='$token' where  id=$identity_id;";
                 $this->query($sql);
@@ -418,6 +423,7 @@ class IdentityModels extends DataModel{
                 $sql="update identities set status='2',activecode='$token' where  id=$identity_id;";
                 $this->query($sql);
             }
+           
         }
     }
 
