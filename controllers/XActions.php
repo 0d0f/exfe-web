@@ -112,14 +112,10 @@ class XActions extends ActionController {
         // exclude exfee identities that already in cross
         $invitM = $this->getModelByName('invitation');
         $idents = $invitM->getIdentitiesIdsByCrossIds(array($cross_id));
-        $invited = array();
-        foreach ($idents as $identI => $identItem) {
-            array_push($invited, $identItem['identity_id']);
-        }
 
         $exfees    = json_decode($_POST["exfee"], true);
         $ehelper   = $this->getHelperByName("exfee");
-        $newExfees = $ehelper->addExfeeIdentify($cross_id, $exfees, $invited);
+        $newExfees = $ehelper->addExfeeIdentify($cross_id, $exfees, $idents);
 
         $ehelper->sendIdentitiesInvitation($cross_id, $newExfees);
 
