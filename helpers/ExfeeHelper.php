@@ -51,6 +51,63 @@ class ExfeeHelper extends ActionController
         }
     }
 
+    public function sendIdentitiesInvitation($cross_id,$identity_list)
+    {
+
+        $invitationdata=$this->getModelByName("invitation");
+        $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
+
+        $crossData=$this->getModelByName("X");
+        $cross=$crossData->getCross($cross_id);
+        $place_id=$cross["place_id"];
+        if(intval($place_id)>0)
+        {
+            $placeData=$this->getModelByName("place");
+            $place=$placeData->getPlace($place_id);
+            $cross["place"]=$place;
+        }
+
+        require_once 'lib/Resque.php';
+        date_default_timezone_set('GMT');
+        Resque::setBackend(RESQUE_SERVER);
+        if($invitations)
+            foreach ($invitations as $invitation) {
+               $args = array(
+                        'title' => $cross["title"],
+                        'description' => $cross["description"],
+                        'begin_at' => $cross["begin_at"],
+                        'place_line1' => $cross["place"]["line1"],
+                        'place_line2' => $cross["place"]["line2"],
+                        'cross_id' => $cross_id,
+                        'cross_id_base62' => int_to_base62($cross_id),
+                        'invitation_id' => $invitation["invitation_id"],
+                        'token' => $invitation["token"],
+                        'identity_id' => $invitation["identity_id"],
+                        'provider' => $invitation["provider"],
+                        'external_identity' => $invitation["external_identity"],
+                        'name' => $invitation["name"],
+                        'avatar_file_name' => $invitation["avatar_file_name"]
+                );
+                $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+
+                $identities=$invitation["identities"];
+                if($identities)
+                {
+                    foreach ($identities as $identity)
+                    {
+                        if($identity["provider"]=="iOSAPN")
+                        {
+                            $args["identity"]=$identity;
+                            $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
+                        }
+
+                    }
+                }
+
+                //echo "Queued job ".$jobId."\n\n";
+            }
+    }
+
     public function sendInvitation($cross_id, $filter)
     {
         $invitationdata=$this->getModelByName("invitation");
@@ -68,7 +125,7 @@ class ExfeeHelper extends ActionController
 
         require 'lib/Resque.php';
         date_default_timezone_set('GMT');
-        Resque::setBackend('127.0.0.1:6379');
+        Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
                $args = array(
@@ -77,6 +134,7 @@ class ExfeeHelper extends ActionController
                         'begin_at' => $cross["begin_at"],
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
+                        'cross_id' => $cross_id,
                         'cross_id_base62' => int_to_base62($cross_id),
                         'invitation_id' => $invitation["invitation_id"],
                         'token' => $invitation["token"],

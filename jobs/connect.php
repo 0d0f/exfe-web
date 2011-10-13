@@ -36,3 +36,35 @@ function cleanMailer()
         $email_connect->ClearAttachments();
         $email_connect->ClearCustomHeaders();
 }
+
+function apn_connect()
+{
+    global $apn_connect;
+    print "init apn\r\n";
+
+    $ctx = stream_context_create();
+    stream_context_set_option($ctx, 'ssl', 'local_cert', 'apns-dev-exfe.pem');  
+    $apn_connect = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
+
+    if (!$apn_connect) {
+        print "Failed to connect $err $errstr\n";
+        return;
+    }
+    else {
+        $err=stream_set_blocking($apn_connect, 0); 
+        $err=stream_set_write_buffer($apn_connect, 0); 
+    }
+
+
+}
+function sendapn($deviceToken,$body)
+{
+    global $apn_connect;
+    var_dump($apn_connect);
+    $payload = json_encode($body);
+    $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
+    $err=fwrite($apn_connect, $msg);
+    return $err;
+}
+
+

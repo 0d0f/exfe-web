@@ -2,22 +2,20 @@
 require_once("../config.php");
 require_once("connect.php");
 
-class Apn_Job
+class Apnconversation_Job
 {
     public function perform()
     {
         global $apn_connect;
-        
-	    $title=$this->args['title'];
-	    $name=$this->args['name'];
-	    $cross_id=$this->args['cross_id'];
-	    if($this->args['name']=="")
-		    $name=$this->args['external_identity'];
-	    $message=$name." 邀请你参加活动 " .$title;
-        //$sound = $_GET['sound'] or $sound = $argv[3];
+        $name=$this->args['exfee_name'];
+        $comment=$this->args['comment'];
+        if(mb_strlen($comment)>100)
+            $comment=mb_substr($comment,0,100);
+        $message=$name.":".$comment;
         $sound ="default";
-        $args = array('cross_id'=>$cross_id);
-        $deviceToken = $this->args["identity"]["external_identity"];
+        $cross_id=$this->args["cross_id"];
+        $args = array('cross_id' => $cross_id);
+        $deviceToken = $this->args["external_identity"];
         $badge=1;
         if($apn_connect=="")
             apn_connect();

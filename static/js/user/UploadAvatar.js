@@ -32,6 +32,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#upload_files_process_status").show();
     };
     ns.fileUploadCompleteCallBack = function(id, fileName, responseJSON){
+        if(responseJSON.error){
+            window.location.href = site_url + "/s/profile";
+        }
+        
         jQuery("#upload_btn_container").hide();
         jQuery("#dragdrop_info").hide();
 
@@ -56,10 +60,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             minWidth:80,
             x1: 0,
             y1: 0,
-            x2: 80,
-            y2: 80,
+            x2: 300,
+            y2: 300,
             onSelectChange: ns.previewImages
         });
+        ns.previewImages(jQuery('#big'),{"width":300, "height":300});
     };
 
     ns.previewImages = function(img, selection) {

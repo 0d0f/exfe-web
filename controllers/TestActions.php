@@ -46,12 +46,12 @@ class TestActions extends ActionController {
     public function doTest()
     {
 
-        $mail=array();
-        $mail["title"]="mail title";
-        $this->getMail($mail);
 
-#        $invitationdata=$this->getModelByName("invitation");
-#        $invitations=$invitationdata->getInvitation_Identities(3);
+        $invitationdata=$this->getModelByName("invitation");
+        //$invitations=$invitationdata->getInvitation_Identities(3);
+
+        $identities=$invitationdata->getInvitation_Identities_ByIdentities(83, array(1,42,13));
+        print_r($identities);
 #
 #        $crossData=$this->getModelByName("X");
 #        $cross=$crossData->getCross(3);
@@ -82,7 +82,7 @@ class TestActions extends ActionController {
 #
 #        require 'lib/Resque.php';
 #        date_default_timezone_set('GMT');
-#        Resque::setBackend('127.0.0.1:6379');
+#        Resque::setBackend(RESQUE_SERVER);
 #
 #
 #        print $str;
