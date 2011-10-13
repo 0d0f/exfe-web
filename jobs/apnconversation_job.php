@@ -36,21 +36,14 @@ class Apnconversation_Job
           $body['aps']['sound'] = $sound;
         $body['args']=$args;
 
-        
-        // send message
-        $payload = json_encode($body);
-        $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
-        $err=fwrite($apn_connect, $msg);
-        var_dump($err);
+        $err=sendapn($deviceToken,$body);
         if($err==0)
         {
             apn_connect();
-            //$this->connect();
-            $err=fwrite($apn_connect, $msg);
+            $err=sendapn($deviceToken,$body);
             if($err>0)
                 $connect_count["apn_connect"]=time();
         }
-#        fclose($apn_connect);
     }
 }
 
