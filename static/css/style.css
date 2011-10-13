@@ -121,7 +121,7 @@ em.h3{font-size:24px;font-family:Verdana; }
 .Conversation .commenttext{margin:15px 0;height:60px}
 .Conversation .commenttext img{float:left;}
 .Conversation .commenttext .ctext{width:422px;height:42px;border:#afafaf 1px solid;float:right;font-size:12px;background:#fff;resize: none; z-index:-10}
-.Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:25px 0 0 434px; }
+.Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:15px 0 0 434px; }
 .commentlist {margin: 10px 0px;line-height: 130%;}
 .commentlist li {margin:20px 0;overflow:hidden;line-height:20px;}
 .comment {float:left;font-size:13px;width:360px;}
@@ -234,8 +234,8 @@ b.r3{margin: 0px}
 .createset ul li textarea#g_description{border:#c5c5c5 1px solid;background:#ffffff;width:480px; height:60px; }
 .createset ul li input#date{border:#c5c5c5 1px solid;background:#ffffff;width:185px;height:20px;}
 .createset ul li textarea#g_place{border:#c5c5c5 1px solid;background:#ffffff;width:163px;height:80px;}
-.createset ul li textarea#exfee{border:#c5c5c5 1px solid;background:#ffffff;width:250px; height:20px; }
-.createset ul li #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:3px 0 0 234px; }
+.createset ul li textarea#exfee{border:#c5c5c5 1px solid;background:#ffffff;width:250px; height:25px; }
+.createset ul li #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:1px 0 0 226px; }
 .createset ul li p.redbtn{height:25px;background:url(/static/images/btn.png) no-repeat left -500px; float:right; padding:3px 0 0 20px; margin:6px 38px 0 0; color:#fc6306}
 .createset ul li label{width:105px;height:25px; margin:0 8px 0 0; line-height:25px;float:left;text-align:right;background:url(/static/images/icons.png) no-repeat;padding-right:30px;color:#020202;font-size:14px;}
 .createset ul li .title{background-position:right -475px;}

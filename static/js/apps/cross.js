@@ -25,9 +25,18 @@ $(document).ready(function() {
 
     $('#rsvp_status').html(arrRvsp[myrsvp]);
 
+    $('textarea[name=comment]').focus();
+
     $('textarea[name=comment]').keydown(function(e) {
-        if (e.keyCode === 13 && !e.shiftKey) {
-            $('#formconversation').submit();
+        switch (e.keyCode) {
+            case 9:
+                $('#post_submit').focus();
+                e.preventDefault();
+                break;
+            case 13:
+                if (!e.shiftKey) {
+                    $('#formconversation').submit();
+                }
         }
     });
 

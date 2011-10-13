@@ -11,6 +11,13 @@ class ExfeeHelper extends ActionController
 
         $curExfees = array();
         $newExfees = array();
+        $inviteIds = array();
+
+        if (is_array($invited)) {
+            foreach ($invited as $identItem) {
+                $inviteIds[$identItem['identity_id']] = $identItem;
+            }
+        }
 
         //TODO: package as a transaction
         foreach ($exfee_list as $exfeeI => $exfeeItem) {
@@ -32,10 +39,11 @@ class ExfeeHelper extends ActionController
 
             // update rsvp status
             if (is_array($invited)) {
-                if (in_array($identity_id, $invited)) {
-                    // @todo: just needed to save diff only!!!
-                    $invitationData->rsvp($cross_id, $identity_id, $confirmed);
-                    $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                if (isset($inviteIds[$identity_id])) {
+                    if ($inviteIds[$identity_id]['state'] !== $confirmed) {
+                        $invitationData->rsvp($cross_id, $identity_id, $confirmed);
+                        $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                    }
                     continue;
                 }
                 array_push($newExfees, $identity_id);
@@ -47,7 +55,7 @@ class ExfeeHelper extends ActionController
         }
 
         if (is_array($invited)) {
-            foreach ($invited as $identity_id) {
+            foreach ($inviteIds as $identity_id => $identity_item) {
                 if (!in_array($identity_id, $curExfees)) {
                     $invitationData->delInvitation($cross_id, $identity_id);
                     $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
