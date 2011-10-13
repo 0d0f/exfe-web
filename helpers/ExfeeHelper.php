@@ -174,7 +174,6 @@ class ExfeeHelper extends ActionController
     }
     public function sendConversationMsg($cross_id,$host_identity_id,$content)
     {
-
                 $mailargs=array();
                 $apnargs=array();
 
@@ -197,8 +196,8 @@ class ExfeeHelper extends ActionController
                 $apnargs["comment"]=$content;
                 $apnargs["cross_id"]=$cross_id;
 
-                $invitationData=$this->getModelByName("invitation");
-                $invitation_identities=$invitationData->getInvitation_Identities($cross_id);
+                $invitationdata=$this->getmodelbyname("invitation");
+                $invitation_identities=$invitationdata->getinvitation_identities($cross_id);
                 if($invitation_identities)
                 foreach($invitation_identities as $invitation_identity)
                 {
@@ -208,18 +207,18 @@ class ExfeeHelper extends ActionController
                     {
                         if(intval($identity["status"])==3)
                         {
-                            $identity=humanIdentity($identity,NULL);
-                            $msghelper=$this->getHelperByName("msg");
+                            $identity=humanidentity($identity,null);
+                            $msghelper=$this->gethelperbyname("msg");
                             if($identity["provider"]=="email")
                             {
                                 $mail["external_identity"]=$identity["external_identity"];
                                 $mail["provider"]=$identity["provider"];
-                                $msghelper->sentTemplateEmail($mail);
+                                $msghelper->senttemplateemail($mail);
                             }
-                            if($identity["provider"]=="iOSAPN")
+                            if($identity["provider"]=="iosapn")
                             {
                                 $apnargs["external_identity"]=$identity["external_identity"];
-                                $msghelper->sentApnConversation($apnargs);
+                                $msghelper->sentapnconversation($apnargs);
                             }
                             else
                             {
