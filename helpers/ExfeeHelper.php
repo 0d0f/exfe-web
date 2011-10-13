@@ -10,6 +10,7 @@ class ExfeeHelper extends ActionController
         $logData        = $this->getModelByName('log');
 
         $curExfees = array();
+        $newExfees = array();
 
         //TODO: package as a transaction
         foreach ($exfee_list as $exfeeI => $exfeeItem) {
@@ -30,10 +31,14 @@ class ExfeeHelper extends ActionController
             array_push($curExfees, $identity_id);
 
             // update rsvp status
-            if (is_array($invited) && in_array($identity_id, $invited)) {
-                $invitationData->rsvp($cross_id, $identity_id, $confirmed);
-                $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
-                continue;
+            if (is_array($invited)) {
+                if (in_array($identity_id, $invited)) {
+                    // @todo: just needed to save diff only!!!
+                    $invitationData->rsvp($cross_id, $identity_id, $confirmed);
+                    $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                    continue;
+                }
+                array_push($newExfees, $identity_id);
             }
 
             // add invitation
@@ -48,6 +53,10 @@ class ExfeeHelper extends ActionController
                     $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
                 }
             }
+        }
+
+        if (is_array($invited)) {
+            return $newExfees;
         }
     }
 
@@ -162,6 +171,62 @@ class ExfeeHelper extends ActionController
 
                 //echo "Queued job ".$jobId."\n\n";
             }
+    }
+    public function sendConversationMsg($cross_id,$host_identity_id,$content)
+    {
+
+                $mailargs=array();
+                $apnargs=array();
+
+                $link=SITE_URL.'/!'.int_to_base62($cross_id);
+                $mail["link"]=$link;
+                $mail["template_name"]="conversation";
+                $mail["action"]="post";
+                $mail["content"]=$content;
+
+                $crossData=$this->getModelByName("x");
+                $cross=$crossData->getCross($cross_id);
+                $mail["title"]=$cross["title"];
+
+                $identityData=$this->getModelByName("identity");
+                $exfee_identity=$identityData->getIdentityById($host_identity_id);
+                $exfee_identity=humanIdentity($exfee_identity,NULL);
+                $mail["exfee_name"]=$exfee_identity["name"];
+
+                $apnargs["exfee_name"]=$exfee_identity["name"];
+                $apnargs["comment"]=$content;
+                $apnargs["cross_id"]=$cross_id;
+
+                $invitationData=$this->getModelByName("invitation");
+                $invitation_identities=$invitationData->getInvitation_Identities($cross_id);
+                if($invitation_identities)
+                foreach($invitation_identities as $invitation_identity)
+                {
+                    $identities=$invitation_identity["identities"];
+                    if($identities)
+                    foreach($identities as $identity)
+                    {
+                        if(intval($identity["status"])==3)
+                        {
+                            $identity=humanIdentity($identity,NULL);
+                            $msghelper=$this->getHelperByName("msg");
+                            if($identity["provider"]=="email")
+                            {
+                                $mail["external_identity"]=$identity["external_identity"];
+                                $mail["provider"]=$identity["provider"];
+                                $msghelper->sentTemplateEmail($mail);
+                            }
+                            if($identity["provider"]=="iOSAPN")
+                            {
+                                $apnargs["external_identity"]=$identity["external_identity"];
+                                $msghelper->sentApnConversation($apnargs);
+                            }
+                            else
+                            {
+                            }
+                        }
+                    }
+                }
     }
 
 }
