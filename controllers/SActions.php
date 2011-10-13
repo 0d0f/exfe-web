@@ -345,7 +345,7 @@ class SActions extends ActionController {
         }
         // Get recently logs
         $logdata = $this->getModelByName('log');
-        $rawLogs = $logdata->getRecentlyLogsByCrossIds($allCrossId);
+        $rawLogs = $logdata->getRecentlyLogsByCrossIds($allCrossId, 'gather');
         // Get confirmed informations
         $crossIds = array();
         foreach ($crosses as $crossI => $crossItem) {
@@ -364,7 +364,7 @@ class SActions extends ActionController {
             if ($logItem['action'] === 'exfee') {
                 switch ($logItem['to_field']) {
                     case 'rsvp':
-                        $rawLogs[$logI]['change_summy'] = explore(':', $logItem['change_summy']);
+                        $rawLogs[$logI]['change_summy'] = explode(':', $logItem['change_summy']);
                         $changeId = $rawLogs[$logI]['change_summy'][0];
                         break;
                     case 'addexfee':
@@ -415,23 +415,42 @@ class SActions extends ActionController {
             $logItem['from_name'] = $hmIdent[$logItem['from_id']];
             if ($logItem['action'] === 'conversation') {
             } else if ($logItem['action'] === 'change') {
-
-            } else if ($logItem['action'] === 'exfee') {
-                if ($logItem['to_field'] === 'rsvp') {
-                    $logItem['change_summy'] = explode(':', $logItem['change_summy']);
-                    $changeId = $logItem['change_summy'][0];
-                } else if ($logItem['to_field'] === 'addexfe' || $logItem['to_field'] === 'delexfe') {
-                    $changeId = $logItem['change_summy'];
+                // merge the same field changes
+                if (!isset($crossChange[$logItem['to_id']])) {
+                    $crossChange[$logItem['to_id']] = array();
                 }
-                $logItem['from_name'] = $hmIdent[$logItem['from_id']];
+                if (isset($crossChange[$logItem['to_id']][$logItem['to_field']])) {
+                    continue;
+                }
+                $crossChange[$logItem['to_id']][$logItem['to_field']] = true;
+            } else if ($logItem['action'] === 'rsvp' || $logItem['action'] === 'exfee') {
+                switch ($logItem['to_field']) {
+                    case '':
+                        $changeId = $logItem['from_id'];
+                        break;
+                    case 'rsvp':
+                        $changeId = $logItem['change_summy'][0];
+                        break;
+                    case 'addexfe':
+                    case 'delexfe':
+                        $changeId = $logItem['change_summy'];
+                }
                 if (isset($exfeeChange[$changeId])) {
                     continue;
                 }
                 $exfeeChange[$changeId] = true;
+                $logItem['to_name'] = $hmIdent[$changeId];
+            } else {
+                continue;
             }
             array_push($logs[$logItem['to_id']]['activity'], $logItem);
         }
-        print_r($logs);
+        foreach ($logs as $logI => $logItem) {
+            if (!$logItem['activity']) {
+                unset($logs[$logI]);
+            }
+        }
+        $this->setVar('logs', $logs);
         // Get new invitations
         $idents = array();
         foreach ($identities as $identI => $identItem) {

@@ -12,15 +12,16 @@ class LogModels extends DataModel{
         $change_summy=mysql_real_escape_string($change_summy);
         $meta=mysql_real_escape_string($meta);
 
-        $sql="insert into logs (from_obj, from_id, action, to_obj, to_id, to_field, change_summy, meta) values ('$from_obj',$from_id,'$action','$to_obj',$to_id,'$to_field','$change_summy','$meta');";
+        $sql="insert into logs (from_obj, from_id, action, to_obj, to_id, to_field, change_summy, meta, time) values ('$from_obj',$from_id,'$action','$to_obj',$to_id,'$to_field','$change_summy','$meta', NOW());";
         $this->query($sql);
     }
 
-    public function getRecentlyLogsByCrossIds($cross_ids, $limit = 20)
+    public function getRecentlyLogsByCrossIds($cross_ids, $excludeAct = '', $limit = 20)
     {
         if ($cross_ids) {
-            $cross_ids = implode(' OR `to_id` = ', $cross_ids);
-            $sql       = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) ORDER BY `time` DESC LIMIT {$limit};";
+            $cross_ids  = implode(' OR `to_id` = ', $cross_ids);
+            $excludeAct = $excludeAct ? " AND `action` <> '{$excludeAct}'" : '';
+            $sql        = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}){$excludeAct} ORDER BY `time` DESC LIMIT {$limit};";
             return $this->getAll($sql);
         } else {
             return array();
