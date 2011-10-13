@@ -34,8 +34,7 @@ class XActions extends ActionController {
 
             $helper=$this->getHelperByName("exfee");
             $helper->addExfeeIdentify($cross_id, json_decode($_POST["exfee_list"], true));
-         // $helper->sendInvitation($cross_id, $identity_id);
-         // @todo: fix invitation feature
+            $helper->sendInvitation($cross_id, $identity_id);
 
             // remove draft
             $XDraft = $this->getModelByName('XDraft');
