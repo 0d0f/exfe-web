@@ -6,7 +6,7 @@ class IdentityHelper extends ActionController
     {
             require 'lib/Resque.php';
             date_default_timezone_set('GMT');
-            Resque::setBackend('127.0.0.1:6379');
+            Resque::setBackend(RESQUE_SERVER);
             $jobId = Resque::enqueue("activecode","emailactivecode_job" , $args, true);
             return $jobId;
     }

@@ -80,6 +80,7 @@ class ConversationActions extends ActionController {
                             if($identity["provider"]=="email")
                             {
                                 $mail["external_identity"]=$identity["external_identity"];
+                                $mail["provider"]=$identity["provider"];
                                 $msghelper->sentTemplateEmail($mail);
                             }
                             if($identity["provider"]=="iOSAPN")

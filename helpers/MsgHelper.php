@@ -5,8 +5,8 @@ class MsgHelper extends ActionController
     {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
-            Resque::setBackend('127.0.0.1:6379');
-            $jobId = Resque::enqueue("templatemail","templatemail_job" , $mail, true);
+            Resque::setBackend(RESQUE_SERVER);
+            $jobId = Resque::enqueue($mail["provider"],"templatemail_job" , $mail, true);
             return $jobId;
     }
 
@@ -15,7 +15,7 @@ class MsgHelper extends ActionController
     {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
-            Resque::setBackend('127.0.0.1:6379');
+            Resque::setBackend(RESQUE_SERVER);
             $jobId = Resque::enqueue("iOSAPN","apnconversation_job" , $args, true);
             return $jobId;
     }

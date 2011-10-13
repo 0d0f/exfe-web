@@ -69,7 +69,7 @@ class ExfeeHelper extends ActionController
 
         require_once 'lib/Resque.php';
         date_default_timezone_set('GMT');
-        Resque::setBackend('127.0.0.1:6379');
+        Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
                $args = array(
@@ -78,6 +78,7 @@ class ExfeeHelper extends ActionController
                         'begin_at' => $cross["begin_at"],
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
+                        'cross_id' => $cross_id,
                         'cross_id_base62' => int_to_base62($cross_id),
                         'invitation_id' => $invitation["invitation_id"],
                         'token' => $invitation["token"],
@@ -124,7 +125,7 @@ class ExfeeHelper extends ActionController
 
         require 'lib/Resque.php';
         date_default_timezone_set('GMT');
-        Resque::setBackend('127.0.0.1:6379');
+        Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
                $args = array(
@@ -133,6 +134,7 @@ class ExfeeHelper extends ActionController
                         'begin_at' => $cross["begin_at"],
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
+                        'cross_id' => $cross_id,
                         'cross_id_base62' => int_to_base62($cross_id),
                         'invitation_id' => $invitation["invitation_id"],
                         'token' => $invitation["token"],

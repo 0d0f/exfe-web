@@ -10,12 +10,13 @@ class Apn_Job
         
 	    $title=$this->args['title'];
 	    $name=$this->args['name'];
+	    $cross_id=$this->args['cross_id'];
 	    if($this->args['name']=="")
 		    $name=$this->args['external_identity'];
 	    $message=$name." 邀请你参加活动 " .$title;
         //$sound = $_GET['sound'] or $sound = $argv[3];
         $sound ="default";
-        $args = array('t' => 'i','eid'=>'85');
+        $args = array('cross_id'=>$cross_id);
         $deviceToken = $this->args["identity"]["external_identity"];
         $badge=1;
         if($apn_connect=="")
