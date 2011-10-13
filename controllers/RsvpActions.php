@@ -32,13 +32,16 @@ class RSVPActions extends ActionController {
         $cross_id=$_POST["cross_id"];
         //if(isset($identity) && isset($password))
         //{
-        if($rsvp=="yes")
-            $state=INVITATION_YES;
-        if($rsvp=="no")
-            $state=INVITATION_NO;
-        if($rsvp=="maybe")
-            $state=INVITATION_MAYBE;
-
+        switch ($rsvp) {
+            case 'yes':
+                $state = INVITATION_YES;
+                break;
+            case 'no':
+                $state = INVITATION_NO;
+                break;
+            case 'maybe':
+                $state = INVITATION_MAYBE;
+        }
         $responobj["meta"]["code"]=200;
 
         $checkhelper=$this->getHelperByName("check");
@@ -57,7 +60,7 @@ class RSVPActions extends ActionController {
                 $r=$invitationData->rsvp($cross_id,$identity_id,$state);
 
                 $logdata=$this->getModelByName("log");
-                $logdata->addLog("identity",$identity_id,"rsvp","cross",$cross_id,"",$rsvp,"");
+                $logdata->addLog('identity', $identity_id, 'rsvp', 'cross', $cross_id, '', $state);
 
                 if($r===true)
                     $responobj["response"]["success"]="true";
@@ -83,7 +86,6 @@ class RSVPActions extends ActionController {
         $token=$_GET["token"];
 
         $identity_id=$this->checkallow($cross_id,$token);
-
 
         if(intval($identity_id)>0)
         {

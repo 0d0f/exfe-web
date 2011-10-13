@@ -1,7 +1,7 @@
 <?php
 class XModels extends DataModel {
 
-    public function gatherCross($identityId,$cross)
+    public function gatherCross($identityId, $cross)
     {
         // gather a empty cross, state=draft
         // state=1 draft
@@ -35,7 +35,7 @@ class XModels extends DataModel {
         return $result;
     }
 
-    public function getCrossByUserId($userid,$updated_since=0)
+    public function getCrossByUserId($userid, $updated_since=0)
     {
         //get all identityid
         $sql="select identityid from user_identity where userid=$userid ;";
@@ -60,7 +60,8 @@ class XModels extends DataModel {
                 $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
             }
             $str=implode(" or ",$cross_id_list);
-            $sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at desc;";
+            //$sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at desc;";
+            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) ORDER BY created_at DESC;";
             $crosses=$this->getAll($sql);
             return $crosses;
         }
@@ -69,7 +70,8 @@ class XModels extends DataModel {
         //now, if a cross related with you, you must have a invitation.
     }
 
-    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20)
+
+    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20, $actions='')
     {
         // Get user identities
         $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
@@ -83,6 +85,11 @@ class XModels extends DataModel {
         $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
         $cross_id_list = $this->getColumn($sql);
 
+        //if just get corss number.
+        if($actions == 'count'){
+            return count($cross_id_list);
+        }
+
         // Get crosses
         if (!sizeof($cross_id_list)) {
             return array();
@@ -93,17 +100,24 @@ class XModels extends DataModel {
         $str     = implode(' or ', $cross_id_list);
         switch ($opening) {
             case 'yes':
-                $strTime = " and begin_at >= FROM_UNIXTIME({$begin_at})";
+                $strTime = "AND begin_at >= FROM_UNIXTIME({$begin_at})";
                 break;
             case 'no':
-                $strTime = " and begin_at <  FROM_UNIXTIME({$begin_at})";
+                $strTime = "AND begin_at <  FROM_UNIXTIME({$begin_at})";
                 break;
             default:
                 $strTime = '';
         }
-        $sql     = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+        $order_by = $order_by ? "ORDER BY {$order_by}" : '';
+        $limit    = $limit    ? "LIMIT {$limit}"       : '';
+
+        if($actions == 'simple'){
+            $sql = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} {$order_by} {$limit};";
+        }else{
+            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
+        }
         $crosses = $this->getAll($sql);
+
         return $crosses;
     }
-
 }

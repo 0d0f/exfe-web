@@ -34,7 +34,7 @@ class XActions extends ActionController {
 
             $helper=$this->getHelperByName("exfee");
             $helper->addExfeeIdentify($cross_id, json_decode($_POST["exfee_list"], true));
-            $helper->sendInvitation($cross_id,$identity_id);
+            $helper->sendInvitation($cross_id, $identity_id);
 
             // remove draft
             $XDraft = $this->getModelByName('XDraft');
@@ -74,8 +74,6 @@ class XActions extends ActionController {
     {
         $crossDataObj = $this->getDataModel("x");
 
-
-
         $identity_id = $_SESSION['identity_id'];
         $cross_id = base62_to_int($_GET["id"]);
         $old_cross=$crossDataObj->getCross($cross_id);
@@ -91,11 +89,11 @@ class XActions extends ActionController {
         }
 
         $cross = array(
-                "id"            =>$cross_id,
-                "title"         =>mysql_real_escape_string($_POST["ctitle"]),
-                "desc"          =>mysql_real_escape_string($_POST["cdesc"]),
-                "start_time"    =>$_POST["ctime"],
-                "identity_id"   =>$identity_id
+                "id"          => $cross_id,
+                "title"       => mysql_real_escape_string($_POST["ctitle"]),
+                "desc"        => mysql_real_escape_string($_POST["cdesc"]),
+                "start_time"  => $_POST['ctime'],
+                "identity_id" => $identity_id
         );
 
         $result = $crossDataObj->updateCross($cross);
@@ -109,7 +107,7 @@ class XActions extends ActionController {
         }
 
         $xhelper=$this->getHelperByName("x");
-        $xhelper->addCrossDiffLog($identity_id,$old_cross, $cross);
+        $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
 
         // exclude exfee identities that already in cross
         $invitM = $this->getModelByName('invitation');
@@ -119,11 +117,11 @@ class XActions extends ActionController {
             array_push($invited, $identItem['identity_id']);
         }
 
-        $exfees=json_decode($_POST["exfee"], true);
-        $ehelper=$this->getHelperByName("exfee");
-        $ehelper->addExfeeIdentify($cross_id, $exfees, $invited);
+        $exfees    = json_decode($_POST["exfee"], true);
+        $ehelper   = $this->getHelperByName("exfee");
+        $newExfees = $ehelper->addExfeeIdentify($cross_id, $exfees, $invited);
 
-        $ehelper->sendInvitation($cross_id, $invited);
+        $ehelper->sendIdentitiesInvitation($cross_id, $newExfees);
 
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($return_data);
