@@ -42,55 +42,8 @@ class ConversationActions extends ActionController {
                 $logdata=$this->getModelByName("log");
                 $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
 
-                //base mail object
-                $link=SITE_URL.'/!'.int_to_base62($cross_id);
-                $mail["link"]=$link;
-                $mail["template_name"]="conversation";
-                $mail["action"]="post";
-                $mail["content"]=$comment;
-
-                $crossData=$this->getModelByName("x");
-                $cross=$crossData->getCross($cross_id);
-                $mail["title"]=$cross["title"];
-
-                $identityData=$this->getModelByName("identity");
-                $exfee_identity=$identityData->getIdentityById($identity_id);
-                $exfee_identity=humanIdentity($exfee_identity,NULL);
-                $mail["exfee_name"]=$exfee_identity["name"];
-
-                $apnargs["exfee_name"]=$exfee_identity["name"];
-                $apnargs["comment"]=$comment;
-                $apnargs["cross_id"]=$cross_id;
-
-
-
-                $invitationData=$this->getModelByName("invitation");
-                $invitation_identities=$invitationData->getInvitation_Identities($cross_id);
-                if($invitation_identities)
-                foreach($invitation_identities as $invitation_identity)
-                {
-                    $identities=$invitation_identity["identities"];
-                    if($identities)
-                    foreach($identities as $identity)
-                    {
-                        if(intval($identity["status"])==3)
-                        {
-                            $identity=humanIdentity($identity,NULL);
-                            $msghelper=$this->getHelperByName("msg");
-                            if($identity["provider"]=="email")
-                            {
-                                $mail["external_identity"]=$identity["external_identity"];
-                                $mail["provider"]=$identity["provider"];
-                                $msghelper->sentTemplateEmail($mail);
-                            }
-                            if($identity["provider"]=="iOSAPN")
-                            {
-                                $apnargs["external_identity"]=$identity["external_identity"];
-                                $msghelper->sentApnConversation($apnargs);
-                            }
-                        }
-                    }
-                }
+                $exfeehelper=$this->getHelperByName("exfee");
+                $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
 
 
                 if($r===false)
