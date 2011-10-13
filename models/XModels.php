@@ -70,6 +70,7 @@ class XModels extends DataModel {
         //now, if a cross related with you, you must have a invitation.
     }
 
+
     public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20, $actions='')
     {
         // Get user identities
@@ -87,7 +88,7 @@ class XModels extends DataModel {
         //if just get corss number.
         if($actions == 'count'){
             return count($cross_id_list);
-        } 
+        }
 
         // Get crosses
         if (!sizeof($cross_id_list)) {
@@ -107,19 +108,16 @@ class XModels extends DataModel {
             default:
                 $strTime = '';
         }
-<<<<<<< HEAD
+        $order_by = $order_by ? "ORDER BY {$order_by}" : '';
+        $limit    = $limit    ? "LIMIT {$limit}"       : '';
+
         if($actions == 'simple'){
-            $sql = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+            $sql = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         }else{
-            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} ORDER BY {$order_by} LIMIT {$limit};";
+            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         }
         $crosses = $this->getAll($sql);
-=======
-        $order_by = $order_by ? " ORDER BY {$order_by}" : '';
-        $limit    = $limit    ? " LIMIT {$limit}"       : '';
-        $sql      = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime}{$order_by}{$limit};";
-        $crosses  = $this->getAll($sql);
->>>>>>> 3b1a99a9a316a336482e8f59527a4efc1859808b
+
         return $crosses;
     }
 }
