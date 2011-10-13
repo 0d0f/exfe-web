@@ -1,7 +1,7 @@
 <?php
 class XModels extends DataModel {
 
-    public function gatherCross($identityId,$cross)
+    public function gatherCross($identityId, $cross)
     {
         // gather a empty cross, state=draft
         // state=1 draft
@@ -35,7 +35,7 @@ class XModels extends DataModel {
         return $result;
     }
 
-    public function getCrossByUserId($userid,$updated_since=0)
+    public function getCrossByUserId($userid, $updated_since=0)
     {
         //get all identityid
         $sql="select identityid from user_identity where userid=$userid ;";
@@ -107,12 +107,19 @@ class XModels extends DataModel {
             default:
                 $strTime = '';
         }
+<<<<<<< HEAD
         if($actions == 'simple'){
             $sql = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} ORDER BY {$order_by} LIMIT {$limit};";
         }else{
             $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} ORDER BY {$order_by} LIMIT {$limit};";
         }
         $crosses = $this->getAll($sql);
+=======
+        $order_by = $order_by ? " ORDER BY {$order_by}" : '';
+        $limit    = $limit    ? " LIMIT {$limit}"       : '';
+        $sql      = "SELECT c.*, places.place_line1, places.place_line2 FROM crosses c,places WHERE ({$str}) AND c.place_id = places.id{$strTime}{$order_by}{$limit};";
+        $crosses  = $this->getAll($sql);
+>>>>>>> 3b1a99a9a316a336482e8f59527a4efc1859808b
         return $crosses;
     }
 }

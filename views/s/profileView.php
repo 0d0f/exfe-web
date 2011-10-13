@@ -11,6 +11,7 @@
     $user       = $this->getVar('user');
     $crosses    = $this->getVar('crosses');
     $newInvt    = $this->getVar('newInvt');
+    $logs       = $this->getVar('logs');
     if ($user["avatar_file_name"]=="")
         $user["avatar_file_name"]="default.png";
 ?>
@@ -30,16 +31,16 @@
             <div id="container">
                 <div id="dragdrop_info">Drag and drop<br />your portrait here</div>
                 <div id="upload_btn_container"></div>
-                
+
                 <div id="wrapper">
                 	<div id="div_upload_big"></div>
-                    <input type="hidden" name="img_src" id="img_src" class="img_src" value="" /> 
+                    <input type="hidden" name="img_src" id="img_src" class="img_src" value="" />
                     <input type="hidden" name="height" id="height" class="height" value="0" />
                     <input type="hidden" name="width" id="width" class="width" value="0" />
                     <input type="hidden" id="y1" class="y1" name="y" />
                     <input type="hidden" id="x1" class="x1" name="x" />
                     <input type="hidden" id="y2" class="y2" name="y1" />
-                    <input type="hidden" id="x2" class="x2" name="x1" />                         
+                    <input type="hidden" id="x2" class="x2" name="x1" />
 
                     <div id="preview_container">
                         <div class="preview"><div id="preview"></div></div>
@@ -55,7 +56,7 @@
         <h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>
         <?php foreach($identities as $identity) {
             $identity=humanIdentity($identity,NULL);
-            if($identity["name"]==$identity["external_identity"])  
+            if($identity["name"]==$identity["external_identity"])
                 $identity["name"]="";
             if($identity["status"]!=3)
             {
@@ -65,14 +66,14 @@
                     $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
             ?>
             <p><img class="s_header" src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status;?> <?php echo $button?></i></p>
-            <?php 
+            <?php
             }
             else
             {
             ?>
             <p><img class="s_header" src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> </p>
-            <?php 
-            } 
+            <?php
+            }
         }
         ?>
         <!--p><img class="s_header" src="/static/images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p-->
@@ -128,8 +129,8 @@
 </div>
 <div class="right">
 <?php
-    $strInvt = $newInvt ? '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>' : '';
-    if($newInvt)
+    if ($newInvt) {
+        $strInvt  = '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>';
         foreach ($newInvt as $newInvtI => $newInvtItem) {
             $xid62 = int_to_base62($newInvtItem['cross']['id']);
             $strInvt .= '<dl class="bnone">'
@@ -138,34 +139,69 @@
                       .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"
                       . '</dl>';
         }
-    $strInvt .= $newInvt ? '</div><div class="shadow_310"></div>' : '';
-    echo $strInvt;
+        $strInvt .= '</div><div class="shadow_310"></div>';
+        echo $strInvt;
+    }
+
+    if ($logs) {
+        $strLogs = '<div class="Recently_updates"><div class="p_right"><img class="update" src="/static/images/translation.gif"/><a href="#">Recently updates</a></div>';
+        foreach ($logs as $logItem) {
+            $xid62    = int_to_base62($logItem['id']);
+            $strLogs .= '<a class="cross_link" href="/!' . int_to_base62($crossItem['id']) . '"><div class="redate">'
+                      . "<h5>{$logItem['title']}</h5>"
+                      . '<div class="maringbt">';
+
+            foreach ($logItem['activity'] as $actItem) {
+                switch ($actItem['action']) {
+                    case 'conversation':
+                        $strLogs .= "<p><span>{$actItem['from_name']['name']}</span>: {$actItem['change_summy']}</p>";
+                        break;
+                    case 'change':
+                        switch ($actItem['to_field']) {
+                            case 'title':
+                                $strLogs .= "<p>Title: <span>{$actItem['change_summy']}</span></p>";
+                                break;
+                            case 'description':
+                                $strLogs .= "<p>Description: <span>{$actItem['change_summy']}</span></p>";
+                                break;
+                            case 'begin_at':
+                                $strLogs .= "<p class=\"clock\"><span>{$actItem['change_summy']}</span></p>";
+                                break;
+                            // @todo: add location support // class="on_line"
+                        }
+                        break;
+                    case 'rsvp':
+                    case 'exfee':
+                        $intActv = -1;
+                        switch ($actItem['to_field']) {
+                            case '':
+                                $to_name = $actItem['from_name']['name'];
+                                $intActv = $actItem['change_summy'];
+                            case 'rsvp':
+                                $to_name = $changeId ?: $actItem['to_name']['name'];
+                                $intActv = $intActv === -1 ? $actItem['change_summy'][1] : $actItem['change_summy'][0];
+                                switch ($intActv) {
+                                    case '0':
+                                        $strLogs .= "<p><span>{$actItem['to_name']['name']}</span> well be absent</p>";
+                                    case '1':
+                                        $strLogs .= "<p><span>{$to_name}</span> confirmed</p>";
+                                }
+                                break;
+                            case 'addexfe':
+                                $strLogs .= "<p><span>{$actItem['to_name']['name']}</span> joined</p>";
+                                break;
+                            case 'delexfe':
+                                $strLogs .= "<p><span>{$actItem['to_name']['name']}</span> leaved</p>";
+                        }
+                }
+            }
+            $strLogs .='</div></div></a>';
+        }
+        $strLogs .= '<div class="more"><a href="">more…</a></div></div><div class="shadow_310"></div>';
+        echo $strLogs;
+    }
 ?>
-<div class="Recently_updates">
-<div class="p_right"><img class="update" src="/static/images/translation.gif"/><a href="#">Recently updates</a></div>
-<div class="redate">
-<h5>Dinner in SF</h5>
-<div class="maringbt">
-<p><span>dm</span>: My only missing food in US, dudes ! yummy!^</p>
-</div>
-</div>
-<div class="redate">
-<h5>Ferry famers Market</h5>
-<div class="maringbt">
-<p><span>6</span> confirmed: <span>Gokeep, DuanMu, Arthur369, Virushuo</span>…</p>
-<p><span>Virushuo:</span> Lorem ipsum dolor sit amet, ligula suspendi...</p>
-</div>
-</div>
-<div class="redate">
-<h5>0d0f team meeting 1 day</h5>
-<div class="maringbt">
-<p class="clock"><span>11:30PM Saturday</span>, April 9</p>
-<p class="on_line"><span>Online</span></p>
-</div>
-</div>
-<div class="more"><a href="">more…</a></div>
-</div>
-<div class="shadow_310"></div>
+
 </div>
 
 <!--right end -->

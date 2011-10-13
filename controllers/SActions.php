@@ -323,9 +323,8 @@ class SActions extends ActionController {
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crossdata = $this->getModelByName('x');
-        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today); // Why "0"? @virushuo says "no mulit-identity" in one user now
+        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today); // @virushuo says "no mulit-identity" in one user now
         $pastXs    = $crossdata->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
-        //$recenUpdt = $crossdata->fetchCross($identities[0]['id'], 0, null, 'updated_at DESC', 10);
         foreach ($crosses as $crossI => $crossItem) {
             $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
             if ($crosses[$crossI]['timestamp'] < $upcoming) {
@@ -340,21 +339,42 @@ class SActions extends ActionController {
             $pastXItem['sort'] = 'past';
             array_push($crosses, $pastXItem);
         }
-        //foreach ($recenUpdt as $recenUpdtI => $recenUpdtItem) {
-        //    $recenUpdtItem['sort'] = 'updated';
-        //    array_push($crosses, $pastXItem);
-        //}
-        // Get confirmed identity ids
-        $cfedIds = array();
+        // Get all cross
+        $allCross   = $crossdata->fetchCross($_SESSION['userid'], 0, null, null, null);
+        $allCrossId = array();
+        foreach ($allCross as $crossI => $crossItem) {
+            array_push($allCrossId, $crossItem['id']);
+        }
+        // Get recently logs
+        $logdata = $this->getModelByName('log');
+        $rawLogs = $logdata->getRecentlyLogsByCrossIds($allCrossId, 'gather');
+        // Get confirmed informations
+        $crossIds = array();
         foreach ($crosses as $crossI => $crossItem) {
-            array_push($cfedIds, $crossItem['id']);
+            array_push($crossIds, $crossItem['id']);
         }
         $modIvit = $this->getModelByName('invitation');
-        $cfedIds = $modIvit->getIdentitiesIdsByCrossIds($cfedIds);
+        $cfedIds = $modIvit->getIdentitiesIdsByCrossIds($crossIds);
         // Get identities
         $idents  = array();
         foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
             array_push($idents, $cfedIdItem['identity_id']);
+        }
+        foreach ($rawLogs as $logI => $logItem) {
+            // add ids from logs
+            array_push($idents, $logItem['from_id']);
+            if ($logItem['action'] === 'exfee') {
+                switch ($logItem['to_field']) {
+                    case 'rsvp':
+                        $rawLogs[$logI]['change_summy'] = explode(':', $logItem['change_summy']);
+                        $changeId = $rawLogs[$logI]['change_summy'][0];
+                        break;
+                    case 'addexfee':
+                    case 'delexfee':
+                        $changeId = $logItem['change_summy'];
+                }
+                array_push($idents, $changeId);
+            }
         }
         $idents  = $identityData->getIdentitiesByIdentityIds(array_flip(array_flip($idents)));
         // Get human identity
@@ -377,7 +397,62 @@ class SActions extends ActionController {
             }
         }
         $this->setVar('crosses', $crosses);
-
+        // Improve logs
+        $logs        = array();
+        $exfeeChange = array();
+        $crossChange = array();
+        foreach ($rawLogs as $logItem) {
+            if (!isset($logs[$logItem['to_id']])) {
+                foreach ($allCross as $crossI => $crossItem) {
+                    if ($crossItem['id'] === $logItem['to_id']) {
+                        $logs[$logItem['to_id']] = $crossItem;
+                        unset($allCross[$crossI]);
+                    }
+                }
+                if (!isset($logs[$logItem['to_id']])) {
+                    continue;
+                }
+                $logs[$logItem['to_id']]['activity'] = array();
+            }
+            $logItem['from_name'] = $hmIdent[$logItem['from_id']];
+            if ($logItem['action'] === 'conversation') {
+            } else if ($logItem['action'] === 'change') {
+                // merge the same field changes
+                if (!isset($crossChange[$logItem['to_id']])) {
+                    $crossChange[$logItem['to_id']] = array();
+                }
+                if (isset($crossChange[$logItem['to_id']][$logItem['to_field']])) {
+                    continue;
+                }
+                $crossChange[$logItem['to_id']][$logItem['to_field']] = true;
+            } else if ($logItem['action'] === 'rsvp' || $logItem['action'] === 'exfee') {
+                switch ($logItem['to_field']) {
+                    case '':
+                        $changeId = $logItem['from_id'];
+                        break;
+                    case 'rsvp':
+                        $changeId = $logItem['change_summy'][0];
+                        break;
+                    case 'addexfe':
+                    case 'delexfe':
+                        $changeId = $logItem['change_summy'];
+                }
+                if (isset($exfeeChange[$changeId])) {
+                    continue;
+                }
+                $exfeeChange[$changeId] = true;
+                $logItem['to_name'] = $hmIdent[$changeId];
+            } else {
+                continue;
+            }
+            array_push($logs[$logItem['to_id']]['activity'], $logItem);
+        }
+        foreach ($logs as $logI => $logItem) {
+            if (!$logItem['activity']) {
+                unset($logs[$logI]);
+            }
+        }
+        $this->setVar('logs', $logs);
         // Get new invitations
         $idents = array();
         foreach ($identities as $identI => $identItem) {
