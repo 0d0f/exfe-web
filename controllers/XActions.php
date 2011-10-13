@@ -121,7 +121,7 @@ class XActions extends ActionController {
         $ehelper=$this->getHelperByName("exfee");
         $ehelper->addExfeeIdentify($cross_id, $exfees, $invited);
 
-        $ehelper->sendInvitation($cross_id, $invited);
+        //$ehelper->sendInvitation($cross_id, $invited);
 
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($return_data);
