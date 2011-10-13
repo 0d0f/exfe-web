@@ -54,6 +54,17 @@ function apn_connect()
         $err=stream_set_blocking($apn_connect, 0); 
         $err=stream_set_write_buffer($apn_connect, 0); 
     }
+
+
+}
+function sendapn($deviceToken,$body)
+{
+    global $apn_connect;
+    var_dump($apn_connect);
+    $payload = json_encode($body);
+    $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
+    $err=fwrite($apn_connect, $msg);
+    return $err;
 }
 
 

@@ -82,7 +82,7 @@ class TestActions extends ActionController {
 #
 #        require 'lib/Resque.php';
 #        date_default_timezone_set('GMT');
-#        Resque::setBackend('127.0.0.1:6379');
+#        Resque::setBackend(RESQUE_SERVER);
 #
 #
 #        print $str;
