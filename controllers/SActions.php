@@ -421,9 +421,11 @@ class SActions extends ActionController {
     public function doCheckUserLogin()
     {
         $returnData = array(
-            "user_status"    => 0,
-            "user_name"      => "",
-            "user_avatar"    => ""
+            "user_status"    =>0,
+            "user_name"      =>"",
+            "user_avatar"    =>"",
+            "cross_num"      =>0,
+            "crosses"        =>""
         );
 
         if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
@@ -438,8 +440,7 @@ class SActions extends ActionController {
             $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
             $global_external_identity=$_SESSION["identity"]["external_identity"];
             $global_identity_id=$_SESSION["identity_id"];
-        } else
-        {
+        } else {
             $indentityData=$this->getModelByName("identity");
             $indentityData->loginByCookie();
 
@@ -453,21 +454,41 @@ class SActions extends ActionController {
         {
             $userData = $this->getModelByName("user");
             $user=$userData->getUser($_SESSION["userid"]);
-            if($global_name==""){
-                $global_name=$user["name"];
-            }
-            if($global_avatar_file_name==""){
-                if($user["avatar_file_name"] == ""){
-                    $global_avatar_file_name = "default.png";
-                }else{
-                    $global_avatar_file_name=$user["avatar_file_name"];
-                }
+            //display user name.
+            $global_name=$user["name"];
+            if($user["avatar_file_name"] == ""){
+                $global_avatar_file_name = "default.png";
+            }else{
+                $global_avatar_file_name=$user["avatar_file_name"];
             }
 
             $returnData["user_status"] = 1;
             $returnData["user_name"] = $global_name;
             $returnData["user_avatar"] = $global_avatar_file_name;
         }
+        //Get user panel data(User Crosses)
+        $today = strtotime(date('Y-m-d'));
+        $upcoming = $today + 60 * 60 * 24 * 3;
+        $sevenDays = $today + 60 * 60 * 24 * 7;
+        $crossdata = $this->getModelByName('x');
+        $crosses_number = $crossdata->fetchCross($_SESSION['userid'], 0, 'yes', 'begin_at', 1000, 'count');
+        $returnData["cross_num"] = $crosses_number;
+
+        $crosses = $crossdata->fetchCross($_SESSION['userid'], $today, 'yes', 'begin_at', 4, 'simple');
+
+        foreach ($crosses as $k=>$v) {
+            $crosses[$k]['timestamp'] = strtotime($v['begin_at']);
+            $crosses[$k]["id"] = int_to_base62($v["id"]);
+            if ($crosses[$k]['timestamp'] < $upcoming) {
+                $crosses[$k]['sort'] = 'upcoming';
+            } else if ($crosses[$k]['timestamp'] < $sevenDays) {
+                $crosses[$k]['sort'] = 'sevenDays';
+            } else {
+                $crosses[$k]['sort'] = 'later';
+            }
+        }
+        $returnData["crosses"] = $crosses;
+
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
         exit();
