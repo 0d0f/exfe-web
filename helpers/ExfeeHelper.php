@@ -215,21 +215,26 @@ class ExfeeHelper extends ActionController
                     {
                         if(intval($identity["status"])==3)
                         {
-                            $identity=humanidentity($identity,null);
-                            $msghelper=$this->gethelperbyname("msg");
-                            if($identity["provider"]=="email")
+                            $muteData=$this->getmodelbyname("mute");
+                            $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
+                            if($mute===FALSE)
                             {
-                                $mail["external_identity"]=$identity["external_identity"];
-                                $mail["provider"]=$identity["provider"];
-                                $msghelper->senttemplateemail($mail);
-                            }
-                            if($identity["provider"]=="iosapn")
-                            {
-                                $apnargs["external_identity"]=$identity["external_identity"];
-                                $msghelper->sentapnconversation($apnargs);
-                            }
-                            else
-                            {
+                                $identity=humanidentity($identity,null);
+                                $msghelper=$this->gethelperbyname("msg");
+                                if($identity["provider"]=="email")
+                                {
+                                    $mail["external_identity"]=$identity["external_identity"];
+                                    $mail["provider"]=$identity["provider"];
+                                    $msghelper->senttemplateemail($mail);
+                                }
+                                if($identity["provider"]=="iOSAPN")
+                                {
+                                    $apnargs["external_identity"]=$identity["external_identity"];
+                                    $msghelper->sentapnconversation($apnargs);
+                                }
+                                else
+                                {
+                                }
                             }
                         }
                     }
