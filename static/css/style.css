@@ -617,6 +617,7 @@ b.r3{margin: 0px}
 	opacity: 0.5;
 }
 .imgareaselect-selection { }
+
 /** cross - edit - exfee ** by Leask **/
 #exfee_area {
     padding: 10px;
@@ -629,26 +630,26 @@ b.r3{margin: 0px}
     width:11px;
     height:13px;
     float:left;
-    background:url(/static/images/icons.png) no-repeat left -640px;
+    background: url("/static/images/icons.png") no-repeat left -640px;
     cursor:pointer;
 }
 
 #exfee_input {
-    border:#c5c5c5 1px solid;
-    background:#ffffff;
-    width:248px;
-    height:17px;
+    border: #c5c5c5 1px solid;
+    background: #ffffff;
+    width: 248px;
+    height: 22px;
 }
 
 #exfee_submit {
-    background:url("/static/images/enter.png") no-repeat scroll right bottom;
-    width:25px;
-    height:22px;
-    border:none;
+    background: url("/static/images/enter.png") no-repeat right;
+    width: 25px;
+    height: 17px;
+    border: none;
     float: right;
-    z-index:2;
+    z-index: 2;
     position: absolute;
-    margin:7px 0 0 232px;
+    margin: 8px 0 0 224px;
 }
 
 #exfee_edit_buttons {

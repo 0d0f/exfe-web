@@ -77,6 +77,16 @@ class XActions extends ActionController {
         $identity_id = $_SESSION['identity_id'];
         $cross_id = base62_to_int($_GET["id"]);
         $old_cross=$crossDataObj->getCross($cross_id);
+        #if($old_cross)
+        #{
+        #    $place_id=$old_cross["place_id"];
+        #    if(intval($place_id)>0)
+        #    {
+        #        $placeData=$this->getModelByName("place");
+        #        $place=$placeData->getPlace($place_id);
+        #        $old_cross["place"]=$place;
+        #    }
+        #}
 
         $return_data = array("error"=>0,"msg"=>"");
         if(!array_key_exists("ctitle", $_POST) || trim($_POST["ctitle"]) == ""){
@@ -107,7 +117,9 @@ class XActions extends ActionController {
         }
 
         $xhelper=$this->getHelperByName("x");
-        $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
+        $changed=$xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
+        if($changed!=FALSE)
+            $xhelper->sendXChangeMsg($cross_id,$identity_id,$changed,$old_cross);
 
         // exclude exfee identities that already in cross
         $invitM = $this->getModelByName('invitation');
