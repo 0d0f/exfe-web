@@ -32,6 +32,13 @@ class XModels extends DataModel {
         $time=time();
         $sql = "UPDATE crosses SET updated_at=FROM_UNIXTIME($time), title='".$cross["title"]."', description='".$cross["desc"]."', begin_at='".$cross["start_time"]."' WHERE id=".$cross["id"];
         $result = $this->query($sql);
+        if($result){
+            $sql = "SELECT place_id FROM crosses WHERE id=".$cross["id"];
+            $place_id = $this->getRow($sql);
+            $ts = date("Y-m-d H:i:s", time());
+            $sql = "UPDATE places SET place_line1='".$cross["place"]."', updated_at='".$ts."' WHERE id=".$place_id["place_id"];
+            $result = $this->query($sql);
+        }
         return $result;
     }
 

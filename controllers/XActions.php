@@ -103,6 +103,7 @@ class XActions extends ActionController {
                 "title"       => mysql_real_escape_string($_POST["ctitle"]),
                 "desc"        => mysql_real_escape_string($_POST["cdesc"]),
                 "start_time"  => $_POST['ctime'],
+                "place"       => mysql_real_escape_string($_POST["cplace"]),
                 "identity_id" => $identity_id
         );
 

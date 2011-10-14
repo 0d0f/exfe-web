@@ -91,7 +91,7 @@ em.h3{font-size:24px;font-family:Verdana; }
 }
 .exfer{float:right;width:278px;
 }
-.exfer h3{color:#0591af;font-size:28px;height:50px;line-height:50px;font-family:Verdana;font-weight:normal;margin-top:10px; }
+.exfer h3{color:#0591af; font-size:28px; overflow:hidden; font-weight:normal; padding:5px; margin-top:10px; }
 .exfer p.tm{color:#020202;font-size:18px;line-height:22px;}
 .exfer p.map{margin-top:20px}
 .exfer .exfee{margin-top:40px;}
@@ -445,13 +445,21 @@ b.r3{margin: 0px}
 
 .cross_view_container #rsvp_submitted{ padding:30px 0 0; font-size:12pt; }
 
-.cross_view_container #cross_time_bubble { width:310px; height:220px; margin-left:210px; margin-top:125px; display:none; }
+.cross_view_container #cross_time_bubble { width:310px; height:220px; margin-left:210px; margin-top:125px; }
 .cross_view_container #cross_time_bubble:before { top:29px; left:330px; }
 .cross_view_container #cross_time_bubble:after { top:29px; left:330px; }
-
 .cross_view_container #cross_time_bubble .cross_dt_input{ width:310px; height:25px; background: url("/static/images/icons.png") no-repeat scroll right -535px transparent; }
 .cross_view_container #cross_time_bubble .cross_dt_msg{ width:310px; height:20px; color:#FF0000; }
 .cross_view_container #cross_time_bubble #cross_datetime_original{ height:18px; background-color:#FAFAFA; padding:0; border:1px solid #999; width:250px; }
+
+.cross_view_container #cross_place_bubble { width:210px; height:120px; margin-left:310px; margin-top:195px; }
+.cross_view_container #cross_place_bubble:before { top:29px; left:230px; }
+.cross_view_container #cross_place_bubble:after { top:29px; left:230px; }
+.cross_view_container #cross_place_bubble .input_box{ width:210px; height:120px; }
+.cross_view_container #cross_place_bubble .input_box textarea{ position:relative; float:left; width:180px; height:118px; border:1px solid #CCCCCC; }
+.cross_view_container #cross_place_bubble .input_box span{ position:relative; float:right; display:block; width:20px; height:20px; background: url("/static/images/icons.png") no-repeat scroll right -570px transparent; }
+
+
 
 /*********** bubble style control by handaoliang *************/
 .exfe_bubble {
