@@ -73,7 +73,7 @@ $(document).ready(function() {
         if(current_val.length > 0){
             $('#gather_title_bg').html('');
         }else{
-            $('#gather_title_bg').html($gTitlesDefaultText);
+            $('#gather_title_bg').html(gTitlesDefaultText);
         }
     });
     $('#gather_title_input').blur(function () {
@@ -86,6 +86,7 @@ $(document).ready(function() {
                 $("#gather_title_bg").removeClass("gather_title_bg_normal");
             });
         }else{
+            $('#gather_title_bg').html(gTitlesDefaultText);
             $("#g_title").val(gTitlesDefaultText);
         }
     });
