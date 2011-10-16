@@ -25,7 +25,7 @@
 <ul>
 <li id="calendar_map_container"></li>
 <form action="" method="post" id="gatherxform">
-<li><label class="title">Title:</label><input type="text"  name="title" id="g_title"  value="Edit title here"/><input type="hidden"  name="draft_id" id="draft_id" value="0"/></li>
+<li><label class="title">Title:</label><input type="text" name="title" id="g_title"  value="Edit title here"/><input type="hidden"  name="draft_id" id="draft_id" value="0"/></li>
 
 <li><label class="description">Description:</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
 </li>
@@ -39,7 +39,7 @@
 Pier 39, 203 C
 San Francisco, CA
 (555) 434-2722</textarea></li>
-<li><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
+<li><label class="hostby">Host By</label>  <input type="text" name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
 <li><label class="exfee">exfee:</label>
 <p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
@@ -49,7 +49,7 @@ San Francisco, CA
   <div class="selecetafri">
     <div class="sover" id="exfee_pv">
       <ul class="samlcommentlist">
-      <?php if($external_identity!="") { ?>
+        <?php if($external_identity!="") { ?>
         <li class="addjn">
           <p class="pic20">
               <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />

@@ -130,9 +130,10 @@ em.h3{font-size:24px;font-family:Verdana; }
 
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
-.smcomment {float:left;font-size:12px;}
-.smcomment span{color:#020202;font-size:13px;padding-right:5px;}
-.smcomment span.lb{background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}
+.smcomment { float:left; font-size:12px; width: 190px; overflow: hidden; }
+.smcomment div { float: left; }
+.smcomment span.ex_name { color: #020202; font-size: 13px; padding-right: 5px; }
+.smcomment span.lb { background: url(/static/images/btn.png) no-repeat left -281px; color: #ffffff; padding: 3px; font-size: 11px; }
 .cs {float:right;width:20px;height:20px;}
 .cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
 .cs em.c1{background-position:-1px -82px}
@@ -261,11 +262,11 @@ b.r3{margin: 0px}
 .createset .creattext textarea.ctext_1{height:72px;margin:0}
 .createset .creattext .selecetafri{padding:0;border:#c5c5c5 1px dashed;background:#e7e7e7;width:485px;color:#1f1f1f;height:115px;margin-top:-15px;overflow:auto;overflow-x:scroll}
 .createset .creattext .sover{width:960px;}
-.createset .creattext .selecetafri .samlcommentlist{width:275px;float:left;margin:2px;}
-.createset .creattext .selecetafri .samlcommentlist li{margin:3px 0 0px 5px;}
-.createset .creattext .selecetafri .samlcommentlist li.bgrond{background:#d5e6e9}
-.createset .creattext .selecetafri .samlcommentlist .smcomment{width:170px;color:#a0a0a0}
-.createset .creattext .selecetafri .samlcommentlist .smcomment span{color:#020202;font-size:13px;padding-right:5px;}
+.createset .creattext .selecetafri .samlcommentlist{width:275px;float:left;margin:2px; }
+.createset .creattext .selecetafri .samlcommentlist li{margin:3px 0 0px 5px; }
+.createset .creattext .selecetafri .samlcommentlist li.bgrond{background:#d5e6e9; }
+.createset .creattext .selecetafri .samlcommentlist .smcomment {width:170px; color:#a0a0a0; }
+.createset .creattext .selecetafri .samlcommentlist .smcomment span {color:#020202;font-size:13px;padding-right:5px;}
 .createset  button.continue{width:92px; height:26px; background:url(/static/images/btn.png) no-repeat right -279px; text-align:center; font:12px/26px Verdana, Arial, Helvetica, sans-serif; color:#626262; border:0; margin-top:15px;float:right;}
 .createset .creattext .selecetafri .samlcommentlist li button{margin:3px 5px 0 0;border:0;width:11px;height:13px;background:url(/static/images/icons.png) no-repeat left -640px;float:right;display:none;cursor:pointer;}
 .createset .creattext .selecetafri .samlcommentlist .smcomment span.lb{background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}

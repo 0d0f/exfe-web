@@ -1,11 +1,13 @@
 <?php
 class SActions extends ActionController {
+
     public function doTestUser()
     {
         $identityData = $this->getModelByName("identity");
         $identityData->setRelation($_GET["identity_id"]);
 
     }
+
     public function doAdd()
     {
         $identity= $_GET["identity"];
@@ -489,6 +491,7 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
+
     /**
      * check user login status.
      *
@@ -586,6 +589,7 @@ class SActions extends ActionController {
             exit();
         }
     }
+
     public function doGetUserProfile()
     {
         //TODO: private API ,must check session
@@ -603,6 +607,7 @@ class SActions extends ActionController {
             exit();
         }
     }
+
     public function doLogoutsession()
     {
         unset($_SESSION["userid"]);
@@ -612,7 +617,6 @@ class SActions extends ActionController {
         //logout session
         session_destroy();
     }
-
 
     public function doLogout()
     {

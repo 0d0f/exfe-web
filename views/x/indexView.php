@@ -161,7 +161,7 @@ $token=$_GET["token"];
                 <div class="feetop"><h3>exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
                 <div id="exfee_edit_box">
                     <span id="exfee_submit" title="Invite!"></span>
-                    <input type="text" id="exfee_input" value=""/><div id="identity_ajax"></div>
+                    <input type="text" id="exfee_input" value="Enter attendees' information"><div id="identity_ajax"></div>
                     <span id="exfee_edit_buttons">
                         <span id="exfee_revert">Revert</span>
                         <button id="exfee_done" type="button" class="edit_button">Done</button>
@@ -169,41 +169,25 @@ $token=$_GET["token"];
                 </div>
                 <ul class="samlcommentlist">
 
-                <?php
-                // @todo: the looking of name and external_identity needed to improve, added by Leask
-                foreach($host_exfee as $exfee)
-                {
-                      if($exfee["name"]==$exfee["external_identity"])
-                        $exfee["name"]="";
-                //    if($exfee["avatar_file_name"]=="")
-                //        $exfee["avatar_file_name"]="default.png"
+                <?php foreach($host_exfee as $exfee) {
+                //        if ($exfee["avatar_file_name"] === '') {
+                //            $exfee["avatar_file_name"] = 'default.png';
+                //        }
                 ?>
-                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist">
+                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
                     <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                    <p class="smcomment"><span><?php echo $exfee["name"]; ?></span> <?php echo $exfee["external_identity"]; ?> <span class="lb">host</span></p>
+                    <div class="smcomment"><div><span class="ex_name"><?php echo $exfee["name"]; ?></span><span class="lb">host</span><span class="ex_identity"> <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?></span></div></div>
                     <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
                 </li>
-                <?php
-                }
-                ?>
-                <?php
-                // @todo: the looking of name and external_identity needed to improve, added by Leask
-                foreach($normal_exfee as $exfee)
-                {
-                    if($exfee["name"]==$exfee["external_identity"]){
-                        $exfee["name"]="";
-                    }
-                ?>
-                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist">
+                <?php } ?>
+                <?php foreach($normal_exfee as $exfee) { ?>
+                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
                     <button type="button" class="exfee_del"></button>
                     <p class="pic20"><img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                    <p class="smcomment"><span><?php echo $exfee["name"]; ?></span> <?php echo $exfee["external_identity"]; ?> </p>
+                    <div class="smcomment"><div><span><?php echo $exfee["name"]; ?></span><span class="ex_identity"> <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?></span></div></div>
                     <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
                 </li>
-                <?php
-                }
-                ?>
-
+                <?php } ?>
                 </ul>
             <div>
                 <button id="exfee_edit"   type="button" class="edit_button">Edit...</button>
