@@ -21,11 +21,18 @@
 <div class="centerbg">
   <div class="createset">
   <!--<h3>Gather for your <span>X</span></h3>-->
-
 <ul>
 <li id="calendar_map_container"></li>
 <form action="" method="post" id="gatherxform">
-<li><label class="title">Title:</label><input type="text" name="title" id="g_title"  value="Edit title here"/><input type="hidden"  name="draft_id" id="draft_id" value="0"/></li>
+<li>
+    <div class="gather_title_bg" id="gather_title_bg">
+        <?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?>
+    </div>
+    <label class="title">Title:</label>
+    <input type="text"  name="title" id="gather_title_input" class="gather_title_input"  value="" />
+    <input type="hidden"  name="title" id="g_title" value="" />
+    <input type="hidden"  name="draft_id" id="draft_id" value="0" style="clear:both;" />
+</li>
 
 <li><label class="description">Description:</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
 </li>
@@ -39,7 +46,7 @@
 Pier 39, 203 C
 San Francisco, CA
 (555) 434-2722</textarea></li>
-<li><label class="hostby">Host By</label>  <input type="text" name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
+<li style="margin-top:15px;"><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
 <li><label class="exfee">exfee:</label>
 <p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
@@ -82,10 +89,10 @@ San Francisco, CA
 
 <div class="albg" id="content_x">
 <div class="step" id="index">
+<p class="Preview"></p>
 <h2 id="pv_title">Title</h2>
 <div class="exfel">
 <p class="text" id="pv_description">new cross for test</p><a href="">Expand</a>
-<p class="Preview"></p>
 <ul class="ynbtn">
 <li><a class="yes" href="/3/rsvp/yes">Yes</a></li>
 <li><a class="no" href="/3/rsvp/no">No</a></li>

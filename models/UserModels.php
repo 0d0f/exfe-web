@@ -89,6 +89,15 @@ class UserModels extends DataModel{
             return $user;
         }
     }
+    public function getUserIdByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            return intval($result["userid"]);
+        }
+    }
 
     public function getUserByIdentityId($identity_id)
     {

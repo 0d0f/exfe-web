@@ -83,12 +83,17 @@ $token=$_GET["token"];
     <p class="revert"><a id="revert_cross_btn" href="javascript:;">Revert</a></p>
 </div>
 <div id="content" class="cross_view_container">
-    <div class="exfe_bubble" id="cross_time_bubble">
+    <div class="exfe_bubble" id="cross_time_bubble" style="display:none;">
         <div class="cross_dt_input"><input name="cross_datetime_original" id="cross_datetime_original" value="" /></div>
         <div class="cross_dt_msg"></div>
         <div id="cross_time_container"></div>
     </div>
-
+    <div class="exfe_bubble" id="cross_place_bubble" style="display:none;">
+        <div class="input_box">
+            <textarea name="place_content" id="place_content"><?php echo $place_line1; ?></textarea>
+            <span class="icon"></span>
+        </div>
+    </div>
     <div class="menu_bar">
         <p class="lock_icon" id="private_icon"></p>
         <p class="lock_icon_desc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
@@ -97,7 +102,8 @@ $token=$_GET["token"];
     </div>
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
-        <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
+            <a href="<?php echo SITE_URL."/mute/x?id=".int_to_base62($cross["id"])?>">mute</a>
+        <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2> 
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
             <div id="cross_desc"<?php if($desc_str_len > $define_str_len){ ?> style="display:none"<?php } ?>>
@@ -154,7 +160,7 @@ $token=$_GET["token"];
                 <h3><?php echo $begin_at_relativetime;?></h3>
                 <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
             </div>
-            <h3><?php echo $place_line1; ?></h3>
+            <h3 id="cross_place_area"><?php echo $place_line1; ?></h3>
             <p class="tm"><?php echo $place_line2; ?></p>
 
             <div id="exfee_area" class="exfee">

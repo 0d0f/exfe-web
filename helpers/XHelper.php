@@ -50,7 +50,8 @@ class XHelper extends ActionController
         $apnargs["cross_id"]=$cross_id;
 
                 $invitationdata=$this->getmodelbyname("invitation");
-                $invitation_identities=$invitationdata->getinvitation_identities($cross_id);
+                $invitation_identities=$invitationdata->getInvitation_Identities($cross_id);
+                $muteData=$this->getmodelbyname("mute");
                 if($invitation_identities)
                 foreach($invitation_identities as $invitation_identity)
                 {
@@ -60,21 +61,26 @@ class XHelper extends ActionController
                     {
                         if(intval($identity["status"])==3)
                         {
-                            $identity=humanidentity($identity,null);
-                            $msghelper=$this->gethelperbyname("msg");
-                            if($identity["provider"]=="email")
+                            $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
+                            if($mute===FALSE)
                             {
-                                $mail["external_identity"]=$identity["external_identity"];
-                                $mail["provider"]=$identity["provider"];
-                                $msghelper->senttemplateemail($mail);
-                            }
-                            if($identity["provider"]=="iOSAPN")
-                            {
-                                $apnargs["external_identity"]=$identity["external_identity"];
-                                $msghelper->sentapnchangecross($apnargs);
-                            }
-                            else
-                            {
+
+                                $identity=humanidentity($identity,null);
+                                $msghelper=$this->gethelperbyname("msg");
+                                if($identity["provider"]=="email")
+                                {
+                                    $mail["external_identity"]=$identity["external_identity"];
+                                    $mail["provider"]=$identity["provider"];
+                                    $msghelper->senttemplateemail($mail);
+                                }
+                                if($identity["provider"]=="iOSAPN")
+                                {
+                                    $apnargs["external_identity"]=$identity["external_identity"];
+                                    $msghelper->sentapnchangecross($apnargs);
+                                }
+                                else
+                                {
+                                }
                             }
                         }
                     }

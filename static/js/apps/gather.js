@@ -48,7 +48,7 @@ $(document).ready(function() {
     $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
     $('#identity_ajax').hide();
 
-    $('#g_title').focus();
+    $('#gather_title_input').focus();
 
     /*
     $('input[type="text"], textarea').focus(function () {
@@ -67,20 +67,29 @@ $(document).ready(function() {
         }
     });
     */
-    /*
-    var gTitlesDefaultText = $('#g_title').val();
-    $('#g_title').focus(function () {
-        if($(this).attr("enter") != "true"){
-            $(this).val('');
+    var gTitlesDefaultText = $('#gather_title_bg').html();
+    $('#gather_title_input').keyup(function(e){
+        var current_val = $(this).val();
+        if(current_val.length > 0){
+            $('#gather_title_bg').html('');
+        }else{
+            $('#gather_title_bg').html(gTitlesDefaultText);
         }
     });
-    $('#g_title').blur(function () {
-        if ($(this).val() == "") {
-            $(this).val(gTitlesDefaultText);
+    $('#gather_title_input').blur(function () {
+        if($(this).val() != ""){
+            $(this).addClass("gather_titles_hidden_line");
+            $("#gather_title_bg").addClass("gather_title_bg_normal");
+            $("#g_title").val($(this).val());
+            $(this).bind("focus", function(){
+                $("#gather_title_input").removeClass("gather_titles_hidden_line");
+                $("#gather_title_bg").removeClass("gather_title_bg_normal");
+            });
+        }else{
+            $('#gather_title_bg').html(gTitlesDefaultText);
+            $("#g_title").val(gTitlesDefaultText);
         }
     });
-    */
-
 
     var gDescDefaultText = $("#g_description").val();
     $('#g_description').focus(function () {
@@ -177,8 +186,8 @@ $(document).ready(function() {
         }
     });
 
-    $('#g_title').keyup(function(e) {
-        $('#pv_title').html($('#g_title').val());
+    $('#gather_title_input').keyup(function(e) {
+        $('#pv_title').html($('#gather_title_input').val());
     });
 
     $('#g_description').keyup(function(e) {

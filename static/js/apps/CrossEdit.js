@@ -29,9 +29,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //bind event for cross time container
         jQuery("#cross_times_area").addClass("enable_click");
-        jQuery("#cross_times_area").bind("click",function(){
-             odof.cross.edit.bindEditTimesEvent();
-        });
+        jQuery("#cross_times_area").bind("click", odof.cross.edit.bindEditTimesEvent);
+
+        //bind event for cross place container
+        jQuery("#cross_place_area").addClass("enable_click");
+        jQuery("#cross_place_area").bind("click",odof.cross.edit.bindEditPlaceEvent);
 
         jQuery("#cross_desc").show();
         jQuery("#cross_desc_short").hide();
@@ -108,7 +110,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.bindEditTimesEvent = function(){
         //check if had bind a event for #cross_time_bubble
         var eventTemp = jQuery("#cross_time_bubble").data("events");
-        //console.log(eventTemp);
+        console.log(eventTemp);
         if(!eventTemp){
             jQuery('#cross_time_bubble').bind("clickoutside",function(event) {
                 //console.log(event.target.parentNode);
@@ -138,8 +140,30 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     /**
-     * user Edit cross description
+     * user edit time, show edit place area.
      *
+     * */
+    ns.bindEditPlaceEvent = function(){
+        var placeEventTemp = jQuery("#cross_place_bubble").data("events");
+        //console.log(placeEventTemp);
+        if(!placeEventTemp){
+            jQuery('#cross_place_bubble').bind("clickoutside",function(event) {
+                if(event.target.parentNode != jQuery("#cross_container")[0]){
+                    jQuery("#cross_place_bubble").hide();
+                    jQuery("#cross_place_bubble").unbind("clickoutside");
+                }else{
+                    jQuery("#place_content").bind("keyup",function(){
+                        jQuery("#cross_place_area").html(jQuery("#place_content").val());
+                    });
+                    jQuery("#cross_place_bubble").show();
+                }
+            });
+        }
+    };
+
+    /**
+     * User Edit cross description
+     * 
      * */
     ns.bindEditDescEvent = function(){
         jQuery("#cross_desc").hide();
@@ -173,6 +197,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.submitData = function(){
         var title = jQuery("#cross_titles_textarea").val(),
             time  = jQuery("#datetime").val(),
+            place  = jQuery("#place_content").val(),
             desc  = jQuery("#cross_desc_textarea").val(),
             exfee = JSON.stringify(ns.getexfee());
         jQuery.ajax({
@@ -184,6 +209,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 ctitle : title,
                 ctime  : time,
                 cdesc  : desc,
+                cplace : place,
                 exfee  : exfee
             },
             //回调
