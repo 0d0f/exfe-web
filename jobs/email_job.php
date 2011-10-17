@@ -32,24 +32,25 @@ class Email_Job
             global $email_connect;
             global $connect_count;
 
-            cleanMailer();
-    	    $email_connect->Body = $body;
-    	    $email_connect->Subject = $title;
-    	    $email_connect->AddAddress($args['external_identity']);  // This is where you put the email adress of the person you want to mail
-            $email_connect->AddStringAttachment($attachment, "exfe_".$args['cross_id_base62'].".ics",'base64',"text/calendar");
-            //print_r("email_job");
-            //print_r($email_connect);
+            $mail_mime = new Mail_mime(array('eol' => "\n"));
+            $mail_mime->setHTMLBody($body);
+            $mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
 
-    	    if(!$email_connect->Send())
-    	    {
-    	        echo "Message was not sent<br/ >";
-    	        echo "Mailer Error: " . $email_connect->ErrorInfo;
-    	    }
-    	    else
-    	    {
+            $body = $mail_mime->get();
+            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
+            
+            $message = $headers . "\r\n" . $body;
+
+            $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));
+            if ($r->isOK())
+            {
+                print("Mail sent; message id is " . (string) $r->body->SendRawEmailResult->MessageId . "\n");
                 $connect_count["email_connect"]=time();
-    	        echo "Message has been sent";
-    	    }
+            }
+            else
+            {
+                  print("Mail not sent; error is " . (string) $r->body->Error->Message . "\n");
+            }
     }
 }
 ?>
