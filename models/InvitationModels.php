@@ -1,5 +1,5 @@
 <?php
-class InvitationModels extends DataModel{
+class InvitationModels extends DataModel {
 
     public function rsvpIdentities($cross_id,$identity_id_list,$state,$userid)
     {
@@ -193,6 +193,7 @@ class InvitationModels extends DataModel{
         }
         return $invitations;
     }
+
     public function getInvitation_APNIdentities($cross_id)
     {
 

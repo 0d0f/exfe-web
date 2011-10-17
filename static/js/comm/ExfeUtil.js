@@ -927,4 +927,40 @@ var odof = {
         return str.replace(/^\s+|\s+$/g, '');
     };
 
+    /**
+     * get relative time by Leask
+     */
+    util.getRelativeTime = function(timestamp)
+    {
+        if (timestamp < 0) {
+            return 0;
+        }
+        var difference = time() - timestamp,
+            periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
+            lengths    = ['60', '60', '24', '7', '4.35', '12', '10'],
+            ending     = '';
+        if (difference > 0) {
+            // this was in the past
+            ending     = 'ago';
+        } else {
+            // this was in the future
+            difference = -difference;
+            ending     = 'later';
+        }
+        for (var i = 0; difference >= lengths[i]; i++) {
+            if (lengths[i] == 0) {
+                difference  = 0;
+                break;
+            } else {
+                difference /= lengths[i];
+            }
+        }
+        difference = round(difference);
+        if (difference != 1) {
+            periods[i] += 's';
+        }
+        var text = difference + ' ' + periods[i] + ' ' + ending;
+        return text;
+    };
+
 })(odof);
