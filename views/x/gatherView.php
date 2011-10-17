@@ -90,13 +90,13 @@ San Francisco, CA
 <div class="albg" id="content_x">
 <div class="step" id="index">
 <p class="Preview"></p>
-<h2 id="pv_title">Title</h2>
+<h2 id="pv_title"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></h2>
 <div class="exfel">
-<p class="text" id="pv_description">new cross for test</p><a href="">Expand</a>
+<p class="text" id="pv_description">Write some description for your exfe. (optional)</p><!--a href="">Expand</a-->
 <ul class="ynbtn">
-<li><a class="yes" href="/3/rsvp/yes">Yes</a></li>
-<li><a class="no" href="/3/rsvp/no">No</a></li>
-<li><a class="maybe" href="/3/rsvp/maybe">Interested</a></li><li>
+<li><a class="yes_readonly" disabled="disabled">Yes</a></li>
+<li><a class="no_readonly" disabled="disabled">No</a></li>
+<li><a class="maybe_readonly" disabled="disabled">interested</a></li><li>
 </li></ul>
 
 

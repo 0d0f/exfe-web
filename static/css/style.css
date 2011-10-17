@@ -83,11 +83,13 @@ em.h3{font-size:24px;font-family:Verdana; }
 }
 .exfel ul.ynbtn li a:visited.no{background:url(/static/images/btn.png) no-repeat -750px top;
 }
-.exfel ul.ynbtn li a.yes_readonly{background:url(/static/images/btn.png) no-repeat -900px top;
-}
-.exfel ul.ynbtn li a.no_readonly{background:url(/static/images/btn.png) no-repeat -1050px top;
-}
 .exfel ul.ynbtn li a.maybe{background:none;color:#838383;text-decoration: underline;font-size:18px;text-align:left;
+}
+.exfel ul.ynbtn li a.yes_readonly{background:url(/static/images/btn.png) no-repeat -900px top;cursor:default;
+}
+.exfel ul.ynbtn li a.no_readonly{background:url(/static/images/btn.png) no-repeat -1050px top;cursor:default;
+}
+.exfel ul.ynbtn li a.maybe_readonly{background:none;color:#838383;text-decoration: underline;font-size:18px;text-align:left;cursor:default;
 }
 .exfer{float:right;width:278px;
 }

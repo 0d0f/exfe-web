@@ -103,7 +103,7 @@ $token=$_GET["token"];
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
             <a href="<?php echo SITE_URL."/mute/x?id=".int_to_base62($cross["id"])?>">mute</a>
-        <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2> 
+        <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
             <div id="cross_desc"<?php if($desc_str_len > $define_str_len){ ?> style="display:none"<?php } ?>>
@@ -113,10 +113,10 @@ $token=$_GET["token"];
             <?php echo $display_desc; ?>
             <a id="desc_expand_btn" href="javascript:void(0);">Expand</a>
             </div>
-            <ul class="ynbtn" id="rsvp_options" <?php if($interested=="yes") { echo 'style="display:none"'; } ?> >
-                <li><a id='rsvp_yes' value="yes" href="javascript:void(0);" "/<?php echo $cross["id"];?>/rsvp/yes<?php if($token!="") echo "?token=".$token;?>" class="yes">Yes</a></li>
-                <li><a id='rsvp_no' value="no" href="javascript:void(0);" "/<?php echo $cross["id"];?>/rsvp/no<?php if($token!="") echo "?token=".$token;?>" class="no">No</a></li>
-                <li><a id='rsvp_maybe' value="maybe" href="javascript:void(0);" "/<?php echo $cross["id"];?>/rsvp/maybe<?php if($token!="") echo "?token=".$token;?>" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
+            <ul class="ynbtn" id="rsvp_options" <?php if($interested === 'yes') { echo 'style="display:none"'; } ?> >
+                <li><a id='rsvp_yes' value="yes" href="javascript:void(0);" class="yes">Yes</a></li>
+                <li><a id='rsvp_no' value="no" href="javascript:void(0);" class="no">No</a></li>
+                <li><a id='rsvp_maybe' value="maybe" href="javascript:void(0);" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
             </ul>
             <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="javascript:void(0);" id="changersvp">Change?</a></div>
 
