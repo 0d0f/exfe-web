@@ -110,7 +110,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.bindEditTimesEvent = function(){
         //check if had bind a event for #cross_time_bubble
         var eventTemp = jQuery("#cross_time_bubble").data("events");
-        console.log(eventTemp);
+        //console.log(eventTemp);
         if(!eventTemp){
             jQuery('#cross_time_bubble').bind("clickoutside",function(event) {
                 //console.log(event.target.parentNode);
@@ -163,7 +163,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     /**
      * User Edit cross description
-     * 
+     *
      * */
     ns.bindEditDescEvent = function(){
         jQuery("#cross_desc").hide();
