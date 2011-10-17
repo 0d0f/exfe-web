@@ -542,6 +542,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         rollE.css('margin-left', curLeft + 'px');
     };
 
+    /**
+     * update relative time
+     * by Leask
+     */
+    ns.relativeTime = function() {
+        var curTime = $('#datetime').val();
+        if (curTime === ns.oldTime) {
+            return;
+        }
+        $('#cross_times_area > h3').html(
+            odof.util.getRelativeTime(
+                Date.parse(odof.util.getDateFromString(curTime)) / 1000
+            )
+        );
+        ns.oldTime = curTime;
+    };
+
 })(ns);
 
 jQuery(document).ready(function() {
@@ -576,5 +593,6 @@ jQuery(document).ready(function() {
     });
     odof.cross.edit.rollingExfee = null;
     odof.cross.edit.exfeeRollingTimer = setInterval(odof.cross.edit.rollExfee, 50);
+    odof.cross.edit.relativeTimeTimer = setInterval(odof.cross.edit.relativeTime, 1000);
 
 });
