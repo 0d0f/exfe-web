@@ -16,8 +16,7 @@ function showdialog(type)
     var title="";
     var desc="";
     var form="";
-    if(type=="setpassword")
-    {
+    if(type=="setpassword") {
         title="Set Password";
         desc="<div class='setpassword'>Please set password to keep track of <br/> RSVP status and engage in.</div>";
 
@@ -31,9 +30,7 @@ function showdialog(type)
             +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
             +"</ul>"
             +"</form>"
-    }
-    else if(type=="login")
-    {
+    } else if(type=="login") {
         title="Sign In";
         desc="<div class='account'><p>Authorize with your <br/> existing accounts </p><span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
             +"<img src='/static/images/twitter.png' alt='' width='32' height='32' /> "
@@ -51,11 +48,8 @@ function showdialog(type)
             +"</ul>"
             +"</form>"
 
-    }
-    else if(type=="reg")
-    {
+    } else if(type=="reg") {
         title="Identification";
-
 
         desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
             +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
@@ -99,8 +93,7 @@ function showdialog(type)
 
 function bindDialogEvent(type)
 {
-    if(type=="reg")
-    {
+    if(type=="reg") {
         $('#identity').blur(function() {
                 $.ajax({
                     type: "GET",
@@ -177,9 +170,7 @@ function bindDialogEvent(type)
                             }
                         }
                     });
-                }
-                else if(password!=""&& identity!="" && retypepassword==password &&  displayname!="")
-                {
+                } else if(password!=""&& identity!="" && retypepassword==password &&  displayname!="") {
                     var poststr="identity="+identity+"&password="+encodeURIComponent(password)
                                 +"&repassword="+encodeURIComponent(retypepassword)
                                 +"&displayname="+encodeURIComponent(displayname);
@@ -205,10 +196,10 @@ function bindDialogEvent(type)
                             }
                         }
                     });
-//reg
-                }
-                else 
+                //reg
+                } else {
                     return false;
+                }
 
                 $.ajax({
                     type: "GET",

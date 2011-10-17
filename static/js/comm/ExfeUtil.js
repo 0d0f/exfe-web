@@ -928,14 +928,27 @@ var odof = {
     };
 
     /**
-     * get relative time by Leask
+     * parses sql datetime string and returns javascript date object
+     * input has to be in this format: 1989-06-04 00:00:00
+     * by Leask
+     */
+    util.getDateFromString = function(strTime)
+    {
+        var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/,
+            parts = strTime.replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
+        return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
+    };
+
+    /**
+     * get relative time
+     * by Leask
      */
     util.getRelativeTime = function(timestamp)
     {
         if (timestamp < 0) {
             return 0;
         }
-        var difference = time() - timestamp,
+        var difference = Date.parse(new Date()) / 1000 - timestamp,
             periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
             lengths    = ['60', '60', '24', '7', '4.35', '12', '10'],
             ending     = '';
@@ -955,7 +968,7 @@ var odof = {
                 difference /= lengths[i];
             }
         }
-        difference = round(difference);
+        difference = Math.round(difference);
         if (difference != 1) {
             periods[i] += 's';
         }
