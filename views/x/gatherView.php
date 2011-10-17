@@ -28,13 +28,13 @@
     <div class="gather_title_bg" id="gather_title_bg">
         <?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?>
     </div>
-    <label class="title">Title:</label>
+    <label class="title">Title</label>
     <input type="text"  name="title" id="gather_title_input" class="gather_title_input"  value="" />
     <input type="hidden"  name="title" id="g_title" value="" />
     <input type="hidden"  name="draft_id" id="draft_id" value="0" style="clear:both;" />
 </li>
 
-<li><label class="description">Description:</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
+<li><label class="description">Description</label><textarea enter="0" name="description" id="g_description">Write some description for your exfe. (optional)</textarea>
 </li>
 
 <input type="hidden" name="datetime" id="datetime" value="" />
@@ -42,13 +42,13 @@
 <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011 </p>
 </li>
 
-<li><label class="location">Location:</label>  <textarea name="place" id="g_place" >Crab House
+<li><label class="location">Location</label>  <textarea name="place" id="g_place" >Crab House
 Pier 39, 203 C
 San Francisco, CA
 (555) 434-2722</textarea></li>
 <li style="margin-top:15px;"><label class="hostby">Host By</label>  <input type="text"  name="hostby" id="hostby" <?php if($external_identity!="") echo "enter='true' disabled='disabled' ";?> value="<?php if($external_identity!="") echo $external_identity; else echo "Enter your email";?>"/></li>
 
-<li><label class="exfee">exfee:</label>
+<li><label class="exfee">Exfee</label>
 <p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
 <span id="post_submit" title="Invite!"></span>
 <textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea><div id="identity_ajax"></div>
@@ -77,7 +77,7 @@ San Francisco, CA
 
  <li>
  <input type=hidden id="exfee_list" name="exfee_list"  value="" />
-<label class="privacy">Privacy:</label><p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
+<label class="privacy">Privacy</label><p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
         <button type="button" id="gather_x" class="submit">Submit</button> <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a> </li>
 </form>
   </ul>
