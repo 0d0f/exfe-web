@@ -21,7 +21,7 @@
     <div id="gather_title_bg" class="gather_focus"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></div>
     <label class="title">Title</label>
     <input type="text" name="title" id="g_title" value="" />
-    <input type="hidden" name="draft_id" id="draft_id" value="0" style="clear:both;" />
+    <input type="hidden" name="draft_id" id="draft_id" value="0" />
 </li>
 
 <li id="gather_desc_blank">
@@ -50,34 +50,36 @@ San Francisco, CA
 </li>
 <li style="margin-top:15px;">
     <label class="hostby">Host By</label>
-    <input type="text" name="hostby" id="hostby" <?php echo $external_identity ? "enter='true' disabled='disabled' " : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
+    <input type="text" name="hostby" id="hostby" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
 </li>
 
-<li><label class="exfee">Exfee</label>
-<p class="count"> <a id="confirmed_all" check=false href="javascript:void(1);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
-<span id="post_submit" title="Invite!"></span>
-<textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea><div id="identity_ajax"></div>
-<div class="creattext">
-  <div class="selecetafri">
-    <div class="sover" id="exfee_pv">
-      <ul class="samlcommentlist">
-        <?php if ($external_identity!="") { ?>
-        <li class="addjn">
-          <p class="pic20">
-              <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
-          </p>
-          <p class="smcomment">
-              <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span>
-              <input id="confirmed_exfee_<?php echo $global_identity_id;?>" class="confirmed_box" checked=true type="checkbox" />
-              <span class="lb">host</span>
-          </p>
-          <button type="button" class="exfee_del"></button>
-        </li>
-        <?php } ?>
-      </ul>
+<li>
+    <label class="exfee">Exfee</label>
+    <p class="count"><a id="confirmed_all" check=false href="javascript:void(0);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+    <span id="post_submit" title="Invite!"></span>
+    <textarea name="comment" id="exfee" >Enter attendees’ email or id</textarea>
+    <div id="identity_ajax"></div>
+    <div class="creattext">
+        <div class="selecetafri">
+            <div class="sover" id="exfee_pv">
+                <ul class="samlcommentlist">
+                    <?php if ($external_identity!="") { ?>
+                    <li class="addjn">
+                        <p class="pic20">
+                            <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
+                        </p>
+                        <p class="smcomment">
+                            <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span>
+                            <input id="confirmed_exfee_<?php echo $global_identity_id;?>" class="confirmed_box" checked=true type="checkbox" />
+                            <span class="lb">host</span>
+                        </p>
+                        <button type="button" class="exfee_del"></button>
+                    </li>
+                    <?php } ?>
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 </li>
 
 <li>

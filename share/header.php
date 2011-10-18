@@ -14,6 +14,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS" href="" />
     <link rel="index" href="http://www.exfe.com/sitemap/" />
     <script type="text/javascript" src="/static/js/libs/jquery-1.6.4.js"></script>
+    <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
     <script type="text/javascript" src="/static/js/comm/ExfeUtil.js"></script>
     <script type="text/javascript" src="/static/js/comm/func.js"></script>
 
@@ -32,6 +33,7 @@
         DD_belatedPNG.fix('#header .logo,#header .mygear');
     </script>
     <![endif]-->
+
     <?php
     if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
     {
