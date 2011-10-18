@@ -718,7 +718,7 @@ class SActions extends ActionController {
                 $provider= $_POST["provider"];
                 if($provider=="")
                     $provider="email";
-                $identity_id=$identityData->addIdentity($userid,$provider,$identity);
+                $identity_id=$identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
