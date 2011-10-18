@@ -1,10 +1,14 @@
+<? 
+$displayname=$this->getVar("displayname");
+?>
+
 <script type="text/javascript" src="/static/js/user/login.js"></script>
 <div id="fBox" class="loginMask">
 <h5><a href="/" onclick="cancel()">关闭</a><em class="tl">Registeration</em></h5>
 <div class="overFramel">
 <div class="overFramelogin">
 <div class="login">
-<h4>Hi Virushuo !</h4>
+<h4>Hi <?php echo $displayname;?>!</h4>
 <h4>Welcome to <span>exfe</span> !</h4>
 <p class="t"> An utility for hanging out with friends.  </p>
 <p class="t"> <span style="color:#0591af;">X</span> (cross),   </p>
