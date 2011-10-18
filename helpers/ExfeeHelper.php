@@ -186,7 +186,9 @@ class ExfeeHelper extends ActionController
                 $apnargs=array();
 
                 $link=SITE_URL.'/!'.int_to_base62($cross_id);
+                $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
                 $mail["link"]=$link;
+                $mail["mutelink"]=$mutelink;
                 $mail["template_name"]="conversation";
                 $mail["action"]="post";
                 $mail["content"]=$content;
