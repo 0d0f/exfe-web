@@ -25,15 +25,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     ns.showStatus = function(userData){
         if(userData.user_status == 0){
-            jQuery("#global_user_info").html('<div class="global_sign_in_btn"><a id="home_user_login_btn" href="javascript:void(0);">Sign In</a></div>');
+            var loginMenu = '<div class="global_sign_in_btn">'
+                            + '<a id="home_user_login_btn" href="javascript:void(0);">Sign In</a>'
+                            + '</div>';
+            jQuery("#global_user_info").html(loginMenu);
+
             jQuery("#home_user_login_btn").click(function() {
-                var html = showdialog("reg");
-                jQuery(html).modal();
-                bindDialogEvent("reg");
+                var html = odof.user.identification.showdialog("reg");
+                odof.exlibs.ExDialog.initialize("identification", html);
+                odof.user.identification.bindDialogEvent("reg");
             });
         }else{
-            var userPanelHTML = '<div class="uinfo"><em class="light"></em><div class="name" ><div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
-
+            var userPanelHTML = '<div class="uinfo">'
+                                + '<em class="light"></em>'
+                                + '<div class="name" >'
+                                + '<div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
             userPanelHTML += '<div class="myexfe" id="myexfe" ><div class="message"><div class="na">';
             userPanelHTML += '<p class="h">';
             userPanelHTML += '<span>' + userData.cross_num + '</span>';

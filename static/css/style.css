@@ -153,20 +153,15 @@ b.rbottomh b{display:block;height:1px;overflow: hidden;background:#f2f2f2;border
 b.r1{margin: 0 2px}
 b.r2{margin: 0 1px}
 b.r3{margin: 0px}
-.loginMask{
-	position:absolute;
-	padding:0;
-	line-height:200%;
-	z-index:20;
-	width:463px;
-	left:50%;
-	margin-left:-205px;
-	top:100px;
+.identification_dialog{
+	position:absolute; padding:0;
+	width:463px; overflow:hidden;
+	line-height:200%; z-index:201;
 }
-.loginMask h5{margin:0;height:25px;padding:0 8px;background:url(/static/images/fuceng_title.png) no-repeat}
-.loginMask h5 a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
-.loginMask h5 em{float:right;width:90px;height:25px;}
-.loginMask h5 em.tl{color:#226571; font-size:12px;  font-weight:normal; margin-top:-2px; text-shadow:0 0.1em #50d2dd}
+.identification_dialog .titles{margin:0;height:25px;padding:0 8px;background:url(/static/images/fuceng_title.png) no-repeat}
+.identification_dialog .titles div{float:left; height:25px; width:20px;}
+.identification_dialog .titles a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
+.identification_dialog .titles div.tl{float:right; text-align:right; color:#226571; width:420px; font-size:12px;  font-weight:normal; margin-top:-2px; text-shadow:0 0.1em #50d2dd}
 .overFrame{background:#fafafa;padding-bottom:15px;}
 .overFramel{background:#ffffff;padding-bottom:15px;}
 .overFrameh{background:#f2f2f2;padding:10px 0 15px;}
@@ -178,10 +173,10 @@ b.r3{margin: 0px}
 .invi .inbtn{color:#208196;font-size:14px;height:20px;text-align:right;}
 .invi .inbtn p.lb,.upd .upbtn p.uplb{width:150px;float:right;cursor:pointer;}
 .invi .inbtn button{background: url("/static/images/btn.png") no-repeat scroll 2px -176px transparent;border:0;color: #FFFFFF;font:12px Verdana;height: 20px;text-align:center;width:95px;cursor:pointer;display:none;padding-bottom:2px;float:right;margin-left:8px;}
-.loginMask .inbtn em,.loginMask .upbtn em{width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;padding-left:25px;}
-.loginMask .inbtn em.in,.loginMask .upbtn em.in{background-position:left -447px;}
-.loginMask .inbtn em.up,.loginMask .upbtn em.up{background-position:left -494px;}
-.loginMask .inbtn span,.loginMask .upbtn span{padding-left:8px;padding-top:4px;float:right}
+.identification_dialog .inbtn em,.identification_dialog .upbtn em{width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;padding-left:25px;}
+.identification_dialog .inbtn em.in,.identification_dialog .upbtn em.in{background-position:left -447px;}
+.identification_dialog .inbtn em.up,.identification_dialog .upbtn em.up{background-position:left -494px;}
+.identification_dialog .inbtn span,.identification_dialog .upbtn span{padding-left:8px;padding-top:4px;float:right}
 
 
 .upd{width:412px;margin:0 auto;line-height:20px;}
@@ -209,7 +204,10 @@ b.r3{margin: 0px}
 .login h4{font-size:18px;line-height:25px;text-align:center;}
 .login h4 span{font-size:24px;color:#0591af;}
 .login p.t{font-size:14px;margin:20px 0;text-align:center;line-height:20px;}
-.login .account{font-size:14px;margin:20px 0 0 0;line-height:20px;  background:url(/static/images/hr_or.png) no-repeat 0 55px; width:460px}
+.login .account{
+    font-size:14px;margin:20px 0 0 0;line-height:20px;
+    background:url(/static/images/hr_or.png) no-repeat 0 55px;
+}
 .login .account p{ width:200px; float:left}
 .login .account span{ width:150px}
 .login .account span img{ padding:2px 6px }

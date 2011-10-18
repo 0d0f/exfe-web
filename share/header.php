@@ -16,6 +16,11 @@
     <script type="text/javascript" src="/static/js/libs/jquery-1.6.4.js"></script>
     <script type="text/javascript" src="/static/js/comm/ExfeUtil.js"></script>
     <script type="text/javascript" src="/static/js/comm/func.js"></script>
+
+    <script type="text/javascript" src="/static/js/user/UserIdentification.js"></script>
+    <script type="text/javascript" language="javascript" src="/static/js/exlibs/ExDialog.js"></script>
+    <script type="text/javascript" src="/static/js/user/UserStatus.js"></script>
+
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     <script type="text/javascript">
         var site_url = "<?php echo SITE_URL; ?>";

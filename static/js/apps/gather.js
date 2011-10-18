@@ -167,7 +167,7 @@ $(document).ready(function() {
             });
             $.modal.close();
         }});
-        bindDialogEvent("reg");
+        odof.user.identification.bindDialogEvent("reg");
     });
 
     $('.addjn').mousemove(function() {

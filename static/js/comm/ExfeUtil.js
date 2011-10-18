@@ -46,10 +46,19 @@ var odof = {
      * Create a html element
      * @htmlTagName, the name string, for example "div"
      **/
-    util.createElement = function(htmlTagName) {
+    util.createElement = function(htmlTagName, elementID, className) {
         var obj = document.createElement(htmlTagName);
-        Element.extend(obj);
-        return (obj);
+        if(typeof elementID != "undefined"){
+            obj.setAttribute("id",elementID);
+        }
+        if(typeof className != "undefined"){
+            if(jQuery.browser.msie){
+                obj.setAttribute("className",className);
+            }else{
+                obj.setAttribute("class",className);
+            }
+        }
+        return obj;
     };
 
     /**
@@ -187,6 +196,66 @@ var odof = {
         }
         return DBCStr;
     };
+
+    /**
+     * get Windows size
+     * @string.trim;
+     * @Return String
+     **/
+    util.getWindowSize = function() {
+        var window_width = window.innerWidth;
+        var window_height = window.innerHeight;
+        if (jQuery.browser.msie)
+        {
+            if (document.compatMode && document.compatMode != "BackCompat")
+            {
+                window_width = document.documentElement.clientWidth;
+                window_height = document.documentElement.clientHeight;
+            } else {
+                window_width = document.body.clientWidth;
+                window_height = document.body.clientHeight;
+            }
+        }
+        return { "width":window_width, "height":window_height};
+    };
+
+    /**
+     * get page size
+     * @string.trim;
+     * @Return String
+     **/
+    util.getPageSize = function() {
+        var xScroll, yScroll;	
+        if (window.innerHeight && window.scrollMaxY) { // Mozilla
+            xScroll = document.body.scrollWidth;
+            yScroll = window.innerHeight + window.scrollMaxY;
+        } else if (document.body.scrollHeight > document.body.offsetHeight){ // all but Explorer Mac
+            xScroll = document.body.scrollWidth;
+            yScroll = document.body.scrollHeight;
+        } else { // Explorer Mac...would also work in Explorer 6 Strict, Mozilla and Safari
+            xScroll = document.body.offsetWidth;
+            yScroll = document.body.offsetHeight;
+        }
+        var windowWidth, windowHeight;
+        if (self.innerHeight) {	// all except Explorer
+            windowWidth = self.innerWidth;
+            windowHeight = self.innerHeight;
+        } else if (document.documentElement && document.documentElement.clientHeight) { // Explorer 6 Strict Mode
+            windowWidth = document.documentElement.clientWidth;
+            windowHeight = document.documentElement.clientHeight;
+        } else if (document.body) { // other Explorers
+            windowWidth = document.body.clientWidth;
+            windowHeight = document.body.clientHeight;
+        }		
+
+        // for small pages with total size less then the viewport
+        var pageWidth = (xScroll<windowWidth) ? windowWidth: xScroll;
+        var pageHeight = (yScroll<windowHeight) ? windowHeight : yScroll;
+
+        return {PageW:pageWidth, PageH:pageHeight, WinW:windowWidth, WinH:windowHeight};
+    };
+
+
 
     /**
      * -----------------------------------------------------------------

@@ -1,16 +1,9 @@
 <?php include "share/header.php"; ?>
-<link type="text/css" href="/static/css/ui-lightness/jquery-ui-1.7.2.custom.css" rel="stylesheet" />
-<link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/libs/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
-<script type="text/javascript" src="/static/js/libs/timepicker.js"></script>
-<script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
 <script type="text/javascript" src="/static/js/apps/gather.js"></script>
-<script type="text/javascript" src="/static/js/comm/dialog.js"></script>
 
 <!-- Exfe Calendar -->
-<link type="text/css" href="/static/js/excal/skin/default/excal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/excal/excal.js"></script>
+<link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
 
 </head>
 <body>

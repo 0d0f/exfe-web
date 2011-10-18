@@ -1,5 +1,5 @@
 <?php include "share/header.php"; ?>
-<script type="text/javascript" src="/static/js/user/profile.js"></script>
+<script type="text/javascript" src="/static/js/user/UserProfile.js"></script>
 <script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
 <script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
 <script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
