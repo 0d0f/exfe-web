@@ -98,7 +98,6 @@ $token=$_GET["token"];
     </div>
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
-            <a href="<?php echo SITE_URL."/mute/x?id=".int_to_base62($cross["id"])?>">mute</a>
         <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>

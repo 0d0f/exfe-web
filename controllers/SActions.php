@@ -651,7 +651,7 @@ class SActions extends ActionController {
 
         $isNewIdentity=FALSE;
 
-        if(isset($identity) && isset($password)  && isset($repassword) && isset($displayname) )
+        if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
         {
             $Data = $this->getModelByName("user");
             $userid = $Data->AddUser($password);
@@ -659,13 +659,15 @@ class SActions extends ActionController {
             $provider= $_POST["provider"];
             if($provider=="")
                 $provider="email";
-            $identityData->addIdentity($userid,$provider,$identity);
+            $identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
             //TODO: check return value
             $isNewIdentity=TRUE;
+            $this->setVar("displayname", $displayname);
+
         }
 
 
-        if(isset($identity) && isset($password))
+        if($identity!="" && $password!="")
         {
             $Data=$this->getModelByName("identity");
             $userid=$Data->login($identity,$password,$autosignin);
@@ -683,8 +685,10 @@ class SActions extends ActionController {
 
                 if($_GET["url"]!="")
                     header( 'Location:'.$_GET["url"] ) ;
-                else
+                else if( $isNewIdentity==TRUE)
                     $this->displayView();
+                else
+                    header( 'Location: /s/profile' ) ;
             }
             else
             {
@@ -718,7 +722,7 @@ class SActions extends ActionController {
                 $provider= $_POST["provider"];
                 if($provider=="")
                     $provider="email";
-                $identity_id=$identityData->addIdentity($userid,$provider,$identity);
+                $identity_id=$identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
