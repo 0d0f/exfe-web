@@ -1,13 +1,10 @@
 <?php $page="cross";?>
 <?php include "share/header.php"; ?>
-<link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
-<script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
 <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
 <script type="text/javascript" src="/static/js/apps/CrossEdit.js"></script>
 <!-- Exfe Calendar -->
-<link type="text/css" href="/static/js/excal/skin/default/excal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/excal/excal.js"></script>
+<link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
 </head>
 
 <body>
@@ -30,7 +27,6 @@ echo "var myrsvp=".intval($myrsvp)."; \r\n";
 echo "</script>\r\n";
 ?>
 <script type='text/javascript' src='/static/js/user/login.js'></script>
-<script type="text/javascript" src="/static/js/comm/dialog.js"></script>
 <script type="text/javascript" src="/static/js/apps/crossdialog.js"></script>
 <?php
 $original_desc_str = $cross["description"];
@@ -102,7 +98,6 @@ $token=$_GET["token"];
     </div>
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
-            <a href="<?php echo SITE_URL."/mute/x?id=".int_to_base62($cross["id"])?>">mute</a>
         <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>

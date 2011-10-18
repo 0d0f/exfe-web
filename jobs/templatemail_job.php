@@ -28,6 +28,7 @@ class Templatemail_Job
         $action=$mail["action"];
         $content=$mail["content"];
         $link=$mail["link"];
+        $mutelink=$mail["mutelink"];
         $command=$mail["command"];
 
         //$templatename="conversation";
@@ -43,6 +44,7 @@ class Templatemail_Job
         $mail_body=str_replace("%action%",$action,$mail_body);
         $mail_body=str_replace("%content%",$content,$mail_body);
         $mail_body=str_replace("%link%",$link,$mail_body);
+        $mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }

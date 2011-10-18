@@ -40,6 +40,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         }
     };
+    /*
     ns.cancel = function(){
         var oall = document.getElementById("oall");
         var lightBox = document.getElementById("fBox");
@@ -48,6 +49,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             lightBox.style.display = "none";
         }
     };
+    */
 })(ns);
 
 jQuery(document).ready(function() {
