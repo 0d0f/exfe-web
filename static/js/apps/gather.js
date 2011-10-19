@@ -87,7 +87,10 @@ $(document).ready(function() {
 
     // date
     var gDateDefaultText = $('#gather_date_bg').html();
-    $('#datetime_original').keyup(function() {
+    $('#datetime_original').keyup(function(e) {
+        if ((e.keyCode ? e.keyCode : e.which) === 9) {
+            return;
+        }
         if ($(this).val()) {
             $('#gather_date_bg').html('');
         }else {
@@ -96,7 +99,9 @@ $(document).ready(function() {
         // $('#pv_time').html($('#gather_date_bg').html());
     });
     $('#datetime_original').focus(function () {
-        $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur');
+        $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur')
+                            .html($('#gather_date_bg').html() === gDateDefaultText
+                                  ? 'e.g. 6PM Today' : '');
     });
     $('#datetime_original').blur(function () {
         $('#gather_date_bg').addClass('gather_blur').removeClass('gather_focus')
@@ -193,7 +198,7 @@ $(document).ready(function() {
             });
             $.modal.close();
         }});
-        odof.user.identification.bindDialogEvent("reg");
+        odof.user.identification.bindDialogEvent('reg');
     });
 
     // exfee
@@ -418,7 +423,7 @@ function saveDraft()
 {
     var cross    = {title       : $('#g_title').val(),
                     description : $('#g_description').val(),
-                    datetime    : $("input[name='datetime']").val(),
+                    datetime    : $('#datetime').val(),
                     place       : $('#g_place').val(),
                     hostby      : $('#hostby').val(),
                     exfee       : $('#exfee_pv').html()},
