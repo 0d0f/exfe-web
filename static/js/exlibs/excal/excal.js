@@ -9,7 +9,7 @@
 var calendarId = 'exCalendarContainer';
 var calendarContainerClassName = 'exCalendarContainer';
 //exCalendar config.
-var exCalPath = "/static/js/excal";
+var exCalPath = "/static/js/exlibs/excal";
 var exCalLangPath = exCalPath + "/lang";
 var exCalLang = "en";
 
