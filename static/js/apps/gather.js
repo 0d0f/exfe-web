@@ -21,8 +21,8 @@ function getexfee()
     var result = [];
     function collect(obj, exist)
     {
-        var exfee_identity = $(obj).attr("value"),
-            element_id     = $(obj).attr("id"),
+        var exfee_identity = $(obj).attr('value'),
+            element_id     = $(obj).attr('id'),
             spanHost       = $(obj).parent().children('.lb'),
             item           = {exfee_name     : $(obj).html(),
                               exfee_identity : exfee_identity,
@@ -157,9 +157,11 @@ $(document).ready(function() {
     });
 
     // host
-    $("#hostby").focus(function() {
-        if ($(this).attr('enter') == "true") {return;}
-        var html = showdialog("reg");
+    $('#hostby').focus(function() {
+        if ($(this).attr('enter') === 'true') {
+            return;
+        }
+        var html = showdialog('reg');
         $(html).modal({onClose : function() {
             $("#hostby").attr('disabled', true);
             var exfee_pv = [];
@@ -231,31 +233,7 @@ $(document).ready(function() {
         show_exfeedel($(this));
     });
 
-    $('#gather_x').click(function() {
-        $('#gatherxform').submit();
-    });
-
-    /* //modified by handaoliang..
-    $('#datetime').datepicker({
-        duration: '',
-        showTime: true,
-        constrainInput: false,
-        time24h: true,
-        dateFormat: 'yy-mm-dd',
-
-        beforeShow: function(input, inst)
-        {
-            $.datepicker._pos = $.datepicker._findPos(input);
-            $.datepicker._pos[0] = 280;
-            $.datepicker._pos[1] = 50;
-        }
-    });
-    */
-    $('#gatherxform').submit(function(e) {
-        if($('#g_description').attr('enter') == '0')
-            $('#g_description').html('');
-            $('#exfee_list').val(JSON.stringify(getexfee()));
-    });
+    $('#gather_x').click(submitX);
 
     $('#confirmed_all').click(function(e) {
         var check=false;
@@ -282,6 +260,7 @@ $(document).ready(function() {
 
     window.curCross = '';
     window.code     = null;
+    window.draft_id = 0;
     window.new_identity_id = 0;
 
     setInterval('saveDraft()', 10000);
@@ -420,31 +399,54 @@ function updateExfeeList()
     $('#exfee').val('');
 }
 
+function summaryX()
+{
+    return {title       : $('#g_title').val(),
+            description : $('#g_description').val(),
+            datetime    : $('#datetime').val(),
+            place       : $('#g_place').val(),
+            hostby      : $('#hostby').val(),
+            exfee       : JSON.stringify(getexfee())};
+}
+
 function saveDraft()
 {
-    var cross    = {title       : $('#g_title').val(),
-                    description : $('#g_description').val(),
-                    datetime    : $('#datetime').val(),
-                    place       : $('#g_place').val(),
-                    hostby      : $('#hostby').val(),
-                    exfee       : $('#exfee_pv').html()},
-        strCross = JSON.stringify(cross);
+    var strCross = JSON.stringify(summaryX());
 
     if (curCross !== strCross) {
         $.ajax({
             type     : 'POST',
             url      : site_url + '/x/savedraft',
             dataType : 'json',
-            data     : {draft_id : parseInt($('#draft_id').val()),
+            data     : {draft_id : draft_id,
                         cross    : strCross},
             success  : function (data) {
-                if (data && data.draft_id) {
-                    $('#draft_id').val(data.draft_id);
-                }
+                draft_id = data && data.draft_id ? data.draft_id : draft_id;
             }
         });
         curCross = strCross;
     }
+}
+
+function submitX()
+{
+    var cross = summaryX();
+    cross['draft_id'] = draft_id;
+
+    $.ajax({
+        type     : 'POST',
+        url      : site_url + '/x/gather',
+        dataType : 'json',
+        data     : cross,
+        success  : function(data) {
+            if (data && data.success) {
+                location.href = '/!' + data.crossid;
+            }
+        },
+        failure : function(data) {
+
+        }
+    });
 }
 
 /**

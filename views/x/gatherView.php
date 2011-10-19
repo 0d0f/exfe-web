@@ -15,86 +15,82 @@
   <div class="createset">
   <!--<h3>Gather for your <span>X</span></h3>-->
 <ul>
-<li id="calendar_map_container"></li>
-<form action="" method="post" id="gatherxform">
+    <li id="calendar_map_container"></li>
 
-<li>
-    <div id="gather_title_bg" class="gather_focus"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></div>
-    <label class="title">Title</label>
-    <input type="text" name="title" id="g_title" value="" />
-    <input type="hidden" name="draft_id" id="draft_id" value="0" />
-</li>
+    <li>
+        <div id="gather_title_bg" class="gather_focus"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></div>
+        <label class="title">Title</label>
+        <input type="text" name="title" id="g_title" value="" />
+    </li>
 
-<li id="gather_desc_blank">
-    <div id="gather_desc_bg" class="gather_blur">Write some description for your exfe. (optional)</div>
-    <label class="description">Description</label>
-    <textarea name="description" id="g_description"></textarea>
-</li>
+    <li id="gather_desc_blank">
+        <div id="gather_desc_bg" class="gather_blur">Write some description for your exfe. (optional)</div>
+        <label class="description">Description</label>
+        <textarea name="description" id="g_description"></textarea>
+    </li>
 
-<li>
-    <div id="gather_date_bg" class="gather_blur">Sometime</div>
-    <label class="date">Date &amp; Time</label>
-    <input type="text" name="datetime_original" id="datetime_original" onfocus="exCal.initCalendar(this, 'calendar_map_container', 'datetime');" />
-    <input type="hidden" name="datetime" id="datetime" value="" />
-    <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p>
-</li>
+    <li>
+        <div id="gather_date_bg" class="gather_blur">Sometime</div>
+        <label class="date">Date &amp; Time</label>
+        <input type="text" name="datetime_original" id="datetime_original" onfocus="exCal.initCalendar(this, 'calendar_map_container', 'datetime');" />
+        <input type="hidden" name="datetime" id="datetime" value="" />
+        <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p>
+    </li>
 
-<li id="gather_place_blank">
-    <div id="gather_place_bg" class="gather_blur">
+    <li id="gather_place_blank">
+        <div id="gather_place_bg" class="gather_blur">
 Crab House
 Pier 39, 203 C
 San Francisco, CA
 (555) 434-2722
-    </div>
-    <label class="location">Location</label>
-    <textarea name="place" id="g_place" ></textarea>
-</li>
+        </div>
+        <label class="location">Location</label>
+        <textarea name="place" id="g_place" ></textarea>
+    </li>
 
-<li style="margin-top:15px;">
-    <label class="hostby">Host By</label>
-    <input type="text" name="hostby" id="hostby" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
-</li>
+    <li style="margin-top:15px;">
+        <label class="hostby">Host By</label>
+        <input type="text" name="hostby" id="hostby" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
+    </li>
 
-<li>
-    <div id="gather_exfee_bg" class="gather_blur">Enter attendees’ email or id</div>
-    <label class="exfee">Exfee</label>
-    <p class="count"><a id="confirmed_all" check=false href="javascript:void(0);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
-    <span id="post_submit" title="Invite!"></span>
-    <textarea name="comment" id="exfee" ></textarea>
-    <div id="identity_ajax"></div>
-    <div class="creattext">
-        <div class="selecetafri">
-            <div class="sover" id="exfee_pv">
-                <ul class="exfeelist">
-                    <?php if ($external_identity!="") { ?>
-                    <li class="addjn">
-                        <p class="pic20">
-                            <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
-                        </p>
-                        <p class="smcomment">
-                            <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span>
-                            <input id="confirmed_exfee_<?php echo $global_identity_id;?>" class="confirmed_box" checked=true type="checkbox" />
-                            <span class="lb">host</span>
-                        </p>
-                        <button type="button" class="exfee_del"></button>
-                    </li>
-                    <?php } ?>
-                </ul>
+    <li>
+        <div id="gather_exfee_bg" class="gather_blur">Enter attendees’ email or id</div>
+        <label class="exfee">Exfee</label>
+        <p class="count"><a id="confirmed_all" check=false href="javascript:void(0);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+        <span id="post_submit" title="Invite!"></span>
+        <textarea name="comment" id="exfee" ></textarea>
+        <div id="identity_ajax"></div>
+        <div class="creattext">
+            <div class="selecetafri">
+                <div class="sover" id="exfee_pv">
+                    <ul class="exfeelist">
+                        <?php if ($external_identity!="") { ?>
+                        <li class="addjn">
+                            <p class="pic20">
+                                <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
+                            </p>
+                            <p class="smcomment">
+                                <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span>
+                                <input id="confirmed_exfee_<?php echo $global_identity_id;?>" class="confirmed_box" checked=true type="checkbox" />
+                                <span class="lb">host</span>
+                            </p>
+                            <button type="button" class="exfee_del"></button>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</li>
+    </li>
 
-<li>
-    <input type=hidden id="exfee_list" name="exfee_list"  value="" />
-    <label class="privacy">Privacy</label>
-    <p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
-    <button type="button" id="gather_x" class="submit">Submit</button>
-    <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a>
-</li>
+    <li>
+        <label class="privacy">Privacy</label>
+        <p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
+        <button type="button" id="gather_x" class="submit">Submit</button>
+        <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a>
+    </li>
 
-</form>
-  </ul>
+</ul>
 
 
   </div>
