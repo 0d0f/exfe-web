@@ -5,6 +5,7 @@
 <!-- Exfe Calendar -->
 <link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
+<script type="text/javascript" src="/static/js/apps/crossdialog.js"></script>
 </head>
 
 <body>
@@ -26,8 +27,6 @@ echo "var token_expired='".$token_expired."'; \r\n";
 echo "var myrsvp=".intval($myrsvp)."; \r\n";
 echo "</script>\r\n";
 ?>
-<script type='text/javascript' src='/static/js/user/login.js'></script>
-<script type="text/javascript" src="/static/js/apps/crossdialog.js"></script>
 <?php
 $original_desc_str = $cross["description"];
 $desc_str_len = mb_strlen($original_desc_str);

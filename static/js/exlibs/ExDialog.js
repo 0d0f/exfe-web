@@ -111,15 +111,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         // If had create cover return NULL
-        if(document.getElementById(dialogID)){
-            document.getElementById(ns.dialogID).style = "display";
-            return;
+        if(document.getElementById(ns.dialogID)){
+            document.getElementById(ns.dialogID).style.display = "block";
+        }else{
+            //create dialog element
+            ns.dialogElement = odof.util.createElement("div", ns.dialogID, ns.dialogID);
+            document.body.insertBefore(ns.dialogElement,document.body.firstChild);
         }
-        //create cover element
-        odof.exlibs.ExDialog.createCover(ns.coverID);
-        //create dialog element
-        ns.dialogElement = odof.util.createElement("div", ns.dialogID, ns.dialogID);
-        document.body.insertBefore(ns.dialogElement,document.body.firstChild);
+        odof.exlibs.ExDialog.createCover();
     };
 
     ns.hideDialog = function(){
@@ -129,17 +128,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /*
      * initialize cover module
      * */
-    ns.createCover = function(cid){
+    ns.createCover = function(){
         // If had create cover return NULL
         if(document.getElementById(ns.coverID)){
-            document.getElementById(ns.coverID).style="display";
-            return;
+            document.getElementById(ns.coverID).style.display = "block";
+        }else{
+            // Create a element for display cover
+            ns.coverElement = odof.util.createElement("div", ns.coverID, "cover_element");
+            ns.resizeCover();
+            jQuery(window).resize(ns.resizeCover);
+            document.body.appendChild(ns.coverElement);
         }
-        // Create a element for display cover
-        ns.coverElement = odof.util.createElement("div", ns.coverID, "cover_element");
-        ns.resizeCover();
-        jQuery(window).resize(ns.resizeCover);
-        document.body.appendChild(ns.coverElement);
 
     };
 
