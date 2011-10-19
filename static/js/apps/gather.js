@@ -70,9 +70,9 @@ $(document).ready(function() {
     // description
     var gDescDefaultText = $('#gather_desc_bg').html();
     $('#g_description').keyup(function() {
-        if($(this).val()){
+        if ($(this).val()) {
             $('#gather_desc_bg').html('');
-        }else{
+        } else {
             $('#gather_desc_bg').html(gDescDefaultText);
         }
         $('#pv_description').html($('#gather_desc_bg').html());
@@ -87,16 +87,21 @@ $(document).ready(function() {
 
     // date
     var gDateDefaultText = $('#gather_date_bg').html();
-    $('#datetime_original').keyup(function() {
-        if($(this).val()){
+    $('#datetime_original').keyup(function(e) {
+        if ((e.keyCode ? e.keyCode : e.which) === 9) {
+            return;
+        }
+        if ($(this).val()) {
             $('#gather_date_bg').html('');
-        }else{
+        }else {
             $('#gather_date_bg').html(gDateDefaultText);
         }
         // $('#pv_time').html($('#gather_date_bg').html());
     });
     $('#datetime_original').focus(function () {
-        $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur');
+        $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur')
+                            .html($('#gather_date_bg').html() === gDateDefaultText
+                                  ? 'e.g. 6PM Today' : '');
     });
     $('#datetime_original').blur(function () {
         $('#gather_date_bg').addClass('gather_blur').removeClass('gather_focus')
@@ -106,41 +111,52 @@ $(document).ready(function() {
     // place
     var gPlaceDefaultText = $('#gather_place_bg').html();
     $('#g_place').keyup(function() {
-        if($(this).val()){
+        if ($(this).val()) {
             $('#gather_place_bg').html('');
-        }else{
+        } else {
             $('#gather_place_bg').html(gPlaceDefaultText);
         }
-        //$('#pv_description').html($('#gather_place_bg').html());
+        var place_lines = $('#g_place').val(),
+            lines       = place_lines.split("\r\n");
+        if (lines.length <= 1) {
+            lines = place_lines.split("\n");
+        }
+        if (lines.length <= 1) {
+            lines = place_lines.split("\r");
+        }
+        var trim_lines = new Array();
+        if (lines.length > 1) {
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i] != '') {
+                    trim_lines.push(lines[i]);
+                }
+            }
+        }
+        if (trim_lines.length <= 1) {
+            $('#pv_place_line1').html(place_lines);
+            $('#pv_place_line2').html('');
+        } else {
+            $('#pv_place_line1').html(trim_lines[0]);
+            var place_line2 = '';
+            for (i = 1; i < trim_lines.length; i++) {
+                if (i == trim_lines.length - 1) {
+                    place_line2 = place_line2 + trim_lines[i];
+                } else {
+                    place_line2 = place_line2 + trim_lines[i] + '<br />';
+                }
+            }
+            $('#pv_place_line2').html(place_line2);
+        }
     });
     $('#g_place').focus(function () {
         $('#gather_place_bg').addClass('gather_focus').removeClass('gather_blur');
     });
     $('#g_place').blur(function () {
         $('#gather_place_bg').addClass('gather_blur').removeClass('gather_focus')
-                             .html($(this).val() ? '' : gDescDefaultText);
+                             .html($(this).val() ? '' : gPlaceDefaultText);
     });
 
-
-
-    var gPlaceDefaultText = $("#g_place").val();
-    $('#g_place').focus(function () {
-        if($(this).attr("enter") != "true")
-        {
-            //gPlaceDefaultText = $(this).val();
-            $(this).val('');
-        }
-    });
-
-    $('#g_place').blur(function () {
-        if ($(this).val() == "") {
-            $(this).val(gPlaceDefaultText);
-        } else {
-            $(this).attr("enter", "true");
-        }
-    });
-
-
+    // host
     $("#hostby").focus(function() {
         if ($(this).attr('enter') == "true") {return;}
         var html = showdialog("reg");
@@ -182,8 +198,30 @@ $(document).ready(function() {
             });
             $.modal.close();
         }});
-        odof.user.identification.bindDialogEvent("reg");
+        odof.user.identification.bindDialogEvent('reg');
     });
+
+    // exfee
+    var gExfeeDefaultText = $('#gather_exfee_bg').html();
+    $('#exfee').keyup(function(e) {
+        if ($(this).val()) {
+            $('#gather_exfee_bg').html('');
+        } else {
+            $('#gather_exfee_bg').html(gExfeeDefaultText);
+        }
+        if ((e.keyCode ? e.keyCode : e.which) === 13) {
+            identity();
+            e.preventDefault();
+        }
+    });
+    $('#exfee').focus(function () {
+        $('#gather_exfee_bg').addClass('gather_focus').removeClass('gather_blur');
+    });
+    $('#exfee').blur(function () {
+        $('#gather_exfee_bg').addClass('gather_blur').removeClass('gather_focus')
+                            .html($(this).val() ? '' : gExfeeDefaultText);
+    });
+
 
     $('.addjn').mousemove(function() {
         hide_exfeedel($(this));
@@ -193,45 +231,7 @@ $(document).ready(function() {
         show_exfeedel($(this));
     });
 
-    $('#exfee').keypress(function(e) {
-        code = e.keyCode ? e.keyCode : e.which;
-        if (code == 13) {
-            identity();
-            e.preventDefault();
-        }
-    });
-
-    $('#g_place').keyup(function(e) {
-        var place_lines=$('#g_place').val();
-        var lines = place_lines.split("\r\n");
-        if(lines.length<=1)
-            lines = place_lines.split("\n");
-        if(lines.length<=1)
-            lines = place_lines.split("\r");
-        var trim_lines = new Array();
-        if(lines.length>1)
-            for (var i = 0; i < lines.length; i++)
-                if(lines[i] != "")
-                    trim_lines.push(lines[i]);
-
-        if (trim_lines.length <= 1) {
-            $('#pv_place_line1').html(place_lines);
-            $('#pv_place_line2').html('');
-        } else {
-            $('#pv_place_line1').html(trim_lines[0]);
-            var place_line2 = '';
-            for (i = 1; i < trim_lines.length; i++) {
-                if(i == trim_lines.length-1) {
-                    place_line2 = place_line2 + trim_lines[i];
-                } else {
-                    place_line2 = place_line2 + trim_lines[i] + '<br />';
-                }
-            }
-            $('#pv_place_line2').html(place_line2);
-        }
-    });
-
-    $('#gather_x').click(function(e) {
+    $('#gather_x').click(function() {
         $('#gatherxform').submit();
     });
 
@@ -423,7 +423,7 @@ function saveDraft()
 {
     var cross    = {title       : $('#g_title').val(),
                     description : $('#g_description').val(),
-                    datetime    : $("input[name='datetime']").val(),
+                    datetime    : $('#datetime').val(),
                     place       : $('#g_place').val(),
                     hostby      : $('#hostby').val(),
                     exfee       : $('#exfee_pv').html()},
@@ -437,7 +437,7 @@ function saveDraft()
             data     : {draft_id : parseInt($('#draft_id').val()),
                         cross    : strCross},
             success  : function (data) {
-                if (data.draft_id) {
+                if (data && data.draft_id) {
                     $('#draft_id').val(data.draft_id);
                 }
             }
