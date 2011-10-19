@@ -17,6 +17,7 @@
 <ul>
 <li id="calendar_map_container"></li>
 <form action="" method="post" id="gatherxform">
+
 <li>
     <div id="gather_title_bg" class="gather_focus"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></div>
     <label class="title">Title</label>
@@ -48,6 +49,7 @@ San Francisco, CA
     <label class="location">Location</label>
     <textarea name="place" id="g_place" ></textarea>
 </li>
+
 <li style="margin-top:15px;">
     <label class="hostby">Host By</label>
     <input type="text" name="hostby" id="hostby" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
@@ -63,7 +65,7 @@ San Francisco, CA
     <div class="creattext">
         <div class="selecetafri">
             <div class="sover" id="exfee_pv">
-                <ul class="samlcommentlist">
+                <ul class="exfeelist">
                     <?php if ($external_identity!="") { ?>
                     <li class="addjn">
                         <p class="pic20">
@@ -90,6 +92,7 @@ San Francisco, CA
     <button type="button" id="gather_x" class="submit">Submit</button>
     <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a>
 </li>
+
 </form>
   </ul>
 
