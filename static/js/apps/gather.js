@@ -190,7 +190,7 @@ $(document).ready(function() {
                             }
                         });
                         if (!inserted) {
-                            $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv.shift() + '</ul>');
+                            $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
                         }
                     }
                     updateExfeeList();
@@ -376,13 +376,14 @@ function identity()
                 var inserted = false;
                 $('#exfee_pv > ul').each(function(intIndex) {
                     var li = $(this).children('li');
+                    console.log(li.length);
                     if (li.length < 4) {
                         $(this).append(exfee_pv.shift());
                         inserted = true;
                     }
                 });
                 if (!inserted) {
-                    $('#exfee_pv').append('<ul class="samlcommentlist">' + exfee_pv.shift() + '</ul>');
+                    $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
                 }
             }
 
@@ -413,7 +414,7 @@ function updateExfeeList()
                       +     '<p class="cs"><em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em></p>'
                       + '</li>';
     }
-    $('#samlcommentlist').html(htmExfeeList);
+    $('#exfeelist').html(htmExfeeList);
     $('#exfee_confirmed').html(numConfirmed);
     $('#exfee_summary').html(numSummary);
     $('#exfee').val('');

@@ -239,14 +239,14 @@ b.r3{margin: 0px}
 }
 /*title*/
 #g_title {
-    position:absolute; z-index:2; margin:1px 1px 1px 1px;
-    background-color:transparent; width:480px; height:20px;
-    color:#020202; font-size:16px;
+    position:absolute; z-index:2; margin:2px 0px 0px 5px;
+    background-color:transparent; width:480px; height:24px;
+    color:#020202; font-size:18px;
     border:0;
 }
 #gather_title_bg {
-    position:absolute; margin-left:144px; padding-top:2px;
-    z-index:1; width:480px;height:18px;
+    position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
+    z-index:1; width:480px;height:24px; font-size:18px;
 }
 /*description*/
 #gather_desc_blank {
@@ -254,25 +254,25 @@ b.r3{margin: 0px}
 }
 #g_description {
     /* resize: none; */
-    position:absolute; z-index:4; margin:1px 1px 1px 1px;
+    position:absolute; z-index:4; margin:2px 0px 0px 5px;
     background-color:transparent; width:480px; height:60px;
-    color:#020202; font-size:16px;
+    color:#020202; font-size:14px;
     border:none;
 }
 #gather_desc_bg {
-    position:absolute; margin-left:144px; padding-top:2px;
-    z-index:3; width:480px; height:58px;
+    position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
+    z-index:3; width:480px; height:60px; font-size:14px;
 }
 /*datetime*/
 #datetime_original {
-    position:absolute; z-index:6; margin:1px 1px 1px 1px;
-    background-color:transparent; width:163px; height:20px;
-    color:#020202; font-size:16px;
+    position:absolute; z-index:6; margin:2px 0px 0px 5px;
+    background-color:transparent; width:163px; height:24px;
+    color:#020202; font-size:14px;
     border:0;
 }
 #gather_date_bg {
-    position:absolute; margin-left:144px; padding-top:2px;
-    z-index:5; width:163px; height:20px;
+    position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
+    z-index:5; width:163px; height:24px; font-size:14px;
 
 }
 /*place*/
@@ -280,49 +280,49 @@ b.r3{margin: 0px}
     height: 100px;
 }
 #g_place {
-    position:absolute; z-index:8; margin:1px 1px 1px 1px;
+    position:absolute; z-index:8; margin:2px 0px 0px 5px;
     background-color:transparent; width:163px; height:100px;
-    color:#020202; font-size:16px;
+    color:#020202; font-size:14px;
     border:none; resize: none;
 }
 #gather_place_bg {
-    position:absolute; margin-left:144px; padding-top:2px;
-    z-index:7; width:163px; height:100px;
+    position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
+    z-index:7; width:163px; height:100px; font-size:14px;
 }
 /*host*/
 
 /*exfee*/
 #exfee {
-    position:absolute; z-index:10; margin:1px 1px 1px 145px;
-    background-color:transparent; width:250px; height:25px;
-    color:#020202; font-size:16px;
+    position:absolute; z-index:10; margin:4px 0px 0px 148px;
+    background-color:transparent; width:250px; height:24px;
+    color:#020202; font-size:14px;
     border:none; resize: none;
 }
 #gather_exfee_bg {
-    position:absolute; margin-left:144px; padding-top:2px;
-    z-index:9; width:250px; height:25px;
+    position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
+    z-index:9; width:250px; height:24px; font-size:14px;
 }
 
 
 
 .createset ul li #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:1px 0 0 370px; }
 .createset ul li p.redbtn{height:22px;background:url(/static/images/btn.png) no-repeat left -500px; float:right; padding:2px 0 0 20px; margin:2px 45px 0 0; color:#fc6306}
-.createset ul li label{width:105px;height:25px; margin:0 8px 0 0; line-height:25px;float:left;text-align:right;background:url(/static/images/icons.png) no-repeat;padding-right:30px;color:#020202;font-size:14px;}
-.createset ul li .title{background-position:right -475px;}
-.createset ul li .description{background-position:right -505px;}
-.createset ul li .date{background-position:right -535px;}
-.createset ul li .location{background-position:right -565px;}
-.createset ul li .hostby{background-position:right 0px;}
-.createset ul li .exfee{background-position:right -625px;}
-.createset ul li .privacy{background-position:right -595px;}
-.createset ul li span{color:#9C9C9C; font-size:12px;line-height:18px;}
-.createset ul li .count{ float:right; margin:5px 38px 0 0; font-size:13px}
-.createset ul li .count a{ text-decoration:underline}
-.createset ul li .count span{font-size:18px; color:#0591af}
-.createset ul li p.privacy{ line-height:30px; width:200px; float:left}
-.createset ul li p.privacy span{ color:#020202; font-size:14px}
-.createset ul li p.privacy strong{ color:#0591af}
-.createset .creattext{width:487px; margin-left:143px}
+.createset ul li label { width:105px;height:25px; margin:0 8px 0 0; line-height:25px;float:left;text-align:right;background:url(/static/images/icons.png) no-repeat;padding-right:30px;color:#020202;font-size:14px;}
+.createset ul li .title { background-position:right -475px; }
+.createset ul li .description { background-position:right -505px;}
+.createset ul li .date { background-position:right -535px; }
+.createset ul li .location { background-position:right -565px; }
+.createset ul li .hostby { background-position:right 0px; }
+.createset ul li .exfee { background-position:right -625px; }
+.createset ul li .privacy  {background-position:right -595px; }
+.createset ul li span {color:#9C9C9C; font-size:12px;line-height:18px;}
+.createset ul li .count { float:right; margin:5px 38px 0 0; font-size:13px}
+.createset ul li .count a { text-decoration:underline}
+.createset ul li .count span {font-size:18px; color:#0591af}
+.createset ul li p.privacy { line-height:30px; width:200px; float:left}
+.createset ul li p.privacy span { color:#020202; font-size:14px}
+.createset ul li p.privacy strong { color:#0591af}
+.createset .creattext { width:487px; margin-left:143px}
 .createset .creattext .vti{height:25px;line-height:25px;}
 .createset .creattext .vti p{width:50px;}
 .createset .creattext .vti p span{font-size:16px;color:#020202}
@@ -331,14 +331,14 @@ b.r3{margin: 0px}
 .createset .creattext textarea.ctext_1{height:72px;margin:0}
 .createset .creattext .selecetafri{padding:0;border:#c5c5c5 1px dashed;background:#fcfbf9;width:485px;color:#1f1f1f;height:115px;margin-top:40px;overflow:auto;overflow-x:scroll}
 .createset .creattext .sover{width:960px;}
-.createset .creattext .selecetafri .samlcommentlist{width:275px;float:left;margin:2px; }
-.createset .creattext .selecetafri .samlcommentlist li{margin:3px 0 0px 5px; }
-.createset .creattext .selecetafri .samlcommentlist li.bgrond{background:#d5e6e9; }
-.createset .creattext .selecetafri .samlcommentlist .smcomment {width:170px; color:#a0a0a0; }
-.createset .creattext .selecetafri .samlcommentlist .smcomment span {color:#020202;font-size:13px;padding-right:5px;}
-.createset  button.continue{width:92px; height:26px; background:url(/static/images/btn.png) no-repeat right -279px; text-align:center; font:12px/26px Verdana, Arial, Helvetica, sans-serif; color:#626262; border:0; margin-top:15px;float:right;}
-.createset .creattext .selecetafri .samlcommentlist li button{margin:3px 5px 0 0;border:0;width:11px;height:13px;background:url(/static/images/icons.png) no-repeat left -640px;float:right;display:none;cursor:pointer;}
-.createset .creattext .selecetafri .samlcommentlist .smcomment span.lb{background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}
+.createset .creattext .selecetafri .exfeelist { width:275px; float:left; margin:2px; }
+.createset .creattext .selecetafri .exfeelist li { margin:3px 0 0px 5px; }
+.createset .creattext .selecetafri .exfeelist li.bgrond { background:#d5e6e9; }
+.createset .creattext .selecetafri .exfeelist .smcomment { width:170px; color:#a0a0a0; }
+.createset .creattext .selecetafri .exfeelist .smcomment span { color:#020202; font-size:13px; padding-right:5px; }
+.createset  button.continue { width:92px; height:26px; background:url(/static/images/btn.png) no-repeat right -279px; text-align:center; font:12px/26px Verdana, Arial, Helvetica, sans-serif; color:#626262; border:0; margin-top:15px;float:right;}
+.createset .creattext .selecetafri .exfeelist li button { margin:3px 5px 0 0;border:0;width:11px;height:13px;background:url(/static/images/icons.png) no-repeat left -640px;float:right;display:none;cursor:pointer;}
+.createset .creattext .selecetafri .exfeelist .smcomment span.lb { background:url(/static/images/btn.png) no-repeat left -281px;color:#ffffff;padding:2px;font-size:11px;}
 
 .createset .cl{float:left;}
 .createset .cr{float:right;}
