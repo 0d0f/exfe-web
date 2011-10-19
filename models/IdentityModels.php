@@ -483,5 +483,32 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+    public function buildIndex($identities)
+    {
+        //$identities=$this->getIdentitiesByUser($userid);
+
+        global $redis;
+        foreach($identities as $identity)
+        {
+            print_r( $identity);
+            //$identity_array=explode(" ",$identity);
+            //if($identity_array>0)
+            //{
+            //    foreach($identity_array as $identity_a)
+            //    {
+            //        $identity_part="";
+            //        for ($i=0;$i<strlen($identity_a);$i++)
+            //        {
+            //            $identity_part.=$identity_a[$i];
+            //            $redis->zAdd('user', 0, $identity_part);
+            //        }
+            //        $redis->zAdd('user', 0, $identity_part."|".$identity."*");
+
+            //    }
+            //}
+        }
+
+
+    }
 }
 
