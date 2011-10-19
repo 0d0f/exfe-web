@@ -1,47 +1,54 @@
 <?php
-class XActions extends ActionController {
+
+class XActions extends ActionController
+{
 
     public function doGather()
     {
-        $identity_id=$_SESSION["identity_id"];
-        $external_identity=$_SESSION["identity"]["external_identity"];
+        $identity_id = $_SESSION['identity_id'];
+        $external_identity = $_SESSION['identity']['external_identity'];
 
-        if ($external_identity!="") {
-            $this->setVar("external_identity", $external_identity);
+        if ($external_identity !== '') {
+            $this->setVar('external_identity', $external_identity);
         }
 
-        if ($_POST["title"]!="") {
-            $crossdata=$this->getDataModel("x");
-            $placedata=$this->getModelByName("place");
+        if ($_POST['title']) {
+            $crossdata=$this->getDataModel('x');
+            $placedata=$this->getModelByName('place');
 
-            //TODO: package as a translaction
-            if(trim($_POST["place"])!="")
-                $placeid=$placedata->savePlace($_POST["place"]);
-            else
-                $placeid=0;
+            // @todo: package as a translaction
+            if (trim($_POST['place']) !== '') {
+                $placeid=$placedata->savePlace($_POST['place']);
+            } else {
+                $placeid = 0;
+            }
 
             $cross = array(
-                "title"         =>mysql_real_escape_string($_POST["title"]),
-                "description"   =>mysql_real_escape_string($_POST["description"]),
-                "place_id"      =>$placeid,
-                "datetime"      =>$_POST["datetime"]
+                'title'       => mysql_real_escape_string($_POST['title']),
+                'description' => mysql_real_escape_string($_POST['description']),
+                'place_id'    => $placeid,
+                'datetime'    => $_POST['datetime']
             );
 
             $cross_id = $crossdata->gatherCross($identity_id, $cross);
 
-            $logdata=$this->getModelByName("log");
-            $logdata->addLog("identity",$identity_id,"gather","cross",$cross_id,"",$_POST["title"],"");
+            if ($cross_id) {
+                $logdata = $this->getModelByName('log');
+                $logdata->addLog('identity', $identity_id, 'gather', 'cross', $cross_id, '', $_POST['title'], '');
 
-            $helper=$this->getHelperByName("exfee");
-            $helper->addExfeeIdentify($cross_id, json_decode($_POST["exfee_list"], true));
-            $helper->sendInvitation($cross_id, $identity_id);
+                $helper = $this->getHelperByName('exfee');
+                $helper->addExfeeIdentify($cross_id, json_decode($_POST['exfee'], true));
+                $helper->sendInvitation($cross_id, $identity_id);
 
-            // remove draft
-            $XDraft = $this->getModelByName('XDraft');
-            $XDraft->delDraft($_POST['draft_id']);
+                // remove draft
+                $XDraft = $this->getModelByName('XDraft');
+                $XDraft->delDraft($_POST['draft_id']);
 
-            $cross_id_base62 = int_to_base62($cross_id);
-            header( 'Location: /!' . $cross_id_base62 ) ;
+                $result = array('success' => true, 'crossid' => int_to_base62($cross_id));
+            } else {
+                $result = array('success' => false);
+            }
+            echo json_encode($result);
             exit(0);
         }
         $this->displayView();
@@ -72,10 +79,10 @@ class XActions extends ActionController {
     //编辑Cross功能。
     public function doCrossEdit()
     {
-        $crossDataObj = $this->getDataModel("x");
+        $crossDataObj = $this->getDataModel('x');
 
         $identity_id = $_SESSION['identity_id'];
-        $cross_id = base62_to_int($_GET["id"]);
+        $cross_id = base62_to_int($_GET['id']);
         $old_cross=$crossDataObj->getCross($cross_id);
         #if($old_cross)
         #{
