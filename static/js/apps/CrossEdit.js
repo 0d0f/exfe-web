@@ -130,18 +130,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             console.log(e.target.parentNode);
         });
         */
-        var calCallBack = function(displayCalString, standardTimeString){
-            document.getElementById("cross_times").innerHTML = displayCalString;
-            document.getElementById("datetime").value = standardTimeString;
+        var calCallBack = function(displayCalString, standardTimeString) {
+            $('#cross_times').html(displayCalString);
+            $('#datetime').val(standardTimeString);
+            $('#cross_times_area > h3').html(
+                odof.util.getRelativeTime(
+                    Date.parse(odof.util.getDateFromString(standardTimeString)) / 1000
+                )
+            );
         };
 
-        var timeDisplayContainer = document.getElementById("cross_datetime_original");
-        exCal.initCalendar(timeDisplayContainer, 'cross_time_container',calCallBack);
-
+        var timeDisplayContainer = document.getElementById('cross_datetime_original');
+        exCal.initCalendar(timeDisplayContainer, 'cross_time_container', calCallBack);
     };
 
     /**
-     * user edit time, show edit place area.
+     * user edit place, show edit place area.
      *
      * */
     ns.bindEditPlaceEvent = function(){
@@ -429,7 +433,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * change rsvp status
      * by Leask
-     */
+     * */
     ns.changeRsvp = function(target) {
         var intC = parseInt(target.className.substr(1)) + 1;
      // target.className = 'c' + (intC > 4 ? 1 : intC);
@@ -441,7 +445,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * update "check all" status
      * by Leask
-     */
+     * */
     ns.updateCheckAll = function() {
         if ($('.cs > .c2').length) {
             $('#check_all > span').html('Check all');
@@ -455,7 +459,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * do "check all" or "uncheck all"
      * by Leask
-     */
+     * */
     ns.checkAll = function() {
         switch ($('#check_all > em')[0].className) {
             case 'c1':
@@ -470,7 +474,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * get exfee editing result
      * by Leask
-     */
+     * */
     ns.getexfee = function() {
         var result = [];
         function collect(obj, exist)
@@ -498,7 +502,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * show external identity
      * by Leask
-     */
+     * */
     ns.showExternalIdentity = function(event) {
         var target = $(event.target);
         while (!target.hasClass('exfee_item')) {
@@ -527,7 +531,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * roll the exfee that with long name
      * by Leask
-     */
+     * */
     ns.rollExfee = function() {
         var maxWidth = 200;
         if (!ns.rollingExfee) {
@@ -541,23 +545,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
         rollE.css('margin-left', curLeft + 'px');
-    };
-
-    /**
-     * update relative time
-     * by Leask
-     */
-    ns.relativeTime = function() {
-        var curTime = $('#datetime').val();
-        if (curTime === ns.oldTime) {
-            return;
-        }
-        $('#cross_times_area > h3').html(
-            odof.util.getRelativeTime(
-                Date.parse(odof.util.getDateFromString(curTime)) / 1000
-            )
-        );
-        ns.oldTime = curTime;
     };
 
 })(ns);
@@ -594,6 +581,5 @@ jQuery(document).ready(function() {
     });
     odof.cross.edit.rollingExfee = null;
     odof.cross.edit.exfeeRollingTimer = setInterval(odof.cross.edit.rollExfee, 50);
-    odof.cross.edit.relativeTimeTimer = setInterval(odof.cross.edit.relativeTime, 1000);
 
 });
