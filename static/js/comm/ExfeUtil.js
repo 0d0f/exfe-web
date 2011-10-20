@@ -1,7 +1,7 @@
 /**
  * @Description:    The base common function
  * @createDate:     Sup 15,2011
- * @CopyRights:		http://www.exfe.com
+ * @CopyRights:     http://www.exfe.com
  **/
 var odof = {
     version:"0.1",
@@ -225,7 +225,7 @@ var odof = {
      * @Return String
      **/
     util.getPageSize = function() {
-        var xScroll, yScroll;	
+        var xScroll, yScroll;
         if (window.innerHeight && window.scrollMaxY) { // Mozilla
             xScroll = document.body.scrollWidth;
             yScroll = window.innerHeight + window.scrollMaxY;
@@ -246,7 +246,7 @@ var odof = {
         } else if (document.body) { // other Explorers
             windowWidth = document.body.clientWidth;
             windowHeight = document.body.clientHeight;
-        }		
+        }
 
         // for small pages with total size less then the viewport
         var pageWidth = (xScroll<windowWidth) ? windowWidth: xScroll;
@@ -989,7 +989,8 @@ var odof = {
     };
 
     /**
-     * trim string by Leask
+     * trim string
+     * by Leask
      */
     util.trim = function(str)
     {
