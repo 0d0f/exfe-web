@@ -466,6 +466,17 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+    public function ifIdentityIdBelongsUser($identity_id,$user_id)
+    {
+        if(intval($identity_id)>0 && intval($user_id)>0)
+        {
+            $sql="select identityid from user_identity where identityid=$identity_id and userid=$user_id;";
+            $row=$this->getRow($sql);
+            if(intval($row["identityid"])==$identity_id)
+                return $identity_id;
+        }
+        return FALSE;
+    }
     public function reActiveIdentity($identity_id)
     {
         if(intval($identity_id)>0)
@@ -483,29 +494,43 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
-    public function buildIndex($identities)
+    public function buildIndex($userid,$identities)
     {
         //$identities=$this->getIdentitiesByUser($userid);
+        //$userid=$_SESSION["userid"];
 
-        global $redis;
-        foreach($identities as $identity)
+        if(intval($userid)>0)
         {
-            print_r( $identity);
-            //$identity_array=explode(" ",$identity);
-            //if($identity_array>0)
-            //{
-            //    foreach($identity_array as $identity_a)
-            //    {
-            //        $identity_part="";
-            //        for ($i=0;$i<strlen($identity_a);$i++)
-            //        {
-            //            $identity_part.=$identity_a[$i];
-            //            $redis->zAdd('user', 0, $identity_part);
-            //        }
-            //        $redis->zAdd('user', 0, $identity_part."|".$identity."*");
+            $sql="select name,external_identity from user_relations where userid=$userid;";
+            $identities =$this->getAll($sql);
 
-            //    }
-            //}
+            #global $redis;
+
+            $redis = new Redis();
+            $redis->connect('127.0.0.1', 6379);
+            $redis->connect('127.0.0.1'); // port 6379 by default
+            mb_internal_encoding("UTF-8");
+
+
+            foreach($identities as $identitymeta)
+            {
+                $identity=mb_strtolower($identitymeta["name"]." ".$identitymeta["external_identity"]);
+                $identity_array=explode(" ",trim($identity));
+                if($identity_array>0)
+                {
+                    foreach($identity_array as $identity_a)
+                    {
+                        $identity_part="";
+                        for ($i=0;$i<mb_strlen($identity_a);$i++)
+                        {
+                            $identity_part.=mb_substr($identity_a, $i, 1);
+                            $redis->zAdd('u_'.$userid, 0, $identity_part);
+                        }
+                        $redis->zAdd('u_'.$userid, 0, $identity_part."|".$identitymeta["name"]." ".$identitymeta["external_identity"]."*");
+
+                    }
+                }
+            }
         }
 
 

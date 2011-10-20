@@ -93,7 +93,7 @@ class Resque_RedisCluster extends RedisentCluster
 		try {
 			return parent::__call($name, $args[1]);
 		}
-		catch(RedisException $e) {
+		catch(RedisException_a $e) {
 			return false;
 		}
 	}

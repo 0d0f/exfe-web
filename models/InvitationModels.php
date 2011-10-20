@@ -236,5 +236,12 @@ class InvitationModels extends DataModel {
         $sql = "SELECT * FROM `invitations` WHERE (`identity_id` = {$identity_ids}) AND `state` = 0 ORDER by `updated_at` DESC LIMIT {$limit};";
         return $this->getAll($sql);
     }
+    public function getYESInvitationsByCrossId($cross_id,$my_identity_id)
+    {
+        $sql="SELECT identity_id FROM invitations WHERE cross_id=$cross_id AND state=".INVITATION_YES." AND identity_id<>$my_identity_id;";
+        $result=$this->getColumn($sql);
+        return $result;
+
+    }
 
 }

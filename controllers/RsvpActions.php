@@ -56,8 +56,24 @@ class RSVPActions extends ActionController {
                 $responobj["response"]["identity_id"]=$identity_id;
                 $responobj["response"]["state"]=$rsvp;
 
-                $invitationData=$this->getModelByName("Invitation");
+                $invitationData=$this->getModelByName("invitation");
                 $r=$invitationData->rsvp($cross_id,$identity_id,$state);
+                if($state==INVITATION_YES)
+                {
+                    if(intval($_SESSION['userid'])>0)
+                    {
+                        $userid=intval($_SESSION['userid']);
+                        $identityData=$this->getModelByName("identity");
+                        $belong=$identityData->ifIdentityIdBelongsUser($identity_id,$userid); // conformed himself status
+                        if(intval($belong)>0)
+                        {
+                            $relationData=$this->getHelperByName("relation");
+                            $relationData->saveRelationsByXInvitation($userid,$identity_id,$cross_id);
+                        }
+
+                    }
+                }
+
 
                 $logdata=$this->getModelByName("log");
                 $logdata->addLog('identity', $identity_id, 'rsvp', 'cross', $cross_id, '', $state);

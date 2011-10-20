@@ -7,6 +7,7 @@ class ExfeeHelper extends ActionController
     {
         $identityData   = $this->getModelByName('identity');
         $invitationData = $this->getModelByName('invitation');
+        $relationData   = $this->getModelByName('relation');
         $logData        = $this->getModelByName('log');
 
         $curExfees = array();
@@ -51,6 +52,8 @@ class ExfeeHelper extends ActionController
 
             // add invitation
             $invitationData->addInvitation($cross_id, $identity_id, $confirmed);
+            $relationData->saveRelations($_SESSION['userid'],$identity_id);
+
             $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
         }
 

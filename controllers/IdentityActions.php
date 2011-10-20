@@ -47,8 +47,9 @@ class IdentityActions extends ActionController
     public function doComplete()
     {
         $rangelen=50;
-        $key=$_GET["key"];
+        $key=mb_strtolower($_GET["key"]);
         $userid=$_SESSION["userid"];
+        $resultarray=array();
         if(trim($key)!="" && intval($userid)>0)
         {
             $redis = new Redis();
@@ -63,12 +64,11 @@ class IdentityActions extends ActionController
                     return;
                 else
                 {
-                    $identityData->buildIndex($identities);
+                    $identityData->buildIndex($userid,$identities);
                 }
             }
 
             $start=$redis->zRank('u_'.$userid, $key);
-            $resultarray=array();
             if(is_numeric($start))
             {
                 $endflag=FALSE;
@@ -101,9 +101,8 @@ class IdentityActions extends ActionController
                     $result=$redis->zRange('u_'.$userid, $start+1, $start+$rangelen);
                 }
             }
-            return $resultarray;
         }
-
+        echo json_encode($resultarray);
 
     }
 
