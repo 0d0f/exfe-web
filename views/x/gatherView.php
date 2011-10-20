@@ -113,9 +113,8 @@ San Francisco, CA
 </div><!--exfel-->
 
 <div class="exfer">
-<h3>3 months later</h3>
-<p class="tm">
-12:00 AM, Oct 20, 2011 </p>
+<h3 id="pv_relativetime">Sometime</h3>
+<p id="pv_origintime"class="tm"></p>
 <h3 id="pv_place_line1">huoju's home</h3>
 <p class="tm" id="pv_place_line2">shanghai<br>pudong</p>
 

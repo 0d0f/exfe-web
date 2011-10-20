@@ -120,12 +120,8 @@ $(document).ready(function() {
         if ((e.keyCode ? e.keyCode : e.which) === 9) {
             return;
         }
-        if ($(this).val()) {
-            $('#gather_date_bg').html('');
-        }else {
-            $('#gather_date_bg').html(gDateDefaultText);
-        }
-        // $('#pv_time').html($('#gather_date_bg').html());
+        updateRelativeTime();
+        ////////////////////////////////////////////////////////////
     });
     $('#datetime_original').focus(function () {
         $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur')
@@ -296,16 +292,16 @@ $(document).ready(function() {
 
     $('.confirmed_box').live('change', updateExfeeList);
 
-    //getDraft();
+    // getDraft();
 
     updateExfeeList();
 
-
-    //added by handaoliang
+    // added by handaoliang
     jQuery("#datetime_original").bind("focus", function(){
         var displayTextBox = document.getElementById("datetime_original");
         var calendarCallBack = function(displayTimeString, standardTimeString){
             document.getElementById("datetime").value = standardTimeString;
+            updateRelativeTime();
         };
         exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
     })
@@ -486,6 +482,23 @@ function submitX()
 
         }
     });
+}
+
+function updateRelativeTime()
+{
+    if ($('#datetime_original').val()) {
+        $('#gather_date_bg').html('');
+        $('#pv_relativetime').html(
+            odof.util.getRelativeTime(
+                Date.parse(odof.util.getDateFromString($('#datetime').val())) / 1000
+            )
+        );
+        $('#pv_origintime').html($('#datetime_original').val());
+    } else {
+        $('#gather_date_bg').html(gDateDefaultText);
+        $('#pv_relativetime').html(gDateDefaultText);
+        $('#pv_origintime').html('');
+    }
 }
 
 /**
