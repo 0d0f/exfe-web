@@ -5,7 +5,6 @@
 <link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
 <script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
 
-<script type="text/javascript" src="/static/js/libs/jquery.autoresize.js"></script>
 </head>
 <body>
 <?php include "share/nav.php"; ?>
@@ -16,7 +15,6 @@
   <div class="createset">
   <!--<h3>Gather for your <span>X</span></h3>-->
 <ul>
-    <li id="calendar_map_container"></li>
 
     <li>
         <div id="gather_title_bg" class="gather_focus"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></div>
@@ -31,6 +29,7 @@
     </li>
 
     <li>
+        <div id="calendar_map_container"></div>
         <div id="gather_date_bg" class="gather_blur">Sometime</div>
         <label class="date">Date &amp; Time</label>
         <input type="text" name="datetime_original" id="datetime_original" />

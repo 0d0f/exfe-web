@@ -79,26 +79,28 @@ $(document).ready(function() {
     // description
     var gDescDefaultText = $('#gather_desc_bg').html();
     $('#g_description').keyup(function() {
-        var objDesc = $(this);
-        if (objDesc.val()) {
+        var maxChrt = 33,
+            maxLine = 9,
+            objDesc = $(this),
+            extSpce = 10,
+            strDesc = objDesc.val();
+        if (strDesc) {
             $('#gather_desc_bg').html('');
-            $('#pv_description').html(objDesc.val());
-            var strDesc = objDesc.val(),
-                arrDesc = strDesc.split(/\r|\n|\r\n/),
+            $('#pv_description').html(strDesc);
+            var arrDesc = strDesc.split(/\r|\n|\r\n/),
                 intLine = arrDesc.length;
             for (var i in arrDesc) {
-                intLine += arrDesc[i].length / 33 | 0;
+                intLine += arrDesc[i].length / maxChrt | 0;
             }
-            console.log((intLine > 9 ? 9 : intLine));
             var difHeight = parseInt(objDesc.css('line-height'))
-                          * (intLine ? (intLine > 9 ? 9 : intLine) : 1)
-                          + 10 - objDesc.height();
+                          * (intLine ? (intLine > maxLine ? maxLine : intLine) : 1)
+                          + extSpce - (objDesc.height());
             if (difHeight <= 0) {
                 return;
             }
-            objDesc.animate({'height' : '+=' + difHeight}, 300);
-            $('#gather_desc_bg').animate({'height' : '+=' + difHeight}, 300);
-            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 300);
+            objDesc.animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_bg').animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 100);
         } else {
             $('#gather_desc_bg').html(gDescDefaultText);
             $('#pv_description').html(gDescDefaultText);
@@ -111,20 +113,6 @@ $(document).ready(function() {
         $('#gather_desc_bg').addClass('gather_blur').removeClass('gather_focus')
                             .html($(this).val() ? '' : gDescDefaultText);
     });
-//
-//    $('#g_description').autoResize({
-//        maxHeight  : 200,
-//        minHeight  : 100,
-//        extraSpace : 30,
-//        animate    : {
-//            duration : 0,
-//            complete : function () {
-//                var intHeight = $('#g_description').height() - $('#gather_desc_bg').height();
-//                $('#gather_desc_bg').animate({'height' : '+=' + intHeight}, 300);
-//                $('#gather_desc_blank').animate({'height' : '+=' + intHeight}, 300);
-//            }
-//        }
-//    });
 
     // date
     var gDateDefaultText = $('#gather_date_bg').html();
