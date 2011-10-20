@@ -20,8 +20,7 @@ class RelationModels extends DataModel{
                         $provider=$identity["provider"];
                         $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values($userid,$r_identityid,'$name','$external_identity','$provider')"; 
                         $result=$this->query($sql);
-                        if(intval($result["insert_id"])>0)
-                            return intval($result["insert_id"]);
+                        return intval($result);
                     }
                 }
             }

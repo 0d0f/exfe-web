@@ -20,6 +20,7 @@ class ExfeeHelper extends ActionController
             }
         }
 
+        $addrelation=FALSE;
         //TODO: package as a transaction
         foreach ($exfee_list as $exfeeI => $exfeeItem) {
             $identity_id   = isset($exfeeItem['exfee_id'])       ? $exfeeItem['exfee_id']       : null;
@@ -52,9 +53,20 @@ class ExfeeHelper extends ActionController
 
             // add invitation
             $invitationData->addInvitation($cross_id, $identity_id, $confirmed);
-            $relationData->saveRelations($_SESSION['userid'],$identity_id);
+            $r=$relationData->saveRelations($_SESSION['userid'],$identity_id);
+            if($r>0)
+            {
+                $addrelation=TRUE;
+
+            }
 
             $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
+        }
+        if($addrelation==TRUE)
+        {
+            $redis = new Redis();
+            $redis->connect('127.0.0.1', 6379);
+            $redis->zRemrangebyrank("u_".$_SESSION['userid'],0,-1);
         }
 
         if (is_array($invited)) {
