@@ -101,7 +101,7 @@ San Francisco, CA
 <div class="albg" id="content_x">
 <div class="step" id="index">
 <p class="Preview"></p>
-<h2 id="pv_title"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></h2>
+<h2 id="pv_title" class="pv_title_normal"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></h2>
 <div class="exfel">
 <p class="text" id="pv_description">Write some description for your exfe. (optional)</p><!--a href="">Expand</a-->
 <ul class="ynbtn">

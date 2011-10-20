@@ -52,9 +52,17 @@ $(document).ready(function() {
     var gTitlesDefaultText = $('#gather_title_bg').html();
     $('#g_title').focus();
     $('#g_title').keyup(function() {
-        if ($(this).val()) {
+        var objTitle = $(this);
+        if (objTitle.val()) {
             $('#gather_title_bg').html('');
-            $('#pv_title').html($(this).val());
+            $('#pv_title').html(objTitle.val());
+            if ($('#pv_title').hasClass('pv_title_double') && $('#pv_title').height() < 112) {
+                $('#pv_title').addClass('pv_title_normal').removeClass('pv_title_double');
+            }
+            if ($('#pv_title').hasClass('pv_title_normal') && $('#pv_title').height() > 70) {
+                $('#pv_title').addClass('pv_title_double').removeClass('pv_title_normal');
+            }
+
         } else {
             $('#gather_title_bg').html(gTitlesDefaultText);
             $('#pv_title').html(gTitlesDefaultText);
@@ -74,8 +82,8 @@ $(document).ready(function() {
         var objDesc = $(this);
         if (objDesc.val()) {
             $('#gather_desc_bg').html('');
-            $('#pv_description').html($(this).val());
-            var strDesc = $(this).val(),
+            $('#pv_description').html(objDesc.val());
+            var strDesc = objDesc.val(),
                 arrDesc = strDesc.split(/\r|\n|\r\n/),
                 intLine = arrDesc.length;
             for (var i in arrDesc) {
