@@ -27,10 +27,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             form="<form id='identityform' accept-charset='UTF-8' action='' method='post'>"
                 +"<ul>"
-                +"<li><label>Identity:</label><input id='identity' name='identity' type='text' class='inputText' disabled='disabled' value='"+external_identity+"'><em class='ic1'></em></li>"
-                +"<li><label>Password:</label><input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
-                +"<li id='retype' ><label>Re-type:</label><input type='text'  name='retypepassword' class='inputText'/><em class='ic3'></em></li>"
-                +"<li id='displayname'><label>Names:</label><input type='text'  name='displayname' class='inputText'/><em class='warning'></em></li>"
+                +"<li><label>Identity:</label>"
+                +"<input id='identity' name='identity' type='text' class='inputText' disabled='disabled' value='"
+                +external_identity
+                +"'><em class='ic1'></em></li>"
+                +"<li><label>Password:</label>"
+                +"<input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
+                +"<li id='retype' ><label>Re-type:</label>"
+                +"<input type='text'  name='retypepassword' class='inputText'/><em class='ic3'></em></li>"
+                +"<li id='displayname'><label>Names:</label>"
+                +"<input type='text'  name='displayname' class='inputText'/><em class='warning'></em></li>"
                 +"<li><a href='#'>Cancel</a><input type='submit' name='setpwddone' value='Done' class='sub'/></li>"
                 +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                 +"</ul>"
@@ -107,54 +113,57 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.bindDialogEvent = function(type) {
         if(type=="reg") {
-            $('#identity').blur(function() {
-                $.ajax({
-                    type: "GET",
-                    url: site_url+"/s/IfIdentityExist?identity="+$('#identity').val(),
-                    dataType:"json",
-                    success: function(data){
-                        if(data!=null) {
-                            if(data.response.identity_exist=="false")
-                            {//identity
-                                $('#hint').show();
-                                $('#retype').show();
-                                $('#displayname').show();
-                                $('#resetpwd').hide();
-                            } else if(data.response.identity_exist=="true") {
-                                $('#hint').hide();
-                                $('#retype').hide();
-                                $('#displayname').hide();
-                                $('#resetpwd').show();
+            jQuery('#identity').blur(function() {
+                var identityVal = jQuery('#identity').val();
+                if(identityVal != ""){
+                    jQuery.ajax({
+                        type: "GET",
+                        url: site_url+"/s/IfIdentityExist?identity="+identityVal,
+                        dataType:"json",
+                        success: function(data){
+                            if(data!=null) {
+                                if(data.response.identity_exist=="false")
+                                {//identity
+                                    jQuery('#hint').show();
+                                    jQuery('#retype').show();
+                                    jQuery('#displayname').show();
+                                    jQuery('#resetpwd').hide();
+                                } else if(data.response.identity_exist=="true") {
+                                    jQuery('#hint').hide();
+                                    jQuery('#retype').hide();
+                                    jQuery('#displayname').hide();
+                                    jQuery('#resetpwd').show();
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             });
 
-            $('#identificationform').submit(function() {
+            jQuery('#identificationform').submit(function() {
                     var params=ns.getUrlVars();
                     //ajax set password
                     //var token=params["token"];
-                    var identity=$('input[name=identity]').val();
-                    var password=$('input[name=password]').val();
-                    var retypepassword=$('input[name=retypepassword]').val();
-                    var displayname=$('input[name=displayname]').val();
-                    var auto_signin=$('input[name=auto_signin]').val();
+                    var identity=jQuery('input[name=identity]').val();
+                    var password=jQuery('input[name=password]').val();
+                    var retypepassword=jQuery('input[name=retypepassword]').val();
+                    var displayname=jQuery('input[name=displayname]').val();
+                    var auto_signin=jQuery('input[name=auto_signin]').val();
             
-                    if($('#retype').is(':visible')==true &&  password!=retypepassword && password!="" ) {
-                        $('#pwd_hint').html("<span>Check Password</span>");
-                        $('#pwd_hint').show();
+                    if(jQuery('#retype').is(':visible')==true &&  password!=retypepassword && password!="" ) {
+                        jQuery('#pwd_hint').html("<span>Check Password</span>");
+                        jQuery('#pwd_hint').show();
                         return false;
                     }
-                    if($('#displayname').is(':visible')==true && displayname=="") {
-                        $('#pwd_hint').html("<span>set your display name</span>");
-                        $('#pwd_hint').show();
+                    if(jQuery('#displayname').is(':visible')==true && displayname=="") {
+                        jQuery('#pwd_hint').html("<span>set your display name</span>");
+                        jQuery('#pwd_hint').show();
                         return false;
                     }
-                    if(password!=""&& identity!="" && $('#displayname').is(':visible')==false) {
+                    if(password!=""&& identity!="" && jQuery('#displayname').is(':visible')==false) {
                         var poststr = "identity="+identity+"&password="
                                       + encodeURIComponent(password)+"&auto_signin="+auto_signin;
-                        $.ajax({
+                        jQuery.ajax({
                             type: "POST",
                             data: poststr,
                             url: site_url+"/s/dialoglogin",
@@ -162,14 +171,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             success: function(data){
                                 if(data!=null) {
                                     if(data.response.success=="false") {
-                                        $('#login_hint').show();
+                                        jQuery('#login_hint').show();
                                     } else if(data.response.success=="true") {
-                                        $("#hostby").val(identity);
-                                        $("#hostby").attr("enter","true");
+                                        jQuery("#hostby").val(identity);
+                                        jQuery("#hostby").attr("enter","true");
                                         odof.exlibs.ExDialog.hideDialog();
                                         odof.exlibs.ExDialog.destroyCover();
 
-                                        //$.modal.close();
+                                        //jQuery.modal.close();
                                     }
                                     //added by handaoliang
                                     //callback check UserLogin
@@ -181,7 +190,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         var poststr="identity="+identity+"&password="+encodeURIComponent(password)
                                     +"&repassword="+encodeURIComponent(retypepassword)
                                     +"&displayname="+encodeURIComponent(displayname);
-                        $.ajax({
+                        jQuery.ajax({
                             type: "POST",
                             data: poststr,
                             url: site_url+"/s/dialogaddidentity",
@@ -191,15 +200,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 {
                                     if(data.response.success=="false")
                                     {
-                                        $('#login_hint').show();
+                                        jQuery('#login_hint').show();
                                     }
                                     else if(data.response.success=="true")
                                     {
-                                        $("#hostby").val(identity);
-                                        $("#hostby").attr("enter","true");
+                                        jQuery("#hostby").val(identity);
+                                        jQuery("#hostby").attr("enter","true");
                                         odof.exlibs.ExDialog.hideDialog();
                                         odof.exlibs.ExDialog.destroyCover();
-                                        //$.modal.close();
+                                        //jQuery.modal.close();
                                         odof.user.status.checkUserLogin();
                                     }
                                 }
@@ -209,7 +218,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         return false;
                     }
 
-                    $.ajax({
+                    jQuery.ajax({
                         type: "GET",
                         url: site_url+"/identity/get?identity="+identity, 
                         dataType:"json",
@@ -221,15 +230,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             var id=data.response.identity.id;
                             var name=data.response.identity.name;
                             var avatar_file_name=data.response.identity.avatar_file_name;
-                            if($('#exfee_'+id).attr("id")==null)
+                            if(jQuery('#exfee_'+id).attr("id")==null)
                             {
                                 if(name=="")
                                     name=identity;
-                                exfee_pv=exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>';
+                                exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
                             }
                         }
 
-                        $("ul.samlcommentlist").append(exfee_pv);
+                        jQuery("ul.samlcommentlist").append(exfee_pv);
                         }
                 });
                 return false;
@@ -238,15 +247,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 })(ns);
 
-$(document).ready(function(){
+jQuery(document).ready(function(){
 
-        $('#loginform').submit(function() {
-            var identity=$('input[name=loginidentity]').val();
-            var password=$('input[name=password]').val();
-            var auto_signin=$('input[name=auto_signin]').val();
+        jQuery('#loginform').submit(function() {
+            var identity=jQuery('input[name=loginidentity]').val();
+            var password=jQuery('input[name=password]').val();
+            var auto_signin=jQuery('input[name=auto_signin]').val();
             var poststr="identity="+identity+"&password="+encodeURIComponent(password)+"&auto_signin="+auto_signin;
-            $('#login_hint').hide();
-            $.ajax({
+            jQuery('#login_hint').hide();
+            jQuery.ajax({
                 type: "POST",
                 data: poststr,
                 url: site_url+"/s/dialoglogin",
@@ -257,8 +266,8 @@ $(document).ready(function(){
                         if(data.response.success=="false")
                         {
 
-                            //$('#pwd_hint').html("<span>Error identity </span>");
-                            $('#login_hint').show();
+                            //jQuery('#pwd_hint').html("<span>Error identity </span>");
+                            jQuery('#login_hint').show();
                         }
                         else if(data.response.success=="true")
                         {
@@ -270,31 +279,31 @@ $(document).ready(function(){
         return false;
         });
 
-        $('#identityform').submit(function() {
+        jQuery('#identityform').submit(function() {
             var params=ns.getUrlVars();
             //ajax set password
             var token=params["token"];
-            var password=$('input[name=password]').val();
-            var retypepassword=$('input[name=retypepassword]').val();
-            var displayname=$('input[name=displayname]').val();
+            var password=jQuery('input[name=password]').val();
+            var retypepassword=jQuery('input[name=retypepassword]').val();
+            var displayname=jQuery('input[name=displayname]').val();
 
 
             if(password!=retypepassword && password!="" )
             {
-                $('#pwd_hint').html("<span>Check Password</span>");
-                $('#pwd_hint').show();
+                jQuery('#pwd_hint').html("<span>Check Password</span>");
+                jQuery('#pwd_hint').show();
                 return false;
             }
             if(displayname=="")
             {
-                $('#pwd_hint').html("<span>set your display name</span>");
-                $('#pwd_hint').show();
+                jQuery('#pwd_hint').html("<span>set your display name</span>");
+                jQuery('#pwd_hint').show();
                 return false;
             }
             if(token!=""&& cross_id>0)
             {
             var poststr="cross_id="+cross_id+"&password="+encodeURIComponent(password)+"&displayname="+displayname+"&token="+token;
-            $.ajax({
+            jQuery.ajax({
                 type: "POST",
                 data: poststr,
                 url: site_url+"/s/setpwd",
