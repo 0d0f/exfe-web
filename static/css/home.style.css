@@ -2,7 +2,7 @@
 
 #home .home_banner{
     display:block; width:100%; height:550px; min-width:880px; overflow:hidden;
-    background:#EEEEEE url(../images/x-code-bg.jpg) repeat-y center 0;
+    background:#E6E6E6 url(../images/index_bg.jpg) repeat-y center 0;
 }
 #home .home_banner span{
     position:relative; display:block; width:417px; height:410px; margin:auto; margin-top:60px;
@@ -13,16 +13,7 @@
 #home .home_bottom .gather_btn{ clear:both; width:238px; height:57px; margin:auto; }
 #home .home_bottom .gather_btn a{ display:block; width:230px; height:57px; padding:0px; cursor:pointer; }
 
-#home .home_bottom ul{ clear:both; width:695px; height:30px; margin:auto; margin-top:50px; }
-#home .home_bottom ul li{ position:relative; float:left; margin-left:20px; }
-#home .home_bottom ul li.one{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -1px; }
-#home .home_bottom ul li.two{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -33px; }
-#home .home_bottom ul li.three{ width:82px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -252px; }
-#home .home_bottom ul li.four{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -64px; }
-#home .home_bottom ul li.five{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -96px; }
-#home .home_bottom ul li.six{ width:67px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -277px; }
-#home .home_bottom ul li.seven{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -127px; }
-#home .home_bottom ul li.eight{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -160px; }
-#home .home_bottom ul li.nine{ width:90px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -305px; }
-#home .home_bottom ul li.ten{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -193px; }
-#home .home_bottom ul li.eleven{ width:28px; height:28px; background:url(../images/index-bottom-icon.png) no-repeat -1px -225px; }
+#home .home_bottom .home_bottom_btn{
+    clear:both; width:695px; height:36px; margin:auto; margin-top:50px;
+    background:url(../images/index_icon_a.png) no-repeat 0 0;
+}

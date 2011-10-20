@@ -50,7 +50,7 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 
 /** global header **/
 #global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
-#global_header .logo{ position:relative; float:left; width:567px; height:47px; }
+#global_header .logo{ position:relative; float:left; width:450px; height:47px; }
 #global_header .user_info{
     float:right; width:320px; height:47px;
 }
