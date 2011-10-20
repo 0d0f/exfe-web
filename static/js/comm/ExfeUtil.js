@@ -132,7 +132,7 @@ var odof = {
      * @Array, items;
      * @Return Array
      **/
-    util.removeItemByVal = function(myArray, itemToRemove) {
+    util.removeArrayItemByVal = function(myArray, itemToRemove) {
         var j = 0;
         while (j < myArray.length) {
             if (myArray[j] == itemToRemove) {
@@ -148,7 +148,7 @@ var odof = {
      * @Array, items id;
      * @Return Array
      **/
-    util.removeItemById = function(myArray, itemIDToRemove){
+    util.removeArrayItemById = function(myArray, itemIDToRemove){
         if(!util.isArray(myArray) || isNaN(itemIDToRemove)){
             return false;
         }

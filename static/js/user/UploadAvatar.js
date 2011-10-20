@@ -65,6 +65,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             onSelectChange: ns.previewImages
         });
         ns.previewImages(jQuery('#big'),{"width":300, "height":300});
+
+        //初始化选区的位置及大小。
+        jQuery('.x1').val(0);
+        jQuery('.y1').val(0);
+        jQuery('.x2').val(300);
+        jQuery('.y2').val(300);
     };
 
     ns.previewImages = function(img, selection) {

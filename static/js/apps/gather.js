@@ -311,6 +311,16 @@ $(document).ready(function() {
     //getDraft();
 
     updateExfeeList();
+
+
+    //added by handaoliang
+    jQuery("#datetime_original").bind("focus", function(){
+        var displayTextBox = document.getElementById("datetime_original");
+        var calendarCallBack = function(displayTimeString, standardTimeString){
+            document.getElementById("datetime").value = standardTimeString;
+        };
+        exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
+    })
 });
 
 
