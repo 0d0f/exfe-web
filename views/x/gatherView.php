@@ -32,7 +32,7 @@
     <li>
         <div id="gather_date_bg" class="gather_blur">Sometime</div>
         <label class="date">Date &amp; Time</label>
-        <input type="text" name="datetime_original" id="datetime_original" onfocus="exCal.initCalendar(this, 'calendar_map_container', 'datetime');" />
+        <input type="text" name="datetime_original" id="datetime_original" />
         <input type="hidden" name="datetime" id="datetime" value="" />
         <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p>
     </li>
@@ -128,7 +128,6 @@ San Francisco, CA
 
 </div><!--/#index-->
 </div>
-
 
 </body>
 </html>

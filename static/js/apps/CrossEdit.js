@@ -130,12 +130,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             console.log(e.target.parentNode);
         });
         */
+        var calCallBack = function(displayCalString, standardTimeString){
+            document.getElementById("cross_times").innerHTML = displayCalString;
+            document.getElementById("datetime").value = standardTimeString;
+        };
 
-        var timeDisplayContainer = [
-            document.getElementById("cross_datetime_original"),
-            document.getElementById("cross_times")
-        ];
-        exCal.initCalendar(timeDisplayContainer, 'cross_time_container',"datetime");
+        var timeDisplayContainer = document.getElementById("cross_datetime_original");
+        exCal.initCalendar(timeDisplayContainer, 'cross_time_container',calCallBack);
 
     };
 
