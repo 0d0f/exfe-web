@@ -39,10 +39,13 @@ em.h3{font-size:24px;font-family:Verdana; }
 
 /*header*/
 #content{width:880px;margin: auto;}
-#content_x{width:880px;margin: 70px auto;}
+#content_x{width:880px;margin: 20px auto;}
 #content:after { content: ".";display: block;height: 0;clear: both;visibility: hidden;}
 #index{width:800px;margin:0 auto;padding:30px 0;}
+/************
+pause this style
 #index h2{color:#0591af;font-size:40px;height:80px;line-height:80px;font-family:Verdana;font-weight:normal;}
+*******************/
 
 /*fuo*/
 .fsuo{position:relative;}
@@ -229,7 +232,7 @@ b.r3{margin: 0px}
 .login ul .notice span{ margin-left:82px; margin-top:0;}
 
 /*ceate*/
-.createset {width:670px; height:465px; margin:0px auto;padding:0 10px 15px 10px;z-index:10;}
+.createset {width:670px; margin:0px auto;padding:0 10px 15px 10px;z-index:10;}
 .createset h3{ color:#020202; font:Arial, Helvetica, sans-serif; font-size:22px; font-weight:bold; margin-bottom:30px}
 .createset h3 span{ color:#0591af}
 .createset ul li{margin:0 0 10px 0; overflow:hidden; list-style:none; clear:both; }
@@ -303,6 +306,17 @@ b.r3{margin: 0px}
 #gather_exfee_bg {
     position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
     z-index:9; width:250px; height:24px; font-size:14px;
+}
+
+/*preview title*/
+#pv_title {
+    color:#0591af; font-family:Verdana; font-weight:normal; word-break: break-all;
+}
+.pv_title_normal {
+    line-height: 70px; font-size: 64px;
+}
+.pv_title_double {
+    line-height: 56px; font-size: 52px; max-height: 112px; overflow: hidden;
 }
 
 
