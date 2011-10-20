@@ -257,7 +257,7 @@ b.r3{margin: 0px}
     position:absolute; z-index:4; margin:2px 0px 0px 5px;
     background-color:transparent; width:480px; height:30px;
     color:#020202; font-size:14px; line-height: 20px;
-    border:none;
+    border:none; resize: none;
 }
 #gather_desc_bg {
     position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
