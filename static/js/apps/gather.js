@@ -54,10 +54,11 @@ $(document).ready(function() {
     $('#g_title').keyup(function() {
         if ($(this).val()) {
             $('#gather_title_bg').html('');
+            $('#pv_title').html($(this).val());
         } else {
             $('#gather_title_bg').html(gTitlesDefaultText);
+            $('#pv_title').html(gTitlesDefaultText);
         }
-        $('#pv_title').html($('#gather_title_bg').html());
     });
     $('#g_title').focus(function() {
         $('#gather_title_bg').addClass('gather_focus').removeClass('gather_blur');
@@ -70,12 +71,30 @@ $(document).ready(function() {
     // description
     var gDescDefaultText = $('#gather_desc_bg').html();
     $('#g_description').keyup(function() {
-        if ($(this).val()) {
+        var objDesc = $(this);
+        if (objDesc.val()) {
             $('#gather_desc_bg').html('');
+            $('#pv_description').html($(this).val());
+            var strDesc = $(this).val(),
+                arrDesc = strDesc.split(/\r|\n|\r\n/),
+                intLine = arrDesc.length;
+            for (var i in arrDesc) {
+                intLine += arrDesc[i].length / 33 | 0;
+            }
+            console.log((intLine > 9 ? 9 : intLine));
+            var difHeight = parseInt(objDesc.css('line-height'))
+                          * (intLine ? (intLine > 9 ? 9 : intLine) : 1)
+                          + 10 - objDesc.height();
+            if (difHeight <= 0) {
+                return;
+            }
+            objDesc.animate({'height' : '+=' + difHeight}, 300);
+            $('#gather_desc_bg').animate({'height' : '+=' + difHeight}, 300);
+            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 300);
         } else {
             $('#gather_desc_bg').html(gDescDefaultText);
+            $('#pv_description').html(gDescDefaultText);
         }
-        $('#pv_description').html($('#gather_desc_bg').html());
     });
     $('#g_description').focus(function () {
         $('#gather_desc_bg').addClass('gather_focus').removeClass('gather_blur');
@@ -84,6 +103,20 @@ $(document).ready(function() {
         $('#gather_desc_bg').addClass('gather_blur').removeClass('gather_focus')
                             .html($(this).val() ? '' : gDescDefaultText);
     });
+//
+//    $('#g_description').autoResize({
+//        maxHeight  : 200,
+//        minHeight  : 100,
+//        extraSpace : 30,
+//        animate    : {
+//            duration : 0,
+//            complete : function () {
+//                var intHeight = $('#g_description').height() - $('#gather_desc_bg').height();
+//                $('#gather_desc_bg').animate({'height' : '+=' + intHeight}, 300);
+//                $('#gather_desc_blank').animate({'height' : '+=' + intHeight}, 300);
+//            }
+//        }
+//    });
 
     // date
     var gDateDefaultText = $('#gather_date_bg').html();
