@@ -1,13 +1,10 @@
 <?php $page="cross";?>
 <?php include "share/header.php"; ?>
-<link type="text/css" href="/static/css/simplemodal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/libs/jquery.simplemodal.1.4.1.min.js"></script>
-<script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
 <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
 <script type="text/javascript" src="/static/js/apps/CrossEdit.js"></script>
 <!-- Exfe Calendar -->
-<link type="text/css" href="/static/js/excal/skin/default/excal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/excal/excal.js"></script>
+<link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
 </head>
 
 <body>
@@ -29,9 +26,6 @@ echo "var token_expired='".$token_expired."'; \r\n";
 echo "var myrsvp=".intval($myrsvp)."; \r\n";
 echo "</script>\r\n";
 ?>
-<script type='text/javascript' src='/static/js/user/login.js'></script>
-<script type="text/javascript" src="/static/js/comm/dialog.js"></script>
-<script type="text/javascript" src="/static/js/apps/crossdialog.js"></script>
 <?php
 $original_desc_str = $cross["description"];
 $desc_str_len = mb_strlen($original_desc_str);

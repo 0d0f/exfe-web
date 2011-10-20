@@ -50,14 +50,16 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 
 /** global header **/
 #global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
-#global_header .logo{ position:relative; float:left; width:567px; height:47px; }
+#global_header .logo{ position:relative; float:left; width:450px; height:47px; }
 #global_header .user_info{
     float:right; width:320px; height:47px;
 }
 #global_header .user_info a{ color:#FFF; }
 #global_header .user_info .global_sign_in_btn{
-    width:240px; height:20px; text-align:center; margin-top:13px; cursor:pointer;
+    width:240px; height:20px; text-align:center; margin-top:15px; cursor:pointer;
 }
+#global_header .user_info .global_sign_in_btn #home_user_login_btn{ font-weight:bold; font-style:italic; }
+#global_header .user_info .global_sign_in_btn #home_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
 
 #global_header .user_info .uinfo{ position:absolute; width:200px; height:47px; z-index:100; }
 #global_header .user_info .uinfo em.light{
@@ -108,3 +110,13 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 /** 404 error page style control **/
 #error_404_page { background-color:#F2F2F2; }
 #error_404_page .img_404{ width:500px; height:600px; margin:auto; margin-top:20px; background:url(../images/404.jpg) no-repeat 0 0; }
+
+/** Cover effect style control **/
+.cover_element{
+    position:absolute; z-index:200;
+    left:0px; top:0px; background-color:#333;
+    -moz-opacity:0.6; opacity: 0.6;
+    filter: alpha(opacity=60);
+    -khtml-opacity: 0.6;
+}
+/** Cover effect style control **/

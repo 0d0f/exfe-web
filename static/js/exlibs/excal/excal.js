@@ -9,7 +9,7 @@
 var calendarId = 'exCalendarContainer';
 var calendarContainerClassName = 'exCalendarContainer';
 //exCalendar config.
-var exCalPath = "/static/js/excal";
+var exCalPath = "/static/js/exlibs/excal";
 var exCalLangPath = exCalPath + "/lang";
 var exCalLang = "en";
 
@@ -64,16 +64,13 @@ function exCalendar() {
     var weekArr = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     var monthArr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
     var dateField = null;
-    //支持多个地方同时显示。
-    var dateDisplayField = null;
-    //支持隐藏域添加标准时间。
-    var dateHiddenField = null;
+    var exCallBack = null;
 
     /**
      * Exfe Calendar initialize function
      **/
     this.initialize = initialize;
-    function initialize(textFieldContainer, calendarContainer, hiddenFieldContainer) {
+    function initialize(textFieldContainer, calendarContainer, calendarCallBack) {
         //set language...
         weekArr = exLang.weekArr;
         monthArr = exLang.monthArr;
@@ -82,11 +79,12 @@ function exCalendar() {
         if (typeof calendarContainer != "undefined"){
             calendarId = calendarContainer;
         }
-        
-        if (typeof hiddenFieldContainer != "undefined"){
-            dateHiddenField = document.getElementById(hiddenFieldContainer);
-        }
 
+        //set callback function
+        if(typeof calendarCallBack != "undefined"){
+            exCallBack = calendarCallBack;
+        }
+        
         //设置统一的ClassName以方便样式控制。
         calendarContainerObj = document.getElementById(calendarId);
         calendarContainerObj.className = calendarContainerClassName;
@@ -162,32 +160,18 @@ function exCalendar() {
 
             //save standard time.
             var standardDateString = curYear + "-" + monthVar + "-" + dayVar + " 00:00:00";
-            saveStandardDateTime(standardDateString);
 
             //set dateField value.
             dateField.value = dateString;
-
-            //other field display datetime
-            if(dateDisplayField){
-                for(i=0; i < dateDisplayField.length; i++){
-                    dateDisplayField[i].innerHTML = dateString;
-                }
+            if(exCallBack){
+                exCallBack(dateString, standardDateString);
             }
+
             //hide();
             //Refresh date table display
             refreshDateTables(curYear, curMonth, curDay);
         }
         return;
-    }
-
-    /**
-     * * save standard datetime string.
-     *
-     * */
-    function saveStandardDateTime(standardDateTime){
-        if(dateHiddenField){
-            dateHiddenField.value = standardDateTime;
-        }
     }
 
     /**
@@ -332,15 +316,13 @@ function exCalendar() {
                 }
             } catch(e) { /*alert(e);*/ }
         }
+
         //do save the standard date time string.
-        saveStandardDateTime(standardDateTimeString);
+        //saveStandardDateTime(standardDateTimeString);
 
         dateField.value = fieldString;
-        //other field display datetime
-        if(dateDisplayField){
-            for(i=0; i < dateDisplayField.length; i++){
-                dateDisplayField[i].innerHTML = fieldString;
-            }
+        if(exCallBack){
+            exCallBack(fieldString, standardDateTimeString);
         }
 
         //refresh time list
@@ -498,7 +480,7 @@ function exCalendar() {
      * remove a item from array by item id.
      *
      * */
-    function removeItemById(myArray, itemIDToRemove) {
+    function removeArrayItemById(myArray, itemIDToRemove) {
         if(!isArray(myArray) || isNaN(itemIDToRemove)){
             return false;
         }   
@@ -514,13 +496,7 @@ function exCalendar() {
     function show(textFieldContainer) {
         can_hide = 0;
 
-        //支持多个时间显示框。
-        if(isArray(textFieldContainer)){
-            field = textFieldContainer[0];
-            dateDisplayField = removeItemById(textFieldContainer,0);
-        }else{
-            field = textFieldContainer;
-        }
+        field = textFieldContainer;
 
         // If the calendar is visible and associated with, this field do not do anything.
         if (dateField == field) {
@@ -592,8 +568,8 @@ function exCalendar() {
     var exCalObj = new exCalendar();
 
     //main function
-    exCal.initCalendar = function(textFieldContainer, calendarContainer, hiddenFieldContainer){
-        exCalObj.initialize(textFieldContainer, calendarContainer, hiddenFieldContainer);
+    exCal.initCalendar = function(textFieldContainer, calendarContainer, calendarCallBack){
+        exCalObj.initialize(textFieldContainer, calendarContainer, calendarCallBack);
     };
 
     //clear calendar..
