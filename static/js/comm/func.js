@@ -40,6 +40,39 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         }
     };
+    ns.displayPassword = function(pwdBoxID){
+        var originalBoxJID = "#"+pwdBoxID;
+        var displayPWDBoxID = "#"+pwdBoxID+"_a";
+        var curBtnID = "#"+pwdBoxID+"_ic";
+
+
+        if(jQuery(curBtnID).hasClass("ic3")){
+            jQuery(curBtnID).removeClass("ic3");
+            jQuery(curBtnID).addClass("ic2");
+            var originalPWDVal = jQuery(originalBoxJID).val();
+            jQuery(displayPWDBoxID).val(originalPWDVal);
+
+            jQuery(displayPWDBoxID).show();
+            jQuery(originalBoxJID).hide();
+
+            jQuery(displayPWDBoxID).bind("keyup", function(){
+                jQuery(originalBoxJID).val(jQuery(displayPWDBoxID).val());
+            });
+        }else{
+            jQuery(curBtnID).removeClass("ic2");
+            jQuery(curBtnID).addClass("ic3");
+
+            var displayPWDVal = jQuery(displayPWDBoxID).val();
+            jQuery(originalBoxJID).val(displayPWDVal);
+
+            jQuery(displayPWDBoxID).hide();
+            jQuery(originalBoxJID).show();
+
+            jQuery(originalBoxJID).bind("keyup", function(){
+                jQuery(displayPWDBoxID).val(jQuery(originalBoxJID).val());
+            });
+        }
+    };
     /*
     ns.cancel = function(){
         var oall = document.getElementById("oall");

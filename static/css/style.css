@@ -158,6 +158,8 @@ b.r3{margin: 0px}
 	width:463px; overflow:hidden;
 	line-height:200%; z-index:201;
 }
+.idialog_inpage{ margin:auto; position:relative; z-index:0; }
+.idialog_inpage .titles { display:none; }
 .identification_dialog .titles{margin:0;height:25px;padding:0 8px;background:url(/static/images/fuceng_title.png) no-repeat}
 .identification_dialog .titles div{float:left; height:25px; width:20px;}
 .identification_dialog .titles a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
@@ -196,7 +198,7 @@ b.r3{margin: 0px}
 .login{margin:0 auto;}
 .login ul{margin-top:10px;}
 .login ul li{height:35px;line-height:35px;}
-.login ul label{width:75px;height:30px;line-height:30px;float:left;text-align:right;}
+.login ul label{width:75px;height:30px;line-height:20px;float:left;text-align:right;}
 .login ul li input.inputText{height:17px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px;}
 .login .loginbtn p .dx{width:55px;height:15px;position:absolute;top:10px;}
 .login h3{font-size:19px;line-height:25px;text-align:center;}
@@ -217,8 +219,8 @@ b.r3{margin: 0px}
 .login ul li p{height:26px;width:60px;margin:0 auto;}
 .login ul li em{float:left;width:30px;height:20px;background:url(/static/images/icons.png) no-repeat;cursor:pointer;}
 .login ul li em.ic1{background-position:8px -284px;}
-.login ul li em.ic2{background-position:8px -327px;}
-.login ul li em.ic3{background-position:8px -373px;}
+.login ul li em.ic2{background-position:8px -330px;}
+.login ul li em.ic3{background-position:8px -374px;}
 .login ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
 
 .login ul .logincheck input{ margin-left:82px; line-height:200%}

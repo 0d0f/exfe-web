@@ -8,19 +8,7 @@
         <div class="gather_btn">
             <a href="/x/gather"><img src="/static/images/home_gather_btn.jpg" alt="Gather" title="Gather" /></a>
         </div>
-        <ul>
-            <li class="one"></li>
-            <li class="two"></li>
-            <li class="three"></li>
-            <li class="four"></li>
-            <li class="five"></li>
-            <li class="six"></li>
-            <li class="seven"></li>
-            <li class="eight"></li>
-            <li class="nine"></li>
-            <li class="ten"></li>
-            <li class="eleven"></li>
-        </ul>
+        <div class="home_bottom_btn"></div>
     </div>
 </body>
 <script type="text/javascript">
