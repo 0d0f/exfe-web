@@ -54,7 +54,6 @@ class IdentityActions extends ActionController
         {
             $redis = new Redis();
             $redis->connect('127.0.0.1', 6379);
-            $redis->connect('127.0.0.1'); // port 6379 by default
             $count=$redis->zCard('u_'.$userid);
             if($count==0)
             {

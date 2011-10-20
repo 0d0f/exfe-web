@@ -508,7 +508,6 @@ class IdentityModels extends DataModel{
 
             $redis = new Redis();
             $redis->connect('127.0.0.1', 6379);
-            $redis->connect('127.0.0.1'); // port 6379 by default
             mb_internal_encoding("UTF-8");
 
 

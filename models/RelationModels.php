@@ -30,6 +30,9 @@ class RelationModels extends DataModel{
     }
     public function saveRelationsWithIds($userid,$identityid_list,$my_identity_id)
     {
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+
         if ($identityid_list) {
             $identity_ids = implode(' OR `r_identityid` = ', $identityid_list);
             $sql = "SELECT r_identityid FROM `user_relations` WHERE userid=$userid and (`r_identityid` = {$identity_ids});";
@@ -64,6 +67,7 @@ class RelationModels extends DataModel{
                     $value[strlen($value)-1]=";";
                     $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values $value"; 
                     $this->query($sql);
+                    $redis->zRemrangebyrank("u_".$userid,0,-1);
                 }
             }
             // add my_id for other's relationship
@@ -97,9 +101,12 @@ class RelationModels extends DataModel{
                 $value[strlen($value)-1]=";";
                 $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values $value"; 
                 $this->query($sql);
+                foreach($newuserids as $userid)
+                {
+                    $redis->zRemrangebyrank("u_".$userid,0,-1);
+                }
             }
         }
     }
-
 }
 
