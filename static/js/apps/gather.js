@@ -52,17 +52,17 @@ $(document).ready(function() {
     var gTitlesDefaultText = $('#gather_title_bg').html();
     $('#g_title').focus();
     $('#g_title').keyup(function() {
-        var objTitle = $(this);
-        if (objTitle.val()) {
+        var objTitle = $(this),
+            strTitle = objTitle.val();
+        if (strTitle) {
             $('#gather_title_bg').html('');
-            $('#pv_title').html(objTitle.val());
+            $('#pv_title').html(strTitle);
             if ($('#pv_title').hasClass('pv_title_double') && $('#pv_title').height() < 112) {
                 $('#pv_title').addClass('pv_title_normal').removeClass('pv_title_double');
             }
             if ($('#pv_title').hasClass('pv_title_normal') && $('#pv_title').height() > 70) {
                 $('#pv_title').addClass('pv_title_double').removeClass('pv_title_normal');
             }
-
         } else {
             $('#gather_title_bg').html(gTitlesDefaultText);
             $('#pv_title').html(gTitlesDefaultText);
@@ -106,10 +106,10 @@ $(document).ready(function() {
             $('#pv_description').html(gDescDefaultText);
         }
     });
-    $('#g_description').focus(function () {
+    $('#g_description').focus(function() {
         $('#gather_desc_bg').addClass('gather_focus').removeClass('gather_blur');
     });
-    $('#g_description').blur(function () {
+    $('#g_description').blur(function() {
         $('#gather_desc_bg').addClass('gather_blur').removeClass('gather_focus')
                             .html($(this).val() ? '' : gDescDefaultText);
     });
@@ -121,9 +121,8 @@ $(document).ready(function() {
             return;
         }
         updateRelativeTime();
-        ////////////////////////////////////////////////////////////
     });
-    $('#datetime_original').focus(function () {
+    $('#datetime_original').focus(function() {
         $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur')
                             .html($('#gather_date_bg').html() === gDateDefaultText
                                   ? 'e.g. 6PM Today' : '');
@@ -136,41 +135,28 @@ $(document).ready(function() {
     // place
     var gPlaceDefaultText = $('#gather_place_bg').html();
     $('#g_place').keyup(function() {
-        if ($(this).val()) {
+        var strPlace = $('#g_place').val(),
+            arrPlace = strPlace.split(/\r|\n|\r\n/),
+            prvPlace = [];
+        arrPlace.forEach(function(item, i) {
+            if ((item = odof.util.trim(item))) {
+                prvPlace.push(item);
+            }
+        });
+        if (prvPlace.length) {
             $('#gather_place_bg').html('');
+            $('#pv_place_line1').html(prvPlace.shift());
+            $('#pv_place_line2').html(prvPlace.join('<br />'));
+            if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 72) {
+                $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
+            }
+            if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
+                $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
+            }
         } else {
             $('#gather_place_bg').html(gPlaceDefaultText);
-        }
-        var place_lines = $('#g_place').val(),
-            lines       = place_lines.split("\r\n");
-        if (lines.length <= 1) {
-            lines = place_lines.split("\n");
-        }
-        if (lines.length <= 1) {
-            lines = place_lines.split("\r");
-        }
-        var trim_lines = new Array();
-        if (lines.length > 1) {
-            for (var i = 0; i < lines.length; i++) {
-                if (lines[i] != '') {
-                    trim_lines.push(lines[i]);
-                }
-            }
-        }
-        if (trim_lines.length <= 1) {
-            $('#pv_place_line1').html(place_lines);
-            $('#pv_place_line2').html('');
-        } else {
-            $('#pv_place_line1').html(trim_lines[0]);
-            var place_line2 = '';
-            for (i = 1; i < trim_lines.length; i++) {
-                if (i == trim_lines.length - 1) {
-                    place_line2 = place_line2 + trim_lines[i];
-                } else {
-                    place_line2 = place_line2 + trim_lines[i] + '<br />';
-                }
-            }
-            $('#pv_place_line2').html(place_line2);
+            $('#pv_place_line1').html('Somewhere');
+            $('#pv_place_line2').html('in San Francisco');
         }
     });
     $('#g_place').focus(function () {
@@ -308,25 +294,19 @@ $(document).ready(function() {
 });
 
 
-function trim(str)
-{
-    return str.replace(/^\s+|\s+$/g, '');
-}
-
-
 function parseId(strId)
 {
     if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
         var iLt = strId.indexOf('<'),
             iGt = strId.indexOf('>');
-        return {name : trim(strId.substring(0,     iLt)),
-                id   : trim(strId.substring(++iLt, iGt)),
+        return {name : odof.util.trim(strId.substring(0,     iLt)),
+                id   : odof.util.trim(strId.substring(++iLt, iGt)),
                 type : 'email'};
     } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
-        return {id   : trim(strId),
+        return {id   : odof.util.trim(strId),
                 type : 'email'};
     } else {
-        return {id   : trim(strId),
+        return {id   : odof.util.trim(strId),
                 type : 'unknow'};
     }
 }
@@ -340,7 +320,7 @@ function identity()
     var arrIdentityOri = $('#exfee').val().split(/,|;|\r|\n|\t/);
 
     for (var i in arrIdentityOri) {
-        if ((arrIdentityOri[i] = trim(arrIdentityOri[i]))) {
+        if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
             arrIdentitySub.push(parseId(arrIdentityOri[i]));
         }
     }
