@@ -115,7 +115,7 @@
 
 <div class="exfee">
 <div class="feetop"><h3>exfee</h3>  <p class="of"><em id="exfee_confirmed" class="bignb">0</em> of <span id="exfee_summary">0</span><br>confirmed</p></div>
-<ul id="samlcommentlist" class="samlcommentlist"></ul>
+<ul id="exfeelist" class="samlcommentlist"></ul>
 </div><!--exfee-->
 </div><!--exfer-->
 

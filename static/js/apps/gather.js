@@ -49,7 +49,7 @@ $(document).ready(function() {
     $('#identity_ajax').hide();
 
     // title
-    var gTitlesDefaultText = $('#gather_title_bg').html();
+    window.gTitlesDefaultText = $('#gather_title_bg').html();
     $('#g_title').focus();
     $('#g_title').keyup(function() {
         var objTitle = $(this),
@@ -370,7 +370,6 @@ function identity()
                 var inserted = false;
                 $('#exfee_pv > ul').each(function(intIndex) {
                     var li = $(this).children('li');
-                    console.log(li.length);
                     if (li.length < 4) {
                         $(this).append(exfee_pv.shift());
                         inserted = true;
@@ -396,6 +395,7 @@ function updateExfeeList()
         htmExfeeList  = '',
         numConfirmed  = 0,
         numSummary    = 0;
+        console.log(exfees);
     for (var i in exfees) {
         numConfirmed += exfees[i].confirmed;
         numSummary++;
@@ -416,7 +416,7 @@ function updateExfeeList()
 
 function summaryX()
 {
-    return {title       : $('#g_title').val(),
+    return {title       : $('#g_title').val() ? $('#g_title').val() : gTitlesDefaultText,
             description : $('#g_description').val(),
             datetime    : $('#datetime').val(),
             place       : $('#g_place').val(),
