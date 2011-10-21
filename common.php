@@ -63,10 +63,20 @@ function humanIdentity($identity,$user)
     return $identity;
 }
 
-function humanDateTime($timestamp,$lang='en')
+function humanDateTime($timestamp,$time_type=0,$lang='en')
 {
+    $datestr="";
     if($lang=='en')
-        return date("g:i A, M j, Y ", $timestamp);
+    {
+        if($time_type==0)
+            $datestr=date("g:i A, M j, Y ", $timestamp);
+        else if($time_type==1)
+            $datestr="All day, ".date("M j, Y ", $timestamp);
+        else if($time_type==2)
+            $datestr="Anytime, ".date("M j, Y ", $timestamp);
+    }
+
+    return $datestr;
 }
 
 function RelativeTime($timestamp)

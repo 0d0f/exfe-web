@@ -190,10 +190,6 @@ class XActions extends ActionController
                 $this->setVar("token_expired", "true");
 
             }
-
-            //$tokenSession["token_expired"]="true";
-            //               $_SESSION["tokenIdentity"]=$tokenSession;
-
         }
         $this->setVar("showlogin", $showlogin);
         $this->setVar("token", $_GET["token"]);

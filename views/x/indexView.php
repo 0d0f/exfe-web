@@ -66,7 +66,7 @@ foreach($normal_exfee as $exfee)
 }
 
 $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
-$begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]));
+$begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]),intval($cross["time_type"]));
 $token=$_GET["token"];
 ?>
 <div class="cross_view_centerbg">
