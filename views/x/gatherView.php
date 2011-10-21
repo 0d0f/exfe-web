@@ -49,10 +49,10 @@
     </li>
 
     <li>
+        <div id="post_submit" title="Invite!"></div>
         <div id="gather_exfee_bg" class="gather_blur">Enter attendees’ email or id</div>
         <label class="exfee">Exfee</label>
         <p class="count"><a id="confirmed_all" check=false href="javascript:void(0);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
-        <span id="post_submit" title="Invite!"></span>
         <textarea name="comment" id="exfee" ></textarea>
         <div id="identity_ajax"></div>
         <div class="creattext">

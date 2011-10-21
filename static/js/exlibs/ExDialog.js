@@ -35,6 +35,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         var dialogJID = "#" + ns.dialogID;
         var dialogTitlesJID = "#" + ns.dialogTitleID;
+        var dialogCloseBtnJID = "#" + ns.dialogCloseBtnID;
 
         jQuery(dialogJID).css({ top:20, left:parseInt(pageWidth-dialogWidth)/2 });
         jQuery(window).scroll(function() {
@@ -86,7 +87,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery(dialogJID).show();
             drag = false;
         });
-        jQuery('#identification_close_btn').click(function() {
+        jQuery(dialogCloseBtnJID).click(function() {
             ns.hideDialog();
             ns.destroyCover();
             floatshowOne = 0;
@@ -103,11 +104,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.coverID = dialogID + "_cover";
             ns.dialogID = dialogID + "_dialog";
             ns.dialogTitleID = dialogID + "_handler";
+            ns.dialogCloseBtnID = dialogID + "_close_btn";
         }else{
             var randID = odof.util.createRandElementID();
             ns.coverID = randID + "_cover";
             ns.dialogID = randID + "_dialog";
             ns.dialogTitleID = randID + "_handler";
+            ns.dialogCloseBtnID = randID + "_close_btn";
         }
 
         // If had create cover return NULL

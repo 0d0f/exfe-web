@@ -541,6 +541,7 @@ $.imgAreaSelect = function (img, options) {
     }
 
     function setOptions(newOptions) {
+        console.log(newOptions);
         if (newOptions.parent)
             ($parent = $(newOptions.parent)).append($box.add($outer));
 
