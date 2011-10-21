@@ -12,7 +12,7 @@ define('CRLF', sprintf('%s%s', chr(13), chr(10)));
 /**
  * Wraps native Redis errors in friendlier PHP exceptions
  */
-class RedisException extends Exception {
+class RedisException_a extends Exception {
 }
 
 /**
@@ -78,7 +78,7 @@ class Redisent {
         switch (substr($reply, 0, 1)) {
             /* Error reply */
             case '-':
-                throw new RedisException(substr(trim($reply), 4));
+                throw new RedisException_a(substr(trim($reply), 4));
                 break;
             /* Inline reply */
             case '+':
@@ -130,7 +130,7 @@ class Redisent {
                 $response = intval(substr(trim($reply), 1));
                 break;
             default:
-                throw new RedisException("invalid server response: {$reply}");
+                throw new RedisException_a("invalid server response: {$reply}");
                 break;
         }
         /* Party on */
