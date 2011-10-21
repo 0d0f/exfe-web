@@ -23,4 +23,8 @@ define("STATUS_DISCONNECTED",1);
 define("STATUS_VERYIFING",2);
 define("STATUS_CONNECTED",3);
 
+define("TIMETYPE_ALLDAY",1);
+define("TIMETYPE_ANYTIME",2);
+
+
 frontController::createInstance()->dispatch();

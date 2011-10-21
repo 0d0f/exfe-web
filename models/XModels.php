@@ -11,8 +11,13 @@ class XModels extends DataModel {
         //$begin_at=$cross["begin_at"];
         //$end_at=$cross["end_at"];
         //$duration=$cross["duration"];
+        $cross_datetime=$cross["datetime"];
+        $datetime_array=explode(" ",$cross_datetime);
+        $time_type=0;
+        if(sizeof($datetime_array)==1)
+            $time_type=TIMETYPE_ANYTIME; //allday
 
-        $sql="insert into crosses (host_id,created_at,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";
+        $sql="insert into crosses (host_id,created_at,time_type,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),$time_type,FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";
 
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
