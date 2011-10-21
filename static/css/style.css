@@ -333,7 +333,10 @@ b.r3{margin: 0px}
     word-break: break-all; max-height: 96px; overflow: hidden;
 }
 
-.createset ul li #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:100; position: absolute; margin:1px 0 0 370px; }
+.createset ul li #post_submit{
+    background:url("/static/images/enter.png") no-repeat scroll right bottom;
+    width:25px; height:25px; border:none; z-index:100; position: absolute; margin-left:375px;
+}
 .createset ul li p.redbtn{height:22px;background:url(/static/images/btn.png) no-repeat left -500px; float:right; padding:2px 0 0 20px; margin:2px 45px 0 0; color:#fc6306}
 .createset ul li label { width:105px;height:25px; margin:0 8px 0 0; line-height:25px;float:left;text-align:right;background:url(/static/images/icons.png) no-repeat;padding-right:30px;color:#020202;font-size:14px;}
 .createset ul li .title { background-position:right -475px; }
