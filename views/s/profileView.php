@@ -22,7 +22,7 @@
         <button style="display:none" class="change" id="changeavatar">Change...</button>
 
         <!-- upload avatar windows -->
-        <div id="upload_avatar_window" style="display:none;">
+        <!-- div id="upload_avatar_window" class="upload_avatar_dialog" style="display:none;">
             <div class="titles">
                 <p class="l"><a href="javascript:void(0);" id="close_upload_avatar_window_btn">Close Window</a></p>
                 <p class="r">Portrait</p>
@@ -49,7 +49,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div -->
         <!-- upload avatar windows -->
     </div>
     <div class="u_con">
