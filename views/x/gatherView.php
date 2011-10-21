@@ -38,12 +38,7 @@
     </li>
 
     <li id="gather_place_blank">
-        <div id="gather_place_bg" class="gather_blur">
-Crab House
-Pier 39, 203 C
-San Francisco, CA
-(555) 434-2722
-        </div>
+        <div id="gather_place_bg" class="gather_blur">Somewhere<br />in San Francisco</div>
         <label class="location">Location</label>
         <textarea name="place" id="g_place" ></textarea>
     </li>
@@ -115,12 +110,12 @@ San Francisco, CA
 <div class="exfer">
 <h3 id="pv_relativetime">Sometime</h3>
 <p id="pv_origintime"class="tm"></p>
-<h3 id="pv_place_line1">huoju's home</h3>
-<p class="tm" id="pv_place_line2">shanghai<br>pudong</p>
+<h3 id="pv_place_line1" class="pv_place_line1_normal">Somewhere</h3>
+<p class="tm" id="pv_place_line2">in San Francisco</p>
 
 <div class="exfee">
 <div class="feetop"><h3>exfee</h3>  <p class="of"><em id="exfee_confirmed" class="bignb">0</em> of <span id="exfee_summary">0</span><br>confirmed</p></div>
-<ul id="samlcommentlist" class="samlcommentlist"></ul>
+<ul id="exfeelist" class="samlcommentlist"></ul>
 </div><!--exfee-->
 </div><!--exfer-->
 
