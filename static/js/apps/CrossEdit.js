@@ -313,26 +313,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     /**
-     * parse exfee id
-     * by Leask
-     * */
-    ns.parseId = function(strId) {
-        if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
-            var iLt = strId.indexOf('<'),
-                iGt = strId.indexOf('>');
-            return {name : odof.util.trim(strId.substring(0,     iLt)),
-                    id   : odof.util.trim(strId.substring(++iLt, iGt)),
-                    type : 'email'};
-        } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
-            return {id   : odof.util.trim(strId),
-                    type : 'email'};
-        } else {
-            return {id   : odof.util.trim(strId),
-                    type : 'unknow'};
-        }
-    };
-
-    /**
      * identity exfee from server
      * by Leask
      * */
@@ -342,7 +322,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#exfee_input').val('');
         for (var i in arrIdentityOri) {
             if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
-                ns.arrIdentitySub.push(ns.parseId(arrIdentityOri[i]));
+                ns.arrIdentitySub.push(odof.util.parseId(arrIdentityOri[i]));
             }
         }
 
@@ -484,7 +464,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 item           = {exfee_name     : $('#' + element_id + ' > .smcomment > span').html(),
                                   exfee_identity : exfee_identity,
                                   confirmed      : $('#' + element_id + ' > .cs > em')[0].className === 'c1' ? 1 : 0,
-                                  identity_type  : ns.parseId(exfee_identity).type};
+                                  identity_type  : odof.util.parseId(exfee_identity).type};
             if (exist) {
                 item.exfee_id  = $(obj).attr('identityid');
             }

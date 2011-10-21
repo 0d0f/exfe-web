@@ -23,6 +23,7 @@ class ExfeeHelper extends ActionController
         $addrelation=FALSE;
         //TODO: package as a transaction
         foreach ($exfee_list as $exfeeI => $exfeeItem) {
+            $identity_name = isset($exfeeItem['exfee_name'])     ? $exfeeItem['exfee_name']     : null;
             $identity_id   = isset($exfeeItem['exfee_id'])       ? $exfeeItem['exfee_id']       : null;
             $confirmed     = isset($exfeeItem['confirmed'])      ? $exfeeItem['confirmed']      : 0;
             $identity      = isset($exfeeItem['exfee_identity']) ? $exfeeItem['exfee_identity'] : null;
@@ -33,7 +34,7 @@ class ExfeeHelper extends ActionController
                 if ($identity_id === false) {
                     // TODO: add new Identity, need check this identity provider, now default "email"
                     // add identity
-                    $identity_id = $identityData->addIdentityWithoutUser('email', $identity);
+                    $identity_id = $identityData->addIdentityWithoutUser('email', $identity, array('name' => $identity_name));
                 }
             }
 

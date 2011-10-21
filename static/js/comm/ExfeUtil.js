@@ -998,6 +998,28 @@ var odof = {
     };
 
     /**
+     * parse exfee id
+     * by Leask
+     */
+    util.parseId = function(strId)
+    {
+        strId = this.trim(strId);
+        if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
+            var iLt = strId.indexOf('<'),
+                iGt = strId.indexOf('>');
+            return {name : this.trim(strId.substring(0,     iLt)),
+                    id   : this.trim(strId.substring(++iLt, iGt)),
+                    type : 'email'};
+        } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
+            return {id   : this.trim(strId),
+                    type : 'email'};
+        } else {
+            return {id   : this.trim(strId),
+                    type : 'unknow'};
+        }
+    };
+
+    /**
      * parses sql datetime string and returns javascript date object
      * input has to be in this format: 1989-06-04 00:00:00
      * by Leask
