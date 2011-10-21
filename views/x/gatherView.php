@@ -51,6 +51,8 @@
     <li>
         <div id="post_submit" title="Invite!"></div>
         <div id="gather_exfee_bg" class="gather_blur">Enter attendees’ email or id</div>
+        <select id="exfee_complete" size="5">
+        </select>
         <label class="exfee">Exfee</label>
         <p class="count"><a id="confirmed_all" check=false href="javascript:void(0);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
         <textarea name="comment" id="exfee" ></textarea>
@@ -89,7 +91,6 @@
 
 
   </div>
-<!--input id="user_submit" name="commit"  type="submit" value="Submit" /-->
 
 
 <div class="albg" id="content_x">

@@ -48,7 +48,6 @@ class XActions extends ActionController
             } else {
                 $result = array('success' => false);
             }
-            return;
             echo json_encode($result);
             exit(0);
         }

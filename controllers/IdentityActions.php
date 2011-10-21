@@ -89,7 +89,7 @@ class IdentityActions extends ActionController
                         if(strlen($r)==strlen($key))
                         {
                             $endflag=TRUE;
-                            break;                
+                            break;
                         }
                     }
                     if($result<$rangelen || $endflag===TRUE)
@@ -101,7 +101,7 @@ class IdentityActions extends ActionController
                 }
             }
         }
-        echo json_encode($resultarray);
+        echo json_encode($resultarray, JSON_FORCE_OBJECT);
 
     }
 

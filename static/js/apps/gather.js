@@ -221,22 +221,70 @@ $(document).ready(function() {
     // exfee
     var gExfeeDefaultText = $('#gather_exfee_bg').html();
     $('#exfee').keyup(function(e) {
-        if ($(this).val()) {
+        var strExfee = $(this).val();
+        if (strExfee) {
             $('#gather_exfee_bg').html('');
+            var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
+            if (strKey) {
+                $.ajax({
+                    type     : 'GET',
+                    url      : site_url + '/identity/complete?key=' + strKey,
+                    dataType : 'json',
+                    success  : function(data) {
+                        var strFound = '';
+                        for (var item in data) {
+                            var spdItem = odof.util.trim(item).split(' '),
+                                strId   = spdItem.pop(),
+                                strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                            strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
+                        }
+                        if (strFound) {
+                            $('#exfee_complete').html(strFound);
+                            $('#exfee_complete').slideDown(50);
+                        } else {
+                            $('#exfee_complete').slideUp(50);
+                        }
+                    }
+                });
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
         } else {
             $('#gather_exfee_bg').html(gExfeeDefaultText);
+            $('#exfee_complete').slideUp(50);
         }
         if ((e.keyCode ? e.keyCode : e.which) === 13) {
             identity();
             e.preventDefault();
         }
     });
-    $('#exfee').focus(function () {
+    $('#exfee').keydown(function(e) {
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 9:
+            case 40:
+                $('#exfee_complete').focus();
+                e.preventDefault();
+        }
+    });
+    $('#exfee').focus(function() {
         $('#gather_exfee_bg').addClass('gather_focus').removeClass('gather_blur');
     });
-    $('#exfee').blur(function () {
+    $('#exfee').blur(function() {
         $('#gather_exfee_bg').addClass('gather_blur').removeClass('gather_focus')
                             .html($(this).val() ? '' : gExfeeDefaultText);
+    });
+    $('#exfee_complete').hide();
+    $('#exfee_complete').bind('click keydown', function(e) {
+        switch (e.type) {
+            case 'click':
+                complete();
+                break;
+            case 'keydown':
+                switch (e.keyCode ? e.keyCode : e.which) {
+                    case 13:
+                        complete();
+                }
+        }
     });
 
 
@@ -296,6 +344,21 @@ $(document).ready(function() {
         exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
     })
 });
+
+
+function complete()
+{
+    var strValue = $('#exfee_complete').val();
+    if (strValue === '') {
+        return;
+    }
+    var arrInput = $('#exfee').val().split(/,|;|\r|\n|\t/);
+    arrInput.pop();
+    $('#exfee').val(arrInput.join('; ') + '; ' + strValue);
+    $('#exfee_complete').slideUp(50);
+    identity();
+    $('#exfee').focus();
+}
 
 
 function identity()
@@ -378,7 +441,6 @@ function updateExfeeList()
         htmExfeeList  = '',
         numConfirmed  = 0,
         numSummary    = 0;
-        console.log(exfees);
     for (var i in exfees) {
         numConfirmed += exfees[i].confirmed;
         numSummary++;
