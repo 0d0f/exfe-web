@@ -16,8 +16,17 @@ class Email_Job
         global $email_connect;
         
         $link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
+        $rsvpyeslink='<a href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">YES</a>';
+        $rsvpnolink='<a href="'.$site_url.'/rsvp/no?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">NO</a>';
+        $rsvpmaybelink='<a href="'.$site_url.'/rsvp/maybe?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">interested</a>';
         $body=$name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
         $body=$body.$this->args['description'];
+        $body=$body."<p>RSVP:</p>";
+        $body=$body."<p>".$rsvpyeslink."</p>";
+        $body=$body."<p>".$rsvpnolink."</p>";
+        $body=$body."<p>".$rsvpmaybelink."</p>";
+        print $body;
+
         $icsstr=buildICS($this->args);
 
         if($email_connect=="")
