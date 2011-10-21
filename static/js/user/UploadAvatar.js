@@ -11,12 +11,41 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns){
     ns.cropper = null;
     ns.init = function(){   
+        var html = '<div id="upload_avatar_titles" class="titles">'
+                 + '<p class="l"><a href="#" id="upload_avatar_close_btn"></a></p>'
+                 + '<p id="upload_avatar_handler" class="r">Portrait</p>'
+                 + '</div>'
+                 + '<div id="upload_status" style="display:none;"></div>'
+                 + '<div id="container">'
+                 + '<div id="dragdrop_info">Drag and drop<br />your portrait here</div>'
+                 + '<div id="upload_btn_container"></div>'
+                 + '<div id="wrapper">'
+                 + '<div id="div_upload_big"></div>'
+                 + '<input type="hidden" name="img_src" id="img_src" class="img_src" value="" />'
+                 + '<input type="hidden" name="height" id="height" class="height" value="0" />'
+                 + '<input type="hidden" name="width" id="width" class="width" value="0" />'
+                 + '<input type="hidden" id="y1" class="y1" name="y" />'
+                 + '<input type="hidden" id="x1" class="x1" name="x" />'
+                 + '<input type="hidden" id="y2" class="y2" name="y1" />'
+                 + '<input type="hidden" id="x2" class="x2" name="x1" />'
+                 + '<div id="preview_container">'
+                 + '<div class="preview"><div id="preview"></div></div>'
+                 + '<span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>'
+                 + '<a id="saveBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>'
+                 + '</div>'
+                 + '</div>'
+                 + '</div>';
+
+        odof.exlibs.ExDialog.initialize("upload_avatar", html);
+
         //display upload windows.
+        /*
         jQuery("#close_upload_avatar_window_btn").bind("click",function(e){
             jQuery("#upload_avatar_window").hide();
             jQuery("#close_upload_avatar_window_btn").unbind("click");
         });
         jQuery("#upload_avatar_window").show();
+        */
 
         //create file uploader object
         var fileUploaderObj = new exFileUploader.initialize({
@@ -50,6 +79,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery('#big').imgAreaSelect({
             aspectRatio: '1:1',
             handles: true,
+            parent: '#upload_avatar_dialog',
             hide:false,
             show:true,
             fadeSpeed: 200,
