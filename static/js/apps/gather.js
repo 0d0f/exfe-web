@@ -172,7 +172,10 @@ $(document).ready(function() {
         if ($(this).attr('enter') === 'true') {
             return;
         }
-        var html = showdialog('reg');
+        var html = odof.user.identification.showdialog("reg");
+        odof.exlibs.ExDialog.initialize("identification", html);
+        odof.user.identification.bindDialogEvent("reg");
+        /*
         $(html).modal({onClose : function() {
             $("#hostby").attr('disabled', true);
             var exfee_pv = [];
@@ -212,6 +215,7 @@ $(document).ready(function() {
             $.modal.close();
         }});
         odof.user.identification.bindDialogEvent('reg');
+        */
     });
 
     // exfee
