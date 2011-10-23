@@ -87,8 +87,25 @@ class ExfeeHelper extends ActionController
     public function sendIdentitiesInvitation($cross_id,$identity_list)
     {
 
+        $identity_id = $_SESSION['identity_id'];
+        if($identity_id >0)
+        {
+            $identitydata=$this->getModelByName("identity");
+            $host_identity=$identitydata->getIdentityById($identity_id);
+        }
+        $userid=$_SESSION["userid"];
+        if($userid>0)
+        {
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($userid);
+        }
+        $host_identity=humanIdentity($host_identit,$user);
+
         $invitationdata=$this->getModelByName("invitation");
         $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
+
+
+
 
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
@@ -119,7 +136,8 @@ class ExfeeHelper extends ActionController
                         'provider' => $invitation["provider"],
                         'external_identity' => $invitation["external_identity"],
                         'name' => $invitation["name"],
-                        'avatar_file_name' => $invitation["avatar_file_name"]
+                        'avatar_file_name' => $invitation["avatar_file_name"],
+                        'host_identity' => $host_identity
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
 
@@ -143,6 +161,22 @@ class ExfeeHelper extends ActionController
 
     public function sendInvitation($cross_id, $filter)
     {
+        $identity_id = $_SESSION['identity_id'];
+
+        if($identity_id >0)
+        {
+            $identitydata=$this->getModelByName("identity");
+            $host_identity=$identitydata->getIdentityById($identity_id);
+        }
+        $userid=$_SESSION["userid"];
+        if($userid>0)
+        {
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($userid);
+        }
+        $host_identity=humanIdentity($host_identit,$user);
+
+
         $invitationdata=$this->getModelByName("invitation");
         $invitations=$invitationdata->getInvitation_Identities($cross_id, false, $filter);
 
@@ -175,7 +209,8 @@ class ExfeeHelper extends ActionController
                         'provider' => $invitation["provider"],
                         'external_identity' => $invitation["external_identity"],
                         'name' => $invitation["name"],
-                        'avatar_file_name' => $invitation["avatar_file_name"]
+                        'avatar_file_name' => $invitation["avatar_file_name"],
+                        'host_identity' => $host_identity
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
 
