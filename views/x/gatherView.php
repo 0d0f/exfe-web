@@ -80,11 +80,12 @@
         </div>
     </li>
 
-    <li>
+    <li id="gather_submit_blank">
         <label class="privacy">Privacy</label>
         <p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
         <button type="button" id="gather_x" class="submit">Submit</button>
         <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a>
+        <div id="gather_submit_ajax"></div>
     </li>
 
 </ul>

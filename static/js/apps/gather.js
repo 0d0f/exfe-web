@@ -48,6 +48,9 @@ $(document).ready(function() {
     $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
     $('#identity_ajax').hide();
 
+    $('#gather_submit_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
+    $('#gather_submit_ajax').hide();
+
     // title
     window.gTitlesDefaultText = $('#gather_title_bg').html();
     $('#g_title').focus();
@@ -531,6 +534,8 @@ function saveDraft()
 
 function submitX()
 {
+    $('#gather_submit_ajax').show();
+
     var cross = summaryX();
     cross['draft_id'] = draft_id;
 
@@ -543,9 +548,10 @@ function submitX()
             if (data && data.success) {
                 location.href = '/!' + data.crossid;
             }
+            $('#gather_submit_ajax').hide();
         },
         failure : function(data) {
-
+            $('#gather_submit_ajax').hide();
         }
     });
 }
