@@ -343,6 +343,7 @@ $(document).ready(function() {
     window.draft_id = 0;
     window.new_identity_id = 0;
     window.completeTimer   = null;
+    window.xSubmitting     = false;
 
     setInterval(saveDraft, 10000);
 
@@ -538,6 +539,10 @@ function submitX()
 {
     $('#gather_submit_ajax').show();
 
+    if (xSubmitting) { return; }
+
+    xSubmitting = true;
+
     var cross = summaryX();
     cross['draft_id'] = draft_id;
 
@@ -551,9 +556,11 @@ function submitX()
                 location.href = '/!' + data.crossid;
             }
             $('#gather_submit_ajax').hide();
+            xSubmitting = false;
         },
         failure : function(data) {
             $('#gather_submit_ajax').hide();
+            xSubmitting = false;
         }
     });
 }
