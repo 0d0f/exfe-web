@@ -127,8 +127,11 @@ $(document).ready(function() {
     });
     $('#datetime_original').focus(function() {
         $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur')
-                            .html($('#gather_date_bg').html() === gDateDefaultText
-                                  ? 'e.g. 6PM Today' : '');
+                            .html('');
+                         // @todo: time format tips
+                         // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
+        // @todo: disable time input box for version #oC
+        $('#datetime_original').blur();
     });
     $('#datetime_original').blur(function () {
         $('#gather_date_bg').addClass('gather_blur').removeClass('gather_focus')
@@ -288,7 +291,6 @@ $(document).ready(function() {
                         e.preventDefault();
                         break;
                     case 38:
-                        console.log($('#exfee_complete').val());
                         if ($('#exfee_complete').val() === strExfeeCompleteDefault) {
                             $('#exfee').focus();
                             e.preventDefault();
