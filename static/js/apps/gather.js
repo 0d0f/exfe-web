@@ -221,6 +221,15 @@ $(document).ready(function() {
     // exfee
     var gExfeeDefaultText = $('#gather_exfee_bg').html();
     $('#exfee').keyup(function(e) {
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 13:
+                identity();
+                e.preventDefault();
+                break;
+            case 27:
+                $('#exfee_complete').slideUp(50);
+                return;
+        }
         var strExfee = $(this).val();
         if (strExfee) {
             $('#gather_exfee_bg').html('');
@@ -236,6 +245,9 @@ $(document).ready(function() {
                             var spdItem = odof.util.trim(item).split(' '),
                                 strId   = spdItem.pop(),
                                 strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                            if (!strFound) {
+                                window.strExfeeCompleteDefault = strId;
+                            }
                             strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
                         }
                         if (strFound) {
@@ -252,10 +264,6 @@ $(document).ready(function() {
         } else {
             $('#gather_exfee_bg').html(gExfeeDefaultText);
             $('#exfee_complete').slideUp(50);
-        }
-        if ((e.keyCode ? e.keyCode : e.which) === 13) {
-            identity();
-            e.preventDefault();
         }
     });
     $('#exfee').keydown(function(e) {
@@ -275,14 +283,39 @@ $(document).ready(function() {
     });
     $('#exfee_complete').hide();
     $('#exfee_complete').bind('click keydown', function(e) {
+        var intKey = e.keyCode ? e.keyCode : e.which;
         switch (e.type) {
             case 'click':
                 complete();
                 break;
             case 'keydown':
-                switch (e.keyCode ? e.keyCode : e.which) {
+                switch (intKey) {
+                    case 9:
+                        if (e.shiftKey) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
                     case 13:
                         complete();
+                        break;
+                    case 27:
+                        $('#exfee_complete').slideUp(50);
+                    case 8:
+                        $('#exfee').focus();
+                        e.preventDefault();
+                        break;
+                    case 38:
+                        console.log($('#exfee_complete').val());
+                        if ($('#exfee_complete').val() === strExfeeCompleteDefault) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    default:
+                        if ((intKey > 64 && intKey < 91) || (intKey > 47 && intKey < 58)) {
+                            $('#exfee').focus();
+                        }
                 }
         }
     });
@@ -326,7 +359,7 @@ $(document).ready(function() {
     window.draft_id = 0;
     window.new_identity_id = 0;
 
-    setInterval('saveDraft()', 10000);
+    setInterval(saveDraft, 10000);
 
     $('.confirmed_box').live('change', updateExfeeList);
 
