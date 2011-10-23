@@ -495,11 +495,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         switch (event.type) {
             case 'mouseenter':
                 ns.rollingExfee = id;
-                $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn();
+                $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn(100);
                 break;
             case 'mouseleave':
                 ns.rollingExfee = null;
-                $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut();
+                $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut(100);
                 var rollE = $('#' + id + ' > .smcomment > div');
                 rollE.animate({
                     marginLeft : '+=' + (0 - parseInt(rollE.css('margin-left')))},
