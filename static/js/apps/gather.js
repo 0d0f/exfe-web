@@ -235,29 +235,8 @@ $(document).ready(function() {
             $('#gather_exfee_bg').html('');
             var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
             if (strKey) {
-                $.ajax({
-                    type     : 'GET',
-                    url      : site_url + '/identity/complete?key=' + strKey,
-                    dataType : 'json',
-                    success  : function(data) {
-                        var strFound = '';
-                        for (var item in data) {
-                            var spdItem = odof.util.trim(item).split(' '),
-                                strId   = spdItem.pop(),
-                                strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
-                            if (!strFound) {
-                                window.strExfeeCompleteDefault = strId;
-                            }
-                            strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
-                        }
-                        if (strFound) {
-                            $('#exfee_complete').html(strFound);
-                            $('#exfee_complete').slideDown(50);
-                        } else {
-                            $('#exfee_complete').slideUp(50);
-                        }
-                    }
-                });
+                clearTimeout(completeTimer);
+                completeTimer = setTimeout("chkComplete('" + strKey + "')", 1000);
             } else {
                 $('#exfee_complete').slideUp(50);
             }
@@ -358,6 +337,7 @@ $(document).ready(function() {
     window.code     = null;
     window.draft_id = 0;
     window.new_identity_id = 0;
+    window.completeTimer   = null;
 
     setInterval(saveDraft, 10000);
 
@@ -377,6 +357,34 @@ $(document).ready(function() {
         exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
     })
 });
+
+
+function chkComplete(strKey)
+{
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/complete?key=' + strKey,
+        dataType : 'json',
+        success  : function(data) {
+            var strFound = '';
+            for (var item in data) {
+                var spdItem = odof.util.trim(item).split(' '),
+                    strId   = spdItem.pop(),
+                    strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                if (!strFound) {
+                    window.strExfeeCompleteDefault = strId;
+                }
+                strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
+            }
+            if (strFound) {
+                $('#exfee_complete').html(strFound);
+                $('#exfee_complete').slideDown(50);
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
+        }
+    });
+}
 
 
 function complete()
