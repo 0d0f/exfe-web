@@ -155,9 +155,9 @@ class XActions extends ActionController
 
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
-        if($check["allow"]=="false")
-        {
-            header( 'Location: /s/login' ) ;
+        if ($check["allow"] == "false") {
+            $this->setVar('fromaddress', $_SERVER['HTTP_REFERER'] ?: null);
+            header('Location: /x/forbidden');
             exit(0);
         }
         if($check["type"]=="token")
@@ -259,4 +259,10 @@ class XActions extends ActionController
             $this->displayView();
         }
     }
+
+    public function doForbidden()
+    {
+        $this->displayView();
+    }
+
 }

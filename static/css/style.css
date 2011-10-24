@@ -132,7 +132,7 @@ pause this style
 
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
-.smcomment { float:left; font-size:12px; width: 190px; overflow: hidden; }
+.smcomment { float:left; font-size:12px; width: 190px; overflow: hidden; white-space: nowrap; }
 .smcomment div { float: left; }
 .smcomment span.ex_name { color: #020202; font-size: 13px; padding-right: 5px; }
 .smcomment span.lb { background: url(/static/images/btn.png) no-repeat left -281px; color: #ffffff; padding: 3px; font-size: 11px; }
@@ -290,7 +290,11 @@ b.r3{margin: 0px}
     position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
     z-index:7; width:163px; height:100px; font-size:14px;
 }
-/*host*/
+/*host by*/
+#hostby {
+    padding:2px 0px 0px 5px;
+    width:163px; height:24px; font-size:14px;
+}
 
 /*exfee*/
 #exfee {
@@ -724,6 +728,11 @@ b.r3{margin: 0px}
 }
 .imgareaselect-selection { }
 
+/** cross - edit ** by leask **/
+#cross_titles {
+    color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+}
+
 /** cross - edit - exfee ** by Leask **/
 #exfee_area {
     padding: 10px;
@@ -842,3 +851,53 @@ b.r3{margin: 0px}
     background: -webkit-gradient(linear, 0 0, 0 100%, from(rgb(255, 255, 255)), to(rgb(235, 235, 235)));
 }
 /**********************************/
+
+/** special_page **/
+#special_page_body {
+    background-color: #fbfbfb;
+}
+.special_page {
+    width: 840px;
+    margin: 200px auto auto auto;
+    color: #333333;
+}
+.special_main_area {
+    background: url(../images/special_page_subtitle_bg.png) no-repeat bottom center;
+}
+.special_page_title {
+    font-family: Verdana;
+    font-size: 36px;
+    line-height: 42px;
+    text-align: center;
+}
+.special_page_subtitle {
+    font-family: Verdana;
+    font-size: 24px;
+    line-height: 80px;
+    margin-top: 36px;
+    text-align: center;
+}
+.special_x {
+    color: #0591ac;
+}
+.spacial_page_buttons {
+    margin: 60px auto auto auto;
+    width: 100px;
+}
+.spacial_page_buttons button {
+    border:1px solid rgb(192, 192, 192);
+    background-color: rgb(249, 249, 249);
+    color: rgb(51, 51, 51);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    width: 96px;
+    height: 26px;
+}
+.special_page_identity {
+    font-style: italic;
+    color: #666666;
+}
+
+/** forbidden **/
+
