@@ -7,34 +7,106 @@ class Email_Job
 {
     public function perform()
     {
-        $title="来自 Exfe 的活动邀请：".$this->args['title'];
         $name=$this->args['name'];
         if($this->args['name']=="")
-        $name=$this->args['external_identity'];
+            $name=$this->args['external_identity'];
+
+        $by_identity_name=$this->args["by_identity"]['name'];
+        if($by_identity_name=="")
+            $by_identity_name=$this->args["by_identity"]['external_identity'];
+
         $host_identity=$this->args['host_identity'];
         $host_name=$host_identity["name"];
+        $host_avatar=$host_identity["avatar_file_name"];
+        $rsvpyeslink='<a href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">YES</a>';
     
         global $site_url;
         global $email_connect;
         
-        $link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
-        $rsvpyeslink='<a href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">YES</a>';
-        $rsvpnolink='<a href="'.$site_url.'/rsvp/no?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">NO</a>';
-        $rsvpmaybelink='<a href="'.$site_url.'/rsvp/maybe?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">interested</a>';
-        $body=$host_name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
-        $body=$body.$this->args['description'];
-        $body=$body."<p>RSVP:</p>";
-        $body=$body."<p>".$rsvpyeslink."</p>";
-        $body=$body."<p>".$rsvpnolink."</p>";
-        $body=$body."<p>".$rsvpmaybelink."</p>";
+        $mail["exfe_title"]=$this->args['title'];
+        $mail["exfee_name"]=$name;
+        $mail["host_name"]=$host_name;
+
+        $mail["hint_title"]="Invitation from: ".$host_name;
+        var_dump($this->args["host_identity_id"]);
+        var_dump($this->args["identity_id"]);
+        print_r($this->args);
+        if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
+            $mail["hint_title"]="You’re successfully gathering this X.";
+
+        if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
+            $mail["rsvp_status"]="You're CONFIRMED by ".$by_identity_name."to attend.";
+        else
+            $mail["rsvp_status"]=$rsvpyeslink;
+
+        $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'];
+        $mail["host_avatar"]=$site_url."/eimgs/80_80_".$host_avatar;
+        $invitations=$this->args["invitations"];
+        $exfee_list="";
+        foreach($invitations as $invitation)
+        {
+            //http://local.exfe.com/eimgs/80_80_default.png
+            $exfee_avatar=$site_url."/eimgs/80_80_".$invitation["avatar_file_name"];
+            $exfee_name=$invitation['name'];
+            if($exfee_name=="")
+                $exfee_name=$invitation['external_identity'];
+            $exfee_list.="<img src='$exfee_avatar'/>$exfee_name";
+        }
+        $mail["exfee_list"]=$exfee_list;
+        $mail["content"]=$this->args["description"];
+        $begin_at=$this->args["begin_at"];
+        $datetime=explode(" ",$begin_at);
+        $mail["date"]=$datetime[0];
+        $mail["time"]=$datetime[1];
+        if($mail["time"]=="")
+            $mail["time"]="Anytime";
+        $mail["place_line1"]=$this->args["place_line1"];
+        $mail["place_line2"]=$this->args["place_line2"];
+
+        #$link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
+        #$rsvpnolink='<a href="'.$site_url.'/rsvp/no?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">NO</a>';
+        #$rsvpmaybelink='<a href="'.$site_url.'/rsvp/maybe?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">interested</a>';
+        #$body=$host_name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
+        #$body=$body.$this->args['description'];
+        #$body=$body."<p>RSVP:</p>";
+        #$body=$body."<p>".$rsvpyeslink."</p>";
+        #$body=$body."<p>".$rsvpnolink."</p>";
+        #$body=$body."<p>".$rsvpmaybelink."</p>";
+        $body=$this->getMailBody($mail);
+        #print $body["body"];
 
         $icsstr=buildICS($this->args);
 
         if($email_connect=="")
             smtp_connect();
-        $this->send($title,$body,$icsstr,$this->args);
+        $this->send($body["title"],$body["body"],$icsstr,$this->args);
     
     
+    }
+    public function getMailBody($mail)
+    {
+        $template=file_get_contents("invitation_template.html");
+        $templates=split("\r|\n",$template);
+        $template_title=$templates[0];
+        unset($templates[0]);
+        $template_body=implode($templates);
+        $mail_title=str_replace("%exfe_title%",$mail["exfe_title"],$template_title);
+
+        $mail_body=str_replace("%exfe_title%",$mail["exfe_title"],$template_body);
+        $mail_body=str_replace("%exfee_name%",$mail["exfee_name"],$mail_body);
+        $mail_body=str_replace("%hint_title%",$mail["hint_title"],$mail_body);
+        $mail_body=str_replace("%host_name%",$mail["host_name"],$mail_body);
+        $mail_body=str_replace("%rsvp_status%",$mail["rsvp_status"],$mail_body);
+        $mail_body=str_replace("%exfe_link%",$mail["exfe_link"],$mail_body);
+        $mail_body=str_replace("%host_avatar%",$mail["host_avatar"],$mail_body);
+        $mail_body=str_replace("%exfee_list%",$mail["exfee_list"],$mail_body);
+        $mail_body=str_replace("%content%",$mail["content"],$mail_body);
+        $mail_body=str_replace("%date%",$mail["date"],$mail_body);
+        $mail_body=str_replace("%time%",$mail["time"],$mail_body);
+        $mail_body=str_replace("%place_line1%",$mail["place_line1"],$mail_body);
+        $mail_body=str_replace("%place_line2%",$mail["place_line2"],$mail_body);
+
+        return array("title"=>$mail_title,"body"=>$mail_body);
     }
 
     public function send($title,$body,$attachment,$args)
