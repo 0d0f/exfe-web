@@ -58,8 +58,8 @@ class CheckHelper extends ActionController {
                 if($token!="")
                 {
                     $result=$invitationdata->ifIdentityHasInvitationByToken($token,$cross_id);
-                    if($result===true)
-                        return array("allow"=>"true","type"=>"token");
+                    if($result["allow"]==="true")
+                        return array("allow"=>"true","type"=>"token","tokenexpired"=>$result["tokenexpired"]);
                 }
                 if(intval($_SESSION["identity_id"])>0)
                 {

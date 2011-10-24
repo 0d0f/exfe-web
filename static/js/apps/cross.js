@@ -44,7 +44,7 @@ $(document).ready(function() {
 
         $("#rsvp_loading").ajaxStart(function(){ $(this).show(); });
         $("#rsvp_loading").ajaxStop(function(){ $(this).hide(); });
-        var poststr = 'cross_id=' + cross_id + '&rsvp=' + $(this).attr('value');
+        var poststr = 'cross_id=' + cross_id + '&rsvp=' + $(this).attr('value')+'&token='+token;
 
         $.ajax({
             type: 'POST',
@@ -54,6 +54,11 @@ $(document).ready(function() {
             success: function(data) {
                 if (data != null) {
                     if (data.response.success === 'true') {
+                        if(data.response.token_expired=='1' && login_type=='token')
+                        {
+                            token_expired=true;
+                            setreadonly();
+                        }
                         switch (data.response.state) {
                             case 'yes':
                                 $("li#exfee_" + data.response.identity_id + " > .cs > em").removeClass("c2");
@@ -75,6 +80,7 @@ $(document).ready(function() {
                         $('#rsvp_options').hide();
                         $('#rsvp_submitted').show();
                     } else {
+                        alert("show login dialog");
                         //$('#pwd_hint').html("<span>Error identity </span>");
                         //$('#login_hint').show();
                     }

@@ -188,6 +188,7 @@ class XActions extends ActionController
                 else if($identity_id!=$_SESSION["identity_id"])
                     $showlogin= "login";
                 $this->setVar("token_expired", "true");
+                $this->setVar("login_type", "token");
 
             }
         }
