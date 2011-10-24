@@ -286,7 +286,7 @@ class ExfeeHelper extends ActionController
                                 {
                                     $mail["external_identity"]=$identity["external_identity"];
                                     $mail["provider"]=$identity["provider"];
-                                    $msghelper->senttemplateemail($mail);
+                                    $msghelper->sentConversationEmail($mail);
                                 }
                                 if($identity["provider"]=="iOSAPN")
                                 {

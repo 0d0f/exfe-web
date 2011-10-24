@@ -152,7 +152,7 @@ class Resque_Worker
 	 *
 	 * @param int $interval How often to check for new jobs across the queues.
 	 */
-	public function work($interval = 5)
+	public function work($interval = 5,$multi=FALSE)
 	{
 		$this->updateProcLine('Starting');
 		$this->startup();
@@ -166,6 +166,8 @@ class Resque_Worker
 			// Attempt to find and reserve a job
 			$job = false;
 			if(!$this->paused) {
+                if($multi==TRUE)
+                    echo "get multi jobs";
 				$job = $this->reserve();
 			}
 
