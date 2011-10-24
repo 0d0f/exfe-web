@@ -291,8 +291,8 @@ class IdentityModels extends DataModel{
         if($identity_id > 0)
         {
 
-            $sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";
-            $this->query($sql);
+            #$sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";
+            #$this->query($sql);
 
             $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
             $identityrow=$this->getRow($sql);

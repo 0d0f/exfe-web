@@ -2,34 +2,35 @@
 
 class RSVPActions extends ActionController {
 
-    #public function checkallow($cross_id,$token)
-    #{
-    #    $checkhelper=$this->getHelperByName("check");
-    #    $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-    #    if($check["allow"]=="false")
-    #    {
-    #        header( 'Location: /s/login' ) ;
-    #        exit(0);
-    #    }
-    #    if($check["type"]=="token")
-    #    {
-    #        $identityData=$this->getModelByName("identity");
-    #        $identity_id=$identityData->loginWithXToken($cross_id, $token);
-    #        $status=$identityData->checkIdentityStatus($identity_id);
-    #        if($status!=STATUS_CONNECTED)
-    #        {
-    #            $identityData->setRelation($identity_id,STATUS_CONNECTED);
-    #        }
-    #    }
-    #    else if($check["type"]=="session")
-    #        $identity_id=$_SESSION["identity_id"];
-    #    return $identity_id;
-    #}
+    public function checkallow($cross_id,$token)
+    {
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
+        if($check["allow"]=="false")
+        {
+            header( 'Location: /s/login' ) ;
+            exit(0);
+        }
+        if($check["type"]=="token")
+        {
+            $identityData=$this->getModelByName("identity");
+            $identity_id=$identityData->loginWithXToken($cross_id, $token);
+            $status=$identityData->checkIdentityStatus($identity_id);
+            if($status!=STATUS_CONNECTED)
+            {
+                $identityData->setRelation($identity_id,STATUS_CONNECTED);
+            }
+        }
+        else if($check["type"]=="session")
+            $identity_id=$_SESSION["identity_id"];
+        return $identity_id;
+    }
 
     public function doSave()
     {
         $rsvp=$_POST["rsvp"];
         $cross_id=$_POST["cross_id"];
+        $token=$_POST["token"];
 
         switch ($rsvp) {
             case 'yes':
@@ -45,7 +46,7 @@ class RSVPActions extends ActionController {
 
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-        if($check["allow"]!="false")
+        if(($check["allow"]!="false" && $check["tokenexpired"]=="false") ||($check["allow"]!="false" && $check["tokenexpired"]=="") )
         {
             $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
             if(intval($identity_id)==0)
@@ -57,10 +58,11 @@ class RSVPActions extends ActionController {
 
                 $r=$this->save($cross_id,$identity_id,$state);
 
-                if($r===true)
+                if(intval($r["success"])==1)
                     $responobj["response"]["success"]="true";
                 else
                     $responobj["response"]["success"]="false";
+                $responobj["response"]["token_expired"]=$r["tokenexpired"];
             }
             else
                 $responobj["response"]["success"]="false";
@@ -78,21 +80,21 @@ class RSVPActions extends ActionController {
     {
         $invitationData=$this->getModelByName("invitation");
         $r=$invitationData->rsvp($cross_id,$identity_id,$state);
-        if($state==INVITATION_YES)
-        {
-            if(intval($_SESSION['userid'])>0)
-            {
-                $userid=intval($_SESSION['userid']);
-                $identityData=$this->getModelByName("identity");
-                $belong=$identityData->ifIdentityIdBelongsUser($identity_id,$userid); // conformed himself status
-                if(intval($belong)>0)
-                {
-                    $relationData=$this->getHelperByName("relation");
-                    $relationData->saveRelationsByXInvitation($userid,$identity_id,$cross_id);
-                }
+        //if($state==INVITATION_YES)
+        //{
+        //    //if(intval($_SESSION['userid'])>0)
+        //    //{
+        //    //    $userid=intval($_SESSION['userid']);
+        //    //    $identityData=$this->getModelByName("identity");
+        //    //    $belong=$identityData->ifIdentityIdBelongsUser($identity_id,$userid); // conformed himself status
+        //    //    if(intval($belong)>0)
+        //    //    {
+        //    //        $relationData=$this->getHelperByName("relation");
+        //    //        $relationData->saveRelationsByXInvitation($userid,$identity_id,$cross_id);
+        //    //    }
 
-            }
-        }
+        //    //}
+        //}
 
         $logdata=$this->getModelByName("log");
         $logdata->addLog('identity', $identity_id, 'rsvp', 'cross', $cross_id, '', $state);
@@ -152,10 +154,14 @@ class RSVPActions extends ActionController {
         $token=$_GET["token"];
         $state=INVITATION_NO;
 
-        $checkhelper=$this->getHelperByName("check");
-        $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-        if($check["allow"]!="false")
+        $identity_id=$this->checkallow($cross_id,$token);
+
+        if(intval($identity_id)>0)
         {
+        //$checkhelper=$this->getHelperByName("check");
+        //$check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
+        //if($check["allow"]!="false")
+        //{
             $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
             if(intval($identity_id)==0)
                 $identity_id=$_SESSION["identity_id"];

@@ -43,15 +43,19 @@ class InvitationModels extends DataModel {
 
     public function rsvp($cross_id,$identity_id,$state)
     {
-        $sql="update invitations set state=$state where identity_id=$identity_id and cross_id=$cross_id;";
+        $sql="update invitations set state=$state ,tokenexpired=1 where identity_id=$identity_id and cross_id=$cross_id;";
         $this->query($sql);
 
-        $sql="select state from invitations where identity_id=$identity_id and cross_id=$cross_id;";
+        //$sql="update invitations set  where cross_id=$cross_id and token='$token';";
+        //$this->query($sql);
+
+        $sql="select state,tokenexpired from invitations where identity_id=$identity_id and cross_id=$cross_id;";
         $result=$this->getRow($sql);
-        if(intval($result["state"])==intval($state))
-            return true;
+        if(intval($result["state"])===intval($state))
+            $result["success"]=1;
         else
-            return false;
+            $result["success"]=0;
+        return $result;
     }
 
     public function addInvitation($cross_id,$identity_id,$state=0)
@@ -211,12 +215,14 @@ class InvitationModels extends DataModel {
 
     public function ifIdentityHasInvitationByToken($token,$cross_id)
     {
-        $sql="select id from invitations where token='$token' and  cross_id=$cross_id;";
+        $sql="select id,tokenexpired from invitations where token='$token' and  cross_id=$cross_id;";
         $row=$this->getRow($sql);
-        if(intval($row["id"])>0)
-            return true;
+        if($row["tokenexpired"]=="0")
+            return array("allow"=>"true","tokenexpired"=>"false");
+        else if ($row["tokenexpired"]=="1")
+            return array("allow"=>"true","tokenexpired"=>"true");
 
-        return false;
+        return array("allow"=>"false");
     }
 
     public function getIdentitiesIdsByCrossIds($cross_ids)
