@@ -162,7 +162,7 @@ $token=$_GET["token"];
             <div id="exfee_area" class="exfee">
                 <div class="feetop"><h3>exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
                 <div id="exfee_edit_box">
-                    <span id="exfee_submit" title="Invite!"></span>
+                    <div id="exfee_submit" title="Invite!"></div>
                     <input type="text" id="exfee_input" value="Enter attendees' information"><div id="identity_ajax"></div>
                     <span id="exfee_edit_buttons">
                         <span id="exfee_revert">Revert</span>

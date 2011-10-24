@@ -34,7 +34,7 @@
         <label class="date">Date &amp; Time</label>
         <input type="text" name="datetime_original" id="datetime_original" />
         <input type="hidden" name="datetime" id="datetime" value="" />
-        <p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p>
+        <!--@todo--p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p-->
     </li>
 
     <li id="gather_place_blank">
@@ -80,11 +80,12 @@
         </div>
     </li>
 
-    <li>
+    <li id="gather_submit_blank">
         <label class="privacy">Privacy</label>
         <p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
         <button type="button" id="gather_x" class="submit">Submit</button>
         <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a>
+        <div id="gather_submit_ajax"></div>
     </li>
 
 </ul>

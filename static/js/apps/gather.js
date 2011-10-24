@@ -48,6 +48,9 @@ $(document).ready(function() {
     $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
     $('#identity_ajax').hide();
 
+    $('#gather_submit_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
+    $('#gather_submit_ajax').hide();
+
     // title
     window.gTitlesDefaultText = $('#gather_title_bg').html();
     $('#g_title').focus();
@@ -124,8 +127,11 @@ $(document).ready(function() {
     });
     $('#datetime_original').focus(function() {
         $('#gather_date_bg').addClass('gather_focus').removeClass('gather_blur')
-                            .html($('#gather_date_bg').html() === gDateDefaultText
-                                  ? 'e.g. 6PM Today' : '');
+                            .html('');
+                         // @todo: time format tips
+                         // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
+        // @todo: disable time input box for version #oC
+        $('#datetime_original').blur();
     });
     $('#datetime_original').blur(function () {
         $('#gather_date_bg').addClass('gather_blur').removeClass('gather_focus')
@@ -221,41 +227,28 @@ $(document).ready(function() {
     // exfee
     var gExfeeDefaultText = $('#gather_exfee_bg').html();
     $('#exfee').keyup(function(e) {
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 13:
+                identity();
+                e.preventDefault();
+                break;
+            case 27:
+                $('#exfee_complete').slideUp(50);
+                return;
+        }
         var strExfee = $(this).val();
         if (strExfee) {
             $('#gather_exfee_bg').html('');
             var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
             if (strKey) {
-                $.ajax({
-                    type     : 'GET',
-                    url      : site_url + '/identity/complete?key=' + strKey,
-                    dataType : 'json',
-                    success  : function(data) {
-                        var strFound = '';
-                        for (var item in data) {
-                            var spdItem = odof.util.trim(item).split(' '),
-                                strId   = spdItem.pop(),
-                                strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
-                            strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
-                        }
-                        if (strFound) {
-                            $('#exfee_complete').html(strFound);
-                            $('#exfee_complete').slideDown(50);
-                        } else {
-                            $('#exfee_complete').slideUp(50);
-                        }
-                    }
-                });
+                clearTimeout(completeTimer);
+                completeTimer = setTimeout("chkComplete('" + strKey + "')", 1000);
             } else {
                 $('#exfee_complete').slideUp(50);
             }
         } else {
             $('#gather_exfee_bg').html(gExfeeDefaultText);
             $('#exfee_complete').slideUp(50);
-        }
-        if ((e.keyCode ? e.keyCode : e.which) === 13) {
-            identity();
-            e.preventDefault();
         }
     });
     $('#exfee').keydown(function(e) {
@@ -275,14 +268,38 @@ $(document).ready(function() {
     });
     $('#exfee_complete').hide();
     $('#exfee_complete').bind('click keydown', function(e) {
+        var intKey = e.keyCode ? e.keyCode : e.which;
         switch (e.type) {
             case 'click':
                 complete();
                 break;
             case 'keydown':
-                switch (e.keyCode ? e.keyCode : e.which) {
+                switch (intKey) {
+                    case 9:
+                        if (e.shiftKey) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
                     case 13:
                         complete();
+                        break;
+                    case 27:
+                        $('#exfee_complete').slideUp(50);
+                    case 8:
+                        $('#exfee').focus();
+                        e.preventDefault();
+                        break;
+                    case 38:
+                        if ($('#exfee_complete').val() === strExfeeCompleteDefault) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    default:
+                        if ((intKey > 64 && intKey < 91) || (intKey > 47 && intKey < 58)) {
+                            $('#exfee').focus();
+                        }
                 }
         }
     });
@@ -325,8 +342,10 @@ $(document).ready(function() {
     window.code     = null;
     window.draft_id = 0;
     window.new_identity_id = 0;
+    window.completeTimer   = null;
+    window.xSubmitting     = false;
 
-    setInterval('saveDraft()', 10000);
+    setInterval(saveDraft, 10000);
 
     $('.confirmed_box').live('change', updateExfeeList);
 
@@ -344,6 +363,34 @@ $(document).ready(function() {
         exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
     })
 });
+
+
+function chkComplete(strKey)
+{
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/complete?key=' + strKey,
+        dataType : 'json',
+        success  : function(data) {
+            var strFound = '';
+            for (var item in data) {
+                var spdItem = odof.util.trim(item).split(' '),
+                    strId   = spdItem.pop(),
+                    strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                if (!strFound) {
+                    window.strExfeeCompleteDefault = strId;
+                }
+                strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
+            }
+            if (strFound) {
+                $('#exfee_complete').html(strFound);
+                $('#exfee_complete').slideDown(50);
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
+        }
+    });
+}
 
 
 function complete()
@@ -490,6 +537,12 @@ function saveDraft()
 
 function submitX()
 {
+    $('#gather_submit_ajax').show();
+
+    if (xSubmitting) { return; }
+
+    xSubmitting = true;
+
     var cross = summaryX();
     cross['draft_id'] = draft_id;
 
@@ -502,9 +555,12 @@ function submitX()
             if (data && data.success) {
                 location.href = '/!' + data.crossid;
             }
+            $('#gather_submit_ajax').hide();
+            xSubmitting = false;
         },
         failure : function(data) {
-
+            $('#gather_submit_ajax').hide();
+            xSubmitting = false;
         }
     });
 }

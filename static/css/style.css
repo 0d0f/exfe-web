@@ -335,6 +335,10 @@ b.r3{margin: 0px}
     color: #666666; font-family: Verdana; font-size: 18px; line-height: 24px;
     word-break: break-all; max-height: 96px; overflow: hidden;
 }
+#gather_submit_blank {
+    height: 50px;
+}
+
 
 .createset ul li #post_submit{
     background:url("/static/images/enter.png") no-repeat scroll right bottom;
@@ -481,7 +485,8 @@ b.r3{margin: 0px}
 
 
 #rsvp_loading{ margin-left: 100px; margin-top: -15px; }
-#identity_ajax{ position:absolute; margin-left: 420px; margin-top: -18px; }
+#identity_ajax{ position:relative; margin-left: 165px; margin-top: 15px; }
+#gather_submit_ajax{ position:relative; margin-left: 165px; margin-top: -14px; }
 .creattext{ margin-top: 25px; }
 
 /* ----------------------------------- modified by handaoliang --------------------------*/
@@ -750,7 +755,7 @@ b.r3{margin: 0px}
     float: right;
     z-index: 2;
     position: absolute;
-    margin: 12px 0 0 114px;
+    margin: 7px 0 0 225px;
 }
 
 #exfee_edit_buttons {
