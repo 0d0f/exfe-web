@@ -45,7 +45,7 @@
 
     <li style="margin-top:15px;">
         <label class="hostby">Host By</label>
-        <input type="text" name="hostby" id="hostby" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
+        <input type="text" name="hostby" id="hostby" class="gather_blur" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
     </li>
 
     <li>
@@ -67,7 +67,7 @@
                                 <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
                             </p>
                             <p class="smcomment">
-                                <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>"><?php echo $global_name;?></span>
+                                <span class="exfee_exist" id="exfee_<?php echo $global_identity_id; ?>" identityid="<?php echo $global_identity_id; ?>" value="<?php echo $global_external_identity; ?>" avatar="<?php echo $global_avatar_file_name; ?>"><?php echo $global_name;?></span>
                                 <input id="confirmed_exfee_<?php echo $global_identity_id;?>" class="confirmed_box" checked=true type="checkbox" />
                                 <span class="lb">host</span>
                             </p>

@@ -96,7 +96,7 @@ $token=$_GET["token"];
     </div>
     <div id="index" class="step">
         <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
-        <h2 id="cross_titles"><?php echo $cross["title"]; ?></h2>
+        <h2 id="cross_titles" class="pv_title_normal"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
             <div id="cross_desc"<?php if($desc_str_len > $define_str_len){ ?> style="display:none"<?php } ?>>

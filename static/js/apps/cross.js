@@ -8,7 +8,21 @@ function setreadonly()
     });
 }
 
+function formatCross()
+{
+    // format title
+    if ($('#cross_title').hasClass('pv_title_double') && $('#cross_title').height() < 112) {
+        $('#cross_title').addClass('pv_title_normal').removeClass('pv_title_double');
+    }
+    if ($('#cross_title').hasClass('pv_title_normal') && $('#cross_title').height() > 70) {
+        $('#cross_title').addClass('pv_title_double').removeClass('pv_title_normal');
+    }
+
+    // format address
+}
+
 $(document).ready(function() {
+
     $('#rsvp_loading').activity({segments: 8, steps: 3, opacity: 0.3, width: 4, space: 0, length: 5, color: '#0b0b0b', speed: 1.5});
 
     $('#formconversation').submit(function(e) {
@@ -19,6 +33,8 @@ $(document).ready(function() {
         $('#rsvp_options').show();
         $('#rsvp_submitted').hide();
     });
+
+    formatCross();
 
     window.submitting = false;
     window.arrRvsp    = ['Interested', 'Accepted', 'Declined', 'Interested'];
@@ -81,62 +97,64 @@ $(document).ready(function() {
                 }
                 $("#rsvp_loading").hide();
                 $("#rsvp_loading").unbind("ajaxStart ajaxStop");
-        },
-        error: function(data) {
-            $("#rsvp_loading").hide();
-            $("#rsvp_loading").unbind("ajaxStart ajaxStop");
-        }
-    });
-    e.preventDefault();
-});
-
-$('#formconversation').submit(function() {
-
-    if (submitting) { return false; }
-
-    submitting = true;
-
-    var comment = $('textarea[name=comment]').val();
-    var poststr = "cross_id=" + cross_id + "&comment=" + comment;
-    $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 5, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
-    $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
-
-    $.ajax({
-        type: 'POST',
-        data: poststr,
-        url: site_url + '/conversation/save',
-        dataType: 'json',
-        success: function(data) {
-            if (data != null)
-            {
-                if (data.response.success == "false")
-                {
-                    //$('#pwd_hint').html("<span>Error identity </span>");
-                    //$('#login_hint').show();
-                }
-                else if(data.response.success == "true")
-                {
-                    var name = data.response.identity.name;
-                    if(name == "")
-                        name = data.response.identity.external_identity;
-                    var html = '<li><p class="pic40"><img src="/eimgs/80_80_' + data.response.identity.avatar_file_name + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
-                    $("#commentlist").prepend(html);
-                    $("textarea[name=comment]").val("");
-                }
+            },
+            error: function(data) {
+                $("#rsvp_loading").hide();
+                $("#rsvp_loading").unbind("ajaxStart ajaxStop");
             }
-            $('textarea[name=comment]').activity(false);
-            $('#post_submit').css('background', 'url("/static/images/enter.png")');
-            submitting = false;
-        },
-        error: function(date) {
-            $('textarea[name=comment]').activity(false);
-            $('#post_submit').css('background', 'url("/static/images/enter.png")');
-            submitting = false;
-        }
+        });
+        e.preventDefault();
     });
-    return false;
-});
 
-if(token_expired == 'true')
-    setreadonly();
+    $('#formconversation').submit(function() {
+
+        if (submitting) { return false; }
+
+        submitting = true;
+
+        var comment = $('textarea[name=comment]').val();
+        var poststr = "cross_id=" + cross_id + "&comment=" + comment;
+        $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 5, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
+        $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+
+        $.ajax({
+            type: 'POST',
+            data: poststr,
+            url: site_url + '/conversation/save',
+            dataType: 'json',
+            success: function(data) {
+                if (data != null)
+                {
+                    if (data.response.success == "false")
+                    {
+                        //$('#pwd_hint').html("<span>Error identity </span>");
+                        //$('#login_hint').show();
+                    }
+                    else if(data.response.success == "true")
+                    {
+                        var name = data.response.identity.name;
+                        if(name == "")
+                            name = data.response.identity.external_identity;
+                        var html = '<li><p class="pic40"><img src="/eimgs/80_80_' + data.response.identity.avatar_file_name + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
+                        $("#commentlist").prepend(html);
+                        $("textarea[name=comment]").val("");
+                    }
+                }
+                $('textarea[name=comment]').activity(false);
+                $('#post_submit').css('background', 'url("/static/images/enter.png")');
+                submitting = false;
+            },
+            error: function(date) {
+                $('textarea[name=comment]').activity(false);
+                $('#post_submit').css('background', 'url("/static/images/enter.png")');
+                submitting = false;
+            }
+        });
+        return false;
+    });
+
+    if(token_expired == 'true') {
+        setreadonly();
+    }
+
 });

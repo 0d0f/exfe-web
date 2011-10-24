@@ -28,7 +28,8 @@ function getexfee()
                               exfee_identity : exfee_identity,
                               confirmed      : $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0,
                               identity_type  : odof.util.parseId(exfee_identity).type,
-                              isHost         : spanHost && spanHost.html() === 'host'};
+                              isHost         : spanHost && spanHost.html() === 'host',
+                              avatar         : $(obj).attr('avatar')};
         if (exist) {
             item.exfee_id  = $(obj).attr('identityid');
         }
@@ -438,7 +439,16 @@ function identity()
                 if ($('#exfee_' + id).attr('id') == null) {
                     name = name ? name : identity;
                     exfee_pv.push(
-                        '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" class="confirmed_box" type="checkbox"/></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_'+id+'\'))" type="button"></button> </li>'
+                        '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
+                      +     '<p class="pic20"><img src="/eimgs/80_80_' + avatar_file_name + '" alt="" /></p>'
+                      +     '<p class="smcomment">'
+                      +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
+                      +             name
+                      +         '</span>'
+                      +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" type="checkbox"/>'
+                      +     '</p>'
+                      +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_' + id + '\'))" type="button"></button>'
+                      + '</li>'
                     );
                 }
                 identifiable[identity] = true;
@@ -454,7 +464,16 @@ function identity()
                     }
                     new_identity_id++;
                     exfee_pv.push(
-                        '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))"> <p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p> <p class="smcomment"><span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">' + name + '</span><input id="confirmed_newexfee_' + new_identity_id +'" class="confirmed_box" type="checkbox"/></p> <button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button> </li>'
+                        '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
+                      +     '<p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p>'
+                      +     '<p class="smcomment">'
+                      +         '<span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">'
+                      +             name
+                      +         '</span>'
+                      +         '<input id="confirmed_newexfee_' + new_identity_id + '" class="confirmed_box" type="checkbox"/>'
+                      +     '</p>'
+                      +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button>'
+                      + '</li>'
                     );
                 }
             }
@@ -492,12 +511,19 @@ function updateExfeeList()
         numConfirmed += exfees[i].confirmed;
         numSummary++;
         htmExfeeList += '<li>'
-                      +     '<span class="pic20"><img alt="" src="/eimgs/1.png"></span>'
-                      +     '<span class="smcomment">'
-                      +         exfees[i].exfee_name
-                      +        (exfees[i].isHost ? '<span class="lb">host</span>' : '')
-                      +     '</span>'
-                      +     '<p class="cs"><em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em></p>'
+                      +     '<p class="pic20"><img alt="" src="/eimgs/80_80_' + (exfees[i].avatar ? exfees[i].avatar : 'default.png') + '"></p>'
+                      +     '<div class="smcomment">'
+                      +         '<div>'
+                      +             '<span class="ex_name">' + exfees[i].exfee_name + '</span>'
+                      +             (exfees[i].isHost ? '<span class="lb">host</span>' : '')
+                      +             '<span class="ex_identity"> '
+                      +                 (exfees[i].exfee_name === exfees[i].exfee_identity ? '' : exfees[i].exfee_identity)
+                      +             '</span>'
+                      +         '</div>'
+                      +     '</div>'
+                      +     '<p class="cs">'
+                      +         '<em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em>'
+                      +     '</p>'
                       + '</li>';
     }
     $('#exfeelist').html(htmExfeeList);
