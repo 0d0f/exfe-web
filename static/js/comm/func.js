@@ -40,11 +40,60 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         }
     };
+    ns.verifyDisplayName = function(dname){
+        if(typeof dname == "undefined" || dname == ""){
+            return false;
+        }
+        var nameREG = "^[0-9a-zA-Z_\ \'\.]+$"; 
+        var re = new RegExp(nameREG);
+        if(!re.test(dname)){
+            return false;
+        }
+        return true;
+
+    };
+    ns.showRePassword = function(){
+        var pwdBoxID = "identification_pwd";
+
+        var pwdBoxJID = "#"+pwdBoxID;
+        var displayPwdBoxJID = "#"+pwdBoxID+"_a";
+        var btnJID = "#"+pwdBoxID+"_ic";
+
+        var rePwdBoxJID = "#identification_rpwd";
+
+        //initialize
+        jQuery(btnJID).unbind("click");
+        jQuery(btnJID).removeClass("ic3");
+        jQuery(btnJID).addClass("ic2");
+        jQuery(pwdBoxJID).hide();
+        jQuery(displayPwdBoxJID).show();
+        jQuery(displayPwdBoxJID).unbind("keyup");
+        jQuery(displayPwdBoxJID).bind("keyup", function(){
+            var curPwd = jQuery(displayPwdBoxJID).val();
+            jQuery(pwdBoxJID).val(curPwd);
+            jQuery(rePwdBoxJID).val(curPwd);
+        });
+
+        jQuery(btnJID).bind("click",function(){
+            ns.displayPassword(pwdBoxID);
+
+            if(jQuery(btnJID).hasClass("ic3")){
+                jQuery("#retype").show();
+                jQuery(displayPwdBoxJID).unbind("keyup");
+                jQuery(rePwdBoxJID).val('');
+            }else{
+                jQuery("#retype").hide();
+                jQuery(displayPwdBoxJID).bind("keyup", function(){
+                    jQuery(rePwdBoxJID).val(jQuery(displayPwdBoxJID).val());
+                });
+            }
+
+        });
+    };
     ns.displayPassword = function(pwdBoxID){
         var originalBoxJID = "#"+pwdBoxID;
         var displayPWDBoxID = "#"+pwdBoxID+"_a";
         var curBtnID = "#"+pwdBoxID+"_ic";
-
 
         if(jQuery(curBtnID).hasClass("ic3")){
             jQuery(curBtnID).removeClass("ic3");

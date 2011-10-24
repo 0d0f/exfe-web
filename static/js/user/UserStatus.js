@@ -36,6 +36,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     var html = odof.user.identification.showdialog("reg");
                     odof.exlibs.ExDialog.initialize("identification", html);
                     odof.user.identification.bindDialogEvent("reg");
+                    jQuery("#identification_pwd_ic").bind("click",function(){
+                        odof.comm.func.displayPassword('identification_pwd');
+                    });
                 });
             }else{
                 jQuery("#home_user_login_btn").click(function() {
@@ -94,7 +97,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     jQuery('#myexfe').hide();
                 });
             }else{
-                window.history.back(-1);
+                //console.log(pageReferrerURI);
+                //window.history.back(-1);
+                window.location.href="/s/profile";
             }
 
         }
