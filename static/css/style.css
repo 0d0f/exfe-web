@@ -132,7 +132,7 @@ pause this style
 
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
-.smcomment { float:left; font-size:12px; width: 190px; overflow: hidden; }
+.smcomment { float:left; font-size:12px; width: 190px; overflow: hidden; white-space: nowrap; }
 .smcomment div { float: left; }
 .smcomment span.ex_name { color: #020202; font-size: 13px; padding-right: 5px; }
 .smcomment span.lb { background: url(/static/images/btn.png) no-repeat left -281px; color: #ffffff; padding: 3px; font-size: 11px; }

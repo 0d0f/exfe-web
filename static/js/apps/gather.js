@@ -138,6 +138,12 @@ $(document).ready(function() {
         $('#gather_date_bg').addClass('gather_blur').removeClass('gather_focus')
                             .html($(this).val() ? '' : gDateDefaultText);
     });
+    $('.ex_identity').hide();
+    $('.exfee_item').live('mouseenter mouseleave', function(event) {
+        showExternalIdentity(event);
+    });
+    window.rollingExfee = null;
+    window.exfeeRollingTimer = setInterval(rollExfee, 50);
 
     // place
     var gPlaceDefaultText = $('#gather_place_bg').html();
@@ -366,6 +372,50 @@ $(document).ready(function() {
 });
 
 
+function showExternalIdentity(event)
+{
+    var target = $(event.target);
+    while (!target.hasClass('exfee_item')) {
+        target = $(target[0].parentNode);
+    }
+    var id     = target[0].id;
+    if (!id) {
+        return;
+    }
+    switch (event.type) {
+        case 'mouseenter':
+            rollingExfee = id;
+            $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn(100);
+            break;
+        case 'mouseleave':
+            rollingExfee = null;
+            $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut(100);
+            var rollE = $('#' + id + ' > .smcomment > div');
+            rollE.animate({
+                marginLeft : '+=' + (0 - parseInt(rollE.css('margin-left')))},
+                700
+            );
+    }
+}
+
+
+function rollExfee()
+{
+    var maxWidth = 200;
+    if (!rollingExfee) {
+        return;
+    }
+    var rollE    = $('#' + rollingExfee + ' > .smcomment > div'),
+        orlWidth = rollE.width(),
+        curLeft  = parseInt(rollE.css('margin-left')) - 1;
+    if (orlWidth <= maxWidth) {
+        return;
+    }
+    curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
+    rollE.css('margin-left', curLeft + 'px');
+}
+
+
 function chkComplete(strKey)
 {
     $.ajax({
@@ -510,7 +560,7 @@ function updateExfeeList()
     for (var i in exfees) {
         numConfirmed += exfees[i].confirmed;
         numSummary++;
-        htmExfeeList += '<li>'
+        htmExfeeList += '<li id="exfee_list_item_' + numSummary + '" class="exfee_item">'
                       +     '<p class="pic20"><img alt="" src="/eimgs/80_80_' + (exfees[i].avatar ? exfees[i].avatar : 'default.png') + '"></p>'
                       +     '<div class="smcomment">'
                       +         '<div>'
@@ -530,6 +580,7 @@ function updateExfeeList()
     $('#exfee_confirmed').html(numConfirmed);
     $('#exfee_summary').html(numSummary);
     $('#exfee').val('');
+    $('.ex_identity').hide();
 }
 
 function summaryX()

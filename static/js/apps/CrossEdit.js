@@ -490,7 +490,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         while (!target.hasClass('exfee_item')) {
             target = $(target[0].parentNode);
         }
-        var id    = target[0].id;
+        var id     = target[0].id;
         if (!id) {
             return;
         }
