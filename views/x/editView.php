@@ -6,4 +6,4 @@
 $cross=$this->getVar("cross");
 ?>
 </body>
-</html
+</html>
