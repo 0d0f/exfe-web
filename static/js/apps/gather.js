@@ -241,6 +241,7 @@ $(document).ready(function() {
     $('#exfee').keyup(function(e) {
         switch (e.keyCode ? e.keyCode : e.which) {
             case 13:
+                clearTimeout(completeTimer);
                 identity();
                 e.preventDefault();
                 break;
