@@ -96,7 +96,7 @@ class IdentityModels extends DataModel{
             return FALSE;
     }
 
-    public function setLoginCookie($userid,$identity_id)
+    public function setLoginCookie($identity, $userid, $identity_id)
     {
             $time=time();
 
@@ -115,17 +115,16 @@ class IdentityModels extends DataModel{
 
                 $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
                 $this->query($sql);
-            }
-            else
-            {
+            } else {
                     $cookie_logintoken=$userrow["cookie_logintoken"];
                     $cookie_loginsequ=$userrow["cookie_loginsequ"];
             }
 
-                setcookie('uid', $userid, time()+86400, "/",".exfe.com");
-                setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
-                setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
-                setcookie('logintoken', $cookie_logintoken, time()+86400, "/",".exfe.com");
+            setcookie('uid', $userid, time()+86400, "/",".exfe.com");
+            setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
+            setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
+            setcookie('logintoken', $cookie_logintoken, time()+86400, "/",".exfe.com");
+            setcookie('last_identity', $identity, time()+31536000, "/",".exfe.com");//one year.
     }
 
     public function loginByCookie()
@@ -134,6 +133,7 @@ class IdentityModels extends DataModel{
         $identity_id=intval($_COOKIE['id']);
         $loginsequ=$_COOKIE['loginsequ'];
         $logintoken=$_COOKIE['logintoken'];
+        $identity = $_COOKIE["last_identity"];
         if($uid>0)
         {
             $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
@@ -162,7 +162,7 @@ class IdentityModels extends DataModel{
 
             if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
             {
-               $user_id=$this->loginByIdentityId($identity_id,$uid,NULL,NULL,"cookie",false);
+               $user_id=$this->loginByIdentityId($identity, $identity_id,$uid,NULL,NULL,"cookie",false);
     //do login
                return $user_id;
             }
@@ -173,7 +173,7 @@ class IdentityModels extends DataModel{
 
         }
     }
-    public function loginByIdentityId($identity_id,$userid=0,$userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false)
+    public function loginByIdentityId($identity, $identity_id,$userid=0,$userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false)
     {
         if($userid==0)
         {
@@ -182,8 +182,7 @@ class IdentityModels extends DataModel{
             if(intval($trow["userid"])>0)
                 $userid=intval($trow["userid"]);
         }
-        if($userrow==NULL)
-        {
+        if($userrow==NULL) {
             $sql="select name,bio,avatar_file_name from users where id=$userid";
             $userrow=$this->getRow($sql);
         }
@@ -193,9 +192,8 @@ class IdentityModels extends DataModel{
             $identityrow=$this->getRow($sql);
         }
 
-
         if($setcookie==true && $type=="password")
-            $this->setLoginCookie($userid,$identity_id);
+            $this->setLoginCookie($identity, $userid,$identity_id);
 
 
         $ipaddress=getRealIpAddr();
@@ -243,7 +241,7 @@ class IdentityModels extends DataModel{
                 $row=$this->getRow($sql);
                 if($row["encrypted_password"]==$password)
                 {
-                    $this->loginByIdentityId($identity_id,$userid,$row,$identityrow,"password",$setcookie);
+                    $this->loginByIdentityId($identity, $identity_id,$userid,$row,$identityrow,"password",$setcookie);
 
                     //$_SESSION["userid"]=$userid;
                     //$_SESSION["identity_id"]=$identity_id;

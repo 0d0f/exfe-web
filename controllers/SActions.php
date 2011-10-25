@@ -630,6 +630,7 @@ class SActions extends ActionController {
         unset($_COOKIE["id"]);
         unset($_COOKIE["loginsequ"]);
         unset($_COOKIE["logintoken"]);
+
         setcookie('uid', NULL, -1,"/",".exfe.com");
         setcookie('id', NULL, -1,"/",".exfe.com");
         setcookie('loginsequ', NULL,-1,"/",".exfe.com");
