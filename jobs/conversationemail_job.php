@@ -5,6 +5,13 @@ require_once("../config.php");
 
 class Conversationemail_Job
 {
+    public function multi_perform($args)
+    {
+        global $site_url;
+        global $email_connect;
+        print "in Conversationemail_Job class:\r\n";
+        print_r($args);
+    }
     public function perform()
     {
         global $site_url;
