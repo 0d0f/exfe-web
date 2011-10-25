@@ -344,6 +344,10 @@ b.r3{margin: 0px}
 #gather_submit_blank {
     height: 50px;
 }
+/*privacy*/
+.privacy {
+    cursor: default;
+}
 
 
 .createset ul li #post_submit{

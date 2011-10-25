@@ -185,9 +185,10 @@ $(document).ready(function() {
         if ($(this).attr('enter') === 'true') {
             return;
         }
-        odof.user.status.doShowLoginDialog();
-        /*
-        $(html).modal({onClose : function() {
+        odof.user.status.doShowLoginDialog(null, function(status) {
+            if (status.user_status !== 1) {
+                return;
+            }
             $("#hostby").attr('disabled', true);
             var exfee_pv = [];
             $.ajax({
@@ -201,9 +202,18 @@ $(document).ready(function() {
                             avatar_file_name = data.response.identities[i].avatar_file_name,
                             name             = data.response.identities[i].name;
                         if ($('#exfee_' + id).attr('id') == null) {
-                            name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
+                            name = name ? name : identity;
                             exfee_pv.push(
-                                '<li class="addjn" ><p class="pic20"><img src="/eimgs/80_80_' + avatar_file_name + '" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '"value="' + identity + '">' + name + '</span><input id="confirmed_exfee_' + id + '" class="confirmed_box" checked=true type="checkbox"/><span class="lb">host</span></p> <button class="exfee_del" type="button"></button> </li>'
+                                '<li id="exfee_' + id + '" class="addjn">'
+                              +     '<p class="pic20"><img src="/eimgs/80_80_' + avatar_file_name + '" alt="" /></p>'
+                              +     '<p class="smcomment">'
+                              +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
+                              +             name
+                              +         '</span>'
+                              +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" type="checkbox" checked/>'
+                              +     '</p>'
+                              +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_' + id + '\'))" type="button"></button>'
+                              + '</li>'
                             );
                         }
                     }
@@ -223,10 +233,7 @@ $(document).ready(function() {
                     updateExfeeList();
                 }
             });
-            $.modal.close();
-        }});
-        odof.user.identification.bindDialogEvent('reg');
-        */
+        });
     });
 
     // exfee
@@ -341,6 +348,14 @@ $(document).ready(function() {
 
     $('#post_submit').click(function(e) {
         identity();
+    });
+
+    $('.privacy').click(function(e) {
+        odof.exlibs.ExDialog.initialize(
+            'privacy_warning',
+            "sdafasdfasdf"
+            //////////////////////////////////////////////////////
+        );
     });
 
     window.curCross = '';
