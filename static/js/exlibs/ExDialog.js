@@ -13,9 +13,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /*
      * initialize dialog module
      * */
-    ns.initialize = function(dialogID, contents){
+    ns.initialize = function(dialogID, contents, dialogClassName){
 
-        ns.createDialog(dialogID);
+        ns.createDialog(dialogID, dialogClassName);
         ns.dialogElement.innerHTML = contents;
 
         var dialogWidth = 463;
@@ -98,7 +98,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * create dialog function
      * */
-    ns.createDialog = function(dialogID){
+    ns.createDialog = function(dialogID, dialogClassName)
+    {
+        var defaultDialogClass = "ex_dialog";
 
         if (dialogID){
             ns.coverID = dialogID + "_cover";
@@ -112,13 +114,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.dialogTitleID = randID + "_handler";
             ns.dialogCloseBtnID = randID + "_close_btn";
         }
+        var className = defaultDialogClass + " " + ns.dialogID;
+        if(typeof dialogClassName != "undefined"){
+            className = defaultDialogClass + " " +dialogClassName;
+        }
 
         // If had create cover return NULL
         if(document.getElementById(ns.dialogID)){
             document.getElementById(ns.dialogID).style.display = "block";
         }else{
             //create dialog element
-            ns.dialogElement = odof.util.createElement("div", ns.dialogID, ns.dialogID);
+            ns.dialogElement = odof.util.createElement("div", ns.dialogID, className);
             document.body.insertBefore(ns.dialogElement,document.body.firstChild);
         }
         odof.exlibs.ExDialog.createCover();
