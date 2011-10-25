@@ -176,6 +176,20 @@ var odof = {
     };
 
     /**
+     * test and verify string is chinese chars
+     * @string str
+     * @Return True || False
+     * */
+    util.isCN = function(str) {
+        var strREG = /^[u4E00-u9FA5]+$/;
+        var re = new RegExp(strREG);
+        if(!re.test(str)){
+            return false;
+        }
+        return true;
+    };
+
+    /**
      * toDBC
      * @string.trim;
      * @Return String

@@ -19,6 +19,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return vars;
     };
 
+    ns.showIdentityInfo = function(){
+        if(jQuery("#identity").val()){
+            jQuery("#identity_dbox").html('');
+        }else{
+            jQuery("#identity_dbox").html('Your email here');
+        }
+    };
+
     ns.showdialog = function(type) {
         var title="", desc="", form="";
         if(type=="setpassword") {
@@ -56,7 +64,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
                 //+"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
                 //+"<li id='displayname' style='display:none'><label>Names:</label><input type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
-                +"<li class='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+                +"<li class='logincheck' id='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
                 +"<li><input id='resetpwd' type='submit' value='Reset Password...' class='changepassword'/><input type='submit' value='Sign In' class='sub'/></li>"
                 +"</ul>"
                 +"</form>"
@@ -64,7 +72,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if(type=="reg") {
             title="Identification";
 
-            desc = "<div class='account' style='text-align:center; height:40px; border-bottom:1px dashed #BBBBBB; margin-bottom:20px; font-size:20px;'>User Login</div>";
+            desc = "<div class='account' style='text-align:center; height:40px; border-bottom:1px dashed #BBBBBB; margin-bottom:20px; font-size:18px;'>"
+                 + "Welcome to <span style='color:#0591AC;'>EXFE</span></div>";
             /*
             desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
@@ -75,22 +84,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             */
             form="<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
                 +"<ul>"
-                +"<li><label>Identity:</label><input id='identity' name='identity' type='text' class='inputText' ><em class='ic1'></em></li>"
+                +"<li><label>Identity:</label><div class='identity_box'><input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' /></div><div id='identity_dbox'>Your email here</div><em class='ic1' style='display:none;'></em></li>"
                 +"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
                 +"<li><label>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
                 +"<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
-                +"<em class='ic3' id='identification_pwd_ic' onclick='javascript:odof.comm.func.displayPassword(\"identification_pwd\");'></em>"
+                +"<em class='ic3' id='identification_pwd_ic'></em>"
                 +"</li>"
                 +"<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
                 +"<li id='retype' style='display:none'>"
                 +"<label>Re-type:</label>"
                 +"<input type='password' id='identification_rpwd' name='retypepassword' class='inputText' />"
-                +"<input type='text' id='identification_rpwd_a' class='inputText' style='display:none;' />"
-                +"<em id='identification_rpwd_ic' class='ic3' onclick='javascript:odof.comm.func.displayPassword(\"identification_rpwd\");'></em></li>"
+                +"</li>"
                 +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                +"<li id='displayname' style='display:none'><label>Names:</label><input  type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
-                +"<li class='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
-                +"<li><input id='resetpwd' type='submit' value='Reset Password...' class='changepassword'/><input type='submit' value='Sign In' class='sub'/></li>"
+                +"<li id='displayname' style='display:none'><label>Display name:</label>"
+                +"<input  type='text'  name='displayname'class='inputText'/>"
+                +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
+                +"<li class='logincheck' id='logincheck' style='display:none;'>"
+                +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+                +"<li style='width:256px; padding-left:50px;'>"
+                +"<input id='resetpwd' type='submit' value='Reset Password...' class='changepassword' style='display:none;' />"
+                +"<input type='submit' value='Sign In' class='sub'/></li>"
                 +"</ul>"
                 +"</form>";
         }
@@ -114,29 +127,39 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.bindDialogEvent = function(type) {
         if(type=="reg") {
             jQuery('#identity').blur(function() {
+                jQuery(".notice").hide();
                 var identityVal = jQuery('#identity').val();
-                if(identityVal != ""){
+                //added by handaoliang, check email address
+                var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if(identityVal != "" && identityVal.match(mailReg)){
                     jQuery.ajax({
                         type: "GET",
                         url: site_url+"/s/IfIdentityExist?identity="+identityVal,
                         dataType:"json",
                         success: function(data){
                             if(data!=null) {
-                                if(data.response.identity_exist=="false")
-                                {//identity
+                                if(data.response.identity_exist=="false"){//identity
                                     jQuery('#hint').show();
-                                    jQuery('#retype').show();
+                                    //jQuery('#retype').show();
                                     jQuery('#displayname').show();
                                     jQuery('#resetpwd').hide();
+                                    jQuery('#logincheck').hide();
+                                    odof.comm.func.showRePassword();
                                 } else if(data.response.identity_exist=="true") {
                                     jQuery('#hint').hide();
                                     jQuery('#retype').hide();
                                     jQuery('#displayname').hide();
                                     jQuery('#resetpwd').show();
+                                    jQuery('#logincheck').show();
                                 }
                             }
                         }
                     });
+                }else{
+                    jQuery('#hint').hide();
+                    jQuery('#retype').hide();
+                    jQuery('#displayname').hide();
+                    jQuery('#resetpwd').hide();
                 }
             });
 
@@ -149,16 +172,24 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     var retypepassword=jQuery('input[name=retypepassword]').val();
                     var displayname=jQuery('input[name=displayname]').val();
                     var auto_signin=jQuery('input[name=auto_signin]').val();
-            
+           
                     if(jQuery('#retype').is(':visible')==true &&  password!=retypepassword && password!="" ) {
                         jQuery('#pwd_hint').html("<span>Check Password</span>");
                         jQuery('#pwd_hint').show();
                         return false;
                     }
-                    if(jQuery('#displayname').is(':visible')==true && displayname=="") {
-                        jQuery('#pwd_hint').html("<span>set your display name</span>");
-                        jQuery('#pwd_hint').show();
-                        return false;
+                    if(jQuery('#displayname').is(':visible')==true) {
+                        if(displayname==""){
+                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>set your display name</span>");
+                            jQuery('#displayname_error').show();
+                            jQuery('#pwd_hint').show();
+                            return false;
+                        }else if(!odof.comm.func.verifyDisplayName(displayname)){
+                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>Display name Error.</span>");
+                            jQuery('#displayname_error').show();
+                            jQuery('#pwd_hint').show();
+                            return false;
+                        }
                     }
                     if(password!=""&& identity!="" && jQuery('#displayname').is(':visible')==false) {
                         var poststr = "identity="+identity+"&password="
