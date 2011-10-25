@@ -300,7 +300,7 @@ b.r3{margin: 0px}
 
 /*exfee*/
 #exfee {
-    position:absolute; z-index:10; margin:4px 0px 0px 148px;
+    position:relative; z-index:10; margin:4px 0px 0px 5px;
     background-color:transparent; width:250px; height:24px;
     color:#020202; font-size:14px;
     border:none; resize: none;
@@ -366,7 +366,7 @@ b.r3{margin: 0px}
 .createset ul li p.privacy { line-height:30px; width:200px; float:left}
 .createset ul li p.privacy span { color:#020202; font-size:14px}
 .createset ul li p.privacy strong { color:#0591af}
-.createset .creattext { width:487px; margin-left:143px}
+.createset .creattext { width:487px; margin-left:143px; margin-top: -30px;}
 .createset .creattext .vti{height:25px;line-height:25px;}
 .createset .creattext .vti p{width:50px;}
 .createset .creattext .vti p span{font-size:16px;color:#020202}
