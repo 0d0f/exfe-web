@@ -100,7 +100,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<input  type='text'  name='displayname'class='inputText'/>"
                 +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
                 +"<li class='logincheck' id='logincheck' style='display:none;'>"
-                +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+                +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked /><span>Sign in automatically</span></li>"
                 +"<li style='width:256px; padding-left:50px;'>"
                 +"<input id='resetpwd' type='submit' value='Reset Password...' class='changepassword' style='display:none;' />"
                 +"<input type='submit' value='Sign In' class='sub'/></li>"

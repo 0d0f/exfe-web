@@ -12,6 +12,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * Check if user login
      *
      * */
+    ns.callBackFunc = null;
     ns.checkUserLogin = function(){
         var getURI = site_url+"/s/checkUserLogin";
         jQuery.ajax({
@@ -19,11 +20,39 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             url: getURI,
             dataType:"json",
             success: function(JSONData){
-                odof.user.status.showStatus(JSONData);
+                odof.user.status.showLoginStatus(JSONData);
+                try{
+                    if(odof.user.status.callBackFunc){
+                        odof.user.status.callBackFunc(JSONData);
+                    }
+                }catch(e){ /*pass*/ }
             }
         });
     };
-    ns.showStatus = function(userData){
+    ns.doShowLoginDialog = function(identityDialogBoxID, callBackFunc){
+        var html = odof.user.identification.showdialog("reg");
+        if(typeof callBackFunc != "undefined"){
+            ns.callBackFunc = callBackFunc;
+        }
+        if(typeof identityDialogBoxID != "undefined" && typeof identityDialogBoxID == "string"){
+            document.getElementById(identityDialogBoxID).innerHTML = html;
+        }else{
+            odof.exlibs.ExDialog.initialize("identification", html);
+        }
+
+        odof.user.identification.bindDialogEvent("reg");
+        jQuery("#identification_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword('identification_pwd');
+        });
+
+        var lastIdentity = odof.util.getCookie('last_identity');
+        if(lastIdentity){
+            jQuery("#identity").val(odof.util.getCookie('last_identity'))
+            jQuery("#identity_dbox").html("");
+        }
+        jQuery("#identity").focus();
+    };
+    ns.showLoginStatus = function(userData){
         if(userData.user_status == 0){
             var loginMenu = '<div class="global_sign_in_btn">'
                             + '<a id="home_user_login_btn" href="javascript:void(0);">Sign In</a>'
@@ -32,13 +61,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             //If not login page
             if(typeof showIdentificationDialog == "undefined"){
-                jQuery("#home_user_login_btn").click(function() {
-                    var html = odof.user.identification.showdialog("reg");
-                    odof.exlibs.ExDialog.initialize("identification", html);
-                    odof.user.identification.bindDialogEvent("reg");
-                    jQuery("#identification_pwd_ic").bind("click",function(){
-                        odof.comm.func.displayPassword('identification_pwd');
-                    });
+                jQuery("#home_user_login_btn").bind("click",function(){
+                    ns.doShowLoginDialog();
                 });
             }else{
                 jQuery("#home_user_login_btn").click(function() {

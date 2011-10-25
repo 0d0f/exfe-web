@@ -4,7 +4,11 @@ function setreadonly()
     $('textarea[name=comment]').val("pls login");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
-        alert("pls login");
+        //alert("pls login");
+        var callBackFunc = function(args){
+            console.log(args);
+        };
+        odof.user.status.doShowLoginDialog(null, callBackFunc);
     });
 }
 
