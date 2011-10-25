@@ -238,6 +238,7 @@ $(document).ready(function() {
 
     // exfee
     var gExfeeDefaultText = $('#gather_exfee_bg').html();
+    $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
     $('#exfee').keyup(function(e) {
         switch (e.keyCode ? e.keyCode : e.which) {
             case 13:
@@ -270,6 +271,12 @@ $(document).ready(function() {
             case 40:
                 $('#exfee_complete').focus();
                 e.preventDefault();
+                break;
+            case 13:
+                e.preventDefault();
+                break;
+            default:
+                $('#post_submit').css('background', 'url("/static/images/enter' + (chkExfeeFormat() ? '' : '_gray') + '.png")');
         }
     });
     $('#exfee').focus(function() {
@@ -329,8 +336,8 @@ $(document).ready(function() {
     $('#gather_x').click(submitX);
 
     $('#confirmed_all').click(function(e) {
-        var check=false;
-        if ($(this).attr('check')== 'false') {
+        var check = false;
+        if ($(this).attr('check') === 'false') {
             $(this).attr('check', 'true');
             check=true;
         } else {
@@ -375,10 +382,10 @@ $(document).ready(function() {
     updateExfeeList();
 
     // added by handaoliang
-    jQuery("#datetime_original").bind("focus", function(){
-        var displayTextBox = document.getElementById("datetime_original");
+    jQuery('#datetime_original').bind('focus', function(){
+        var displayTextBox = document.getElementById('datetime_original');
         var calendarCallBack = function(displayTimeString, standardTimeString){
-            document.getElementById("datetime").value = standardTimeString;
+            document.getElementById('datetime').value = standardTimeString;
             updateRelativeTime();
         };
         exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
@@ -458,6 +465,25 @@ function chkComplete(strKey)
 }
 
 
+function chkExfeeFormat()
+{
+    window.arrIdentitySub = [];
+    var strExfees = $('#exfee').val().replace(/\r|\n|\t/, '');
+    $('#exfee').val(strExfees);
+    var arrIdentityOri = strExfees.split(/,|;/);
+    for (var i in arrIdentityOri) {
+        if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
+            var exfee_item = odof.util.parseId(arrIdentityOri[i]);
+            if (exfee_item.type !== 'email') {
+                return false;
+            }
+            arrIdentitySub.push(exfee_item);
+        }
+    }
+    return arrIdentitySub.length > 0;
+}
+
+
 function complete()
 {
     var strValue = $('#exfee_complete').val();
@@ -475,16 +501,11 @@ function complete()
 
 function identity()
 {
-    $('#identity_ajax').show();
-    //@todo line break bugs!!!
-    window.arrIdentitySub = [];
-    var arrIdentityOri = $('#exfee').val().split(/,|;|\r|\n|\t/);
-
-    for (var i in arrIdentityOri) {
-        if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
-            arrIdentitySub.push(odof.util.parseId(arrIdentityOri[i]));
-        }
+    if (!chkExfeeFormat()) {
+        return;
     }
+
+    $('#identity_ajax').show();
 
     $.ajax({
         type     : 'GET',
