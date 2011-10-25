@@ -583,7 +583,6 @@ function identity()
             $('#identity_ajax').hide();
         }
     });
-    $('#exfee_count').html($('span.exfee_exist').length + $('span.exfee_new').length);
 }
 
 function updateExfeeList()
@@ -614,6 +613,7 @@ function updateExfeeList()
     $('#exfeelist').html(htmExfeeList);
     $('#exfee_confirmed').html(numConfirmed);
     $('#exfee_summary').html(numSummary);
+    $('#exfee_count').html(numSummary);
     $('#exfee').val('');
     $('.ex_identity').hide();
 }
