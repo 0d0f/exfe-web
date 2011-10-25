@@ -119,4 +119,8 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
     filter: alpha(opacity=60);
     -khtml-opacity: 0.6;
 }
+.ex_dialog{
+	position:absolute; padding:50px;
+	z-index:201; background:#FFF;
+}
 /** Cover effect style control **/
