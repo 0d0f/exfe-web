@@ -185,9 +185,7 @@ $(document).ready(function() {
         if ($(this).attr('enter') === 'true') {
             return;
         }
-        var html = odof.user.identification.showdialog("reg");
-        odof.exlibs.ExDialog.initialize("identification", html);
-        odof.user.identification.bindDialogEvent("reg");
+        odof.user.status.doShowLoginDialog();
         /*
         $(html).modal({onClose : function() {
             $("#hostby").attr('disabled', true);
