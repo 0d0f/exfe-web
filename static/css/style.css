@@ -347,6 +347,17 @@ b.r3{margin: 0px}
 .privacy {
     cursor: default;
 }
+#gather_private_hint {
+    display: none;
+    position: absolute;
+    border: #90c3ce 1px solid;
+    padding: 8px;
+    z-index: 20;
+    background: #f4fcfe;
+    line-height:20px;
+    margin-top: 40px;
+    margin-left: 145px;
+}
 
 
 .createset ul li #post_submit{

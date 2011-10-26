@@ -358,24 +358,11 @@ $(document).ready(function() {
         identity();
     });
 
-    $('.privacy').click(function(e) {
-        odof.exlibs.ExDialog.initialize(
-            'privacy_warning',
-            '<div id="privacy_warning_titles" class="titles">'
-          +     '<div><a href="#" id="privacy_warning_close_btn">Close</a></div>'
-          +     '<div id="identification_handler" class="tl">' + 'dsfsdf' + '</div>'
-          + '</div>'
-          + '<div id="overFramel" class="overFramel">'
-          +     '<div class="overFramelogin">'
-          +         '<div class="login">'
-          +         ''
-          +         ''
-          +         '</div>'
-          +     '</div>'
-          + '</div>'
-          + '<b class="rbottom"><b class="r3"></b><b class="r2"></b><b class="r1"></b></b>'
-            //////////////////////////////////////////////////////
-        );
+    jQuery('.privacy').mousemove(function() {
+        jQuery('#gather_private_hint').show();
+    });
+    jQuery('.privacy').mouseout(function() {
+        jQuery('#gather_private_hint').hide();
     });
 
     window.curCross = '';
