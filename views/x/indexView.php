@@ -98,7 +98,7 @@ $token=$_GET["token"];
         <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit this cross.</p>
     </div>
     <div id="index" class="step">
-        <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
+        <input id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;" value="<?php echo $cross["title"] ?>" />
         <h2 id="cross_titles" class="pv_title_normal"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
