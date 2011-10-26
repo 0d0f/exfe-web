@@ -91,6 +91,7 @@
         <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" id="discard">Discard</a>
         <button type="button" id="gather_x" class="submit">Submit</button>
         <div id="gather_submit_ajax"></div>
+        <div id="gather_failed_hint">Submission failed.</div>
     </li>
 
 </ul>

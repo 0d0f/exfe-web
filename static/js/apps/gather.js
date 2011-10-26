@@ -671,6 +671,7 @@ function submitX()
     xSubmitting = true;
 
     $('#gather_submit_ajax').show();
+    $('#gather_failed_hint').hide();
     $('#gather_x').removeClass('mouseover');
     $('#gather_x').removeClass('mousedown');
     $('#gather_x').addClass('disabled');
@@ -697,6 +698,7 @@ function submitX()
         },
         failure : function(data) {
             $('#gather_submit_ajax').hide();
+            $('#gather_failed_hint').show();
             $('#gather_x').removeClass('mouseover');
             $('#gather_x').removeClass('mousedown');
             $('#gather_x').removeClass('disabled');
