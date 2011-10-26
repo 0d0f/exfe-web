@@ -72,8 +72,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if(type=="reg") {
             title="Identification";
 
-            desc = "<div class='account' style='text-align:center; height:40px; border-bottom:1px dashed #BBBBBB; margin-bottom:20px; font-size:18px;'>"
-                 + "Welcome to <span style='color:#0591AC;'>EXFE</span></div>";
+            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
+                 + "Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
+                 + "<div style='font-size:14px;'>Enter your identity information:</div>";
             /*
             desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
@@ -86,7 +87,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<ul>"
                 +"<li><label>Identity:</label>"
                 +"<div class='identity_box'>"
-                +"<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' />"
+                +"<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' onchange='javascript:odof.user.identification.showIdentityInfo();' />"
                 +"</div>"
                 +"<div id='identity_dbox'>Your email here</div>"
                 +"<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
@@ -108,7 +109,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
                 +"<li class='logincheck' id='logincheck' style='display:none;'>"
                 +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked /><span>Sign in automatically</span></li>"
-                +"<li style='width:275px; padding:15px 0 0 50px;'>"
+                +"<li style='width:288px; padding:15px 0 0 50px;'>"
                 +"<input id='resetpwd' type='submit' value='Reset Password...' class='changepassword' style='display:none;' />"
                 +"<input type='submit' value='Sign In' class='sub'/></li>"
                 +"</ul>"

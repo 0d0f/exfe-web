@@ -79,15 +79,19 @@
         </div>
     </li>
 
-    <li id="gather_submit_blank">
+    <li>
         <label class="privacy">Privacy</label>
         <p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
         <div id="gather_private_hint">
             Sorry, EXFE doesn't support to create public X yet. We're still working on it.
         </div>
+    </li>
+
+    <li id="gather_submit_blank">
+        <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" id="discard">Discard</a>
         <button type="button" id="gather_x" class="submit">Submit</button>
-        <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" class="discard"> Discard </a>
         <div id="gather_submit_ajax"></div>
+        <div id="gather_failed_hint">Submission failed.</div>
     </li>
 
 </ul>

@@ -1,7 +1,7 @@
 *{ margin:0; padding:0;
 }
 body {
-    font:13px Lucida Grande, Verdana, LucidaSansUnicode,Helvetica,Arial,sans-serif;
+    font:13px Verdana, LucidaSansUnicode,Helvetica,Arial,sans-serif;
     background:url(/static/images/global_header_bg.jpg) repeat-x 0 0;
     color:#696969
 }
@@ -23,7 +23,6 @@ em.x{font-style:italic;color:#9c9c9c}
 em.y{color:#0591af}
 em.h3{font-size:24px;font-family:Verdana; }
 .fbg{background:#d5e6e9}
-.discard{text-decoration:underline; margin-left:20px}
 
 .menu_iframe{
 	width:228px;
@@ -166,7 +165,7 @@ b.r3{margin: 0px}
 .overFrame{background:#fafafa;padding-bottom:15px;}
 .overFramel{background:#ffffff;padding-bottom:15px;}
 .overFrameh{background:#f2f2f2;padding:10px 0 15px;}
-.overFramelogin{width:370px;margin:0 auto;padding:45px 0;}
+.overFramelogin{width:390px;margin:0 auto;padding:15px 0;}
 .invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}
 .invi dl{margin-top:5px;padding:5px 8px;position:relative;}
 .invi dl dt span{font-size:16px;color:#0591af}
@@ -188,19 +187,17 @@ b.r3{margin: 0px}
 .upd dl dd button{position:absolute;height:20px;right:2px;top:5px;background:url(/static/images/btn.png) no-repeat left -144px;width:20px;display:none;text-indent:-9999px;border:0 }
 
 
-
-
 .centerbg{width:1000px;margin:0 auto;background:url(/static/images/ceatebg.png) repeat-y top center;padding:30px 0 45px;}
 
 /*登录*/
 .loginBao{width:325px;margin:0px auto;border:1px solid #CCCCCC;padding:50px 125px;background:#ffffff;position:relative;z-index:10}
 .login{margin:0 auto;}
 .login ul{margin-top:10px;}
-.login ul li{clear:both; height:35px;line-height:35px;}
-.login ul label{width:95px;height:30px;line-height:20px;float:left;text-align:right;}
-.login ul li input.inputText{ height:17px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px; background-color: transparent; }
-.login ul li .identity_box{ position:absolute; margin-top:0px; margin-left:103px; z-index:203; overflow:hidden; }
-.login ul li #identity_dbox{ position:absolute; height:17px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:103px; z-index:202; }
+.login ul li{clear:both; height:40px; }
+.login ul label{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
+.login ul li input.inputText{ height:28px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px; background-color: transparent; font:18px Verdana; }
+.login ul li .identity_box{ position:absolute; margin-top:0px; margin-left:118px; z-index:203; overflow:hidden; }
+.login ul li #identity_dbox{ position:absolute; height:21px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:118px; z-index:202; padding-top:7px; font-size:18px; }
 .login .loginbtn p .dx{width:55px;height:15px;position:absolute;top:10px;}
 .login h3{font-size:19px;line-height:25px;text-align:center;}
 .login h3 a{color:#0591af;}
@@ -233,7 +230,7 @@ b.r3{margin: 0px}
 
 .login ul li p{height:26px;width:60px;margin:0 auto;}
 .login ul li em{
-    float:left; width:30px; height:20px; cursor:pointer;
+    float:left; width:30px; height:20px; cursor:pointer; margin-top:5px;
     background:url(/static/images/icons.png) no-repeat;
 }
 .login ul li em.ic1{background-position:8px -284px;}
@@ -241,18 +238,18 @@ b.r3{margin: 0px}
 .login ul li em.ic3{background-position:8px -374px;}
 .login ul li em.loading{
     position:absolute; display:block; width:16px; height:16px;
-    margin-left:332px; margin-top:2px; z-index:203; cursor:default;
+    margin-left:347px; margin-top:8px; z-index:203; cursor:default;
     background:url(/static/images/loading_a.gif) no-repeat 0 0;
 }
 .login ul li em.delete{
     position:absolute; display:block; width:15px; height:15px;
-    margin-left:306px; margin-top:2px; z-index:203; cursor:pointer;
+    margin-left:321px; margin-top:8px; z-index:203; cursor:pointer;
     background:url(/static/images/icons.png) no-repeat left -691px;
 }
 .login ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
 
-.login ul .logincheck input{ margin-left:82px; line-height:200%}
-.login ul .logincheck span{ margin-left:8px; }
+.login ul .logincheck input{ margin-left:118px; line-height:200%}
+.login ul .logincheck span{ margin-left:8px; font-size:14px; }
 .login ul .notice{ height:25px; color:#0591af; line-height:10px;}
 .login ul .notice span{ margin-left:82px; margin-top:0;}
 
@@ -386,6 +383,17 @@ b.r3{margin: 0px}
     margin-top: 40px;
     margin-left: 145px;
 }
+/*submit*/
+#gather_failed_hint {
+    display: none;
+    position: absolute;
+    padding: 8px;
+    z-index: 20;
+    line-height:20px;
+    margin-top: -30px;
+    color: #ff3333;
+    margin-left: 490px;
+}
 
 
 .createset ul li #post_submit{
@@ -428,7 +436,37 @@ b.r3{margin: 0px}
 
 .createset .cl{float:left;}
 .createset .cr{float:right;}
-.createset .submit {background: url("/static/images/btn.png") no-repeat scroll 0 0;border: 0 none;color:#ffffff;font-size:16px;height:30px;width:130px;cursor:pointer;padding:0 0 4px; margin:5px 0 0 90px; font-family:Verdana, Geneva, sans-serif}
+#discard {
+    display: block;
+    position: absolute;
+    text-decoration: underline;
+    width: 80px;
+    margin-left: 420px;
+    margin-top: 7px;
+    color: #999999;
+}
+.createset .submit {
+    position: absolute;
+    background: url("/static/images/btn.png") no-repeat scroll 0 0;
+    border: 0 none;
+    color: #ffffff;
+    font-size: 16px;
+    height: 30px;
+    width: 130px;
+    cursor: pointer;
+    padding:0 0 4px;
+    margin-left: 500px;
+    font-family: Verdana, Geneva, sans-serif;
+}
+.createset .mouseover {
+    background: url("/static/images/btn.png") no-repeat scroll -300px 0;
+}
+.createset .mousedown {
+    background: url("/static/images/btn.png") no-repeat scroll -600px 0;
+}
+.createset .disabled {
+    background: url("/static/images/btn.png") no-repeat scroll -900px 0;
+}
 
 
 .createset .exfend{width:400px;margin:0 auto;padding-top:85px;text-align:center;font-family:Verdana; }
@@ -534,7 +572,7 @@ b.r3{margin: 0px}
 
 #rsvp_loading{ margin-left: 100px; margin-top: -15px; }
 #identity_ajax{ position:relative; margin-left: 165px; margin-top: 15px; }
-#gather_submit_ajax{ position:relative; margin-left: 165px; margin-top: -14px; }
+#gather_submit_ajax{ position:relative; margin-left: 455px; margin-top: 15px; }
 .creattext{ margin-top: 25px; }
 
 /* ----------------------------------- modified by handaoliang --------------------------*/

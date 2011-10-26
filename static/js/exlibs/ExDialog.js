@@ -37,7 +37,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var dialogTitlesJID = "#" + ns.dialogTitleID;
         var dialogCloseBtnJID = "#" + ns.dialogCloseBtnID;
 
-        jQuery(dialogJID).css({ top:20, left:parseInt(pageWidth-dialogWidth)/2 });
+        jQuery(dialogJID).css({ top:23, left:parseInt(pageWidth-dialogWidth)/2 });
         jQuery(window).scroll(function() {
             if (!drag && divscroll) {
                 floatWrapX = jQuery(window).scrollLeft() + pX;

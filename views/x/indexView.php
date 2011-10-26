@@ -98,7 +98,7 @@ $token=$_GET["token"];
         <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit this cross.</p>
     </div>
     <div id="index" class="step">
-        <textarea id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;"><?php echo $cross["title"] ?></textarea>
+        <input id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;" value="<?php echo $cross["title"] ?>" />
         <h2 id="cross_titles" class="pv_title_normal"><?php echo $cross["title"]; ?></h2>
         <div class="exfel">
         <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
@@ -153,7 +153,7 @@ $token=$_GET["token"];
         <div id="cross_container" class="exfer">
             <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
             <div id="cross_times_area">
-                <h3 id="pv_relativetime"><?php echo $begin_at_relativetime;?></h3>
+                <h3 id="pv_relativetime"><?php if($begin_at_relativetime == 0){ echo "Anytime"; } else { echo $begin_at_relativetime; } ?></h3>
                 <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
             </div>
             <div id="cross_place_area">
