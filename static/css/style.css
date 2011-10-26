@@ -23,7 +23,6 @@ em.x{font-style:italic;color:#9c9c9c}
 em.y{color:#0591af}
 em.h3{font-size:24px;font-family:Verdana; }
 .fbg{background:#d5e6e9}
-.discard{text-decoration:underline; margin-left:20px}
 
 .menu_iframe{
 	width:228px;
@@ -428,7 +427,37 @@ b.r3{margin: 0px}
 
 .createset .cl{float:left;}
 .createset .cr{float:right;}
-.createset .submit {background: url("/static/images/btn.png") no-repeat scroll 0 0;border: 0 none;color:#ffffff;font-size:16px;height:30px;width:130px;cursor:pointer;padding:0 0 4px; margin:5px 0 0 90px; font-family:Verdana, Geneva, sans-serif}
+#discard {
+    display: block;
+    position: absolute;
+    text-decoration: underline;
+    width: 80px;
+    margin-left: 420px;
+    margin-top: 7px;
+    color: #999999;
+}
+.createset .submit {
+    position: absolute;
+    background: url("/static/images/btn.png") no-repeat scroll 0 0;
+    border: 0 none;
+    color: #ffffff;
+    font-size: 16px;
+    height: 30px;
+    width: 130px;
+    cursor: pointer;
+    padding:0 0 4px;
+    margin-left: 500px;
+    font-family: Verdana, Geneva, sans-serif;
+}
+.createset .mouseover {
+    background: url("/static/images/btn.png") no-repeat scroll -300px 0;
+}
+.createset .mousedown {
+    background: url("/static/images/btn.png") no-repeat scroll -600px 0;
+}
+.createset .disabled {
+    background: url("/static/images/btn.png") no-repeat scroll -900px 0;
+}
 
 
 .createset .exfend{width:400px;margin:0 auto;padding-top:85px;text-align:center;font-family:Verdana; }
@@ -534,7 +563,7 @@ b.r3{margin: 0px}
 
 #rsvp_loading{ margin-left: 100px; margin-top: -15px; }
 #identity_ajax{ position:relative; margin-left: 165px; margin-top: 15px; }
-#gather_submit_ajax{ position:relative; margin-left: 165px; margin-top: -14px; }
+#gather_submit_ajax{ position:relative; margin-left: 455px; margin-top: 15px; }
 .creattext{ margin-top: 25px; }
 
 /* ----------------------------------- modified by handaoliang --------------------------*/
