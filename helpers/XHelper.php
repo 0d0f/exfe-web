@@ -51,7 +51,6 @@ class XHelper extends ActionController
 
                 $invitationdata=$this->getmodelbyname("invitation");
                 $invitation_identities=$invitationdata->getInvitation_Identities($cross_id);
-                //$muteData=$this->getmodelbyname("mute");
                 if($invitation_identities)
                 foreach($invitation_identities as $invitation_identity)
                 {
@@ -61,10 +60,6 @@ class XHelper extends ActionController
                     {
                         if(intval($identity["status"])==3)
                         {
-                            //$mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
-                            //if($mute===FALSE)
-                            //{
-
                                 $identity=humanidentity($identity,null);
                                 $msghelper=$this->gethelperbyname("msg");
                                 if($identity["provider"]=="email")
@@ -81,7 +76,6 @@ class XHelper extends ActionController
                                 else
                                 {
                                 }
-                            //}
                         }
                     }
                 }

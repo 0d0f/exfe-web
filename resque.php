@@ -1,9 +1,11 @@
 <?php
+$MULTI = getenv('MULTI');
 $QUEUE = getenv('QUEUE');
 if(empty($QUEUE)) {
     die("Set QUEUE env var containing the list of queues to work.\n");
 }
 
+echo "is multi job? ".$MULTI;
 $APP_INCLUDE = getenv('APP_INCLUDE');
 if($APP_INCLUDE) {
     if(!file_exists($APP_INCLUDE)) {
@@ -74,6 +76,9 @@ else {
     }
 
     fwrite(STDOUT , '*** Starting worker '.$worker."\n");
-    $worker->work($interval);
+    if($MULTI=="true")
+        $worker->work($interval,TRUE);
+    else
+        $worker->work($interval);
 }
 ?>

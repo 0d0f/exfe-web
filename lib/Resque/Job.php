@@ -166,6 +166,37 @@ class Resque_Job
 	 *
 	 * @throws Resque_Exception When the job's class could not be found or it does not contain a perform method.
 	 */
+	public function multi_perform($jobs)
+	{
+        $argsarray=array();
+        foreach( $jobs as $job)
+        {
+            $args=$job->payload["args"];
+            array_push($argsarray,$args);
+        }
+		$instance = $this->getInstance();
+		try {
+			Resque_Event::trigger('beforePerform', $this);
+	
+			if(method_exists($instance, 'setUp')) {
+				$instance->setUp();
+			}
+
+			$instance->multi_perform($argsarray);
+
+			if(method_exists($instance, 'tearDown')) {
+				$instance->tearDown();
+			}
+
+			Resque_Event::trigger('afterPerform', $this);
+		}
+		// beforePerform/setUp have said don't perform this job. Return.
+		catch(Resque_Job_DontPerform $e) {
+			return false;
+		}
+		
+		return true;
+    }
 	public function perform()
 	{
 		$instance = $this->getInstance();
