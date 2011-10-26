@@ -15,14 +15,17 @@ function setreadonly()
 function formatCross()
 {
     // format title
-    if ($('#cross_title').hasClass('pv_title_double') && $('#cross_title').height() < 112) {
-        $('#cross_title').addClass('pv_title_normal').removeClass('pv_title_double');
+    if ($('#cross_titles').hasClass('pv_title_double') && $('#cross_titles').height() < 112) {
+        $('#cross_titles').addClass('pv_title_normal').removeClass('pv_title_double');
+        console.log('A');
     }
-    if ($('#cross_title').hasClass('pv_title_normal') && $('#cross_title').height() > 70) {
-        $('#cross_title').addClass('pv_title_double').removeClass('pv_title_normal');
+    if ($('#cross_titles').hasClass('pv_title_normal') && $('#cross_titles').height() > 70) {
+        $('#cross_titles').addClass('pv_title_double').removeClass('pv_title_normal');
+        console.log('B');
     }
 
     // format address
+    
 }
 
 $(document).ready(function() {

@@ -341,6 +341,7 @@ b.r3{margin: 0px}
 /*preview title*/
 #pv_title {
     color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+    margin-bottom: 20px;
 }
 .pv_title_normal {
     line-height: 70px; font-size: 64px;
@@ -351,7 +352,7 @@ b.r3{margin: 0px}
 /*preview datetime*/
 #pv_relativetime {
     color:#0591af; overflow:hidden; font-weight:normal; padding:5px;
-    margin-top:10px; word-break: break-all; font-size:36px;
+    margin-top:10px; word-break: break-all; font-size:36px; font-weight: normal;
 }
 /*preview place*/
 #pv_place_line1 {
@@ -373,6 +374,17 @@ b.r3{margin: 0px}
 /*privacy*/
 .privacy {
     cursor: default;
+}
+#gather_private_hint {
+    display: none;
+    position: absolute;
+    border: #90c3ce 1px solid;
+    padding: 8px;
+    z-index: 20;
+    background: #f4fcfe;
+    line-height:20px;
+    margin-top: 40px;
+    margin-left: 145px;
 }
 
 
@@ -763,6 +775,11 @@ b.r3{margin: 0px}
 /** cross - edit ** by leask **/
 #cross_titles {
     color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+    margin-bottom: 20px;
+}
+#cross_place_area {
+    color:#0591ac; overflow:hidden; font-weight:normal; padding:5px; margin-top:10px; word-break: break-all;
+    font-weight: normal;
 }
 
 /** cross - edit - exfee ** by Leask **/

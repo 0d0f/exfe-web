@@ -100,7 +100,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#cross_titles_textarea").unbind("clickoutside");
                 jQuery("#cross_titles").show();
                 formatCross();
-                console.log('ss');
             }
         });
     };
