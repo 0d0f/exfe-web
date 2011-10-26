@@ -153,7 +153,7 @@ $token=$_GET["token"];
         <div id="cross_container" class="exfer">
             <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
             <div id="cross_times_area">
-                <h3 id="pv_relativetime"><?php echo $begin_at_relativetime;?></h3>
+                <h3 id="pv_relativetime"><?php if($begin_at_relativetime == 0){ echo "Anytime"; } else { echo $begin_at_relativetime; } ?></h3>
                 <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
             </div>
             <div id="cross_place_area">
