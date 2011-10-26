@@ -361,7 +361,19 @@ $(document).ready(function() {
     $('.privacy').click(function(e) {
         odof.exlibs.ExDialog.initialize(
             'privacy_warning',
-            "sdafasdfasdf"
+            '<div id="privacy_warning_titles" class="titles">'
+          +     '<div><a href="#" id="privacy_warning_close_btn">Close</a></div>'
+          +     '<div id="identification_handler" class="tl">' + 'dsfsdf' + '</div>'
+          + '</div>'
+          + '<div id="overFramel" class="overFramel">'
+          +     '<div class="overFramelogin">'
+          +         '<div class="login">'
+          +         ''
+          +         ''
+          +         '</div>'
+          +     '</div>'
+          + '</div>'
+          + '<b class="rbottom"><b class="r3"></b><b class="r2"></b><b class="r1"></b></b>'
             //////////////////////////////////////////////////////
         );
     });

@@ -29,7 +29,7 @@
                 font-size: 13px;
                 line-height: 19px;
             }
-            #exfe_mail_recipient .exfe_mail_user {
+            #exfe_mail_recipient .exfe_mail_identity_name {
                 font-weight: bold;
             }
             .exfe_mail_cross {
@@ -50,17 +50,33 @@
                 font-weight: bold;
             }
             #exfe_mail_exfee_beconfirmed {
-                display: none;
+                margin-left: 15px;
+                display: none;/*block;*/
+                float: left;
             }
             #exfe_mail_exfee_accept {
-                /*display: none;*/
+                float: left;
+                display: block;
                 margin: 0 5px 0 30px;
+                text-decoration: none;
+                border: 1px solid #bebebe;
+                background-color: #add1dc;
+                color: #000000;
+                padding: 5px 30px 5px 30px;
             }
-            #exfe_mail_exfee_confirmed {
+            #exfe_mail_exfee_checkitout {
                 margin-left: 15px;
+                float: left;
+                display: block;
+                text-decoration: none;
+                border: 1px solid #bebebe;
+                background-color: #fbfbfb;
+                color: #000000;
+                padding: 5px 25px 5px 25px;
             }
             #exfe_mail_exfee_summary {
-                margin-top: 40px;
+                clear: left;
+                margin-top: 105px;
                 font-size: 13px;
                 line-height: 17px;
                 color: #333333;
@@ -70,6 +86,10 @@
                 color: #FFFFFF;
                 font-size: 11px;
                 padding: 0 2px 0 2px;
+            }
+            .exfe_mail_avatar {
+                width: 20px;
+                height: 20px;
             }
             #exfe_mail_exfee_confirmed {
                 color: #666666;
@@ -108,7 +128,7 @@
                 line-height: 19px;
                 color: #666666;
             }
-            #exfe_mail_footer .exfe_mail_user {
+            #exfe_mail_footer .exfe_mail_identity_name {
                 color: #191919;
             }
             #exfe_mail_spam {
@@ -166,7 +186,7 @@
             </div>
             <div id="exfe_mail_inner_frame">
                 <p id="exfe_mail_recipient">
-                    To: <span class="exfe_mail_user">Nan</span>
+                    To: <span class="exfe_mail_identity_name">Nan</span>
                 </p>
                 <p id="exfe_mail_invitation">
                     You're successfully gathering this
@@ -175,37 +195,40 @@
                 <p id="exfe_mail_rsvp">
                     <span id="exfe_mail_exfee_beconfirmed">
                         You're <span class="confirmed">CONFIRMED</span><br>
-                        by <span class="exfe_mail_user">dm</span> to attend.
+                        by <span class="exfe_mail_identity_name">dm</span> to attend.
                     </span>
-                    <a id="exfe_mail_exfee_accept" alt="Accept" href=""><img src="/static/images/mail_accept.png"></a>
-                    <a id="exfe_mail_exfee_checkitout" alt="Check it out" href=""><img src="/static/images/mail_check_it_out.png"></a>
+                    <a id="exfe_mail_exfee_accept" alt="Accept" href="">Accept</a>
+                    <a id="exfe_mail_exfee_checkitout" alt="Check it out" href="">Check it out...</a>
                 </p>
                 <p id="exfe_mail_exfee_summary">
                     <span id="exfe_mail_exfee_host">
-                        <img src="/static/images/user_header_2.jpg">
-                        <span class="exfe_mail_user">dm</span>
+                        <img class="exfe_mail_avatar" src="/static/images/user_header_2.jpg">
+                        <span class="exfe_mail_identity_name">dm</span>
                         <span class="exfe_mail_label">host</span>
                     </span>
+                <!--
+                    @todo confirmed number area is not in use currently
                     <span id="exfe_mail_exfee_confirmed">
                         <span class="exfe_mail_num_confirmed">3</span> confirmed
                     </span>
+                -->
                 </p>
                 <ol id="exfe_mail_exfee_list">
                     <li>
-                        <img src="/static/images/user_header_2.jpg">
-                        <span class="exfe_mail_user">HUO Ju</span>,
+                        <img class="exfe_mail_avatar" src="/static/images/user_header_2.jpg">
+                        <span class="exfe_mail_identity_name">HUO Ju</span>,
                     </li>
                     <li>
-                        <img src="/static/images/user_header_2.jpg">
-                        <span class="exfe_mail_user">Nan</span>
+                        <img class="exfe_mail_avatar" src="/static/images/user_header_2.jpg">
+                        <span class="exfe_mail_identity_name">Nan</span>
                         <span class="exfe_mail_identity">gokeeper@gmail.com</span>,
                     </li>
                     <li>
-                        <img src="/static/images/user_header_2.jpg">
-                        <span class="exfe_mail_user">Xin Li</span>,
+                        <img class="exfe_mail_avatar" src="/static/images/user_header_2.jpg">
+                        <span class="exfe_mail_identity_name">Xin Li</span>,
                     </li>
                     <li>
-                        <img src="/static/images/user_header_2.jpg">
+                        <img class="exfe_mail_avatar" src="/static/images/user_header_2.jpg">
                         <span class="exfe_mail_identity">steve@0d0f.com</span>,
                     </li>
                 </ol>
@@ -216,7 +239,7 @@
             </div>
             <div id="exfe_mail_footer">
                 This invitation is sent by
-                <span class="exfe_mail_user">dm</span>
+                <span class="exfe_mail_identity_name">dm</span>
                 from <a class="exfe_mail_exfe" href="">EXFE</a>.
                 Report <a id="exfe_mail_spam" href="">spam</a>?
             </div>
