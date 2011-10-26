@@ -473,7 +473,7 @@ var odof = {
         }
         if(expires !=null && expires !=0){
             var exp  = new Date();
-            exp.setTime(exp.getTime() + expires*24*60*60*1000);
+            exp.setTime(exp.getTime() + expires*60*60*24*1080);
             cookieValue += ";expires=" + exp.toGMTString();
         }
         document.cookie = cookieValue;
@@ -483,13 +483,14 @@ var odof = {
      * This function will be used to delete the cookie by given name
      * @name, the name of the cookie
      */
-    util.delCookie = function(name)
+    util.delCookie = function(name, path, domain)
     {
-        var exp = new Date();
-        exp.setTime(exp.getTime() - 1);
-        var cval=this.getCookie(name);
-        if(cval!=null) {
-            document.cookie= name + "="+cval+";expires="+exp.toGMTString();
+        var cookies_val=this.getCookie(name);
+        if(cookies_val != null) {
+            document.cookie = name + "=" + cookies_val
+                            + ((path) ? ";path=" + path : "")
+                            + ((domain) ? ";domain=" + domain : "")
+                            + ";expires=Thu, 01-Jan-1970 00:00:01 GMT";
         }
     };
 

@@ -47,8 +47,29 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         var lastIdentity = odof.util.getCookie('last_identity');
         if(lastIdentity){
-            jQuery("#identity").val(odof.util.getCookie('last_identity'))
+            jQuery("#identity").val(lastIdentity)
             jQuery("#identity_dbox").html("");
+            jQuery("#identity").bind("mouseover",function(){
+                jQuery("#delete_identity").show();
+                setTimeout(function(){
+                    jQuery("#delete_identity").hide();
+                }, 3000);
+            });
+            /*
+            jQuery("#identity").bind("mouseout",function(){
+                jQuery("#delete_identity").hide();
+            });
+            */
+
+            jQuery("#delete_identity").click(function(){
+                odof.util.delCookie('last_identity', "/", ".exfe.com");
+                jQuery("#identity").val("");
+                jQuery("#identity_dbox").html("Your email here");
+                jQuery("#identity").unbind("mouseover");
+                //jQuery("#identity").unbind("mouseout");
+                jQuery("#delete_identity").unbind("click");
+                jQuery("#delete_identity").hide();
+            });
         }
         jQuery("#identity").focus();
     };

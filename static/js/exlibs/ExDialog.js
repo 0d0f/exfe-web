@@ -145,12 +145,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             // Create a element for display cover
             ns.coverElement = odof.util.createElement("div", ns.coverID, "cover_element");
             ns.resizeCover();
-            jQuery(window).resize(ns.resizeCover);
             document.body.appendChild(ns.coverElement);
+            //jQuery("#"+ns.coverID).dblclick(function(){ return false; });
+            
+            jQuery(window).resize(ns.resizeCover);
+            //比击不允许选择内容。
+            jQuery("body").bind("selectstart",function(){ return false; });
         }
 
     };
-
     /*
      * resize cover element 
      * */
@@ -173,6 +176,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if(coverElementObj){
             document.body.removeChild(coverElementObj);
         }
+        //解除绑定。
+        jQuery("body").unbind("selectstart");
     };
 
 
