@@ -18,7 +18,7 @@ class Email_Job
         $host_identity=$this->args['host_identity'];
         $host_name=$host_identity["name"];
         $host_avatar=$host_identity["avatar_file_name"];
-        $rsvpyeslink='<a href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">YES</a>';
+        $rsvpyeslink='<a id="exfe_mail_exfee_accept" alt="Accept" href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">Accept</a>';
     
         global $site_url;
         global $email_connect;
@@ -27,15 +27,13 @@ class Email_Job
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
 
-        $mail["hint_title"]="Invitation from: ".$host_name;
-        var_dump($this->args["host_identity_id"]);
-        var_dump($this->args["identity_id"]);
-        print_r($this->args);
+        $mail["hint_title"]='Invitation from:'.$host_name;
+
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
-            $mail["hint_title"]="You’re successfully gathering this X.";
+            $mail["hint_title"]="You're successfully gathering this <span class='exfe_mail_cross'>X.</span>";
 
         if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
-            $mail["rsvp_status"]="You're CONFIRMED by ".$by_identity_name."to attend.";
+            $mail["rsvp_status"]="<span id='exfe_mail_exfee_beconfirmed'> You're <span class='confirmed'>CONFIRMED</span><br> by <span class='exfe_mail_identity_name'> $by_identity_name </span> to attend.  </span>";
         else
             $mail["rsvp_status"]=$rsvpyeslink;
 
@@ -43,17 +41,24 @@ class Email_Job
         $mail["host_avatar"]=$site_url."/eimgs/80_80_".$host_avatar;
         $invitations=$this->args["invitations"];
         $exfee_list="";
+        $exfee_sum=sizeof($invitations);
+        $exfee_idx=0;
         foreach($invitations as $invitation)
         {
+            $exfee_idx=$exfee_idx+1;
             //http://local.exfe.com/eimgs/80_80_default.png
             $exfee_avatar=$site_url."/eimgs/80_80_".$invitation["avatar_file_name"];
             $exfee_name=$invitation['name'];
             if($exfee_name=="")
                 $exfee_name=$invitation['external_identity'];
-            $exfee_list.="<img src='$exfee_avatar'/>$exfee_name";
+            $exfee_list.="<li> <img class='exfe_mail_avatar' src='$exfee_avatar'> <span class='exfe_mail_identity_name'>$exfee_name</span>";
+            if($exfee_idx!=$exfee_sum)
+                $exfee_list.=",";
+            $exfee_list.="</li>";
         }
         $mail["exfee_list"]=$exfee_list;
         $mail["content"]=$this->args["description"];
+//<a id="exfe_mail_main_more" href="">...more</a>
         $begin_at=$this->args["begin_at"];
         $datetime=explode(" ",$begin_at);
         $mail["date"]=$datetime[0];
@@ -63,17 +68,7 @@ class Email_Job
         $mail["place_line1"]=$this->args["place_line1"];
         $mail["place_line2"]=$this->args["place_line2"];
 
-        #$link='<a href="'.$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'].'">'.$this->args['title']."</a>";
-        #$rsvpnolink='<a href="'.$site_url.'/rsvp/no?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">NO</a>';
-        #$rsvpmaybelink='<a href="'.$site_url.'/rsvp/maybe?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">interested</a>';
-        #$body=$host_name." 在 Exfe 上邀请你参加活动 " .$link."，这个活动的详细情况如下：\r\n";
-        #$body=$body.$this->args['description'];
-        #$body=$body."<p>RSVP:</p>";
-        #$body=$body."<p>".$rsvpyeslink."</p>";
-        #$body=$body."<p>".$rsvpnolink."</p>";
-        #$body=$body."<p>".$rsvpmaybelink."</p>";
         $body=$this->getMailBody($mail);
-        #print $body["body"];
 
         $icsstr=buildICS($this->args);
 
@@ -85,6 +80,7 @@ class Email_Job
     }
     public function getMailBody($mail)
     {
+        global $site_url;
         $template=file_get_contents("invitation_template.html");
         $templates=split("\r|\n",$template);
         $template_title=$templates[0];
@@ -105,6 +101,7 @@ class Email_Job
         $mail_body=str_replace("%time%",$mail["time"],$mail_body);
         $mail_body=str_replace("%place_line1%",$mail["place_line1"],$mail_body);
         $mail_body=str_replace("%place_line2%",$mail["place_line2"],$mail_body);
+        $mail_body=str_replace("%site_url%",$site_url,$mail_body);
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }
