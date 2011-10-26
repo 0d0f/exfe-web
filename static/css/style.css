@@ -335,7 +335,7 @@ b.r3{margin: 0px}
     font-size:36px; line-height: 46px;
 }
 .pv_place_line1_double {
-    font-size:30px; line-height: 36px; max-height: 72px;
+    font-size:30px; line-height: 36px; max-height: 70px;
 }
 #pv_place_line2 {
     color: #666666; font-family: Verdana; font-size: 18px; line-height: 24px;
@@ -749,10 +749,6 @@ b.r3{margin: 0px}
 #cross_titles {
     color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
     margin-bottom: 20px;
-}
-#cross_place_area {
-    color:#0591ac; overflow:hidden; font-weight:normal; padding:5px; margin-top:10px; word-break: break-all;
-    font-weight: normal;
 }
 
 /** cross - edit - exfee ** by Leask **/
