@@ -239,12 +239,12 @@ b.r3{margin: 0px}
 .login ul li em.ic3{background-position:8px -374px;}
 .login ul li em.loading{
     position:absolute; display:block; width:16px; height:16px;
-    margin-left:347px; margin-top:2px; z-index:203; cursor:default;
+    margin-left:347px; margin-top:8px; z-index:203; cursor:default;
     background:url(/static/images/loading_a.gif) no-repeat 0 0;
 }
 .login ul li em.delete{
     position:absolute; display:block; width:15px; height:15px;
-    margin-left:321px; margin-top:2px; z-index:203; cursor:pointer;
+    margin-left:321px; margin-top:8px; z-index:203; cursor:pointer;
     background:url(/static/images/icons.png) no-repeat left -691px;
 }
 .login ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
