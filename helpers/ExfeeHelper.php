@@ -247,19 +247,23 @@ class ExfeeHelper extends ActionController
                 $link=SITE_URL.'/!'.int_to_base62($cross_id);
                 $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
                 $mail["link"]=$link;
+                $mail["cross_id"]=$cross_id;
+                $mail["cross_id_base62"]=int_to_base62($cross_id);
                 $mail["mutelink"]=$mutelink;
-                $mail["template_name"]="conversation";
+                //$mail["template_name"]="conversation";
                 $mail["action"]="post";
                 $mail["content"]=$content;
 
                 $crossData=$this->getModelByName("x");
                 $cross=$crossData->getCross($cross_id);
                 $mail["title"]=$cross["title"];
+                $mail["create_at"]=time();
 
                 $identityData=$this->getModelByName("identity");
                 $exfee_identity=$identityData->getIdentityById($host_identity_id);
                 $exfee_identity=humanIdentity($exfee_identity,NULL);
-                $mail["exfee_name"]=$exfee_identity["name"];
+                //$mail["exfee_name"]=$exfee_identity["name"];
+                $mail["identity"]=$exfee_identity;
 
                 $apnargs["exfee_name"]=$exfee_identity["name"];
                 $apnargs["comment"]=$content;
@@ -268,38 +272,56 @@ class ExfeeHelper extends ActionController
                 $invitationdata=$this->getmodelbyname("invitation");
                 $invitation_identities=$invitationdata->getinvitation_identities($cross_id);
                 if($invitation_identities)
-                foreach($invitation_identities as $invitation_identity)
                 {
-                    $identities=$invitation_identity["identities"];
-                    if($identities)
-                    foreach($identities as $identity)
+                    $to_identities=array();
+                    foreach($invitation_identities as $invitation_identity)
                     {
-                        if(intval($identity["status"])==3)
+                        $identities=$invitation_identity["identities"];
+                        if($identities)
+                        foreach($identities as $identity)
                         {
-                            $muteData=$this->getmodelbyname("mute");
-                            $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
-                            if($mute===FALSE)
+                            if(intval($identity["status"])==3)
                             {
-                                $identity=humanidentity($identity,null);
-                                $msghelper=$this->gethelperbyname("msg");
-                                if($identity["provider"]=="email")
+                                $muteData=$this->getmodelbyname("mute");
+                                $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
+                                if($mute===FALSE)
                                 {
-                                    $mail["external_identity"]=$identity["external_identity"];
-                                    $mail["provider"]=$identity["provider"];
-                                    $msghelper->sentConversationEmail($mail);
-                                }
-                                if($identity["provider"]=="iOSAPN")
-                                {
-                                    $apnargs["external_identity"]=$identity["external_identity"];
-                                    $msghelper->sentapnconversation($apnargs);
-                                }
-                                else
-                                {
+                                    $identity=humanidentity($identity,null);
+                                    if($identity["provider"]=="email")
+                                    {
+                                        #$mail["external_identity"]=$identity["external_identity"];
+                                        #$mail["provider"]=$identity["provider"];
+                                        #$msghelper->sentConversationEmail($mail);
+                                        if($identity["provider"]=="email" && $identity["identity_id"]!=$_SESSION["identity_id"])
+                                            array_push($to_identities,$identity);
+                                    }
                                 }
                             }
                         }
                     }
+                    $mail["to_identities"]=$to_identities;
+                    $msghelper=$this->gethelperbyname("msg");
+                    $msghelper->sentConversationEmail($mail);
                 }
     }
+                #                if($identity["provider"]=="email")
+                #                {
+                #                    $mail["external_identity"]=$identity["external_identity"];
+                #                    $mail["provider"]=$identity["provider"];
+                #                    $msghelper->sentConversationEmail($mail);
+                #                }
+                #                if($identity["provider"]=="iOSAPN")
+                #                {
+                #                    $apnargs["external_identity"]=$identity["external_identity"];
+                #                    $msghelper->sentapnconversation($apnargs);
+                #                }
+                #                else
+                #                {
+                #                }
+                #            }
+                #        }
+                #    }
+                #}
+    #}
 
 }

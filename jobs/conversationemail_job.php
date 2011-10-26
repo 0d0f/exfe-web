@@ -9,15 +9,24 @@ class Conversationemail_Job
     {
         global $site_url;
         global $email_connect;
-        print "in Conversationemail_Job class:\r\n";
-        print_r($args);
+
+        $mails=$this->getMailBodyWithMultiObjects($args);
+        if($mails)
+        {
+            if($email_connect=="")
+                smtp_connect();
+
+            foreach($mails as $mail)
+                $this->send($mail["title"],$mail["body"],$mail["to"]);
+        }
+
+
     }
     public function perform()
     {
         global $site_url;
         global $email_connect;
         $args=$this->args;
-        
 
         if($email_connect=="")
             smtp_connect();
@@ -25,6 +34,68 @@ class Conversationemail_Job
         $this->send($mail["title"],$mail["body"],$this->args);
     
     
+    }
+    public function getMailBodyWithMultiObjects($args)
+    {
+        #$to_identities=$args["to_identities"];
+        $mails=array();
+        $pargs=array();
+        #$external_identity_list=array();
+        foreach($args as $arg)
+        {
+            $key="id_".$arg["cross_id"];
+            if($pargs[$key]=="")
+                $pargs[$key]=array();
+            array_push($pargs[$key],$arg);
+        #    $external_identity_list[$arg["external_identity"]]=1;
+        }
+        foreach($pargs as $k=>$posts)
+        {
+            $identity_posts=array();
+            foreach($posts as $post)
+            {
+                $to_identities=$post["to_identities"];
+                foreach($to_identities as $to_identity)
+                {
+                    $identity_key="identity_".$to_identity["identity_id"];
+                    if($identity_posts[$identity_key]=="")
+                        $identity_posts[$identity_key]["posts"]=array();
+                    unset($post["to_identities"]);
+                    array_push($identity_posts[$identity_key]["posts"],$post);
+                    if($identity_posts[$identity_key]["to_identity"]=="")
+                        $identity_posts[$identity_key]["to_identity"]=$to_identity;
+                }
+            }
+        }
+        if($identity_posts)
+        {
+            foreach($identity_posts as $key=>$identity_post)
+            {
+                $mail=array();
+                $posts=$identity_post["posts"];
+                $html="";
+                $title="";
+                foreach($posts as $post)
+                {
+                    if($post["identity"]["external_identity"]!=$external_identity)
+                    {
+                        $title=$post["title"];
+                        $avatar_file_name=$post["identity"]["avatar_file_name"];
+                        $name=$post["identity"]["name"];
+                        $content=$post["content"];
+                        $create_at=humanDateTime($post["create_at"]);
+                        $html.="<li><img src='$avatar_file_name' />$content<br/>$name at $create_at</li>";
+                    }
+                }
+                $to_identity=$identity_post["to_identity"];
+
+                $mail["body"]=$html;
+                $mail["title"]=$title;
+                $mail["to"]=$to_identity["external_identity"];
+                array_push($mails,$mail);
+            }
+        }
+        return $mails;
     }
     public function getMailWithTemplate($mail)
     {
@@ -53,7 +124,7 @@ class Conversationemail_Job
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }
-    public function send($title,$body,$args)
+    public function send($title,$body,$to)
     {
             global $email_connect;
             global $connect_count;
@@ -67,7 +138,7 @@ class Conversationemail_Job
             
             $message = $headers . "\r\n" . $body;
 
-            $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));
+            $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $to));
             if ($r->isOK())
             {
                 print("Mail sent; message id is " . (string) $r->body->SendRawEmailResult->MessageId . "\n");
