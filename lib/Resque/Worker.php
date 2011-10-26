@@ -152,7 +152,7 @@ class Resque_Worker
 	 *
 	 * @param int $interval How often to check for new jobs across the queues.
 	 */
-	public function work($interval = 5)
+	public function work($interval = 5,$multi=FALSE)
 	{
 		$this->updateProcLine('Starting');
 		$this->startup();
@@ -165,12 +165,25 @@ class Resque_Worker
 
 			// Attempt to find and reserve a job
 			$job = false;
+            $multijobs=array();
 			if(!$this->paused) {
-				$job = $this->reserve();
+                if($multi==TRUE)
+                {
+                    echo "get multi jobs";
+                    do {
+                        $job = $this->reserve();
+                        if($job)
+                            array_push($multijobs,$job);
+                    } while ($job != NULL);
+
+                    $job=$multijobs[0];
+				}
+                else
+				    $job = $this->reserve();
 			}
 
             $this->checkConnect();
-			if(!$job) {
+			if(!$job ) {
 				// For an interval of 0, break now - helps with unit testing etc
 				if($interval == 0) {
 					break;
@@ -198,7 +211,12 @@ class Resque_Worker
 				$status = 'Processing ' . $job->queue . ' since ' . strftime('%F %T');
 				$this->updateProcLine($status);
 				$this->log($status, self::LOG_VERBOSE);
-				$this->perform($job);
+                if($multi==TRUE)
+                {
+                    $this->multi_perform($multijobs);
+                }
+                else
+				    $this->perform($job);
 				if($this->child === 0) {
 					exit(0);
 				}
@@ -246,6 +264,25 @@ class Resque_Worker
 
 		$job->updateStatus(Resque_Job_Status::STATUS_COMPLETE);
 		$this->log('done ' . $job);
+	}
+	public function multi_perform($jobs)
+	{
+        if($jobs)
+        {
+            $job=$jobs[0];
+		    try {
+		    	Resque_Event::trigger('afterFork', $job);
+		    	$job->multi_perform($jobs);
+		    }
+		    catch(Exception $e) {
+		    	$this->log($job . ' failed: ' . $e->getMessage());
+		    	$job->fail($e);
+		    	return;
+		    }
+
+		    $job->updateStatus(Resque_Job_Status::STATUS_COMPLETE);
+		    $this->log('done multi jobs' . $jobs);
+        }
 	}
 
 	/**
