@@ -84,7 +84,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             */
             form="<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
                 +"<ul>"
-                +"<li><label>Identity:</label><div class='identity_box'><input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' /></div><div id='identity_dbox'>Your email here</div><em class='ic1' style='display:none;'></em></li>"
+                +"<li><label>Identity:</label>"
+                +"<div class='identity_box'>"
+                +"<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' />"
+                +"</div>"
+                +"<div id='identity_dbox'>Your email here</div>"
+                +"<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
+                +"<em class='delete' id='delete_identity' style='display:none;'></em>"
+                +"</li>"
                 +"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
                 +"<li><label>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
                 +"<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
@@ -101,7 +108,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
                 +"<li class='logincheck' id='logincheck' style='display:none;'>"
                 +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked /><span>Sign in automatically</span></li>"
-                +"<li style='width:256px; padding-left:50px;'>"
+                +"<li style='width:275px; padding:15px 0 0 50px;'>"
                 +"<input id='resetpwd' type='submit' value='Reset Password...' class='changepassword' style='display:none;' />"
                 +"<input type='submit' value='Sign In' class='sub'/></li>"
                 +"</ul>"
@@ -132,6 +139,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 //added by handaoliang, check email address
                 var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
                 if(identityVal != "" && identityVal.match(mailReg)){
+                    jQuery("#identity_verify_loading").show();
                     jQuery.ajax({
                         type: "GET",
                         url: site_url+"/s/IfIdentityExist?identity="+identityVal,
@@ -153,6 +161,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     jQuery('#logincheck').show();
                                 }
                             }
+                            jQuery("#identity_verify_loading").hide();
                         }
                     });
                 }else{

@@ -106,12 +106,13 @@ class XActions extends ActionController
         }
 
         $cross = array(
-                "id"          => $cross_id,
-                "title"       => mysql_real_escape_string($_POST["ctitle"]),
-                "desc"        => mysql_real_escape_string($_POST["cdesc"]),
-                "start_time"  => $_POST['ctime'],
-                "place"       => mysql_real_escape_string($_POST["cplace"]),
-                "identity_id" => $identity_id
+            'id'          => $cross_id,
+            'title'       => mysql_real_escape_string($_POST["ctitle"]),
+            'desc'        => mysql_real_escape_string($_POST["cdesc"]),
+            'start_time'  => $_POST['ctime'],
+            'place_line1' => mysql_real_escape_string($_POST["cplaceline1"]),
+            'place_line2' => mysql_real_escape_string($_POST["cplaceline2"]),
+            'identity_id' => $identity_id
         );
 
         $result = $crossDataObj->updateCross($cross);

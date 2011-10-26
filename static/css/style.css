@@ -154,9 +154,8 @@ b.r1{margin: 0 2px}
 b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 .identification_dialog{
-	position:absolute; padding:0;
-	width:463px; overflow:hidden;
-	line-height:200%; z-index:201;
+	position:absolute; padding:0; width:463px; overflow:hidden;
+	line-height:200%; z-index:201; background:transparent;
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; }
 .idialog_inpage .titles { display:none; }
@@ -216,13 +215,40 @@ b.r3{margin: 0px}
 .login .account span{ width:150px}
 .login .account span img{ padding:2px 6px }
 .login .account h4{ font-size:14px; font-weight:normal; text-align:left; margin-top:30px}
-.login input.sub{height:26px; border:0;border-right:#8fb9d0 solid 1px;background:url(/static/images/btn.png) no-repeat left -44px;width:60px;font-size:14px; float:right;margin-top:15px}
-.login input.changepassword{height:26px; border:0;border-right:#8fb9d0 solid 1px;background:url(/static/images/btn.png) no-repeat left -44px;width:120px;font-size:14px; float:left;margin-top:15px}}
+.login input.sub{
+    height:26px; border:0; width:80px; font-size:14px; float:right; cursor:pointer;
+    border-right:#8fb9d0 solid 1px; border-left:#8fb9d0 solid 1px;
+    background:url(/static/images/btn.png) no-repeat -1px -44px;
+}
+.login input.sub:hover { background:url(/static/images/btn.png) no-repeat -310px -44px; }
+.login input.sub:active { background:url(/static/images/btn.png) no-repeat -605px -44px; }
+
+.login input.changepassword{
+    height:26px; border:0; width:145px; font-size:14px; float:left; cursor:pointer;
+    border-right:#8fb9d0 solid 1px; border-left:#8fb9d0 solid 1px;
+    background:url(/static/images/btn.png) no-repeat -1px -44px;
+}
+.login input.changepassword:hover { background:url(/static/images/btn.png) no-repeat -302px -44px; }
+.login input.changepassword:active { background:url(/static/images/btn.png) no-repeat -602px -44px; }
+
 .login ul li p{height:26px;width:60px;margin:0 auto;}
-.login ul li em{float:left;width:30px;height:20px;background:url(/static/images/icons.png) no-repeat;cursor:pointer;}
+.login ul li em{
+    float:left; width:30px; height:20px; cursor:pointer;
+    background:url(/static/images/icons.png) no-repeat;
+}
 .login ul li em.ic1{background-position:8px -284px;}
 .login ul li em.ic2{background-position:8px -330px;}
 .login ul li em.ic3{background-position:8px -374px;}
+.login ul li em.loading{
+    position:absolute; display:block; width:16px; height:16px;
+    margin-left:332px; margin-top:2px; z-index:203; cursor:default;
+    background:url(/static/images/loading_a.gif) no-repeat 0 0;
+}
+.login ul li em.delete{
+    position:absolute; display:block; width:15px; height:15px;
+    margin-left:306px; margin-top:2px; z-index:203; cursor:pointer;
+    background:url(/static/images/icons.png) no-repeat left -691px;
+}
 .login ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
 
 .login ul .logincheck input{ margin-left:82px; line-height:200%}
@@ -315,6 +341,7 @@ b.r3{margin: 0px}
 /*preview title*/
 #pv_title {
     color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+    margin-bottom: 20px;
 }
 .pv_title_normal {
     line-height: 70px; font-size: 64px;
@@ -325,7 +352,7 @@ b.r3{margin: 0px}
 /*preview datetime*/
 #pv_relativetime {
     color:#0591af; overflow:hidden; font-weight:normal; padding:5px;
-    margin-top:10px; word-break: break-all; font-size:36px;
+    margin-top:10px; word-break: break-all; font-size:36px; font-weight: normal;
 }
 /*preview place*/
 #pv_place_line1 {
@@ -335,7 +362,7 @@ b.r3{margin: 0px}
     font-size:36px; line-height: 46px;
 }
 .pv_place_line1_double {
-    font-size:30px; line-height: 36px; max-height: 72px;
+    font-size:30px; line-height: 36px; max-height: 70px;
 }
 #pv_place_line2 {
     color: #666666; font-family: Verdana; font-size: 18px; line-height: 24px;
@@ -347,6 +374,17 @@ b.r3{margin: 0px}
 /*privacy*/
 .privacy {
     cursor: default;
+}
+#gather_private_hint {
+    display: none;
+    position: absolute;
+    border: #90c3ce 1px solid;
+    padding: 8px;
+    z-index: 20;
+    background: #f4fcfe;
+    line-height:20px;
+    margin-top: 40px;
+    margin-left: 145px;
 }
 
 
@@ -604,7 +642,7 @@ b.r3{margin: 0px}
 /******************************************************************/
 
 /******* upload user avatar window style by handaoliang ***********/
-.upload_avatar_dialog{ position:absolute; width:463px; height:385px; z-index:201; }
+.upload_avatar_dialog{ position:absolute; width:463px; height:385px; padding:0px; background:transparent; z-index:201; }
 .upload_avatar_dialog .titles{ width:463px; height:25px; background:url(/static/images/fuceng_title.png) no-repeat 0 0; }
 .upload_avatar_dialog .titles p.l{ width:35px; height:25px; float:left; color:#FFF; padding-left:3px; }
 .upload_avatar_dialog .titles p.l a{ display:block; width:27px; height:22px; padding-top:3px; text-decoration:none; }
@@ -737,6 +775,7 @@ b.r3{margin: 0px}
 /** cross - edit ** by leask **/
 #cross_titles {
     color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+    margin-bottom: 20px;
 }
 
 /** cross - edit - exfee ** by Leask **/

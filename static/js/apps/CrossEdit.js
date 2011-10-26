@@ -100,7 +100,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#cross_titles_textarea").unbind("clickoutside");
                 jQuery("#cross_titles").show();
                 formatCross();
-                console.log('ss');
             }
         });
     };
@@ -155,12 +154,27 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //console.log(placeEventTemp);
         if(!placeEventTemp){
             jQuery('#cross_place_bubble').bind("clickoutside",function(event) {
-                if(event.target.parentNode != jQuery("#cross_container")[0]){
+                if(event.target.parentNode.parentNode != jQuery("#cross_container")[0]){
                     jQuery("#cross_place_bubble").hide();
                     jQuery("#cross_place_bubble").unbind("clickoutside");
                 }else{
                     jQuery("#place_content").bind("keyup",function(){
-                        jQuery("#cross_place_area").html(jQuery("#place_content").val());
+                        var strPlace = $('#place_content').val(),
+                            arrPlace = strPlace.split(/\r|\n|\r\n/),
+                            prvPlace = [];
+                        arrPlace.forEach(function(item, i) {
+                            if ((item = odof.util.trim(item))) {
+                                prvPlace.push(item);
+                            }
+                        });
+                        $('#pv_place_line1').html(prvPlace.shift());
+                        $('#pv_place_line2').html(prvPlace.join('<br />'));
+                        if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
+                            $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
+                        }
+                        if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
+                            $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
+                        }
                     });
                     jQuery("#cross_place_bubble").show();
                 }
@@ -201,10 +215,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * while user submit data
      *
      * */
-    ns.submitData = function(){
+    ns.submitData = function() {
         var title = jQuery("#cross_titles_textarea").val(),
             time  = jQuery("#datetime").val(),
-            place  = jQuery("#place_content").val(),
+            placeline1 = $('#pv_place_line1').html(),
+            placeline2 = $('#pv_place_line2').html().replace(/<br>/g, '\\r'),
             desc  = jQuery("#cross_desc_textarea").val(),
             exfee = JSON.stringify(ns.getexfee());
         jQuery.ajax({
@@ -216,7 +231,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 ctitle : title,
                 ctime  : time,
                 cdesc  : desc,
-                cplace : place,
+                cplaceline1 : placeline1,
+                cplaceline2 : placeline2,
                 exfee  : exfee
             },
             //回调

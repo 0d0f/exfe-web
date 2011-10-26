@@ -44,7 +44,7 @@ class XModels extends DataModel {
             $place_id = $place_id_arr["place_id"];
             if($place_id != 0) {
                 $ts = date("Y-m-d H:i:s", time());
-                $sql = "UPDATE places SET place_line1='".$cross["place"]."', updated_at='".$ts."' WHERE id=".$place_id;
+                $sql = "UPDATE places SET place_line1='{$cross['place_line1']}', place_line2='{$cross['place_line2']}', updated_at='{$ts}' WHERE id={$place_id}";
                 $result = $this->query($sql);
             }
         }

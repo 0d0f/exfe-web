@@ -113,10 +113,15 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 
 /** Cover effect style control **/
 .cover_element{
-    position:absolute; z-index:200;
+    position:fixed; z-index:200;
     left:0px; top:0px; background-color:#333;
     -moz-opacity:0.6; opacity: 0.6;
     filter: alpha(opacity=60);
     -khtml-opacity: 0.6;
+    -moz-user-select:none;
+}
+.ex_dialog{
+	position:absolute; padding:50px;
+	z-index:201; background:#FFF;
 }
 /** Cover effect style control **/

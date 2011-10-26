@@ -51,8 +51,8 @@ foreach($temp_lines as $s)
 }
 //=============================================================
 
-$place_line1=$cross["place"]["line1"];
-$place_line2= str_replace('\r',"<br/>",$cross["place"]["line2"]);
+$place_line1 = $cross["place"]["line1"];
+$place_line2 = str_replace('\r', "\n", $cross["place"]["line2"]);
 $host_exfee=$cross["host_exfee"];
 $normal_exfee=$cross["normal_exfee"];
 $confirmed=0;
@@ -87,7 +87,7 @@ $token=$_GET["token"];
     </div>
     <div class="exfe_bubble" id="cross_place_bubble" style="display:none;">
         <div class="input_box">
-            <textarea name="place_content" id="place_content"><?php echo $place_line1; ?></textarea>
+            <textarea name="place_content" id="place_content"><?php echo "{$place_line1}\n{$place_line2}"; ?></textarea>
             <span class="icon"></span>
         </div>
     </div>
@@ -153,12 +153,13 @@ $token=$_GET["token"];
         <div id="cross_container" class="exfer">
             <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>" />
             <div id="cross_times_area">
-                <h3><?php echo $begin_at_relativetime;?></h3>
+                <h3 id="pv_relativetime"><?php echo $begin_at_relativetime;?></h3>
                 <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
             </div>
-            <h3 id="cross_place_area"><?php echo $place_line1; ?></h3>
-            <p class="tm"><?php echo $place_line2; ?></p>
-
+            <div id="cross_place_area">
+                <h3 id="pv_place_line1" class="pv_place_line1_normal"><?php echo $place_line1; ?></h3>
+                <p id="pv_place_line2" class="tm"><?php echo str_replace('\r', '<br>', $cross["place"]["line2"]); ?></p>
+            </div>
             <div id="exfee_area" class="exfee">
                 <div class="feetop"><h3>exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
                 <div id="exfee_edit_box">
