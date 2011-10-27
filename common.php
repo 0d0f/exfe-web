@@ -244,3 +244,53 @@ function reverse_escape($str)
   $replace=array("\\","\0","\n","\r","\x1a","'",'"');
   return str_replace($search,$replace,$str);
 }
+/**
+ * 散列存储
+ * @param NULL
+ * @return array
+ **/
+function hashFileSavePath($savePath, $fileName=''){
+    $hashFileName = md5(randStr(20).$fileName.getMicrotime().uniqid());
+    $savePath = strtok($savePath, "/");
+    $hashDir = $savePath."/".substr($hashFileName, 0, 1);
+    $hashSubDir = $hashDir."/".substr($hashFileName, 1, 2);
+
+    $fileInfo = array(
+        "fpath"      =>$hashSubDir,
+        "fname"      =>$hashFileName,
+        "error"      =>0
+    );
+
+    if(is_dir($savePath)){
+        if(!is_dir($hashDir)){
+            try{
+                mkdir($hashDir, 0777);
+            }catch(Exception $e){ 
+                $fileInfo["error"] = 2;
+            }
+            try{
+                mkdir($hashSubDir, 0777);
+            } catch (Exception $e) {
+                $fileInfo["error"] = 3;
+            }
+        }
+    }else{
+        $fileInfo["error"] = 1;
+    }
+    return $fileInfo;
+}
+
+/**
+ * 获取散列存储路径
+ * @param $rootPath, $fileName
+ * @return string
+ **/
+function getHashFilePath($rootPath='', $fileName=''){
+    if($fileName == ''){
+        return false;
+    }else if($fileName == "default.png"){
+        return $rootPath;
+    }
+    $rootPath = $rootPath == '' ? $rootPath : strtok($rootPath,"/")."/";
+    return $rootPath.substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
+}

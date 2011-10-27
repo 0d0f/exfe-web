@@ -122,6 +122,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
+    ns.getHashFilePath = function(rootPath, fileName){
+        if(fileName == "default.png"){ return rootPath; }
+        return rootPath+"/"+fileName.substring(0,1)+"/"+fileName.substring(1,3);
+    };
     /*
     ns.cancel = function(){
         var oall = document.getElementById("oall");

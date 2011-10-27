@@ -17,15 +17,18 @@ function formatCross()
     // format title
     if ($('#cross_titles').hasClass('pv_title_double') && $('#cross_titles').height() < 112) {
         $('#cross_titles').addClass('pv_title_normal').removeClass('pv_title_double');
-        console.log('A');
     }
     if ($('#cross_titles').hasClass('pv_title_normal') && $('#cross_titles').height() > 70) {
         $('#cross_titles').addClass('pv_title_double').removeClass('pv_title_normal');
-        console.log('B');
     }
 
     // format address
-    
+    if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
+        $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
+    }
+    if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
+        $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
+    }
 }
 
 $(document).ready(function() {
@@ -147,8 +150,9 @@ $(document).ready(function() {
                     {
                         var name = data.response.identity.name;
                         if(name == "")
-                            name = data.response.identity.external_identity;
-                        var html = '<li><p class="pic40"><img src="/eimgs/80_80_' + data.response.identity.avatar_file_name + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
+                            var name = data.response.identity.external_identity;
+                            var avatar = data.response.identity.avatar_file_name;
+                        var html = '<li><p class="pic40"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar)+'/80_80_' + avatar + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
                         $("#commentlist").prepend(html);
                         $("textarea[name=comment]").val("");
                     }

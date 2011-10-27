@@ -47,12 +47,11 @@ class FileUploaderHelper extends ActionController {
     }
     
     /**
-     * Returns $return_data = array( "filename"=>"", "error"=>0, "msg"=>"");
+     * Returns $return_data = array( "file_name"=>"", "file_ext"="", "file_path"=>"", "error"=>0, "msg"=>"");
      */
     function handleUpload($uploadDirectory, $replaceOldFile = FALSE){
-        $timestamp = getMicrotime();
         $return_data = array(
-            "filename"  =>"",
+            "file_name"  =>"",
             "file_ext"  =>"",
             "file_path"  =>"",
             "error"     =>0,
@@ -87,8 +86,10 @@ class FileUploaderHelper extends ActionController {
         
         $pathinfo = pathinfo($this->file->getName());
         $filename = $pathinfo['filename'];
-        $filename = md5(randStr(20).$filename.getMicrotime().uniqid());
-        //$filename = md5(uniqid());
+        $hashFileInfo = hashFileSavePath($uploadDirectory, $filename);
+
+        $hashFileName = $hashFileInfo["fname"];
+        $hashFilePath = $hashFileInfo["fpath"];
         $ext = $pathinfo['extension'];
 
         if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
@@ -100,15 +101,17 @@ class FileUploaderHelper extends ActionController {
         
         if(!$replaceOldFile){
             /// don't overwrite previous files that were uploaded
-            while (file_exists($uploadDirectory . $filename . '.' . $ext)) {
-                $filename = md5(randStr(20).$filename.getMicrotime().uniqid());
+            if(file_exists($hashFilePath . '/' . $hashFileName . '.' . $ext)) {
+                $hashFileInfo = hashFileSavePath($filename);
+                $hashFileName = $hashFileInfo["fname"];
+                $hashFilePath = $hashFileInfo["fpath"];
             }
         }
         
-        if ($this->file->save($uploadDirectory . $filename.'.'.$ext)){
-            $return_data['filename'] = $filename.'.'.$ext;
+        if ($this->file->save($hashFilePath . '/' . $hashFileName . '.' . $ext)){
+            $return_data['file_name'] = $hashFileName . '.' . $ext;
             $return_data['file_ext'] = $ext;
-            $return_data['file_path'] = $uploadDirectory;
+            $return_data['file_path'] = $hashFilePath;
             $return_data['msg'] = "Upload File success.";
         } else {
             $return_data['error'] = 1;

@@ -205,7 +205,7 @@ $(document).ready(function() {
                             name = name ? name : identity;
                             exfee_pv.push(
                                 '<li id="exfee_' + id + '" class="addjn">'
-                              +     '<p class="pic20"><img src="/eimgs/80_80_' + avatar_file_name + '" alt="" /></p>'
+                              +     '<p class="pic20"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
                               +     '<p class="smcomment">'
                               +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
                               +             name
@@ -543,7 +543,7 @@ function identity()
                     name = name ? name : identity;
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
-                      +     '<p class="pic20"><img src="/eimgs/80_80_' + avatar_file_name + '" alt="" /></p>'
+                      +     '<p class="pic20"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
                       +     '<p class="smcomment">'
                       +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
                       +             name
@@ -612,13 +612,16 @@ function updateExfeeList()
     for (var i in exfees) {
         numConfirmed += exfees[i].confirmed;
         numSummary++;
+        var avatarFile = exfees[i].avatar ? exfees[i].avatar : 'default.png';
         htmExfeeList += '<li id="exfee_list_item_' + numSummary + '" class="exfee_item">'
-                      +     '<p class="pic20"><img alt="" src="/eimgs/80_80_' + (exfees[i].avatar ? exfees[i].avatar : 'default.png') + '"></p>'
+                      +     '<p class="pic20"><img alt="" src="/'+odof.comm.func.getHashFilePath("eimgs",avatarFile)+'/80_80_' + avatarFile + '"></p>'
                       +     '<div class="smcomment">'
                       +         '<div>'
-                      +             '<span class="ex_name">' + exfees[i].exfee_name + '</span>'
+                      +             '<span class="ex_name' + (exfees[i].exfee_name === exfees[i].exfee_identity ? ' external_identity' : '') + '">'
+                      +                 exfees[i].exfee_name
+                      +             '</span>'
                       +             (exfees[i].isHost ? '<span class="lb">host</span>' : '')
-                      +             '<span class="ex_identity"> '
+                      +             '<span class="ex_identity external_identity"> '
                       +                 (exfees[i].exfee_name === exfees[i].exfee_identity ? '' : exfees[i].exfee_identity)
                       +             '</span>'
                       +         '</div>'
@@ -690,10 +693,11 @@ function submitX()
                 location.href = '/!' + data.crossid;
             }
             $('#gather_submit_ajax').hide();
+            $('#gather_failed_hint').show();
             $('#gather_x').removeClass('mouseover');
             $('#gather_x').removeClass('mousedown');
             $('#gather_x').removeClass('disabled');
-            $('#gather_x').html('Submit');
+            $('#gather_x').html('Re-submit');
             xSubmitting = false;
         },
         failure : function(data) {

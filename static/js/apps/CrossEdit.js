@@ -169,12 +169,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         });
                         $('#pv_place_line1').html(prvPlace.shift());
                         $('#pv_place_line2').html(prvPlace.join('<br />'));
-                        if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
-                            $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
-                        }
-                        if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
-                            $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
-                        }
+                        formatCross();
                     });
                     jQuery("#cross_place_bubble").show();
                 }
@@ -350,22 +345,34 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             dataType : 'json',
             success  : function(data) {
                 var exfee_pv     = '',
-                    identifiable = {};
+                    identifiable = {},
+                    id           = '',
+                    identity     = '',
+                    name         = '';
                 for (var i in data.response.identities) {
-                    var identity         = data.response.identities[i].external_identity,
-                        id               = data.response.identities[i].id,
-                        avatar_file_name = data.response.identities[i].avatar_file_name,
-                        name             = data.response.identities[i].name;
+                    id           = data.response.identities[i].id;
+                    identity     = data.response.identities[i].external_identity;
+                    name         = data.response.identities[i].name;
+                    var avatar_file_name = data.response.identities[i].avatar_file_name;
                     if ($('#exfee_' + id).attr('id') == null) {
-                        name = (name ? name : identity).replace('<', '&lt;').replace('>', '$gt;');
-                        exfee_pv += '<li id="exfee_' + id + '" identity="' + identity + '" identityid="' + id + '" class="exfee_exist exfee_item" invited="false">'
+                        exfee_pv += '<li id="exfee_'   + id + '" '
+                                  +     'identity="'   + identity + '" '
+                                  +     'identityid="' + id + '" '
+                                  +     'identityname="' + name + '" '
+                                  +     'class="exfee_exist exfee_item" '
+                                  +     'invited="false">'
                                   +     '<button type="button" class="exfee_del"></button>'
                                   +     '<p class="pic20">'
-                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
+                                  +         '<img src="/'+odof.comm.func.getHashFilePath("eimgs", avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="">'
                                   +     '</p>'
                                   +     '<div class="smcomment">'
                                   +         '<div>'
-                                  +            '<span>' + name + '</span>' + (identity === name ? '' : identity)
+                                  +             '<span class="ex_name' + (name === identity ? ' external_identity' : '') + '">'
+                                  +                 name
+                                  +             '</span>'
+                                  +             '<span class="ex_identity external_identity">'
+                                  +                 (identity === name ? '' : identity)
+                                  +             '</span>'
                                   +         '</div>'
                                   +     '</div>'
                                   +     '<p class="cs">'
@@ -377,25 +384,28 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
                 for (i in ns.arrIdentitySub) {
                     if (!identifiable[ns.arrIdentitySub[i].id]) {
-                        switch (ns.arrIdentitySub[i].type) {
-                            case 'email':
-                                name =  ns.arrIdentitySub[i].name
-                                     ? (ns.arrIdentitySub[i].name + ' <'  + ns.arrIdentitySub[i].id + '>')
-                                     :  ns.arrIdentitySub[i].id;
-                                break;
-                            default:
-                                name =  ns.arrIdentitySub[i].id;
-                        }
-                        name = name.replace('<', '&lt;').replace('>', '&gt;');
+                        identity = ns.arrIdentitySub[i].id;
+                        name     = ns.arrIdentitySub[i].name
+                                 ? ns.arrIdentitySub[i].name
+                                 : ns.arrIdentitySub[i].id;
                         ns.numNewIdentity++;
-                        exfee_pv += '<li id="newexfee_' + ns.numNewIdentity + '" identity="' + ns.arrIdentitySub[i].id + '" class="exfee_new exfee_item" invited="false">'
+                        exfee_pv += '<li id="newexfee_' + ns.numNewIdentity + '" '
+                                  +     'identity="'    + identity + '" '
+                                  +     'identityname="' + name + '" '
+                                  +     'class="exfee_new exfee_item" '
+                                  +     'invited="false">'
                                   +     '<button type="button" class="exfee_del"></button>'
                                   +     '<p class="pic20">'
-                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
+                                  +         '<img src="/eimgs/80_80_default.png" alt="">'
                                   +     '</p>'
                                   +     '<div class="smcomment">'
                                   +         '<div>'
-                                  +             '<span>' + name + '</span>'
+                                  +             '<span class="ex_name' + (name === identity ? ' external_identity' : '') + '">'
+                                  +                 name
+                                  +             '</span>'
+                                  +             '<span class="ex_identity external_identity">'
+                                  +                 (identity === name ? '' : identity)
+                                  +             '</span>'
                                   +         '</div>'
                                   +     '</div>'
                                   +     '<p class="cs">'
@@ -413,10 +423,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         $('.exfee_del').show();
                 }
                 ns.summaryExfee();
-                //updateExfeeList();
+                $('.ex_identity').hide();
             }
         });
-        //$('#exfee_count').html($('span.exfee_exist').length + $('span.exfee_new').length);
     };
 
     /**
@@ -479,7 +488,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         {
             var exfee_identity = $(obj).attr('identity'),
                 element_id     = $(obj).attr('id'),
-                item           = {exfee_name     : $('#' + element_id + ' > .smcomment > span').html(),
+                item           = {exfee_name     : $(obj).attr('identityname'),
                                   exfee_identity : exfee_identity,
                                   confirmed      : $('#' + element_id + ' > .cs > em')[0].className === 'c1' ? 1 : 0,
                                   identity_type  : odof.util.parseId(exfee_identity).type};

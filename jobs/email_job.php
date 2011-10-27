@@ -38,7 +38,7 @@ class Email_Job
             $mail["rsvp_status"]=$rsvpyeslink;
 
         $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'];
-        $mail["host_avatar"]=$site_url."/eimgs/80_80_".$host_avatar;
+        $mail["host_avatar"]=$site_url."/".getHashFilePath("eimgs",$host_avatar)."/80_80_".$host_avatar;
         $invitations=$this->args["invitations"];
         $exfee_list="";
         $exfee_sum=sizeof($invitations);
@@ -47,7 +47,7 @@ class Email_Job
         {
             $exfee_idx=$exfee_idx+1;
             //http://local.exfe.com/eimgs/80_80_default.png
-            $exfee_avatar=$site_url."/eimgs/80_80_".$invitation["avatar_file_name"];
+            $exfee_avatar=$site_url."/".getHashFilePath("eimgs",$invitation["avatar_file_name"])."/80_80_".$invitation["avatar_file_name"];
             $exfee_name=$invitation['name'];
             if($exfee_name=="")
                 $exfee_name=$invitation['external_identity'];
