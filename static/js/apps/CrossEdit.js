@@ -169,12 +169,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         });
                         $('#pv_place_line1').html(prvPlace.shift());
                         $('#pv_place_line2').html(prvPlace.join('<br />'));
-                        if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
-                            $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
-                        }
-                        if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
-                            $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
-                        }
+                        formatCross();
                     });
                     jQuery("#cross_place_bubble").show();
                 }

@@ -17,15 +17,18 @@ function formatCross()
     // format title
     if ($('#cross_titles').hasClass('pv_title_double') && $('#cross_titles').height() < 112) {
         $('#cross_titles').addClass('pv_title_normal').removeClass('pv_title_double');
-        console.log('A');
     }
     if ($('#cross_titles').hasClass('pv_title_normal') && $('#cross_titles').height() > 70) {
         $('#cross_titles').addClass('pv_title_double').removeClass('pv_title_normal');
-        console.log('B');
     }
 
     // format address
-    
+    if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
+        $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
+    }
+    if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
+        $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
+    }
 }
 
 $(document).ready(function() {
