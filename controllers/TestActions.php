@@ -43,15 +43,33 @@ class TestActions extends ActionController {
 
     }
 
+        function escape($str)
+        {
+                $search=array("\\","\0","\n","\r","\x1a","'",'"');
+                $replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+                return str_replace($search,$replace,$str);
+        }
+    function reverse_escape($str)
+    {
+      $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+      $replace=array("\\","\0","\n","\r","\x1a","'",'"');
+      return str_replace($search,$replace,$str);
+    }
     public function doTest()
     {
 
+        $a="abcd\r\ne'rf";
+        #$b=nl2br($a);
+        #$b=$this->escape($a) ;
+        #$a=str_replace('\r\n', "\n", $a);
+        $b=mysql_real_escape_string($a);
+        print $this->reverse_escape($b);//stripslashes($b);
 
-        $invitationdata=$this->getModelByName("invitation");
-        //$invitations=$invitationdata->getInvitation_Identities(3);
+    #    $invitationdata=$this->getModelByName("invitation");
+    #    //$invitations=$invitationdata->getInvitation_Identities(3);
 
-        $identities=$invitationdata->getInvitation_Identities_ByIdentities(83, array(1,42,13));
-        print_r($identities);
+    #    $identities=$invitationdata->getInvitation_Identities_ByIdentities(83, array(1,42,13));
+    #    print_r($identities);
 #
 #        $crossData=$this->getModelByName("X");
 #        $cross=$crossData->getCross(3);

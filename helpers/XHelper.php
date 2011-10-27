@@ -66,12 +66,12 @@ class XHelper extends ActionController
                                 {
                                     $mail["external_identity"]=$identity["external_identity"];
                                     $mail["provider"]=$identity["provider"];
-                                    $msghelper->senttemplateemail($mail);
+                                //    $msghelper->senttemplateemail($mail);
                                 }
                                 if($identity["provider"]=="iOSAPN")
                                 {
                                     $apnargs["external_identity"]=$identity["external_identity"];
-                                    $msghelper->sentapnchangecross($apnargs);
+                                //   $msghelper->sentapnchangecross($apnargs);
                                 }
                                 else
                                 {

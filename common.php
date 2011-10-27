@@ -237,3 +237,10 @@ function getMicrotime()
     list($usec, $sec) = explode(" ", microtime());
     return ((float)$usec + (float)$sec);
 }
+
+function reverse_escape($str)
+{
+  $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+  $replace=array("\\","\0","\n","\r","\x1a","'",'"');
+  return str_replace($search,$replace,$str);
+}
