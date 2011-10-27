@@ -116,14 +116,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     });
                     userPanelHTML += '</p>';
                 }
-                /*
-                userPanelHTML += '<p class="info">';
-                userPanelHTML += '<span>Upcoming:</span><br />';
-                userPanelHTML += '<em>Now</em>  Dinner in SF<br/>';
-                userPanelHTML += '<em>24hr</em>  Bay Area VC TALK<br/>';
-                userPanelHTML += 'Mary and Virushuo’s Birthday Party';
-                userPanelHTML += '</p>';
-                */
                 userPanelHTML += '<p class="creatbtn"><a href="/x/gather">Gather X</a></p>';
                 userPanelHTML += '</div>';
                 userPanelHTML += '<div class="myexfefoot">';
