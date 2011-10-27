@@ -1,5 +1,7 @@
 <?php
-class InvitationModels extends DataModel {
+
+class InvitationModels extends DataModel
+{
 
     public function rsvpIdentities($cross_id,$identity_id_list,$state,$userid)
     {

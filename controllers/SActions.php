@@ -1,5 +1,7 @@
 <?php
-class SActions extends ActionController {
+
+class SActions extends ActionController
+{
 
     public function doTestUser()
     {
@@ -840,6 +842,7 @@ class SActions extends ActionController {
         }
 
     }
+
     public function doActive() {
         $identity_id=intval($_GET["id"]);
         $activecode=$_GET["activecode"];
@@ -855,6 +858,7 @@ class SActions extends ActionController {
         $this->setVar("result",$result);
         $this->displayView();
     }
+
     public function doSendActiveEmail() {
         $responobj["response"]["success"]="false";
         if(intval($_SESSION["userid"])>0)

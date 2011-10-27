@@ -394,6 +394,9 @@ b.r3{margin: 0px}
     color: #ff3333;
     margin-left: 490px;
 }
+.external_identity {
+    font-style: italic;
+}
 
 
 .createset ul li #post_submit{
