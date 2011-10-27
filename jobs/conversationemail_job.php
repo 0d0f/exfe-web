@@ -11,15 +11,14 @@ class Conversationemail_Job
         global $email_connect;
 
         $mails=$this->getMailBodyWithMultiObjects($args);
-        print $mails[0]["body"];
-        #if($mails)
-        #{
-        #    if($email_connect=="")
-        #        smtp_connect();
+        if($mails)
+        {
+            if($email_connect=="")
+                smtp_connect();
 
-        #    foreach($mails as $mail)
-        #        $this->send($mail["title"],$mail["body"],$mail["to"]);
-        #}
+            foreach($mails as $mail)
+                $this->send($mail["title"],$mail["body"],$mail["to"]);
+        }
 
 
     }
@@ -83,6 +82,7 @@ class Conversationemail_Job
                 $title="";
                 $name="";
                 $mutelink="";
+                $link="";
                 foreach($posts as $post)
                 {
                     if($post["identity"]["external_identity"]!=$external_identity)
@@ -92,9 +92,10 @@ class Conversationemail_Job
                         $name=$post["identity"]["name"];
                         $content=$post["content"];
                         $mutelink=$post["mutelink"];
+                        $link=$post["link"];
                         $create_at=humanDateTime($post["create_at"]);
                         #$html.="<li><img src='' />$content<br/>$name at $create_at</li>";
-                        $html.="<li><img class='exfe_mail_avatar' src='$avatar_file_name'> <div class='exfe_mail_msg_area'> <span class='exfe_mail_message'>$content</span> <span class='exfe_mail_identity_name'>$name</span><span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </div></li>";
+                        $html.="<li><img class='exfe_mail_avatar' src='$site_url/eimgs/80_80_$avatar_file_name'> <div class='exfe_mail_msg_area'> <span class='exfe_mail_message'>$content</span> <span class='exfe_mail_identity_name'>$name</span><span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </div></li>";
                     }
                 }
                 $to_identity=$identity_post["to_identity"];
@@ -103,6 +104,7 @@ class Conversationemail_Job
                 $mail_body=str_replace("%host_name%",$name,$mail_body);
                 $mail_body=str_replace("%exfe_title%",$title,$mail_body);
                 $mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
+                $mail_body=str_replace("%link%",$link,$mail_body);
 
                 $mail["body"]=$mail_body;
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
