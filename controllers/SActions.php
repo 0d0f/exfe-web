@@ -794,6 +794,8 @@ class SActions extends ActionController {
         $identity_id=$identityData->loginWithXToken($cross_id, $token);
         $result="false";
 
+        $identity = $identityData->getIdentityById($identity_id);
+
         if(intval($identity_id)>0)
         {
             $userData=$this->getModelByName("user");
@@ -801,7 +803,7 @@ class SActions extends ActionController {
             if(intval($r)==1)
             {
                 $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id);
+                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
             }
         }
         else if(intval($identity_id)==0)
@@ -811,7 +813,7 @@ class SActions extends ActionController {
             if(intval($identity_id)>0)
             {
                 $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id);
+                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
             }
         }
 
@@ -847,9 +849,11 @@ class SActions extends ActionController {
         {
             $identityData= $this->getModelByName("identity");
             $result=$identityData->activeIdentity($identity_id,$activecode);
+
+            $identity = $identityData->getIdentityById($identity_id);
             if($result["result"]=="verified")
             {
-                $identityData->loginByIdentityId($identity_id);
+                $identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
             }
         }
         $this->setVar("result",$result);
