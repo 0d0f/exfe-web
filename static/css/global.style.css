@@ -84,13 +84,17 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
     font-size:13px;right:0px;top:5px;
 }
 
-#global_header .user_info .uinfo .message{width:190px;padding:50px 19px 10px; }
-#global_header .user_info .uinfo .message .na{height:40px; }
-#global_header .user_info .uinfo .message .na p{float:left;color:#a0a0a0 }
-#global_header .user_info .uinfo .message .na p span{font-size:24px;color:#058fad;display:block; }
+#global_header .user_info .uinfo .message { width:190px; padding:50px 19px 10px; }
+#global_header .user_info .uinfo .message .na { height:40px; }
+#global_header .user_info .uinfo .message .na p { float:left;color:#333333; }
+#global_header .user_info .uinfo .message .na p .num_of_x { font-size:24px; color:#058fad; display:block; font-weight:bold; }
+#global_header .user_info .uinfo .message .na p .x_attended { color:#0591ac; }
+#global_header .user_info .uinfo .message .info a {
+    display:block; color: #191919; margin-left:30px; margin-top:-20px;
+}
 #global_header .user_info .uinfo .message .na img{width:40px;height:40px;float:right; }
 #global_header .user_info .uinfo .message .info{line-height:20px;color:#202020;text-align:left;font-size:14px;margin-top:10px; }
-#global_header .user_info .uinfo .message .info span{color:#696969;font-weight:normal }
+#global_header .user_info .uinfo .message .info span{color:#696969;font-weight:normal; }
 #global_header .user_info .uinfo .message .info em{
     background:url(/static/images/btn.png) no-repeat left -282px;
     color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;

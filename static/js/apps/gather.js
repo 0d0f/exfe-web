@@ -617,9 +617,11 @@ function updateExfeeList()
                       +     '<p class="pic20"><img alt="" src="/'+odof.comm.func.getHashFilePath("eimgs",avatarFile)+'/80_80_' + avatarFile + '"></p>'
                       +     '<div class="smcomment">'
                       +         '<div>'
-                      +             '<span class="ex_name">' + exfees[i].exfee_name + '</span>'
+                      +             '<span class="ex_name' + (exfees[i].exfee_name === exfees[i].exfee_identity ? ' external_identity' : '') + '">'
+                      +                 exfees[i].exfee_name
+                      +             '</span>'
                       +             (exfees[i].isHost ? '<span class="lb">host</span>' : '')
-                      +             '<span class="ex_identity"> '
+                      +             '<span class="ex_identity external_identity"> '
                       +                 (exfees[i].exfee_name === exfees[i].exfee_identity ? '' : exfees[i].exfee_identity)
                       +             '</span>'
                       +         '</div>'
@@ -691,10 +693,11 @@ function submitX()
                 location.href = '/!' + data.crossid;
             }
             $('#gather_submit_ajax').hide();
+            $('#gather_failed_hint').show();
             $('#gather_x').removeClass('mouseover');
             $('#gather_x').removeClass('mousedown');
             $('#gather_x').removeClass('disabled');
-            $('#gather_x').html('Submit');
+            $('#gather_x').html('Re-submit');
             xSubmitting = false;
         },
         failure : function(data) {

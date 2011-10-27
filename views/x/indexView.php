@@ -171,24 +171,47 @@ $token=$_GET["token"];
                     </span>
                 </div>
                 <ul class="samlcommentlist">
-
-                <?php foreach($host_exfee as $exfee) {
-                //        if ($exfee["avatar_file_name"] === '') {
-                //            $exfee["avatar_file_name"] = 'default.png';
-                //        }
-                ?>
-                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
-                    <p class="pic20"><img src="/<?php echo getHashFilePath("eimgs", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                    <div class="smcomment"><div><span class="ex_name"><?php echo $exfee["name"]; ?></span><span class="lb">host</span><span class="ex_identity"> <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?></span></div></div>
-                    <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
+                <?php foreach($host_exfee as $exfee) { ?>
+                <li id="exfee_<?php echo $exfee["identity_id"];?>"
+                    identity="<?php echo $exfee["external_identity"]; ?>"
+                    identityid="<?php echo $exfee["identity_id"]; ?>"
+                    class="exfee_exist exfee_item">
+                    <p class="pic20">
+                        <img src="/<?php echo getHashFilePath("eimgs", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt="">
+                    </p>
+                    <div class="smcomment"><div>
+                        <span class="ex_name<?php echo $exfee["external_identity"] === $exfee["name"] ? ' external_identity' : ''; ?>">
+                            <?php echo $exfee["name"]; ?>
+                        </span>
+                        <span class="lb">host</span>
+                        <span class="ex_identity external_identity">
+                            <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?>
+                        </span>
+                    </div></div>
+                    <p class="cs">
+                        <em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em>
+                    </p>
                 </li>
                 <?php } ?>
                 <?php foreach($normal_exfee as $exfee) { ?>
-                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
+                <li id="exfee_<?php echo $exfee["identity_id"];?>"
+                    identity="<?php echo $exfee["external_identity"]; ?>"
+                    identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
                     <button type="button" class="exfee_del"></button>
-                    <p class="pic20"><img src="/<?php echo getHashFilePath("eimgs", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
-                    <div class="smcomment"><div><span><?php echo $exfee["name"]; ?></span><span class="ex_identity"> <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?></span></div></div>
-                    <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
+                    <p class="pic20">
+                        <img src="/<?php echo getHashFilePath("eimgs", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt="">
+                    </p>
+                    <div class="smcomment"><div>
+                        <span class="ex_name<?php echo $exfee["external_identity"] === $exfee["name"] ? ' external_identity' : ''; ?>">
+                            <?php echo $exfee["name"]; ?>
+                        </span>
+                        <span class="ex_identity external_identity">
+                            <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?>
+                        </span>
+                    </div></div>
+                    <p class="cs">
+                        <em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em>
+                    </p>
                 </li>
                 <?php } ?>
                 </ul>
