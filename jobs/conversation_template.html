@@ -1,7 +1,94 @@
-exfe: %exfe_title% conversation
+%exfe_title%
 
-exfe: <a href="%link%">%exfe_title% </a>
-
-%exfee_name% %action%: %content%
-<br/>
-<a href="%mutelink%">mute this conversation</a>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style>
+            .exfe_mail_exfe {
+                color: #0591ac;
+                text-decoration: none;
+            }
+            #exfe_mail_frame {
+                font-family: Verdana;
+                width: 560px;
+                padding: 10px 40px 30px 40px;
+                background-color: #fbfbfb;
+            }
+            .exfe_mail_avatar {
+                width: 40px;
+                height: 40px;
+                float: left;
+            }
+            #exfe_mail_conversation_list {
+                list-style: none;
+                padding: 0;
+                font-size: 13px;
+                color: #191919;
+                line-height: 20px;
+            }
+            #exfe_mail_conversation_list li {
+                padding-top: 20px;
+            }
+            .exfe_mail_msg_area {
+                display: block;
+                margin-left: 50px;
+            }
+            .exfe_mail_message {
+                display: block;
+            }
+            #exfe_mail_conversation_list .exfe_mail_identity_name {
+                font-size: 12px;
+                line-height: 20px;
+                color: #666666;
+            }
+            .exfe_mail_msg_at {
+                font-size: 12px;
+                line-height: 20px;
+                color: #999999;
+            }
+            .exfe_mail_msg_time {
+                font-size: 12px;
+                line-height: 20px;
+                color: #666666;
+            }
+            #exfe_mail_footer {
+                margin-top: 30px;
+                font-size: 12px;
+                line-height: 19px;
+                color: #666666;
+            }
+            #exfe_mail_footer .exfe_mail_identity_name {
+                color: #191919;
+            }
+            #exfe_mail_cross_title {
+                color: #191919;
+            }
+            #exfe_mail_mute {
+                color: #333333;
+            }
+            #exfe_mail_unsub {
+                color: #999999;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="exfe_mail_frame">
+            <ol id="exfe_mail_conversation_list">
+                %conversations%
+            </ol>
+            <div id="exfe_mail_footer">
+                This is an <a class="exfe_mail_exfe" href="">EXFE</a>
+                conversation of
+                "<span id="exfe_mail_cross_title"><a href="%link%">%exfe_title%</a></span>"
+                by host
+                <span class="exfe_mail_identity_name">%host_name%</span>.
+                To stop receiving email of this conversation, please
+                <a id="exfe_mail_mute" href="%mutelink%">Mute</a>.
+                <a id="exfe_mail_unsub" href="">Unsubscribe All?</a>
+            </div>
+        </div>
+    </body>
+</html>

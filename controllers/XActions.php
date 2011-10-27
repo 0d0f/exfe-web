@@ -37,7 +37,7 @@ class XActions extends ActionController
                 $logdata->addLog('identity', $identity_id, 'gather', 'cross', $cross_id, '', $_POST['title'], '');
 
                 $helper = $this->getHelperByName('exfee');
-                $helper->addExfeeIdentify($cross_id, json_decode($_POST['exfee'], true));
+                $helper->addExfeeIdentify($cross_id, json_decode($_POST['exfee'], true), $identity_id);
                 $helper->sendInvitation($cross_id, $identity_id);
 
                 // remove draft

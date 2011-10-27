@@ -58,13 +58,13 @@ class InvitationModels extends DataModel {
         return $result;
     }
 
-    public function addInvitation($cross_id,$identity_id,$state=0)
+    public function addInvitation($cross_id,$identity_id,$state=0,$my_identity_id=0)
     {
         //TODO: ADD token
         $time=time();
         $token=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
         //$state=INVITATION_MAYBE;
-        $sql="insert into invitations (identity_id,cross_id,state,created_at,updated_at,token) values($identity_id,$cross_id,$state,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'$token');";
+        $sql="insert into invitations (identity_id,cross_id,state,by_identity_id,created_at,updated_at,token) values($identity_id,$cross_id,$state,$my_identity_id,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'$token');";
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);

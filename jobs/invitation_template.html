@@ -1,22 +1,226 @@
 %exfe_title%
 
-%exfe_title% <br/>
-To: %exfee_name%<br/>
-%hint_title%<br/>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style>
+            .exfe_mail_exfe {
+                color: #0591ac;
+                text-decoration: none;
+            }
+            #exfe_mail_outer_frame {
+                font-family: Verdana;
+                width: 560px;
+                padding: 30px 40px 30px 40px;
+                background: url(%site_url%/static/images/mail_bg.png) repeat-x;
+                min-height: 562px;
+            }
+            #exfe_mail_outer_frame h1 {
+                font-size: 32px;
+                line-height: 38px;
+                color: #0591ac;
+                font-weight: normal;
+            }
+            #exfe_mail_inner_frame {
+                width: 340px;
+                margin-top: 20px;
+            }
+            #exfe_mail_recipient {
+                font-size: 13px;
+                line-height: 19px;
+            }
+            #exfe_mail_recipient .exfe_mail_identity_name {
+                font-weight: bold;
+            }
+            .exfe_mail_cross {
+                color: #0591ac;
+            }
+            #exfe_mail_invitation {
+                margin-top: 10px;
+                font-size: 13px;
+                line-height: 19px;
+            }
+            #exfe_mail_rsvp {
+                margin-top: 35px;
+                font-size: 13px;
+                line-height: 16px;
+                color: #333333;
+            }
+            #exfe_mail_rsvp .confirmed {
+                font-weight: bold;
+            }
+            #exfe_mail_exfee_beconfirmed {
+                margin-left: 15px;
+                display: block;
+                float: left;
+            }
+            #exfe_mail_exfee_accept {
+                float: left;
+                display: block;
+                margin: 0 5px 0 30px;
+                text-decoration: none;
+                border: 1px solid #bebebe;
+                background-color: #add1dc;
+                color: #000000;
+                padding: 5px 30px 5px 30px;
+            }
+            #exfe_mail_exfee_checkitout {
+                margin-left: 15px;
+                float: left;
+                display: block;
+                text-decoration: none;
+                border: 1px solid #bebebe;
+                background-color: #fbfbfb;
+                color: #000000;
+                padding: 5px 25px 5px 25px;
+            }
+            #exfe_mail_exfee_summary {
+                clear: left;
+                margin-top: 105px;
+                font-size: 13px;
+                line-height: 17px;
+                color: #333333;
+            }
+            #exfe_mail_exfee_summary .exfe_mail_label {
+                background-color: #0591ac;
+                color: #FFFFFF;
+                font-size: 11px;
+                padding: 0 2px 0 2px;
+            }
+            .exfe_mail_avatar {
+                width: 20px;
+                height: 20px;
+            }
+            #exfe_mail_exfee_confirmed {
+                color: #666666;
+                float: right;
+            }
+            #exfe_mail_exfee_confirmed .exfe_mail_num_confirmed {
+                color: #0591ac;
+            }
+            #exfe_mail_exfee_list {
+                list-style: none;
+                padding: 0;
+                font-size: 13px;
+                color: #333333;
+                line-height: 17px;
+            }
+            #exfe_mail_exfee_list li {
+                display: inline;
+            }
+            #exfe_mail_exfee_list .exfe_mail_identity {
+                font-style: italic;
+            }
+            #exfe_mail_main {
+                color: #191919;
+                font-size: 13px;
+                margin-top: 45px;
+                line-height: 19px;
+            }
+            #exfe_mail_main_more {
+                font-style: italic;
+                color: #666666;
+                text-decoration: none;
+            }
+            #exfe_mail_footer {
+                margin-top: 40px;
+                font-size: 12px;
+                line-height: 19px;
+                color: #666666;
+            }
+            #exfe_mail_footer .exfe_mail_identity_name {
+                color: #191919;
+            }
+            #exfe_mail_spam {
+                color: #666666;
+            }
+            #exfe_mail_aside {
+                float: right;
+                width: 190px;
+                margin: 0px 0px auto auto;
+            }
+            #exfe_mail_relatively_time {
+                font-size: 20px;
+                line-height: 26px;
+                color: #0591ac;
+            }
+            #exfe_mail_absolute_time {
+                font-size: 13px;
+                line-height: 19px;
+                color: #191919;
+                margin-top: -20px;
+            }
+            #exfe_mail_place_line1 {
+                font-size: 20px;
+                line-height: 26px;
+                color: #0591ac;
+            }
+            #exfe_mail_place_line2 {
+                font-size: 13px;
+                line-height: 19px;
+                color: #191919;
+                margin-top: -20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="exfe_mail_outer_frame">
+            <h1>%exfe_title%</h1>
+            <div id="exfe_mail_aside">
+                <p id="exfe_mail_relatively_time">%date%</p>
+                <p id="exfe_mail_absolute_time">%time%</p>
+                <p id="exfe_mail_ics_icon"></p>
+                <p id="exfe_mail_place_line1">
+                    %place_line1%
+                </p>
+                <p id="exfe_mail_place_line2">
+                    %place_line2%
+                </p>
+            <!--
+                @todo map area is not in use currently
+                <p id="exfe_mail_place_map"></p>
+            -->
+            </div>
+            <div id="exfe_mail_inner_frame">
+            <p id="exfe_mail_recipient">
+            To: <span class="exfe_mail_identity_name">%exfee_name%</span>
+                </p>
 
-%rsvp_status% %exfe_link%<br/>
-
-<img src="%host_avatar%"/> %host_name% host<br/>
-%exfee_list%<br/>
-
-%content%<br/>
-
-%date%<br/>
-
-%time%<br/>
-
-%place_line1%<br/>
-%place_line2%<br/>
-
-This invitation is sent by %host_name% from EXFE. Report <a href="%mutelink%">spam</a>?
-
+                <p id="exfe_mail_invitation">
+                %hint_title%
+                </p>
+                <p id="exfe_mail_rsvp">
+                    %rsvp_status%
+                    <a id="exfe_mail_exfee_checkitout" alt="Check it out" href="%exfe_link%">Check it out...</a>
+                </p>
+                <p id="exfe_mail_exfee_summary">
+                    <span id="exfe_mail_exfee_host">
+                        <img class="exfe_mail_avatar" src="%host_avatar%">
+                        <span class="exfe_mail_identity_name">%host_name%</span>
+                        <span class="exfe_mail_label">host</span>
+                    </span>
+                <!--
+                    @todo confirmed number area is not in use currently
+                    <span id="exfe_mail_exfee_confirmed">
+                        <span class="exfe_mail_num_confirmed">3</span> confirmed
+                    </span>
+                -->
+                </p>
+                <ol id="exfe_mail_exfee_list">
+                    %exfee_list%
+                </ol>
+                <p id="exfe_mail_main">
+                %content%
+                </p>
+            </div>
+            <div id="exfe_mail_footer">
+                This invitation is sent by
+                <span class="exfe_mail_identity_name">%host_name%</span>
+                from <a class="exfe_mail_exfe" href="http://www.exfe.com">EXFE</a>.
+                Report <a id="exfe_mail_spam" href="%mutelink%">spam</a>?
+            </div>
+        </div>
+    </body>
+</html>

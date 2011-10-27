@@ -333,6 +333,25 @@ $(document).ready(function() {
         show_exfeedel($(this));
     });
 
+    $('#gather_x').bind('mouseenter mouseout mousedown', function(event) {
+        if (xSubmitting) {
+            return;
+        }
+        switch (event.type) {
+            case 'mouseenter':
+                $('#gather_x').addClass('mouseover');
+                $('#gather_x').removeClass('mousedown');
+                break;
+            case 'mouseout':
+                $('#gather_x').removeClass('mouseover');
+                $('#gather_x').removeClass('mousedown');
+                break;
+            case 'mousedown':
+                $('#gather_x').removeClass('mouseover');
+                $('#gather_x').addClass('mousedown');
+        }
+    });
+
     $('#gather_x').click(submitX);
 
     $('#confirmed_all').click(function(e) {
@@ -649,11 +668,15 @@ function saveDraft()
 
 function submitX()
 {
-    $('#gather_submit_ajax').show();
-
     if (xSubmitting) { return; }
-
     xSubmitting = true;
+
+    $('#gather_submit_ajax').show();
+    $('#gather_failed_hint').hide();
+    $('#gather_x').removeClass('mouseover');
+    $('#gather_x').removeClass('mousedown');
+    $('#gather_x').addClass('disabled');
+    $('#gather_x').html('');
 
     var cross = summaryX();
     cross['draft_id'] = draft_id;
@@ -668,10 +691,19 @@ function submitX()
                 location.href = '/!' + data.crossid;
             }
             $('#gather_submit_ajax').hide();
+            $('#gather_x').removeClass('mouseover');
+            $('#gather_x').removeClass('mousedown');
+            $('#gather_x').removeClass('disabled');
+            $('#gather_x').html('Submit');
             xSubmitting = false;
         },
         failure : function(data) {
             $('#gather_submit_ajax').hide();
+            $('#gather_failed_hint').show();
+            $('#gather_x').removeClass('mouseover');
+            $('#gather_x').removeClass('mousedown');
+            $('#gather_x').removeClass('disabled');
+            $('#gather_x').html('Re-submit');
             xSubmitting = false;
         }
     });
