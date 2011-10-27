@@ -700,6 +700,7 @@ class SActions extends ActionController {
             $this->displayView();
         }
     }
+
     public function doDialogaddidentity()
     {
         $identity=$_POST["identity"];
@@ -827,6 +828,20 @@ class SActions extends ActionController {
 
         echo json_encode($responobj);
         exit();
+    }
+
+    /**
+     * 重新设置密码。
+     * 
+     **/
+    public function doResetPassword()
+    {
+        $actions = exGet("act");
+        if($actions == ""){
+            $this->displayView();
+        }else{ //do update password.
+            echo $actions;
+        }
     }
 
     public function doCheckLogin(){

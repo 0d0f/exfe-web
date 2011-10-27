@@ -52,14 +52,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return true;
 
     };
-    ns.showRePassword = function(){
-        var pwdBoxID = "identification_pwd";
-
+    ns.showRePassword = function(pwdBoxID, rePwdBoxID){
         var pwdBoxJID = "#"+pwdBoxID;
         var displayPwdBoxJID = "#"+pwdBoxID+"_a";
         var btnJID = "#"+pwdBoxID+"_ic";
 
-        var rePwdBoxJID = "#identification_rpwd";
+        var rePwdBoxJID = "#"+rePwdBoxID;
+        var rePwdBoxLiJID = "#"+rePwdBoxID+"_li";
 
         //initialize
         jQuery(btnJID).unbind("click");
@@ -77,15 +76,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery(btnJID).bind("click",function(){
             ns.displayPassword(pwdBoxID);
 
-            if(jQuery(btnJID).hasClass("ic3")){
-                jQuery("#retype").show();
-                jQuery(displayPwdBoxJID).unbind("keyup");
-                jQuery(rePwdBoxJID).val('');
-            }else{
-                jQuery("#retype").hide();
+            if(jQuery(btnJID).hasClass("ic2")){
+                jQuery(rePwdBoxLiJID).hide();
                 jQuery(displayPwdBoxJID).bind("keyup", function(){
                     jQuery(rePwdBoxJID).val(jQuery(displayPwdBoxJID).val());
                 });
+            }else{
+                jQuery(rePwdBoxLiJID).show();
+                jQuery(displayPwdBoxJID).unbind("keyup");
+                jQuery(rePwdBoxJID).val('');
             }
 
         });

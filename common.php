@@ -1,5 +1,51 @@
 <?php
 
+/*
+ * 判断并获取GET数据
+ * @param $name:field name;
+ * @return 如果存在，则返回GET的数据，否则返回空!
+*/
+function exGet($name)
+{
+    if (array_key_exists($name,$_GET))
+	{
+		return $_GET[$name];
+	}else{
+		return ("");
+	}
+}
+
+/**
+ * 判断并获取POST数据
+ * @param $name:field name;
+ * @return 如果存在，则返回POST的数据，否则返回空!
+*/
+function exPost($name)
+{
+    if (array_key_exists($name,$_POST))
+	{
+		return $_POST[$name];
+	}else{
+		return ("");
+	}
+}
+
+/**
+ * 判断并获取REQUEST数据
+ * @param $name:field name;
+ * @return 如果存在，则返回REQUEST的数据，否则返回空!
+*/
+function exRequest($name)
+{
+	if (array_key_exists($name, $_REQUEST))
+	{
+		return $_REQUEST[$name];
+	}else{
+		return "";
+	}
+}
+
+
 function buildICS($args)
 {
     require_once 'lib/iCalcreator.class.php';
