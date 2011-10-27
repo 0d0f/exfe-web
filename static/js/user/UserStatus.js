@@ -97,10 +97,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     + '<em class="light"></em>'
                                     + '<div class="name" >'
                                     + '<div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
-                userPanelHTML += '<div class="myexfe" id="myexfe" ><div class="message"><div class="na">';
+                userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
                 userPanelHTML += '<p class="h">';
-                userPanelHTML += '<span>' + userData.cross_num + '</span>';
-                userPanelHTML += 'exfes attended';
+                userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
+                userPanelHTML += '<span class="x_attended">X</span> attended';
                 userPanelHTML += '</p>';
                 userPanelHTML += '<a href="/s/profile" class="l"><img src="/'+odof.comm.func.getHashFilePath("eimgs",userData.user_avatar)+'/80_80_'+ userData.user_avatar +'"></a>';
                 userPanelHTML += '</div>';
@@ -109,9 +109,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     userPanelHTML += '<span>Upcoming:</span><br />';
                     jQuery.each(userData.crosses, function(k,v){
                         if(v.sort == "upcoming"){
-                            userPanelHTML += '<em>Now</em>  <a href="/!'+v.id+'" style="color:#0591AF">'+ v.title +'</a><br/>';
+                            userPanelHTML += '<em>Now</em> <a href="/!'+v.id+'">'+ v.title +'</a>';
                         }else{
-                            userPanelHTML += '<em>24hr</em>  <a href="/!'+v.id+'" style="color:#0591AF">'+ v.title +'</a><br/>';
+                            userPanelHTML += '<em>24hr</em> <a href="/!'+v.id+'">'+ v.title +'</a>';
                         }
                     });
                     userPanelHTML += '</p>';
