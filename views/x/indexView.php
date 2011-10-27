@@ -120,7 +120,7 @@ $token=$_GET["token"];
             <h3>Conversation</h3>
                 <div class="commenttext">
                 <form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-                <img style="width:40px;height:40px" src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
+                <img style="width:40px;height:40px" src="/<?php echo getHashFilePath("eimgs", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
                 </form>
                 </div>
                 <ul id="commentlist" class="commentlist">
@@ -140,7 +140,7 @@ $token=$_GET["token"];
                     //    $identity["name"]=$identity["external_identity"];
                 ?>
                 <li>
-                <p class="pic40"><img src="/eimgs/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
+                <p class="pic40"><img src="/<?php echo getHashFilePath("eimgs", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
                 </li>
                 <?php
                     }
@@ -172,6 +172,7 @@ $token=$_GET["token"];
                 </div>
                 <ul class="samlcommentlist">
 
+<<<<<<< HEAD
                 <?php foreach($host_exfee as $exfee) { ?>
                 <li id="exfee_<?php echo $exfee["identity_id"];?>"
                     identity="<?php echo $exfee["external_identity"]; ?>"
@@ -192,6 +193,17 @@ $token=$_GET["token"];
                     <p class="cs">
                         <em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em>
                     </p>
+=======
+                <?php foreach($host_exfee as $exfee) {
+                //        if ($exfee["avatar_file_name"] === '') {
+                //            $exfee["avatar_file_name"] = 'default.png';
+                //        }
+                ?>
+                <li id="exfee_<?php echo $exfee["identity_id"];?>" identity="<?php echo $exfee["external_identity"]; ?>" identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
+                    <p class="pic20"><img src="/<?php echo getHashFilePath("eimgs", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+                    <div class="smcomment"><div><span class="ex_name"><?php echo $exfee["name"]; ?></span><span class="lb">host</span><span class="ex_identity"> <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?></span></div></div>
+                    <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
+>>>>>>> 08d81719823d1611bfb108c8ea3ea188c88646f2
                 </li>
                 <?php } ?>
                 <?php foreach($normal_exfee as $exfee) { ?>
@@ -199,6 +211,7 @@ $token=$_GET["token"];
                     identity="<?php echo $exfee["external_identity"]; ?>"
                     identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
                     <button type="button" class="exfee_del"></button>
+<<<<<<< HEAD
                     <p class="pic20">
                         <img src="/eimgs/80_80_<?php echo $exfee["avatar_file_name"];?>" alt="">
                     </p>
@@ -213,6 +226,11 @@ $token=$_GET["token"];
                     <p class="cs">
                         <em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em>
                     </p>
+=======
+                    <p class="pic20"><img src="/<?php echo getHashFilePath("eimgs", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt=""></p>
+                    <div class="smcomment"><div><span><?php echo $exfee["name"]; ?></span><span class="ex_identity"> <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?></span></div></div>
+                    <p class="cs"><em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em></p>
+>>>>>>> 08d81719823d1611bfb108c8ea3ea188c88646f2
                 </li>
                 <?php } ?>
                 </ul>

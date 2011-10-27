@@ -368,7 +368,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +     'invited="false">'
                                   +     '<button type="button" class="exfee_del"></button>'
                                   +     '<p class="pic20">'
-                                  +         '<img src="/eimgs/80_80_' + avatar_file_name + '" alt="">'
+                                  +         '<img src="/'+odof.comm.func.getHashFilePath("eimgs", avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="">'
                                   +     '</p>'
                                   +     '<div class="smcomment">'
                                   +         '<div>'

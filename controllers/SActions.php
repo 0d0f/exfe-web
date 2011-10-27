@@ -39,21 +39,19 @@ class SActions extends ActionController
         $sizeLimit = 10 * 1024 * 1024;
         //The directory for the images to be saved in
         $upload_dir = "eimgs";
-        //The path to where the image will be saved
-        $upload_path = $upload_dir."/";
 
         $exFileUploader = $this->getHelperByName("fileUploader");
         $exFileUploader->initialize($allowedExtensions, $sizeLimit);
-        $result = $exFileUploader->handleUpload($upload_path);
+        $result = $exFileUploader->handleUpload($upload_dir);
         if(!$result["error"]){
-            $img_name = $result["filename"];
+            $img_name = $result["file_name"];
             $img_ext = $result["file_ext"];
             $img_path = $result["file_path"];
             //图片还要经过处理后再给客户端。
             require_once "imgcommon.php";
             $img_info = array(
-                "source_image"      =>$img_path.$img_name,
-                "target_image"      =>$img_path."300_300_".$img_name,
+                "source_image"      =>$img_path."/".$img_name,
+                "target_image"      =>$img_path."/"."300_300_".$img_name,
                 "width"             =>300,
                 "height"            =>300,
             );
@@ -73,11 +71,12 @@ class SActions extends ActionController
         $img_width = $_POST["iWidth"];
         $img_x = $_POST["iX"];
         $img_y = $_POST["iY"];
-        $img_dir = "eimgs/";
+        $img_dir = "eimgs";
+        $img_path = getHashFilePath($img_dir, $img_name);
 
         $img_info = array(
-            "source_image"      =>$img_dir."300_300_".$img_name,
-            "target_image"      =>$img_dir."80_80_".$img_name,
+            "source_image"      =>$img_path."/"."300_300_".$img_name,
+            "target_image"      =>$img_path."/"."80_80_".$img_name,
             "width"             =>$img_width,
             "height"            =>$img_height,
             "x"                 =>$img_x,
@@ -796,6 +795,8 @@ class SActions extends ActionController
         $identity_id=$identityData->loginWithXToken($cross_id, $token);
         $result="false";
 
+        $identity = $identityData->getIdentityById($identity_id);
+
         if(intval($identity_id)>0)
         {
             $userData=$this->getModelByName("user");
@@ -803,7 +804,7 @@ class SActions extends ActionController
             if(intval($r)==1)
             {
                 $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id);
+                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
             }
         }
         else if(intval($identity_id)==0)
@@ -813,7 +814,7 @@ class SActions extends ActionController
             if(intval($identity_id)>0)
             {
                 $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id);
+                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
             }
         }
 
@@ -850,9 +851,11 @@ class SActions extends ActionController
         {
             $identityData= $this->getModelByName("identity");
             $result=$identityData->activeIdentity($identity_id,$activecode);
+
+            $identity = $identityData->getIdentityById($identity_id);
             if($result["result"]=="verified")
             {
-                $identityData->loginByIdentityId($identity_id);
+                $identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
             }
         }
         $this->setVar("result",$result);

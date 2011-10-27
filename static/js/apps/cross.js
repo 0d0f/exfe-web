@@ -147,8 +147,9 @@ $(document).ready(function() {
                     {
                         var name = data.response.identity.name;
                         if(name == "")
-                            name = data.response.identity.external_identity;
-                        var html = '<li><p class="pic40"><img src="/eimgs/80_80_' + data.response.identity.avatar_file_name + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
+                            var name = data.response.identity.external_identity;
+                            var avatar = data.response.identity.avatar_file_name;
+                        var html = '<li><p class="pic40"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar)+'/80_80_' + avatar + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
                         $("#commentlist").prepend(html);
                         $("textarea[name=comment]").val("");
                     }

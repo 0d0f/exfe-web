@@ -63,7 +63,7 @@
                         <?php if ($external_identity != '') { ?>
                         <li class="addjn">
                             <p class="pic20">
-                                <img src="/eimgs/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
+                                <img src="/<?php echo getHashFilePath("eimgs", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
                             </p>
                             <p class="smcomment">
                                 <span id="exfee_<?php echo $global_identity_id; ?>"
