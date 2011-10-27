@@ -24,15 +24,16 @@ class XHelper extends ActionController
         }
         if(sizeof($changed)==0)
             return FALSE;
-    
+
         return $changed;
-        
+
 #sentTemplateEmail($mail)
 #sentApnConversation($args)
 
         //merge diff and send msg
 
     }
+
     public function sendXChangeMsg($cross_id,$host_identity_id,$changed,$old_cross)
     {
         $identityData=$this->getModelByName("identity");

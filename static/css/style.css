@@ -98,7 +98,7 @@ pause this style
 .exfer .exfee{margin-top:40px;}
 .feetop{height:40px;}
 .exfer .exfee h3{background:url(/static/images/icons.png) no-repeat left -28px;text-indent:35px;font-size:24px;height:40px;line-height:40px;font-weight:normal;float:left;width:100px;color:#696969;margin:0}
-.exfer .exfee p.of{float:right;width:95px;}
+.exfer .exfee p.of{float:right;width:100px;}
 .exfer .exfee p.of em.bignb{float:left;font-size:36px;color:#0591AF;width:30px;}
 
 .albg{background:#ffffff url(/static/images/exfebg.jpg) no-repeat;}
@@ -901,11 +901,11 @@ b.r3{margin: 0px}
     display:block;
 }
 
-#check_all em.c1{
+#check_all em.c1 {
     background-position: -1px -82px;
 }
 
-#check_all em.c2{
+#check_all em.c2 {
     background-position: left -123px;
 }
 
@@ -917,7 +917,7 @@ b.r3{margin: 0px}
     width: 80px;
 }
 
-.exfer .exfee p.of em.bignb{
+.exfer .exfee p.of em.bignb {
     float:left;
     font-size:36px;
     color:#0591AF;
