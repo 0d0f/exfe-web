@@ -27,7 +27,7 @@ class Email_Job
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
 
-        $mail["hint_title"]='Invitation from:'.$host_name;
+        $mail["hint_title"]='Invitation from '.$host_name.".";
 
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
             $mail["hint_title"]="You're successfully gathering this <span class='exfe_mail_cross'>X.</span>";
