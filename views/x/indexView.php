@@ -165,6 +165,7 @@ $token=$_GET["token"];
                 <div id="exfee_edit_box">
                     <div id="exfee_submit" title="Invite!"></div>
                     <input type="text" id="exfee_input" value="Enter attendees' information"><div id="identity_ajax"></div>
+                    <select id="exfee_complete" size="5"></select>
                     <span id="exfee_edit_buttons">
                         <span id="exfee_revert">Revert</span>
                         <button id="exfee_done" type="button" class="edit_button">Done</button>

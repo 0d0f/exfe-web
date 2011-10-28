@@ -510,7 +510,7 @@ function complete()
     }
     var arrInput = $('#exfee').val().split(/,|;|\r|\n|\t/);
     arrInput.pop();
-    $('#exfee').val(arrInput.join('; ') + '; ' + strValue);
+    $('#exfee').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
     $('#exfee_complete').slideUp(50);
     identity();
     $('#exfee').focus();

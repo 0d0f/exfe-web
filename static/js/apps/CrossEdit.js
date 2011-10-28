@@ -65,10 +65,81 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               : odof.cross.edit.exfeeInputTips
             );
         });
-        $('#exfee_input').keypress(function(e) {
-            if ((e.keyCode ? e.keyCode : e.which) == 13) {
-                odof.cross.edit.identityExfee();
-                e.preventDefault();
+        $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+        odof.cross.edit.completeTimer = null;
+        $('#exfee_input').keyup(function(e) {
+            switch (e.keyCode ? e.keyCode : e.which) {
+                case 13:
+                    clearTimeout(odof.cross.edit.completeTimer);
+                    odof.cross.edit.identityExfee();
+                    e.preventDefault();
+                    break;
+                case 27:
+                    $('#exfee_complete').slideUp(50);
+                    return;
+            }
+            var strExfee = $(this).val();
+            if (strExfee) {
+                var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
+                if (strKey) {
+                    clearTimeout(odof.cross.edit.completeTimer);
+                    odof.cross.edit.completeTimer = setTimeout("odof.cross.edit.chkComplete('" + strKey + "')", 1000);
+                } else {
+                    $('#exfee_complete').slideUp(50);
+                }
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
+        });
+        $('#exfee_input').keydown(function(e) {
+            switch (e.keyCode ? e.keyCode : e.which) {
+                case 9:
+                case 40:
+                    $('#exfee_complete').focus();
+                    e.preventDefault();
+                    break;
+                case 13:
+                    e.preventDefault();
+                    break;
+                default:
+                    $('#post_submit').css('background', 'url("/static/images/enter' + (odof.cross.edit.chkExfeeFormat() ? '' : '_gray') + '.png")');
+            }
+        });
+        $('#exfee_complete').hide();
+        $('#exfee_complete').bind('click keydown', function(e) {
+            var intKey = e.keyCode ? e.keyCode : e.which;
+            switch (e.type) {
+                case 'click':
+                    complete();
+                    break;
+                case 'keydown':
+                    switch (intKey) {
+                        case 9:
+                            if (e.shiftKey) {
+                                $('#exfee_input').focus();
+                                e.preventDefault();
+                            }
+                            break;
+                        case 13:
+                            odof.cross.edit.complete();
+                            break;
+                        case 27:
+                            $('#exfee_complete').slideUp(50);
+                        case 8:
+                            $('#exfee_input').focus();
+                            e.preventDefault();
+                            break;
+                        case 38:
+                            if ($('#exfee_complete').val() === odof.cross.edit.strExfeeCompleteDefault) {
+                                $('#exfee_input').focus();
+                                e.preventDefault();
+                            }
+                            break;
+                        default:
+                            if ((intKey > 64 && intKey < 91) || (intKey > 47 && intKey < 58)) {
+                                $('#exfee').focus();
+                            }
+                    }
             }
         });
         $('#exfee_submit').bind('click', function() {
@@ -330,13 +401,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * by Leask
      * */
     ns.identityExfee = function() {
-        ns.arrIdentitySub = [];
-        var arrIdentityOri = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
-        $('#exfee_input').val('');
-        for (var i in arrIdentityOri) {
-            if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
-                ns.arrIdentitySub.push(odof.util.parseId(arrIdentityOri[i]));
-            }
+        if (!ns.chkExfeeFormat()) {
+            return;
         }
 
         $.ajax({
@@ -352,13 +418,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 for (var i in data.response.identities) {
                     id           = data.response.identities[i].id;
                     identity     = data.response.identities[i].external_identity;
-                    name         = data.response.identities[i].name;
+                    name         = data.response.identities[i].name
+                                 ? data.response.identities[i].name
+                                 : data.response.identities[i].external_identity;
                     var avatar_file_name = data.response.identities[i].avatar_file_name;
                     if ($('#exfee_' + id).attr('id') == null) {
                         exfee_pv += '<li id="exfee_'   + id + '" '
                                   +     'identity="'   + identity + '" '
                                   +     'identityid="' + id + '" '
-                                  +     'identityname="' + name + '" '
+                                  +     'identityname="' + (name === identity ? '' : name) + '" '
                                   +     'class="exfee_exist exfee_item" '
                                   +     'invited="false">'
                                   +     '<button type="button" class="exfee_del"></button>'
@@ -391,7 +459,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         ns.numNewIdentity++;
                         exfee_pv += '<li id="newexfee_' + ns.numNewIdentity + '" '
                                   +     'identity="'    + identity + '" '
-                                  +     'identityname="' + name + '" '
+                                  +     'identityname="' + (name === identity ? '' : name) + '" '
                                   +     'class="exfee_new exfee_item" '
                                   +     'invited="false">'
                                   +     '<button type="button" class="exfee_del"></button>'
@@ -424,6 +492,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
                 ns.summaryExfee();
                 $('.ex_identity').hide();
+                $('#exfee_input').val('');
             }
         });
     };
@@ -552,6 +621,71 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
         rollE.css('margin-left', curLeft + 'px');
+    };
+
+    /**
+     *
+     */
+    ns.chkComplete = function(strKey) {
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/identity/complete?key=' + strKey,
+            dataType : 'json',
+            success  : function(data) {
+                var strFound = '';
+                for (var item in data) {
+                    var spdItem = odof.util.trim(item).split(' '),
+                        strId   = spdItem.pop(),
+                        strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                    if (!strFound) {
+                        odof.cross.edit.strExfeeCompleteDefault = strId;
+                    }
+                    strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
+                }
+                if (strFound) {
+                    $('#exfee_complete').html(strFound);
+                    $('#exfee_complete').slideDown(50);
+                } else {
+                    $('#exfee_complete').slideUp(50);
+                }
+            }
+        });
+    };
+
+    /**
+     *
+     */
+    ns.chkExfeeFormat = function() {
+        ns.arrIdentitySub = [];
+        var strExfees = $('#exfee_input').val().replace(/\r|\n|\t/, '');
+        $('#exfee_input').val(strExfees);
+        var arrIdentityOri = strExfees.split(/,|;/);
+        for (var i in arrIdentityOri) {
+            if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
+                var exfee_item = odof.util.parseId(arrIdentityOri[i]);
+                if (exfee_item.type !== 'email') {
+                    return false;
+                }
+                ns.arrIdentitySub.push(exfee_item);
+            }
+        }
+        return ns.arrIdentitySub.length > 0;
+    };
+
+    /**
+     *
+     */
+    ns.complete = function() {
+        var strValue = $('#exfee_complete').val();
+        if (strValue === '') {
+            return;
+        }
+        var arrInput = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
+        arrInput.pop();
+        $('#exfee_input').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
+        $('#exfee_complete').slideUp(50);
+        ns.identityExfee();
+        $('#exfee_input').focus();
     };
 
 })(ns);

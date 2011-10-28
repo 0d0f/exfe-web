@@ -88,9 +88,11 @@
 
     <li>
         <label class="privacy">Privacy</label>
-        <p class="privacy"><span>This is a private <strong>X</strong>.</span> <!--So only attendees could see details.--></p>
+        <p class="privacy">
+            <span class="inform">This is a private <span class="x">X</span>.</span> <!--So only attendees could see details.-->
+        </p>
         <div id="gather_private_hint">
-            Sorry, EXFE doesn't support to create public X yet. We're still working on it.
+            Sorry, public <span class="x">X</span> is not supported yet, we're still working on it.
         </div>
     </li>
 

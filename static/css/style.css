@@ -335,6 +335,9 @@ b.r3{margin: 0px}
 #exfee_complete {
     position: absolute; z-index: 11; margin: 27px 0px 0px 144px; width:257px;
 }
+#exfee_area #exfee_complete {
+    position: absolute; z-index: 11; margin: -16px 0px 0px 0px; width:250px;
+}
 /*preview title*/
 #pv_title {
     color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
@@ -380,7 +383,7 @@ b.r3{margin: 0px}
     z-index: 20;
     background: #f4fcfe;
     line-height:20px;
-    margin-top: 40px;
+    margin-top: 37px;
     margin-left: 145px;
 }
 /*submit*/
@@ -413,12 +416,12 @@ b.r3{margin: 0px}
 .createset ul li .exfee { background-position:right -625px; }
 .createset ul li .privacy  {background-position:right -595px; }
 .createset ul li span {color:#9C9C9C; font-size:12px;line-height:18px;}
+.createset ul li span.x { color:#0591ac; font-size:inherit; }
 .createset ul li .count { float:right; margin:5px 38px 0 0; font-size:13px}
 .createset ul li .count a { text-decoration:underline}
 .createset ul li .count span {font-size:18px; color:#0591af}
 .createset ul li p.privacy { line-height:30px; width:200px; float:left}
-.createset ul li p.privacy span { color:#020202; font-size:14px}
-.createset ul li p.privacy strong { color:#0591af}
+.createset ul li p.privacy .inform { color:#020202; font-size:14px}
 .createset .creattext { width:487px; margin-left:143px; margin-top: -30px;}
 .createset .creattext .vti{height:25px;line-height:25px;}
 .createset .creattext .vti p{width:50px;}
@@ -984,6 +987,3 @@ b.r3{margin: 0px}
     font-style: italic;
     color: #666666;
 }
-
-/** forbidden **/
-
