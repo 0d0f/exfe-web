@@ -57,13 +57,14 @@ class TestActions extends ActionController {
     }
     public function doTest()
     {
-
-        $a="abcd\r\ne'rf";
+        $content=cleanText("dadfasdf http://www.dianping.com/shop/2588782 www.google.com ");
+        print_r($content);
+        #$a="abcd\r\ne'rf";
         #$b=nl2br($a);
         #$b=$this->escape($a) ;
         #$a=str_replace('\r\n', "\n", $a);
-        $b=mysql_real_escape_string($a);
-        print $this->reverse_escape($b);//stripslashes($b);
+        #$b=mysql_real_escape_string($a);
+        #print $this->reverse_escape($b);//stripslashes($b);
 
     #    $invitationdata=$this->getModelByName("invitation");
     #    //$invitations=$invitationdata->getInvitation_Identities(3);
