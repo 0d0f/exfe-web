@@ -16,6 +16,7 @@ class Email_Job
             $by_identity_name=$this->args["by_identity"]['external_identity'];
 
         $host_identity=$this->args['host_identity'];
+        $host_identity["id"]=$this->args["host_identity_id"];
         $host_name=$host_identity["name"];
         $host_avatar=$host_identity["avatar_file_name"];
         $rsvpyeslink='<a id="exfe_mail_exfee_accept" alt="Accept" href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">Accept</a>';
@@ -30,10 +31,10 @@ class Email_Job
         $mail["hint_title"]='Invitation from '.$host_name.".";
 
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
-            $mail["hint_title"]="You're successfully gathering this <span class='exfe_mail_cross'>X.</span>";
+            $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X.</span>";
 
         if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
-            $mail["rsvp_status"]="<span id='exfe_mail_exfee_beconfirmed'> You're <span class='confirmed'>CONFIRMED</span><br> by <span class='exfe_mail_identity_name'> $by_identity_name </span> to attend.  </span>";
+            $mail["rsvp_status"]="<span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span><br> by <span class='exfe_mail_identity_name'> $by_identity_name </span> to attend.  </span>";
         else
             $mail["rsvp_status"]=$rsvpyeslink;
 
@@ -45,16 +46,19 @@ class Email_Job
         $exfee_idx=0;
         foreach($invitations as $invitation)
         {
-            $exfee_idx=$exfee_idx+1;
-            //http://local.exfe.com/eimgs/80_80_default.png
-            $exfee_avatar=$site_url."/".getHashFilePath("eimgs",$invitation["avatar_file_name"])."/80_80_".$invitation["avatar_file_name"];
-            $exfee_name=$invitation['name'];
-            if($exfee_name=="")
-                $exfee_name=$invitation['external_identity'];
-            $exfee_list.="<li> <img class='exfe_mail_avatar' src='$exfee_avatar'> <span class='exfe_mail_identity_name'>$exfee_name</span>";
-            if($exfee_idx!=$exfee_sum)
-                $exfee_list.=",";
-            $exfee_list.="</li>";
+            if(intval($invitation["identity_id"])!=intval($host_identity["id"]))
+            {
+                $exfee_idx=$exfee_idx+1;
+                //http://local.exfe.com/eimgs/80_80_default.png
+                $exfee_avatar=$site_url."/".getHashFilePath("eimgs",$invitation["avatar_file_name"])."/80_80_".$invitation["avatar_file_name"];
+                $exfee_name=$invitation['name'];
+                if($exfee_name=="")
+                    $exfee_name=$invitation['external_identity'];
+                $exfee_list.= "<tr> <td> <img class='exfe_mail_avatar' src='$exfee_avatar'> </td> <td> <span class='exfe_mail_identity_name'>$exfee_name</span> </td> </tr>";
+                if($exfee_idx!=$exfee_sum-1) //-1 ,exclude host
+                    $exfee_list.=",";
+                #$exfee_list.="</li>";
+            }
         }
         $mail["exfee_list"]=$exfee_list;
         $mail["content"]=$this->args["description"];
@@ -75,8 +79,6 @@ class Email_Job
         if($email_connect=="")
             smtp_connect();
         $this->send($body["title"],$body["body"],$icsstr,$this->args);
-    
-    
     }
     public function getMailBody($mail)
     {
