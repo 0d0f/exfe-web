@@ -545,7 +545,7 @@ function identity()
                 identifiable = {};
             for (var i in data.response.identities) {
                 var identity         = data.response.identities[i].external_identity,
-                    id               = data.response.identities[i].id,
+                    id               = data.response.identities[i].id.toLowerCase(),
                     avatar_file_name = data.response.identities[i].avatar_file_name;
                     name             = data.response.identities[i].name;
                 if ($('#exfee_' + id).attr('id') == null) {
