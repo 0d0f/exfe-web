@@ -29,16 +29,33 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
     };
-    ns.doShowLoginDialog = function(identityDialogBoxID, callBackFunc){
+    ns.doShowResetPwdDialog =function(rePwdCID){
+        var html = odof.user.identification.showdialog("resetpwd");
+        if(typeof rePwdCID != "undefined" && typeof rePwdCID == "string") {
+            jQuery("#"+rePwdCID).html(html);
+        }
+        jQuery("#identification_pwd_ic").bind("click", function(){
+            odof.comm.func.displayPassword('identification_pwd');
+        });
+        jQuery("#identification_newpwd_ic").bind("click", function(){
+            odof.comm.func.showRePassword('identification_newpwd', 'identification_renewpwd');
+        });
+    };
+    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc){
         var html = odof.user.identification.showdialog("reg");
         if(typeof callBackFunc != "undefined"){
             ns.callBackFunc = callBackFunc;
         }
-        if(typeof identityDialogBoxID != "undefined" && typeof identityDialogBoxID == "string"){
-            document.getElementById(identityDialogBoxID).innerHTML = html;
+        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string"){
+            document.getElementById(dialogBoxID).innerHTML = html;
         }else{
             odof.exlibs.ExDialog.initialize("identification", html);
+            var dialogBoxID = "identification_dialog";
         }
+
+        jQuery("#resetpwd").bind("click", function(){
+            ns.doShowResetPwdDialog(dialogBoxID);
+        });
 
         odof.user.identification.bindDialogEvent("reg");
         jQuery("#identification_pwd_ic").bind("click",function(){
@@ -84,6 +101,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if(typeof showIdentificationDialog == "undefined"){
                 jQuery("#home_user_login_btn").bind("click",function(){
                     ns.doShowLoginDialog();
+                    
                 });
             }else{
                 jQuery("#home_user_login_btn").click(function() {
@@ -94,7 +112,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             //如果不是从/s/login页面登录。
             if(typeof showIdentificationDialog == "undefined"){
                 var userPanelHTML = '<div class="uinfo">'
-                                    + '<em class="light"></em>'
+                                    + '<em class="light" style="background:none;"></em>'
                                     + '<div class="name" >'
                                     + '<div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
                 userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';

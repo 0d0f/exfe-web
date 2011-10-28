@@ -2,7 +2,7 @@
 require "config.php";
 
 function stripslashes_deep($value) {
-    return is_array($value) ? array_map('stripslashes_deep', $value) : stripslashes($value);
+    return is_array($value) ? array_map('reverse_escape', $value) : reverse_escape($value);
 }
 
 abstract class DataModel{
@@ -82,7 +82,8 @@ abstract class DataModel{
         if($query = mysql_query($sql)) {
             $return = $this->mysql_fetch_all($query);
             if(count($return)) {
-                return $this->convertDataTypeForAll($return);
+                return $return;
+                //return $this->convertDataTypeForAll($return);
             }
             //Return NULL Bug Fix
             return $return;

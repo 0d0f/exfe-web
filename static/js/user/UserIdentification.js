@@ -99,7 +99,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<em class='ic3' id='identification_pwd_ic'></em>"
                 +"</li>"
                 +"<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
-                +"<li id='retype' style='display:none'>"
+                +"<li id='identification_rpwd_li' style='display:none'>"
                 +"<label>Re-type:</label>"
                 +"<input type='password' id='identification_rpwd' name='retypepassword' class='inputText' />"
                 +"</li>"
@@ -112,6 +112,45 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<li style='width:288px; padding:15px 0 0 50px;'>"
                 +"<input id='resetpwd' type='submit' value='Reset Password...' class='changepassword' style='display:none;' />"
                 +"<input type='submit' value='Sign In' class='sub'/></li>"
+                +"</ul>"
+                +"</form>";
+        } else if(type=="resetpwd"){
+             desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Reset Password</div>"
+                 + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please enter current password and set new password.</div>";
+
+            form="<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+                +"<ul>"
+                +"<li><label>Identity:</label>"
+                +"<div class='identity_box'>handaoliang@gmail.com</div>"
+                +"</li>"
+                +"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
+                +"<li><label>Password:</label>"
+                +"<input type='password' id='identification_pwd' name='password' class='inputText' />"
+                +"<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
+                +"<em class='ic3' id='identification_pwd_ic'></em>"
+                +"</li>"
+                +"<li>"
+                +"<label>New password:</label>"
+                +"<input type='password' id='identification_newpwd' name='newpassword' class='inputText' />"
+                +"<input type='text' id='identification_newpwd_a' class='inputText' style='display:none;' />"
+                +"<em class='ic3' id='identification_newpwd_ic'></em>"
+                +"</li>"
+                +"<li id='identification_renewpwd_li'>"
+                +"<label>Re-type new:</label>"
+                +"<input type='password' id='identification_renewpwd' name='renewpassword' class='inputText' />"
+                +"</li>"
+                +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
+                +"<li id='displayname' style='display:none'><label>Display name:</label>"
+                +"<input  type='text'  name='displayname'class='inputText'/>"
+                +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
+                +"<li class='logincheck' id='logincheck' style='display:none;'>"
+                +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
+                +"<span>Sign in automatically</span>"
+                +"</li>"
+                +"<li style='width:148px; padding:15px 0 0 190px;'>"
+                +"<a href='javascript:void(0);'>Discard</a>"
+                +"<input type='submit' value='Done' class='sub' />"
+                +"</li>"
                 +"</ul>"
                 +"</form>";
         }
@@ -153,7 +192,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     jQuery('#displayname').show();
                                     jQuery('#resetpwd').hide();
                                     jQuery('#logincheck').hide();
-                                    odof.comm.func.showRePassword();
+                                    odof.comm.func.showRePassword("identification_pwd", "identification_rpwd");
                                 } else if(data.response.identity_exist=="true") {
                                     jQuery('#hint').hide();
                                     jQuery('#retype').hide();
