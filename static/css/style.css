@@ -139,6 +139,8 @@ pause this style
 .cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
 .cs em.c1{background-position:-1px -82px}
 .cs em.c2{background-position:left -123px}
+/*.cs em.c3{background-position:-1px -82px}
+.cs em.c4{background-position:left -123px}*/
 
 
 /*浮层*/

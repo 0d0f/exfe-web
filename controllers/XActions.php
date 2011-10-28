@@ -83,64 +83,68 @@ class XActions extends ActionController
 
         $identity_id = $_SESSION['identity_id'];
         $cross_id = base62_to_int($_GET['id']);
-        $old_cross=$crossDataObj->getCross($cross_id);
-        #if($old_cross)
-        #{
-        #    $place_id=$old_cross["place_id"];
-        #    if(intval($place_id)>0)
-        #    {
-        #        $placeData=$this->getModelByName("place");
-        #        $place=$placeData->getPlace($place_id);
-        #        $old_cross["place"]=$place;
-        #    }
-        #}
+        $return_data = array('error' => 0, 'msg' => '');
 
-        $return_data = array("error"=>0,"msg"=>"");
-        if(!array_key_exists("ctitle", $_POST) || trim($_POST["ctitle"]) == ""){
-            $return_data["error"] = 1;
-            $return_data["msg"] = "The title can not be empty.";
+        if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
+            $old_cross=$crossDataObj->getCross($cross_id);
+            #if($old_cross)
+            #{
+            #    $place_id=$old_cross["place_id"];
+            #    if(intval($place_id)>0)
+            #    {
+            #        $placeData=$this->getModelByName("place");
+            #        $place=$placeData->getPlace($place_id);
+            #        $old_cross["place"]=$place;
+            #    }
+            #}
 
-            header("Content-Type:application/json; charset=UTF-8");
-            echo json_encode($return_data);
-            exit();
+            if (!array_key_exists('ctitle', $_POST) || trim($_POST['ctitle']) == ''){
+                $return_data['error'] = 1;
+                $return_data['msg'] = 'The title can not be empty.';
+
+                header('Content-Type:application/json; charset=UTF-8');
+                echo json_encode($return_data);
+                exit();
+            }
+
+            $cross = array(
+                'id'          => $cross_id,
+                'title'       => mysql_real_escape_string($_POST['ctitle']),
+                'desc'        => mysql_real_escape_string($_POST['cdesc']),
+                'start_time'  => $_POST['ctime'],
+                'place_line1' => mysql_real_escape_string($_POST['cplaceline1']),
+                'place_line2' => mysql_real_escape_string($_POST['cplaceline2']),
+                'identity_id' => $identity_id
+            );
+
+            $result = $crossDataObj->updateCross($cross);
+            if (!$result) {
+                $return_data['error'] = 2;
+                $return_data['msg'] = 'System error.';
+
+                header('Content-Type:application/json; charset=UTF-8');
+                echo json_encode($return_data);
+                exit();
+            }
+
+            $xhelper = $this->getHelperByName('x');
+            $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
+            if($changed != false) {
+                $xhelper->sendXChangeMsg($cross_id, $identity_id, $changed, $old_cross);
+            }
         }
-
-        $cross = array(
-            'id'          => $cross_id,
-            'title'       => mysql_real_escape_string($_POST["ctitle"]),
-            'desc'        => mysql_real_escape_string($_POST["cdesc"]),
-            'start_time'  => $_POST['ctime'],
-            'place_line1' => mysql_real_escape_string($_POST["cplaceline1"]),
-            'place_line2' => mysql_real_escape_string($_POST["cplaceline2"]),
-            'identity_id' => $identity_id
-        );
-
-        $result = $crossDataObj->updateCross($cross);
-        if(!$result){
-            $return_data["error"] = 2;
-            $return_data["msg"] = "System error.";
-
-            header("Content-Type:application/json; charset=UTF-8");
-            echo json_encode($return_data);
-            exit();
-        }
-
-        $xhelper=$this->getHelperByName("x");
-        $changed=$xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
-        if($changed!=FALSE)
-            $xhelper->sendXChangeMsg($cross_id,$identity_id,$changed,$old_cross);
 
         // exclude exfee identities that already in cross
         $invitM = $this->getModelByName('invitation');
         $idents = $invitM->getIdentitiesIdsByCrossIds(array($cross_id));
 
-        $exfees    = json_decode($_POST["exfee"], true);
-        $ehelper   = $this->getHelperByName("exfee");
-        $newExfees = $ehelper->addExfeeIdentify($cross_id, $exfees, $idents);
+        $exfees    = json_decode($_POST['exfee'], true);
+        $ehelper   = $this->getHelperByName('exfee');
+        $newExfees = $ehelper->addExfeeIdentify($cross_id, $exfees, $identity_id, $idents);
 
         $ehelper->sendIdentitiesInvitation($cross_id, $newExfees);
 
-        header("Content-Type:application/json; charset=UTF-8");
+        header('Content-Type:application/json; charset=UTF-8');
         echo json_encode($return_data);
         exit(0);
     }

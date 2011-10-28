@@ -3,7 +3,7 @@
 class ExfeeHelper extends ActionController
 {
 
-    public function addExfeeIdentify($cross_id, $exfee_list, $my_identity_id=0 , $invited = null)
+    public function addExfeeIdentify($cross_id, $exfee_list, $my_identity_id = 0 , $invited = null)
     {
         $identityData   = $this->getModelByName('identity');
         $invitationData = $this->getModelByName('invitation');
@@ -53,8 +53,8 @@ class ExfeeHelper extends ActionController
             }
 
             // add invitation
-            $invitationData->addInvitation($cross_id, $identity_id, $confirmed,$my_identity_id);
-            $r=$relationData->saveRelations($_SESSION['userid'],$identity_id);
+            $invitationData->addInvitation($cross_id, $identity_id, $confirmed, $my_identity_id);
+            $r=$relationData->saveRelations($_SESSION['userid'], $identity_id);
             if($r>0)
             {
                 $addrelation=TRUE;
