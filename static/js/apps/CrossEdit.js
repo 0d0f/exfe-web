@@ -83,7 +83,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
                 if (strKey) {
                     clearTimeout(odof.cross.edit.completeTimer);
-                    odof.cross.edit.completeTimer = setTimeout("odof.cross.edit.chkComplete('" + strKey + "')", 1000);
+                    odof.cross.edit.completeTimer = setTimeout("odof.cross.edit.chkComplete('" + strKey + "')", 500);
                 } else {
                     $('#exfee_complete').slideUp(50);
                 }

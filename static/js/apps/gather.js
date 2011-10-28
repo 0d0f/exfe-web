@@ -256,7 +256,7 @@ $(document).ready(function() {
             var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
             if (strKey) {
                 clearTimeout(completeTimer);
-                completeTimer = setTimeout("chkComplete('" + strKey + "')", 1000);
+                completeTimer = setTimeout("chkComplete('" + strKey + "')", 500);
             } else {
                 $('#exfee_complete').slideUp(50);
             }
