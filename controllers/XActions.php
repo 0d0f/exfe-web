@@ -202,6 +202,9 @@ class XActions extends ActionController
 
         $Data=$this->getModelByName("x");
         $cross=$Data->getCross(base62_to_int($_GET["id"]));
+        $cross["title"]=cleanText($cross["title"]);
+        $cross["description"]=cleanText($cross["description"]);
+
         if($cross)
         {
             $place_id=$cross["place_id"];
@@ -210,6 +213,8 @@ class XActions extends ActionController
             {
                 $placeData=$this->getModelByName("place");
                 $place=$placeData->getPlace($place_id);
+                $place["line1"]=cleanText($place["line1"]);
+                $place["line2"]=cleanText($place["line2"]);
                 $cross["place"]=$place;
             }
             $invitationData=$this->getModelByName("invitation");
