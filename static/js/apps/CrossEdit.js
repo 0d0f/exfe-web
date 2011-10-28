@@ -530,6 +530,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             $('#check_all > span').html('Uncheck all');
             $('#check_all > em').attr('class', 'c1');
         }
+        // submit
+        jQuery.ajax({
+            url : ns.editURI + '/crossEdit',
+            type : 'POST',
+            dataType : 'json',
+            data : {ctitle     : $('#cross_titles_textarea').val(),
+                    exfee_only : true,
+                    exfee      : JSON.stringify(ns.getexfee())},
+            success:function(data){}
+        });
     };
 
     /**

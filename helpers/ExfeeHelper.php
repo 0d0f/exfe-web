@@ -3,7 +3,7 @@
 class ExfeeHelper extends ActionController
 {
 
-    public function addExfeeIdentify($cross_id, $exfee_list, $my_identity_id=0 , $invited = null)
+    public function addExfeeIdentify($cross_id, $exfee_list, $my_identity_id = 0 , $invited = null)
     {
         $identityData   = $this->getModelByName('identity');
         $invitationData = $this->getModelByName('invitation');
