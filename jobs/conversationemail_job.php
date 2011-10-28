@@ -17,7 +17,9 @@ class Conversationemail_Job
                 smtp_connect();
 
             foreach($mails as $mail)
+            {
                 $this->send($mail["title"],$mail["body"],$mail["to"]);
+            }
         }
 
 
@@ -94,8 +96,8 @@ class Conversationemail_Job
                         $mutelink=$post["mutelink"];
                         $link=$post["link"];
                         $create_at=humanDateTime($post["create_at"]);
-                        #$html.="<li><img src='' />$content<br/>$name at $create_at</li>";
-                        $html.="<li><img class='exfe_mail_avatar' src='$site_url/eimgs/80_80_$avatar_file_name'> <div class='exfe_mail_msg_area'> <span class='exfe_mail_message'>$content</span> <span class='exfe_mail_identity_name'>$name</span><span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </div></li>";
+                        $avartar=$site_url."/".getHashFilePath("eimgs",$avatar_file_name)."/80_80_".$avatar_file_name;
+                        $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img  class='exfe_mail_avatar' src='".$avartar."'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                     }
                 }
                 $to_identity=$identity_post["to_identity"];
