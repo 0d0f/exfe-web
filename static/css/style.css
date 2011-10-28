@@ -164,10 +164,20 @@ b.r3{margin: 0px}
 .identification_dialog .titles div{float:left; height:25px; width:20px;}
 .identification_dialog .titles a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
 .identification_dialog .titles div.tl{float:right; text-align:right; color:#226571; width:420px; font-size:12px;  font-weight:normal; margin-top:-2px; text-shadow:0 0.1em #50d2dd}
-.overFrame{background:#fafafa;padding-bottom:15px;}
-.overFramel{background:#ffffff;padding-bottom:15px;}
+.overFrame{background:#fafafa; padding-bottom:15px; }
+.overFramel{background:#EFEFEF; padding-bottom:15px; overflow:hidden;}
 .overFrameh{background:#f2f2f2;padding:10px 0 15px;}
-.overFramelogin{width:390px;margin:0 auto;padding:15px 0;}
+.overFramelogin{width:390px;margin:0 auto;padding:15px 0; }
+.overFramel .identity_register_msg{
+    position:absolute; display:block; z-index:204; width:463px; padding:30px 0;
+    background:#EFEFEF; text-align:center; line-height:1.5em;
+    -moz-opacity:0.8; opacity: 0.8;
+    filter: alpha(opacity=80); -khtml-opacity: 0.8;
+}
+.overFramel .identity_register_msg div{
+    width:230px; padding:5px; margin:auto;
+}
+
 .invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}
 .invi dl{margin-top:5px;padding:5px 8px;position:relative;}
 .invi dl dt span{font-size:16px;color:#0591af}
@@ -192,10 +202,10 @@ b.r3{margin: 0px}
 .centerbg{width:1000px;margin:0 auto;background:url(/static/images/ceatebg.png) repeat-y top center;padding:30px 0 45px;}
 
 /*登录*/
-.loginBao{width:325px;margin:0px auto;border:1px solid #CCCCCC;padding:50px 125px;background:#ffffff;position:relative;z-index:10}
+.loginBao{width:325px;margin:0px auto;border:1px solid #CCCCCC;padding:50px 125px;background:#efefef;position:relative;z-index:10}
 .login{margin:0 auto;}
 .login ul{margin-top:10px;}
-.login ul li{clear:both; height:40px; }
+.login ul li{clear:both; height:45px; }
 .login ul label{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
 .login ul li input.inputText{ height:28px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px; background-color: transparent; font:18px Verdana; }
 .login ul li .identity_box{ position:absolute; margin-top:0px; margin-left:118px; z-index:203; overflow:hidden; }
@@ -206,6 +216,7 @@ b.r3{margin: 0px}
 .login h4{font-size:18px;line-height:25px;text-align:center;}
 .login h4 span{font-size:24px;color:#0591af;}
 .login p.t{font-size:14px;margin:20px 0;text-align:center;line-height:20px;}
+
 .login .account{
     font-size:14px;margin:20px 0 0 0;line-height:20px;
     background:url(/static/images/hr_or.png) no-repeat 0 55px;
@@ -214,21 +225,28 @@ b.r3{margin: 0px}
 .login .account span{ width:150px}
 .login .account span img{ padding:2px 6px }
 .login .account h4{ font-size:14px; font-weight:normal; text-align:left; margin-top:30px}
-.login input.sub{
+.login input.sign_in_btn {
     height:26px; border:0; width:80px; font-size:14px; float:right; cursor:pointer;
     border-right:#8fb9d0 solid 1px; border-left:#8fb9d0 solid 1px;
     background:url(/static/images/btn.png) no-repeat -1px -44px;
 }
-.login input.sub:hover { background:url(/static/images/btn.png) no-repeat -310px -44px; }
-.login input.sub:active { background:url(/static/images/btn.png) no-repeat -605px -44px; }
-
-.login input.changepassword{
-    height:26px; border:0; width:145px; font-size:14px; float:left; cursor:pointer;
-    border-right:#8fb9d0 solid 1px; border-left:#8fb9d0 solid 1px;
-    background:url(/static/images/btn.png) no-repeat -1px -44px;
+.login input.sign_in_btn_disabled{
+    height:26px; border:0; width:80px; font-size:14px; float:right;
+    border-right:#C6C7C8 solid 1px; border-left:#C6C7C8 solid 1px;
+    background:url(/static/images/btn.png) no-repeat -905px -44px;
 }
-.login input.changepassword:hover { background:url(/static/images/btn.png) no-repeat -302px -44px; }
-.login input.changepassword:active { background:url(/static/images/btn.png) no-repeat -602px -44px; }
+.login input.sign_in_btn:hover { background:url(/static/images/btn.png) no-repeat -310px -44px; }
+.login input.sign_in_btn:active { background:url(/static/images/btn.png) no-repeat -605px -44px; }
+
+.login .forgotpassword{
+    display:block; height:26px; border:0; width:145px; font-size:14px; float:left; cursor:pointer;
+    border-right:#8fb9d0 solid 1px; border-left:#8fb9d0 solid 1px; text-align:center;
+    background:url(/static/images/btn.png) no-repeat -1px -44px; color:#6C6E6F; text-decoration:none;
+}
+.login .forgotpassword:hover { background:url(/static/images/btn.png) no-repeat -302px -44px; color:#6C6E6F; text-decoration:none; }
+.login .forgotpassword:active { background:url(/static/images/btn.png) no-repeat -602px -44px; color:#6C6E6F; text-decoration:none; }
+.login .sign_up_btn { font-size:14px; text-decoration:underline; }
+.login .sign_up_btn:hover { font-style:italic; }
 
 .login ul li p{height:26px;width:60px;margin:0 auto;}
 .login ul li em{
@@ -250,10 +268,11 @@ b.r3{margin: 0px}
 }
 .login ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
 
+.login ul .logincheck{ height:35px; margin-top:-10px; }
 .login ul .logincheck input{ margin-left:118px; line-height:200%}
 .login ul .logincheck span{ margin-left:8px; font-size:14px; }
 .login ul .notice{ height:25px; color:#0591af; line-height:10px;}
-.login ul .notice span{ margin-left:82px; margin-top:0;}
+.login ul .notice span{ margin-left:120px; margin-top:0;}
 
 /*ceate*/
 .createset {width:670px; margin:0px auto;padding:0 10px 15px 10px;z-index:10;}
