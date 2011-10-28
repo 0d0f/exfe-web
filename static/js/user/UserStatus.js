@@ -56,6 +56,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#resetpwd").bind("click", function(){
             ns.doShowResetPwdDialog(dialogBoxID);
         });
+        jQuery("#sign_up_btn").bind("click", function(){
+            odof.user.identification.showRegisteMsg();
+        });
 
         odof.user.identification.bindDialogEvent("reg");
         jQuery("#identification_pwd_ic").bind("click",function(){
@@ -72,6 +75,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     jQuery("#delete_identity").hide();
                 }, 3000);
             });
+
+            //enable sign in btn
+            jQuery('#sign_in_btn').attr('disabled', false);
+            jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
+            jQuery('#sign_in_btn').addClass("sign_in_btn");
+            //jQuery('#resetpwd').show();
+            jQuery('#logincheck').show();
+            jQuery('#sign_up_btn').show();
+
             /*
             jQuery("#identity").bind("mouseout",function(){
                 jQuery("#delete_identity").hide();

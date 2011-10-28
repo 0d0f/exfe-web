@@ -52,7 +52,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return true;
 
     };
-    ns.showRePassword = function(pwdBoxID, rePwdBoxID){
+    ns.showRePassword = function(pwdBoxID, rePwdBoxID, type){
+        if(typeof type == "undefined"){ type = "visible"; }
+
         var pwdBoxJID = "#"+pwdBoxID;
         var displayPwdBoxJID = "#"+pwdBoxID+"_a";
         var btnJID = "#"+pwdBoxID+"_ic";
@@ -61,18 +63,27 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var rePwdBoxLiJID = "#"+rePwdBoxID+"_li";
 
         //initialize
-        jQuery(btnJID).unbind("click");
-        jQuery(btnJID).removeClass("ic3");
-        jQuery(btnJID).addClass("ic2");
-        jQuery(pwdBoxJID).hide();
-        jQuery(displayPwdBoxJID).show();
-        jQuery(displayPwdBoxJID).unbind("keyup");
-        jQuery(displayPwdBoxJID).bind("keyup", function(){
-            var curPwd = jQuery(displayPwdBoxJID).val();
-            jQuery(pwdBoxJID).val(curPwd);
-            jQuery(rePwdBoxJID).val(curPwd);
-        });
+        if(type == "visible"){
+            console.log("aaaa");
+            jQuery(btnJID).unbind("click");
+            if(jQuery(btnJID).hasClass("ic3")){
+                jQuery(btnJID).removeClass("ic3");
+            }
+            jQuery(btnJID).addClass("ic2");
+            jQuery(pwdBoxJID).hide();
+            jQuery(displayPwdBoxJID).show();
 
+            jQuery(displayPwdBoxJID).unbind("keyup");
+            jQuery(displayPwdBoxJID).bind("keyup", function(){
+                var curPwd = jQuery(displayPwdBoxJID).val();
+                jQuery(pwdBoxJID).val(curPwd);
+                jQuery(rePwdBoxJID).val(curPwd);
+            });
+
+            jQuery(rePwdBoxLiJID).hide();
+        }
+
+        //绑定事件。
         jQuery(btnJID).bind("click",function(){
             ns.displayPassword(pwdBoxID);
 
@@ -87,6 +98,30 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery(rePwdBoxJID).val('');
             }
 
+        });
+    };
+    ns.removeRePassword = function(pwdBoxID, rePwdBoxID){
+
+        var pwdBoxJID = "#"+pwdBoxID;
+        var displayPwdBoxJID = "#"+pwdBoxID+"_a";
+        var btnJID = "#"+pwdBoxID+"_ic";
+
+        var rePwdBoxJID = "#"+rePwdBoxID;
+        var rePwdBoxLiJID = "#"+rePwdBoxID+"_li";
+
+        jQuery(btnJID).unbind("click");
+        if(jQuery(btnJID).hasClass("ic2")){
+            jQuery(btnJID).removeClass("ic2");
+        }
+        jQuery(btnJID).addClass("ic3");
+        jQuery(pwdBoxJID).show();
+        jQuery(displayPwdBoxJID).hide();
+        jQuery(displayPwdBoxJID).unbind("keyup");
+
+        jQuery(rePwdBoxLiJID).hide();
+
+        jQuery(btnJID).bind("click",function(){
+            ns.displayPassword(pwdBoxID);
         });
     };
     ns.displayPassword = function(pwdBoxID){
