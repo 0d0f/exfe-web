@@ -846,14 +846,14 @@ b.r3{margin: 0px}
 }
 
 #exfee_submit {
-    background: url("/static/images/enter.png") no-repeat right;
+    background: url("/static/images/enter.png") no-repeat right bottom;
     width: 25px;
-    height: 17px;
+    height: 25px;
     border: none;
     float: right;
     z-index: 2;
     position: absolute;
-    margin: 7px 0 0 225px;
+    margin: 3px 0 0 225px;
 }
 
 #exfee_edit_buttons {

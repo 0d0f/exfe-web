@@ -65,7 +65,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               : odof.cross.edit.exfeeInputTips
             );
         });
-        $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+        $('#exfee_submit').css('background', 'url("/static/images/enter_gray.png")');
         odof.cross.edit.completeTimer = null;
         $('#exfee_input').keyup(function(e) {
             switch (e.keyCode ? e.keyCode : e.which) {
@@ -102,7 +102,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     e.preventDefault();
                     break;
                 default:
-                    $('#post_submit').css('background', 'url("/static/images/enter' + (odof.cross.edit.chkExfeeFormat() ? '' : '_gray') + '.png")');
+                    $('#exfee_submit').css('background', 'url("/static/images/enter' + (odof.cross.edit.chkExfeeFormat() ? '' : '_gray') + '.png")');
             }
         });
         $('#exfee_complete').hide();
@@ -624,7 +624,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     /**
-     *
+     * get auto complete infos of exfees from server
+     * by Leask
      */
     ns.chkComplete = function(strKey) {
         $.ajax({
@@ -653,7 +654,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     /**
-     *
+     * check exfee format
+     * by Leask
      */
     ns.chkExfeeFormat = function() {
         ns.arrIdentitySub = [];
@@ -673,7 +675,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     /**
-     *
+     * auto complete for exfees
+     * by Leask
      */
     ns.complete = function() {
         var strValue = $('#exfee_complete').val();
