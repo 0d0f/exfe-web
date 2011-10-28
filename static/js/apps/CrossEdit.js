@@ -75,6 +75,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     e.preventDefault();
                     break;
                 case 27:
+                    clearTimeout(odof.cross.edit.completeTimer);
                     $('#exfee_complete').slideUp(50);
                     return;
             }
@@ -83,11 +84,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
                 if (strKey) {
                     clearTimeout(odof.cross.edit.completeTimer);
-                    odof.cross.edit.completeTimer = setTimeout("odof.cross.edit.chkComplete('" + strKey + "')", 1000);
+                    odof.cross.edit.completeTimer = setTimeout("odof.cross.edit.chkComplete('" + strKey + "')", 500);
                 } else {
+                    clearTimeout(odof.cross.edit.completeTimer);
                     $('#exfee_complete').slideUp(50);
                 }
             } else {
+                clearTimeout(odof.cross.edit.completeTimer);
                 $('#exfee_complete').slideUp(50);
             }
         });
@@ -124,6 +127,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             odof.cross.edit.complete();
                             break;
                         case 27:
+                            clearTimeout(odof.cross.edit.completeTimer);
                             $('#exfee_complete').slideUp(50);
                         case 8:
                             $('#exfee_input').focus();
@@ -141,6 +145,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             }
                     }
             }
+        });
+        $('#exfee_complete').bind('clickoutside', function() {
+            clearTimeout(odof.cross.edit.completeTimer);
+            $('#exfee_complete').slideUp(50);
         });
         $('#exfee_submit').bind('click', function() {
             odof.cross.edit.identityExfee();
@@ -530,6 +538,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             $('#check_all > span').html('Uncheck all');
             $('#check_all > em').attr('class', 'c1');
         }
+        // submit
+        jQuery.ajax({
+            url : ns.editURI + '/crossEdit',
+            type : 'POST',
+            dataType : 'json',
+            data : {ctitle     : $('#cross_titles_textarea').val(),
+                    exfee_only : true,
+                    exfee      : JSON.stringify(ns.getexfee())},
+            success:function(data){}
+        });
     };
 
     /**
@@ -643,10 +661,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                     strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
                 }
-                if (strFound) {
+                if (strFound && odof.cross.edit.completeTimer) {
                     $('#exfee_complete').html(strFound);
                     $('#exfee_complete').slideDown(50);
                 } else {
+                    clearTimeout(odof.cross.edit.completeTimer);
                     $('#exfee_complete').slideUp(50);
                 }
             }
@@ -686,6 +705,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var arrInput = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
         arrInput.pop();
         $('#exfee_input').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
+        clearTimeout(odof.cross.edit.completeTimer);
         $('#exfee_complete').slideUp(50);
         ns.identityExfee();
         $('#exfee_input').focus();

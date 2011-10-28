@@ -247,6 +247,7 @@ $(document).ready(function() {
                 e.preventDefault();
                 break;
             case 27:
+                clearTimeout(completeTimer);
                 $('#exfee_complete').slideUp(50);
                 return;
         }
@@ -256,11 +257,13 @@ $(document).ready(function() {
             var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
             if (strKey) {
                 clearTimeout(completeTimer);
-                completeTimer = setTimeout("chkComplete('" + strKey + "')", 1000);
+                completeTimer = setTimeout("chkComplete('" + strKey + "')", 500);
             } else {
+                clearTimeout(completeTimer);
                 $('#exfee_complete').slideUp(50);
             }
         } else {
+            clearTimeout(completeTimer);
             $('#gather_exfee_bg').html(gExfeeDefaultText);
             $('#exfee_complete').slideUp(50);
         }
@@ -284,7 +287,7 @@ $(document).ready(function() {
     });
     $('#exfee').blur(function() {
         $('#gather_exfee_bg').addClass('gather_blur').removeClass('gather_focus')
-                            .html($(this).val() ? '' : gExfeeDefaultText);
+                             .html($(this).val() ? '' : gExfeeDefaultText);
     });
     $('#exfee_complete').hide();
     $('#exfee_complete').bind('click keydown', function(e) {
@@ -305,6 +308,7 @@ $(document).ready(function() {
                         complete();
                         break;
                     case 27:
+                        clearTimeout(completeTimer);
                         $('#exfee_complete').slideUp(50);
                     case 8:
                         $('#exfee').focus();
@@ -323,7 +327,10 @@ $(document).ready(function() {
                 }
         }
     });
-
+    $('#exfee_complete').bind('clickoutside', function() {
+        clearTimeout(completeTimer);
+        $('#exfee_complete').slideUp(50);
+    });
 
     $('.addjn').mousemove(function() {
         hide_exfeedel($(this));
@@ -472,10 +479,11 @@ function chkComplete(strKey)
                 }
                 strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
             }
-            if (strFound) {
+            if (strFound && completeTimer) {
                 $('#exfee_complete').html(strFound);
                 $('#exfee_complete').slideDown(50);
             } else {
+                clearTimeout(completeTimer);
                 $('#exfee_complete').slideUp(50);
             }
         }
@@ -511,6 +519,7 @@ function complete()
     var arrInput = $('#exfee').val().split(/,|;|\r|\n|\t/);
     arrInput.pop();
     $('#exfee').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
+    clearTimeout(completeTimer);
     $('#exfee_complete').slideUp(50);
     identity();
     $('#exfee').focus();
@@ -536,7 +545,7 @@ function identity()
                 identifiable = {};
             for (var i in data.response.identities) {
                 var identity         = data.response.identities[i].external_identity,
-                    id               = data.response.identities[i].id,
+                    id               = data.response.identities[i].id.toLowerCase(),
                     avatar_file_name = data.response.identities[i].avatar_file_name;
                     name             = data.response.identities[i].name;
                 if ($('#exfee_' + id).attr('id') == null) {

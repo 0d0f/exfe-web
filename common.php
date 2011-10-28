@@ -340,3 +340,19 @@ function getHashFilePath($rootPath='', $fileName=''){
     $rootPath = $rootPath == '' ? $rootPath : strtok($rootPath,"/")."/";
     return $rootPath.substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
 }
+function autoLink($text) {
+   $pattern = "/(((http[s]?:\/\/)|(www\.))(([a-z][-a-z0-9]+\.)?[a-z][-a-z0-9]+\.[a-z]+(\.[a-z]{2,2})?)\/?[a-z0-9._\/~#&=;%+?-]+[a-z0-9\/#=?]{1,1})/is";
+   $text = preg_replace($pattern, " <a href='$1'>$1</a>", $text);
+   // fix URLs without protocols
+   $text = preg_replace("/href='www/", "href='http://www", $text);
+
+   return $text;
+} 
+
+function cleanText($content)
+{
+    $content=htmlspecialchars($content);
+    $content=autoLink($content);
+    return $content;
+
+}

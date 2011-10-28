@@ -76,9 +76,10 @@ class RSVPActions extends ActionController {
         exit();
 
     }
+
     public function save($cross_id,$identity_id,$state)
     {
-        $invitationData=$this->getModelByName("invitation");
+        $invitationData=$this->getModelByName('invitation');
         $r=$invitationData->rsvp($cross_id,$identity_id,$state);
         //if($state==INVITATION_YES)
         //{
@@ -156,25 +157,25 @@ class RSVPActions extends ActionController {
 
         $identity_id=$this->checkallow($cross_id,$token);
 
-        if(intval($identity_id)>0)
-        {
+        if (intval($identity_id) > 0) {
         //$checkhelper=$this->getHelperByName("check");
         //$check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
         //if($check["allow"]!="false")
         //{
             $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
-            if(intval($identity_id)==0)
+            if(intval($identity_id) == 0) {
                 $identity_id=$_SESSION["identity_id"];
-            if(intval($state)>0 && intval($identity_id)>0 )
-            {
+            }
+            if (intval($state)>0 && intval($identity_id) > 0) {
                 $this->save($cross_id,$identity_id,$state);
             }
         }
 
-       if($token!="")
-           header( "Location: /!$cross_id_base62?token=$token" ) ;
-       else
-           header( "Location: /!$cross_id_base62" ) ;
+        if ($token != '') {
+            header( "Location: /!$cross_id_base62?token=$token" ) ;
+        } else {
+            header( "Location: /!$cross_id_base62" ) ;
+        }
 
         exit(0);
         #$identity_id=$this->checkallow($cross_id,$token);
@@ -213,10 +214,11 @@ class RSVPActions extends ActionController {
             }
         }
 
-       if($token!="")
-           header( "Location: /!$cross_id_base62?token=$token" ) ;
-       else
-           header( "Location: /!$cross_id_base62" ) ;
+        if ($token != '') {
+            header( "Location: /!$cross_id_base62?token=$token" ) ;
+        } else {
+            header( "Location: /!$cross_id_base62" ) ;
+        }
 
         exit(0);
 
