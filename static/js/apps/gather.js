@@ -603,7 +603,7 @@ function identity()
                     $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
                 }
             }
-
+            $('#exfee_pv').css('width', 300 * $('#exfee_pv > ul').length + 'px');
             updateExfeeList();
         },
         error: function() {
