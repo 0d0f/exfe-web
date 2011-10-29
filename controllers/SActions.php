@@ -861,6 +861,17 @@ class SActions extends ActionController
             $returnData["error"] = 1;
             $returnData["msg"] = "User Identity is empty";
         }else{
+            $args = array(
+                     'external_identity' => $userIdentity
+             );
+            $helper=$this->getHelperByName("identity");
+            $jobId=$helper->sendResetPassword($args);
+            if($jobId=="")
+            {
+                $returnData["error"] = 1;
+                $returnData["msg"] = "mail server err";
+            }
+            //echo "get $userIdentity";
             //@Huoju
             //do send verication email
         }
