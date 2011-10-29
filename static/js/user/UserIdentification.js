@@ -42,25 +42,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.showdialog = function(type) {
         var title="", desc="", form="";
         if(type=="setpassword") {
-            title="Set Password";
-            desc="<div class='setpassword'>Please set password to keep track of <br/> RSVP status and engage in.</div>";
+            title = "Set Password";
+            desc = "<div class='setpassword'>Please set password to keep track of <br/> RSVP status and engage in.</div>";
 
-            form="<form id='identityform' accept-charset='UTF-8' action='' method='post'>"
-                +"<ul>"
-                +"<li><label>Identity:</label>"
-                +"<input id='identity' name='identity' type='text' class='inputText' disabled='disabled' value='"
-                +external_identity
-                +"'><em class='ic1'></em></li>"
-                +"<li><label>Password:</label>"
-                +"<input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
-                +"<li id='retype' ><label>Re-type:</label>"
-                +"<input type='text'  name='retypepassword' class='inputText'/><em class='ic3'></em></li>"
-                +"<li id='displayname'><label>Names:</label>"
-                +"<input type='text'  name='displayname' class='inputText'/><em class='warning'></em></li>"
-                +"<li><a href='#'>Cancel</a><input type='submit' name='setpwddone' value='Done' class='sub'/></li>"
-                +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                +"</ul>"
-                +"</form>"
+            form = "<form id='identityform' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li><label>Identity:</label>"
+                 + "<input id='identity' name='identity' type='text' class='inputText' disabled='disabled' value='"
+                 + external_identity
+                 + "'><em class='ic1'></em></li>"
+                 + "<li><label>Password:</label>"
+                 + "<input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
+                 + "<li id='retype' ><label>Re-type:</label>"
+                 + "<input type='text'  name='retypepassword' class='inputText'/><em class='ic3'></em></li>"
+                 + "<li id='displayname'><label>Names:</label>"
+                 + "<input type='text'  name='displayname' class='inputText'/><em class='warning'></em></li>"
+                 + "<li><a href='#'>Cancel</a><input type='submit' name='setpwddone' value='Done' class='sub'/></li>"
+                 + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
+                 + "</ul>"
+                 + "</form>";
         } else if(type=="login") {
             title="Sign In";
             /*
@@ -70,16 +70,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"</span> <h4>Enter your identity information</h4></div>";
             */
             form = "<form id='loginform' accept-charset='UTF-8' action='' method='post'>"
-                +"<ul>"
-                +"<li><label>Identity:</label><input id='loginidentity' name='loginidentity' type='text' class='inputText' value='"+external_identity+"' ><em class='ic1'></em></li>"
-                +"<li><label>Password:</label><input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
-                +"<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
-                //+"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
-                //+"<li id='displayname' style='display:none'><label>Names:</label><input type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
-                +"<li class='logincheck' id='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
-                +"<li><input id='resetpwd' type='submit' value='Reset Password...' class='forgotpassword'/><input type='submit' value='Sign In' class='sub'/></li>"
-                +"</ul>"
-                +"</form>"
+                 + "<ul>"
+                 + "<li><label>Identity:</label><input id='loginidentity' name='loginidentity' type='text' class='inputText' value='"+external_identity+"' ><em class='ic1'></em></li>"
+                 + "<li><label>Password:</label><input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
+                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 //+"<li id='retype' style='display:none'><label>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
+                 //+"<li id='displayname' style='display:none'><label>Names:</label><input type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
+                 + "<li class='logincheck' id='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
+                 + "<li><input id='resetpwd' type='submit' value='Forgot Password...' class='forgotpassword'/><input type='submit' value='Sign In' class='sub'/></li>"
+                 + "</ul>"
+                 + "</form>";
 
         } else if(type=="reg") {
             title="Identification";
@@ -95,171 +95,214 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 +"<h4>Enter your identity information</h4>"
                 +"</div>";
             */
-            form="<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
-                +"<ul>"
-                +"<li><label>Identity:</label>"
-                +"<div class='identity_box'>"
-                +"<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' onchange='javascript:odof.user.identification.showIdentityInfo();' />"
-                +"</div>"
-                +"<div id='identity_dbox'>Your email here</div>"
-                +"<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
-                +"<em class='delete' id='delete_identity' style='display:none;'></em>"
-                +"</li>"
-                +"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
-                +"<li><label>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
-                +"<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
-                +"<em class='ic3' id='identification_pwd_ic'></em>"
-                +"</li>"
-                +"<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
-                +"<li id='identification_rpwd_li' style='display:none'>"
-                +"<label>Re-type:</label>"
-                +"<input type='password' id='identification_rpwd' name='retypepassword' class='inputText' />"
-                +"</li>"
-                +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                +"<li id='displayname' style='display:none'><label>Display name:</label>"
-                +"<input  type='text'  name='displayname'class='inputText'/>"
-                +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
-                +"<li class='logincheck'>"
-                +"<div id='logincheck' style='display:none;'>"
-                +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
-                +"<span>Sign in automatically</span>"
-                +"</div></li>"
-                +"<li style='width:288px; padding:0 0 0 50px;'>"
-                +"<a id='resetpwd' class='forgotpassword' style='display:none;'>Reset Password...</a>"
-                +"<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
-                +"<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
-                +"</ul>"
-                +"</form>";
-        } else if(type=="resetpwd"){
-             desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Reset Password</div>"
+            form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li><label>Identity:</label>"
+                 + "<div class='identity_box'>"
+                 + "<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' onchange='javascript:odof.user.identification.showIdentityInfo();' />"
+                 + "</div>"
+                 + "<div id='identity_dbox'>Your email here</div>"
+                 + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
+                 + "<em class='delete' id='delete_identity' style='display:none;'></em>"
+                 + "</li>"
+                 + "<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
+                 + "<li><label>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='identification_pwd_ic'></em>"
+                 + "</li>"
+                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 + "<li id='identification_rpwd_li' style='display:none'>"
+                 + "<label>Re-type:</label>"
+                 + "<input type='password' id='identification_rpwd' name='retypepassword' class='inputText' />"
+                 + "</li>"
+                 + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
+                 + "<li id='displayname' style='display:none'><label>Display name:</label>"
+                 + "<input  type='text'  name='displayname'class='inputText'/>"
+                 + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
+                 + "<li class='logincheck'>"
+                 + "<div id='logincheck' style='display:none;'>"
+                 + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
+                 + "<span>Sign in automatically</span>"
+                 + "</div></li>"
+                 + "<li style='width:288px; padding:0 0 0 50px;'>"
+                 + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
+                 + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
+                 + "<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
+                 + "</ul>"
+                 + "</form>";
+        } else if(type=="change_pwd"){
+            title = "Change Password";
+            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Change Password</div>"
                  + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please enter current password and set new password.</div>";
 
-            form="<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
-                +"<ul>"
-                +"<li><label>Identity:</label>"
-                +"<div class='identity_box'>handaoliang@gmail.com</div>"
-                +"</li>"
-                +"<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
-                +"<li><label>Password:</label>"
-                +"<input type='password' id='identification_pwd' name='password' class='inputText' />"
-                +"<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
-                +"<em class='ic3' id='identification_pwd_ic'></em>"
-                +"</li>"
-                +"<li>"
-                +"<label>New password:</label>"
-                +"<input type='password' id='identification_newpwd' name='newpassword' class='inputText' />"
-                +"<input type='text' id='identification_newpwd_a' class='inputText' style='display:none;' />"
-                +"<em class='ic3' id='identification_newpwd_ic'></em>"
-                +"</li>"
-                +"<li id='identification_renewpwd_li'>"
-                +"<label>Re-type new:</label>"
-                +"<input type='password' id='identification_renewpwd' name='renewpassword' class='inputText' />"
-                +"</li>"
-                +"<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                +"<li id='displayname' style='display:none'><label>Display name:</label>"
-                +"<input  type='text'  name='displayname'class='inputText'/>"
-                +"<em id='displayname_error' class='warning' style='display:none;'></em></li>"
-                +"<li class='logincheck' id='logincheck' style='display:none;'>"
-                +"<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
-                +"<span>Sign in automatically</span>"
-                +"</li>"
-                +"<li style='width:148px; padding:15px 0 0 190px;'>"
-                +"<a href='javascript:void(0);'>Discard</a>"
-                +"<input type='submit' value='Done' class='sub' />"
-                +"</li>"
-                +"</ul>"
-                +"</form>";
+            form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li><label>Identity:</label>"
+                 + "<div class='identity_box'>handaoliang@gmail.com</div>"
+                 + "</li>"
+                 + "<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
+                 + "<li><label>Password:</label>"
+                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='identification_pwd_ic'></em>"
+                 + "</li>"
+                 + "<li>"
+                 + "<label>New password:</label>"
+                 + "<input type='password' id='identification_newpwd' name='newpassword' class='inputText' />"
+                 + "<input type='text' id='identification_newpwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='identification_newpwd_ic'></em>"
+                 + "</li>"
+                 + "<li id='identification_renewpwd_li'>"
+                 + "<label>Re-type new:</label>"
+                 + "<input type='password' id='identification_renewpwd' name='renewpassword' class='inputText' />"
+                 + "</li>"
+                 + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
+                 + "<li id='displayname' style='display:none'><label>Display name:</label>"
+                 + "<input  type='text'  name='displayname'class='inputText'/>"
+                 + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
+                 + "<li class='logincheck' id='logincheck' style='display:none;'>"
+                 + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
+                 + "<span>Sign in automatically</span>"
+                 + "</li>"
+                 + "<li style='width:148px; padding:15px 0 0 190px;'>"
+                 + "<a href='javascript:void(0);'>Discard</a>"
+                 + "<input type='submit' value='Done' class='sub' />"
+                 + "</li>"
+                 + "</ul>"
+                 + "</form>";
         }
+
+        var forgot_pwd = "<div id='identity_forgot_pwd_dialog' class='identity_forgot_pwd_dialog' style='display:none;'>"
+                       + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
+                       + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
+                       + "</div>"
+                       + "<div style='float:left; font-size:14px; height:30px; padding-left:36px; text-align:left;'>"
+                       + "Enter your identity information:"
+                       + "</div>"
+                       + "<div>"
+                       + "<label>Identity:</label><input type='text' id='f_identity' class='inputText' />"
+                       + "</div>"
+                       + "<div id='identity_forgot_pwd_info' style='margin-left:80px; padding:10px; text-align:left; width:290px; '>Verification will be sent in minutes, please check your inbox.</div>"
+                       + "<div style='text-align:right; width:300px;'>"
+                       + "<span id='submit_loading_btn' style='display:none;'></span>"
+                       + "<a href='javascript:void(0);' id='cancel_verification_btn'>Cancel</a>&nbsp;&nbsp;<input type='button' id='send_verification_btn' style='cursor:pointer;' value='Send Verification' />"
+                       + "</div>"
+                       + "</div>";
+
         //var html="<div id='fBox' class='loginMask' style='display:none'>"
-        var regMSG = "<div id='identity_register_msg' class='identity_register_msg' style='display:none;'>"
-                   + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
-                   + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
-                   + "<p>No sign-up here!</p>"
-                   + "</div>"
-                   + "<div>"
-                   + "We know you’re tired of signing up all around."
-                   + "</div>"
-                   + "<div>"
-                   + "So, just enter your email and name that your friends know who you are.And set your password."
-                   + "</div>"
-                   + "<div>"
-                   + "Done."
-                   + "</div>"
-                   + "<div style='text-align:right;'>"
-                   + "<input type='button' id='close_reg_msg_btn' value='I See' />"
-                   + "</div>"
-                   + "</div>";
+        var reg_success = "<div id='identity_reg_success' class='identity_reg_success' style='display:none;'>"
+                       + "<div style='font-size:18px; margin-bottom:15px;'>Hi, <span id='identity_display_box'></span></div>"
+                       + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
+                       + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
+                       + "<p style='font-size:14px;'>An utility for hanging out with friends.</p>"
+                       + "</div>"
+                       + "<div>"
+                       + "<span style='color:#0591AC;'>X</span>(cross),<br />gathering of friends for anything you want to do with bunch of people. We save you from calling up every one just to confirm attendance, and lost in emails of endless discussion off the point."
+                       + "</div>"
+                       + "<div>"
+                       + "Go, gather your friends!"
+                       + "</div>"
+                       + "<div>"
+                       + "<input type='button' id='close_reg_success_dialog_btn' style='cursor:pointer;' value='Go' />"
+                       + "</div>"
+                       + "</div>";
+
+        var sign_up_msg = "<div id='identity_register_msg' class='identity_register_msg' style='display:none;'>"
+                       + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
+                       + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
+                       + "<p>No sign-up here!</p>"
+                       + "</div>"
+                       + "<div>"
+                       + "We know you’re tired of signing up all around."
+                       + "</div>"
+                       + "<div>"
+                       + "So, just enter your email and name that your friends know who you are.And set your password."
+                       + "</div>"
+                       + "<div>"
+                       + "Done."
+                       + "</div>"
+                       + "<div style='text-align:right;'>"
+                       + "<input type='button' id='close_reg_msg_btn' style='cursor:pointer;' value='I See' />"
+                       + "</div>"
+                       + "</div>";
+
         var html = "<div id='identification_titles' class='titles'>"
                    + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
                    + "<div id='identification_handler' class='tl'>"+title+"</div></div>"
                    + "<div id='overFramel' class='overFramel'>"
-                   + regMSG
+                   + forgot_pwd
+                   + sign_up_msg
+                   + reg_success
                    + "<div class='overFramelogin'>"
                    + "<div class='login'>"
                    + desc
                    + form 
                    + "</div>"
                    + "</div>"
-                   + "</div>"
-                   + "<b class='rbottom'><b class='r3'></b><b class='r2'></b><b class='r1'></b></b>";
+                   + "</div>";
+                   //+ "<b class='rbottom'><b class='r3'></b><b class='r2'></b><b class='r1'></b></b>";
                    //+ "</div>";
         return html;
+    };
+
+    ns.identityInputBoxActions = function(){
+        jQuery(".notice").hide();
+        var identityVal = jQuery('#identity').val();
+        //added by handaoliang, check email address
+        var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        if(identityVal != "" && identityVal.match(mailReg)){
+            jQuery("#identity_verify_loading").show();
+            jQuery.ajax({
+                type: "GET",
+                url: site_url+"/s/IfIdentityExist?identity="+identityVal,
+                dataType:"json",
+                success: function(data){
+                    if(data!=null) {
+                        if(data.response.identity_exist=="false"){//identity
+                            jQuery('#hint').show();
+                            //jQuery('#retype').show();
+                            jQuery('#displayname').show();
+                            jQuery('#resetpwd').hide();
+                            jQuery('#logincheck').hide();
+                            jQuery('#sign_in_btn').val("Sign Up");
+                            odof.comm.func.showRePassword("identification_pwd", "identification_rpwd");
+                        } else if(data.response.identity_exist=="true") {
+                            jQuery('#hint').hide();
+                            jQuery('#retype').hide();
+                            jQuery('#displayname').hide();
+                            jQuery('#resetpwd').show();
+                            jQuery('#sign_in_btn').val("Sign In");
+                            jQuery('#logincheck').show();
+                            odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
+                        }
+                        jQuery('#sign_up_btn').hide();
+                        jQuery('#sign_in_btn').attr('disabled', false);
+                        jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
+                        jQuery('#sign_in_btn').addClass("sign_in_btn");
+
+                    }
+                    jQuery("#identity_verify_loading").hide();
+                },
+                complete:function(){
+                    jQuery("#identity_verify_loading").hide();
+                }
+            });
+        }else{
+            jQuery('#hint').hide();
+            jQuery('#retype').hide();
+            jQuery('#displayname').hide();
+            jQuery('#resetpwd').hide();
+            jQuery('#logincheck').hide();
+            jQuery('#sign_up_btn').show();
+            jQuery('#sign_in_btn').addClass("sign_in_btn_disabled");
+            jQuery('#sign_in_btn').removeClass("sign_in_btn");
+        }
     };
 
     ns.bindDialogEvent = function(type) {
         if(type=="reg") {
             jQuery('#identity').keyup(function() {
-                jQuery(".notice").hide();
-                var identityVal = jQuery('#identity').val();
-                //added by handaoliang, check email address
-                var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-                if(identityVal != "" && identityVal.match(mailReg)){
-                    jQuery("#identity_verify_loading").show();
-                    jQuery.ajax({
-                        type: "GET",
-                        url: site_url+"/s/IfIdentityExist?identity="+identityVal,
-                        dataType:"json",
-                        success: function(data){
-                            if(data!=null) {
-                                if(data.response.identity_exist=="false"){//identity
-                                    jQuery('#hint').show();
-                                    //jQuery('#retype').show();
-                                    jQuery('#displayname').show();
-                                    //jQuery('#resetpwd').hide();
-                                    jQuery('#logincheck').hide();
-                                    jQuery('#sign_in_btn').val("Sign Up");
-                                    odof.comm.func.showRePassword("identification_pwd", "identification_rpwd");
-                                } else if(data.response.identity_exist=="true") {
-                                    jQuery('#hint').hide();
-                                    jQuery('#retype').hide();
-                                    jQuery('#displayname').hide();
-                                    //jQuery('#resetpwd').show();
-                                    jQuery('#sign_in_btn').val("Sign In");
-                                    jQuery('#logincheck').show();
-                                    odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
-                                }
-                                jQuery('#sign_up_btn').hide();
-                                jQuery('#sign_in_btn').attr('disabled', false);
-                                jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
-                                jQuery('#sign_in_btn').addClass("sign_in_btn");
-
-                            }
-                            jQuery("#identity_verify_loading").hide();
-                        },
-                        complete:function(){
-                            jQuery("#identity_verify_loading").hide();
-                        }
-                    });
-                }else{
-                    jQuery('#hint').hide();
-                    jQuery('#retype').hide();
-                    jQuery('#displayname').hide();
-                    //jQuery('#resetpwd').hide();
-                    jQuery('#logincheck').hide();
-                    jQuery('#sign_up_btn').show();
-                    jQuery('#sign_in_btn').addClass("sign_in_btn_disabled");
-                    jQuery('#sign_in_btn').removeClass("sign_in_btn");
-                }
+                ns.identityInputBoxActions();
             });
 
             jQuery('#identificationform').submit(function() {
@@ -336,9 +379,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     {
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
-                                        odof.exlibs.ExDialog.hideDialog();
-                                        odof.exlibs.ExDialog.destroyCover();
-                                        //jQuery.modal.close();
+
+                                        //显示注册成功窗口
+                                        jQuery("#identity_reg_success").show();
+                                        jQuery("#identity_display_box").html(identity);
+                                        jQuery("#close_reg_success_dialog_btn").bind("click",function(){
+                                            odof.exlibs.ExDialog.hideDialog();
+                                            odof.exlibs.ExDialog.destroyCover();
+                                        });
+                                        
                                         odof.user.status.checkUserLogin();
                                     }
                                 }

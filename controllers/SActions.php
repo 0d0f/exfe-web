@@ -846,6 +846,29 @@ class SActions extends ActionController
         }
     }
 
+    /**
+     * 忘记密码发送验证邮件
+     * 
+     **/
+    public function doSendVerification()
+    {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>""
+        );
+        $userIdentity = exGet("identity");
+        if($userIdentity == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "User Identity is empty";
+        }else{
+            //@Huoju
+            //do send verication email
+        }
+        //sleep(1);
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
+    }
+
     public function doCheckLogin(){
         //header("Content-Type:application/json; charset=UTF-8");
         if(intval($_SESSION["userid"])>0)

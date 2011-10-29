@@ -64,7 +64,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //initialize
         if(type == "visible"){
-            console.log("aaaa");
             jQuery(btnJID).unbind("click");
             if(jQuery(btnJID).hasClass("ic3")){
                 jQuery(btnJID).removeClass("ic3");
