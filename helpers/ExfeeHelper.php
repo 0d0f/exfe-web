@@ -132,15 +132,16 @@ class ExfeeHelper extends ActionController
                         'invitation_id' => $invitation["invitation_id"],
                         'token' => $invitation["token"],
                         'identity_id' => $invitation["identity_id"],
+                        'host_identity_id' => $identity_id,
                         'provider' => $invitation["provider"],
                         'external_identity' => $invitation["external_identity"],
                         'name' => $invitation["name"],
                         'avatar_file_name' => $invitation["avatar_file_name"],
                         'host_identity' => $host_identity,
-                        'host_identity_id' => $identity_id,
-                        'rsvp_status' => $invitation["status"],
+                        'rsvp_status' => $invitation["state"],
                         'by_identity' => $by_identity,
                         'invitations' => $invitations
+
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
 
