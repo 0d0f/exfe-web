@@ -861,15 +861,28 @@ class SActions extends ActionController
             $returnData["error"] = 1;
             $returnData["msg"] = "User Identity is empty";
         }else{
-            $args = array(
-                     'external_identity' => $userIdentity
-             );
-            $helper=$this->getHelperByName("identity");
-            $jobId=$helper->sendResetPassword($args);
-            if($jobId=="")
+
+            $userData = $this->getModelByName("user");
+            $result=$userData->setPasswordToken($userIdentity);
+            if($result["token"]!="" && intval($result["uid"])>0)
             {
-                $returnData["error"] = 1;
-                $returnData["msg"] = "mail server err";
+                $args = array(
+                         'external_identity' => $userIdentity,
+                         'uid' => $result["uid"],
+                         'token' => $result["token"]
+                 );
+                $helper=$this->getHelperByName("identity");
+                $jobId=$helper->sendResetPassword($args);
+                if($jobId=="")
+                {
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "mail server err";
+                }
+            }
+            else
+            {
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "can't reset password";
             }
             //echo "get $userIdentity";
             //@Huoju

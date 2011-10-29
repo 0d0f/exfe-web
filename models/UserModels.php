@@ -215,5 +215,24 @@ class UserModels extends DataModel{
         }
         return FALSE;
     }
+    public function setPasswordToken($external_identity)
+    {
+        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$external_identity' and a.id=b.identityid;";
+        $row=$this->getRow($sql);
+        $uid=intval($row["uid"]);
+        if($uid>0)
+        {
+            $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+            $sql="update users set reset_password_token='$activecode' where id=$uid";
+            $this->query($sql);
+            $sql="select reset_password_token from users where id=$uid";
+            $row=$this->getRow($sql);
+            $token=$row["reset_password_token"];
+            if($token==$activecode)
+                return array("uid"=>$uid,"token"=>$activecode);
+        }
+        return "";
+
+    }
 
 }
