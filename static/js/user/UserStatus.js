@@ -29,10 +29,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
     };
-    ns.doShowResetPwdDialog =function(rePwdCID){
-        var html = odof.user.identification.showdialog("resetpwd");
-        if(typeof rePwdCID != "undefined" && typeof rePwdCID == "string") {
-            jQuery("#"+rePwdCID).html(html);
+    ns.doShowChangePwdDialog =function(changePwdCID){
+        var html = odof.user.identification.showdialog("change_pwd");
+        if(typeof changePwdCID != "undefined" && typeof changePwdCID == "string") {
+            jQuery("#"+changePwdCID).html(html);
         }
         jQuery("#identification_pwd_ic").bind("click", function(){
             odof.comm.func.displayPassword('identification_pwd');
@@ -54,7 +54,36 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         jQuery("#resetpwd").bind("click", function(){
-            ns.doShowResetPwdDialog(dialogBoxID);
+            jQuery("#identity_forgot_pwd_dialog").show();
+            jQuery("#f_identity").val(jQuery("#identity").val());
+            jQuery("#cancel_verification_btn").bind("click",function(){
+                jQuery("#identity_forgot_pwd_dialog").hide();
+                jQuery("#send_verification_btn").unbind("click");
+            });
+            jQuery('#f_identity').keyup(function() {
+                jQuery("#identity").val(jQuery("#f_identity").val());
+                jQuery("#identity_forgot_pwd_dialog").hide();
+                odof.user.identification.identityInputBoxActions();
+            });
+            jQuery("#send_verification_btn").bind("click",function(){
+                var userIdentity = jQuery("#f_identity").val();
+                var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if(userIdentity != "" && userIdentity.match(mailReg)){
+                    jQuery("#submit_loading_btn").show();
+                    jQuery.ajax({
+                        type: "GET",
+                        url: site_url+"/s/SendVerification?identity="+userIdentity,
+                        dataType:"json",
+                        success: function(JSONData){
+                            jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
+                            jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
+                        },
+                        complete: function(){
+                            jQuery("#submit_loading_btn").hide();
+                        }
+                    });
+                }
+            });
         });
         jQuery("#sign_up_btn").bind("click", function(){
             odof.user.identification.showRegisteMsg();
@@ -80,9 +109,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#sign_in_btn').attr('disabled', false);
             jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
             jQuery('#sign_in_btn').addClass("sign_in_btn");
-            //jQuery('#resetpwd').show();
+            jQuery('#resetpwd').show();
             jQuery('#logincheck').show();
-            jQuery('#sign_up_btn').show();
+            jQuery('#sign_up_btn').hide();
 
             /*
             jQuery("#identity").bind("mouseout",function(){
