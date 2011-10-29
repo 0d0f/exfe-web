@@ -170,7 +170,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</li>"
                  + "</ul>"
                  + "</form>";
+        } else if(type=="reset_pwd"){
+            title = "Reset Password";
+            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Reset Password</div>"
+                 + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please set password to keep track of RSVP status and engage in.</div>";
+            form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li><label>Identity:</label>"
+                 + "<div class='identity_box'>handaoliang@gmail.com</div>"
+                 + "</li>"
+                 + "<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
+                 + "<li><label>Password:</label>"
+                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='identification_pwd_ic'></em>"
+                 + "</li>"
+                 + "<li id='identification_repwd_li' style='display:none;'>"
+                 + "<label>Re-type:</label>"
+                 + "<input type='password' id='identification_repwd' name='repassword' class='inputText' />"
+                 + "<em class='ic3' id='identification_newpwd_ic'></em>"
+                 + "</li>"
+                 + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
+                 + "<li id='displayname'><label>Display name:</label>"
+                 + "<input  type='text'  name='displayname'class='inputText'/>"
+                 + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
+                 + "<li style='width:148px; padding:15px 0 0 190px; text-align:right;'>"
+                 + "<a href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
+                 + "<input type='submit' value='Done' class='sub' />"
+                 + "</li>"
+                 + "</ul>"
+                 + "</form>";
         }
+
 
         var forgot_pwd = "<div id='identity_forgot_pwd_dialog' class='identity_forgot_pwd_dialog' style='display:none;'>"
                        + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"

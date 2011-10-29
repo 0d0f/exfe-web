@@ -29,6 +29,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
     };
+    ns.doShowResetPwdDialog =function(resetPwdCID){
+        var html = odof.user.identification.showdialog("reset_pwd");
+        if(typeof resetPwdCID != "undefined" && typeof resetPwdCID == "string") {
+            jQuery("#"+resetPwdCID).html(html);
+        }
+        jQuery("#identification_pwd_ic").bind("click", function(){
+            odof.comm.func.displayPassword('identification_pwd');
+        });
+        jQuery("#identification_newpwd_ic").bind("click", function(){
+            odof.comm.func.showRePassword('identification_newpwd', 'identification_renewpwd');
+        });
+    };
     ns.doShowChangePwdDialog =function(changePwdCID){
         var html = odof.user.identification.showdialog("change_pwd");
         if(typeof changePwdCID != "undefined" && typeof changePwdCID == "string") {
