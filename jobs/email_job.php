@@ -67,12 +67,12 @@ class Email_Job
         $datetime=explode(" ",$begin_at);
         $mail["date"]=$datetime[0];
         $mail["time"]=$datetime[1];
-        if($mail["date"]=="" && $mail["time"]=="")
+        if($mail["date"]=="0000-00-00" && $mail["time"]=="00:00:00")
         {
             $mail["date"]="Time";
             $mail["time"]="To be decided.";
         }
-        else if($mail["time"]=="")
+        else if($mail["time"]=="00:00:00")
             $mail["time"]="Anytime";
         $mail["place_line1"]=$this->args["place_line1"];
         $mail["place_line2"]=$this->args["place_line2"];
@@ -87,6 +87,7 @@ class Email_Job
         $body=$this->getMailBody($mail);
 
         $icsstr=buildICS($this->args);
+       
 
         if($email_connect=="")
             smtp_connect();
