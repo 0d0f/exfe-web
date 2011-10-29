@@ -42,22 +42,17 @@ class Email_Job
         $mail["host_avatar"]=$site_url."/".getHashFilePath("eimgs",$host_avatar)."/80_80_".$host_avatar;
         $invitations=$this->args["invitations"];
         $exfee_list="";
-        $exfee_sum=sizeof($invitations);
-        $exfee_idx=0;
         foreach($invitations as $invitation)
         {
             if(intval($invitation["identity_id"])!=intval($host_identity["id"]))
             {
-                $exfee_idx=$exfee_idx+1;
+                #$exfee_idx=$exfee_idx+1;
                 //http://local.exfe.com/eimgs/80_80_default.png
                 $exfee_avatar=$site_url."/".getHashFilePath("eimgs",$invitation["avatar_file_name"])."/80_80_".$invitation["avatar_file_name"];
                 $exfee_name=$invitation['name'];
                 if($exfee_name=="")
                     $exfee_name=$invitation['external_identity'];
                 $exfee_list.= "<tr> <td width='25' align='left'> <img width='20' height='20' src='$exfee_avatar'> </td> <td> <span class='exfe_mail_identity_name'>$exfee_name</span> </td> </tr>";
-                if($exfee_idx!=$exfee_sum-1) //-1 ,exclude host
-                    $exfee_list.=",";
-                #$exfee_list.="</li>";
             }
         }
         $mail["exfee_list"]=$exfee_list;
