@@ -3,33 +3,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>%exfe_title%</title>
+        <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
-            #exfe_mail_exfee_accept {
-                float: left;
-                display: block;
-                text-decoration: none;
-                border: 1px solid #bebebe;
-                background-color: #add1dc;
-                color: #000000;
-                padding: 5px 30px 5px 30px;
-                margin-left: 30px;
-            }
-            #exfe_mail_exfee_checkitout {
-                float: left;
-                display: block;
-                text-decoration: none;
-                border: 1px solid #bebebe;
-                background-color: #fbfbfb;
-                color: #000000;
-                padding: 5px 25px 5px 25px;
-                margin-left: 15px;
-            }
-            .exfe_mail_avatar {
-                width: 20px;
-                height: 20px;
-            }
             .exfe_mail_label {
                 background-color: #0591ac;
                 color: #FFFFFF;
@@ -45,8 +21,7 @@
         </style>
     </head>
     <body>
-
-        <table width="640" border="0" cellpadding="0" cellspacing="0" style="font-family: Verdana; font-size: 13px; line-height: 19px; color: #191919; font-weight: normal; padding: 30px 40px 30px 40px; background: url(%site_url%/static/images/mail_bg.png) repeat-x; min-height: 562px;">
+        <table width="640" border="0" cellpadding="0" cellspacing="0" style="font-family: Verdana; font-size: 13px; line-height: 19px; color: #191919; font-weight: normal; padding: 30px 40px 30px 40px; background: url(/static/images/mail_bg.png) repeat-x; min-height: 562px;">
             <tr>
                 <td colspan="3" height="100" valign="top" style="font-size: 32px; line-height: 38px; color: #0591ac;">
                     %exfe_title%
@@ -56,43 +31,48 @@
                 <td width="340">
                     <table>
                         <tr>
-                            <td colspan="2" height="30" valign="top">
+                            <td height="30" valign="top">
                                 To: <span style="font-weight: bold;">%exfee_name%</span>
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" valign="top">
+                            <td valign="top">
                                 %hint_title%
                             </td>
                         </tr>
-
                         <tr>
-                            <td valign="top" width="160">
-                                <p style="font-size: 20px; line-height: 26px; color: #333333;">
-                                    %date%
-                                </p>
-                                <p style="margin-top: -20px;">
-                                    %time%
-                                </p>
-                            </td>
-                            <td valign="top">
-                                <p style="font-size: 20px; line-height: 26px; color: #333333;">
-                                    %place_line1%
-                                </p>
-                                <p style="color: #191919; margin-top: -20px;">
-                                    %place_line2%
-                                </p>
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td colspan="2" valign="top" height="70">
-                                    %rsvp_status%
-                                <a id="exfe_mail_exfee_checkitout" alt="Check it out" href="">Check it out...</a>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td valign="top" width="160">
+                                            <p style="font-size: 20px; line-height: 26px; color: #333333;">
+                                                %date%
+                                            </p>
+                                            <p style="margin-top: -20px;">
+                                                %time%
+                                            </p>
+                                        </td>
+                                        <td valign="top">
+                                            <p style="font-size: 20px; line-height: 26px; color: #333333;">
+                                                %place_line1%
+                                            </p>
+                                            <p style="color: #191919; margin-top: -20px;">
+                                                %place_line2%
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
+                        %rsvp_status%
                         <tr>
-                            <td colspan="2" height="150" valign="top">
+                            <td valign="top" height="70">
+                                %rsvp_accept%
+                                <a style="float: left; display: block; text-decoration: none; border: 1px solid #bebebe; background-color: #fbfbfb; color: #000000; padding: 5px 25px 5px 25px; margin-left: 15px;" alt="Check it out" href="">Check it out...</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td height="150" valign="top">
                                 %content%
                                 <!--a style="font-style: italic; color: #666666; text-decoration: none;" href="">...more</a-->
                             </td>
@@ -119,8 +99,8 @@
                             <td>
                                 <table border="0" style="color: #333333;" cellpadding="0" cellspacing="0">
                                     <tr>
-                                        <td>
-                                            <img class="exfe_mail_avatar" src="%host_avatar%">
+                                        <td width="25" align="left">
+                                           <img width="20" height="20" src="%host_avatar%">
                                         </td>
                                         <td>
                                            <span>%host_name%</span> <span class="exfe_mail_label">host</span>

@@ -7,6 +7,8 @@ class Email_Job
 {
     public function perform()
     {
+        global $site_url;
+        global $email_connect;
         $name=$this->args['name'];
         if($this->args['name']=="")
             $name=$this->args['external_identity'];
@@ -19,10 +21,8 @@ class Email_Job
         $host_identity["id"]=$this->args["host_identity_id"];
         $host_name=$host_identity["name"];
         $host_avatar=$host_identity["avatar_file_name"];
-        $rsvpyeslink='<a id="exfe_mail_exfee_accept" alt="Accept" href="'.$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'].'">Accept</a>';
+        $rsvpyeslink=$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'];
     
-        global $site_url;
-        global $email_connect;
         
         $mail["exfe_title"]=$this->args['title'];
         $mail["exfee_name"]=$name;
@@ -34,9 +34,9 @@ class Email_Job
             $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X.</span>";
 
         if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
-            $mail["rsvp_status"]="<span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span><br> by <span class='exfe_mail_identity_name'> $by_identity_name </span> to attend.  </span>";
+            $mail["rsvp_status"]="<tr> <td> <span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span> by <span class='exfe_mail_identity_name'>$by_identity_name</span> to attend.</span> </td> </tr>";
         else
-            $mail["rsvp_status"]=$rsvpyeslink;
+            $mail["rsvp_accept"]="<a style='float: left; display: block; text-decoration: none; border: 1px solid #bebebe; background-color: #add1dc; color: #000000; padding: 5px 30px 5px 30px; margin-left: 30px;' alt='Accept' href='$rsvpyeslink'>Accept</a>";
 
         $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'];
         $mail["host_avatar"]=$site_url."/".getHashFilePath("eimgs",$host_avatar)."/80_80_".$host_avatar;
@@ -54,7 +54,7 @@ class Email_Job
                 $exfee_name=$invitation['name'];
                 if($exfee_name=="")
                     $exfee_name=$invitation['external_identity'];
-                $exfee_list.= "<tr> <td> <img class='exfe_mail_avatar' src='$exfee_avatar'> </td> <td> <span class='exfe_mail_identity_name'>$exfee_name</span> </td> </tr>";
+                $exfee_list.= "<tr> <td width='25' align='left'> <img width='20' height='20' src='$exfee_avatar'> </td> <td> <span class='exfe_mail_identity_name'>$exfee_name</span> </td> </tr>";
                 if($exfee_idx!=$exfee_sum-1) //-1 ,exclude host
                     $exfee_list.=",";
                 #$exfee_list.="</li>";
@@ -67,10 +67,22 @@ class Email_Job
         $datetime=explode(" ",$begin_at);
         $mail["date"]=$datetime[0];
         $mail["time"]=$datetime[1];
-        if($mail["time"]=="")
+        if($mail["date"]=="" && $mail["time"]=="")
+        {
+            $mail["date"]="Time";
+            $mail["time"]="To be decided.";
+        }
+        else if($mail["time"]=="")
             $mail["time"]="Anytime";
         $mail["place_line1"]=$this->args["place_line1"];
         $mail["place_line2"]=$this->args["place_line2"];
+        if($mail["place_line1"]=="")
+        {
+            $mail["place_line1"]="Place";
+            $mail["place_line2"]="To be decided.";
+        }
+
+
 
         $body=$this->getMailBody($mail);
 
@@ -95,6 +107,7 @@ class Email_Job
         $mail_body=str_replace("%hint_title%",$mail["hint_title"],$mail_body);
         $mail_body=str_replace("%host_name%",$mail["host_name"],$mail_body);
         $mail_body=str_replace("%rsvp_status%",$mail["rsvp_status"],$mail_body);
+        $mail_body=str_replace("%rsvp_accept%",$mail["rsvp_accept"],$mail_body);
         $mail_body=str_replace("%exfe_link%",$mail["exfe_link"],$mail_body);
         $mail_body=str_replace("%host_avatar%",$mail["host_avatar"],$mail_body);
         $mail_body=str_replace("%exfee_list%",$mail["exfee_list"],$mail_body);
