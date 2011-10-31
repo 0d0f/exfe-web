@@ -10,7 +10,11 @@ function setreadonly()
             //console.log(args);
         }
         if(show_idbox == "setpassword"){
-            odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
+            odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+            jQuery("#show_identity_box").html(external_identity);
+
+
+            //odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
         }else{
             odof.user.status.doShowLoginDialog(null, callBackFunc);
         }

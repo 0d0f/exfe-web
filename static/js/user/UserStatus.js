@@ -69,14 +69,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
 
     };
-    ns.doShowResetPwdDialog =function(resetPwdCID){
+    ns.doShowResetPwdDialog =function(resetPwdCID, actions){
         var html = odof.user.identification.showdialog("reset_pwd");
         if(typeof resetPwdCID != "undefined" && typeof resetPwdCID == "string") {
             jQuery("#"+resetPwdCID).html(html);
+        }else{
+            odof.exlibs.ExDialog.initialize("identification", html);
+            var dialogBoxID = "identification_dialog";
         }
+
         jQuery("#identification_pwd_ic").bind("click", function(){
             odof.comm.func.displayPassword('identification_pwd');
         });
+
+        if(typeof actions == "undefined"){
+            actions = "resetpwd";
+        }
 
         jQuery("#submit_reset_password").bind("click", function(){
             var userPassword = jQuery("#identification_pwd").val();
@@ -101,16 +109,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Display name Error.");
             }else{
-                jQuery.ajax({
-                    type: "POST",
-                    url: site_url+"/s/resetPassword?act=doreset",
-                    dataType:"json",
-                    data:{
+                var postData = {
+                    jrand:Math.round(Math.random()*10000000000),
+                    u_pwd:userPassword,
+                    u_dname:userDisplayName,
+                    u_token:userToken
+                };
+                if(actions == "setpwd"){
+                    postData = {
                         jrand:Math.round(Math.random()*10000000000),
                         u_pwd:userPassword,
                         u_dname:userDisplayName,
-                        u_token:userToken
-                    },
+                        c_id:cross_id,
+                        c_token:token
+                    };
+                }
+                jQuery.ajax({
+                    type: "POST",
+                    url: site_url+"/s/resetPassword?act="+actions,
+                    dataType:"json",
+                    data:postData,
                     success: function(JSONData){
                         //console.log(JSONData);
                         if(!JSONData.error){
