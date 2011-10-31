@@ -133,6 +133,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         success: function(JSONData){
                             jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
                             jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
+                            setTimeout(function(){
+                                jQuery("#identity_forgot_pwd_dialog").hide();
+                            }, 3000);
                         },
                         complete: function(){
                             jQuery("#submit_loading_btn").hide();
