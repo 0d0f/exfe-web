@@ -521,7 +521,7 @@ class SActions extends ActionController
             $global_identity_id=$_SESSION["identity_id"];
         } else {
             $indentityData=$this->getModelByName("identity");
-            $indentityData->loginByCookie();
+            $indentityData->loginByCookie("ajax");
 
             $global_name=$_SESSION["identity"]["name"];
             $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
