@@ -88,22 +88,22 @@ $(document).ready(function() {
                             token_expired = true;
                             setreadonly();
                         }
+                        var objChkbox = $('li#exfee_' + data.response.identity_id + ' > .cs > em');
+                        objChkbox.removeClass('c0');
+                        objChkbox.removeClass('c1');
+                        objChkbox.removeClass('c2');
+                        objChkbox.removeClass('c3');
                         switch (data.response.state) {
                             case 'yes':
-                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').removeClass('c2');
-                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').addClass('c1');
-                                if (myrsvp !== 1) {
-                                    $('.bignb').html(parseInt($('.bignb').html()) + 1);
-                                }
+                                objChkbox.addClass('c1');
                                 break;
                             case 'no':
+                                objChkbox.addClass('c2');
+                                break;
                             case 'maybe':
-                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').removeClass('c1');
-                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').addClass('c2');
-                                if (myrsvp === 1) {
-                                    $('.bignb').html(parseInt($('.bignb').html()) - 1);
-                                }
+                                objChkbox.addClass('c3');
                         }
+                        odof.cross.edit.summaryExfee();
                         myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
                         $('#rsvp_status').html(arrRvsp[myrsvp]);
                         $('#rsvp_options').hide();
