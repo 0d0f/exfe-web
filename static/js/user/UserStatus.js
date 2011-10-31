@@ -137,16 +137,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.comm.func.showRePassword('identification_newpwd', 'identification_renewpwd');
         });
     };
-    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc){
+    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity){
         var html = odof.user.identification.showdialog("reg");
         if(typeof callBackFunc != "undefined"){
             ns.callBackFunc = callBackFunc;
         }
+
         if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string"){
             document.getElementById(dialogBoxID).innerHTML = html;
         }else{
             odof.exlibs.ExDialog.initialize("identification", html);
             var dialogBoxID = "identification_dialog";
+        }
+
+        //如果传入了identity，那么要检测是注册还是登录。
+        if(typeof userIdentity != "undefined" && userIdentity != ""){
+            odof.user.identification.identityInputBoxActions(userIdentity);
         }
 
         jQuery("#resetpwd").bind("click", function(){
@@ -242,7 +248,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if(typeof showIdentificationDialog == "undefined"){
                 jQuery("#home_user_login_btn").bind("click",function(){
                     ns.doShowLoginDialog();
-                    
                 });
             }else{
                 jQuery("#home_user_login_btn").click(function() {

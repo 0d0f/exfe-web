@@ -9,7 +9,11 @@ function setreadonly()
             window.location.href=location_uri;
             //console.log(args);
         }
-        odof.user.status.doShowLoginDialog(null, callBackFunc);
+        if(show_idbox == "setpassword"){
+            odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
+        }else{
+            odof.user.status.doShowLoginDialog(null, callBackFunc);
+        }
     });
 }
 
