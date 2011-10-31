@@ -54,6 +54,7 @@ $(document).ready(function() {
 
     // title
     window.gTitlesDefaultText = $('#gather_title_bg').html();
+    document.title = 'EXFE - ' + gTitlesDefaultText;
     $('#g_title').focus();
     $('#g_title').keyup(function() {
         var objTitle = $(this),
@@ -67,9 +68,11 @@ $(document).ready(function() {
             if ($('#pv_title').hasClass('pv_title_normal') && $('#pv_title').height() > 70) {
                 $('#pv_title').addClass('pv_title_double').removeClass('pv_title_normal');
             }
+            document.title = 'EXFE - ' + strTitle;
         } else {
             $('#gather_title_bg').html(gTitlesDefaultText);
             $('#pv_title').html(gTitlesDefaultText);
+            document.title = 'EXFE - ' + gTitlesDefaultText;
         }
     });
     $('#g_title').focus(function() {

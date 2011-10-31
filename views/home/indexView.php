@@ -12,7 +12,8 @@
     </div>
 </body>
 <script type="text/javascript">
-jQuery(document).ready(function(){
+jQuery(document).ready(function() {
+    document.title = 'EXFE';
     var winSize = odof.util.getWindowSize();
     winHeight = winSize.height;
     if(winHeight < 600){
