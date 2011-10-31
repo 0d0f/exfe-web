@@ -127,7 +127,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li style='width:288px; padding:0 0 0 50px;'>"
                  + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
                  + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
-                 + "<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
+                 //+ "<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
+                 + "<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn' /></li>"
                  + "</ul>"
                  + "</form>";
         } else if(type=="change_pwd"){
