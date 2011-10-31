@@ -5,9 +5,7 @@ function setreadonly()
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
         //alert("pls login");
-        var callBackFunc = function(args){
-            console.log(args);
-        };
+        var callBackFunc = function(args){ //console.log(args); };
         odof.user.status.doShowLoginDialog(null, callBackFunc);
     });
 }
@@ -109,7 +107,9 @@ $(document).ready(function() {
                         $('#rsvp_options').hide();
                         $('#rsvp_submitted').show();
                     } else {
-                        alert("show login dialog");
+                        var args = {"identity":external_identity};
+                        odof.user.status.doShowVerificationDialog(null, args);
+                        //alert("show login dialog.");
                         //$('#pwd_hint').html("<span>Error identity </span>");
                         //$('#login_hint').show();
                     }
