@@ -5,7 +5,9 @@ function setreadonly()
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
         //alert("pls login");
-        var callBackFunc = function(args){ //console.log(args); };
+        var callBackFunc = function(args){
+            //console.log(args);
+        }
         odof.user.status.doShowLoginDialog(null, callBackFunc);
     });
 }
