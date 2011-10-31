@@ -13,40 +13,47 @@ class XActions extends ActionController
         }
 
         if ($_POST['title']) {
-            $crossdata=$this->getDataModel('x');
-            $placedata=$this->getModelByName('place');
+            $idntdata = $this->getModelByName('identity');
+            // @todo: inorder to gather X, user must be verified
+            if (1) {
+            //if ($idntdata->checkIdentityStatus($identity_id) === 3) {
+                $crossdata=$this->getDataModel('x');
+                $placedata=$this->getModelByName('place');
 
-            // @todo: package as a translaction
-            if (trim($_POST['place']) !== '') {
-                $placeid=$placedata->savePlace($_POST['place']);
+                // @todo: package as a translaction
+                if (trim($_POST['place']) !== '') {
+                    $placeid=$placedata->savePlace($_POST['place']);
+                } else {
+                    $placeid = 0;
+                }
+
+                $cross = array(
+                    'title'       => mysql_real_escape_string($_POST['title']),
+                    'description' => mysql_real_escape_string($_POST['description']),
+                    'place_id'    => $placeid,
+                    'datetime'    => $_POST['datetime']
+                );
+
+                $cross_id = $crossdata->gatherCross($identity_id, $cross);
+
+                if ($cross_id) {
+                    $logdata = $this->getModelByName('log');
+                    $logdata->addLog('identity', $identity_id, 'gather', 'cross', $cross_id, '', $_POST['title'], '');
+
+                    $helper = $this->getHelperByName('exfee');
+                    $helper->addExfeeIdentify($cross_id, json_decode($_POST['exfee'], true), $identity_id);
+                    $helper->sendInvitation($cross_id, $identity_id);
+
+                    // remove draft
+                    $XDraft = $this->getModelByName('XDraft');
+                    $XDraft->delDraft($_POST['draft_id']);
+
+                    $result = array('success' => true, 'crossid' => int_to_base62($cross_id));
+                } else {
+                    $result = array('success' => false, 'error' => 'unknow');
+                }
             } else {
-                $placeid = 0;
-            }
-
-            $cross = array(
-                'title'       => mysql_real_escape_string($_POST['title']),
-                'description' => mysql_real_escape_string($_POST['description']),
-                'place_id'    => $placeid,
-                'datetime'    => $_POST['datetime']
-            );
-
-            $cross_id = $crossdata->gatherCross($identity_id, $cross);
-
-            if ($cross_id) {
-                $logdata = $this->getModelByName('log');
-                $logdata->addLog('identity', $identity_id, 'gather', 'cross', $cross_id, '', $_POST['title'], '');
-
-                $helper = $this->getHelperByName('exfee');
-                $helper->addExfeeIdentify($cross_id, json_decode($_POST['exfee'], true), $identity_id);
-                $helper->sendInvitation($cross_id, $identity_id);
-
-                // remove draft
-                $XDraft = $this->getModelByName('XDraft');
-                $XDraft->delDraft($_POST['draft_id']);
-
-                $result = array('success' => true, 'crossid' => int_to_base62($cross_id));
-            } else {
-                $result = array('success' => false);
+                $result = array('success' => false, 'error' => 'notverified');
             }
             echo json_encode($result);
             exit(0);

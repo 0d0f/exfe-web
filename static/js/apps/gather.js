@@ -205,7 +205,7 @@ $(document).ready(function() {
                             name = name ? name : identity;
                             exfee_pv.push(
                                 '<li id="exfee_' + id + '" class="addjn">'
-                              +     '<p class="pic20"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
+                              +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
                               +     '<p class="smcomment">'
                               +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
                               +             name
@@ -384,11 +384,8 @@ $(document).ready(function() {
         identity();
     });
 
-    jQuery('.privacy').mousemove(function() {
-        jQuery('#gather_private_hint').show();
-    });
-    jQuery('.privacy').mouseout(function() {
-        jQuery('#gather_private_hint').hide();
+    $('.privacy').click(function() {
+        $('.privacy > .subinform').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
     });
 
     window.curCross = '';
@@ -552,7 +549,7 @@ function identity()
                     name = name ? name : identity;
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
-                      +     '<p class="pic20"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
+                      +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
                       +     '<p class="smcomment">'
                       +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
                       +             name
@@ -577,7 +574,7 @@ function identity()
                     new_identity_id++;
                     exfee_pv.push(
                         '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
-                      +     '<p class="pic20"><img src="/eimgs/80_80_default.png" alt="" /></p>'
+                      +     '<p class="pic20"><img src="'+img_url+'/web/80_80_default.png" alt="" /></p>'
                       +     '<p class="smcomment">'
                       +         '<span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">'
                       +             name
@@ -595,12 +592,24 @@ function identity()
                 $('#exfee_pv > ul').each(function(intIndex) {
                     var li = $(this).children('li');
                     if (li.length < 4) {
-                        $(this).append(exfee_pv.shift());
+                        // @todo: remove this in next version
+                        if (($('.exfee_exist').length + $('.exfee_new').length) < 12) {
+                            $(this).append(exfee_pv.shift());
+                        } else {
+                            exfee_pv.shift();
+                            $('#exfee_warning').show();
+                        }
                         inserted = true;
                     }
                 });
                 if (!inserted) {
-                    $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
+                    // @todo: remove this in next version
+                    if (($('.exfee_exist').length + $('.exfee_new').length) < 12) {
+                        $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
+                    } else {
+                        exfee_pv.shift();
+                        $('#exfee_warning').show();
+                    }
                 }
             }
             $('#exfee_pv').css('width', 300 * $('#exfee_pv > ul').length + 'px');
@@ -623,7 +632,7 @@ function updateExfeeList()
         numSummary++;
         var avatarFile = exfees[i].avatar ? exfees[i].avatar : 'default.png';
         htmExfeeList += '<li id="exfee_list_item_' + numSummary + '" class="exfee_item">'
-                      +     '<p class="pic20"><img alt="" src="/'+odof.comm.func.getHashFilePath("eimgs",avatarFile)+'/80_80_' + avatarFile + '"></p>'
+                      +     '<p class="pic20"><img alt="" src="'+odof.comm.func.getHashFilePath(img_url,avatarFile)+'/80_80_' + avatarFile + '"></p>'
                       +     '<div class="smcomment">'
                       +         '<div>'
                       +             '<span class="ex_name' + (exfees[i].exfee_name === exfees[i].exfee_identity ? ' external_identity' : '') + '">'
@@ -698,9 +707,22 @@ function submitX()
         dataType : 'json',
         data     : cross,
         success  : function(data) {
-            if (data && data.success) {
-                location.href = '/!' + data.crossid;
+            if (data) {
+                if (data.success) {
+                    location.href = '/!' + data.crossid;
+                } else {
+                    switch (data.error) {
+                        case 'notverified':
+                            // @todo: inorder to gather X, user must be verified
+                            // odof.exlibs.ExDialog.initialize('');
+                    }
+                }
             }
+            var curTop = parseInt($('#gather_submit_blank').css('padding-top'));
+            $('#gather_submit_blank').css(
+                'padding-top',
+                (curTop ? curTop : (curTop + 20)) + 'px'
+            );
             $('#gather_submit_ajax').hide();
             $('#gather_failed_hint').show();
             $('#gather_x').removeClass('mouseover');

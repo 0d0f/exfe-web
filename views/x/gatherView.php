@@ -64,7 +64,7 @@
                         <?php if ($external_identity != '') { ?>
                         <li class="addjn">
                             <p class="pic20">
-                                <img src="/<?php echo getHashFilePath("eimgs", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
+                                <img src="<?php echo IMG_URL."/".getHashFilePath("", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>" alt="" />
                             </p>
                             <p class="smcomment">
                                 <span id="exfee_<?php echo $global_identity_id; ?>"
@@ -85,16 +85,18 @@
                 </div>
             </div>
         </div>
+        <div id="exfee_warning">
+            No more than 12 attendees. Sorry we're still working on it.
+        </div>
     </li>
 
     <li>
         <label class="privacy">Privacy</label>
         <p class="privacy">
-            <span class="inform">This is a private <span class="x">X</span>.</span> <!--So only attendees could see details.-->
+            <span class="inform">This is a private <span class="x">X</span>.</span>
+            <br>
+            <span class="subinform">Only attendees can access, and change other's status.</span>
         </p>
-        <div id="gather_private_hint">
-            Sorry, public <span class="x">X</span> is not supported yet, we're still working on it.
-        </div>
     </li>
 
     <li id="gather_submit_blank">
