@@ -217,9 +217,10 @@ class UserModels extends DataModel{
     }
     public function setPasswordToken($external_identity)
     {
-        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$external_identity' and a.id=b.identityid;";
+        $sql="select b.userid as uid ,a.name as name from identities a,user_identity b where a.external_identity='$external_identity' and a.id=b.identityid;";
         $row=$this->getRow($sql);
         $uid=intval($row["uid"]);
+        $name=$row["name"];
         if($uid>0)
         {
             $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
@@ -229,10 +230,22 @@ class UserModels extends DataModel{
             $row=$this->getRow($sql);
             $token=$row["reset_password_token"];
             if($token==$activecode)
-                return array("uid"=>$uid,"token"=>$activecode);
+                return array("uid"=>$uid,"name"=>$name,"token"=>$activecode);
         }
         return "";
+    }
 
+    public function verifyResetPassword($userID, $userToken){
+        $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$userToken}'";
+        $row = $this->getRow($sql);
+        return $row;
+    }
+
+    public function doResetUserPassword($userPwd, $userName, $userID, $userToken){
+        $passWord=md5($userPwd.$this->salt);
+        $ts = time();
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}'";
+        $result = $this->query($sql);
     }
 
 }

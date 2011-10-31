@@ -174,15 +174,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             title = "Reset Password";
             desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Reset Password</div>"
                  + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please set password to keep track of RSVP status and engage in.</div>";
-            form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
-                 + "<ul>"
+            form = "<ul>"
                  + "<li><label>Identity:</label>"
-                 + "<div class='identity_box'>handaoliang@gmail.com</div>"
+                 + "<div class='identity_box' id='show_identity_box' style='font-size:14px;'></div>"
                  + "</li>"
                  + "<li id='hint' style='display:none' class='notice'><span>You're creating a new identity!</span></li>"
                  + "<li><label>Password:</label>"
                  + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
                  + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
+                 + "<input type='hidden' id='identification_user_token' value='' />"
                  + "<em class='ic3' id='identification_pwd_ic'></em>"
                  + "</li>"
                  + "<li id='identification_repwd_li' style='display:none;'>"
@@ -192,14 +192,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</li>"
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                  + "<li id='displayname'><label>Display name:</label>"
-                 + "<input  type='text'  name='displayname'class='inputText'/>"
+                 + "<input  type='text'  name='displayname' class='inputText' id='user_display_name' />"
                  + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
+                 + "<li id='reset_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "<li style='width:148px; padding:15px 0 0 190px; text-align:right;'>"
-                 + "<a href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
-                 + "<input type='submit' value='Done' class='sub' />"
+                 //+ "<a href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
+                 + "<input type='submit' value='Done' class='sub' id='submit_reset_password' style='cursor:pointer;' />"
                  + "</li>"
-                 + "</ul>"
-                 + "</form>";
+                 + "</ul>";
         }
 
 
@@ -444,7 +444,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             {
                                 if(name=="")
                                     name=identity;
-                                exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="/'+odof.comm.func.getHashFilePath("eimgs",avatar_file_name)+'/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
+                                exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
                             }
                         }
 

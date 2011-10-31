@@ -521,7 +521,7 @@ class SActions extends ActionController
             $global_identity_id=$_SESSION["identity_id"];
         } else {
             $indentityData=$this->getModelByName("identity");
-            $indentityData->loginByCookie();
+            $indentityData->loginByCookie("ajax");
 
             $global_name=$_SESSION["identity"]["name"];
             $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
@@ -840,9 +840,48 @@ class SActions extends ActionController
     {
         $actions = exGet("act");
         if($actions == ""){
-            $this->displayView();
+            $token = exGet("token");
+            if($token == ""){
+                header("location:/x/forbidden");
+            }else{
+                $userInfo = unpackArray($token);
+                $userToken = $userInfo["user_token"];
+                $userId = $userInfo["user_id"];
+                $userIdentity = $userInfo["user_identity"];
+
+                //验证当前重置密码操作是否有效。
+                $userDataObj = $this->getModelByName("user");
+                $result = $userDataObj->verifyResetPassword($userId, $userToken);
+
+                if(is_array($result)){
+                    $this->setVar("userIdentity", $userIdentity);
+                    $this->setVar("userName", $result["name"]);
+                    $this->setVar("userToken", $token);
+                    $this->displayView();
+                }else{
+                    header("location:/x/forbidden");
+                }
+            }
         }else{ //do update password.
-            echo $actions;
+            $returnData = array(
+                "error" => 0,
+                "msg"   =>""
+            );
+            $userPassword = exPost("u_pwd");
+            $userDisplayName = mysql_real_escape_string(exPost("u_dname"));
+            $token = exPost("u_token");
+            $userInfo = unpackArray($token);
+            $userId = $userInfo["user_id"];
+            $userToken = $userInfo["user_token"];
+
+            $userDataObj = $this->getModelByName("user");
+            $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
+            if(!$result){
+                $result["error"] = 1;
+                $result["msg"] = "System Error.";
+            }
+            header("Content-Type:application/json; charset=UTF-8");
+            echo json_encode($returnData);
         }
     }
 
@@ -866,21 +905,28 @@ class SActions extends ActionController
             $result=$userData->setPasswordToken($userIdentity);
             if($result["token"]!="" && intval($result["uid"])>0)
             {
+                $userInfo = array(
+                    "user_id"           =>$result["uid"],
+                    "user_identity"     =>$userIdentity,
+                    "user_token"        =>$result["token"]
+                );
+
+                $pakageToken = packArray($userInfo);
+                $name=$result["name"];
                 $args = array(
                          'external_identity' => $userIdentity,
-                         'uid' => $result["uid"],
-                         'token' => $result["token"]
-                 );
+                         'name' => $name,
+                         'token' => $pakageToken
+                );
+                //print_r($args);
                 $helper=$this->getHelperByName("identity");
                 $jobId=$helper->sendResetPassword($args);
                 if($jobId=="")
                 {
                     $returnData["error"] = 1;
-                    $returnData["msg"] = "mail server err";
+                    $returnData["msg"] = "mail server error";
                 }
-            }
-            else
-            {
+            } else {
                     $returnData["error"] = 1;
                     $returnData["msg"] = "can't reset password";
             }

@@ -68,7 +68,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#upload_btn_container").hide();
         jQuery("#dragdrop_info").hide();
 
-		var img = "/"+responseJSON.file_path+"/300_300_"+responseJSON.file_name;
+		//var img = "/"+responseJSON.file_path+"/300_300_"+responseJSON.file_name;
+		var img = img_url+responseJSON.web_path+"/300_300_"+responseJSON.file_name;
 
         jQuery('#preview').html(img);
         jQuery('#img_src').val(responseJSON.file_name);				

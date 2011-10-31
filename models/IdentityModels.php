@@ -127,7 +127,7 @@ class IdentityModels extends DataModel{
             setcookie('last_identity', $identity, time()+31536000, "/",".exfe.com");//one year.
     }
 
-    public function loginByCookie()
+    public function loginByCookie($source='')
     {
         $uid=intval($_COOKIE['uid']);
         $identity_id=intval($_COOKIE['id']);
@@ -156,7 +156,9 @@ class IdentityModels extends DataModel{
                 setcookie('id', NULL, -1,"/",".exfe.com");
                 setcookie('loginsequ', NULL,-1,"/",".exfe.com");
                 setcookie('logintoken',NULL,-1,"/",".exfe.com");
-                header( 'Location: /s/login' ) ;
+                if($source == ""){
+                    header( 'Location: /s/login' ) ;
+                }
                 exit(0);
             }
 
