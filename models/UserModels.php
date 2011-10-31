@@ -232,7 +232,19 @@ class UserModels extends DataModel{
                 return array("uid"=>$uid,"token"=>$activecode);
         }
         return "";
+    }
 
+    public function verifyResetPassword($userID, $userToken){
+        $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$userToken}'";
+        $row = $this->getRow($sql);
+        return $row;
+    }
+
+    public function doResetUserPassword($userPwd, $userName, $userID, $userToken){
+        $passWord=md5($userPwd.$this->salt);
+        $ts = time();
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}'";
+        $result = $this->query($sql);
     }
 
 }

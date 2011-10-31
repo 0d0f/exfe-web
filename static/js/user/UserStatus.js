@@ -37,9 +37,53 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#identification_pwd_ic").bind("click", function(){
             odof.comm.func.displayPassword('identification_pwd');
         });
-        jQuery("#identification_newpwd_ic").bind("click", function(){
-            odof.comm.func.showRePassword('identification_newpwd', 'identification_renewpwd');
+
+        jQuery("#submit_reset_password").bind("click", function(){
+            var userPassword = jQuery("#identification_pwd").val();
+            var userDisplayName = jQuery("#user_display_name").val();
+            var userToken = jQuery("#identification_user_token").val();
+            var hideErrorMsg = function(){
+                jQuery("#reset_pwd_error_msg").hide();
+                jQuery("#displayname_error").hide();
+            }
+            if(userPassword == ""){
+                jQuery("#reset_pwd_error_msg").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Please input a password");
+            }else if(userDisplayName == ""){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#displayname_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Please input a display name");
+            }else if(!odof.comm.func.verifyDisplayName(userDisplayName)){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#displayname_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Display name Error.");
+            }else{
+                jQuery.ajax({
+                    type: "POST",
+                    url: site_url+"/s/resetPassword?act=doreset",
+                    dataType:"json",
+                    data:{
+                        jrand:Math.round(Math.random()*10000000000),
+                        u_pwd:userPassword,
+                        u_dname:userDisplayName,
+                        u_token:userToken
+                    },
+                    success: function(JSONData){
+                        //console.log(JSONData);
+                        if(!JSONData.error){
+                            window.location.href="/s/profile";
+                        }else{
+                            jQuery("#reset_pwd_error_msg").show();
+                            setTimeout(hideErrorMsg, 3000);
+                        }
+                    }
+                });
+            }
         });
+        
     };
     ns.doShowChangePwdDialog =function(changePwdCID){
         var html = odof.user.identification.showdialog("change_pwd");

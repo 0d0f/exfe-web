@@ -8,12 +8,11 @@ class Emailresetpassword_Job
     {
         $title="reset password";
         $external_identity=$this->args['external_identity'];
-        $uid=$this->args['uid'];
         $token=$this->args['token'];
 
         global $email_connect;
         global $site_url;
-        $url=$site_url.'/s/resetpassword?token='.$token.$uid;
+        $url=$site_url.'/s/resetpassword?token='.$token;
 
         #$url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
         #$link='<a href="'.$url.'">'.$url."</a>";
