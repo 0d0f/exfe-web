@@ -44,6 +44,60 @@ function getexfee()
     return result;
 }
 
+function afterLogin(status) {
+    if (status.user_status !== 1) {
+        return;
+    }
+    $("#hostby").attr('disabled', true);
+    var exfee_pv = [];
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/get?identities=' + JSON.stringify([odof.util.parseId($("#hostby").val())]),
+        dataType : 'json',
+        success  : function(data) {
+            for (var i in data.response.identities) {
+                var identity         = data.response.identities[i].external_identity,
+                    id               = data.response.identities[i].id,
+                    avatar_file_name = data.response.identities[i].avatar_file_name,
+                    name             = data.response.identities[i].name;
+                if ($('#exfee_' + id).attr('id') == null) {
+                    name = name ? name : identity;
+                    exfee_pv.push(
+                        '<li id="exfee_' + id + '" class="addjn">'
+                      +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
+                      +     '<p class="smcomment">'
+                      +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
+                      +             name
+                      +         '</span>'
+                      +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" type="checkbox" checked/>'
+                      +     '</p>'
+                      +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_' + id + '\'))" type="button"></button>'
+                      + '</li>'
+                    );
+                }
+            }
+            while (exfee_pv.length) {
+                var inserted = false;
+                $('#exfee_pv > ul').each(function(intIndex) {
+                    var li = $(this).children('li');
+                    if (li.length < 4) {
+                        $(this).append(exfee_pv.shift());
+                        inserted = true;
+                    }
+                });
+                if (!inserted) {
+                    $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
+                }
+            }
+            updateExfeeList();
+            if (autoSubmit) {
+                autoSubmit = false;
+                submitX();
+            }
+        }
+    });
+}
+
 $(document).ready(function() {
 
     $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
@@ -188,55 +242,7 @@ $(document).ready(function() {
         if ($(this).attr('enter') === 'true') {
             return;
         }
-        odof.user.status.doShowLoginDialog(null, function(status) {
-            if (status.user_status !== 1) {
-                return;
-            }
-            $("#hostby").attr('disabled', true);
-            var exfee_pv = [];
-            $.ajax({
-                type     : 'GET',
-                url      : site_url + '/identity/get?identities=' + JSON.stringify([odof.util.parseId($("#hostby").val())]),
-                dataType : 'json',
-                success  : function(data) {
-                    for (var i in data.response.identities) {
-                        var identity         = data.response.identities[i].external_identity,
-                            id               = data.response.identities[i].id,
-                            avatar_file_name = data.response.identities[i].avatar_file_name,
-                            name             = data.response.identities[i].name;
-                        if ($('#exfee_' + id).attr('id') == null) {
-                            name = name ? name : identity;
-                            exfee_pv.push(
-                                '<li id="exfee_' + id + '" class="addjn">'
-                              +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
-                              +     '<p class="smcomment">'
-                              +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
-                              +             name
-                              +         '</span>'
-                              +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" type="checkbox" checked/>'
-                              +     '</p>'
-                              +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_' + id + '\'))" type="button"></button>'
-                              + '</li>'
-                            );
-                        }
-                    }
-                    while (exfee_pv.length) {
-                        var inserted = false;
-                        $('#exfee_pv > ul').each(function(intIndex) {
-                            var li = $(this).children('li');
-                            if (li.length < 4) {
-                                $(this).append(exfee_pv.shift());
-                                inserted = true;
-                            }
-                        });
-                        if (!inserted) {
-                            $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
-                        }
-                    }
-                    updateExfeeList();
-                }
-            });
-        });
+        odof.user.status.doShowLoginDialog(null, afterLogin);
     });
 
     // exfee
@@ -397,6 +403,7 @@ $(document).ready(function() {
     window.new_identity_id = 0;
     window.completeTimer   = null;
     window.xSubmitting     = false;
+    window.autoSubmit      = false;
 
     setInterval(saveDraft, 10000);
 
@@ -715,6 +722,10 @@ function submitX()
                     location.href = '/!' + data.crossid;
                 } else {
                     switch (data.error) {
+                        case 'notlogin':
+                            autoSubmit = true;
+                            odof.user.status.doShowLoginDialog(null, afterLogin);
+                            break;
                         case 'notverified':
                             // @todo: inorder to gather X, user must be verified
                             // odof.exlibs.ExDialog.initialize('');
