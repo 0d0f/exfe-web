@@ -6,6 +6,7 @@ function setreadonly()
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
         //alert("pls login");
         var callBackFunc = function(args){
+            window.location.href=location_uri;
             //console.log(args);
         }
         odof.user.status.doShowLoginDialog(null, callBackFunc);
