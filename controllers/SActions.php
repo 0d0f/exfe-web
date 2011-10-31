@@ -772,36 +772,48 @@ class SActions extends ActionController
         if(strlen($crossToken)>32){
             $crossToken = substr($crossToken,0,32);
         }
-
-
-        $identityData=$this->getModelByName("identity");
-        $identity_id=$identityData->loginWithXToken($crossID, $crossToken);
-        $result="false";
-
-        $identity = $identityData->getIdentityById($identity_id);
-
-        if(intval($identity_id)>0)
+        $userData=$this->getModelByName("user");
+        $result=$userData->addUserByToken($crossID,$userPassword,$userDisplayName,$crossToken);
+        if($result["uid"]>0 &&$result["identity_id"]>0)
         {
-            $userData=$this->getModelByName("user");
-            $r=$userData->setPassword($identity_id,$userPassword,$userDisplayName);
-            if(intval($r)==1)
-            {
-                $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-            }
-        }
-        else if(intval($identity_id)==0)
-        {
-            $userData=$this->getModelByName("user");
-            $identity_id=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
-            if(intval($identity_id)>0)
-            {
-                $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-            }
+            $identity_id=$result["identity_id"];
+            $uid=$result["uid"];
+
+            $identityData=$this->getModelByName("identity");
+            $userid=$identityData->loginByIdentityId($identity_id,$uid);
+            if($userid>0)
+                return array("uid"=>$userid);
         }
 
-        return $result;
+        return false; 
+        #$identityData=$this->getModelByName("identity");
+        #$identity_id=$identityData->loginWithXToken($crossID, $crossToken);
+        #$result=false;
+
+        #$identity = $identityData->getIdentityById($identity_id);
+
+        #if(intval($identity_id)>0)
+        #{
+        #    $userData=$this->getModelByName("user");
+        #    $r=$userData->setPassword($identity_id,$userPassword,$userDisplayName);
+        #    if(intval($r)==1)
+        #    {
+        #        $result=true;
+        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
+        #    }
+        #}
+        #else if(intval($identity_id)==0)
+        #{
+        #    $userData=$this->getModelByName("user");
+        #    $identity_id=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
+        #    if(intval($identity_id)>0)
+        #    {
+        #        $result=true;
+        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
+        #    }
+        #}
+
+        #return $result;
         /*
         if($result=="false")
         {
@@ -888,11 +900,15 @@ class SActions extends ActionController
                 $crossToken = exPost("c_token");
                 $result = $this->doSetpwd($userPassword, $userDisplayName, $crossID, $crossToken);
 
-                if(!$result){
-                    $result["error"] = 1;
-                    $result["msg"] = "System Error.";
+                if($result==false){
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "System Error.";
                 }
-
+                else
+                {
+                    $returnData["uid"]=$result["uid"];
+                    $returnData["cross_id"]=int_to_base62($crossID);
+                }
             }
             header("Content-Type:application/json; charset=UTF-8");
             echo json_encode($returnData);

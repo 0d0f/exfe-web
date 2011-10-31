@@ -130,9 +130,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     dataType:"json",
                     data:postData,
                     success: function(JSONData){
-                        //console.log(JSONData);
                         if(!JSONData.error){
-                            window.location.href="/s/profile";
+                            if(actions == "setpwd")
+                            {
+                                window.location.href="/!"+JSONData.cross_id;
+                            }
+                            else
+                                window.location.href="/s/profile";
                         }else{
                             jQuery("#reset_pwd_error_msg").show();
                             setTimeout(hideErrorMsg, 3000);

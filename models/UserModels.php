@@ -132,6 +132,45 @@ class UserModels extends DataModel{
         return false;
         //$sql="update ";
     }
+    public function addUserByToken($cross_id,$password,$displayname,$token)
+    {
+        $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
+        $row=$this->getRow($sql);
+        $identity_id=intval($row["identity_id"]);
+        if($identity_id > 0)
+        {
+            $sql="select userid from user_identity where identityid=$identity_id";
+            $result=$this->getRow($sql);
+            if(intval($result["userid"])>0)
+            {
+                //user exist, set password
+            }
+            else
+            {
+                $password=md5($password.$this->salt);
+                $time=time();
+                $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
+                $result=$this->query($sql);
+                if(intval($result["insert_id"])>0)
+                {
+                    $uid=intval($result["insert_id"]);
+                    $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+                    $this->query($sql);
+                    $sql="select userid from user_identity where identityid=$identity_id";
+                    $result=$this->getRow($sql);
+                    if(intval($result["userid"])>0)
+                    {
+                        if($uid==intval($result["userid"]))
+                            return array("uid"=>$uid,"identity_id"=>$identity_id);
+                        return false;
+                    }
+                }
+    //add user
+            }
+        }
+        return false;
+
+    }
 
     public function setPasswordByToken($cross_id,$token,$password,$displayname)
     {
