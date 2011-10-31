@@ -347,6 +347,7 @@ function getHashFilePath($rootPath='', $fileName=''){
         return substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
     return $rootPath.substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
 }
+
 function autoLink($text) {
    $pattern = "/(((http[s]?:\/\/)|(www\.))(([a-z][-a-z0-9]+\.)?[a-z][-a-z0-9]+\.[a-z]+(\.[a-z]{2,2})?)\/?[a-z0-9._\/~#&=;%+?-]+[a-z0-9\/#=?]{1,1})/is";
    $text = preg_replace($pattern, " <a href='$1'>$1</a>", $text);
@@ -365,9 +366,9 @@ function cleanText($content)
 }
 
 /**
- * 打包一个Array数组
+ * 打包Array数组
  * @param $inArray
- * @return 打包后的一个字符串
+ * @return 打包后的字符串
 **/
 function packArray($inArray)
 {
@@ -375,7 +376,7 @@ function packArray($inArray)
 }
 
 /**
- * 解包一个Array数组
+ * 解包Array数组
  * @param $inString
  * @return 解包出来的Array数组
 **/
@@ -536,5 +537,4 @@ function exDecrypt($str, $key) {
  * 结束
  * ******************************************************
 **/
-
 
