@@ -156,7 +156,7 @@ class IdentityModels extends DataModel{
                 setcookie('id', NULL, -1,"/",".exfe.com");
                 setcookie('loginsequ', NULL,-1,"/",".exfe.com");
                 setcookie('logintoken',NULL,-1,"/",".exfe.com");
-                if($source == "")
+                if($source == ""){
                     header( 'Location: /s/login' ) ;
                 }
                 exit(0);
