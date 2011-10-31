@@ -14,7 +14,6 @@ $cross=$this->getVar("cross");
 $user=$this->getVar("user");
 $myidentity=$this->getVar("myidentity");
 $myrsvp=$this->getVar("myrsvp");
-$interested=$this->getVar("interested");
 
 $token_expired=$this->getVar("token_expired");
 $login_type=$this->getVar("login_type");
@@ -51,21 +50,21 @@ foreach($temp_lines as $s)
 }
 //=============================================================
 
-$place_line1 = $cross["place"]["line1"];
-$place_line2 = str_replace('\r', "\n", $cross["place"]["line2"]);
-$host_exfee=$cross["host_exfee"];
-$normal_exfee=$cross["normal_exfee"];
-$confirmed=0;
-$allinvitation=count($host_exfee)+count($normal_exfee);
-foreach($host_exfee as $exfee)
-{
-    if($exfee["state"]==INVITATION_YES)
-	$confirmed=$confirmed+1;
+$place_line1   = $cross['place']['line1'];
+$place_line2   = str_replace('\r', "\n", $cross['place']['line2']);
+$host_exfee    = $cross['host_exfee'];
+$normal_exfee  = $cross['normal_exfee'];
+$confirmed     = 0;
+$allinvitation = count($host_exfee) + count($normal_exfee);
+foreach($host_exfee as $exfee) {
+    if ($exfee['state'] == INVITATION_YES) {
+	$confirmed = $confirmed + 1;
+    }
 }
-foreach($normal_exfee as $exfee)
-{
-    if($exfee["state"]==INVITATION_YES)
-	$confirmed=$confirmed+1;
+foreach($normal_exfee as $exfee) {
+    if ($exfee["state"] == INVITATION_YES) {
+	$confirmed = $confirmed + 1;
+    }
 }
 
 $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
@@ -109,12 +108,12 @@ $token=$_GET["token"];
             <?php echo $display_desc; ?>
             <a id="desc_expand_btn" href="javascript:void(0);">Expand</a>
             </div>
-            <ul class="ynbtn" id="rsvp_options" <?php if($interested === 'yes') { echo 'style="display:none"'; } ?> >
+            <ul class="ynbtn" id="rsvp_options" <?php echo $myrsvp ? 'style="display:none"' : ''; ?> >
                 <li><a id='rsvp_yes' value="yes" href="javascript:void(0);" class="yes">Yes</a></li>
                 <li><a id='rsvp_no' value="no" href="javascript:void(0);" class="no">No</a></li>
                 <li><a id='rsvp_maybe' value="maybe" href="javascript:void(0);" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
             </ul>
-            <div id="rsvp_submitted" <?php if($interested!="yes") { echo 'style="display:none"'; } ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="javascript:void(0);" id="changersvp">Change?</a></div>
+            <div id="rsvp_submitted" <?php echo $myrsvp ? '' : 'style="display:none"'; ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="javascript:void(0);" id="changersvp">Change?</a></div>
 
             <div class="Conversation">
             <h3>Conversation</h3>
@@ -190,7 +189,7 @@ $token=$_GET["token"];
                         </span>
                     </div></div>
                     <p class="cs">
-                        <em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em>
+                        <em class="c<?php echo $exfee["state"]; ?>"></em>
                     </p>
                 </li>
                 <?php } ?>
@@ -211,7 +210,7 @@ $token=$_GET["token"];
                         </span>
                     </div></div>
                     <p class="cs">
-                        <em class="<?php echo $exfee["state"] === INVITATION_YES ? 'c1' : 'c2'; ?>"></em>
+                        <em class="c<?php echo $exfee["state"]; ?>"></em>
                     </p>
                 </li>
                 <?php } ?>

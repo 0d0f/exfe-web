@@ -137,10 +137,10 @@ pause this style
 .smcomment span.lb { background: url(/static/images/btn.png) no-repeat left -281px; color: #ffffff; padding: 3px; font-size: 11px; }
 .cs {float:right;width:20px;height:20px;}
 .cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
-.cs em.c1{background-position:-1px -82px}
-.cs em.c2{background-position:left -123px}
-/*.cs em.c3{background-position:-1px -82px}
-.cs em.c4{background-position:left -123px}*/
+.cs em.c0{background-position:left -123px}
+.cs em.c1{background-position:-1px -81px}
+.cs em.c2{background-position:left -165px}
+.cs em.c3{background-position:left -207px}
 
 
 /*浮层*/
@@ -947,12 +947,12 @@ b.r3{margin: 0px}
     display:block;
 }
 
-#check_all em.c1 {
-    background-position: -1px -82px;
+#check_all em.c0 {
+    background-position:-1px -81px;
 }
 
-#check_all em.c2 {
-    background-position: left -123px;
+#check_all em.c1 {
+    background-position:left -123px;
 }
 
 #exfee_edit {

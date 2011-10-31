@@ -520,8 +520,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * */
     ns.changeRsvp = function(target) {
         var intC = parseInt(target.className.substr(1)) + 1;
-     // target.className = 'c' + (intC > 4 ? 1 : intC);
-        target.className = 'c' + (intC > 2 ? 1 : intC);
+        target.className = 'c' + (intC > 2 ? 0 : intC);
         ns.summaryExfee();
         ns.updateCheckAll();
     };
@@ -531,12 +530,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * by Leask
      * */
     ns.updateCheckAll = function() {
-        if ($('.cs > .c2').length) {
+        if ($('.cs > .c1').length < $('.samlcommentlist > li').length) {
             $('#check_all > span').html('Check all');
-            $('#check_all > em').attr('class', 'c2');
+            $('#check_all > em').attr('class', 'c1');
         } else {
             $('#check_all > span').html('Uncheck all');
-            $('#check_all > em').attr('class', 'c1');
+            $('#check_all > em').attr('class', 'c0');
         }
         // submit
         jQuery.ajax({
@@ -556,11 +555,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * */
     ns.checkAll = function() {
         switch ($('#check_all > em')[0].className) {
-            case 'c1':
-                $('.cs > .c1').attr('class', 'c2');
+            case 'c0':
+                $('.cs > em').attr('class', 'c0');
                 break;
-            case 'c2':
-                $('.cs > .c2').attr('class', 'c1');
+            case 'c1':
+                $('.cs > em').attr('class', 'c1');
         }
         ns.updateCheckAll();
     };
@@ -577,7 +576,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 element_id     = $(obj).attr('id'),
                 item           = {exfee_name     : $(obj).attr('identityname'),
                                   exfee_identity : exfee_identity,
-                                  confirmed      : $('#' + element_id + ' > .cs > em')[0].className === 'c1' ? 1 : 0,
+                                  confirmed      : parseInt($('#' + element_id + ' > .cs > em')[0].className.substr(1)),
                                   identity_type  : odof.util.parseId(exfee_identity).type};
             if (exist) {
                 item.exfee_id  = $(obj).attr('identityid');

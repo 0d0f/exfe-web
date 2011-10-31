@@ -47,7 +47,7 @@ $(document).ready(function() {
     formatCross();
 
     window.submitting = false;
-    window.arrRvsp    = ['Interested', 'Accepted', 'Declined', 'Interested'];
+    window.arrRvsp    = ['', 'Accepted', 'Declined', 'Interested'];
 
     $('#rsvp_status').html(arrRvsp[myrsvp]);
 
@@ -68,9 +68,13 @@ $(document).ready(function() {
 
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
 
-        $("#rsvp_loading").ajaxStart(function(){ $(this).show(); });
-        $("#rsvp_loading").ajaxStop(function(){ $(this).hide(); });
-        var poststr = 'cross_id=' + cross_id + '&rsvp=' + $(this).attr('value')+'&token='+token;
+        $("#rsvp_loading").ajaxStart(function() {
+            $(this).show();
+        });
+        $("#rsvp_loading").ajaxStop(function() {
+            $(this).hide();
+        });
+        var poststr = 'cross_id=' + cross_id + '&rsvp=' + $(this).attr('value') + '&token=' + token;
 
         $.ajax({
             type: 'POST',
@@ -80,23 +84,22 @@ $(document).ready(function() {
             success: function(data) {
                 if (data != null) {
                     if (data.response.success === 'true') {
-                        if(data.response.token_expired=='1' && login_type=='token')
-                        {
-                            token_expired=true;
+                        if (data.response.token_expired == '1' && login_type == 'token') {
+                            token_expired = true;
                             setreadonly();
                         }
                         switch (data.response.state) {
                             case 'yes':
-                                $("li#exfee_" + data.response.identity_id + " > .cs > em").removeClass("c2");
-                                $("li#exfee_" + data.response.identity_id + " > .cs > em").addClass("c1");
+                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').removeClass('c2');
+                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').addClass('c1');
                                 if (myrsvp !== 1) {
                                     $('.bignb').html(parseInt($('.bignb').html()) + 1);
                                 }
                                 break;
                             case 'no':
                             case 'maybe':
-                                $("li#exfee_" + data.response.identity_id+" > .cs > em").removeClass("c1");
-                                $("li#exfee_" + data.response.identity_id+" > .cs > em").addClass("c2");
+                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').removeClass('c1');
+                                $('li#exfee_' + data.response.identity_id + ' > .cs > em').addClass('c2');
                                 if (myrsvp === 1) {
                                     $('.bignb').html(parseInt($('.bignb').html()) - 1);
                                 }
@@ -111,12 +114,12 @@ $(document).ready(function() {
                         //$('#login_hint').show();
                     }
                 }
-                $("#rsvp_loading").hide();
-                $("#rsvp_loading").unbind("ajaxStart ajaxStop");
+                $('#rsvp_loading').hide();
+                $('#rsvp_loading').unbind('ajaxStart ajaxStop');
             },
             error: function(data) {
-                $("#rsvp_loading").hide();
-                $("#rsvp_loading").unbind("ajaxStart ajaxStop");
+                $('#rsvp_loading').hide();
+                $('#rsvp_loading').unbind('ajaxStart ajaxStop');
             }
         });
         e.preventDefault();
