@@ -13,6 +13,8 @@ class Email_Job
         if($this->args['name']=="")
             $name=$this->args['external_identity'];
 
+        $icsstr=buildICS($this->args);
+
         $by_identity_name=$this->args["by_identity"]['name'];
         if($by_identity_name=="")
             $by_identity_name=$this->args["by_identity"]['external_identity'];
@@ -66,6 +68,7 @@ class Email_Job
         {
             $mail["date"]="Time";
             $mail["time"]="To be decided.";
+            $icsstr="";
         }
         else if($mail["time"]=="00:00:00")
             $mail["time"]="Anytime";
@@ -81,7 +84,6 @@ class Email_Job
 
         $body=$this->getMailBody($mail);
 
-        $icsstr=buildICS($this->args);
        
 
         if($email_connect=="")
