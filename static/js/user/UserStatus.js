@@ -29,6 +29,46 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
     };
+    ns.doShowVerificationDialog = function(dialogBoxID, args){
+        var html = odof.user.identification.showdialog("reg");
+
+        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string"){
+            document.getElementById(dialogBoxID).innerHTML = html;
+        }else{
+            odof.exlibs.ExDialog.initialize("identification", html);
+            var dialogBoxID = "identification_dialog";
+        }
+
+        jQuery("#identity_forgot_pwd_dialog").show();
+        jQuery("#f_identity_box").html(args.identity);
+        jQuery("#f_identity_box").css({"padding-top":"5px"});
+        jQuery("#f_identity_hidden").val(args.identity);
+
+        jQuery("#send_verification_btn").bind("click",function(){
+            var userIdentity = jQuery("#f_identity_hidden").val();
+            var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            if(userIdentity != "" && userIdentity.match(mailReg)){
+                jQuery("#submit_loading_btn").show();
+                jQuery.ajax({
+                    type: "GET",
+                    url: site_url+"/s/SendVerification?identity="+userIdentity,
+                    dataType:"json",
+                    success: function(JSONData){
+                        //jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
+                        //jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
+                        jQuery("#identity_forgot_pwd_info").html("Verification sent.");
+                        setTimeout(function(){
+                            jQuery("#identity_forgot_pwd_dialog").hide();
+                        }, 3000);
+                    },
+                    complete: function(){
+                        jQuery("#submit_loading_btn").hide();
+                    }
+                });
+            }
+        });
+
+    };
     ns.doShowResetPwdDialog =function(resetPwdCID){
         var html = odof.user.identification.showdialog("reset_pwd");
         if(typeof resetPwdCID != "undefined" && typeof resetPwdCID == "string") {
@@ -131,8 +171,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         url: site_url+"/s/SendVerification?identity="+userIdentity,
                         dataType:"json",
                         success: function(JSONData){
-                            jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
-                            jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
+                            //jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
+                            //jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
+                            jQuery("#identity_forgot_pwd_info").html("Verification sent.");
+                            setTimeout(function(){
+                                jQuery("#identity_forgot_pwd_dialog").hide();
+                            }, 3000);
                         },
                         complete: function(){
                             jQuery("#submit_loading_btn").hide();

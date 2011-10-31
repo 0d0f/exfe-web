@@ -12,13 +12,13 @@ class Emailresetpassword_Job
 
         global $email_connect;
         global $site_url;
-        $url=$site_url.'/s/resetpassword?token='.$token;
+        #$url=$site_url.'/s/resetpassword?token='.$token;
 
         #$url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
         #$link='<a href="'.$url.'">'.$url."</a>";
         #$body=$name." 激活帐号：" .$link."\r\n";
 
-        $url=$site_url.'/s/resetpassword?token='.$token;
+        $url=$site_url.'/s/resetPassword?token='.$token;
         $parturl=substr($url,0,45)."...";
         $mail["link"]=$url;
         $mail["partlink"]=$parturl;
