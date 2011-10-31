@@ -15,6 +15,11 @@
     if ($user["avatar_file_name"]=="")
         $user["avatar_file_name"]="default.png";
 ?>
+<script>
+    $(document).ready(function() {
+        document.title = 'EXFE - ' + $('#profile_name').html();
+    });
+</script>
 <div class="centerbg">
 <div class="edit_user">
     <div id="profile_avatar">

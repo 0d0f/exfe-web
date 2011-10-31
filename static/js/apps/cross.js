@@ -5,7 +5,9 @@ function setreadonly()
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
         //alert("pls login");
-        var callBackFunc = function(args){ //console.log(args); };
+        var callBackFunc = function(args){
+            //console.log(args);
+        }
         odof.user.status.doShowLoginDialog(null, callBackFunc);
     });
 }
@@ -32,6 +34,8 @@ function formatCross()
 $(document).ready(function() {
 
     $('#rsvp_loading').activity({segments: 8, steps: 3, opacity: 0.3, width: 4, space: 0, length: 5, color: '#0b0b0b', speed: 1.5});
+
+    document.title = 'EXFE - ' + $('#cross_titles').html();
 
     $('#formconversation').submit(function(e) {
         // alert("a");

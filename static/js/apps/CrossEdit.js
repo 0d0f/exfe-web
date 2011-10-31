@@ -178,6 +178,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#cross_titles_textarea").hide();
                 jQuery("#cross_titles_textarea").unbind("clickoutside");
                 jQuery("#cross_titles").show();
+                document.title = 'EXFE - ' + $('#cross_titles').html();
                 formatCross();
             }
         });

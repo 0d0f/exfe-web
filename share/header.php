@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=1024" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7, IE=9" />
     <link id="global-stylesheet" rel="stylesheet" href="/static/css/global.style.css" type="text/css" />
-    <title>EXFE.COM</title>
+    <title>www.exfe.com</title>
     <meta name="robots" content="index, follow" />
     <meta name="Keywords" content="EXFE,Gather" />
     <meta name="Description" content="EXFE.COM website" />
