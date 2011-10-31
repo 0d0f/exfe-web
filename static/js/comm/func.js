@@ -156,7 +156,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
     ns.getHashFilePath = function(rootPath, fileName){
-        if(fileName == "default.png"){ return rootPath; }
+        if(fileName == "default.png"){ return rootPath+"/web"; }
         return rootPath+"/"+fileName.substring(0,1)+"/"+fileName.substring(1,3);
     };
     /*

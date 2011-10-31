@@ -25,6 +25,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     <script type="text/javascript">
         var site_url = "<?php echo SITE_URL; ?>";
+        var img_url = "<?php echo IMG_URL; ?>";
     </script>
 
     <!--[if IE 6]>

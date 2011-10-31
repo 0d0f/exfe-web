@@ -302,10 +302,13 @@ function hashFileSavePath($savePath, $fileName=''){
     $savePath = strtok($savePath, "/");
     $hashDir = $savePath."/".substr($hashFileName, 0, 1);
     $hashSubDir = $hashDir."/".substr($hashFileName, 1, 2);
+    $webpath= "/".substr($hashFileName, 0, 1)."/".substr($hashFileName, 1, 2);
+
 
     $fileInfo = array(
         "fpath"      =>$hashSubDir,
         "fname"      =>$hashFileName,
+        "webpath"      =>$webpath,
         "error"      =>0
     );
 
@@ -337,9 +340,11 @@ function getHashFilePath($rootPath='', $fileName=''){
     if($fileName == ''){
         return false;
     }else if($fileName == "default.png"){
-        return $rootPath;
+        return "web";
     }
-    $rootPath = $rootPath == '' ? $rootPath : strtok($rootPath,"/")."/";
+    #$rootPath = $rootPath == '' ? $rootPath : strtok($rootPath,"/")."/";
+    if($rootPath == "")
+        return substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
     return $rootPath.substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
 }
 function autoLink($text) {

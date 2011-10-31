@@ -90,6 +90,7 @@ class FileUploaderHelper extends ActionController {
 
         $hashFileName = $hashFileInfo["fname"];
         $hashFilePath = $hashFileInfo["fpath"];
+        $hashWebPath = $hashFileInfo["webpath"];
         $ext = $pathinfo['extension'];
 
         if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
@@ -112,6 +113,7 @@ class FileUploaderHelper extends ActionController {
             $return_data['file_name'] = $hashFileName . '.' . $ext;
             $return_data['file_ext'] = $ext;
             $return_data['file_path'] = $hashFilePath;
+            $return_data['web_path'] = $hashWebPath;
             $return_data['msg'] = "Upload File success.";
         } else {
             $return_data['error'] = 1;
