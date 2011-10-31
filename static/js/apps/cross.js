@@ -121,10 +121,22 @@ $(document).ready(function() {
                         $('#rsvp_submitted').show();
                     } else {
                         var args = {"identity":external_identity};
-                        odof.user.status.doShowVerificationDialog(null, args);
+                        //odof.user.status.doShowVerificationDialog(null, args);
                         //alert("show login dialog.");
                         //$('#pwd_hint').html("<span>Error identity </span>");
                         //$('#login_hint').show();
+
+                        var callBackFunc = function(args){
+                            window.location.href=location_uri;
+                            //console.log(args);
+                        }
+                        if(show_idbox == "setpassword"){
+                            odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                            jQuery("#show_identity_box").html(external_identity);
+                        }else{
+                            odof.user.status.doShowLoginDialog(null, callBackFunc);
+                        }
+
                     }
                 }
                 $('#rsvp_loading').hide();
