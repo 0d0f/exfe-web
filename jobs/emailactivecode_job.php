@@ -22,9 +22,6 @@ class Emailactivecode_Job
         $mail["partlink"]=$parturl;
         $mail["name"]=$name;
         $mail["external_identity"]=$this->args['external_identity'];
-        #$link='<a href="'.$url.'">'.$url."</a>";
-        #$body=$name." 激活帐号：" .$link."\r\n";
-
 
         $body=$this->getMailBody($mail);
 

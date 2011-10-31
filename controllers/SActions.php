@@ -912,8 +912,10 @@ class SActions extends ActionController
                 );
 
                 $pakageToken = packArray($userInfo);
+                $name=$result["name"];
                 $args = array(
                          'external_identity' => $userIdentity,
+                         'name' => $name,
                          'token' => $pakageToken
                 );
                 //print_r($args);
