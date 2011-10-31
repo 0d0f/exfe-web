@@ -160,6 +160,11 @@ class UserModels extends DataModel{
                     $result=$this->getRow($sql);
                     if(intval($result["userid"])>0)
                     {
+                        if($displayname!="")
+                        {
+                            $sql="update identities set name='$displayname' where id=$identity_id";
+                            $this->query($sql);
+                        }
                         if($uid==intval($result["userid"]))
                             return array("uid"=>$uid,"identity_id"=>$identity_id);
                         return false;
