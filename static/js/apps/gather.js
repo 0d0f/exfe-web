@@ -48,6 +48,8 @@ function afterLogin(status) {
     if (status.user_status !== 1) {
         return;
     }
+    gTitlesDefaultText = 'Meet ' + status.user_name;
+    document.title = 'EXFE - ' + gTitlesDefaultText;
     $("#hostby").attr('disabled', true);
     var exfee_pv = [];
     $.ajax({
