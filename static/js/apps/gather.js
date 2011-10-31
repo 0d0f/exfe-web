@@ -384,11 +384,8 @@ $(document).ready(function() {
         identity();
     });
 
-    jQuery('.privacy').mousemove(function() {
-        jQuery('#gather_private_hint').show();
-    });
-    jQuery('.privacy').mouseout(function() {
-        jQuery('#gather_private_hint').hide();
+    $('.privacy').click(function() {
+        $('.privacy > .subinform').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
     });
 
     window.curCross = '';
@@ -595,12 +592,24 @@ function identity()
                 $('#exfee_pv > ul').each(function(intIndex) {
                     var li = $(this).children('li');
                     if (li.length < 4) {
-                        $(this).append(exfee_pv.shift());
+                        // @todo: remove this in next version
+                        if (($('.exfee_exist').length + $('.exfee_new').length) < 12) {
+                            $(this).append(exfee_pv.shift());
+                        } else {
+                            exfee_pv.shift();
+                            $('#exfee_warning').show();
+                        }
                         inserted = true;
                     }
                 });
                 if (!inserted) {
-                    $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
+                    // @todo: remove this in next version
+                    if (($('.exfee_exist').length + $('.exfee_new').length) < 12) {
+                        $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
+                    } else {
+                        exfee_pv.shift();
+                        $('#exfee_warning').show();
+                    }
                 }
             }
             $('#exfee_pv').css('width', 300 * $('#exfee_pv > ul').length + 'px');
@@ -698,9 +707,22 @@ function submitX()
         dataType : 'json',
         data     : cross,
         success  : function(data) {
-            if (data && data.success) {
-                location.href = '/!' + data.crossid;
+            if (data) {
+                if (data.success) {
+                    location.href = '/!' + data.crossid;
+                } else {
+                    switch (data.error) {
+                        case 'notverified':
+                            // @todo: inorder to gather X, user must be verified
+                            // odof.exlibs.ExDialog.initialize('');
+                    }
+                }
             }
+            var curTop = parseInt($('#gather_submit_blank').css('padding-top'));
+            $('#gather_submit_blank').css(
+                'padding-top',
+                (curTop ? curTop : (curTop + 20)) + 'px'
+            );
             $('#gather_submit_ajax').hide();
             $('#gather_failed_hint').show();
             $('#gather_x').removeClass('mouseover');
