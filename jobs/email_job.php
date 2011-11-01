@@ -24,8 +24,8 @@ class Email_Job
         $host_name=$host_identity["name"];
         $host_avatar=$host_identity["avatar_file_name"];
         $rsvpyeslink=$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'];
-    
-        
+
+
         $mail["exfe_title"]=$this->args['title'];
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
@@ -54,7 +54,7 @@ class Email_Job
                 $exfee_name=$invitation['name'];
                 if($exfee_name=="")
                     $exfee_name=$invitation['external_identity'];
-                $exfee_list.= "<tr> <td width='25' align='left'> <img width='20' height='20' src='$exfee_avatar'> </td> <td> <span class='exfe_mail_identity_name'>$exfee_name</span> </td> </tr>";
+                $exfee_list.= "<tr> <td width=\"25\" height=\"25\" align=\"left\" valign=\"top\"> <img width='20' height='20' src='$exfee_avatar'> </td> <td> <span class='exfe_mail_identity_name'>$exfee_name</span> </td> </tr>";
             }
         }
         $mail["exfee_list"]=$exfee_list;
@@ -84,7 +84,7 @@ class Email_Job
 
         $body=$this->getMailBody($mail);
 
-       
+
 
         if($email_connect=="")
             smtp_connect();
@@ -130,7 +130,7 @@ class Email_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));
