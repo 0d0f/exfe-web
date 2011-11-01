@@ -783,8 +783,8 @@ class SActions extends ActionController
         $result=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
         if(intval($result["uid"])>0 && intval($result["identity_id"])>0)
         {
-            $identity_id=$result["identity_id"];
-            $uid=$result["uid"];
+            $identity_id=intval($result["identity_id"]);
+            $uid=intval($result["uid"]);
 
             $identityData=$this->getModelByName("identity");
             $userid=$identityData->loginByIdentityId($identity_id,$uid);
@@ -854,12 +854,18 @@ class SActions extends ActionController
                 $userInfo = unpackArray($token);
                 $userId = $userInfo["user_id"];
                 $userToken = $userInfo["user_token"];
-
+                $userIdentity= $userInfo["user_identity"];
+                
                 $userDataObj = $this->getModelByName("user");
                 $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
                 if(!$result){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
+                }
+                else
+                {
+                    $identityData = $this->getModelByName("identity");
+                    $identityData->login($userIdentity,$userPassword,"true");
                 }
             }
             if($actions == "setpwd"){
