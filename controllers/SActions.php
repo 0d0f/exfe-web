@@ -785,62 +785,7 @@ class SActions extends ActionController
                 return array("uid"=>$userid);
         }
 
-
-        //setPasswordByToken($cross_id,$token,$password,$displayname)
-        //setPassword($identity_id,$password,$displayname)
-        #$result=$userData->addUserByToken($crossID,$userPassword,$userDisplayName,$crossToken);
-        #if($result["uid"]>0 &&$result["identity_id"]>0)
-        #{
-        #    $identity_id=$result["identity_id"];
-        #    $uid=$result["uid"];
-
-        #    $identityData=$this->getModelByName("identity");
-        #    $userid=$identityData->loginByIdentityId($identity_id,$uid);
-        #    if($userid>0)
-        #        return array("uid"=>$userid);
-        #}
-
         return false; 
-        #$identityData=$this->getModelByName("identity");
-        #$identity_id=$identityData->loginWithXToken($crossID, $crossToken);
-        #$result=false;
-
-        #$identity = $identityData->getIdentityById($identity_id);
-
-        #if(intval($identity_id)>0)
-        #{
-        #    $userData=$this->getModelByName("user");
-        #    $r=$userData->setPassword($identity_id,$userPassword,$userDisplayName);
-        #    if(intval($r)==1)
-        #    {
-        #        $result=true;
-        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-        #    }
-        #}
-        #else if(intval($identity_id)==0)
-        #{
-        #    $userData=$this->getModelByName("user");
-        #    $identity_id=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
-        #    if(intval($identity_id)>0)
-        #    {
-        #        $result=true;
-        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-        #    }
-        #}
-
-        #return $result;
-        /*
-        if($result=="false")
-        {
-            $responobj["response"]["error"]["identity_id"]=$identity_id;
-            $responobj["response"]["error"]["user_id"]=$user_id;
-            $responobj["response"]["error"]["setpassword"]=$r;
-            $responobj["response"]["error"]["action"]="login with $crossID and $crossToken";
-        }
-
-        echo json_encode($responobj);
-        exit();
-         */
     }
 
     /**

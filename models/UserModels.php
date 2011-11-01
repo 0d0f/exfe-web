@@ -184,6 +184,9 @@ class UserModels extends DataModel{
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
+        $tokenexpired=intval($row["tokenexpired"]);
+        if(tokenexpired==2)
+            return false;
         if($identity_id > 0)
         {
             $sql="select userid from user_identity where identityid=$identity_id";
