@@ -228,7 +228,7 @@ $(document).ready(function() {
         } else {
             $('#gather_place_bg').html(gPlaceDefaultText);
             $('#pv_place_line1').html('Somewhere');
-            $('#pv_place_line2').html('in San Francisco');
+            $('#pv_place_line2').html(''); // @todo: gps city here
         }
     });
     $('#g_place').focus(function () {
@@ -251,14 +251,14 @@ $(document).ready(function() {
     var gExfeeDefaultText = $('#gather_exfee_bg').html();
     $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
     $('#exfee').keyup(function(e) {
+        clearTimeout(completeTimer);
+        completeTimer = null;
         switch (e.keyCode ? e.keyCode : e.which) {
             case 13:
-                clearTimeout(completeTimer);
                 identity();
                 e.preventDefault();
                 break;
             case 27:
-                clearTimeout(completeTimer);
                 $('#exfee_complete').slideUp(50);
                 return;
         }
@@ -267,14 +267,11 @@ $(document).ready(function() {
             $('#gather_exfee_bg').html('');
             var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
             if (strKey) {
-                clearTimeout(completeTimer);
                 completeTimer = setTimeout("chkComplete('" + strKey + "')", 500);
             } else {
-                clearTimeout(completeTimer);
                 $('#exfee_complete').slideUp(50);
             }
         } else {
-            clearTimeout(completeTimer);
             $('#gather_exfee_bg').html(gExfeeDefaultText);
             $('#exfee_complete').slideUp(50);
         }
@@ -320,6 +317,7 @@ $(document).ready(function() {
                         break;
                     case 27:
                         clearTimeout(completeTimer);
+                        completeTimer = null;
                         $('#exfee_complete').slideUp(50);
                     case 8:
                         $('#exfee').focus();
@@ -340,6 +338,7 @@ $(document).ready(function() {
     });
     $('#exfee_complete').bind('clickoutside', function() {
         clearTimeout(completeTimer);
+        completeTimer = null;
         $('#exfee_complete').slideUp(50);
     });
 
@@ -488,13 +487,14 @@ function chkComplete(strKey)
                 }
                 strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
             }
-            if (strFound && completeTimer) {
+            if (strFound && completeTimer && $('#exfee').val().length) {
                 $('#exfee_complete').html(strFound);
                 $('#exfee_complete').slideDown(50);
             } else {
-                clearTimeout(completeTimer);
                 $('#exfee_complete').slideUp(50);
             }
+            clearTimeout(completeTimer);
+            completeTimer = null;
         }
     });
 }
@@ -529,6 +529,7 @@ function complete()
     arrInput.pop();
     $('#exfee').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
     clearTimeout(completeTimer);
+    completeTimer = null;
     $('#exfee_complete').slideUp(50);
     identity();
     $('#exfee').focus();

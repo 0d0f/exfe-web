@@ -295,6 +295,7 @@ class UserModels extends DataModel{
         $ts = time();
         $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}'";
         $result = $this->query($sql);
+        return $result;
     }
 
 }

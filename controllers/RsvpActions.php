@@ -109,10 +109,14 @@ class RSVPActions extends ActionController {
         $token=$_GET["token"];
         $state=INVITATION_YES;
 
-        $checkhelper=$this->getHelperByName("check");
-        $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-        if($check["allow"]!="false")
-        {
+        #$checkhelper=$this->getHelperByName("check");
+        #$check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
+        #if($check["allow"]!="false")
+        #{
+
+        $identity_id=$this->checkallow($cross_id,$token);
+
+        if (intval($identity_id) > 0) {
             $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
             if(intval($identity_id)==0)
                 $identity_id=$_SESSION["identity_id"];
@@ -128,23 +132,6 @@ class RSVPActions extends ActionController {
            header( "Location: /!$cross_id_base62" ) ;
 
         exit(0);
-        #$cross_id=intval($_GET["id"]);
-        #$token=$_GET["token"];
-
-        #$identity_id=$this->checkallow($cross_id,$token);
-
-        #if(intval($identity_id)>0)
-        #{
-        #    $state=INVITATION_YES;
-        #    $invitationData=$this->getModelByName("Invitation");
-        #    $invitationData->rsvp($cross_id,$identity_id,$state);
-        #    $cross_id_base62=int_to_base62($cross_id);
-        #}
-        #if($token!="")
-        #    header( "Location: /!$cross_id_base62?token=$token" ) ;
-        #else
-        #    header( "Location: /!$cross_id_base62" ) ;
-        #exit(0);
     }
 
     public function doNO()
@@ -158,10 +145,6 @@ class RSVPActions extends ActionController {
         $identity_id=$this->checkallow($cross_id,$token);
 
         if (intval($identity_id) > 0) {
-        //$checkhelper=$this->getHelperByName("check");
-        //$check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-        //if($check["allow"]!="false")
-        //{
             $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
             if(intval($identity_id) == 0) {
                 $identity_id=$_SESSION["identity_id"];
@@ -178,20 +161,6 @@ class RSVPActions extends ActionController {
         }
 
         exit(0);
-        #$identity_id=$this->checkallow($cross_id,$token);
-
-        #if(intval($identity_id)>0)
-        #{
-        #    $state=INVITATION_NO;
-        #    $invitationData=$this->getModelByName("Invitation");
-        #    $invitationData->rsvp($cross_id,$identity_id,$state);
-        #    $cross_id_base62=int_to_base62($cross_id);
-        #    if($token!="")
-        #        header( "Location: /!$cross_id_base62?token=$token" ) ;
-        #    else
-        #        header( "Location: /!$cross_id_base62" ) ;
-        #}
-        #exit(0);
     }
 
     public function doMaybe()
@@ -201,10 +170,13 @@ class RSVPActions extends ActionController {
         $token=$_GET["token"];
         $state=INVITATION_MAYBE;
 
-        $checkhelper=$this->getHelperByName("check");
-        $check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
-        if($check["allow"]!="false")
-        {
+        #$checkhelper=$this->getHelperByName("check");
+        #$check=$checkhelper->isAllow("rsvp","",array("cross_id"=>$cross_id,"token"=>$token));
+        #if($check["allow"]!="false")
+        #{
+        $identity_id=$this->checkallow($cross_id,$token);
+
+        if (intval($identity_id) > 0) {
             $identity_id=$_SESSION["tokenIdentity"]["identity_id"];
             if(intval($identity_id)==0)
                 $identity_id=$_SESSION["identity_id"];
