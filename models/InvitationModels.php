@@ -45,7 +45,7 @@ class InvitationModels extends DataModel
 
     public function rsvp($cross_id,$identity_id,$state)
     {
-        $sql="update invitations set state=$state ,tokenexpired=1 where identity_id=$identity_id and cross_id=$cross_id;";
+        $sql="update invitations set state=$state  where identity_id=$identity_id and cross_id=$cross_id;";
         $this->query($sql);
 
         //$sql="update invitations set  where cross_id=$cross_id and token='$token';";
@@ -219,9 +219,9 @@ class InvitationModels extends DataModel
     {
         $sql="select id,tokenexpired from invitations where token='$token' and  cross_id=$cross_id;";
         $row=$this->getRow($sql);
-        if($row["tokenexpired"]=="0")
+        if(intval($row["tokenexpired"])<2)
             return array("allow"=>"true","tokenexpired"=>"false");
-        else if ($row["tokenexpired"]=="1")
+        else if (intval($row["tokenexpired"])>=2)
             return array("allow"=>"true","tokenexpired"=>"true");
 
         return array("allow"=>"false");
