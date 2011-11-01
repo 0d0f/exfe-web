@@ -228,7 +228,7 @@ $(document).ready(function() {
         } else {
             $('#gather_place_bg').html(gPlaceDefaultText);
             $('#pv_place_line1').html('Somewhere');
-            $('#pv_place_line2').html('in San Francisco');
+            $('#pv_place_line2').html(''); // @todo: gps city here
         }
     });
     $('#g_place').focus(function () {

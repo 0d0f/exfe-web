@@ -31,10 +31,10 @@ class Email_Job
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
 
-        $mail["hint_title"]='Invitation from '.$host_name.".";
+        $mail["hint_title"]='Invitation from <span style="font-weight:bold;">'.$host_name."</span>.";
 
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
-            $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X.</span>";
+            $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X</span>.";
 
         if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
             $mail["rsvp_status"]="<tr> <td> <span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span> by <span class='exfe_mail_identity_name'>$by_identity_name</span> to attend.</span> </td> </tr>";

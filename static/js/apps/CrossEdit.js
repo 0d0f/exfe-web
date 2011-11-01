@@ -453,7 +453,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +         '</div>'
                                   +     '</div>'
                                   +     '<p class="cs">'
-                                  +         '<em class="c2"></em>'
+                                  +         '<em class="c0"></em>'
                                   +     '</p>'
                                   + '</li>';
                     }
@@ -486,7 +486,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +         '</div>'
                                   +     '</div>'
                                   +     '<p class="cs">'
-                                  +         '<em class="c2"></em>'
+                                  +         '<em class="c0"></em>'
                                   +     '</p>'
                                   + '</li>';
                     }
