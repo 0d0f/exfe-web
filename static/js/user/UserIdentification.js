@@ -308,14 +308,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
-                            jQuery('#hint').hide();
-                            jQuery('#retype').hide();
-                            jQuery('#displayname').hide();
-                            jQuery('#resetpwd').show();
-                            jQuery('#sign_in_btn').val("Sign In");
-                            jQuery('#logincheck').show();
-                            odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
-                            ns.actions = "sign_in";
+                            if(data.response.status == "veryifing"){
+                                jQuery("#identity_forgot_pwd_dialog").show();
+                                jQuery("#f_identity").val(jQuery("#identity").val());
+
+                                var userIdentity = jQuery("#f_identity").val();
+                                var userIdentity = jQuery("#identity").val();
+                                jQuery("#send_verification_btn").bind("click",function(){
+                                    odof.user.status.doSendVerification(userIdentity);
+                                });
+                                jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
+                            }else{
+                                jQuery('#hint').hide();
+                                jQuery('#retype').hide();
+                                jQuery('#displayname').hide();
+                                jQuery('#resetpwd').show();
+                                jQuery('#sign_in_btn').val("Sign In");
+                                jQuery('#logincheck').show();
+                                odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
+                                ns.actions = "sign_in";
+                            }
                         }
                         jQuery('#sign_up_btn').hide();
                         jQuery('#sign_in_btn').attr('disabled', false);
