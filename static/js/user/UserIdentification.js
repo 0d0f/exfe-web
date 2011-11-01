@@ -172,8 +172,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</ul>"
                  + "</form>";
         } else if(type=="reset_pwd"){
-            title = "Reset Password";
-            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Reset Password</div>"
+            title = "Set Password";
+            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Set Password</div>"
                  + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please set password to keep track of RSVP status and engage in.</div>";
             form = "<ul>"
                  + "<li><label>Identity:</label>"
