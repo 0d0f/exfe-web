@@ -644,7 +644,7 @@ class SActions extends ActionController
         setcookie('loginsequ', NULL,-1,"/",".exfe.com");
         setcookie('logintoken',NULL,-1,"/",".exfe.com");
 
-        header("location:".$_SERVER["HTTP_REFERER"]);
+        header('location:/');
 
     }
 
@@ -792,12 +792,12 @@ class SActions extends ActionController
                 return array("uid"=>$userid);
         }
 
-        return false; 
+        return false;
     }
 
     /**
      * 重新设置密码。
-     * 
+     *
      **/
     public function doResetPassword()
     {
@@ -884,7 +884,7 @@ class SActions extends ActionController
 
     /**
      * 忘记密码发送验证邮件
-     * 
+     *
      **/
     public function doSendVerification()
     {
