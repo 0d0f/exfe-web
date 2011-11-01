@@ -144,10 +144,12 @@ class UserModels extends DataModel{
             if(intval($result["userid"])>0)
             {
                 //user exist, set password
+                return array("uid"=>intval($result["userid"]),"identity_id"=>$identity_id);
             }
             else
             {
-                $password=md5($password.$this->salt);
+                if($password!="")
+                    $password=md5($password.$this->salt);
                 $time=time();
                 $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
                 $result=$this->query($sql);
@@ -162,7 +164,7 @@ class UserModels extends DataModel{
                     {
                         if($displayname!="")
                         {
-                            $sql="update identities set name='$displayname' where id=$identity_id";
+                            $sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
                             $this->query($sql);
                         }
                         if($uid==intval($result["userid"]))
@@ -196,7 +198,7 @@ class UserModels extends DataModel{
                 {
                     $sql="update identities set name='$displayname' where id=$identity_id";
                     $result=$this->query($sql);
-                    return true;
+                    return array("uid"=>$userid,"identity_id"=>$identity_id);
                 }
             }
         }

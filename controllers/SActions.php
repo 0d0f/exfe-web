@@ -773,8 +773,8 @@ class SActions extends ActionController
             $crossToken = substr($crossToken,0,32);
         }
         $userData=$this->getModelByName("user");
-        $result=$userData->addUserByToken($crossID,$userPassword,$userDisplayName,$crossToken);
-        if($result["uid"]>0 &&$result["identity_id"]>0)
+        $result=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
+        if(intval($result["uid"])>0 && intval($result["identity_id"])>0)
         {
             $identity_id=$result["identity_id"];
             $uid=$result["uid"];
@@ -784,6 +784,21 @@ class SActions extends ActionController
             if($userid>0)
                 return array("uid"=>$userid);
         }
+
+
+        //setPasswordByToken($cross_id,$token,$password,$displayname)
+        //setPassword($identity_id,$password,$displayname)
+        #$result=$userData->addUserByToken($crossID,$userPassword,$userDisplayName,$crossToken);
+        #if($result["uid"]>0 &&$result["identity_id"]>0)
+        #{
+        #    $identity_id=$result["identity_id"];
+        #    $uid=$result["uid"];
+
+        #    $identityData=$this->getModelByName("identity");
+        #    $userid=$identityData->loginByIdentityId($identity_id,$uid);
+        #    if($userid>0)
+        #        return array("uid"=>$userid);
+        #}
 
         return false; 
         #$identityData=$this->getModelByName("identity");

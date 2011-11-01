@@ -330,6 +330,22 @@ class IdentityModels extends DataModel{
             if($row["tokenexpired"]=="1")
                 $tokenSession["token_expired"]="true";
             $_SESSION["tokenIdentity"]=$tokenSession;
+            if($_SESSION["identity_id"]!=$_SESSION["tokenIdentity"]["identity_id"])
+            {
+                unset($_SESSION["userid"]);
+                unset($_SESSION["identity_id"]);
+                unset($_SESSION["identity"]);
+
+                unset($_COOKIE["uid"]);
+                unset($_COOKIE["id"]);
+                unset($_COOKIE["loginsequ"]);
+                unset($_COOKIE["logintoken"]);
+
+                setcookie('uid', NULL, -1,"/",".exfe.com");
+                setcookie('id', NULL, -1,"/",".exfe.com");
+                setcookie('loginsequ', NULL,-1,"/",".exfe.com");
+                setcookie('logintoken',NULL,-1,"/",".exfe.com");
+            }
         }
         return $identity_id;
     }
