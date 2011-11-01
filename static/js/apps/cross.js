@@ -1,48 +1,95 @@
-function setreadonly()
-{
-    $('textarea[name=comment]').attr("disabled","disabled");
-    $('textarea[name=comment]').val("pls login");
-    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
-    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
-        //alert("pls login");
-        var callBackFunc = function(args){
-            window.location.href=location_uri;
-            //console.log(args);
+/**
+ * @Description:    Cross index
+ * @LastModified:   Nov 1, 2011
+ * @CopyRights:     http://www.exfe.com
+**/
+
+var moduleNameSpace = "odof.cross.index";
+var ns = odof.util.initNameSpace(moduleNameSpace);
+
+(function(ns){
+
+    ns.cross_id = cross_id;
+    ns.btn_val = null;
+    ns.token = token;
+
+    ns.setreadonly = function() {
+        //$('textarea[name=comment]').attr("disabled","disabled");
+        //$('textarea[name=comment]').val("pls login");
+        $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
+        $('#rsvp_yes , #rsvp_no , #rsvp_maybe, textarea[name=comment]').click(function(e) {
+            ns.btn_val = $(this).attr('value');
+            var callBackFunc = function(args){
+                var poststr = {
+                    cross_id:odof.cross.index.cross_id,
+                    rsvp:odof.cross.index.btn_val
+                }
+                $.ajax({
+                    type: 'POST',
+                    data: poststr,
+                    url: site_url + '/rsvp/save',
+                    dataType: 'json',
+                    success: function(data) { }
+                });
+                window.location.href=location_uri;
+                //console.log(args);
+            }
+            if(show_idbox == "setpassword" && token_expired == 'false'){
+                odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                jQuery("#show_identity_box").html(external_identity);
+            }else{
+                odof.user.status.doShowLoginDialog(null, callBackFunc);
+            }
+        });
+
+        $('textarea[name=comment]').unbind("click");
+        $('textarea[name=comment]').blur();
+        $('textarea[name=comment]').click(function(e) {
+            var callBackFunc = function(args){
+                window.location.href=location_uri;
+            }
+            if(show_idbox == "setpassword"){
+                odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                jQuery("#show_identity_box").html(external_identity);
+            }else{
+                odof.user.status.doShowLoginDialog(null, callBackFunc);
+            }
+        });
+
+    };
+
+    ns.formatCross = function() {
+        // format title
+        if ($('#cross_titles').hasClass('pv_title_double') && $('#cross_titles').height() < 112) {
+            $('#cross_titles').addClass('pv_title_normal').removeClass('pv_title_double');
         }
-        if(show_idbox == "setpassword"){
-            odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-            jQuery("#show_identity_box").html(external_identity);
-
-
-            //odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
-        }else{
-            odof.user.status.doShowLoginDialog(null, callBackFunc);
+        if ($('#cross_titles').hasClass('pv_title_normal') && $('#cross_titles').height() > 70) {
+            $('#cross_titles').addClass('pv_title_double').removeClass('pv_title_normal');
         }
-    });
-}
 
-function formatCross()
-{
-    // format title
-    if ($('#cross_titles').hasClass('pv_title_double') && $('#cross_titles').height() < 112) {
-        $('#cross_titles').addClass('pv_title_normal').removeClass('pv_title_double');
-    }
-    if ($('#cross_titles').hasClass('pv_title_normal') && $('#cross_titles').height() > 70) {
-        $('#cross_titles').addClass('pv_title_double').removeClass('pv_title_normal');
-    }
+        // format address
+        if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
+            $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
+        }
+        if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
+            $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
+        }
+    };
+})(ns);
 
-    // format address
-    if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
-        $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
-    }
-    if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
-        $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
-    }
-}
 
 $(document).ready(function() {
 
-    $('#rsvp_loading').activity({segments: 8, steps: 3, opacity: 0.3, width: 4, space: 0, length: 5, color: '#0b0b0b', speed: 1.5});
+    $('#rsvp_loading').activity({
+        segments: 8,
+        steps: 3,
+        opacity: 0.3,
+        width: 4,
+        space: 0,
+        length: 5,
+        color: '#0b0b0b',
+        speed: 1.5
+    });
 
     document.title = 'EXFE - ' + $('#cross_titles').html();
 
@@ -55,7 +102,7 @@ $(document).ready(function() {
         $('#rsvp_submitted').hide();
     });
 
-    formatCross();
+    odof.cross.index.formatCross();
 
     window.submitting = false;
     window.arrRvsp    = ['', 'Accepted', 'Declined', 'Interested'];
@@ -97,7 +144,7 @@ $(document).ready(function() {
                     if (data.response.success === 'true') {
                         if (data.response.token_expired == '1' && login_type == 'token') {
                             token_expired = true;
-                            setreadonly();
+                            odof.cross.index.setreadonly();
                         }
                         var objChkbox = $('li#exfee_' + data.response.identity_id + ' > .cs > em');
                         objChkbox.removeClass('c0');
@@ -199,7 +246,6 @@ $(document).ready(function() {
     });
 
     if(token_expired == 'true') {
-        setreadonly();
+        odof.cross.index.setreadonly();
     }
-
 });

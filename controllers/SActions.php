@@ -486,7 +486,14 @@ class SActions extends ActionController
         //$responobj["meta"]["errorDetail"]="invalid_auth";
 
         if($exist!==FALSE)
+        {
+            if(intval($exist["status"])==3)
+                $responobj["response"]["status"]="connected";
+            else
+                $responobj["response"]["status"]="veryifing";
+
             $responobj["response"]["identity_exist"]="true";
+        }
         else
             $responobj["response"]["identity_exist"]="false";
         echo json_encode($responobj);
@@ -773,8 +780,8 @@ class SActions extends ActionController
             $crossToken = substr($crossToken,0,32);
         }
         $userData=$this->getModelByName("user");
-        $result=$userData->addUserByToken($crossID,$userPassword,$userDisplayName,$crossToken);
-        if($result["uid"]>0 &&$result["identity_id"]>0)
+        $result=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
+        if(intval($result["uid"])>0 && intval($result["identity_id"])>0)
         {
             $identity_id=$result["identity_id"];
             $uid=$result["uid"];
@@ -786,46 +793,6 @@ class SActions extends ActionController
         }
 
         return false; 
-        #$identityData=$this->getModelByName("identity");
-        #$identity_id=$identityData->loginWithXToken($crossID, $crossToken);
-        #$result=false;
-
-        #$identity = $identityData->getIdentityById($identity_id);
-
-        #if(intval($identity_id)>0)
-        #{
-        #    $userData=$this->getModelByName("user");
-        #    $r=$userData->setPassword($identity_id,$userPassword,$userDisplayName);
-        #    if(intval($r)==1)
-        #    {
-        #        $result=true;
-        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-        #    }
-        #}
-        #else if(intval($identity_id)==0)
-        #{
-        #    $userData=$this->getModelByName("user");
-        #    $identity_id=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
-        #    if(intval($identity_id)>0)
-        #    {
-        #        $result=true;
-        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-        #    }
-        #}
-
-        #return $result;
-        /*
-        if($result=="false")
-        {
-            $responobj["response"]["error"]["identity_id"]=$identity_id;
-            $responobj["response"]["error"]["user_id"]=$user_id;
-            $responobj["response"]["error"]["setpassword"]=$r;
-            $responobj["response"]["error"]["action"]="login with $crossID and $crossToken";
-        }
-
-        echo json_encode($responobj);
-        exit();
-         */
     }
 
     /**

@@ -88,10 +88,10 @@ class IdentityModels extends DataModel{
     public function ifIdentityExist($external_identity)
     {
         $external_identity=mysql_real_escape_string($external_identity);
-        $sql="select id from  identities where external_identity='$external_identity'";
+        $sql="select id,status from  identities where external_identity='$external_identity'";
         $row=$this->getRow($sql);
         if (intval($row["id"])>0)
-            return  intval($row["id"]);
+            return  array("id"=>intval($row["id"]),"status"=>intval($row["status"]));
         else
             return FALSE;
     }
@@ -288,11 +288,17 @@ class IdentityModels extends DataModel{
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
+        $tokenexpired=intval($row["tokenexpired"]);
+
         if($identity_id > 0)
         {
 
-            #$sql="update invitations set tokenexpired=1 where cross_id=$cross_id and token='$token';";
-            #$this->query($sql);
+            if($tokenexpired<2)
+            {
+                $tokenexpired=$tokenexpired+1;
+                $sql="update invitations set tokenexpired=$tokenexpired where cross_id=$cross_id and token='$token';";
+                $this->query($sql);
+            }
 
             $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
             $identityrow=$this->getRow($sql);
@@ -327,9 +333,25 @@ class IdentityModels extends DataModel{
             $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
             $tokenSession["identity"]=$identity;
             $tokenSession["auth_type"]="mailtoken";
-            if($row["tokenexpired"]=="1")
+            if($row["tokenexpired"]=="2")
                 $tokenSession["token_expired"]="true";
             $_SESSION["tokenIdentity"]=$tokenSession;
+            if($_SESSION["identity_id"]!=$_SESSION["tokenIdentity"]["identity_id"])
+            {
+                unset($_SESSION["userid"]);
+                unset($_SESSION["identity_id"]);
+                unset($_SESSION["identity"]);
+
+                unset($_COOKIE["uid"]);
+                unset($_COOKIE["id"]);
+                unset($_COOKIE["loginsequ"]);
+                unset($_COOKIE["logintoken"]);
+
+                setcookie('uid', NULL, -1,"/",".exfe.com");
+                setcookie('id', NULL, -1,"/",".exfe.com");
+                setcookie('loginsequ', NULL,-1,"/",".exfe.com");
+                setcookie('logintoken',NULL,-1,"/",".exfe.com");
+            }
         }
         return $identity_id;
     }

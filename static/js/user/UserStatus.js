@@ -14,20 +14,52 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * */
     ns.callBackFunc = null;
     ns.checkUserLogin = function(){
-        var getURI = site_url+"/s/checkUserLogin";
-        jQuery.ajax({
-            type: "GET",
-            url: getURI,
-            dataType:"json",
-            success: function(JSONData){
-                odof.user.status.showLoginStatus(JSONData);
-                try{
-                    if(odof.user.status.callBackFunc){
-                        odof.user.status.callBackFunc(JSONData);
-                    }
-                }catch(e){ /*pass*/ }
+        //专门针对Cross页面，不需要去检查
+        if(typeof login_type != "undefined" && login_type == "token"){
+            var navMenu = '<div class="global_sign_in_btn">'
+                            + '<a id="cross_identity_btn" href="javascript:void(0);">'
+                            + external_identity
+                            + '</a>'
+                            + '</div>';
+            jQuery("#global_user_info").html(navMenu);
+
+            //If not login page
+            if(typeof show_idbox != "undefined" && show_idbox == "login"){
+                jQuery("#cross_identity_btn").bind("click",function(){
+                    ns.doShowLoginDialog();
+                });
             }
-        });
+            if(typeof show_idbox != "undefined" && show_idbox == "setpassword"){
+                if(token_expired == 'false'){
+                    jQuery("#cross_identity_btn").bind("click",function(){
+                        odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                        jQuery("#show_identity_box").html(external_identity);
+                    });
+                }else{
+                    jQuery("#cross_identity_btn").bind("click",function(){
+                        var args = {"identity":external_identity};
+                        odof.user.status.doShowVerificationDialog(null, args);
+                    });
+                }
+            }
+
+        }else{//正常检查是否登录。
+            var getURI = site_url+"/s/checkUserLogin";
+            jQuery.ajax({
+                type: "GET",
+                url: getURI,
+                dataType:"json",
+                success: function(JSONData){
+                    odof.user.status.showLoginStatus(JSONData);
+                    try{
+                        if(odof.user.status.callBackFunc){
+                            odof.user.status.callBackFunc(JSONData);
+                        }
+                    }catch(e){ /*pass*/ }
+                }
+            });
+
+        }
     };
     ns.doShowVerificationDialog = function(dialogBoxID, args){
         var html = odof.user.identification.showdialog("reg");
