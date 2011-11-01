@@ -345,7 +345,7 @@ function getHashFilePath($rootPath='', $fileName=''){
     #$rootPath = $rootPath == '' ? $rootPath : strtok($rootPath,"/")."/";
     if($rootPath == "")
         return substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
-    return $rootPath.substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
+    return $rootPath."/".substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
 }
 
 function autoLink($text) {
