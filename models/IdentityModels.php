@@ -88,10 +88,10 @@ class IdentityModels extends DataModel{
     public function ifIdentityExist($external_identity)
     {
         $external_identity=mysql_real_escape_string($external_identity);
-        $sql="select id from  identities where external_identity='$external_identity'";
+        $sql="select id,status from  identities where external_identity='$external_identity'";
         $row=$this->getRow($sql);
         if (intval($row["id"])>0)
-            return  intval($row["id"]);
+            return  array("id"=>intval($row["id"]),"status"=>intval($row["status"]));
         else
             return FALSE;
     }

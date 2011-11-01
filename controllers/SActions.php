@@ -486,7 +486,14 @@ class SActions extends ActionController
         //$responobj["meta"]["errorDetail"]="invalid_auth";
 
         if($exist!==FALSE)
+        {
+            if(intval($exist["status"])==3)
+                $responobj["response"]["status"]="connected";
+            else
+                $responobj["response"]["status"]="veryifing";
+
             $responobj["response"]["identity_exist"]="true";
+        }
         else
             $responobj["response"]["identity_exist"]="false";
         echo json_encode($responobj);
