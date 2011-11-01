@@ -180,12 +180,15 @@ class XActions extends ActionController
         {
             $identity_id=$identityData->loginWithXToken($cross_id, $token);
             if($_SESSION["identity_id"]==$identity_id)
+            {
                 $check["type"]="session";
 
-            $status=$identityData->checkIdentityStatus($identity_id);
-            if($status!=STATUS_CONNECTED)
-            {
-                $identityData->setRelation($identity_id,STATUS_CONNECTED);
+                $status=$identityData->checkIdentityStatus($identity_id);
+                if($status!=STATUS_CONNECTED)
+                {
+                    $identityData->setRelation($identity_id,STATUS_CONNECTED);
+                }
+                header('Location: /!'.$_GET["id"]);
             }
         }
         else if($check["type"]=="session" || $check["type"]=="cookie")

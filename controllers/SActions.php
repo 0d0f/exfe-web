@@ -767,69 +767,65 @@ class SActions extends ActionController
         echo json_encode($responobj);
         exit();
     }
-    public function doSetpwd()
+    public function doSetpwd($userPassword, $userDisplayName, $crossID, $crossToken)
     {
-        $responobj["meta"]["code"]=200;
-#$cross_id=base62_to_int($_POST["cross_id"]);
-        $cross_id=intval($_POST["cross_id"]);
-        $token=$_POST["token"];
-        if(strlen($token)>32)
-            $token=substr($token,0,32);
-        $password=$_POST["password"];
-        $displayname=$_POST["displayname"];
-        if($password=="")
-        {
-            $responobj["response"]["success"]=$result;
-            $responobj["response"]["error"]="must set password";
-            echo json_encode($responobj);
-            exit();
+        if(strlen($crossToken)>32){
+            $crossToken = substr($crossToken,0,32);
         }
-        if($displayname=="")
+        $userData=$this->getModelByName("user");
+        $result=$userData->addUserByToken($crossID,$userPassword,$userDisplayName,$crossToken);
+        if($result["uid"]>0 &&$result["identity_id"]>0)
         {
-            $responobj["response"]["success"]=$result;
-            $responobj["response"]["error"]="must set display name";
-            echo json_encode($responobj);
-            exit();
+            $identity_id=$result["identity_id"];
+            $uid=$result["uid"];
+
+            $identityData=$this->getModelByName("identity");
+            $userid=$identityData->loginByIdentityId($identity_id,$uid);
+            if($userid>0)
+                return array("uid"=>$userid);
         }
 
-        $identityData=$this->getModelByName("identity");
-        $identity_id=$identityData->loginWithXToken($cross_id, $token);
-        $result="false";
+        return false; 
+        #$identityData=$this->getModelByName("identity");
+        #$identity_id=$identityData->loginWithXToken($crossID, $crossToken);
+        #$result=false;
 
-        $identity = $identityData->getIdentityById($identity_id);
+        #$identity = $identityData->getIdentityById($identity_id);
 
-        if(intval($identity_id)>0)
-        {
-            $userData=$this->getModelByName("user");
-            $r=$userData->setPassword($identity_id,$password,$displayname);
-            if(intval($r)==1)
-            {
-                $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-            }
-        }
-        else if(intval($identity_id)==0)
-        {
-            $userData=$this->getModelByName("user");
-            $identity_id=$userData->setPasswordByToken($cross_id,$token,$password,$displayname);
-            if(intval($identity_id)>0)
-            {
-                $result="true";
-                $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
-            }
-        }
+        #if(intval($identity_id)>0)
+        #{
+        #    $userData=$this->getModelByName("user");
+        #    $r=$userData->setPassword($identity_id,$userPassword,$userDisplayName);
+        #    if(intval($r)==1)
+        #    {
+        #        $result=true;
+        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
+        #    }
+        #}
+        #else if(intval($identity_id)==0)
+        #{
+        #    $userData=$this->getModelByName("user");
+        #    $identity_id=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
+        #    if(intval($identity_id)>0)
+        #    {
+        #        $result=true;
+        #        $userid=$identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
+        #    }
+        #}
 
-        $responobj["response"]["success"]=$result;
+        #return $result;
+        /*
         if($result=="false")
         {
             $responobj["response"]["error"]["identity_id"]=$identity_id;
             $responobj["response"]["error"]["user_id"]=$user_id;
             $responobj["response"]["error"]["setpassword"]=$r;
-            $responobj["response"]["error"]["action"]="login with $cross_id and $token";
+            $responobj["response"]["error"]["action"]="login with $crossID and $crossToken";
         }
 
         echo json_encode($responobj);
         exit();
+         */
     }
 
     /**
@@ -862,23 +858,57 @@ class SActions extends ActionController
                     header("location:/x/forbidden");
                 }
             }
-        }else{ //do update password.
+        }else{
+            //do update password.
             $returnData = array(
                 "error" => 0,
                 "msg"   =>""
             );
             $userPassword = exPost("u_pwd");
             $userDisplayName = mysql_real_escape_string(exPost("u_dname"));
-            $token = exPost("u_token");
-            $userInfo = unpackArray($token);
-            $userId = $userInfo["user_id"];
-            $userToken = $userInfo["user_token"];
-
-            $userDataObj = $this->getModelByName("user");
-            $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
-            if(!$result){
+            if($userPassword == ""){
                 $result["error"] = 1;
-                $result["msg"] = "System Error.";
+                $result["msg"] = "must set password";
+                header("Content-Type:application/json; charset=UTF-8");
+                echo json_encode($returnData);
+                exit();
+            }
+            if($userDisplayName == ""){
+                $result["error"] = 1;
+                $result["msg"] = "must set display name";
+                header("Content-Type:application/json; charset=UTF-8");
+                echo json_encode($returnData);
+                exit();
+            }
+
+
+            if($actions == "resetpwd"){
+                $token = exPost("u_token");
+                $userInfo = unpackArray($token);
+                $userId = $userInfo["user_id"];
+                $userToken = $userInfo["user_token"];
+
+                $userDataObj = $this->getModelByName("user");
+                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
+                if(!$result){
+                    $result["error"] = 1;
+                    $result["msg"] = "System Error.";
+                }
+            }
+            if($actions == "setpwd"){
+                $crossID = exPost("c_id");
+                $crossToken = exPost("c_token");
+                $result = $this->doSetpwd($userPassword, $userDisplayName, $crossID, $crossToken);
+
+                if($result==false){
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "System Error.";
+                }
+                else
+                {
+                    $returnData["uid"]=$result["uid"];
+                    $returnData["cross_id"]=int_to_base62($crossID);
+                }
             }
             header("Content-Type:application/json; charset=UTF-8");
             echo json_encode($returnData);

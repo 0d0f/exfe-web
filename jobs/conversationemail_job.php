@@ -8,6 +8,7 @@ class Conversationemail_Job
     public function multi_perform($args)
     {
         global $site_url;
+        global $img_url;
         global $email_connect;
 
         $mails=$this->getMailBodyWithMultiObjects($args);
@@ -96,7 +97,7 @@ class Conversationemail_Job
                         $mutelink=$post["mutelink"];
                         $link=$post["link"];
                         $create_at=humanDateTime($post["create_at"]);
-                        $avartar=$site_url."/".getHashFilePath("eimgs",$avatar_file_name)."/80_80_".$avatar_file_name;
+                        $avartar=$img_url."/".getHashFilePath("",$avatar_file_name)."/80_80_".$avatar_file_name;
                   //      $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img  class='exfe_mail_avatar' src='".$avartar."'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                     }

@@ -281,16 +281,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return html;
     };
 
-    ns.identityInputBoxActions = function(){
+    ns.identityInputBoxActions = function(userIdentity){
         jQuery(".notice").hide();
-        var identityVal = jQuery('#identity').val();
+        if(typeof userIdentity == "undefined"){
+            var userIdentity = jQuery('#identity').val();
+        }
         //added by handaoliang, check email address
         var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-        if(identityVal != "" && identityVal.match(mailReg)){
+        if(userIdentity != "" && userIdentity.match(mailReg)){
             jQuery("#identity_verify_loading").show();
             jQuery.ajax({
                 type: "GET",
-                url: site_url+"/s/IfIdentityExist?identity="+identityVal,
+                url: site_url+"/s/IfIdentityExist?identity="+userIdentity,
                 dataType:"json",
                 success: function(data){
                     if(data!=null) {

@@ -69,14 +69,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
 
     };
-    ns.doShowResetPwdDialog =function(resetPwdCID){
+    ns.doShowResetPwdDialog =function(resetPwdCID, actions){
         var html = odof.user.identification.showdialog("reset_pwd");
         if(typeof resetPwdCID != "undefined" && typeof resetPwdCID == "string") {
             jQuery("#"+resetPwdCID).html(html);
+        }else{
+            odof.exlibs.ExDialog.initialize("identification", html);
+            var dialogBoxID = "identification_dialog";
         }
+
         jQuery("#identification_pwd_ic").bind("click", function(){
             odof.comm.func.displayPassword('identification_pwd');
         });
+
+        if(typeof actions == "undefined"){
+            actions = "resetpwd";
+        }
 
         jQuery("#submit_reset_password").bind("click", function(){
             var userPassword = jQuery("#identification_pwd").val();
@@ -101,20 +109,34 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Display name Error.");
             }else{
-                jQuery.ajax({
-                    type: "POST",
-                    url: site_url+"/s/resetPassword?act=doreset",
-                    dataType:"json",
-                    data:{
+                var postData = {
+                    jrand:Math.round(Math.random()*10000000000),
+                    u_pwd:userPassword,
+                    u_dname:userDisplayName,
+                    u_token:userToken
+                };
+                if(actions == "setpwd"){
+                    postData = {
                         jrand:Math.round(Math.random()*10000000000),
                         u_pwd:userPassword,
                         u_dname:userDisplayName,
-                        u_token:userToken
-                    },
+                        c_id:cross_id,
+                        c_token:token
+                    };
+                }
+                jQuery.ajax({
+                    type: "POST",
+                    url: site_url+"/s/resetPassword?act="+actions,
+                    dataType:"json",
+                    data:postData,
                     success: function(JSONData){
-                        //console.log(JSONData);
                         if(!JSONData.error){
-                            window.location.href="/s/profile";
+                            if(actions == "setpwd")
+                            {
+                                window.location.href="/!"+JSONData.cross_id;
+                            }
+                            else
+                                window.location.href="/s/profile";
                         }else{
                             jQuery("#reset_pwd_error_msg").show();
                             setTimeout(hideErrorMsg, 3000);
@@ -137,16 +159,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.comm.func.showRePassword('identification_newpwd', 'identification_renewpwd');
         });
     };
-    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc){
+    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity){
         var html = odof.user.identification.showdialog("reg");
         if(typeof callBackFunc != "undefined"){
             ns.callBackFunc = callBackFunc;
         }
+
         if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string"){
             document.getElementById(dialogBoxID).innerHTML = html;
         }else{
             odof.exlibs.ExDialog.initialize("identification", html);
             var dialogBoxID = "identification_dialog";
+        }
+
+        //如果传入了identity，那么要检测是注册还是登录。
+        if(typeof userIdentity != "undefined" && userIdentity != ""){
+            odof.user.identification.identityInputBoxActions(userIdentity);
         }
 
         jQuery("#resetpwd").bind("click", function(){
@@ -242,7 +270,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if(typeof showIdentificationDialog == "undefined"){
                 jQuery("#home_user_login_btn").bind("click",function(){
                     ns.doShowLoginDialog();
-                    
                 });
             }else{
                 jQuery("#home_user_login_btn").click(function() {
