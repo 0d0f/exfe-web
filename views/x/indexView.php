@@ -16,6 +16,8 @@ $myidentity=$this->getVar("myidentity");
 $myrsvp=$this->getVar("myrsvp");
 
 $token_expired=$this->getVar("token_expired");
+if($token_expired=="")
+    $token_expired="false";
 $login_type=$this->getVar("login_type");
 
 echo "<script type='text/javascript'>\r\n";
