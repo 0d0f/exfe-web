@@ -26,8 +26,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         */
         if(token != ""){
             if(show_idbox == 'setpassword'){//如果要求弹设置密码窗口。
-                odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                jQuery("#show_identity_box").html(external_identity);
+                if(token_expired == "true"){
+                    var args = {"identity":external_identity};
+                    odof.user.status.doShowVerificationDialog(null, args);
+                    jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
+                }else{
+                    odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                    jQuery("#show_identity_box").html(external_identity);
+                }
             }else if(show_idbox == "login"){
                 odof.user.status.doShowLoginDialog(null, callBackFunc);
             }else{
