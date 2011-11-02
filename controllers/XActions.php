@@ -122,11 +122,12 @@ class XActions extends ActionController
                 echo json_encode($return_data);
                 exit();
             }
-
+            
+            $crossDesc = strip_tags(exPost('cdesc'));
             $cross = array(
                 'id'          => $cross_id,
                 'title'       => mysql_real_escape_string($_POST['ctitle']),
-                'desc'        => mysql_real_escape_string($_POST['cdesc']),
+                'desc'        => mysql_real_escape_string($crossDesc),
                 'start_time'  => $_POST['ctime'],
                 'place_line1' => mysql_real_escape_string($_POST['cplaceline1']),
                 'place_line2' => mysql_real_escape_string($_POST['cplaceline2']),
