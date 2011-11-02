@@ -312,11 +312,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 jQuery("#identity_forgot_pwd_dialog").show();
                                 jQuery("#f_identity").val(jQuery("#identity").val());
 
-                                var userIdentity = jQuery("#f_identity").val();
                                 var userIdentity = jQuery("#identity").val();
 
                                 jQuery("#send_verification_btn").unbind("click");
                                 jQuery("#send_verification_btn").bind("click",function(){
+                                    jQuery("#send_verification_btn").attr("disabled",false);
+                                    jQuery("#send_verification_btn").css({"cursor":"pointer"});
                                     odof.user.status.doSendVerification(userIdentity);
                                 });
                                 jQuery("#cancel_verification_btn").bind("click", function(){
