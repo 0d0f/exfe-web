@@ -289,7 +289,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var userIdentity = jQuery('#identity').val();
         }
         //added by handaoliang, check email address
-        var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         if(userIdentity != "" && userIdentity.match(mailReg)){
             jQuery("#identity_verify_loading").show();
             jQuery.ajax({
@@ -314,8 +314,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                                 var userIdentity = jQuery("#f_identity").val();
                                 var userIdentity = jQuery("#identity").val();
+
+                                jQuery("#send_verification_btn").unbind("click");
                                 jQuery("#send_verification_btn").bind("click",function(){
                                     odof.user.status.doSendVerification(userIdentity);
+                                });
+                                jQuery("#cancel_verification_btn").bind("click", function(){
+                                    jQuery("#identity_forgot_pwd_dialog").hide();
                                 });
                                 jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
                             }else{
@@ -356,6 +361,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.bindDialogEvent = function(type) {
         if(type=="reg") {
             jQuery('#identity').keyup(function() {
+                ns.identityInputBoxActions();
+            });
+            jQuery('#identification_pwd').focus(function() {
                 ns.identityInputBoxActions();
             });
 

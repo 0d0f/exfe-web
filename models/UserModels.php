@@ -13,6 +13,56 @@ class UserModels extends DataModel{
             return intval($result["insert_id"]);
     }
 
+    public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
+    {
+
+        $external_identity=mysql_real_escape_string($external_identity);
+        $displayname=mysql_real_escape_string($displayname);
+
+
+        if($identity_id==0 && $external_identity!="")
+        {
+            $sql="select id from identities where external_identity='$external_identity';";
+            $result=$this->getRow($sql);
+            $identity_id=$result["id"];
+        }
+
+        $sql="select userid from user_identity where identityid=$identity_id";
+        
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $uid=intval($result["userid"]);
+            return array("uid"=>$uid,"identity_id"=>$identity_id);
+        }
+        else
+        {
+                $time=time();
+                $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
+                $result=$this->query($sql);
+                if(intval($result["insert_id"])>0)
+                {
+                    $uid=intval($result["insert_id"]);
+                    $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+                    $this->query($sql);
+                    $sql="select userid from user_identity where identityid=$identity_id";
+                    $result=$this->getRow($sql);
+                    if(intval($result["userid"])>0)
+                    {
+                        if($displayname!="")
+                        {
+                            $sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                            $this->query($sql);
+                        }
+                        if($uid==intval($result["userid"]))
+                            return array("uid"=>$uid,"identity_id"=>$identity_id);
+                        return false;
+                    }
+                }
+        }
+
+    }
+
     public function getUser($userid)
     {
         $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
@@ -270,6 +320,14 @@ class UserModels extends DataModel{
         $row=$this->getRow($sql);
         $uid=intval($row["uid"]);
         $name=$row["name"];
+        if($uid==0)
+        {
+            $result=$this->addUserAndSetRelation($password,$displayname,0,$external_identity);
+            var_dump($result);
+            if($result!=false)
+                $uid=intval($result["uid"]);
+        }
+
         if($uid>0)
         {
             $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));

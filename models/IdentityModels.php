@@ -300,8 +300,14 @@ class IdentityModels extends DataModel{
                 $this->query($sql);
             }
 
-            $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
+            $sql="select name,status,avatar_file_name,bio from identities where id=$identity_id limit 1";
             $identityrow=$this->getRow($sql);
+            if($identityrow["status"]!=STATUS_CONNECTED)
+            {
+                $sql="update identities set status=3 where id=$identity_id;";
+                $this->query($sql);
+            }
+
             if($identityrow["name"]=="" || $identityrow["avatar_file_name"]=="" || $identityrow["bio"]=="")
             {
                 $sql="select userid from user_identity where identityid=$identity_id";
