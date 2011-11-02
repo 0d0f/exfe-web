@@ -306,6 +306,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#logincheck').hide();
                             jQuery('#sign_in_btn').val("Sign Up");
                             odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
+                            jQuery('#identification_pwd').unbind("focus");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "veryifing"){
@@ -334,6 +335,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 jQuery('#logincheck').show();
                                 odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
                                 ns.actions = "sign_in";
+
+                                //还是得绑定Password框的Onfocus事件。
+                                jQuery('#identification_pwd').focus(function() {
+                                    odof.user.identification.identityInputBoxActions();
+                                });
                             }
                         }
                         jQuery('#sign_up_btn').hide();
