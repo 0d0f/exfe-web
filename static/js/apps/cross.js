@@ -231,7 +231,6 @@ $(document).ready(function() {
     });
 
     if(token_expired == 'true') {
-
         //$('textarea[name=comment]').attr("disabled","disabled");
         //$('textarea[name=comment]').val("pls login");
         $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
@@ -257,14 +256,21 @@ $(document).ready(function() {
         });
 
         $('textarea[name=comment], #cross_identity_btn').unbind("click");
-        $('textarea[name=comment], #cross_identity_btn').blur();
+        $('textarea[name=comment]').blur();
         $('textarea[name=comment], #cross_identity_btn').click(function(e) {
             var clickCallBackFunc = function(args){
                 window.location.href = odof.cross.index.location_uri;
             };
             odof.cross.index.setreadonly(clickCallBackFunc);
         });
-
-
+    }
+    if(token_expired == 'false') {
+        $('#cross_identity_btn').unbind("click");
+        $('#cross_identity_btn').click(function(e) {
+            var clickCallBackFunc = function(args){
+                window.location.href = odof.cross.index.location_uri;
+            };
+            odof.cross.index.setreadonly(clickCallBackFunc);
+        });
     }
 });
