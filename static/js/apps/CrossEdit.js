@@ -34,11 +34,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //bind event for cross place container
         jQuery("#cross_place_area").addClass("enable_click");
         jQuery("#cross_place_area").bind("click",odof.cross.edit.bindEditPlaceEvent);
-//        $('#cross_place_area').html(
-//            $('#cross_desc_textarea').val()
-//          ? $('#cross_desc_textarea').val()
-//          : 'Write some description for your exfe. (optional)'
-//        );
+        $('#pv_place_line1').html(
+            $('#place_content').val()
+          ? $('#place_content').val()
+          : 'Somewhere'
+        );
 
         jQuery("#cross_desc").show();
         jQuery("#cross_desc_short").hide();
@@ -251,7 +251,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         var strPlace = $('#place_content').val(),
                             arrPlace = strPlace.split(/\r|\n|\r\n/),
                             prvPlace = [],
-                            strLine1 = '',
+                            strLine1 = 'Somewhere',
                             strLine2 = '';
                         if (strPlace) {
                             arrPlace.forEach(function(item, i) {
