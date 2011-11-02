@@ -323,7 +323,6 @@ class UserModels extends DataModel{
         if($uid==0)
         {
             $result=$this->addUserAndSetRelation($password,$displayname,0,$external_identity);
-            var_dump($result);
             if($result!=false)
                 $uid=intval($result["uid"]);
         }
@@ -348,11 +347,22 @@ class UserModels extends DataModel{
         return $row;
     }
 
-    public function doResetUserPassword($userPwd, $userName, $userID, $userToken){
+    public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
         $passWord=md5($userPwd.$this->salt);
         $ts = time();
         $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}'";
         $result = $this->query($sql);
+
+        $external_identity=mysql_real_escape_string($external_identity);
+        $sql="select id,status from identities where external_identity='$external_identity' limit 1";
+        $identityrow=$this->getRow($sql);
+        $identity_id=intval($identityrow["id"]);
+        if($identityrow["status"]!=STATUS_CONNECTED && $identity_id>0)
+        {
+            $sql="update identities set status=3 where id=$identity_id;";
+            $this->query($sql);
+        }
+
         return $result;
     }
 

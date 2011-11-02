@@ -862,7 +862,7 @@ class SActions extends ActionController
                 $userIdentity= $userInfo["user_identity"];
 
                 $userDataObj = $this->getModelByName("user");
-                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
+                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
                 if(!$result){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
