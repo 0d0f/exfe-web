@@ -472,7 +472,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +     'invited="false">'
                                   +     '<button type="button" class="exfee_del"></button>'
                                   +     '<p class="pic20">'
-                                  +         '<img src="'+img_url+'/80_80_default.png" alt="">'
+                                  +         '<img src="'+img_url+'/web/80_80_default.png" alt="">'
                                   +     '</p>'
                                   +     '<div class="smcomment">'
                                   +         '<div>'

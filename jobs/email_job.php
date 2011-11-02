@@ -17,6 +17,7 @@ class Email_Job
         $icsstr=buildICS($this->args);
 
         $by_identity_name=$this->args["by_identity"]['name'];
+        $by_identity_id=$this->args["by_identity"]['id'];
         if($by_identity_name=="")
             $by_identity_name=$this->args["by_identity"]['external_identity'];
 
@@ -37,7 +38,11 @@ class Email_Job
             $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X</span>.";
 
         if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
-            $mail["rsvp_status"]="<tr> <td> <span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span> by <span class='exfe_mail_identity_name'>$by_identity_name</span> to attend.</span> </td> </tr>";
+        {
+            $mail["rsvp_status"]="<tr> <td> <span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span>";
+            if($this->args["by_identity"]['external_identity']!=$this->args['external_identity'])
+                $mail["rsvp_status"].=" by <span class='exfe_mail_identity_name'>$by_identity_name</span> to attend.</span> </td> </tr>";
+        }
         else
             $mail["rsvp_accept"]="<a style='float: left; display: block; text-decoration: none; border: 1px solid #bebebe; background-color: #add1dc; color: #000000; padding: 5px 30px 5px 30px; margin-left: 30px;' alt='Accept' href='$rsvpyeslink'>Accept</a>";
 

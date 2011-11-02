@@ -52,9 +52,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return true;
 
     };
-    ns.showRePassword = function(pwdBoxID, rePwdBoxID, type){
-        if(typeof type == "undefined"){ type = "visible"; }
-
+    ns.initRePassword = function(pwdBoxID, rePwdBoxID){
         var pwdBoxJID = "#"+pwdBoxID;
         var displayPwdBoxJID = "#"+pwdBoxID+"_a";
         var btnJID = "#"+pwdBoxID+"_ic";
@@ -63,15 +61,59 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var rePwdBoxLiJID = "#"+rePwdBoxID+"_li";
 
         //initialize
-        if(type == "visible"){
-            jQuery(btnJID).unbind("click");
-            if(jQuery(btnJID).hasClass("ic3")){
-                jQuery(btnJID).removeClass("ic3");
-            }
+        jQuery(btnJID).unbind("click");
+        if(jQuery(btnJID).hasClass("ic3")){
+            jQuery(btnJID).removeClass("ic3");
+        }
+        jQuery(btnJID).addClass("ic2");
+        jQuery(pwdBoxJID).hide();
+        jQuery(displayPwdBoxJID).show();
+
+        jQuery(displayPwdBoxJID).unbind("keyup");
+        jQuery(displayPwdBoxJID).bind("keyup", function(){
+            var curPwd = jQuery(displayPwdBoxJID).val();
+            jQuery(pwdBoxJID).val(curPwd);
+            jQuery(rePwdBoxJID).val(curPwd);
+        });
+
+        jQuery(rePwdBoxLiJID).hide();
+
+        //绑定事件。
+        jQuery(btnJID).bind("click",function(){
+            ns.showRePassword(pwdBoxID, rePwdBoxID);
+        });
+
+    };
+    ns.showRePassword = function(pwdBoxID, rePwdBoxID){
+        var pwdBoxJID = "#"+pwdBoxID;
+        var displayPwdBoxJID = "#"+pwdBoxID+"_a";
+        var btnJID = "#"+pwdBoxID+"_ic";
+
+        var rePwdBoxJID = "#"+rePwdBoxID;
+        var rePwdBoxLiJID = "#"+rePwdBoxID+"_li";
+
+        //do effect.*****************
+        if(jQuery(btnJID).hasClass("ic2")){
+            jQuery(btnJID).removeClass("ic2");
+            jQuery(btnJID).addClass("ic3");
+            jQuery(pwdBoxJID).show();
+            jQuery(displayPwdBoxJID).hide();
+
+            jQuery(rePwdBoxLiJID).show();
+            jQuery(displayPwdBoxJID).unbind("keyup");
+            jQuery(rePwdBoxJID).val('');
+        }else{
+            jQuery(btnJID).removeClass("ic3");
             jQuery(btnJID).addClass("ic2");
             jQuery(pwdBoxJID).hide();
             jQuery(displayPwdBoxJID).show();
 
+            //初始化一下。
+            var curPwd = jQuery(pwdBoxJID).val();
+            jQuery(displayPwdBoxJID).val(curPwd);
+            jQuery(rePwdBoxJID).val(curPwd);
+
+            //绑定事件到可见的框。
             jQuery(displayPwdBoxJID).unbind("keyup");
             jQuery(displayPwdBoxJID).bind("keyup", function(){
                 var curPwd = jQuery(displayPwdBoxJID).val();
@@ -82,22 +124,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery(rePwdBoxLiJID).hide();
         }
 
-        //绑定事件。
-        jQuery(btnJID).bind("click",function(){
-            ns.displayPassword(pwdBoxID);
-
-            if(jQuery(btnJID).hasClass("ic2")){
-                jQuery(rePwdBoxLiJID).hide();
-                jQuery(displayPwdBoxJID).bind("keyup", function(){
-                    jQuery(rePwdBoxJID).val(jQuery(displayPwdBoxJID).val());
-                });
-            }else{
-                jQuery(rePwdBoxLiJID).show();
-                jQuery(displayPwdBoxJID).unbind("keyup");
-                jQuery(rePwdBoxJID).val('');
-            }
-
-        });
     };
     ns.removeRePassword = function(pwdBoxID, rePwdBoxID){
 

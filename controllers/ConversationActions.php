@@ -57,18 +57,19 @@ class ConversationActions extends ActionController {
 
                     $userData=$this->getModelByName("user");
                     $user=$userData->getUserProfileByIdentityId($identity_id);
+                    $userIdentity=humanIdentity($identity,$user);
 
                     $responobj["response"]["comment"]=$comment;
                     $responobj["response"]["created_at"]=RelativeTime(time());
                     $responobj["response"]["cross_id"]=$cross_id;
-                    if($identity["name"]=="")
-                        $identity["name"]=$user["name"];
-                    if($identity["bio"]=="")
-                        $identity["bio"]=$user["bio"];
-                    if($identity["avatar_file_name"]=="")
-                        $identity["avatar_file_name"]=$user["avatar_file_name"];
+                    //if($identity["name"]=="")
+                    //    $identity["name"]=$user["name"];
+                    //if($identity["bio"]=="")
+                    //    $identity["bio"]=$user["bio"];
+                    //if($identity["avatar_file_name"]=="")
+                    //    $identity["avatar_file_name"]=$user["avatar_file_name"];
 
-                    $responobj["response"]["identity"]=$identity;
+                    $responobj["response"]["identity"]=$userIdentity;
                     $responobj["response"]["success"]="true";
                 }
             }
