@@ -188,7 +188,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#cross_titles_textarea").unbind("clickoutside");
                 jQuery("#cross_titles").show();
                 document.title = 'EXFE - ' + $('#cross_titles').html();
-                formatCross();
+                odof.cross.index.formatCross();
             }
         });
     };
@@ -258,7 +258,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         });
                         $('#pv_place_line1').html(prvPlace.shift());
                         $('#pv_place_line2').html(prvPlace.join('<br />'));
-                        formatCross();
+                        odof.cross.index.formatCross();
                     });
                     jQuery("#cross_place_bubble").show();
                 }
