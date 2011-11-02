@@ -96,6 +96,11 @@ class XActions extends ActionController
         $cross_id = base62_to_int($_GET['id']);
         $return_data = array('error' => 0, 'msg' => '');
 
+        if (!$identity_id && !$_SESSION["tokenIdentity"]) {
+            echo json_encode(array('success' => false));
+            return;
+        }
+
         if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
             $old_cross=$crossDataObj->getCross($cross_id);
             #if($old_cross)
