@@ -165,7 +165,7 @@ $token=$_GET["token"];
                 <p id="pv_place_line2" class="tm"><?php echo str_replace('\r', '<br>', $cross["place"]["line2"]); ?></p>
             </div>
             <div id="exfee_area" class="exfee">
-                <div class="feetop"><h3>exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
+                <div class="feetop"><h3>Exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
                 <div id="exfee_edit_box">
                     <div id="exfee_submit" title="Invite!"></div>
                     <input type="text" id="exfee_input" value="Enter attendees' information"><div id="identity_ajax"></div>
