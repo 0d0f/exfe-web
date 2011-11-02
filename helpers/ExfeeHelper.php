@@ -262,7 +262,10 @@ class ExfeeHelper extends ActionController
 
                 $identityData=$this->getModelByName("identity");
                 $exfee_identity=$identityData->getIdentityById($host_identity_id);
-                $exfee_identity=humanIdentity($exfee_identity,NULL);
+                $userData=$this->getModelByName("user");
+                $user=$userData->getUserProfileByIdentityId($host_identity_id);
+
+                $exfee_identity=humanIdentity($exfee_identity,$user);
                 //$mail["exfee_name"]=$exfee_identity["name"];
                 $mail["identity"]=$exfee_identity;
 
