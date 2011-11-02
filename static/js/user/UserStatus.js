@@ -65,18 +65,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         var userIdentity = jQuery("#f_identity_hidden").val();
         jQuery("#send_verification_btn").bind("click",function(){
-            ns.doSendVerification(userIdentity);
+            ns.doSendEmail(userIdentity);
         });
 
     };
-    ns.doSendVerification = function(userIdentity){
+
+    ns.doSendEmail = function(userIdentity, doActions){
+        var actionURI = site_url+"/s/sendActiveEmail";
+        if(typeof doActions != "undefined" && doActions == 'verification'){
+            actionURI = site_url+"/s/SendVerification";
+        }
         var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         if(userIdentity != "" && userIdentity.match(mailReg)){
+            var postData = {identity:userIdentity};
             jQuery("#submit_loading_btn").show();
             jQuery.ajax({
-                type: "GET",
-                url: site_url+"/s/SendVerification?identity="+userIdentity,
-                dataType:"json",
+                type: "POST",
+                url: actionURI,
+                dataType: "json",
+                data: postData,
                 success: function(JSONData){
                     //jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
                     //jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
@@ -220,7 +227,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
             var userIdentity = jQuery("#f_identity").val();
             jQuery("#send_verification_btn").bind("click",function(){
-                ns.doSendVerification(userIdentity);
+                ns.doSendEmail(userIdentity,"verification");
             });
         });
         jQuery("#sign_up_btn").bind("click", function(){

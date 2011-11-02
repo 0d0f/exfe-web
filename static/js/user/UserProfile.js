@@ -38,21 +38,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.sentActiveEmail=function (external_identity,button){
 
-        var poststr="external_identity="+external_identity;
+        var poststr="identity="+external_identity;
         $.ajax({
         type: "POST",
         data: poststr,
         url: site_url+"/s/sendActiveEmail",
         dataType:"json",
-        success: function(data){
-            if(data.response.success!=null)
+        success: function(JSONData){
+            if(!JSONData.error)
             {
-                var result=data.response.success;
-                if(result=="true")
-                {
-                    button.text("sent");
-                    button.unbind("click");
-                }
+                button.text("sent");
+                button.unbind("click");
             }
         }
         });

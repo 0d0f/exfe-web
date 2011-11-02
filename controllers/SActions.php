@@ -903,7 +903,7 @@ class SActions extends ActionController
             "error" => 0,
             "msg"   =>""
         );
-        $userIdentity = exGet("identity");
+        $userIdentity = exPost("identity");
         if($userIdentity == ""){
             $returnData["error"] = 1;
             $returnData["msg"] = "User Identity is empty";
@@ -981,7 +981,12 @@ class SActions extends ActionController
     }
 
     public function doSendActiveEmail() {
-        $responobj["response"]["success"]="false";
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>"",
+            "identity"  =>""
+        );
+
         if(intval($_SESSION["userid"])>0)
         {
             $external_identity=$_POST["external_identity"];
@@ -1005,16 +1010,18 @@ class SActions extends ActionController
                 {
                     $helper=$this->getHelperByName("identity");
                     $jobId=$helper->sentActiveEmail($args);
-                    if($jobId!="")
+                    if($jobId == "")
                     {
-                        $responobj["response"]["success"]="true";
-                        $responobj["response"]["external_identity"]=$r["external_identity"];
+                        $returnData["error"] = 1;
+                        $returnData["msg"] = "Send mail error.";
+                        $returnData["identity"] = $r["external_identity"];
                     }
                 }
             }
 
         }
-        echo json_encode($responobj);
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
     }
 }
 
