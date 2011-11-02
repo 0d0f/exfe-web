@@ -70,7 +70,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
     ns.doSendVerification = function(userIdentity){
-        var mailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         if(userIdentity != "" && userIdentity.match(mailReg)){
             jQuery("#submit_loading_btn").show();
             jQuery.ajax({
