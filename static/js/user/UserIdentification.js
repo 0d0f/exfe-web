@@ -320,7 +320,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                                 jQuery("#send_verification_btn").unbind("click");
                                 jQuery("#send_verification_btn").bind("click",function(){
-                                    odof.user.status.doSendEmail(userIdentity);
+                                    odof.user.status.doSendEmail(userIdentity,"verification");
                                 });
                                 jQuery("#cancel_verification_btn").bind("click", function(){
                                     jQuery("#identity_forgot_pwd_dialog").hide();

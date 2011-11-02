@@ -862,7 +862,7 @@ class SActions extends ActionController
                 $userIdentity= $userInfo["user_identity"];
 
                 $userDataObj = $this->getModelByName("user");
-                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
+                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
                 if(!$result){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
@@ -987,11 +987,13 @@ class SActions extends ActionController
             "identity"  =>""
         );
 
-        if(intval($_SESSION["userid"])>0)
-        {
-            $external_identity=$_POST["external_identity"];
+        #if(intval($_SESSION["userid"])>0)
+        #{
+            $external_identity=$_POST["identity"];
             $identityData= $this->getModelByName("identity");
-            $identity_id=$identityData->ifIdentityBelongsUser($external_identity,$_SESSION["userid"]);
+            $identity=$identityData->getIdentity($external_identity);
+            $identity_id=intval($identity["id"]);
+            #$identity_id=$identityData->ifIdentityBelongsUser($external_identity,$_SESSION["userid"]);
             if($identity_id>0)
             {
                 $r=$identityData->reActiveIdentity($identity_id);
@@ -1019,7 +1021,7 @@ class SActions extends ActionController
                 }
             }
 
-        }
+        #}
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
     }

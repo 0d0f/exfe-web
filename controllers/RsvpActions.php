@@ -218,11 +218,11 @@ class RSVPActions extends ActionController {
         $invitationData = $this->getModelByName('Invitation');
 
         if (intval($_SESSION['userid']) > 0
-         && ($identity_id = intval($_SESSION["identity_id"])) > 0
-         && ($cross_id = base62_to_int($_GET["xid"]))
+         && ($identity_id = intval($_SESSION['identity_id'])) > 0
+         && ($cross_id = base62_to_int($_GET['xid']))
          && ($result = $invitationData->rsvp($cross_id, $identity_id, INVITATION_YES))
          &&  $result['success']) {
-            header("Location: /s/profile");
+            header('Location: /s/profile');
         } else {
             header('Location: /s/login');
         }
