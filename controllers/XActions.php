@@ -103,16 +103,19 @@ class XActions extends ActionController
 
         if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
             $old_cross=$crossDataObj->getCross($cross_id);
-            #if($old_cross)
-            #{
-            #    $place_id=$old_cross["place_id"];
-            #    if(intval($place_id)>0)
-            #    {
-            #        $placeData=$this->getModelByName("place");
-            #        $place=$placeData->getPlace($place_id);
-            #        $old_cross["place"]=$place;
-            #    }
-            #}
+            if($old_cross)
+            {
+                $place_id=$old_cross["place_id"];
+                if(intval($place_id)>0)
+                {
+                    $placeData=$this->getModelByName("place");
+                    $place=$placeData->getPlace($place_id);
+
+                    $old_cross["place_line1"]=$place["line1"];
+                    $old_cross["place_line2"]=$place["line2"];
+                    unset($old_cross["place_id"]);
+                }
+            }
 
             if (!array_key_exists('ctitle', $_POST) || trim($_POST['ctitle']) == ''){
                 $return_data['error'] = 1;
@@ -122,11 +125,12 @@ class XActions extends ActionController
                 echo json_encode($return_data);
                 exit();
             }
-
+            
+            $crossDesc = strip_tags(exPost('cdesc'));
             $cross = array(
                 'id'          => $cross_id,
                 'title'       => mysql_real_escape_string($_POST['ctitle']),
-                'desc'        => mysql_real_escape_string($_POST['cdesc']),
+                'desc'        => mysql_real_escape_string($crossDesc),
                 'start_time'  => $_POST['ctime'],
                 'place_line1' => mysql_real_escape_string($_POST['cplaceline1']),
                 'place_line2' => mysql_real_escape_string($_POST['cplaceline2']),

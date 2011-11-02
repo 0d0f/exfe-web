@@ -14,7 +14,7 @@ class XHelper extends ActionController
         }
         if($old_cross["description"]!=$crossobj["desc"])
         {
-            $changed["description"]=$crossobj["description"];
+            $changed["description"]=$crossobj["desc"];
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"description",$crossobj["desc"],"");
         }
         if($old_cross["begin_at"]!=$crossobj["start_time"])
