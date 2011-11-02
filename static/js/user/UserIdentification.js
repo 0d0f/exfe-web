@@ -314,6 +314,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                                 var userIdentity = jQuery("#f_identity").val();
                                 var userIdentity = jQuery("#identity").val();
+
+                                jQuery("#send_verification_btn").unbind("click");
                                 jQuery("#send_verification_btn").bind("click",function(){
                                     odof.user.status.doSendVerification(userIdentity);
                                 });
