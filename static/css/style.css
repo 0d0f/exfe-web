@@ -677,7 +677,7 @@ b.r3{margin: 0px}
 .cross_view_container .enable_click:hover { background-color:#D9E8EB; }
 .cross_view_container .cross_titles_textarea{ width:780px; height:45px; font-size:24pt; color:#0591AF; margin-top:10px; }
 
-.cross_view_container #cross_desc{ overflow:hidden; width:500px; }
+.cross_view_container #cross_desc{ overflow:hidden; width:500px; min-height: 50px; }
 .cross_view_container #cross_desc p{ width:500px; overflow:hidden }
 .cross_view_container #cross_desc_textarea{ width:500px; height:120px; font-size:9pt; margin-top:10px; }
 .cross_view_container #cross_desc_short #desc_expand_btn{ display:block; float:right; margin-right:10px; color:#0591AF; font-weight:bold; }

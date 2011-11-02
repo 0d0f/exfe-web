@@ -82,8 +82,8 @@
         <!--p><img class="s_header" src="/static/images/user_header_2.jpg" alt=""/><em>steve@0d0f.com</em><i><img class="worning" src="/static/images/translation.gif" alt=""/>Authorization failed <button type='button' class="boright">Resend</button></i></p-->
     </div>
     <div class="u_num">
-        <p>57</p>
-        <span>exfes attended</span>
+        <p><!--57-->&nbsp;</p>
+        <span><!--exfes attended-->&nbsp;</span>
         <button id="editprofile">Edit</button>
     </div>
 </div>
