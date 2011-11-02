@@ -379,7 +379,9 @@ class SActions extends ActionController
                 array_push($idents, $changeId);
             }
         }
-        $idents  = $identityData->getIdentitiesByIdentityIds(array_flip(array_flip($idents)));
+        // @todo: Temporary unique
+        // $idents  = $identityData->getIdentitiesByIdentityIds(array_flip(array_flip($idents)));
+        $idents  = $identityData->getIdentitiesByIdentityIds(array_unique($idents));
         // Get human identity
         $hmIdent = array();
         $modUser = $this->getModelByName('user');
