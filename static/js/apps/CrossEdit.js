@@ -479,10 +479,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +     '</p>'
                                   + '</li>';
                     }
-                    identifiable[identity] = true;
+                    identifiable[identity.toLowerCase()] = true;
                 }
                 for (i in ns.arrIdentitySub) {
-                    if (!identifiable[ns.arrIdentitySub[i].id]) {
+                    var idUsed = false;
+                    $('.exfee_new').each(function() {
+                        if ($(this).attr('identity').toLowerCase() === ns.arrIdentitySub[i].id.toLowerCase()) {
+                            idUsed = true;
+                        }
+                    });
+                    if (!identifiable[ns.arrIdentitySub[i].id.toLowerCase()] && !idUsed) {
                         identity = ns.arrIdentitySub[i].id;
                         name     = ns.arrIdentitySub[i].name
                                  ? ns.arrIdentitySub[i].name
