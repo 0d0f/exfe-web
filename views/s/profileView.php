@@ -15,11 +15,6 @@
     if ($user["avatar_file_name"]=="")
         $user["avatar_file_name"]="default.png";
 ?>
-<script>
-    $(document).ready(function() {
-        document.title = 'EXFE - ' + $('#profile_name').html();
-    });
-</script>
 <div class="centerbg">
 <div class="edit_user">
     <div id="profile_avatar">
@@ -141,7 +136,7 @@
         $strInvt  = '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>';
         foreach ($newInvt as $newInvtI => $newInvtItem) {
             $xid62 = int_to_base62($newInvtItem['cross']['id']);
-            $strInvt .= '<dl class="bnone">'
+            $strInvt .= "<dl id=\"cross_invitation_{$xid62}\" class=\"bnone\">"
                       .     "<dt><a href=\"/!{$xid62}\">{$newInvtItem['cross']['title']}</a></dt>"
                       .     "<dd>{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</dd>"
                       .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"

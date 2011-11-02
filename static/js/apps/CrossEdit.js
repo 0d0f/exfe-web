@@ -297,7 +297,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             desc  = jQuery("#cross_desc_textarea").val(),
             exfee = JSON.stringify(ns.getexfee());
         jQuery.ajax({
-            url:ns.editURI + "/crossEdit",
+            url:location.href.split('?').shift() + '/crossEdit',
             type:"POST",
             dataType:"json",
             data:{
@@ -539,7 +539,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         // submit
         jQuery.ajax({
-            url : ns.editURI + '/crossEdit',
+            url : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
             data : {ctitle     : $('#cross_titles_textarea').val(),
