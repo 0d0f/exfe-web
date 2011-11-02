@@ -18,6 +18,21 @@
 <script>
     $(document).ready(function() {
         document.title = 'EXFE - ' + $('#profile_name').html();
+        $('.acpbtn').hide();
+        $('.bnone').bind('mousemove mouseout', function(event) {
+            var objEvent = event.target;
+            while (objEvent.id.split('_').shift() !== 'cross') {
+                objEvent = objEvent.parentNode;
+            }
+            var objBtn   = $('#' + objEvent.id + ' > dd > .acpbtn');
+            switch (event.type) {
+                case 'mousemove':
+                    objBtn.show();
+                    break;
+                case 'mouseout':
+                    objBtn.hide();
+            }
+        });
     });
 </script>
 <div class="centerbg">
@@ -141,7 +156,7 @@
         $strInvt  = '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>';
         foreach ($newInvt as $newInvtI => $newInvtItem) {
             $xid62 = int_to_base62($newInvtItem['cross']['id']);
-            $strInvt .= '<dl class="bnone">'
+            $strInvt .= "<dl id=\"cross_invitation_{$xid62}\" class=\"bnone\">"
                       .     "<dt><a href=\"/!{$xid62}\">{$newInvtItem['cross']['title']}</a></dt>"
                       .     "<dd>{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</dd>"
                       .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"
