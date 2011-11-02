@@ -684,6 +684,8 @@ b.r3{margin: 0px}
 
 .cross_view_container #rsvp_submitted{ padding:30px 0 0; font-size:12pt; }
 
+#pv_place_line1 { min-height: 40px; }
+
 .cross_view_container #cross_time_bubble { width:310px; height:220px; margin-left:210px; margin-top:125px; }
 .cross_view_container #cross_time_bubble:before { top:29px; left:330px; }
 .cross_view_container #cross_time_bubble:after { top:29px; left:330px; }
