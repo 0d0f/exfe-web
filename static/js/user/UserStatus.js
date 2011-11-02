@@ -14,7 +14,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * */
     ns.callBackFunc = null;
     ns.checkUserLogin = function(){
-        //专门针对Cross页面，不需要去检查
+        //专门针对Cross页面，如果以Token进入，则预先设置一个ID为：cross_identity_btn的元素节点。
+        //具体的事件绑定在odof.cross.index里面实现。
+        //页面上写有external_identity
         if(typeof login_type != "undefined" && login_type == "token"){
             var navMenu = '<div class="global_sign_in_btn">'
                             + '<a id="cross_identity_btn" href="javascript:void(0);">'
@@ -22,27 +24,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             + '</a>'
                             + '</div>';
             jQuery("#global_user_info").html(navMenu);
-
-            //If not login page
-            if(typeof show_idbox != "undefined" && show_idbox == "login"){
-                jQuery("#cross_identity_btn").bind("click",function(){
-                    ns.doShowLoginDialog();
-                });
-            }
-            if(typeof show_idbox != "undefined" && show_idbox == "setpassword"){
-                if(token_expired == 'false'){
-                    jQuery("#cross_identity_btn").bind("click",function(){
-                        odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                        jQuery("#show_identity_box").html(external_identity);
-                    });
-                }else{
-                    jQuery("#cross_identity_btn").bind("click",function(){
-                        var args = {"identity":external_identity};
-                        odof.user.status.doShowVerificationDialog(null, args);
-                        jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
-                    });
+            try{
+                if(odof.user.status.callBackFunc){
+                    odof.user.status.callBackFunc();
                 }
-            }
+            }catch(e){ /*console.log(e);*/ }
 
         }else{//正常检查是否登录。
             var getURI = site_url+"/s/checkUserLogin";
