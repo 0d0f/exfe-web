@@ -34,9 +34,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //bind event for cross place container
         jQuery("#cross_place_area").addClass("enable_click");
         jQuery("#cross_place_area").bind("click",odof.cross.edit.bindEditPlaceEvent);
+//        $('#cross_place_area').html(
+//            $('#cross_desc_textarea').val()
+//          ? $('#cross_desc_textarea').val()
+//          : 'Write some description for your exfe. (optional)'
+//        );
 
         jQuery("#cross_desc").show();
         jQuery("#cross_desc_short").hide();
+        $('#cross_desc').html(
+            $('#cross_desc_textarea').val()
+          ? $('#cross_desc_textarea').val()
+          : 'Write some description for your exfe. (optional)'
+        );
 
         jQuery("#cross_desc").addClass("enable_click");
         jQuery("#cross_desc").bind("click",function(){
@@ -264,9 +274,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#cross_desc").hide();
         jQuery("#cross_desc_textarea").slideDown(400);
         jQuery('#cross_desc_textarea').bind("clickoutside",function(event) {
-            if(event.target.parentNode != jQuery("#cross_desc")[0]){
+            if (event.target.id === 'cross_desc') {
+                return;
+            }
+            if (event.target.parentNode != jQuery("#cross_desc")[0]){
                 var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
-                jQuery("#cross_desc").html(str);
+                $('#cross_desc').html(
+                    $('#cross_desc_textarea').val()
+                  ? $('#cross_desc_textarea').val()
+                  : 'Write some description for your exfe. (optional)'
+                );
                 jQuery("#cross_desc_textarea").slideUp(400);
                 jQuery("#cross_desc_textarea").unbind("clickoutside");
                 jQuery("#cross_desc").show();
