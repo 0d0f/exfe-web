@@ -26,6 +26,8 @@ class ConversationActions extends ActionController {
         $responobj["meta"]["code"]=200;
         $comment=$_POST["comment"];
         $cross_id=$_POST["cross_id"];
+        $token=$_POST["token"];
+
 
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("conversion","",array("cross_id"=>$cross_id,"token"=>$token));
