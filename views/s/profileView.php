@@ -15,26 +15,6 @@
     if ($user["avatar_file_name"]=="")
         $user["avatar_file_name"]="default.png";
 ?>
-<script>
-    $(document).ready(function() {
-        document.title = 'EXFE - ' + $('#profile_name').html();
-        $('.acpbtn').hide();
-        $('.bnone').bind('mousemove mouseout', function(event) {
-            var objEvent = event.target;
-            while (objEvent.id.split('_').shift() !== 'cross') {
-                objEvent = objEvent.parentNode;
-            }
-            var objBtn   = $('#' + objEvent.id + ' > dd > .acpbtn');
-            switch (event.type) {
-                case 'mousemove':
-                    objBtn.show();
-                    break;
-                case 'mouseout':
-                    objBtn.hide();
-            }
-        });
-    });
-</script>
 <div class="centerbg">
 <div class="edit_user">
     <div id="profile_avatar">

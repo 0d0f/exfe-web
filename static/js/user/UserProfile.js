@@ -103,6 +103,24 @@ $(document).ready(function(){
         }
     });
 
+    document.title = 'EXFE - ' + $('#profile_name').html();
+
+    $('.bnone').bind('mousemove mouseout', function(event) {
+        var objEvent = event.target;
+        while (objEvent.id.split('_').shift() !== 'cross') {
+            objEvent = objEvent.parentNode;
+        }
+        var objBtn   = $('#' + objEvent.id + ' > dd > .acpbtn');
+        switch (event.type) {
+            case 'mousemove':
+                objBtn.show();
+                break;
+            case 'mouseout':
+                objBtn.hide();
+        }
+    });
+
+    $('.acpbtn').hide();
     $('.acpbtn').click(function(e) {
         location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
     });
