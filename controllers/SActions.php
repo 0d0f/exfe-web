@@ -383,8 +383,11 @@ class SActions extends ActionController
         // Get human identity
         $hmIdent = array();
         $modUser = $this->getModelByName('user');
-        foreach ($idents as $identI => $identItem) {
-            $hmIdent[$identItem['id']] = humanIdentity($identItem, $modUser->getUserByIdentityId($identItem['identity_id']));
+        // @todo: Temporary check
+        if (is_array($idents)) {
+            foreach ($idents as $identI => $identItem) {
+                $hmIdent[$identItem['id']] = humanIdentity($identItem, $modUser->getUserByIdentityId($identItem['identity_id']));
+            }
         }
         // Add confirmed informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
@@ -855,7 +858,7 @@ class SActions extends ActionController
                 $userId = $userInfo["user_id"];
                 $userToken = $userInfo["user_token"];
                 $userIdentity= $userInfo["user_identity"];
-                
+
                 $userDataObj = $this->getModelByName("user");
                 $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userToken);
                 if(!$result){
