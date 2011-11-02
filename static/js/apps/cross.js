@@ -190,7 +190,7 @@ $(document).ready(function() {
         submitting = true;
 
         var comment = $('textarea[name=comment]').val();
-        var poststr = "cross_id=" + cross_id + "&comment=" + comment;
+        var poststr = "cross_id=" + cross_id + "&comment=" + comment + '&token=' + token;
         $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 5, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
         $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
 
