@@ -131,7 +131,7 @@ class RSVPActions extends ActionController {
        else
            header( "Location: /!$cross_id_base62" ) ;
 
-        exit(0);
+       exit(0);
     }
 
     public function doNO()
@@ -215,12 +215,13 @@ class RSVPActions extends ActionController {
 
     public function doAccept()
     {
-        $invitationData = $this->getModelByName("Invitation");
+        $invitationData = $this->getModelByName('Invitation');
 
         if (intval($_SESSION['userid']) > 0
-         && intval($identity_id = $_SESSION["identity_id"]) > 0
+         && ($identity_id = intval($_SESSION["identity_id"])) > 0
          && ($cross_id = base62_to_int($_GET["xid"]))
-         && $invitationData->rsvp($cross_id, $identity_id, INVITATION_YES) === true) {
+         && ($result = $invitationData->rsvp($cross_id, $identity_id, INVITATION_YES))
+         &&  $result['success']) {
             header("Location: /s/profile");
         } else {
             header('Location: /s/login');
