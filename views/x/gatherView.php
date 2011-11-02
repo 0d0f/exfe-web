@@ -134,7 +134,7 @@
 <p class="tm" id="pv_place_line2"></p>
 
 <div class="exfee">
-<div class="feetop"><h3>exfee</h3>  <p class="of"><em id="exfee_confirmed" class="bignb">0</em> of <span id="exfee_summary">0</span><br>confirmed</p></div>
+<div class="feetop"><h3>Exfee</h3>  <p class="of"><em id="exfee_confirmed" class="bignb">0</em> of <span id="exfee_summary">0</span><br>confirmed</p></div>
 <ul id="exfeelist" class="samlcommentlist"></ul>
 </div><!--exfee-->
 </div><!--exfer-->

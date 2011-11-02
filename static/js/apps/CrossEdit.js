@@ -250,14 +250,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     jQuery("#place_content").bind("keyup",function(){
                         var strPlace = $('#place_content').val(),
                             arrPlace = strPlace.split(/\r|\n|\r\n/),
-                            prvPlace = [];
-                        arrPlace.forEach(function(item, i) {
-                            if ((item = odof.util.trim(item))) {
-                                prvPlace.push(item);
-                            }
-                        });
-                        $('#pv_place_line1').html(prvPlace.shift());
-                        $('#pv_place_line2').html(prvPlace.join('<br />'));
+                            prvPlace = [],
+                            strLine1 = '',
+                            strLine2 = '';
+                        if (strPlace) {
+                            arrPlace.forEach(function(item, i) {
+                                if ((item = odof.util.trim(item))) {
+                                    prvPlace.push(item);
+                                }
+                            });
+                            strLine1 = prvPlace.shift();
+                            strLine2 = prvPlace.join('<br />');
+                        }
+                        $('#pv_place_line1').html(strLine1);
+                        $('#pv_place_line2').html(strLine2);
                         odof.cross.index.formatCross();
                     });
                     jQuery("#cross_place_bubble").show();
@@ -473,10 +479,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                   +     '</p>'
                                   + '</li>';
                     }
-                    identifiable[identity] = true;
+                    identifiable[identity.toLowerCase()] = true;
                 }
                 for (i in ns.arrIdentitySub) {
-                    if (!identifiable[ns.arrIdentitySub[i].id]) {
+                    var idUsed = false;
+                    $('.exfee_new').each(function() {
+                        if ($(this).attr('identity').toLowerCase() === ns.arrIdentitySub[i].id.toLowerCase()) {
+                            idUsed = true;
+                        }
+                    });
+                    if (!identifiable[ns.arrIdentitySub[i].id.toLowerCase()] && !idUsed) {
                         identity = ns.arrIdentitySub[i].id;
                         name     = ns.arrIdentitySub[i].name
                                  ? ns.arrIdentitySub[i].name

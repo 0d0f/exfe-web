@@ -555,10 +555,10 @@ function identity()
                 identifiable = {};
             for (var i in data.response.identities) {
                 var identity         = data.response.identities[i].external_identity,
-                    id               = data.response.identities[i].id.toLowerCase(),
+                    id               = data.response.identities[i].id,
                     avatar_file_name = data.response.identities[i].avatar_file_name;
                     name             = data.response.identities[i].name;
-                if ($('#exfee_' + id).attr('id') == null) {
+                if (!$('#exfee_' + id).length) {
                     name = name ? name : identity;
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
@@ -573,10 +573,16 @@ function identity()
                       + '</li>'
                     );
                 }
-                identifiable[identity] = true;
+                identifiable[identity.toLowerCase()] = true;
             }
             for (i in arrIdentitySub) {
-                if (!identifiable[arrIdentitySub[i].id]) {
+                var idUsed = false;
+                $('.exfee_new').each(function() {
+                    if ($(this).attr('value').toLowerCase() === arrIdentitySub[i].id.toLowerCase()) {
+                        idUsed = true;
+                    }
+                });
+                if (!identifiable[arrIdentitySub[i].id.toLowerCase()] && !idUsed) {
                     switch (arrIdentitySub[i].type) {
                         case 'email':
                             name =  arrIdentitySub[i].name ? arrIdentitySub[i].name : arrIdentitySub[i].id;

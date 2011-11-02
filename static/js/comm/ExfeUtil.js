@@ -1022,7 +1022,7 @@ var odof = {
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
                 iGt = strId.indexOf('>');
-            return {name : this.trim(strId.substring(0,     iLt)),
+            return {name : this.trim(strId.substring(0,     iLt)).replace(/^"|^'|"$|'$/g, ''),
                     id   : this.trim(strId.substring(++iLt, iGt)),
                     type : 'email'};
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
