@@ -16,7 +16,7 @@ class LogModels extends DataModel{
         $this->query($sql);
     }
 
-    public function getRecentlyLogsByCrossIds($cross_ids, $excludeAct = '', $limit = 20)
+    public function getRecentlyLogsByCrossIds($cross_ids, $excludeAct = '', $limit = 100)
     {
         if ($cross_ids) {
             $cross_ids  = implode(' OR `to_id` = ', $cross_ids);

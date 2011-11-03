@@ -729,6 +729,7 @@ function submitX()
             if (data) {
                 if (data.success) {
                     location.href = '/!' + data.crossid;
+                    return;
                 } else {
                     switch (data.error) {
                         case 'notlogin':

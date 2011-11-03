@@ -24,7 +24,7 @@
     </li>
 
     <li id="gather_desc_blank">
-        <div id="gather_desc_bg" class="gather_blur">Write some description for your exfe. (optional)</div>
+        <div id="gather_desc_bg" class="gather_blur">Write some words about this X.</div>
         <label class="description">Description</label>
         <textarea name="description" id="g_description"></textarea>
     </li>
@@ -117,7 +117,7 @@
 <p class="Preview"></p>
 <h2 id="pv_title" class="pv_title_normal"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></h2>
 <div class="exfel">
-<p class="text" id="pv_description">Write some description for your exfe. (optional)</p><!--a href="">Expand</a-->
+<p class="text" id="pv_description">Write some words about this X.</p><!--a href="">Expand</a-->
 <ul class="ynbtn">
 <li><a class="yes_readonly" disabled="disabled">Yes</a></li>
 <li><a class="no_readonly" disabled="disabled">No</a></li>

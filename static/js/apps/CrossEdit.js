@@ -45,7 +45,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#cross_desc').html(
             $('#cross_desc_textarea').val()
           ? $('#cross_desc_textarea').val()
-          : 'Write some description for your exfe. (optional)'
+          : 'Write some words about this X.'
         );
 
         jQuery("#cross_desc").addClass("enable_click");
@@ -288,7 +288,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#cross_desc').html(
                     $('#cross_desc_textarea').val()
                   ? $('#cross_desc_textarea').val()
-                  : 'Write some description for your exfe. (optional)'
+                  : 'Write some words about this X.'
                 );
                 jQuery("#cross_desc_textarea").slideUp(400);
                 jQuery("#cross_desc_textarea").unbind("clickoutside");
