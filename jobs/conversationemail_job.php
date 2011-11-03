@@ -41,6 +41,7 @@ class Conversationemail_Job
     public function getMailBodyWithMultiObjects($args)
     {
         global $site_url;
+        global $img_url;
         $template=file_get_contents("conversation_template.html");
         $templates=split("\r|\n",$template);
         $template_title=$templates[0];
