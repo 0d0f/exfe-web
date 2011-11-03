@@ -7,6 +7,11 @@
 var moduleNameSpace = "odof.cross.index";
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
+//这个回调函数在后面要被覆盖。
+var clickCallBackFunc = function(args){
+    window.location.href = odof.cross.index.location_uri;
+};
+
 (function(ns){
 
     ns.cross_id = cross_id;
@@ -129,7 +134,7 @@ $(document).ready(function() {
             success: function(data) {
                 if (data != null) {
                     if (data.response.success === 'true') {
-                        odof.cross.index.setreadonly();
+                        odof.cross.index.setreadonly(clickCallBackFunc);
                         if (data.response.token_expired == '1' && login_type == 'token') {
                             token_expired = true;
                         }
@@ -215,7 +220,7 @@ $(document).ready(function() {
                         $("#commentlist").prepend(html);
                         $("textarea[name=comment]").val("");
                     }
-                    odof.cross.index.setreadonly();
+                    odof.cross.index.setreadonly(clickCallBackFunc);
                 }
                 $('textarea[name=comment]').activity(false);
                 $('#post_submit').css('background', 'url("/static/images/enter.png")');
@@ -258,9 +263,6 @@ $(document).ready(function() {
         $('textarea[name=comment], #cross_identity_btn').unbind("click");
         $('textarea[name=comment]').blur();
         $('textarea[name=comment], #cross_identity_btn').click(function(e) {
-            var clickCallBackFunc = function(args){
-                window.location.href = odof.cross.index.location_uri;
-            };
             odof.cross.index.setreadonly(clickCallBackFunc);
         });
     }

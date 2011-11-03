@@ -152,15 +152,15 @@ function exCalendar() {
      *
      * */
     this.setDate = setDate;
-    function setDate(curYear, curMonth, curDay) {
+    function setDate(sYear, sMonth, sDay) {
         if (dateField) {
-            monthVar = curMonth >= 10 ? curMonth : "0"+curMonth;
-            dayVar = curDay >= 10 ? curDay : "0"+curDay;
-            var dateString = monthVar + "-" + dayVar + "-" + curYear;
+            monthVar = sMonth >= 10 ? sMonth : "0" + sMonth;
+            dayVar = sDay >= 10 ? sDay : "0" + sDay;
+            var dateString = monthVar + "-" + dayVar + "-" + sYear;
 
             //save standard time.
-            //var standardDateString = curYear + "-" + monthVar + "-" + dayVar + " 00:00:00";
-            var standardDateString = curYear + "-" + monthVar + "-" + dayVar;
+            //var standardDateString = sYear + "-" + monthVar + "-" + dayVar + " 00:00:00";
+            var standardDateString = sYear + "-" + monthVar + "-" + dayVar;
 
             //set dateField value.
             dateField.value = dateString;
@@ -170,8 +170,26 @@ function exCalendar() {
 
             //hide();
             //Refresh date table display
-            refreshDateTables(curYear, curMonth, curDay);
+            refreshDateTables(sYear, sMonth, sDay);
         }
+        var curYear = getCurrentYear();
+        var curMonth = getCurrentMonth();
+        var curDay = getCurrentDay();
+
+        var sDate = sYear+"-"+sMonth+"-"+sDay;
+        var cDate = curYear+"-"+curMonth+"-"+curDay;
+
+        var timeList = this.createTimeList("newday");
+        if(sDate == cDate){
+            var timeList = this.createTimeList();
+        }
+        //refresh time list
+        var timeListHTML = "";
+        for(i=0; i<timeList.length; i++){
+            timeListHTML += "<li onclick='exCal.setCalendarTime(\""+ timeList[i].displayTime +"\",\"" + timeList[i].standardTime + "\");' name='exCalTimeList' id='" + timeList[i].displayTime + "'>"+ timeList[i].displayTime +"</li>";
+        }
+        document.getElementById("excal_time_list").innerHTML = timeListHTML;
+
         return;
     }
 
@@ -253,14 +271,23 @@ function exCalendar() {
      * create the time list
      *
      * */
-    function createTimeList(){
+    this.createTimeList= createTimeList;
+    function createTimeList(listType){
         var currentHours = getCurrentHours();
         var currentMinutes = getCurrentMinutes();
+
+        //如果是新的一天，则时间从8点开始。
+        if(typeof listType != "undefined" && listType == "newday"){
+            var currentHours = 7;
+            var currentMinutes = 35;
+        }
+
 
         var dayNow = " PM";
         if(currentHours < 12){ dayNow = " AM"; }
 
         var timeList = [];
+
 
         //当前时间。
         if(currentMinutes < 30){
@@ -456,7 +483,7 @@ function exCalendar() {
         excalCon += "</table></div>";
 
         var timeList = createTimeList();
-        excalCon += "<div class='exCalTimes'><ul><li class='header'>" + exLang.timeAllDay + "</li></ul><ul class='list'>";
+        excalCon += "<div class='exCalTimes'><ul><li class='header'>" + exLang.timeAllDay + "</li></ul><ul class='list' id='excal_time_list'>";
         for(i=0; i<timeList.length; i++){
             excalCon += "<li onclick='exCal.setCalendarTime(\""+ timeList[i].displayTime +"\",\"" + timeList[i].standardTime + "\");' name='exCalTimeList' id='" + timeList[i].displayTime + "'>"+ timeList[i].displayTime +"</li>";
         }

@@ -266,8 +266,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         var html = "<div id='identification_titles' class='titles'>"
                    + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
-                   + "<div id='identification_handler' class='tl'>"+title+"</div></div>"
-                   + "<div id='overFramel' class='overFramel'>"
+                   + "<div id='identification_handler' class='tl'>"+title+"</div>"
+                   + "</div>"
+                   + "<div id='overFramel' class='overFramel' style='overflow:hidden;'>"
                    + forgot_pwd
                    + sign_up_msg
                    + reg_success
