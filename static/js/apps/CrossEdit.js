@@ -243,7 +243,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //console.log(placeEventTemp);
         if(!placeEventTemp){
             jQuery('#cross_place_bubble').bind("clickoutside",function(event) {
-                if(event.target.parentNode.parentNode != jQuery("#cross_container")[0]){
+                if(event.target.parentNode != jQuery("#cross_place_area")[0]){
                     jQuery("#cross_place_bubble").hide();
                     jQuery("#cross_place_bubble").unbind("clickoutside");
                 }else{
