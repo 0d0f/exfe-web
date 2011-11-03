@@ -97,7 +97,9 @@ $token=$_GET["token"];
     </div>
     <div class="menu_bar">
         <p class="lock_icon" id="private_icon"></p>
-        <p class="lock_icon_desc" id="private_hint" style="display:none" ><span>Private exfe,</span><br />only attendees could see details.</p>
+        <p class="lock_icon_desc" id="private_hint" style="display:none" >
+            <span>Private X:</span><br />Only attendees can access, and change other’s status.
+        </p>
         <p class="edit_icon" id="edit_icon"></p>
         <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >Edit this cross.</p>
     </div>
