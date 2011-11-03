@@ -80,11 +80,11 @@ class ExfeeHelper extends ActionController
         }
 
         if (is_array($invited)) {
-            return $newExfees;
+            return array("newexfees"=>$newExfees,"allexfees"=>$curExfees);
         }
     }
 
-    public function sendIdentitiesInvitation($cross_id,$identity_list)
+    public function sendIdentitiesInvitation($cross_id,$identity_list,$allexfee)
     {
 
         $identity_id = $_SESSION['identity_id'];
@@ -103,6 +103,10 @@ class ExfeeHelper extends ActionController
 
         $invitationdata=$this->getModelByName("invitation");
         $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
+
+        
+        $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false, $filter);
+
 
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
@@ -140,9 +144,10 @@ class ExfeeHelper extends ActionController
                         'host_identity' => $host_identity,
                         'rsvp_status' => $invitation["state"],
                         'by_identity' => $by_identity,
-                        'invitations' => $invitations
+                        'invitations' => $allinvitations
 
                 );
+
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
 
                 $identities=$invitation["identities"];
