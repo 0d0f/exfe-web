@@ -313,16 +313,10 @@ function hashFileSavePath($savePath, $fileName=''){
     );
 
     if(is_dir($savePath)){
-        if(!is_dir($hashDir)){
-            try{
-                mkdir($hashDir, 0777);
-            }catch(Exception $e){ 
+        if(!is_dir($hashSubDir)){
+            $result = mkdir($hashSubDir, 0777, true);
+            if(!$result){
                 $fileInfo["error"] = 2;
-            }
-            try{
-                mkdir($hashSubDir, 0777);
-            } catch (Exception $e) {
-                $fileInfo["error"] = 3;
             }
         }
     }else{

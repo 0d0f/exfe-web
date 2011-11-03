@@ -859,7 +859,7 @@ exFileUploader.UploadHandlerAbstract = function(o){
 exFileUploader.UploadHandlerAbstract.prototype = {
     log: function(str){
         if (this._options.debug && window.console){
-            console.log('[uploader] ' + str);        
+            console.log('[uploader] ' + str);
         }
     },
     /**
