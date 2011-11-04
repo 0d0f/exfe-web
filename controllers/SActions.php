@@ -746,7 +746,7 @@ class SActions extends ActionController
                     {
                         $msghelper=$this->getHelperByName("msg");
                         $args=array("name"=>$displayname,"external_identity"=>$identity);
-                        if($userDisplayName=="")
+                        if($displayname=="")
                             $args["name"]=$identity;
                         $msghelper->sentWelcomeEmail($args);
                     }
