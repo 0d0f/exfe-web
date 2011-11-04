@@ -34,22 +34,31 @@ class XModels extends DataModel {
     //update cross
     public function updateCross($cross)
     {
-        $time=time();
-        $sql = "UPDATE crosses SET updated_at=FROM_UNIXTIME($time), title='".$cross["title"]."', description='".$cross["desc"]."', begin_at='".$cross["start_time"]."' WHERE id=".$cross["id"];
-        $result = $this->query($sql);
-
-        if($result){
-            $sql = "SELECT place_id FROM crosses WHERE id=".$cross["id"];
-            $place_id_arr = $this->getRow($sql);
-            $place_id = $place_id_arr["place_id"];
-            if($place_id != 0) {
-                $ts = date("Y-m-d H:i:s", time());
-                $sql = "UPDATE places SET place_line1='{$cross['place_line1']}', place_line2='{$cross['place_line2']}', updated_at='{$ts}' WHERE id={$place_id}";
-                $result = $this->query($sql);
-            }
+        // update place
+        $sql  = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
+        $place_id_arr = $this->getRow($sql);
+        $place_id     = $place_id_arr['place_id'];
+        if($place_id) {
+            $ts  = date('Y-m-d H:i:s', time());
+            $sql = "UPDATE `places`
+                       SET `place_line1` = '{$cross['place_line1']}',
+                           `place_line2` = '{$cross['place_line2']}',
+                           `updated_at`  = '{$ts}'
+                     WHERE `id`          =  {$place_id}";
+            $result = $this->query($sql);
+        } else if ($cross['place_line1'] . $cross['place_line2']) {
+            $placeHelper = $this->getHelperByName('place');
+            $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
         }
-
-        return $result;
+        // update cross
+        $sql  = "UPDATE `crosses`
+                    SET `updated_at`  = NOW(),
+                        `title`       = '{$cross["title"]}',
+                        `description` = '{$cross["desc"]}',
+                        `begin_at`    = '{$cross["start_time"]}',
+                        `place_id`    =  {$place_id}
+                  WHERE `id`          =  {$cross["id"]}";
+        return $this->query($sql);
     }
 
     public function getCrossByUserId($userid, $updated_since=0)

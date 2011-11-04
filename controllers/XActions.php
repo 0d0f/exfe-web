@@ -125,7 +125,7 @@ class XActions extends ActionController
                 echo json_encode($return_data);
                 exit();
             }
-            
+
             $crossDesc = strip_tags(exPost('cdesc'));
             $cross = array(
                 'id'          => $cross_id,
