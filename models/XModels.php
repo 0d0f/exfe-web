@@ -46,7 +46,7 @@ class XModels extends DataModel {
                            `updated_at`  = '{$ts}'
                      WHERE `id`          =  {$place_id}";
             $result = $this->query($sql);
-        } else if ($cross['place_line1'] . $cross['place_line2']) {
+        } else {
             $placeHelper = $this->getHelperByName('place');
             $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
         }
