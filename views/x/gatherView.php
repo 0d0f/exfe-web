@@ -18,9 +18,8 @@
 <ul>
 
     <li>
-        <div id="gather_title_bg" class="gather_focus"><?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?></div>
         <label class="title">Title</label>
-        <input type="text" name="title" id="g_title" value="" />
+        <input type="text" name="title" id="g_title" class="gather_blur" value="<?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?>" />
     </li>
 
     <li id="gather_desc_blank">
