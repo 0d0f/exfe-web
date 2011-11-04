@@ -91,7 +91,26 @@ class IdentityModels extends DataModel{
         $sql="select id,status from  identities where external_identity='$external_identity'";
         $row=$this->getRow($sql);
         if (intval($row["id"])>0)
+        {
+            $identity_id=intval($row["id"]);
+            if(intval($row["status"])==3)
+            {
+                $sql="select userid from user_identity where identityid=$identity_id";
+                $userIdRow=$this->getRow($sql);
+                if(intval($userIdRow["userid"])>0)
+                {
+                    $uid=intval($userIdRow["userid"]);
+                    $sql = "select id,encrypted_password from users WHERE id=$uid;";
+                    $userrow = $this->getRow($sql);
+
+                    $newUser = false;
+                    if(intval($userrow["id"])>0 && trim($userrow["encrypted_password"])=="")
+                        return  array("id"=>$identity_id,"status"=>2);
+                }
+            }
+
             return  array("id"=>intval($row["id"]),"status"=>intval($row["status"]));
+        }
         else
             return FALSE;
     }
