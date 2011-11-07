@@ -558,24 +558,25 @@ class SActions extends ActionController
             $returnData["user_avatar"] = $global_avatar_file_name;
         }
         //Get user panel data(User Crosses)
-        $today = strtotime(date('Y-m-d'));
-        $upcoming = $today + 60 * 60 * 24 * 3;
-        $sevenDays = $today + 60 * 60 * 24 * 7;
+        $today     = strtotime(date('Y-m-d'));
+        $tgnow     = time() + 60 * 60 * 2;
+        $tg24hr    = $today + 60 * 60 * 24;
+        $upcoming  = $today + 60 * 60 * 24 * 3;
         $crossdata = $this->getModelByName('x');
         $crosses_number = $crossdata->fetchCross($_SESSION['userid'], 0, 'yes', 'begin_at', 1000, 'count');
         $returnData["cross_num"] = $crosses_number;
 
-        $crosses = $crossdata->fetchCross($_SESSION['userid'], $today, 'yes', 'begin_at', 4, 'simple');
+        $crosses = $crossdata->fetchCross($_SESSION['userid'], $today, 'yes', 'begin_at', 3, 'simple');
 
         foreach ($crosses as $k=>$v) {
             $crosses[$k]['timestamp'] = strtotime($v['begin_at']);
             $crosses[$k]["id"] = int_to_base62($v["id"]);
-            if ($crosses[$k]['timestamp'] < $upcoming) {
-                $crosses[$k]['sort'] = 'upcoming';
-            } else if ($crosses[$k]['timestamp'] < $sevenDays) {
-                $crosses[$k]['sort'] = 'sevenDays';
+            if ($crosses[$k]['timestamp'] < $tgnow) {
+                $crosses[$k]['sort'] = 'now';
+            } else if ($crosses[$k]['timestamp'] < $tg24hr) {
+                $crosses[$k]['sort'] = '24hr';
             } else {
-                $crosses[$k]['sort'] = 'later';
+                $crosses[$k]['sort'] = 'upcoming';
             }
         }
         $returnData["crosses"] = $crosses;

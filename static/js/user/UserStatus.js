@@ -183,7 +183,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 });
             }
         });
-        
+
     };
     ns.doShowChangePwdDialog =function(changePwdCID){
         var html = odof.user.identification.showdialog("change_pwd");
@@ -311,11 +311,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     userPanelHTML += '<p class="info">';
                     userPanelHTML += '<span>Upcoming:</span><br />';
                     jQuery.each(userData.crosses, function(k,v){
-                        if(v.sort == "upcoming"){
-                            userPanelHTML += '<em>Now</em> <a href="/!'+v.id+'">'+ v.title +'</a>';
-                        }else{
-                            userPanelHTML += '<em>24hr</em> <a href="/!'+v.id+'">'+ v.title +'</a>';
+                        var strSort = '<em class="hide"></em>';
+                        switch (v.sort) {
+                            case 'now':
+                                strSort = '<em>Now</em>';
+                                break;
+                            case '24hr':
+                                strSort = '<em>24hr</em>';
                         }
+                        userPanelHTML += strSort + ' <a href="/!'+v.id+'">'+ v.title +'</a>';
                     });
                     userPanelHTML += '</p>';
                 }
