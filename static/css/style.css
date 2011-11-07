@@ -675,12 +675,13 @@ b.r3{margin: 0px}
 .cross_view_container #cross_desc{ overflow:hidden; width:500px; min-height: 50px; }
 .cross_view_container #cross_desc p{ width:500px; overflow:hidden }
 .cross_view_container #cross_desc p a{ background:none; }
-.cross_view_container #cross_desc_textarea{ width:500px; height:120px; font-size:9pt; margin-top:10px; }
+.cross_view_container #cross_desc_textarea{ width:500px; height:120px; font-size:9pt; margin-top:10px; resize: none;}
 .cross_view_container #cross_desc_short #desc_expand_btn{ display:block; float:right; margin-right:10px; color:#0591AF; font-weight:bold; }
 
 .cross_view_container #rsvp_submitted{ padding:30px 0 0; font-size:12pt; }
 
 #pv_place_line1 { min-height: 40px; }
+#place_content { resize: none; }
 
 .cross_view_container #cross_time_bubble { width:310px; height:220px; margin-left:210px; margin-top:125px; }
 .cross_view_container #cross_time_bubble:before { top:29px; left:330px; }
