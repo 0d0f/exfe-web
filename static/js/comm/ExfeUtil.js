@@ -435,6 +435,13 @@ var odof = {
         return text.replace(/&/g, '&amp').replace(/'/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     };
 
+    /*
+     * This function will be used to delete all html tag
+     * @str, the string to be replaced
+     */
+    util.delHtmlTag = function(str){
+        return str.replace(/<[^>]+>/g,"");
+    };
 
     /**
      * -----------------------------------------------------------------
