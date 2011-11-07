@@ -10,10 +10,11 @@ class ConversationModels extends DataModel{
             $row=$this->getRow($sql);
             if(intval($row["id"])>0)
             {
-                $time=time();
+                // @todo: time fixed
+                $time=time() + (60 * 60 * 7);
                 $content=mysql_real_escape_string($content);
                 $title=mysql_real_escape_string($title);
-                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))"; 
+                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
 
 		        $result=$this->query($sql);
                 if(intval($result["insert_id"])>0)
@@ -54,16 +55,13 @@ class ConversationModels extends DataModel{
         $result=$this->getAll($sql);
         $identity=array();
         $posts=array();
-        if($result)
-            foreach ($result as $post)
-            {
+        if ($result) {
+            foreach ($result as $post) {
                 $identity_id=$post["identity_id"];
-                if($identity[$identity_id]=="")
-                {	
+                if ($identity[$identity_id] == "") {
                     $sql="select provider,external_identity,external_username,name,bio,avatar_file_name from identities where id=$identity_id;";
                     $identity=$this->getRow($sql);
-                    if($identity)
-                    {
+                    if ($identity) {
                         $sql="select name,avatar_file_name from users,user_identity where users.id=user_identity.userid and user_identity.identityid=$identity_id";
                         $user=$this->getRow($sql);
                         //if(trim($identity["name"])=="" )
@@ -77,11 +75,16 @@ class ConversationModels extends DataModel{
                         $post["identity"]=$humanidentity;
                         $identity[$identity_id]=$humanidentity;
                     }
-                }
-                else
+                } else {
                     $post["identity"]=$identity[$identity_id];
+                }
+                // @todo: time fixed
+                $strDate = date('Y-m-d H:i:s', strtotime($post['created_at']) + (60 * 60 * 8));
+                $post['created_at']=$strDate;
+                $post['updated_at']=$strDate;
                 array_push($posts,$post);
             }
+        }
         return $posts;
 
     }

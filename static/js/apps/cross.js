@@ -206,7 +206,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 if (data != null)
-                {    
+                {
                     if (data.response.success == "false")
                     {
                         //$('#pwd_hint').html("<span>Error identity </span>");
