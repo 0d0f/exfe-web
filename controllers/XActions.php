@@ -125,7 +125,7 @@ class XActions extends ActionController
                 echo json_encode($return_data);
                 exit();
             }
-            
+
             $crossDesc = strip_tags(exPost('cdesc'));
             $placeLineOne = strip_tags(exPost('cplaceline1'));
             $placeLineTwo = strip_tags(exPost('cplaceline2'));

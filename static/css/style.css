@@ -309,14 +309,9 @@ b.r3{margin: 0px}
 }
 /*title*/
 #g_title {
-    position:absolute; z-index:2; margin:2px 0px 0px 5px;
-    background-color:transparent; width:480px; height:24px;
+    position:absolute; margin:2px 0px 0px 1px; padding-left: 3px;
+    width:482px; height:24px;
     color:#020202; font-size:18px;
-    border:0;
-}
-#gather_title_bg {
-    position:absolute; margin-left:144px; padding:2px 0px 0px 5px;
-    z-index:1; width:480px;height:24px; font-size:18px;
 }
 /*description*/
 #gather_desc_blank {

@@ -1,0 +1,16 @@
+部署记录
+
+
+服务器
+lighttpd
+mysql 5
+redis 2.4
+php 5
+monit
+
+php需要安装 php-redis
+
+脚本 
+发送邮件等的任务脚本。位于script目录
+
+注意，对于需要组合多个消息发送的任务需要使用 MULTI=true 参数

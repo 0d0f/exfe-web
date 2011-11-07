@@ -163,7 +163,7 @@ $token=$_GET["token"];
                 <p class="tm" id="cross_times"><?php echo $begin_at_humandatetime;?></p>
             </div>
             <div id="cross_place_area">
-                <h3 id="pv_place_line1" class="pv_place_line1_normal"><?php echo $place_line1; ?></h3>
+                <h3 id="pv_place_line1" class="pv_place_line1_normal"><?php echo $place_line1 ?: 'Somewhere'; ?></h3>
                 <p id="pv_place_line2" class="tm"><?php echo str_replace('\r', '<br>', $cross["place"]["line2"]); ?></p>
             </div>
             <div id="exfee_area" class="exfee">

@@ -741,6 +741,16 @@ class SActions extends ActionController
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
+                    // sent welcome email
+                    if($provider=="email")
+                    {
+                        $msghelper=$this->getHelperByName("msg");
+                        $args=array("name"=>$displayname,"external_identity"=>$identity);
+                        if($displayname=="")
+                            $args["name"]=$identity;
+                        $msghelper->sentWelcomeEmail($args);
+                    }
+
                     $responobj["response"]["success"]="true";
                     $responobj["response"]["userid"]=$userid;
                     $responobj["response"]["identity_id"]=$identity_id;
@@ -788,11 +798,22 @@ class SActions extends ActionController
         $result=$userData->setPasswordByToken($crossID,$crossToken,$userPassword,$userDisplayName);
         if(intval($result["uid"])>0 && intval($result["identity_id"])>0)
         {
+
             $identity_id=intval($result["identity_id"]);
             $uid=intval($result["uid"]);
 
             $identityData=$this->getModelByName("identity");
             $userid=$identityData->loginByIdentityId($identity_id,$uid);
+
+            $identity = $identityData->getIdentityById($identity_id);
+
+            // sent welcome email
+            $msghelper=$this->getHelperByName("msg");
+            $args=array("name"=>$userDisplayName,"external_identity"=>$identity["external_identity"]);
+            if($userDisplayName=="")
+                $args["name"]=$identity["external_identity"];
+            $msghelper->sentWelcomeEmail($args);
+
             if($userid>0)
                 return array("uid"=>$userid);
         }
@@ -863,7 +884,8 @@ class SActions extends ActionController
 
                 $userDataObj = $this->getModelByName("user");
                 $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
-                if(!$result){
+                
+                if(!$result["result"]){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
                 }
@@ -871,6 +893,19 @@ class SActions extends ActionController
                 {
                     $identityData = $this->getModelByName("identity");
                     $identityData->login($userIdentity,$userPassword,"true");
+
+                    if($result["newuser"])
+                    {
+                        $msghelper=$this->getHelperByName("msg");
+                        $identity = $identityData->getIdentity($userIdentity);
+
+                        $args=array("name"=>$userDisplayName,"external_identity"=>$identity["external_identity"]);
+
+                        if($args["name"]=="")
+                            $args["name"]=$identity["external_identity"];
+
+                        $msghelper->sentWelcomeEmail($args);
+                    }
                 }
             }
             if($actions == "setpwd"){
@@ -928,7 +963,6 @@ class SActions extends ActionController
                          'name' => $name,
                          'token' => $pakageToken
                 );
-                //print_r($args);
                 $helper=$this->getHelperByName("identity");
                 $jobId=$helper->sendResetPassword($args);
                 if($jobId=="")

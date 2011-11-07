@@ -350,7 +350,14 @@ class UserModels extends DataModel{
     public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
         $passWord=md5($userPwd.$this->salt);
         $ts = time();
-        $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}'";
+        $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";
+        $userrow = $this->getRow($sql);
+        $newUser = false;
+
+        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]=="")
+            $newUser = true;    
+
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $result = $this->query($sql);
 
         $external_identity=mysql_real_escape_string($external_identity);
@@ -362,8 +369,6 @@ class UserModels extends DataModel{
             $sql="update identities set status=3 where id=$identity_id;";
             $this->query($sql);
         }
-
-        return $result;
+        return array("result"=>$result,"newuser"=>$newUser);
     }
-
 }
