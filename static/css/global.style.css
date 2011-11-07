@@ -60,6 +60,9 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 }
 #global_header .user_info .global_sign_in_btn #home_user_login_btn{ font-weight:bold; font-style:italic; }
 #global_header .user_info .global_sign_in_btn #home_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
+#global_header .user_info .global_sign_in_btn #global_user_login_btn{ font-weight:bold; font-style:italic; }
+#global_header .user_info .global_sign_in_btn #global_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
+
 
 #global_header .user_info .uinfo{ position:absolute; width:200px; height:47px; z-index:100; }
 #global_header .user_info .uinfo em.light{
