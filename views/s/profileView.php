@@ -149,8 +149,7 @@
     if ($logs) {
         $strLogs = '<div class="Recently_updates"><div class="p_right"><img class="update" src="/static/images/translation.gif"/><a href="#">Recently updates</a></div>';
         foreach ($logs as $logItem) {
-            $xid62    = int_to_base62($logItem['id']);
-            $strLogs .= '<a class="cross_link" href="/!' . int_to_base62($crossItem['id']) . '"><div class="redate">'
+            $strLogs .= '<a class="cross_link" href="/!' . int_to_base62($logItem['id']) . '"><div class="redate">'
                       . "<h5>{$logItem['title']}</h5>"
                       . '<div class="maringbt">';
 
