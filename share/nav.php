@@ -10,11 +10,10 @@
     </div>
     <img src="/static/images/user.png" style="display:none;" width="0" height="0" />
     <script type="text/javascript">
-        //If not login page
         if(typeof showIdentificationDialog == "undefined"){
             jQuery("#global_user_login_btn").unbind("click");
             jQuery("#global_user_login_btn").bind("click",function(){
-                odof.user.status.doShowLoginDialog();
+                ns.doShowLoginDialog();
             });
         }else{
             jQuery("#global_user_login_btn").unbind("click");
