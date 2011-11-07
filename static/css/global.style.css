@@ -102,6 +102,10 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
     background:url(/static/images/btn.png) no-repeat left -282px;
     color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;
 }
+#global_header .user_info .uinfo .message .info .hide{
+    background:none;
+    color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;
+}
 #global_header .user_info .uinfo .message .creatbtn{
     width:180px;height:32px;background:url(/static/images/btn.png) no-repeat 2px -234px;margin-top:20px;line-height:32px;
 }
