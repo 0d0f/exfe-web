@@ -127,13 +127,15 @@ class XActions extends ActionController
             }
             
             $crossDesc = strip_tags(exPost('cdesc'));
+            $placeLineOne = strip_tags(exPost('cplaceline1'));
+            $placeLineTwo = strip_tags(exPost('cplaceline2'));
             $cross = array(
                 'id'          => $cross_id,
                 'title'       => mysql_real_escape_string($_POST['ctitle']),
                 'desc'        => mysql_real_escape_string($crossDesc),
                 'start_time'  => $_POST['ctime'],
-                'place_line1' => mysql_real_escape_string($_POST['cplaceline1']),
-                'place_line2' => mysql_real_escape_string($_POST['cplaceline2']),
+                'place_line1' => mysql_real_escape_string($placeLineOne),
+                'place_line2' => mysql_real_escape_string($placeLineTwo),
                 'identity_id' => $identity_id
             );
 
