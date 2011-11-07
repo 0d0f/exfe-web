@@ -43,6 +43,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             odof.user.status.callBackFunc(JSONData);
                         }
                     }catch(e){ /*pass*/ }
+                },
+                complete: function(){
+                    odof.user.status.showLoginStatus(JSONData);
                 }
             });
 
