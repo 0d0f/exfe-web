@@ -228,7 +228,8 @@ b.r3{margin: 0px}
 .login{margin:0 auto;}
 .login ul{margin-top:10px;}
 .login ul li{clear:both; height:45px; }
-.login ul label{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
+.login ul label{ }
+.login ul label.title{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
 .login ul li input.inputText{ height:28px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px; background-color: transparent; font:18px Verdana; }
 .login ul li .identity_box{ position:absolute; margin-top:0px; margin-left:118px; z-index:203; overflow:hidden; }
 .login ul li #identity_dbox{ position:absolute; height:21px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:118px; z-index:202; padding-top:7px; font-size:18px; }
