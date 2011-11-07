@@ -570,7 +570,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             data : {ctitle     : $('#cross_titles_textarea').val(),
                     exfee_only : true,
                     exfee      : JSON.stringify(ns.getexfee())},
-            success:function(data){}
+            success:function(data){
+                if (!data) {
+                    return;
+                }
+                if (!data.success) {
+                    switch (data.error) {
+                        case 'token_expired':
+                            odof.cross.index.setreadonly();
+                    }
+                }
+            }
         });
     };
 

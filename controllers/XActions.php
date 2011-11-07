@@ -96,8 +96,13 @@ class XActions extends ActionController
         $cross_id = base62_to_int($_GET['id']);
         $return_data = array('error' => 0, 'msg' => '');
 
-        if (!$identity_id && !$_SESSION["tokenIdentity"]) {
+        if (!$identity_id && !$_SESSION['tokenIdentity']) {
             echo json_encode(array('success' => false));
+            return;
+        }
+
+        if ($_SESSION['tokenIdentity'] && $_SESSION['tokenIdentity']['token_expired']) {
+            echo json_encode(array('success' => false, 'error' => 'token_expired'));
             return;
         }
 
