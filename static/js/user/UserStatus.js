@@ -43,12 +43,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             odof.user.status.callBackFunc(JSONData);
                         }
                     }catch(e){ /*pass*/ }
-                },
-                complete: function(){
-                    odof.user.status.showLoginStatus(JSONData);
                 }
             });
-
         }
     };
     ns.doShowVerificationDialog = function(dialogBoxID, args){
@@ -288,10 +284,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             //If not login page
             if(typeof showIdentificationDialog == "undefined"){
+                jQuery("#home_user_login_btn").unbind("click");
                 jQuery("#home_user_login_btn").bind("click",function(){
                     ns.doShowLoginDialog();
                 });
             }else{
+                jQuery("#home_user_login_btn").unbind("click");
                 jQuery("#home_user_login_btn").click(function() {
                     jQuery("#identity").focus();
                 });
