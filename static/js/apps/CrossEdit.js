@@ -320,6 +320,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             placeline2 = place ? $('#pv_place_line2').html().replace(/<br>/g, '\\r') : '',
             desc  = jQuery("#cross_desc_textarea").val(),
             exfee = JSON.stringify(ns.getexfee());
+        jQuery("#edit_cross_submit_loading").show();
         jQuery.ajax({
             url:location.href.split('?').shift() + '/crossEdit',
             type:"POST",
@@ -336,6 +337,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             //回调
             success:function(JSONData){
                 ns.callbackActions(JSONData);
+            },
+            complete:function(){
+                jQuery("#edit_cross_submit_loading").hide();         
             }
         });
         //jQuery("#edit_cross_bar").slideUp(300);

@@ -78,6 +78,7 @@ $token=$_GET["token"];
 ?>
 <div class="cross_view_centerbg">
 <div id="edit_cross_bar" style="display:none;">
+    <div id='edit_cross_submit_loading' style="display:none;"></div>
     <p class="titles">Editing <span>X</span></p>
     <p id="error_msg" class="error_msg"></p>
     <p class="done_btn"><a href="javascript:void(0);" id="submit_data">Done</a></p>
