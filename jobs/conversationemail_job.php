@@ -186,7 +186,7 @@ class Conversationemail_Job
             #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
 
             $body = $mail_mime->get();
-            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
+            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$args['cross_id_base62'].'@exfe.com', 'Subject' => "$title"));
             
             $message = $headers . "\r\n" . $body;
 

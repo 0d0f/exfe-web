@@ -226,6 +226,20 @@ class InvitationModels extends DataModel
 
         return array("allow"=>"false");
     }
+    public function ifIdentityHasInvitationByIdentity($identity,$cross_id)
+    {
+        $sql="select id from identities where external_identity='$identity';";
+        $row=$this->getRow($sql);
+        if(intval($row["id"])>0 && intval($cross_id)>0)
+        {
+            $identity_id=intval($row["id"]);
+            $sql="select id from invitations where identity_id=$identity_id and  cross_id=$cross_id;";
+            $row=$this->getRow($sql);
+            if(intval($row["id"])>0)
+                return $identity_id;
+        }
+        return false;
+    }
 
     public function getIdentitiesIdsByCrossIds($cross_ids)
     {
