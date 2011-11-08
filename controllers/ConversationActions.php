@@ -21,6 +21,66 @@ class ConversationActions extends ActionController {
         header( "Location: /!$cross_id_base62" ) ;
         exit(0);
     }
+
+    public function doEmailSave() //for email api 
+    {
+        $responobj["meta"]["code"]=200;
+        $comment=$_POST["comment"];
+        $cross_id=base62_to_int($_POST["cross_id_base62"]);
+        $from=$_POST["from"];
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAllow("mailconversion","",array("cross_id"=>$cross_id,"from"=>$from));
+        if($check["allow"]!="false")
+        {
+            $identity_id=$check["identity_id"];
+            if(trim($comment)!="" && intval($identity_id)>0  && $cross_id>0)
+            {
+                $postData=$this->getModelByName("conversation");
+                $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["comment"]);
+
+                $logdata=$this->getModelByName("log");
+                $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
+
+                $exfeehelper=$this->getHelperByName("exfee");
+                $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
+
+
+                if($r===false)
+                {
+                    $responobj["response"]["success"]="false";
+                }
+                else
+                {
+                    $identityData=$this->getModelByName("identity");
+                    $identity=$identityData->getIdentityById($identity_id);
+
+                    $userData=$this->getModelByName("user");
+                    $user=$userData->getUserProfileByIdentityId($identity_id);
+                    $userIdentity=humanIdentity($identity,$user);
+
+                    $responobj["response"]["comment"]=$comment;
+                    $responobj["response"]["created_at"]=RelativeTime(time());
+                    $responobj["response"]["cross_id"]=$cross_id;
+
+                    $responobj["response"]["identity"]=$userIdentity;
+                    $responobj["response"]["success"]="true";
+                }
+            }
+            else
+            {
+                $responobj["response"]["success"]="false";
+            }
+        }
+        else
+        {
+                $responobj["response"]["success"]="false";
+                $responobj["response"]["error"]="not vaild comment";
+        }
+
+        echo json_encode($responobj);
+        exit();
+    }
+
     public function doSave() //for ajax api
     {
         $responobj["meta"]["code"]=200;
@@ -64,12 +124,6 @@ class ConversationActions extends ActionController {
                     $responobj["response"]["comment"]=$comment;
                     $responobj["response"]["created_at"]=RelativeTime(time());
                     $responobj["response"]["cross_id"]=$cross_id;
-                    //if($identity["name"]=="")
-                    //    $identity["name"]=$user["name"];
-                    //if($identity["bio"]=="")
-                    //    $identity["bio"]=$user["bio"];
-                    //if($identity["avatar_file_name"]=="")
-                    //    $identity["avatar_file_name"]=$user["avatar_file_name"];
 
                     $responobj["response"]["identity"]=$userIdentity;
                     $responobj["response"]["success"]="true";
