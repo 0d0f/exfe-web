@@ -174,15 +174,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      *
      * */
     ns.bindEditTitlesEvent = function(){
-        jQuery("#cross_titles").hide();
-        jQuery("#cross_titles_textarea").show();
-        jQuery('#cross_titles_textarea').bind("clickoutside",function(event) {
-            if(event.target != jQuery("#cross_titles")[0]){
-                jQuery("#cross_titles").html(jQuery("#cross_titles_textarea").val());
-                jQuery("#cross_titles_textarea").hide();
-                jQuery("#cross_titles_textarea").unbind("clickoutside");
-                jQuery("#cross_titles").show();
-                document.title = 'EXFE - ' + $('#cross_titles').html();
+        jQuery('#cross_titles').hide();
+        jQuery('#cross_titles_textarea').show();
+        jQuery('#cross_titles_textarea').bind('clickoutside', function(event) {
+            if(event.target != $('#cross_titles')[0]){
+                var strTitle = odof.util.trim($('#cross_titles_textarea').val());
+                strTitle = strTitle ? strTitle : ('Meet ' + id_name);
+                $('#cross_titles_textarea').hide();
+                $('#cross_titles_textarea').unbind('clickoutside');
+                $('#cross_titles').show();
+                $('#cross_titles_textarea').val(strTitle);
+                $('#cross_titles').html(strTitle);
+                document.title = 'EXFE - ' + strTitle;
                 odof.cross.index.formatCross();
             }
         });

@@ -30,6 +30,7 @@ echo "var token_expired='".$token_expired."'; \r\n";
 //echo "var token_expired='true'; \r\n";
 echo "var myrsvp=".intval($myrsvp)."; \r\n";
 echo "var token='".$_GET["token"]."'; \r\n";
+echo "var id_name='".$global_name."'; \r\n";
 echo "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n";
 echo "</script>\r\n";
 ?>
