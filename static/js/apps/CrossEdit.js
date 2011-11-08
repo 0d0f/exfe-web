@@ -31,6 +31,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#cross_times_area").addClass("enable_click");
         jQuery("#cross_times_area").bind("click", odof.cross.edit.bindEditTimesEvent);
 
+        //format edit place container
         //bind event for cross place container
         //console.log(jQuery("#cross_place_area").html());
         var placeContainer = odof.util.stripTags(jQuery("#cross_place_area").html(), ["<p>","<h3>","<br>"]);
@@ -42,10 +43,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         jQuery("#cross_desc").show();
         jQuery("#cross_desc_short").hide();
+
+        //format cross description edit area
+        var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
         $('#cross_desc').html(
-            $('#cross_desc_textarea').val()
-          ? $('#cross_desc_textarea').val()
-          : 'Write some words about this X.'
+            $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
         );
 
         jQuery("#cross_desc").addClass("enable_click");
