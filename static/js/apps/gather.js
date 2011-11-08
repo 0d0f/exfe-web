@@ -125,7 +125,6 @@ $(document).ready(function() {
             }
             document.title = 'EXFE - ' + strTitle;
         } else {
-            $('#g_title').val(gTitlesDefaultText);
             $('#pv_title').html(gTitlesDefaultText);
             document.title = 'EXFE - ' + gTitlesDefaultText;
         }
