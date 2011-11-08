@@ -127,9 +127,9 @@ $token=$_GET["token"];
             <div class="Conversation">
             <h3>Conversation</h3>
                 <div class="commenttext">
-                <form id="formconversation" action="/<?php echo $cross["id"];?>/conversation/add" method="post">
-                <img style="width:40px;height:40px" src="<?php echo IMG_URL."/".getHashFilePath("", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>"><input type="submit" value="" title="Say!" name="post_commit" id="post_submit"><textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
-                </form>
+                    <img style="width:40px;height:40px" src="<?php echo IMG_URL."/".getHashFilePath("", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>">
+                    <input type="submit" value="" title="Say!" name="post_commit" id="post_submit">
+                    <textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
                 </div>
                 <ul id="commentlist" class="commentlist">
                 <?php

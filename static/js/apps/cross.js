@@ -67,6 +67,54 @@ var clickCallBackFunc = function(args){
             $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
         }
     };
+
+    ns.postConversation = function() {
+        var comment = odof.util.trim($('textarea[name=comment]').val());
+
+        if (submitting || comment === '') {
+            return;
+        }
+        submitting = true;
+
+        var poststr = "cross_id=" + cross_id + "&comment=" + comment + '&token=' + token;
+        $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 5, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
+        $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+
+        $.ajax({
+            type: 'POST',
+            data: poststr,
+            url: site_url + '/conversation/save',
+            dataType: 'json',
+            success: function(data) {
+                if (data != null) {
+                    if (data.response.success == 'false') {
+                        //$('#pwd_hint').html("<span>Error identity </span>");
+                        //$('#login_hint').show();
+                    } else if(data.response.success == 'true') {
+                        var name   = data.response.identity.name == ''
+                                   ? data.response.identity.external_identity
+                                   : data.response.identity.name,
+                            avatar = data.response.identity.avatar_file_name;
+                        var html = '<li><p class="pic40"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar)+'/80_80_' + avatar + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
+                        $('#commentlist').prepend(html);
+                        $('textarea[name=comment]').val('');
+                    }
+                    odof.cross.index.setreadonly(clickCallBackFunc);
+                }
+                $('textarea[name=comment]').activity(false);
+                $('textarea[name=comment]').focus();
+                $('#post_submit').css('background', 'url("/static/images/enter.png")');
+                submitting = false;
+            },
+            error: function(date) {
+                $('textarea[name=comment]').activity(false);
+                $('textarea[name=comment]').focus();
+                $('#post_submit').css('background', 'url("/static/images/enter.png")');
+                submitting = false;
+            }
+        });
+    };
+
 })(ns);
 
 
@@ -84,10 +132,6 @@ $(document).ready(function() {
     });
 
     document.title = 'EXFE - ' + $('#cross_titles').html();
-
-    $('#formconversation').submit(function(e) {
-        // alert("a");
-    });
 
     $('#changersvp').click(function(e) {
         $('#rsvp_options').show();
@@ -111,9 +155,14 @@ $(document).ready(function() {
                 break;
             case 13:
                 if (!e.shiftKey) {
-                    $('#formconversation').submit();
+                    odof.cross.index.postConversation();
+                    e.preventDefault();
                 }
         }
+    });
+
+    $('#post_submit').click(function() {
+        odof.cross.index.postConversation();
     });
 
     $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
@@ -188,53 +237,6 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    $('#formconversation').submit(function() {
-
-        if (submitting) { return false; }
-
-        submitting = true;
-
-        var comment = odof.util.trim($('textarea[name=comment]').val());
-        var poststr = "cross_id=" + cross_id + "&comment=" + comment + '&token=' + token;
-        $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 5, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
-        $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
-
-        $.ajax({
-            type: 'POST',
-            data: poststr,
-            url: site_url + '/conversation/save',
-            dataType: 'json',
-            success: function(data) {
-                if (data != null)
-                {
-                    if (data.response.success == "false")
-                    {
-                        //$('#pwd_hint').html("<span>Error identity </span>");
-                        //$('#login_hint').show();
-                    } else if(data.response.success == "true") {
-                        var name = data.response.identity.name;
-                        if(name == "")
-                            var name = data.response.identity.external_identity;
-                            var avatar = data.response.identity.avatar_file_name;
-                        var html = '<li><p class="pic40"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar)+'/80_80_' + avatar + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
-                        $("#commentlist").prepend(html);
-                        $("textarea[name=comment]").val("");
-                    }
-                    odof.cross.index.setreadonly(clickCallBackFunc);
-                }
-                $('textarea[name=comment]').activity(false);
-                $('#post_submit').css('background', 'url("/static/images/enter.png")');
-                submitting = false;
-            },
-            error: function(date) {
-                $('textarea[name=comment]').activity(false);
-                $('#post_submit').css('background', 'url("/static/images/enter.png")');
-                submitting = false;
-            }
-        });
-        return false;
-    });
-
     if(token_expired == 'true') {
         //$('textarea[name=comment]').attr("disabled","disabled");
         //$('textarea[name=comment]').val("pls login");
@@ -266,6 +268,7 @@ $(document).ready(function() {
             odof.cross.index.setreadonly(clickCallBackFunc);
         });
     }
+
     if(token_expired == 'false') {
         $('#cross_identity_btn').unbind("click");
         $('#cross_identity_btn').click(function(e) {
@@ -275,4 +278,5 @@ $(document).ready(function() {
             odof.cross.index.setreadonly(clickCallBackFunc);
         });
     }
+
 });
