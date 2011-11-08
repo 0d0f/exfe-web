@@ -5,68 +5,90 @@ $username = 'x@exfe.com';
 $password = 'V:%wGHsuOXI}x)il';
 
 $obj = new receiveMail($username,$password,$username,"{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX");
-$obj->connect();         
-$tot = $obj->getTotalMails(); 
-for($i = $tot; $i > 0; $i--)
+
+dofetchandpost($obj);
+
+$obj->close_mailbox();   //Close Mail Box
+
+function dofetchandpost($obj)
 {
-    $head = $obj->getHeaders($i);  
-    $to=$head["to"];
-    $from=$head["from"];
+    $obj->connect();         
+    $tot = $obj->getTotalMails(); 
+    if($tot>0)
+    {
+        for($i = $tot; $i > 0; $i--)
+        {
+            $head = $obj->getHeaders($i);  
+            $to=$head["to"];
+            $from=$head["from"];
+            
+            $cross_id_base62="";
+            if(preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches)>0)
+                $cross_id_base62=$matches[1];
+            $body=$obj->getBody($i);  
+            
+            if($body["charset"]!="" && strtolower($body["charset"])!="utf-8")
+            {
+                $body["body"]=mb_convert_encoding($body["body"],"utf-8",$body["charset"]);
+            }
+            $message = $body["body"];
+            $message = str_ireplace("<br>","\n",$message);
+            $message = str_ireplace("</div>","\n",$message);
+            $message = str_ireplace("<br/>","\n",$message);
+            $message = str_ireplace("<br />","\n",$message);
+        
+            $str=strip_gmail($message);
+            if($str!="")
+                $message=$str;
+        	$message=substr(strip_html_tags($message),0,233);
+            $message_array=explode("\n",$message);
+            $result_str="";
+            $endflag=false;
+            if(sizeof($message_array)>0)
+            {
+               foreach($message_array as $line)
+               {
+                 $r=if_replys_or_signature(trim($line));
+                 if($r===false)
+                 {
+                     $result_str.=$line."\n";
+                 }
+                 else
+                     break;
+               }
+            }
+        
+        
+            if($cross_id_base62!="")
+            {
+                print $from;
+                print "\r\n";
+                print $cross_id_base62;
+                print "\r\n";
+                print trim($result_str);
     
-    $cross_id_base62="";
-    if(preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches)>0)
-        $cross_id_base62=$matches[1];
-    $body=$obj->getBody($i);  
     
-    if($body["charset"]!="" && strtolower($body["charset"])!="utf-8")
-    {
-        $body["body"]=mb_convert_encoding($body["body"],"utf-8",$body["charset"]);
-    }
-    $message = $body["body"];
-    $message = str_ireplace("<br>","\n",$message);
-    $message = str_ireplace("<br/>","\n",$message);
-    $message = str_ireplace("<br />","\n",$message);
-
-    $str=strip_gmail($message);
-    if($str!="")
-        $message=$str;
-	$message=substr(strip_html_tags($message),0,233);
-    $message_array=explode("\n",$message);
-    $result_str="";
-    $endflag=false;
-    if(sizeof($message_array)>0)
-    {
-       foreach($message_array as $line)
-       {
-         $r=if_replys_or_signature(trim($line));
-         if($r===false)
-         {
-             $result_str.=$line."\n";
-         }
-         else
-             break;
-       }
-    }
-
-
-    if($cross_id_base62!="")
-    {
-        print $from;
-        print "\r\n";
-        print $cross_id_base62;
-        print "\r\n";
-        print trim($result_str);
-        $result=postcomment($cross_id_base62,$from,$result_str);
-        print "post:".$result."\r\n";
-        print "========\r\n";
+                $result=postcomment($cross_id_base62,$from,$result_str);
+                if($result=="true")
+                {
+                    $move_r=$obj->moveMails($i,"posted");
+                    echo "\r\npost send\r\n";
+                    if($move_r==true)
+                        echo "\r\nArchive mail $move_r \r\n";
+    
+                }
+                print "post:".$result."\r\n";
+                print "========\r\n";
+            }
+        }
     }
 }
 
-$obj->close_mailbox();   //Close Mail Box
+
 function if_replys_or_signature($line)
 {
    $flag =false;
-   if($line=="--")
+   if($line=="--" ||$line=="--&nbsp;" )
        return true;
    $flag = strpos($line,"-----Original Message-----");
 

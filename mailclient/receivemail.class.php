@@ -233,6 +233,14 @@ class receiveMail
         }
         return $body;
     }
+    function moveMails($mid,$label)
+    {
+        if(!$this->marubox)
+            return false;
+    
+        return imap_mail_move($this->marubox,$mid,$label);
+
+    }
     function deleteMails($mid) // Delete That Mail
     {
         if(!$this->marubox)
