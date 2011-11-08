@@ -164,7 +164,7 @@ $token=$_GET["token"];
             </div>
             <div id="cross_place_area">
                 <h3 id="pv_place_line1" class="pv_place_line1_normal"><?php echo ParseURL($place_line1) ?: 'Somewhere'; ?></h3>
-                <p id="pv_place_line2" class="tm"><?php echo str_replace('\r', '<br>', ParseURL($cross["place"]["line2"])); ?></p>
+                <p id="pv_place_line2" class="tm"><?php echo ParseURL(str_replace('\r', '<br />', $cross["place"]["line2"])); ?></p>
             </div>
             <div id="exfee_area" class="exfee">
                 <div class="feetop"><h3>Exfee</h3> <p class="of"><em class="bignb"><?php echo $confirmed; ?></em> of <em class="malnb"><?php echo $allinvitation; ?></em><br />confirmed</p></div>
