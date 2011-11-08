@@ -11,7 +11,7 @@ class ConversationModels extends DataModel{
             if(intval($row["id"])>0)
             {
                 // @todo: time fixed
-                $time=time() + (60 * 60 * 7);
+                $time=time() + (60 * 60 * 5);
                 $content=mysql_real_escape_string($content);
                 $title=mysql_real_escape_string($title);
                 $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
