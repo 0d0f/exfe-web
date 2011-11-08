@@ -32,6 +32,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#cross_times_area").bind("click", odof.cross.edit.bindEditTimesEvent);
 
         //bind event for cross place container
+        //console.log(jQuery("#cross_place_area").html());
+        var placeContainer = odof.util.stripTags(jQuery("#cross_place_area").html(), ["<p>","<h3>","<br>"]);
+        //console.log(placeContainer);
+        jQuery("#cross_place_area").html(placeContainer);
+
         jQuery("#cross_place_area").addClass("enable_click");
         jQuery("#cross_place_area").bind("click",odof.cross.edit.bindEditPlaceEvent);
 
