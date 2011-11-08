@@ -289,9 +289,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if (event.target.parentNode != jQuery("#cross_desc")[0]){
                 var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
                 $('#cross_desc').html(
-                    $('#cross_desc_textarea').val()
-                  ? $('#cross_desc_textarea').val()
-                  : 'Write some words about this X.'
+                    $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
                 );
                 jQuery("#cross_desc_textarea").slideUp(400);
                 jQuery("#cross_desc_textarea").unbind("clickoutside");
