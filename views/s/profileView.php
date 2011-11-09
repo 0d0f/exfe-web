@@ -45,7 +45,7 @@
                     <div id="preview_container">
                         <div class="preview"><div id="preview"></div></div>
                         <span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>
-                        <a id="saveBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>
+                        <a id="save_btn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>
                     </div>
                 </div>
             </div>
