@@ -30,8 +30,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + '<input type="hidden" id="x2" class="x2" name="x1" />'
                  + '<div id="preview_container">'
                  + '<div class="preview"><div id="preview"></div></div>'
-                 + '<span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>'
-                 + '<a id="saveBtn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>'
+                 //+ '<span style="position:absolute;left:0px;top:90px;width:100px;text-align:center;">Small Avatar 80x80px</span>'
+                 + '<a id="save_btn" href="javascript:void(0);" onclick="odof.user.uploadAvatar.saveImage();"></a>'
                  + '</div>'
                  + '</div>'
                  + '</div>';
@@ -68,8 +68,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#upload_btn_container").hide();
         jQuery("#dragdrop_info").hide();
 
-		//var img = "/"+responseJSON.file_path+"/300_300_"+responseJSON.file_name;
-		var img = img_url+responseJSON.web_path+"/300_300_"+responseJSON.file_name;
+		//var img = "/"+responseJSON.file_path+"/240_240_"+responseJSON.file_name;
+		var img = img_url+responseJSON.web_path+"/240_240_"+responseJSON.file_name;
 
         jQuery('#preview').html(img);
         jQuery('#img_src').val(responseJSON.file_name);				
@@ -85,23 +85,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             show:true,
             fadeSpeed: 200,
             resizeable:false,
-            maxHeight:300,
-            maxWidth:300,
+            maxHeight:240,
+            maxWidth:240,
             minHeight:80,
             minWidth:80,
             x1: 0,
             y1: 0,
-            x2: 300,
-            y2: 300,
+            x2: 240,
+            y2: 240,
             onSelectChange: ns.previewImages
         });
-        ns.previewImages(jQuery('#big'),{"width":300, "height":300});
+        ns.previewImages(jQuery('#big'),{"width":240, "height":240});
 
         //初始化选区的位置及大小。
         jQuery('.x1').val(0);
         jQuery('.y1').val(0);
-        jQuery('.x2').val(300);
-        jQuery('.y2').val(300);
+        jQuery('.x2').val(240);
+        jQuery('.y2').val(240);
     };
 
     ns.previewImages = function(img, selection) {
@@ -112,8 +112,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var scaleY = 80 / selection.height;
 
         jQuery('#preview img').css({
-            width: Math.round(scaleX * 300),
-            height: Math.round(scaleY * 300),
+            width: Math.round(scaleX * 240),
+            height: Math.round(scaleY * 240),
             marginLeft: -Math.round(scaleX * selection.x1),
             marginTop: -Math.round(scaleY * selection.y1)
         });

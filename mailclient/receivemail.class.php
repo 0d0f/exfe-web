@@ -49,13 +49,21 @@ class receiveMail
     {
         $this->marubox=imap_open($this->server,$this->username,$this->password);
         
-        print_r($this);
         if(!$this->marubox)
         {
             echo "Error: Connecting to mail server";
             print_r(imap_last_error());
             exit;
         }
+    }
+    function isconnected()
+    {
+        if(!$this->marubox)
+            return false;
+
+        if(imap_ping($this->marubox)==true)
+            return true;
+        return false;
     }
     function getHeaders($mid) // Get Header info
     {
@@ -148,9 +156,16 @@ class receiveMail
     {
         if(!$this->marubox)
             return false;
+    
+        $result=imap_check($this->marubox);
+        return intval($result->Nmsgs);
 
-        $headers=imap_headers($this->marubox);
-        return count($headers);
+        #if(!$this->marubox)
+        #    return false;
+
+        #$headers=imap_headers($this->marubox);
+        #var_dump($headers);
+        #return count($headers);
     }
     function GetAttach($mid,$path) // Get Atteced File from Mail
     {
@@ -232,6 +247,13 @@ class receiveMail
             return "";
         }
         return $body;
+    }
+    function checkMails()
+    {
+        if(!$this->marubox)
+            return false;
+    
+        return imap_check($this->marubox);
     }
     function moveMails($mid,$label)
     {
