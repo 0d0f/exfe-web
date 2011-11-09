@@ -63,11 +63,33 @@ class CheckHelper extends ActionController {
                 }
                 if(intval($_SESSION["identity_id"])>0)
                 {
+
                     $result=$invitationdata->ifIdentityHasInvitation($_SESSION["identity_id"],$cross_id);
                     if($result===true)
                     {
                         return array("allow"=>"true","type"=>$type);
                     }
+                }
+            }
+            return array("allow"=>'false');
+        }
+        else if($class=="mailconversion")
+        {
+            $cross_id=$args["cross_id"];
+            $from=$args["from"];
+            $invitationdata=$this->getModelByName("invitation");
+
+            if(intval($cross_id)>0)
+            {
+                if($from!="")
+                {
+                    $result=$invitationdata->ifIdentityHasInvitationByIdentity($from,$cross_id);
+                    if($result!==false)
+                    {
+                        $identity_id=intval($result);
+                        return array("allow"=>"true","type"=>$type,"identity_id"=>$identity_id);
+                    }
+
                 }
             }
             return array("allow"=>'false');

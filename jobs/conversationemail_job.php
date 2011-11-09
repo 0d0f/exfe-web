@@ -19,7 +19,7 @@ class Conversationemail_Job
 
             foreach($mails as $mail)
             {
-                $this->send($mail["title"],$mail["body"],$mail["to"]);
+                $this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
             }
         }
 
@@ -87,6 +87,7 @@ class Conversationemail_Job
                 $name="";
                 $mutelink="";
                 $link="";
+                $cross_id_base62="";
                 foreach($posts as $post)
                 {
                     if($post["identity"]["external_identity"]!=$external_identity)
@@ -101,6 +102,7 @@ class Conversationemail_Job
                         $avartar=$img_url."/".getHashFilePath("",$avatar_file_name)."/80_80_".$avatar_file_name;
                   //      $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img  class='exfe_mail_avatar' src='".$avartar."'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
+                        $cross_id_base62=$post["cross_id_base62"];
                     }
                 }
                 $to_identity=$identity_post["to_identity"];
@@ -114,69 +116,14 @@ class Conversationemail_Job
                 $mail["body"]=$mail_body;
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["to"]=$to_identity["external_identity"];
+                $mail["cross_id_base62"]=$cross_id_base62;
                 array_push($mails,$mail);
             }
         }
         return $mails;
     }
 
-    #public function getMailBody($mail)
-    #{
-    #    global $site_url;
-    #    $template=file_get_contents("invitation_template.html");
-    #    $templates=split("\r|\n",$template);
-    #    $template_title=$templates[0];
-    #    unset($templates[0]);
-    #    $template_body=implode($templates);
-    #    $mail_title=str_replace("%exfe_title%",$mail["exfe_title"],$template_title);
-
-    #    $mail_body=str_replace("%exfe_title%",$mail["exfe_title"],$template_body);
-    #    $mail_body=str_replace("%exfee_name%",$mail["exfee_name"],$mail_body);
-    #    $mail_body=str_replace("%hint_title%",$mail["hint_title"],$mail_body);
-    #    $mail_body=str_replace("%host_name%",$mail["host_name"],$mail_body);
-    #    $mail_body=str_replace("%rsvp_status%",$mail["rsvp_status"],$mail_body);
-    #    $mail_body=str_replace("%exfe_link%",$mail["exfe_link"],$mail_body);
-    #    $mail_body=str_replace("%host_avatar%",$mail["host_avatar"],$mail_body);
-    #    $mail_body=str_replace("%exfee_list%",$mail["exfee_list"],$mail_body);
-    #    $mail_body=str_replace("%content%",$mail["content"],$mail_body);
-    #    $mail_body=str_replace("%date%",$mail["date"],$mail_body);
-    #    $mail_body=str_replace("%time%",$mail["time"],$mail_body);
-    #    $mail_body=str_replace("%place_line1%",$mail["place_line1"],$mail_body);
-    #    $mail_body=str_replace("%place_line2%",$mail["place_line2"],$mail_body);
-    #    $mail_body=str_replace("%site_url%",$site_url,$mail_body);
-
-    #    return array("title"=>$mail_title,"body"=>$mail_body);
-    #}
-
-
-    #public function getMailWithTemplate($mail)
-    #{
-    #    $title=$mail["title"];
-    #    $exfee_name=$mail["exfee_name"];
-    #    $action=$mail["action"];
-    #    $content=$mail["content"];
-    #    $link=$mail["link"];
-    #    $mutelink=$mail["mutelink"];
-    #    $command=$mail["command"];
-
-    #    //$templatename="conversation";
-    #    $template=file_get_contents("conversation_template.html");
-    #    $templates=split("\r|\n",$template);
-    #    $template_title=$templates[0];
-    #    unset($templates[0]);
-    #    $template_body=implode($templates);
-    #    $mail_title=str_replace("%exfe_title%",$title,$template_title);
-
-    #    $mail_body=str_replace("%exfe_title%",$title,$template_body);
-    #    $mail_body=str_replace("%exfee_name%",$exfee_name,$mail_body);
-    #    $mail_body=str_replace("%action%",$action,$mail_body);
-    #    $mail_body=str_replace("%content%",$content,$mail_body);
-    #    $mail_body=str_replace("%link%",$link,$mail_body);
-    #    $mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
-
-    #    return array("title"=>$mail_title,"body"=>$mail_body);
-    #}
-    public function send($title,$body,$to)
+    public function send($title,$body,$to,$cross_id_base62)
     {
             global $email_connect;
             global $connect_count;
@@ -186,7 +133,7 @@ class Conversationemail_Job
             #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
 
             $body = $mail_mime->get();
-            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
+            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id_base62.'@exfe.com', 'Subject' => "$title"));
             
             $message = $headers . "\r\n" . $body;
 
