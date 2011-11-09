@@ -278,7 +278,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.showLoginStatus = function(userData){
         if(typeof userData == "undefined" || userData == "" || userData.user_status == 0){
             var loginMenu = '<div class="global_sign_in_btn">'
-                            + '<a id="home_user_login_btn" href="javascript:void(0);">Sign In</a>'
+                            + '<a id="home_user_login_btn" href="javascript:void(0);">Sign in</a>'
                             + '</div>';
             jQuery("#global_user_info").html(loginMenu);
 

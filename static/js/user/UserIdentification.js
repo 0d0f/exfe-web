@@ -65,7 +65,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</ul>"
                  + "</form>";
         } else if(type=="login") {
-            title="Sign In";
+            title="Sign in";
             /*
             desc="<div class='account'><p>Authorize with your <br/> existing accounts </p><span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/twitter.png' alt='' width='32' height='32' /> "
@@ -80,7 +80,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  //+"<li id='retype' style='display:none'><label class='title'>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
                  //+"<li id='displayname' style='display:none'><label class='title'>Names:</label><input type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
                  + "<li class='logincheck' id='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
-                 + "<li><input id='resetpwd' type='submit' value='Forgot Password...' class='forgotpassword'/><input type='submit' value='Sign In' class='sub'/></li>"
+                 + "<li><input id='resetpwd' type='submit' value='Forgot Password...' class='forgotpassword'/><input type='submit' value='Sign in' class='sub'/></li>"
                  + "</ul>"
                  + "</form>";
 
@@ -131,8 +131,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li style='width:288px; padding:0 0 0 50px;'>"
                  + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
                  + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
-                 //+ "<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
-                 + "<input type='submit' value='Sign In' id='sign_in_btn' class='sign_in_btn' /></li>"
+                 //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
+                 + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
                  + "</ul>"
                  + "</form>";
         } else if(type=="change_pwd"){
@@ -332,7 +332,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 jQuery('#retype').hide();
                                 jQuery('#displayname').hide();
                                 jQuery('#resetpwd').show();
-                                jQuery('#sign_in_btn').val("Sign In");
+                                jQuery('#sign_in_btn').val("Sign in");
                                 jQuery('#logincheck').show();
                                 odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
                                 ns.actions = "sign_in";

@@ -12,7 +12,7 @@
         <?php if ($fromaddress) { ?>
         <button onclick="alert('<?php echo $fromaddress; ?>')">Back</button>
         <?php } ?>
-        <button onclick="javascript:location.href = '/s/login';">Sign In</button>
+        <button onclick="javascript:location.href = '/s/login';">Sign in</button>
     </div>
 </div>
 </body>
