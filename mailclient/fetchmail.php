@@ -103,7 +103,12 @@ function dofetchandpost($obj)
             $str=strip_gmail($message);
             if($str!="")
                 $message=$str;
-        	$message=substr(strip_html_tags($message),0,233);
+            $source_str=strip_html_tags($message);
+            if(mb_strlen($source_str)>233)
+        	    $message=mb_substr($source_str,0,233)."...";
+            else
+                $message=$source_str;
+
             $message_array=explode("\n",$message);
             $result_str="";
             $endflag=false;
