@@ -1,6 +1,8 @@
 <?php
 class ConversationActions extends ActionController {
 
+    /**
+     * @todo remove this code
     public function doAdd()
     {
         $checkhelper=$this->getHelperByName("check");
@@ -21,8 +23,9 @@ class ConversationActions extends ActionController {
         header( "Location: /!$cross_id_base62" ) ;
         exit(0);
     }
+    */
 
-    public function doEmailSave() //for email api 
+    public function doEmailSave() //for email api
     {
         $responobj["meta"]["code"]=200;
         $comment=$_POST["comment"];
@@ -84,10 +87,9 @@ class ConversationActions extends ActionController {
     public function doSave() //for ajax api
     {
         $responobj["meta"]["code"]=200;
-        $comment=$_POST["comment"];
+        $comment=htmlspecialchars($_POST["comment"]);
         $cross_id=$_POST["cross_id"];
         $token=$_POST["token"];
-
 
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("conversion","",array("cross_id"=>$cross_id,"token"=>$token));
@@ -99,14 +101,13 @@ class ConversationActions extends ActionController {
             if(trim($comment)!="" && intval($identity_id)>0 )
             {
                 $postData=$this->getModelByName("conversation");
-                $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["comment"]);
+                $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$comment);
 
                 $logdata=$this->getModelByName("log");
-                $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$_POST["comment"],"");
+                $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$comment,"");
 
                 $exfeehelper=$this->getHelperByName("exfee");
                 $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
-
 
                 if($r===false)
                 {
