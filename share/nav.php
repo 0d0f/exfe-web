@@ -4,7 +4,7 @@
         </div>
         <div class="user_info" id="global_user_info">
             <div class="global_sign_in_btn">
-                <a id="global_user_login_btn" href="javascript:void(0);">Sign In</a>
+                <a id="global_user_login_btn" href="javascript:void(0);">Sign in</a>
             </div>
         </div>
     </div>
