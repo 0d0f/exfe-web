@@ -51,9 +51,9 @@ class SActions extends ActionController
             require_once "imgcommon.php";
             $img_info = array(
                 "source_image"      =>$img_path."/".$img_name,
-                "target_image"      =>$img_path."/"."300_300_".$img_name,
-                "width"             =>300,
-                "height"            =>300,
+                "target_image"      =>$img_path."/"."240_240_".$img_name,
+                "width"             =>240,
+                "height"            =>240,
             );
             asidoResizeImg($img_info);
         }
@@ -75,7 +75,7 @@ class SActions extends ActionController
         $img_path = getHashFilePath($img_dir, $img_name);
 
         $img_info = array(
-            "source_image"      =>$img_path."/"."300_300_".$img_name,
+            "source_image"      =>$img_path."/"."240_240_".$img_name,
             "target_image"      =>$img_path."/"."80_80_".$img_name,
             "width"             =>$img_width,
             "height"            =>$img_height,

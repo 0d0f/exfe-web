@@ -738,48 +738,50 @@ b.r3{margin: 0px}
 /******************************************************************/
 
 /******* upload user avatar window style by handaoliang ***********/
-.upload_avatar_dialog{ position:absolute; width:463px; height:385px; padding:0px; background:transparent; z-index:201; }
-.upload_avatar_dialog .titles{ width:463px; height:25px; background:url(/static/images/fuceng_title.png) no-repeat 0 0; }
+.upload_avatar_dialog{ position:absolute; width:400px; height:325px; padding:0px; background:transparent; z-index:201; }
+.upload_avatar_dialog .titles{ width:400px; height:25px; background:url(/static/images/fuceng_title_400.png) no-repeat 0 0; }
 .upload_avatar_dialog .titles p.l{ width:35px; height:25px; float:left; color:#FFF; padding-left:3px; }
 .upload_avatar_dialog .titles p.l a{ display:block; width:27px; height:22px; padding-top:3px; text-decoration:none; }
-.upload_avatar_dialog .titles p.r{ width:410px; height:22px; padding-top:3px; float:right; color:#FFF; text-align:right; padding-right:10px; }
+.upload_avatar_dialog .titles p.r{ width:310px; height:22px; padding-top:3px; float:right; color:#FFF; text-align:right; padding-right:10px; }
 
-.upload_avatar_dialog #container { position: absolute; left: 0px; top: 25px; width:463px; height:360px; background:#FFFFFF; }
+.upload_avatar_dialog #container { position: absolute; left: 0px; top: 25px; width:400px; height:300px; background:#FFFFFF; }
 
-.upload_avatar_dialog #wrapper { position: absolute; left: 20px; top: 20px; background:red; }
+.upload_avatar_dialog #wrapper { position: absolute; left: 20px; top: 20px; }
 .upload_avatar_dialog #div_upload_big {
     position: absolute; left: 0px; top: 0px; border: 10px solid #CCC;
-    width:300px; height:300px;
+    width:240px; height:240px;
     background:-webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), to(#EEEEEE));
     background:-moz-linear-gradient(#FFFFFF, #EEEEEE);
     background:-o-linear-gradient(#FFFFFF, #EEEEEE);
     background:linear-gradient(#FFFFFF, #EEEEEE);
 }
 .upload_avatar_dialog #preview_container {
-    position: absolute; width:100px;height:320px; left: 333px; top: 0px;
+    position: absolute; width:90px; height:260px; left:278px; top:0px;
 }
 
 .upload_avatar_dialog .preview{
     position:absolute; width:80px; height:80px; overflow:hidden;
-    left:10px;top:0px; border: 1px solid #ccc; background:#EEEEEE;
+    left:0px; top:0px; border: 1px solid #ccc; background:#EEEEEE;
 }
+/*
 .upload_avatar_dialog #file_select_btn{
     position: absolute; z-index:100;
     left: 35px; top: 120px;
     width: 216px; height:35px; font-size:0px;
     background:url(../images/ic_select_file_btn.png) no-repeat 0 0;;
 }
+*/
 
 .upload_avatar_dialog #dragdrop_info{
     position:absolute; z-index:100;
-    left: 68px; top: 70px;
+    left: 35px; top: 70px;
     text-align:center; font-size:16pt; color:#999;
     width:230px; height:60px;
 }
 
-.upload_avatar_dialog #saveBtn {
+.upload_avatar_dialog #save_btn{
     position: absolute;
-    left: 10px; top: 290px;
+    left: 0px; top: 232px;
     width: 80px; height: 27px;
     background: url(../images/ic_save_img.png);
 }
@@ -791,7 +793,7 @@ b.r3{margin: 0px}
 }
 
 .upload_avatar_dialog #upload_status{
-    position:absolute;left:60px;top:170px;width:300px; height:20px; padding:15px; font-weight:bold;
+    position:absolute;left:35px; top:150px;width:300px; height:20px; padding:15px; font-weight:bold;
     border:1px solid #999; background:#FFF; z-index:204; color:#FF0000; text-align:center;
 }
 
@@ -799,31 +801,31 @@ b.r3{margin: 0px}
 .upload_avatar_dialog #upload_btn_container{
     position: absolute; z-index:100;
     left: 20px; top: 20px;
-    width:320px; height:320px;
+    width:260px; height:260px;
 }
 .upload_avatar_dialog #upload_btn_container .ex-uploader { width:300px; height:300px; }
 .upload_avatar_dialog #upload_btn_container .ex-upload-button {
     position:absolute; display:block; /* or inline-block */
-    top:140px; left:50px; z-index:100;
-    width: 216px; height:35px; text-align:center;font-size:0px;
+    top:140px; left:40px; z-index:100;
+    width:180px; height:30px; text-align:center; font-size:0px;
     background:url(../images/ic_select_file_btn.png) no-repeat 0 0;;
 }
 .upload_avatar_dialog #upload_btn_container .ex-upload-button-hover {}
 .upload_avatar_dialog #upload_btn_container .ex-upload-button-focus {}
 
 .upload_avatar_dialog #upload_btn_container .ex-upload-drop-area {
-    position:absolute; top:0; left:0; display:block;
-    width:314px; height:314px; z-index:102; font-size:0px;
-    border:3px dashed #999; text-align:center;
+    position:absolute; top:0; left:0; text-align:center; border:3px dashed #999;
+    width:254px; height:254px; z-index:102; font-size:0px;
 }
 .upload_avatar_dialog #upload_btn_container .ex-upload-drop-area-active {border:3px dashed #999;}
-.upload_avatar_dialog #upload_btn_container .ex-upload-list .ex-upload-info{
-    display:block; margin-top:10px; width:300px; text-align:center;
-}
+
 .upload_avatar_dialog #upload_btn_container .ex-upload-list {
     position:absolute; top:0; left:0; z-index:101;
-    width:318px; height:318px; background:#FFF;
+    width:260px; height:260px; background:#FFF;
     filter: alpha(opacity = 80); -moz-opacity: 0.8; opacity: 0.8;
+}
+.upload_avatar_dialog #upload_btn_container .ex-upload-list .ex-upload-info{
+    display:block; margin-top:10px; width:240px; text-align:center;
 }
 .upload_avatar_dialog #upload_btn_container .ex-upload-list span{ padding-left:5px; }
 
