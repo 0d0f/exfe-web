@@ -7,6 +7,7 @@ include("receivemail.class.php");
 
 $shutdown=false;
 
+$errorcount=array();
 
 $PIDFILE = getenv('PIDFILE');
 if ($PIDFILE) {
@@ -64,6 +65,7 @@ function shutdown()
 
 function dofetchandpost($obj)
 {
+    global $errorcount;
     if($obj->isconnected()==false)
     {
         thislog("reconnecting...");
@@ -147,6 +149,27 @@ function dofetchandpost($obj)
                         echo "\r\nArchive mail $move_r \r\n";
     
                 }
+                else
+                {
+                    $error_key=md5($cross_id_base62.$from.$result_str);
+                    $error_count=intval($errorcount[$error_key]);
+                    if($error_count<=3)
+                    {
+                        $errorcount[$error_key]=$error_count+1;
+                        print "\r\n add count \r\n";
+                    }
+                    else
+                    {
+                        $move_r=$obj->moveMails($i,"error");
+                        echo "\r\npost error\r\n";
+                        if($move_r==true)
+                        {
+                            unset($errorcount[$error_key]);
+                            echo "\r\n move mail to error box \r\n";
+                        }
+                    }
+                    print_r($errorcount);
+                }
                 print "post:".$result."\r\n";
                 print "========\r\n";
             }
@@ -198,7 +221,6 @@ function if_replys_or_signature($line)
 
 function strip_gmail($text)
 {
-        $string = preg_replace( '@<(script|style)[^>]*?>.*?@si', '', $text);
         $flag=strpos($text,"<div class=\"gmail_quote\"");
         if($flag>0)
             return trim(substr($text,0,$flag));
@@ -207,39 +229,37 @@ function strip_gmail($text)
 
 function strip_html_tags($text)
 {
-
-    $string = preg_replace('/<script\b[^>]*>(.*?)<\/script>/i', "", $text)
-    $string = preg_replace('/<style\b[^>]*>(.*?)<\/style>/i', "", $string)
+    $string = preg_replace('/<script\b[^>]*>(.*?)<\/script>/i', "", $text);
+    $string = preg_replace('/<style\b[^>]*>(.*?)<\/style>/i', "", $string);
     $string = strip_tags($string);
     return trim($string);
 }
 
 function postcomment($cross_id_base62,$from,$comment)
 {
-$fields = array(
-            'cross_id_base62'=>$cross_id_base62,
-            'from'=>$from,
-            'comment'=> $comment,
-            'postkey'=> POSTKEY
-        );
-
-thislog("post comment:".$fields);
-foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-rtrim($fields_string,'&');
-
-$ch = curl_init();
-
-curl_setopt($ch,CURLOPT_URL,EmailPost_link);
-curl_setopt($ch,CURLOPT_POST,count($fields));
-curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
-curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-
-$result = curl_exec($ch);
-print_r($result);
-curl_close($ch);
-
-$resultobj=json_decode($result);
-return $resultobj->response->success;
+    $fields = array(
+                'cross_id_base62'=>$cross_id_base62,
+                'from'=>$from,
+                'comment'=> $comment,
+                'postkey'=> POSTKEY
+            );
+    
+    thislog("post comment:".$fields);
+    foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+    rtrim($fields_string,'&');
+    
+    $ch = curl_init();
+    
+    curl_setopt($ch,CURLOPT_URL,EmailPost_link);
+    curl_setopt($ch,CURLOPT_POST,count($fields));
+    curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+    
+    $result = curl_exec($ch);
+    curl_close($ch);
+    
+    $resultobj=json_decode($result);
+    return $resultobj->response->success;
 
 }
 
