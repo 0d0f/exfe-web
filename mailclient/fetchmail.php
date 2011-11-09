@@ -202,7 +202,9 @@ function strip_gmail($text)
 
 function strip_html_tags($text)
 {
-    $string = preg_replace( '@<(script|style)[^>]*?>.*?@si', '', $text);
+
+    $string = preg_replace('/<script\b[^>]*>(.*?)<\/script>/i', "", $text)
+    $string = preg_replace('/<style\b[^>]*>(.*?)<\/style>/i', "", $string)
     $string = strip_tags($string);
     return trim($string);
 }
@@ -213,10 +215,10 @@ $fields = array(
             'cross_id_base62'=>$cross_id_base62,
             'from'=>$from,
             'comment'=> $comment,
-            'postkey'=> $postkey
+            'postkey'=> POSTKEY
         );
 
-                thislog("post comment:".$fields);
+thislog("post comment:".$fields);
 foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
 rtrim($fields_string,'&');
 
