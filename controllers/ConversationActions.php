@@ -28,8 +28,17 @@ class ConversationActions extends ActionController {
         $comment=$_POST["comment"];
         $cross_id=base62_to_int($_POST["cross_id_base62"]);
         $from=$_POST["from"];
+        $postkey=$_POST["postkey"];
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("mailconversion","",array("cross_id"=>$cross_id,"from"=>$from));
+        if(md5(EmailPost_Key)!=$postkey)
+        {
+            $responobj["response"]["success"]="false";
+            $responobj["response"]["error"]="bad post key.";
+            echo json_encode($responobj);
+            exit();
+        }
+
         if($check["allow"]!="false")
         {
             $identity_id=$check["identity_id"];
