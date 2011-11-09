@@ -1,10 +1,11 @@
 <?php 
+include("mailconf.php");
 include("receivemail.class.php");
+#$username = 'x@exfe.com';
+#$password = 'V:%wGHsuOXI}x)il';
+#$interval=10;
 
-$username = 'x@exfe.com';
-$password = 'V:%wGHsuOXI}x)il';
 $shutdown=false;
-$interval=10;
 
 
 $PIDFILE = getenv('PIDFILE');
@@ -208,11 +209,11 @@ function strip_html_tags($text)
 
 function postcomment($cross_id_base62,$from,$comment)
 {
-$url = 'http://dev.0d0f.com/conversation/emailsave';
 $fields = array(
             'cross_id_base62'=>$cross_id_base62,
             'from'=>$from,
-            'comment'=> $comment
+            'comment'=> $comment,
+            'postkey'=> $postkey
         );
 
                 thislog("post comment:".$fields);
@@ -221,7 +222,7 @@ rtrim($fields_string,'&');
 
 $ch = curl_init();
 
-curl_setopt($ch,CURLOPT_URL,$url);
+curl_setopt($ch,CURLOPT_URL,EmailPost_link);
 curl_setopt($ch,CURLOPT_POST,count($fields));
 curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
 curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
