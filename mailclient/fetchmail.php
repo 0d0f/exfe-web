@@ -3,17 +3,74 @@ include("receivemail.class.php");
 
 $username = 'x@exfe.com';
 $password = 'V:%wGHsuOXI}x)il';
+$shutdown=false;
+$interval=10;
+
+
+$PIDFILE = getenv('PIDFILE');
+if ($PIDFILE) {
+    $pid=getmypid();
+    $r=file_put_contents($PIDFILE, $pid) or
+        die('Could not write PID information to ' . $PIDFILE);
+}
+else
+        die('must write pidfile: ' . $PIDFILE);
+
+fwrite(STDOUT , '*** Starting worker '.$worker."\n");
 
 $obj = new receiveMail($username,$password,$username,"{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX");
+$obj->connect();         
 
-dofetchandpost($obj);
+while(true) {
+    if($shutdown) {
+        break;
+    }
+    dofetchandpost($obj);
+    usleep($interval * 1000000);
+}
 
 $obj->close_mailbox();   //Close Mail Box
 
+function registerSigHandlers()
+{
+    if(!function_exists('pcntl_signal')) {
+        return;
+    }
+    pcntl_signal(SIGTERM, 'shutdown');
+    pcntl_signal(SIGINT, 'shutdown');
+    pcntl_signal(SIGQUIT, 'shutdown');
+}
+
+function thislog($message)
+{
+    #if($this->logLevel == self::LOG_NORMAL) {
+    #    fwrite( STDOUT , "*** " . $message . "\n");
+    #}
+    #else if($this->logLevel == self::LOG_VERBOSE) {
+        fwrite( STDOUT , "** [" . strftime('%T %Y-%m-%d') . "] " . $message . "\n");
+    #}
+}
+
+
+function shutdown()
+{
+    global $shutdown;
+    $shutdown = true;
+    thislog('Exiting...');
+    #$this->shutdown = true;
+    #$this->log('Exiting...');
+}
+
 function dofetchandpost($obj)
 {
-    $obj->connect();         
+    if($obj->isconnected()==false)
+    {
+        thislog("reconnecting...");
+        $obj->connect();
+    }
+
     $tot = $obj->getTotalMails(); 
+    thislog("new mail:".$tot);
     if($tot>0)
     {
         for($i = $tot; $i > 0; $i--)
@@ -23,8 +80,14 @@ function dofetchandpost($obj)
             $from=$head["from"];
             
             $cross_id_base62="";
-            if(preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches)>0)
+            $match_result=preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches);
+            if($match_result==0)
+                $match_result=preg_match('/<x\+([0-9a-zA-Z]+)@exfe.com>/',$to,$matches);
+
+            if($match_result>0)
+            {
                 $cross_id_base62=$matches[1];
+            }
             $body=$obj->getBody($i);  
             
             if($body["charset"]!="" && strtolower($body["charset"])!="utf-8")
@@ -57,6 +120,7 @@ function dofetchandpost($obj)
                      break;
                }
             }
+            print "post comment:".$cross_id_base62." ".$from." ".$result_str."\r\n";
         
         
             if($cross_id_base62!="")
@@ -65,8 +129,8 @@ function dofetchandpost($obj)
                 print "\r\n";
                 print $cross_id_base62;
                 print "\r\n";
+                $result_str=html_entity_decode($result_str, ENT_QUOTES, 'UTF-8');
                 print trim($result_str);
-    
     
                 $result=postcomment($cross_id_base62,$from,$result_str);
                 if($result=="true")
@@ -82,6 +146,15 @@ function dofetchandpost($obj)
             }
         }
     }
+
+    #$check=$obj->checkMails();
+    #var_dump($check);
+    #if($check->Nmsgs>0)
+    #{
+    #    $head = $obj->getHeaders(1);  
+    #    print_r($head);
+    #}
+
 }
 
 
@@ -104,6 +177,11 @@ function if_replys_or_signature($line)
    if($flag === false)
        if(preg_match('/^On (.*) wrote:/',$line)==1)
            return true;
+   if($flag === false)
+       if(preg_match('/^发自我的 iPhone/',$line)==1)
+           return true;
+
+
    if($flag === false)
        if(trim($line)=="")
            return true;
@@ -136,6 +214,8 @@ $fields = array(
             'from'=>$from,
             'comment'=> $comment
         );
+
+                thislog("post comment:".$fields);
 foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
 rtrim($fields_string,'&');
 
@@ -154,3 +234,5 @@ $resultobj=json_decode($result);
 return $resultobj->response->success;
 
 }
+
+
