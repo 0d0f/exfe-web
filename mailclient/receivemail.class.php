@@ -76,12 +76,12 @@ class receiveMail
         if(strtolower($sender->mailbox)!='mailer-daemon' && strtolower($sender->mailbox)!='postmaster')
         {
             $mail_details=array(
-                    'from'=>strtolower($sender->mailbox).'@'.$sender->host,
+                    'from'=>$sender->mailbox.'@'.$sender->host,
                     'fromName'=>$sender->personal,
-                    'toOth'=>strtolower($sender_replyto->mailbox).'@'.$sender_replyto->host,
+                    'toOth'=>$sender_replyto->mailbox.'@'.$sender_replyto->host,
                     'toNameOth'=>$sender_replyto->personal,
                     'subject'=>$mail_header->subject,
-                    'to'=>strtolower($mail_header->toaddress)
+                    'to'=>$mail_header->toaddress
                 );
         }
         return $mail_details;
