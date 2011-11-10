@@ -100,6 +100,7 @@ function dofetchandpost($obj)
             $message = $body["body"];
             $message = str_ireplace("<br>","\n",$message);
             $message = str_ireplace("</div>","\n",$message);
+            $message = str_ireplace("</p>","\n",$message);
             $message = str_ireplace("<br/>","\n",$message);
             $message = str_ireplace("<br />","\n",$message);
         
@@ -219,6 +220,10 @@ function if_replys_or_signature($line)
 
    if($flag === false)
     $flag = strpos($line,"Sent from my BlackBerry");
+
+   if($flag === false)
+       if(preg_match('/^From:.*[mailto:.*]/',$line)==1)
+           return true;
 
    if($flag === false)
        if(preg_match('/^On (.*) wrote:/',$line)==1)
