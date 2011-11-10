@@ -168,10 +168,27 @@ function dofetchandpost($obj)
                             echo "\r\n move mail to error box \r\n";
                         }
                     }
-                    print_r($errorcount);
                 }
-                print "post:".$result."\r\n";
-                print "========\r\n";
+            }
+            else
+            {
+                    $error_key=md5($cross_id_base62.$from.$result_str);
+                    $error_count=intval($errorcount[$error_key]);
+                    if($error_count<=3)
+                    {
+                        $errorcount[$error_key]=$error_count+1;
+                        print "\r\n add count \r\n";
+                    }
+                    else
+                    {
+                        $move_r=$obj->moveMails($i,"error");
+                        echo "\r\npost error\r\n";
+                        if($move_r==true)
+                        {
+                            unset($errorcount[$error_key]);
+                            echo "\r\n move mail to error box \r\n";
+                        }
+                    }
             }
         }
     }
