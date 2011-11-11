@@ -288,6 +288,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery(".notice").hide();
         if(typeof userIdentity == "undefined"){
             var userIdentity = jQuery('#identity').val();
+        }else{//如果传入了，则需要重新设置一下identity输入框的值。
+            jQuery('#identity').val(userIdentity);
         }
         //added by handaoliang, check email address
         var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
