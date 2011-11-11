@@ -38,7 +38,9 @@ echo "</script>\r\n";
 include_once "lib/markdown.php";
 $original_desc_str = $cross["description"];
 
-$description= Markdown($original_desc_str);
+$parser = new Markdown_Parser;
+$parser->no_markup = true;
+$description= $parser->transform($original_desc_str);
 
 $text_desc_str=strip_tags($description);
 $desc_str_len = mb_strlen($text_desc_str);

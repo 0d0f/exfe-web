@@ -52,7 +52,7 @@ function Markdown($text) {
 	}
 
 	# Transform text using parser.
-	return $parser->transform($text);
+	return $parser->transform(custom_markdown_autolinks($text));
 }
 
 
@@ -1644,6 +1644,18 @@ class Markdown_Parser {
 	}
 
 }
+    function custom_markdown_autolinks($text)
+    {
+        $url_regex = '(http|https|ftp)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}'
+            . '(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?\,\'\/\\\+&%\$#\=~])*[^\.\,\)\(\s]';
+        // URL must not be inside markdown tags already.
+        // If a URL has a ", <, ( or [ in front, then don't match it.
+        return preg_replace(
+            '/' . '(^|[^\[\(<"]\s*)' . '(' . $url_regex . ')' . '/',
+            '$1[$2]($2)',
+            $text
+        );
+    }
 
 /*
 
