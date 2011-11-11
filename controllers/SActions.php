@@ -479,6 +479,58 @@ class SActions extends ActionController
         $this->displayView();
     }
 
+
+    public function doGetInvitation()
+    {
+        if (intval($_SESSION['userid']) <= 0) {
+            header( 'Location: /s/login' ) ;
+            exit(0);
+        }
+
+        // init models
+        $modIvit     = $this->getModelByName('invitation');
+        $modIdentity = $this->getModelByName('identity');
+        $modUser     = $this->getModelByName('user');
+        $modCross    = $this->getModelByName('x');
+
+        // Get identity ids
+        $identities  = $modIdentity->getIdentitiesByUser($_SESSION['userid']);
+        $identityIds = array();
+        foreach ($identities as $idI => $idItem) {
+            array_push($identityIds, $idItem['id']);
+        }
+
+        // Get invitations
+        $newInvt = $modIvit->getNewInvitationsByIdentityIds($identityIds);
+        foreach ($newInvt as $newInvtI => $newInvtItem) {
+            $identity = $modIdentity->getIdentityById(
+                $newInvtItem['identity_id']
+            );
+            $newInvt[$newInvtI]['sender'] = humanIdentity(
+                $identity,
+                $modUser->getUserByIdentityId($newInvtItem['identity_id'])
+            );
+            $newInvt[$newInvtI]['cross'] = $modCross->getCross(
+                $newInvtItem['cross_id']
+            );
+        }
+
+        echo json_encode($newInvt);
+    }
+
+
+    public function doGetCross()
+    {
+
+    }
+
+
+    public function doGetUpdate()
+    {
+
+    }
+
+
     public function doIfIdentityExist()
     {
         //TODO: private API ,must check session
@@ -885,7 +937,7 @@ class SActions extends ActionController
 
                 $userDataObj = $this->getModelByName("user");
                 $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
-                
+
                 if(!$result["result"]){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
