@@ -148,7 +148,7 @@ $token=$_GET["token"];
                     //    $identity["name"]=$identity["external_identity"];
                 ?>
                 <li>
-                <p class="pic40"><img src="<?php echo IMG_URL."/".getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span><?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
+                <p class="pic40"><img src="<?php echo IMG_URL."/".getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span>&nbsp;<?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
                 </li>
                 <?php
                     }

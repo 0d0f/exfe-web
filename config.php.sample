@@ -12,3 +12,5 @@ $img_url="http://localimg.exfe.com";
 define("IMG_URL", "http://localimg.exfe.com");
 
 define("RESQUE_SERVER", "127.0.0.1:6379");
+
+define("EmailPost_Key","589895idklf873iu3D1kkjdkja");

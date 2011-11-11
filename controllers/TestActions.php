@@ -57,8 +57,9 @@ class TestActions extends ActionController {
     }
     public function doTest()
     {
-        $content=cleanText("dadfasdf http://www.dianping.com/shop/2588782 www.google.com ");
-        print_r($content);
+        var_dump(base62_to_int("q0X"));
+        #$content=cleanText("dadfasdf http://www.dianping.com/shop/2588782 www.google.com ");
+        #print_r($content);
         #$a="abcd\r\ne'rf";
         #$b=nl2br($a);
         #$b=$this->escape($a) ;

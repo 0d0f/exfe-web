@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /www/exfe/current/mailclient
+PIDFILE=/var/run/resque/worker_mailclientconversation.pid /usr/local/bin/php -f /www/exfe/current/mailclient/fetchmail.php conversation> /var/log/resque/mailclientconversation.log

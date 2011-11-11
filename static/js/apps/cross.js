@@ -95,7 +95,7 @@ var clickCallBackFunc = function(args){
                                    ? data.response.identity.external_identity
                                    : data.response.identity.name,
                             avatar = data.response.identity.avatar_file_name;
-                        var html = '<li><p class="pic40"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar)+'/80_80_' + avatar + '" alt=""></p> <p class="comment"><span>' + name + ':</span>' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
+                        var html = '<li><p class="pic40"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar)+'/80_80_' + avatar + '" alt=""></p> <p class="comment"><span>' + name + ':</span>&nbsp;' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
                         $('#commentlist').prepend(html);
                         $('textarea[name=comment]').val('');
                     }
