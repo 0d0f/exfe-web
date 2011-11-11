@@ -796,7 +796,7 @@ b.r3{margin: 0px}
 
 .upload_avatar_dialog #upload_status{
     position:absolute;left:35px; top:150px;width:300px; height:20px; padding:15px; font-weight:bold;
-    border:1px solid #999; background:#FFF; z-index:204; color:#FF0000; text-align:center;
+    border:1px solid #999; background:#FFF; z-index:204; color:#135200; text-align:center;
 }
 
 /* exFileUploader style control */
