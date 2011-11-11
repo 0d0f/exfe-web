@@ -69,6 +69,15 @@ pause this style
 }
 .exfel p.text a{background:url(/static/images/btn.png) no-repeat 50px -107px;padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
 }
+#cross_desc p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
+}
+#cross_desc p {font-size:15px;margin-top:10px;line-height:22px;
+}
+#cross_desc_short p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
+}
+#cross_desc_short p {font-size:15px;margin-top:10px;line-height:22px;
+}
+
 .exfel ul.ynbtn{margin:25px 0;height:30px;
 }
 .exfel ul.ynbtn li{width:150px;float:left;

@@ -140,6 +140,7 @@ $(document).ready(function() {
 
     // description
     var gDescDefaultText = $('#gather_desc_bg').html();
+    var converter = new Showdown.converter();
     $('#g_description').keyup(function() {
         var maxChrt = 33,
             maxLine = 9,
@@ -148,7 +149,7 @@ $(document).ready(function() {
             strDesc = objDesc.val();
         if (strDesc) {
             $('#gather_desc_bg').html('');
-            $('#pv_description').html(strDesc);
+            $('#pv_description').html(converter.makeHtml(strDesc));
             var arrDesc = strDesc.split(/\r|\n|\r\n/),
                 intLine = arrDesc.length;
             for (var i in arrDesc) {
