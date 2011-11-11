@@ -69,14 +69,21 @@ pause this style
 }
 .exfel p.text a{background:url(/static/images/btn.png) no-repeat 50px -107px;padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
 }
-#cross_desc p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
-}
-#cross_desc p {font-size:15px;margin-top:10px;line-height:22px;
-}
-#cross_desc_short p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
-}
-#cross_desc_short p {font-size:15px;margin-top:10px;line-height:22px;
-}
+#cross_desc p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px; } 
+#cross_desc p {font-size:14px;margin-top:10px;line-height:22px; }
+#cross_desc img {max-width:480px;}
+#cross_desc h1 {font-size:14px; line-height:20px; margin-top:20px; margin-bottom:20px; }
+#cross_desc h2 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
+#cross_desc h3 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
+
+#cross_desc_short p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px; }
+#cross_desc_short p {font-size:14px;margin-top:10px;line-height:22px; }
+#cross_desc_short img {max-width:480px;}
+#cross_desc_short h1 {font-size:14px; line-height:20px; margin-top:20px; margin-bottom:20px; }
+#cross_desc_short h2 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
+#cross_desc_short h3 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
+
+
 
 .exfel ul.ynbtn{margin:25px 0;height:30px;
 }
