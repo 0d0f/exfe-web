@@ -40,7 +40,7 @@ var clickCallBackFunc = function(args){
                     jQuery("#show_identity_box").html(external_identity);
                 }
             }else if(show_idbox == "login"){
-                odof.user.status.doShowLoginDialog(null, callBackFunc);
+                odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
             }else{
                 var args = {"identity":external_identity};
                 odof.user.status.doShowVerificationDialog(null, args);

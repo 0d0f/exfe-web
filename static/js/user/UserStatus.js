@@ -47,14 +47,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
-    ns.doShowVerificationDialog = function(dialogBoxID, args){
+    ns.doShowVerificationDialog = function(dialogContainerID, args){
         var html = odof.user.identification.showdialog("reg");
 
-        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string"){
-            document.getElementById(dialogBoxID).innerHTML = html;
+        if(typeof dialogContainerID != "undefined" && typeof dialogContainerID == "string"){
+            document.getElementById(dialogContainerID).innerHTML = html;
         }else{
             odof.exlibs.ExDialog.initialize("identification", html);
-            var dialogBoxID = "identification_dialog";
+            var dialogContainerID = "identification_dialog";
         }
 
         jQuery("#identity_forgot_pwd_dialog").show();
@@ -168,12 +168,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     data:postData,
                     success: function(JSONData){
                         if(!JSONData.error){
-                            if(actions == "setpwd")
-                            {
+                            if(actions == "setpwd") {
                                 window.location.href="/!"+JSONData.cross_id;
-                            }
-                            else
+                            } else{
                                 window.location.href="/s/profile";
+                            }
                         }else{
                             jQuery("#reset_pwd_error_msg").show();
                             setTimeout(hideErrorMsg, 3000);
@@ -207,37 +206,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var dialogBoxID = "identification_dialog";
         }
 
-        //如果传入了identity，那么要检测是注册还是登录。
-        if(typeof userIdentity != "undefined" && userIdentity != ""){
-            odof.user.identification.identityInputBoxActions(userIdentity);
-        }
-
-        jQuery("#resetpwd").bind("click", function(){
-            jQuery("#identity_forgot_pwd_dialog").show();
-            jQuery("#f_identity").val(jQuery("#identity").val());
-            jQuery("#cancel_verification_btn").bind("click",function(){
-                jQuery("#identity_forgot_pwd_dialog").hide();
-                jQuery("#send_verification_btn").unbind("click");
-            });
-            jQuery('#f_identity').keyup(function() {
-                jQuery("#identity").val(jQuery("#f_identity").val());
-                jQuery("#identity_forgot_pwd_dialog").hide();
-                odof.user.identification.identityInputBoxActions();
-            });
-            var userIdentity = jQuery("#f_identity").val();
-            jQuery("#send_verification_btn").bind("click",function(){
-                ns.doSendEmail(userIdentity,"verification");
-            });
-        });
-        jQuery("#sign_up_btn").bind("click", function(){
-            odof.user.identification.showRegisteMsg();
-        });
-
-        odof.user.identification.bindDialogEvent("reg");
-        jQuery("#identification_pwd_ic").bind("click",function(){
-            odof.comm.func.displayPassword('identification_pwd');
-        });
-
+        //show last login identity
         var lastIdentity = odof.util.getCookie('last_identity');
         if(lastIdentity){
             jQuery("#identity").val(lastIdentity)
@@ -273,6 +242,39 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#delete_identity").hide();
             });
         }
+
+
+        //如果传入了identity，那么要检测是注册还是登录。
+        if(typeof userIdentity != "undefined" && userIdentity != ""){
+            odof.user.identification.identityInputBoxActions(userIdentity);
+        }
+
+        jQuery("#resetpwd").bind("click", function(){
+            jQuery("#identity_forgot_pwd_dialog").show();
+            jQuery("#f_identity").val(jQuery("#identity").val());
+            jQuery("#cancel_verification_btn").bind("click",function(){
+                jQuery("#identity_forgot_pwd_dialog").hide();
+                jQuery("#send_verification_btn").unbind("click");
+            });
+            jQuery('#f_identity').keyup(function() {
+                jQuery("#identity").val(jQuery("#f_identity").val());
+                jQuery("#identity_forgot_pwd_dialog").hide();
+                odof.user.identification.identityInputBoxActions();
+            });
+            var userIdentity = jQuery("#f_identity").val();
+            jQuery("#send_verification_btn").bind("click",function(){
+                ns.doSendEmail(userIdentity,"verification");
+            });
+        });
+        jQuery("#sign_up_btn").bind("click", function(){
+            odof.user.identification.showRegisteMsg();
+        });
+
+        odof.user.identification.bindDialogEvent("reg");
+        jQuery("#identification_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword('identification_pwd');
+        });
+
         jQuery("#identity").focus();
     };
     ns.showLoginStatus = function(userData){
