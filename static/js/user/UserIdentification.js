@@ -121,7 +121,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</li>"
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                  + "<li id='displayname' style='display:none'><label class='title'>Display name:</label>"
-                 + "<input  type='text'  name='displayname'class='inputText'/>"
+                 + "<input type='text' name='displayname' class='inputText'/>"
                  + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
                  + "<li class='logincheck'>"
                  + "<div id='logincheck' style='display:none;'>"

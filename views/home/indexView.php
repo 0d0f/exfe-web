@@ -1,5 +1,8 @@
 <?php include "share/header.php" ?>
     <link type="text/css" rel="stylesheet" href="/static/css/home.style.css" />
+    <script type="text/javascript">
+        var page_flag = "home_page";
+    </script>
 </head>
 <body id="home">
     <?php include "share/nav.php" ?>

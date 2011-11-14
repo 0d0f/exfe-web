@@ -512,28 +512,26 @@ class SActions extends ActionController
     public function doCheckUserLogin()
     {
         $returnData = array(
-            "user_status"    =>0,
-            "user_name"      =>"",
-            "user_avatar"    =>"",
-            "cross_num"      =>0,
-            "crosses"        =>""
+            "user_status"       =>0,
+            "user_name"         =>"",
+            "user_avatar"       =>"",
+            "cross_num"         =>0,
+            "crosses"           =>""
         );
 
-        if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")
-        {
+        if($_SESSION["tokenIdentity"] != "" && $_GET["token"] != ""){
             $global_name=$_SESSION["tokenIdentity"]["identity"]["name"];
             $global_avatar_file_name=$_SESSION["tokenIdentity"]["identity"]["avatar_file_name"];
             $global_external_identity=$_SESSION["tokenIdentity"]["identity"]["external_identity"];
             $global_identity_id=$_SESSION["tokenIdentity"]["identity_id"];
-
-        } else if($_SESSION["identity"]!="") {
+        }else if($_SESSION["identity"] != "") {
             $global_name=$_SESSION["identity"]["name"];
             $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
             $global_external_identity=$_SESSION["identity"]["external_identity"];
             $global_identity_id=$_SESSION["identity_id"];
         } else {
             $indentityData=$this->getModelByName("identity");
-            $indentityData->loginByCookie("ajax");
+            $login_status = $indentityData->loginByCookie("ajax");
 
             $global_name=$_SESSION["identity"]["name"];
             $global_avatar_file_name=$_SESSION["identity"]["avatar_file_name"];
@@ -770,8 +768,9 @@ class SActions extends ActionController
         $identity=$_POST["identity"];
         $password=$_POST["password"];
         $autosignin=$_POST["auto_signin"];
-        if(intval($autosignin)==1)
+        if(intval($autosignin)==1){
             $autosignin=true;
+        }
         if(isset($identity) && isset($password))
         {
             $Data=$this->getModelByName("identity");

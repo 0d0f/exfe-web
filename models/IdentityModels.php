@@ -139,10 +139,10 @@ class IdentityModels extends DataModel{
                     $cookie_loginsequ=$userrow["cookie_loginsequ"];
             }
 
-            setcookie('uid', $userid, time()+86400, "/",".exfe.com");
-            setcookie('id', $identity_id, time()+86400, "/",".exfe.com");
-            setcookie('loginsequ', $cookie_loginsequ, time()+86400, "/",".exfe.com");
-            setcookie('logintoken', $cookie_logintoken, time()+86400, "/",".exfe.com");
+            setcookie('uid', $userid, time()+31536000, "/",".exfe.com");
+            setcookie('id', $identity_id, time()+31536000, "/",".exfe.com");
+            setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/",".exfe.com");
+            setcookie('logintoken', $cookie_logintoken, time()+31536000, "/",".exfe.com");
             setcookie('last_identity', $identity, time()+31536000, "/",".exfe.com");//one year.
     }
 
@@ -182,13 +182,10 @@ class IdentityModels extends DataModel{
             }
 
             if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
-            {
+            { //do login
                $user_id=$this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-    //do login
                return $user_id;
-            }
-            else
-            {
+            } else {
                 return 0;
             }
 
