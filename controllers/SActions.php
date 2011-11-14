@@ -625,66 +625,57 @@ class SActions extends ActionController
         // Get recently logs
         $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds, 'gather');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // Get identity
-        $identityData = $this->getModelByName('identity');
-        $identities   = $identityData->getIdentitiesByUser($_SESSION['userid']);
-        $this->setVar('identities', $identities);
-
-        // Get user informations
-        $userData = $this->getModelByName('user');
-        $user = $userData->getUser($_SESSION['userid']);
-        $this->setVar('user', $user);
-
-        // Get crosses
-        $today     = strtotime(date('Y-m-d'));
-        $upcoming  = $today + 60 * 60 * 24 * 3;
-        $sevenDays = $today + 60 * 60 * 24 * 7;
-        $crossdata = $this->getModelByName('x');
-        $crosses   = $crossdata->fetchCross($_SESSION['userid'], $today); // @virushuo says "no mulit-identity" in one user now
-        $pastXs    = $crossdata->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
-        foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
-            if ($crosses[$crossI]['timestamp'] < $upcoming) {
-                $crosses[$crossI]['sort'] = 'upcoming';
-            } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
-                $crosses[$crossI]['sort'] = 'sevenDays';
-            } else {
-                $crosses[$crossI]['sort'] = 'later';
+        //
+        $cleanLogs = array();
+        $loged     = array();
+        foreach ($rawLogs as $logI => $logItem) {
+            $xId = $logItem['to_id'];
+            switch ($logItem['action']) {
+                case 'conversation':
+                    $changeDna = "{$xId}_conversation";
+                    break;
+                case 'change':
+                    $changeDna = "{$xId}_change_{$logItem['change_summy']}";
+                    break;
+                case 'rsvp':
+                    $changeDna = "{$xId}_rsvp_{$logItem['from_id']}";
+                    break;
+                case 'exfee':
+                    switch ($logItem['to_field']) {
+                        case 'rsvp':
+                            $logItem['change_summy'] = explode(
+                                ':',
+                                $logItem['change_summy']
+                            );
+                            $changeDna = "{$xId}_rsvp_"
+                                       . "{$logItem['change_summy'][0]}";
+                            break;
+                        case 'addexfee':
+                        case 'delexfee':
+                            $changeDna = "{$xId}_{$logItem['to_field']}_"
+                                       . "{$logItem['change_summy']}";
+                    }
+            }
+            if (!$loged[$changeDna]) {
+                $loged[$changeDna] = true;
+                array_push($cleanLogs, $logItem);
             }
         }
-        foreach ($pastXs as $pastXI => $pastXItem) {
-            $pastXItem['sort'] = 'past';
-            array_push($crosses, $pastXItem);
-        }
-        // Get all cross
-        $allCross   = $crossdata->fetchCross($_SESSION['userid'], 0, null, null, null);
-        $allCrossId = array();
-        foreach ($allCross as $crossI => $crossItem) {
-            array_push($allCrossId, $crossItem['id']);
-        }
+
+
+
+
+
+
+        print_r($rawLogs);
+
+
+
+
+
+
+        return;
+
         // Get recently logs
         $logdata = $this->getModelByName('log');
         $rawLogs = $logdata->getRecentlyLogsByCrossIds($allCrossId, 'gather');
