@@ -1,5 +1,7 @@
 <?php
-class XModels extends DataModel {
+
+class XModels extends DataModel
+{
 
     public function gatherCross($identityId, $cross)
     {
@@ -24,12 +26,14 @@ class XModels extends DataModel {
             return intval($result["insert_id"]);
     }
 
+
     public function getCross($crossid)
     {
         $sql="select * from crosses where id=$crossid";
         $result=$this->getRow($sql);
         return $result;
     }
+
 
     //update cross
     public function updateCross($cross)
@@ -60,6 +64,7 @@ class XModels extends DataModel {
                   WHERE `id`          =  {$cross["id"]}";
         return $this->query($sql);
     }
+
 
     public function getCrossByUserId($userid, $updated_since=0)
     {
@@ -97,7 +102,7 @@ class XModels extends DataModel {
     }
 
 
-    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20, $actions='')
+    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = 20, $actions = '')
     {
         // Get user identities
         $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
@@ -105,7 +110,7 @@ class XModels extends DataModel {
 
         // Get crosses id
         for ($i=0; $i < sizeof($identity_id_list); $i++) {
-            $identity_id_list[$i] = 'identity_id = ' . $identity_id_list[$i];
+            $identity_id_list[$i] = '`identity_id` = ' . $identity_id_list[$i];
         }
         $str = implode(' or ', $identity_id_list);
         $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
@@ -123,13 +128,18 @@ class XModels extends DataModel {
         for($i = 0; $i < sizeof($cross_id_list); $i++) {
             $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
         }
-        $str     = implode(' or ', $cross_id_list);
+        $str = implode(' or ', $cross_id_list);
         switch ($opening) {
             case 'yes':
-                $strTime = "AND begin_at >= FROM_UNIXTIME({$begin_at})";
+                $strTime = "AND `begin_at` >= FROM_UNIXTIME({$begin_at})
+                            AND `begin_at` <> 0";
                 break;
             case 'no':
-                $strTime = "AND begin_at <  FROM_UNIXTIME({$begin_at})";
+                $strTime = "AND `begin_at` <  FROM_UNIXTIME({$begin_at})
+                            AND `begin_at` <> 0";
+                break;
+            case 'anytime':
+                $strTime = "AND `begin_at`  = 0";
                 break;
             default:
                 $strTime = '';
@@ -146,4 +156,5 @@ class XModels extends DataModel {
 
         return $crosses;
     }
+
 }

@@ -63,10 +63,11 @@ class FrontController {
     public function dispatch() {
         $classname = !empty($_GET["class"]) ? $_GET["class"] : "home";
         $action = !empty($_GET["action"]) ? $_GET["action"] : "index";
+        $version= !empty($_GET["v"]) ? $_GET["v"] : "v1";
 
         $class = ucfirst($classname) . "Actions";
 
-        $file = APICONTROLLER_DIR. "/" . $class . ".php";
+        $file = APICONTROLLER_DIR. "/" . $version . "/" .$class . ".php";
         if (!is_file($file)) {
             exit("Page not found:".$file);
         }

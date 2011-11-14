@@ -35,25 +35,40 @@ echo "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n";
 echo "</script>\r\n";
 ?>
 <?php
+include_once "lib/markdown.php";
 $original_desc_str = $cross["description"];
-$desc_str_len = mb_strlen($original_desc_str);
+
+$parser = new Markdown_Parser;
+$parser->no_markup = true;
+$description= $parser->transform($original_desc_str);
+
+$text_desc_str=strip_tags($description);
+$desc_str_len = mb_strlen($text_desc_str);
+
 $define_str_len = 300;
 
-$description_lines=preg_split ("/\r\n|\r|\n/", $original_desc_str);
-
-$description="";
-foreach($description_lines as $line)
+$desc_len=0;
+$display_desc="";
+if($desc_str_len>$define_str_len )
 {
-    $description .= '<p class="text">'.ParseURL($line).'</p>';
+    $description_lines=preg_split ("/\r\n|\r|\n/", $description);
+    foreach($description_lines as $line)
+    {
+        $line_len=mb_strlen(strip_tags($line));
+        $desc_len=$desc_len+$line_len;
+        $display_desc.=$line;
+        if($desc_len>$define_str_len)
+            break;
+    }
 }
-//=============================================================
-$short_desc_str = mbString($original_desc_str, $define_str_len);
-$temp_lines=preg_split ("/\r\n|\r|\n/", $short_desc_str);
-$display_desc = "";
-foreach($temp_lines as $s)
-{
-    $display_desc .= '<p class="text">'.ParseURL($s).'</p>';
-}
+#//=============================================================
+#$short_desc_str = mbString($original_desc_str, $define_str_len);
+#$temp_lines=preg_split ("/\r\n|\r|\n/", $short_desc_str);
+#$display_desc = "";
+#foreach($temp_lines as $s)
+#{
+#    $display_desc .= '<p class="text">'.ParseURL($s).'</p>';
+#}
 //=============================================================
 
 $place_line1   = $cross['place']['line1'];

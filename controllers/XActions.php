@@ -242,7 +242,7 @@ class XActions extends ActionController
         $Data=$this->getModelByName("x");
         $cross=$Data->getCross(base62_to_int($_GET["id"]));
         $cross["title"] = htmlspecialchars($cross["title"]);
-        $cross["description"] = htmlspecialchars($cross["description"]);
+        $cross["description"] = $cross["description"];
 
         if($cross)
         {

@@ -479,6 +479,140 @@ class SActions extends ActionController
         $this->displayView();
     }
 
+
+    public function doGetInvitation()
+    {
+        if (intval($_SESSION['userid']) <= 0) {
+            //@todo: return error
+            header( 'Location: /s/login' ) ;
+            exit(0);
+        }
+
+        // init models
+        $modIvit     = $this->getModelByName('invitation');
+        $modIdentity = $this->getModelByName('identity');
+        $modUser     = $this->getModelByName('user');
+        $modCross    = $this->getModelByName('x');
+
+        // Get identity ids
+        $identities  = $modIdentity->getIdentitiesByUser($_SESSION['userid']);
+        $identityIds = array();
+        foreach ($identities as $idI => $idItem) {
+            array_push($identityIds, $idItem['id']);
+        }
+
+        // Get invitations
+        $newInvt = $modIvit->getNewInvitationsByIdentityIds($identityIds);
+        foreach ($newInvt as $newInvtI => $newInvtItem) {
+            $identity = $modIdentity->getIdentityById(
+                $newInvtItem['identity_id']
+            );
+            $newInvt[$newInvtI]['sender'] = humanIdentity(
+                $identity,
+                $modUser->getUserByIdentityId($newInvtItem['identity_id'])
+            );
+            $newInvt[$newInvtI]['cross'] = $modCross->getCross(
+                $newInvtItem['cross_id']
+            );
+        }
+
+        echo json_encode($newInvt);
+    }
+
+
+    public function doGetCross()
+    {
+        if (intval($_SESSION['userid']) <= 0) {
+            //@todo: return error
+            header( 'Location: /s/login' ) ;
+            exit(0);
+        }
+
+        // init models
+        $modIvit     = $this->getModelByName('invitation');
+        $modIdentity = $this->getModelByName('identity');
+        $modUser     = $this->getModelByName('user');
+        $modCross    = $this->getModelByName('x');
+
+        // get crosses
+        $today     = strtotime(date('Y-m-d'));
+        $upcoming  = $today + 60 * 60 * 24 * 3;
+        $sevenDays = $today + 60 * 60 * 24 * 7;
+        $crosses   = $modCross->fetchCross($_SESSION['userid'], $today);
+        $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
+        $anytimeXs = $modCross->fetchCross($_SESSION['userid'], $today, 'anytime', 'created_at DESC', 3);
+
+        // sort crosses
+        foreach ($crosses as $crossI => $crossItem) {
+            $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
+            if ($crosses[$crossI]['timestamp'] < $upcoming) {
+                $crosses[$crossI]['sort'] = 'upcoming';
+            } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
+                $crosses[$crossI]['sort'] = 'sevenDays';
+            } else {
+                $crosses[$crossI]['sort'] = 'later';
+            }
+        }
+        foreach ($pastXs as $pastXI => $pastXItem) {
+            $pastXItem['sort'] = 'past';
+            array_push($crosses, $pastXItem);
+        }
+        foreach ($anytimeXs as $anytimeXI => $anytimeXItem) {
+            $anytimeXItem['sort'] = 'anytime';
+            array_push($crosses, $anytimeXItem);
+        }
+
+        // get confirmed informations
+        $crossIds = array();
+        foreach ($crosses as $crossI => $crossItem) {
+            array_push($crossIds, $crossItem['id']);
+        }
+        $cfedInfo = $modIvit->getIdentitiesIdsByCrossIds($crossIds);
+
+        // get related identities
+        $relatedIdentityIds = array();
+        foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
+            $relatedIdentityIds[$cfedInfoItem['identity_id']] = true;
+        }
+        $relatedIdentities = $modIdentity->getIdentitiesByIdentityIds(
+            array_keys($relatedIdentityIds)
+        ) ?: array();
+
+        // get human identities
+        $humanIdentities = array();
+        foreach ($relatedIdentities as $ridI => $ridItem) {
+            $user = $modUser->getUserByIdentityId($ridItem['identity_id']);
+            $humanIdentities[$ridItem['id']] = humanIdentity($ridItem, $user);
+            unset($humanIdentities[$ridItem['id']]['activecode']);
+        }
+
+        // Add confirmed informations into crosses
+        foreach ($crosses as $crossI => $crossItem) {
+            $crosses[$crossI]['exfee'] = array();
+            foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
+                if ($cfedInfoItem['cross_id'] === $crossItem['id']) {
+                    $exfe = $humanIdentities[$cfedInfoItem['identity_id']];
+                    $exfe['rsvp'] = $cfedInfoItem['state'];
+                    array_push($crosses[$crossI]['exfee'], $exfe);
+                }
+            }
+        }
+
+        echo json_encode($crosses);
+    }
+
+
+    public function doGetUpdate()
+    {
+        if (intval($_SESSION['userid']) <= 0) {
+            header( 'Location: /s/login' ) ;
+            exit(0);
+        }
+
+
+    }
+
+
     public function doIfIdentityExist()
     {
         //TODO: private API ,must check session
@@ -884,7 +1018,7 @@ class SActions extends ActionController
 
                 $userDataObj = $this->getModelByName("user");
                 $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
-                
+
                 if(!$result["result"]){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
