@@ -875,6 +875,7 @@ class SActions extends ActionController
                 if(intval($userid)>0)
                 {
                     // sent welcome email
+                    /*
                     if($provider=="email")
                     {
                         $msghelper=$this->getHelperByName("msg");
@@ -883,6 +884,7 @@ class SActions extends ActionController
                             $args["name"]=$identity;
                         $msghelper->sentWelcomeEmail($args);
                     }
+                     */
 
                     $responobj["response"]["success"]="true";
                     $responobj["response"]["userid"]=$userid;

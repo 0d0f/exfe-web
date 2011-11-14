@@ -52,10 +52,18 @@ class IdentityModels extends DataModel{
                      'avatar_file_name' => $avatar_file_name,
                      'activecode' => $activecode
              );
+            /*
             if($provider=="email")
             {
                 $helper=$this->getHelperByName("identity");
                 $helper->sentActiveEmail($args);
+            }
+             */
+            //send welcome and active e-mail
+            if($provider=="email")
+            {
+                $helper=$this->getHelperByName("identity");
+                $helper->sentWelcomeAndActiveEmail($args);
             }
             return $identityid;
         }
