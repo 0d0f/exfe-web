@@ -23,15 +23,17 @@ class ExfeeHelper extends ActionController
         $addrelation=FALSE;
         //TODO: package as a transaction
         foreach ($exfee_list as $exfeeI => $exfeeItem) {
-            $identity_name = isset($exfeeItem['exfee_name'])     ? $exfeeItem['exfee_name']     : null;
-            $identity_id   = isset($exfeeItem['exfee_id'])       ? $exfeeItem['exfee_id']       : null;
-            $confirmed     = isset($exfeeItem['confirmed'])      ? $exfeeItem['confirmed']      : 0;
-            $identity      = isset($exfeeItem['exfee_identity']) ? $exfeeItem['exfee_identity'] : null;
-            $identity_type = isset($exfeeItem['identity_type'])  ? $exfeeItem['identity_type']  : 'unknow';
+            $identity_name = isset($exfeeItem['exfee_name'])     ? $exfeeItem['exfee_name']        : null;
+            $identity_id   = isset($exfeeItem['exfee_id'])       ? intval($exfeeItem['exfee_id'])  : null;
+            $confirmed     = isset($exfeeItem['confirmed'])      ? intval($exfeeItem['confirmed']) : 0;
+            $identity      = isset($exfeeItem['exfee_identity']) ? $exfeeItem['exfee_identity']    : null;
+            $identity_type = isset($exfeeItem['identity_type'])  ? $exfeeItem['identity_type']     : 'unknow';
 
             if (!$identity_id) {
-                $identity_id  = $identityData->ifIdentityExist($identity);
-                if ($identity_id === false) {
+                $identity_id = $identityData->ifIdentityExist($identity);
+                if ($identity_id) {
+                    $identity_id = $identity_id['id'];
+                } else {
                     // TODO: add new Identity, need check this identity provider, now default "email"
                     // add identity
                     $identity_id = $identityData->addIdentityWithoutUser('email', $identity, array('name' => $identity_name));
@@ -43,7 +45,7 @@ class ExfeeHelper extends ActionController
             // update rsvp status
             if (is_array($invited)) {
                 if (isset($inviteIds[$identity_id])) {
-                    if ($inviteIds[$identity_id]['state'] !== $confirmed) {
+                    if (intval($inviteIds[$identity_id]['state']) !== $confirmed) {
                         $invitationData->rsvp($cross_id, $identity_id, $confirmed);
                         $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
                     }
@@ -55,10 +57,8 @@ class ExfeeHelper extends ActionController
             // add invitation
             $invitationData->addInvitation($cross_id, $identity_id, $confirmed, $my_identity_id);
             $r=$relationData->saveRelations($_SESSION['userid'], $identity_id);
-            if($r>0)
-            {
+            if($r>0) {
                 $addrelation=TRUE;
-
             }
 
             $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
@@ -104,7 +104,7 @@ class ExfeeHelper extends ActionController
         $invitationdata=$this->getModelByName("invitation");
         $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
 
-        
+
         $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false, $filter);
 
 

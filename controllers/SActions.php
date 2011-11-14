@@ -656,7 +656,7 @@ class SActions extends ActionController
                                        . "{$logItem['change_summy']}";
                     }
             }
-            if (!$loged[$changeDna]) {
+            if (!isset($loged[$changeDna])) {
                 $loged[$changeDna] = true;
                 array_push($cleanLogs, $logItem);
             }
@@ -667,7 +667,7 @@ class SActions extends ActionController
 
 
 
-        print_r($rawLogs);
+        print_r($cleanLogs);
 
 
 
