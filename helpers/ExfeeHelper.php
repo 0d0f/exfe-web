@@ -12,6 +12,8 @@ class ExfeeHelper extends ActionController
 
         $curExfees = array();
         $newExfees = array();
+        $delExfees = array();
+        $allExfees = array();
         $inviteIds = array();
 
         if (is_array($invited)) {
@@ -41,6 +43,7 @@ class ExfeeHelper extends ActionController
             }
 
             array_push($curExfees, $identity_id);
+            $allExfees[$identity_id]=$confirmed;
 
             // update rsvp status
             if (is_array($invited)) {
@@ -51,7 +54,9 @@ class ExfeeHelper extends ActionController
                     }
                     continue;
                 }
-                array_push($newExfees, $identity_id);
+                
+                $newExfees[$identity_id]=$confirmed;
+                //array_push($newExfees, $identity_id);
             }
 
             // add invitation
@@ -75,12 +80,15 @@ class ExfeeHelper extends ActionController
                 if (!in_array($identity_id, $curExfees)) {
                     $invitationData->delInvitation($cross_id, $identity_id);
                     $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
+                    $delExfees[$identity_id]=$confirmed;
+                    //array_push($delExfees, $identity_id);
+                    
                 }
             }
         }
 
         if (is_array($invited)) {
-            return array("newexfees"=>$newExfees,"allexfees"=>$curExfees);
+            return array("newexfees"=>$newExfees,"allexfees"=>$allExfees,"delexfees"=>$delExfees);
         }
     }
 

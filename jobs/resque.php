@@ -8,6 +8,7 @@ require_once 'welcomeandactivecode_job.php';
 require_once 'welcomeemail_job.php';
 require_once 'templatemail_job.php';
 require_once 'conversationemail_job.php';
+require_once 'changeemail_job.php';
 require_once 'apn_job.php';
 require_once 'apnconversation_job.php';
 require_once 'apntext_job.php';

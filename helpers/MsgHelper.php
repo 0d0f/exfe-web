@@ -10,6 +10,14 @@ class MsgHelper extends ActionController
             return $jobId;
     }
 
+    public function sentChangeEmail($mail)
+    {
+            require_once 'lib/Resque.php';
+            date_default_timezone_set('GMT');
+            Resque::setBackend(RESQUE_SERVER);
+            $jobId = Resque::enqueue("changeemail","changeemail_job" , $mail, true);
+            return $jobId;
+    }
 
     public function sentApnConversation($args)
     {
