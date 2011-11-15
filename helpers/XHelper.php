@@ -2,7 +2,6 @@
 
 class XHelper extends ActionController
 {
-
     public function addCrossDiffLog($cross_id, $identity_id, $old_cross, $crossobj)
     {
         $changed=array();
@@ -39,7 +38,7 @@ class XHelper extends ActionController
         return $changed;
     }
 
-    public function sendXChangeMsg($new_cross,$host_identity_id,$changed)
+    public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title)
     {
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
@@ -52,9 +51,9 @@ class XHelper extends ActionController
         $mail["action"]="changed";
         $mail["objtype"]="cross";
         $mail["template_name"]="changecross";
-        $mail["title"]=$new_cross["title"];
+        $mail["title"]=$old_title;//$new_cross["title"];
         #$mail["exfee_name"]=$exfee_identity["name"];
-        $mail["action_identity"]=$exfee_identity;
+        $mail["action_identity"]=array(0=>$exfee_identity);
         $mail["changed"]=$changed;
         $mail["cross"]=$new_cross;
         $mail["timestamp"]=time();
@@ -78,7 +77,7 @@ class XHelper extends ActionController
         $mail["objtype"]="identity";
         $mail["template_name"]="changeidentity";
         $mail["changed"]=$changed;
-        $mail["action_identity"]=$exfee_identity;
+        $mail["action_identity"]=array(0=>$exfee_identity);
         $mail["identities"]=$identities;
         $mail["timestamp"]=time();
 

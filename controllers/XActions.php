@@ -207,7 +207,7 @@ class XActions extends ActionController
         if($newExfees || $delExfees)
             $change=true;
         if($changed != false) {
-            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed);
+            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$old_cross["title"]);
         }
         if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
         {
@@ -227,8 +227,6 @@ class XActions extends ActionController
             $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity);
             //send identity invitation changes msg
         }
-        var_dump($new_identities);
-        var_dump($del_identities);
         exit(0);
     }
 
