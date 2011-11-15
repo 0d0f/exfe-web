@@ -633,32 +633,66 @@ class SActions extends ActionController
             switch ($logItem['action']) {
                 case 'conversation':
                     $changeDna = "{$xId}_conversation";
+                    if (isset($loged[$changeDna])) {
+                        unset($rawLogs[$logI]);
+                        $loged[$changeDna]++;
+                    } else {
+                        $loged[$changeDna] = 1;
+                    }
                     break;
                 case 'change':
-                    $changeDna = "{$xId}_change_{$logItem['change_summy']}";
+                    $changeDna = "{$xId}_exfee_{$logItem['to_field']}";
+                    if (isset($loged[$changeDna])) {
+                        unset($rawLogs[$logI]);
+                    } else {
+                        $loged[$changeDna] = true;
+                    }
                     break;
                 case 'rsvp':
-                    $changeDna = "{$xId}_rsvp_{$logItem['from_id']}";
-                    break;
                 case 'exfee':
+                    $doSkip = false;
                     switch ($logItem['to_field']) {
+                        case '':
+                            $changeDna = "{$xId}_exfee_{$logItem['from_id']}";
+                            $dnaValue  = array('action' => 'rsvp',
+                                               'offset' => $logI);
+                            break;
                         case 'rsvp':
-                            $logItem['change_summy'] = explode(
+                            $rawLogs[$logI]['change_summy'] = explode(
                                 ':',
                                 $logItem['change_summy']
                             );
-                            $changeDna = "{$xId}_rsvp_"
-                                       . "{$logItem['change_summy'][0]}";
+                            $changeDna = "{$xId}_exfee_"
+                                       . "{$rawLogs[$logI]['change_summy'][0]}";
+                            $dnaValue  = array('action' => 'rsvp',
+                                               'offset' => $logI);
                             break;
-                        case 'addexfee':
-                        case 'delexfee':
-                            $changeDna = "{$xId}_{$logItem['to_field']}_"
+                        case 'addexfe':
+                        case 'delexfe':
+                            $changeDna = "{$xId}_exfee_"
                                        . "{$logItem['change_summy']}";
+                            $dnaValue  = array('action' => $logItem['to_field'],
+                                               'offset' => $logI);
+                            break;
+                        default:
+                            $doSkip = true; // 容错处理
                     }
-            }
-            if (!isset($loged[$changeDna])) {
-                $loged[$changeDna] = true;
-                array_push($cleanLogs, $logItem);
+                    if ($doSkip) {
+                        unset($rawLogs[$logI]);
+                        break;
+                    }
+                    if (isset($loged[$changeDna])) {
+                        if (($loged[$changeDna]['action'] === 'addexfe'
+                          && $dnaValue['action'] === 'delexfe')
+                         || ($loged[$changeDna]['action'] === 'delexfe'
+                          && $dnaValue['action'] === 'addexfe')) {
+                            $loged[$changeDna]['action'] = 'skipped';
+                            unset($rawLogs[$loged[$changeDna]['offset']]);
+                        }
+                        unset($rawLogs[$logI]);
+                    } else {
+                        $loged[$changeDna] = $dnaValue;
+                    }
             }
         }
 
@@ -667,7 +701,7 @@ class SActions extends ActionController
 
 
 
-        print_r($cleanLogs);
+        print_r($rawLogs);
 
 
 
