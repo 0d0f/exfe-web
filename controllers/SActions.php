@@ -623,14 +623,38 @@ class SActions extends ActionController
         $allCrossIds = array_keys($allCross);
 
         // Get recently logs
-        $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds, 'gather');
+        $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds);
 
-        //
-        $cleanLogs = array();
-        $loged     = array();
+        // clean logs
+        $loged   = array();
         foreach ($rawLogs as $logI => $logItem) {
             $xId = $logItem['to_id'];
             switch ($logItem['action']) {
+                case 'gather':
+                    $changeDna = "{$xId}_title";
+                    if (isset($loged[$changeDna])
+                    && !isset($rawLogs[$loged[$changeDna]]['oldtitle'])) {
+                        $rawLogs[$loged[$changeDna]]['oldtitle']
+                      = $logItem['change_summy'];
+                    }
+                    unset($rawLogs[$logI]);
+                    break;
+                case 'change':
+                    $changeDna = "{$xId}_{$logItem['to_field']}";
+                    if (isset($loged[$changeDna])) {
+                        if ($logItem['to_field'] === 'title') {
+                            if (!isset(
+                                    $rawLogs[$loged[$changeDna]]['oldtitle']
+                                )) {
+                                $rawLogs[$loged[$changeDna]]['oldtitle']
+                              = $logItem['change_summy'];
+                            }
+                        }
+                        unset($rawLogs[$logI]);
+                    } else {
+                        $loged[$changeDna] = $logI;
+                    }
+                    break;
                 case 'conversation':
                     $changeDna = "{$xId}_conversation";
                     if (isset($loged[$changeDna])) {
@@ -638,14 +662,6 @@ class SActions extends ActionController
                         $loged[$changeDna]++;
                     } else {
                         $loged[$changeDna] = 1;
-                    }
-                    break;
-                case 'change':
-                    $changeDna = "{$xId}_exfee_{$logItem['to_field']}";
-                    if (isset($loged[$changeDna])) {
-                        unset($rawLogs[$logI]);
-                    } else {
-                        $loged[$changeDna] = true;
                     }
                     break;
                 case 'rsvp':
@@ -696,7 +712,8 @@ class SActions extends ActionController
             }
         }
 
-
+        // merger
+        $cleanLogs = array();
 
 
 
