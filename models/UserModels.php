@@ -51,7 +51,10 @@ class UserModels extends DataModel{
                     {
                         if($displayname!="")
                         {
-                            $sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                            //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                            $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                            $this->query($sql);
+                            $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
                             $this->query($sql);
                         }
                         if($uid==intval($result["userid"]))
@@ -214,7 +217,10 @@ class UserModels extends DataModel{
                     {
                         if($displayname!="")
                         {
-                            $sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                            //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                            $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                            $this->query($sql);
+                            $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
                             $this->query($sql);
                         }
                         if($uid==intval($result["userid"]))
@@ -258,10 +264,12 @@ class UserModels extends DataModel{
         return false;
     }
 
+    //todo for huoju
     public function regDeviceToken($devicetoken,$provider,$uid)
     {
 
         $sql="select id,status from identities where external_identity='$devicetoken' and  provider='$provider';";
+
         $row=$this->getRow($sql);
         $time=time();
         $identity_id=0;
@@ -361,12 +369,18 @@ class UserModels extends DataModel{
         $result = $this->query($sql);
 
         $external_identity=mysql_real_escape_string($external_identity);
-        $sql="select id,status from identities where external_identity='$external_identity' limit 1";
+        //$sql="select id,status from identities where external_identity='$external_identity' limit 1";
+        $sql="select id from identities where external_identity='$external_identity' limit 1";
         $identityrow=$this->getRow($sql);
         $identity_id=intval($identityrow["id"]);
-        if($identityrow["status"]!=STATUS_CONNECTED && $identity_id>0)
+
+        $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
+        $rows = $this->getRow($sql);
+
+        if($rows["status"]!=STATUS_CONNECTED && $identity_id>0)
         {
-            $sql="update identities set status=3 where id=$identity_id;";
+            //$sql="update identities set status=3 where id=$identity_id;";
+            $sql="UPDATE user_identity SET status=3 WHERE identityid={$identity_id}";
             $this->query($sql);
         }
         return array("result"=>$result,"newuser"=>$newUser);
