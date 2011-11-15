@@ -297,6 +297,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 });
             }
         }else{
+            //如果是首页，并且是已经登录，则跳转到Profile页面。
+            if(typeof page_flag != "undefined" && page_flag == "home_page"){
+                window.location.href="/s/profile";
+            }
             //如果不是从/s/login页面登录。
             if(typeof showIdentificationDialog == "undefined"){
                 var userPanelHTML = '<div class="uinfo">'

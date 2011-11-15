@@ -184,7 +184,10 @@ b.r3{margin: 0px}
 .identification_dialog .titles{margin:0;height:25px;padding:0 8px;background:url(/static/images/fuceng_title.png) no-repeat 0 0; }
 .identification_dialog .titles div{float:left; height:25px; width:20px;}
 .identification_dialog .titles a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
-.identification_dialog .titles div.tl{float:right; text-align:right; color:#226571; width:420px; font-size:12px;  font-weight:normal; margin-top:-2px; text-shadow:0 0.1em #50d2dd}
+.identification_dialog .titles div.tl{
+    float:right; text-align:right; color:#226571; width:420px; font-size:12px;
+    font-weight:normal; text-shadow:0 0.1em #50d2dd; cursor:move;
+}
 .overFrame{background:#fafafa; padding-bottom:15px; }
 .overFramel{background:#EFEFEF; padding-bottom:15px; overflow:hidden;}
 .overFrameh{background:#f2f2f2;padding:10px 0 15px;}
@@ -761,9 +764,9 @@ b.r3{margin: 0px}
 /******* upload user avatar window style by handaoliang ***********/
 .upload_avatar_dialog{ position:absolute; width:400px; height:325px; padding:0px; background:transparent; z-index:201; }
 .upload_avatar_dialog .titles{ width:400px; height:25px; background:url(/static/images/fuceng_title_400.png) no-repeat 0 0; }
-.upload_avatar_dialog .titles p.l{ width:35px; height:25px; float:left; color:#FFF; padding-left:3px; }
+.upload_avatar_dialog .titles p.l{ width:30px; height:25px; float:left; color:#FFF; padding-left:3px; }
 .upload_avatar_dialog .titles p.l a{ display:block; width:27px; height:22px; padding-top:3px; text-decoration:none; }
-.upload_avatar_dialog .titles p.r{ width:310px; height:22px; padding-top:3px; float:right; color:#FFF; text-align:right; padding-right:10px; }
+.upload_avatar_dialog .titles p.r{ width:350px; height:22px; padding-top:3px; float:right; color:#FFF; text-align:right; padding-right:10px; cursor:move; }
 
 .upload_avatar_dialog #container { position: absolute; left: 0px; top: 25px; width:400px; height:300px; background:#FFFFFF; }
 

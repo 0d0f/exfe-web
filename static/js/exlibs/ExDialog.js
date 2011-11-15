@@ -59,10 +59,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
         */
         jQuery(dialogTitlesJID).mousedown(function(event) {
-            jQuery(this).css({cursor:'move'});
-            jQuery('#floatWarpClone').remove();
+            //jQuery('#floatWarpClone').remove();
             jQuery(dialogJID).clone(true).insertAfter(dialogJID).attr('id', 'floatWarpClone').show();
-            jQuery('body').bind("selectstart",function(){return false});
+            //不允许双击
+            //jQuery('body').bind("selectstart",function(){return false});
+            jQuery(dialogTitlesJID).bind("selectstart",function(){ return false; });
             jQuery(dialogJID).hide();
             dragX = (jQuery(window).scrollLeft() + event.clientX) - (parseInt(jQuery(dialogJID).css("left")));
             dragY = (jQuery(window).scrollTop() + event.clientY) - (parseInt(jQuery(dialogJID).css("top")));
@@ -82,8 +83,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery(dialogTitlesJID).mouseup(function() {
             jQuery(dialogJID).css({ left: tX, top: tY });
             jQuery('#floatWarpClone').remove();
-            jQuery('body').unbind("selectstart");
-            jQuery(dialogTitlesJID).css({cursor:'default'});
+            //jQuery('body').unbind("selectstart");
+            jQuery(dialogTitlesJID).unbind("selectstart");
+            //jQuery(dialogTitlesJID).css({cursor:'default'});
             jQuery(dialogJID).show();
             drag = false;
         });
@@ -149,8 +151,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             //jQuery("#"+ns.coverID).dblclick(function(){ return false; });
             
             jQuery(window).resize(ns.resizeCover);
-            //比击不允许选择内容。
-            jQuery("body").bind("selectstart",function(){ return false; });
+            //双击不允许选择内容。
+            //jQuery("body").bind("selectstart",function(){ return false; });
+            jQuery("#"+ns.coverID).bind("selectstart",function(){ return false; });
         }
 
     };
@@ -177,7 +180,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             document.body.removeChild(coverElementObj);
         }
         //解除绑定。
-        jQuery("body").unbind("selectstart");
+        //jQuery("body").unbind("selectstart");
+        jQuery("#"+ns.coverID).unbind("selectstart");
     };
 
 
