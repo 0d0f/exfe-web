@@ -207,6 +207,9 @@ class XActions extends ActionController
         if($newExfees || $delExfees)
             $change=true;
         if($changed != false) {
+            $invitationData=$this->getModelByName("invitation");
+            $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
+            $new_cross["identities"]=$invitations;
             $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$old_cross["title"]);
         }
         if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
@@ -224,6 +227,9 @@ class XActions extends ActionController
             //$allExfee_ids
             //$newExfee_ids//=array();
             //$delExfee_ids//=array();
+            $invitationData=$this->getModelByName("invitation");
+            $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
+            $new_cross["identities"]=$invitations;
             $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity);
             //send identity invitation changes msg
         }

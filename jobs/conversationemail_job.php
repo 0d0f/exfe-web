@@ -27,16 +27,6 @@ class Conversationemail_Job
     }
     public function perform()
     {
-    #    global $site_url;
-    #    global $email_connect;
-    #    $args=$this->args;
-
-    #    if($email_connect=="")
-    #        smtp_connect();
-    #    $mail=$this->getMailWithTemplate($args);
-    #    $this->send($mail["title"],$mail["body"],$this->args);
-    #
-    #
     }
     public function getMailBodyWithMultiObjects($args)
     {
