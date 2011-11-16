@@ -16,12 +16,11 @@ class LogModels extends DataModel{
         $this->query($sql);
     }
 
-    public function getRecentlyLogsByCrossIds($cross_ids, $excludeAct = '', $limit = 100)
+    public function getRecentlyLogsByCrossIds($cross_ids, $limit = 1000)
     {
         if ($cross_ids) {
-            $cross_ids  = implode(' OR `to_id` = ', $cross_ids);
-            $excludeAct = $excludeAct ? " AND `action` <> '{$excludeAct}'" : '';
-            $sql        = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}){$excludeAct} ORDER BY `time` DESC LIMIT {$limit};";
+            $cross_ids = implode(' OR `to_id` = ', $cross_ids);
+            $sql       = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) ORDER BY `time` DESC LIMIT {$limit};";
             return $this->getAll($sql);
         } else {
             return array();
@@ -29,4 +28,3 @@ class LogModels extends DataModel{
     }
 
 }
-
