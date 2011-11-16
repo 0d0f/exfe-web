@@ -185,14 +185,15 @@ class XActions extends ActionController
     {
         $identity_id=0;
         $identityData=$this->getModelByName("identity");
-        $cross_id=base62_to_int($_GET["id"]);
+        $base62_cross_id = $_GET["id"];
+        $cross_id=base62_to_int($base62_cross_id);
         $token=$_GET["token"];
 
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
         if ($check["allow"] == "false") {
-            $this->setVar('fromaddress', $_SERVER['HTTP_REFERER'] ?: null);
-            header('Location: /x/forbidden');
+            $referer_uri = SITE_URL."/!".$base62_cross_id;
+            header('Location: /x/forbidden?s='.urlencode($referer_uri));
             exit(0);
         }
         if($check["type"]=="token")
@@ -311,6 +312,11 @@ class XActions extends ActionController
 
     public function doForbidden()
     {
+        $referer = exGet("s");
+        if($referer != ""){
+            $referer = urldecode($referer);
+        }
+        $this->setVar('referer', $referer);
         $this->displayView();
     }
 

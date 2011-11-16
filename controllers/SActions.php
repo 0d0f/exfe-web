@@ -788,13 +788,20 @@ class SActions extends ActionController
 
     public function doLogin()
     {
+        //如果已经登录。则访问这个页面时跳转到Profile页面。
+        if(intval($_SESSION["userid"])>0){
+            header("location:/s/profile");
+        }
+
+        //取得变量。
         $identity=$_POST["identity"];
         $password=$_POST["password"];
         $repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
-        if(intval($autosignin)==1)
+        if(intval($autosignin)==1){
             $autosignin=true;
+        }
 
         $isNewIdentity=FALSE;
 
@@ -836,14 +843,10 @@ class SActions extends ActionController
                     $this->displayView();
                 else
                     header( 'Location: /s/profile' ) ;
-            }
-            else
-            {
+            } else {
                 $this->displayView();
             }
-        }
-        else
-        {
+        } else {
             $this->displayView();
         }
     }

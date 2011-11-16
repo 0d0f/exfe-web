@@ -441,9 +441,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     } else if(data.response.success=="true") {
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
+                                        //如果是首页，并且是已经登录，则跳转到Profile页面。
+                                        if(typeof page_flag != "undefined" && page_flag == "home_page"){
+                                            window.location.href="/s/profile";
+                                            return;
+                                        }
+                                        //如果不是从/s/login页面登录。
+                                        if(typeof showIdentificationDialog != "undefined"){
+                                            window.location.href="/s/profile";
+                                            return;
+                                        }
+
                                         odof.exlibs.ExDialog.hideDialog();
                                         odof.exlibs.ExDialog.destroyCover();
-
                                         //jQuery.modal.close();
                                     }
                                     //added by handaoliang
@@ -477,10 +487,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                         jQuery("#identity_reg_success").show();
                                         jQuery("#identity_display_box").html(identity);
                                         jQuery("#close_reg_success_dialog_btn").bind("click",function(){
-                                            odof.exlibs.ExDialog.hideDialog();
-                                            odof.exlibs.ExDialog.destroyCover();
+                                            window.location.href="/s/profile";
+                                            //odof.exlibs.ExDialog.hideDialog();
+                                            //odof.exlibs.ExDialog.destroyCover();
                                         });
-                                        
                                         odof.user.status.checkUserLogin();
                                     }
                                 }
