@@ -68,36 +68,28 @@ if(strlen($large_photo_exists)>0 && strlen($thumb_photo_exists)>0){
 }else{
     if(strlen($large_photo_exists)>0){?>
         <h2>Create Thumbnail</h2>
-            <div align="center">
+        <div align="center">
             <img src="/<?php echo $large_photo_exists;?>" style="float: left; margin-right: 10px;" id="thumbnail" alt="Create Thumbnail" />
             <div style="float:left; position:relative; overflow:hidden; width:<?php echo $thumb_width;?>px; height:<?php echo $thumb_height;?>px;">
-            <img src="/<?php echo $large_photo_exists;?>" style="position: relative;" alt="Thumbnail Preview" />
+                <img src="/<?php echo $large_photo_exists;?>" style="position: relative;" alt="Thumbnail Preview" />
             </div>
             <br style="clear:both;"/>
             <form name="thumbnail" action="" method="post">
-            <input type="hidden" name="x1" value="" id="x1" />
-            <input type="hidden" name="y1" value="" id="y1" />
-            <input type="hidden" name="x2" value="" id="x2" />
-            <input type="hidden" name="y2" value="" id="y2" />
-            <input type="hidden" name="w" value="" id="w" />
-            <input type="hidden" name="h" value="" id="h" />
-            <input type="submit" name="upload_thumbnail" value="Save Thumbnail" id="save_thumb" />
+                <input type="hidden" name="x1" value="" id="x1" />
+                <input type="hidden" name="y1" value="" id="y1" />
+                <input type="hidden" name="x2" value="" id="x2" />
+                <input type="hidden" name="y2" value="" id="y2" />
+                <input type="hidden" name="w" value="" id="w" />
+                <input type="hidden" name="h" value="" id="h" />
+                <input type="submit" name="upload_thumbnail" value="Save Thumbnail" id="save_thumb" />
             </form>
-            </div>
-            <hr />
-            <?php 	} ?>
-            <h2>Upload Photo</h2>
-            <form name="photo" enctype="multipart/form-data" action="" method="post">
+        </div>
+        <hr />
+    <?php 	} ?>
+        <h2>Upload Photo</h2>
+        <form name="photo" enctype="multipart/form-data" action="" method="post">
             Photo <input type="file" name="image" size="30" /> <input type="submit" name="upload" value="Upload" />
-            </form>
-            <?php } ?>
-            <div id="footerBao">
-
-            </div><!--/#footerBao-->
-
-
-
-            </body>
-            </html>
-
-
+        </form>
+<?php } ?>
+</body>
+</html>
