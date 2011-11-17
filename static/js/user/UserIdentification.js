@@ -278,7 +278,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                    + form 
                    + "</div>"
                    + "</div>"
-                   + "</div>";
+                   + "</div>"
+                   + "<div class='bottom'></div>";
                    //+ "<b class='rbottom'><b class='r3'></b><b class='r2'></b><b class='r1'></b></b>";
                    //+ "</div>";
         return html;

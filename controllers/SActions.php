@@ -363,20 +363,22 @@ class SActions extends ActionController
         foreach ($cfedIds as $cfedIdI => $cfedIdItem) {
             array_push($idents, $cfedIdItem['identity_id']);
         }
-        foreach ($rawLogs as $logI => $logItem) {
-            // add ids from logs
-            array_push($idents, $logItem['from_id']);
-            if ($logItem['action'] === 'exfee') {
-                switch ($logItem['to_field']) {
-                    case 'rsvp':
-                        $rawLogs[$logI]['change_summy'] = explode(':', $logItem['change_summy']);
-                        $changeId = $rawLogs[$logI]['change_summy'][0];
-                        break;
-                    case 'addexfee':
-                    case 'delexfee':
-                        $changeId = $logItem['change_summy'];
+        if(is_array($rawLogs)){
+            foreach ($rawLogs as $logI => $logItem) {
+                // add ids from logs
+                array_push($idents, $logItem['from_id']);
+                if ($logItem['action'] === 'exfee') {
+                    switch ($logItem['to_field']) {
+                        case 'rsvp':
+                            $rawLogs[$logI]['change_summy'] = explode(':', $logItem['change_summy']);
+                            $changeId = $rawLogs[$logI]['change_summy'][0];
+                            break;
+                        case 'addexfee':
+                        case 'delexfee':
+                            $changeId = $logItem['change_summy'];
+                    }
+                    array_push($idents, $changeId);
                 }
-                array_push($idents, $changeId);
             }
         }
         // @todo: Temporary unique
@@ -409,51 +411,53 @@ class SActions extends ActionController
         $logs        = array();
         $exfeeChange = array();
         $crossChange = array();
-        foreach ($rawLogs as $logItem) {
-            if (!isset($logs[$logItem['to_id']])) {
-                foreach ($allCross as $crossI => $crossItem) {
-                    if ($crossItem['id'] === $logItem['to_id']) {
-                        $logs[$logItem['to_id']] = $crossItem;
-                        unset($allCross[$crossI]);
-                    }
-                }
+        if(is_array($rawLogs)){
+            foreach ($rawLogs as $logItem) {
                 if (!isset($logs[$logItem['to_id']])) {
+                    foreach ($allCross as $crossI => $crossItem) {
+                        if ($crossItem['id'] === $logItem['to_id']) {
+                            $logs[$logItem['to_id']] = $crossItem;
+                            unset($allCross[$crossI]);
+                        }
+                    }
+                    if (!isset($logs[$logItem['to_id']])) {
+                        continue;
+                    }
+                    $logs[$logItem['to_id']]['activity'] = array();
+                }
+                $logItem['from_name'] = $hmIdent[$logItem['from_id']];
+                if ($logItem['action'] === 'conversation') {
+                } else if ($logItem['action'] === 'change') {
+                    // merge the same field changes
+                    if (!isset($crossChange[$logItem['to_id']])) {
+                        $crossChange[$logItem['to_id']] = array();
+                    }
+                    if (isset($crossChange[$logItem['to_id']][$logItem['to_field']])) {
+                        continue;
+                    }
+                    $crossChange[$logItem['to_id']][$logItem['to_field']] = true;
+                } else if ($logItem['action'] === 'rsvp' || $logItem['action'] === 'exfee') {
+                    switch ($logItem['to_field']) {
+                        case '':
+                            $changeId = $logItem['from_id'];
+                            break;
+                        case 'rsvp':
+                            $changeId = $logItem['change_summy'][0];
+                            break;
+                        case 'addexfe':
+                        case 'delexfe':
+                            $changeId = $logItem['change_summy'];
+                    }
+                    if (isset($exfeeChange[$changeId])) {
+                        continue;
+                    }
+                    $exfeeChange[$changeId] = true;
+                    $logItem['to_name'] = $hmIdent[$changeId];
+                } else {
                     continue;
                 }
-                $logs[$logItem['to_id']]['activity'] = array();
+                array_push($logs[$logItem['to_id']]['activity'], $logItem);
             }
-            $logItem['from_name'] = $hmIdent[$logItem['from_id']];
-            if ($logItem['action'] === 'conversation') {
-            } else if ($logItem['action'] === 'change') {
-                // merge the same field changes
-                if (!isset($crossChange[$logItem['to_id']])) {
-                    $crossChange[$logItem['to_id']] = array();
-                }
-                if (isset($crossChange[$logItem['to_id']][$logItem['to_field']])) {
-                    continue;
-                }
-                $crossChange[$logItem['to_id']][$logItem['to_field']] = true;
-            } else if ($logItem['action'] === 'rsvp' || $logItem['action'] === 'exfee') {
-                switch ($logItem['to_field']) {
-                    case '':
-                        $changeId = $logItem['from_id'];
-                        break;
-                    case 'rsvp':
-                        $changeId = $logItem['change_summy'][0];
-                        break;
-                    case 'addexfe':
-                    case 'delexfe':
-                        $changeId = $logItem['change_summy'];
-                }
-                if (isset($exfeeChange[$changeId])) {
-                    continue;
-                }
-                $exfeeChange[$changeId] = true;
-                $logItem['to_name'] = $hmIdent[$changeId];
-            } else {
-                continue;
-            }
-            array_push($logs[$logItem['to_id']]['activity'], $logItem);
         }
         foreach ($logs as $logI => $logItem) {
             if (!$logItem['activity']) {

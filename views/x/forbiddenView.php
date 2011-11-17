@@ -18,7 +18,7 @@ var referer = "<?php echo $referer  ?>";
 <script type="text/javascript">
     var showIdentificationDialog = false;
     jQuery(document).ready(function(){
-        odof.user.status.doShowLoginDialog();
+        odof.user.status.doShowLoginDialog(null, null, null, "win");
     });
 </script>
 </body>

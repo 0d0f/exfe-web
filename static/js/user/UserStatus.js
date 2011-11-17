@@ -193,16 +193,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
         odof.comm.func.initRePassword('identification_newpwd', 'identification_renewpwd');
     };
-    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity){
+
+    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal){
         var html = odof.user.identification.showdialog("reg");
-        if(typeof callBackFunc != "undefined"){
+        if(typeof callBackFunc != "undefined" && callBackFunc != null){
             ns.callBackFunc = callBackFunc;
         }
 
-        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string"){
+        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string" && dialogBoxID != null){
             document.getElementById(dialogBoxID).innerHTML = html;
         }else{
-            odof.exlibs.ExDialog.initialize("identification", html);
+            odof.exlibs.ExDialog.initialize("identification", html, null, winModal);
             var dialogBoxID = "identification_dialog";
         }
 
@@ -245,7 +246,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
         //如果传入了identity，那么要检测是注册还是登录。
-        if(typeof userIdentity != "undefined" && userIdentity != ""){
+        if(typeof userIdentity != "undefined" && userIdentity != null){
             odof.user.identification.identityInputBoxActions(userIdentity);
         }
 

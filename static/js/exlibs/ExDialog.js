@@ -13,19 +13,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /*
      * initialize dialog module
      * */
-    ns.initialize = function(dialogID, contents, dialogClassName){
+    ns.initialize = function(dialogID, contents, dialogClassName, dialogModal){
 
-        ns.createDialog(dialogID, dialogClassName);
+        ns.createDialog(dialogID, dialogClassName, dialogModal);
         ns.dialogElement.innerHTML = contents;
 
-        var dialogWidth = 463;
+        var dialogWidth = 420;
+        var dialogHeight = 420;
         var pageSize = odof.util.getPageSize();
-        var pageWidth = pageSize.PageW;
-        var pageHeight = pageSize.PageH;
+        var pageWidth = pageSize.WinW;
+        var pageHeight = pageSize.WinH;
         
         var floatWrapX, floatWrapY, dragX, dragY, pX, pY, tX, tY;
         var pX = parseInt(pageWidth-dialogWidth)/2;
-        var pY = 20;
+        var pY = parseInt(pageHeight-dialogHeight)/2;
         var cX = document.documentElement.clientWidth;
         var cY = document.documentElement.clientHeight;
         var floatWrapPerX = floatWrapPerY = floatshowOne = 0;
@@ -34,10 +35,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var resizeswitch = true;
 
         var dialogJID = "#" + ns.dialogID;
-        var dialogTitlesJID = "#" + ns.dialogTitleID;
+        var dialogTitlesHandlerJID = "#" + ns.dialogTitleHandlerID;
         var dialogCloseBtnJID = "#" + ns.dialogCloseBtnID;
 
-        jQuery(dialogJID).css({ top:23, left:parseInt(pageWidth-dialogWidth)/2 });
+        jQuery(dialogJID).css({ top:pY, left:pX });
         jQuery(window).scroll(function() {
             if (!drag && divscroll) {
                 floatWrapX = jQuery(window).scrollLeft() + pX;
@@ -45,6 +46,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery(dialogJID).css({ top: floatWrapY, left: floatWrapX });
             }
         });
+
         /*
         jQuery(window).resize(function() {
             if (!drag && resizeswitch) {
@@ -52,18 +54,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 cY = document.documentElement.clientHeight;
                 floatWrapX = jQuery(window).scrollLeft() + cX * floatWrapPerX;
                 floatWrapY = jQuery(window).scrollTop() + cY * floatWrapPerY;
+                console.log(floatWrapPerX);
+                console.log(floatWrapPerY);
                 jQuery(dialogJID).css({ top: floatWrapY, left: floatWrapX });
                 pX = parseInt(jQuery(dialogJID).css("left")) - jQuery(window).scrollLeft();
                 pY = parseInt(jQuery(dialogJID).css("top")) - jQuery(window).scrollTop();
             }
         });
         */
-        jQuery(dialogTitlesJID).mousedown(function(event) {
+        jQuery(dialogTitlesHandlerJID).mousedown(function(event) {
             //jQuery('#floatWarpClone').remove();
             jQuery(dialogJID).clone(true).insertAfter(dialogJID).attr('id', 'floatWarpClone').show();
             //不允许双击
             //jQuery('body').bind("selectstart",function(){return false});
-            jQuery(dialogTitlesJID).bind("selectstart",function(){ return false; });
+            jQuery(dialogTitlesHandlerJID).bind("selectstart",function(){ return false; });
             jQuery(dialogJID).hide();
             dragX = (jQuery(window).scrollLeft() + event.clientX) - (parseInt(jQuery(dialogJID).css("left")));
             dragY = (jQuery(window).scrollTop() + event.clientY) - (parseInt(jQuery(dialogJID).css("top")));
@@ -80,12 +84,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 floatWrapPerY = pY / cY;
             }
         });
-        jQuery(dialogTitlesJID).mouseup(function() {
+        jQuery(dialogTitlesHandlerJID).mouseup(function() {
             jQuery(dialogJID).css({ left: tX, top: tY });
             jQuery('#floatWarpClone').remove();
             //jQuery('body').unbind("selectstart");
-            jQuery(dialogTitlesJID).unbind("selectstart");
-            //jQuery(dialogTitlesJID).css({cursor:'default'});
+            jQuery(dialogTitlesHandlerJID).unbind("selectstart");
+            //jQuery(dialogTitlesHandlerJID).css({cursor:'default'});
             jQuery(dialogJID).show();
             drag = false;
         });
@@ -100,24 +104,24 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /**
      * create dialog function
      * */
-    ns.createDialog = function(dialogID, dialogClassName)
+    ns.createDialog = function(dialogID, dialogClassName, dialogModal)
     {
         var defaultDialogClass = "ex_dialog";
 
         if (dialogID){
             ns.coverID = dialogID + "_cover";
             ns.dialogID = dialogID + "_dialog";
-            ns.dialogTitleID = dialogID + "_handler";
+            ns.dialogTitleHandlerID = dialogID + "_handler";
             ns.dialogCloseBtnID = dialogID + "_close_btn";
         }else{
             var randID = odof.util.createRandElementID();
             ns.coverID = randID + "_cover";
             ns.dialogID = randID + "_dialog";
-            ns.dialogTitleID = randID + "_handler";
+            ns.dialogTitleHandlerID = randID + "_handler";
             ns.dialogCloseBtnID = randID + "_close_btn";
         }
         var className = defaultDialogClass + " " + ns.dialogID;
-        if(typeof dialogClassName != "undefined"){
+        if(typeof dialogClassName != "undefined" && dialogClassName != "" && dialogClassName != null){
             className = defaultDialogClass + " " +dialogClassName;
         }
 
@@ -130,6 +134,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             document.body.insertBefore(ns.dialogElement,document.body.firstChild);
         }
         odof.exlibs.ExDialog.createCover();
+        if(dialogModal == "win"){
+            console.log("aaaa");
+            jQuery("#"+ns.dialogID).bind("clickoutside",function(){
+                odof.exlibs.ExDialog.hideDialog();
+                odof.exlibs.ExDialog.destroyCover();
+            });
+            jQuery("#"+ns.dialogID).addClass("ex_dialog_shadow");
+            jQuery("#"+ns.coverID).addClass("cover_element_shadow");
+        }
     };
 
     ns.hideDialog = function(){

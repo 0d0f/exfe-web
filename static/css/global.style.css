@@ -135,8 +135,17 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
     -khtml-opacity: 0.6;
     -moz-user-select:none;
 }
-.ex_dialog{
-	position:absolute; padding:50px;
-	z-index:201; background:#FFF;
+.cover_element_shadow{
+    -moz-opacity:0.01; opacity: 0.01;
+    filter: alpha(opacity=0.01);
+    -khtml-opacity: 0.01;
+}
+.ex_dialog{ position:absolute; padding:50px; z-index:201; }
+.ex_dialog_shadow {
+    /*border: 10px solid rgba(90, 90, 90, 0.5);*/
+    -webkit-border-radius:10px; -moz-border-radius:10px; border-radius:10px;
+    -moz-box-shadow: rgba(90, 90, 90, 0.5) 0px 0px 0px 10px;
+    -webkit-box-shadow: rgba(90, 90, 90, 0.5) 0px 0px 0px 10px;
+    box-shadow: rgba(90, 90, 90, 0.5) 0px 0px 0px 10px;
 }
 /** Cover effect style control **/
