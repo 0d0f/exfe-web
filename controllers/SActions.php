@@ -611,8 +611,10 @@ class SActions extends ActionController
         }
 
         // init models
-        $modCross = $this->getModelByName('x');
-        $modLog   = $this->getModelByName('log');
+        $modIdentity = $this->getModelByName('identity');
+        $modUser     = $this->getModelByName('user');
+        $modCross    = $this->getModelByName('x');
+        $modLog      = $this->getModelByName('log');
 
         // Get all cross
         $rawCross = $modCross->fetchCross($_SESSION['userid'], 0, null, null, null);
@@ -629,6 +631,8 @@ class SActions extends ActionController
         $loged   = array();
         foreach ($rawLogs as $logI => $logItem) {
             $xId = $logItem['to_id'];
+            $rawLogs[$logI]['from_id']
+          = $logItem['from_id'] = intval($logItem['from_id']);
             switch ($logItem['action']) {
                 case 'gather':
                     $changeDna = "{$xId}_title";
@@ -686,9 +690,8 @@ class SActions extends ActionController
                                 ':',
                                 $logItem['change_summy']
                             );
-                            foreach($rawLogs[$logI]['change_summy'] as $i=>$v) {
-                                $rawLogs[$logI]['change_summy'][$i]=intval($v);
-                            }
+                            $rawLogs[$logI]['change_summy']
+                          = array_map('intval',$rawLogs[$logI]['change_summy']);
                             $changeDna = "{$xId}_exfee_"
                                        . "{$rawLogs[$logI]['change_summy'][0]}";
                             $dnaValue  = array('action' => 'rsvp',
@@ -731,6 +734,7 @@ class SActions extends ActionController
         // merge logs
         $cleanLogs = array();
         $xlogsHash = array();
+        $relatedIdentityIds = array();
         foreach ($rawLogs as $logI => $logItem) {
             $xId = $logItem['to_id'];
             if (!isset($xlogsHash[$xId])) {
@@ -745,6 +749,7 @@ class SActions extends ActionController
                           'new_value' => $logItem['change_summy'],
                           'old_value' => isset($logItem['oldtitle'])
                                        ? $logItem['oldtitle'] : null);
+                    array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'conversation':
                     $cleanLogs[$xlogsHash[$xId]]['conversation']
@@ -752,6 +757,7 @@ class SActions extends ActionController
                           'by_id'     => $logItem['from_id'],
                           'message'   => $logItem['change_summy'],
                           'num_msgs'  => $logItem['num_conversation']);
+                    array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'rsvp':
                 case 'exfee':
@@ -774,10 +780,14 @@ class SActions extends ActionController
                             if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
                             }
-                            array_push($cleanLogs[$xlogsHash[$xId]][$action],
-                                       array('time'  => $logItem['time'],
-                                             'by_id' => $logItem['from_id'],
-                                             'to_id' => intval($toExfee)));
+                            array_push(
+                                $cleanLogs[$xlogsHash[$xId]][$action],
+                                array('time'  => $logItem['time'],
+                                      'by_id' => $logItem['from_id'],
+                                      'to_id' => $toExfee)
+                            );
+                            array_push($relatedIdentityIds,$logItem['from_id']);
+                            array_push($relatedIdentityIds,$toExfee);
                             break;
                         case 'addexfe':
                         case 'delexfe':
@@ -785,7 +795,14 @@ class SActions extends ActionController
                             if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
                             }
-                            array_push($cleanLogs[$xlogsHash[$xId]][$action],
+                            array_push(
+                                $cleanLogs[$xlogsHash[$xId]][$action],
+                                array('time'  => $logItem['time'],
+                                      'by_id' => $logItem['from_id'],
+                                      'to_id' => $logItem['change_summy'])
+                            );
+                            array_push($relatedIdentityIds,$logItem['from_id']);
+                            array_push($relatedIdentityIds,
                                        $logItem['change_summy']);
                     }
             }
@@ -794,7 +811,46 @@ class SActions extends ActionController
                 unset($xlogsHash[$xId]);
             }
         }
-        print_r($cleanLogs);
+
+        // get human identities
+        $humanIdentities = array();
+        $relatedIdentities = $modIdentity->getIdentitiesByIdentityIds(
+            array_flip(array_flip($relatedIdentityIds))
+        );
+        foreach ($relatedIdentities as $ridI => $ridItem) {
+            $user = $modUser->getUserByIdentityId($ridItem['identity_id']);
+            $humanIdentities[$ridItem['id']] = humanIdentity($ridItem, $user);
+        }
+
+        // merge cross details and humanIdentities
+        foreach ($cleanLogs as $logI => $logItem) {
+            $cleanLogs[$logI]['title']
+          = $allCross[$logItem['cross_id']]['title'];
+            $cleanLogs[$logI]['begin_at']
+          = $allCross[$logItem['cross_id']]['begin_at'];
+            foreach (array('change',  'accepted', 'declined',
+                           'addexfe', 'delexfe') as $action) {
+                if (isset($logItem[$action])) {
+                    foreach ($logItem[$action] as $actionI => $actionItem) {
+                        $cleanLogs[$logI][$action][$actionI]['by_name']
+                      = $humanIdentities[$actionItem['by_id']]['name'];
+                        if (!isset(
+                                $cleanLogs[$logI][$action][$actionI]['to_name'])
+                            ) {
+                            continue;;
+                        }
+                        $cleanLogs[$logI][$action][$actionI]['to_name']
+                      = $humanIdentities[$actionItem['to_id']]['name'];
+                    }
+                }
+            }
+            if (isset($logItem['conversation'])) {
+                $cleanLogs[$logI]['conversation']['by_name']
+              = $humanIdentities[$logItem['conversation']['by_id']]['name'];
+            }
+        }
+
+        echo json_encode($cleanLogs);
     }
 
 
