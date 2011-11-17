@@ -297,61 +297,51 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 });
             }
         }else{
-            //如果是首页，并且是已经登录，则跳转到Profile页面。
-            if(typeof page_flag != "undefined" && page_flag == "home_page"){
-                window.location.href="/s/profile";
-            }
-            //如果不是从/s/login页面登录。
-            if(typeof showIdentificationDialog == "undefined"){
-                var userPanelHTML = '<div class="uinfo">'
-                                    + '<em class="light" style="background:none;"></em>'
-                                    + '<div class="name" >'
-                                    + '<div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
-                userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
-                userPanelHTML += '<p class="h">';
-                userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
-                userPanelHTML += '<span class="x_attended">X</span> attended';
+            var userPanelHTML = '<div class="uinfo">'
+                                + '<em class="light" style="background:none;"></em>'
+                                + '<div class="name" >'
+                                + '<div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
+            userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
+            userPanelHTML += '<p class="h">';
+            userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
+            userPanelHTML += '<span class="x_attended">X</span> attended';
+            userPanelHTML += '</p>';
+            userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getHashFilePath(img_url,userData.user_avatar)+'/80_80_'+ userData.user_avatar +'"></a>';
+            userPanelHTML += '</div>';
+            if(userData.crosses != ""){
+                userPanelHTML += '<p class="info">';
+                userPanelHTML += '<span>Upcoming:</span><br />';
+                jQuery.each(userData.crosses, function(k,v){
+                    var strSort = '<em class="hide"></em>';
+                    switch (v.sort) {
+                        case 'now':
+                            strSort = '<em>Now</em>';
+                            break;
+                        case '24hr':
+                            strSort = '<em>24hr</em>';
+                    }
+                    userPanelHTML += strSort + ' <a href="/!'+v.id+'">'+ v.title +'</a>';
+                });
                 userPanelHTML += '</p>';
-                userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getHashFilePath(img_url,userData.user_avatar)+'/80_80_'+ userData.user_avatar +'"></a>';
-                userPanelHTML += '</div>';
-                if(userData.crosses != ""){
-                    userPanelHTML += '<p class="info">';
-                    userPanelHTML += '<span>Upcoming:</span><br />';
-                    jQuery.each(userData.crosses, function(k,v){
-                        var strSort = '<em class="hide"></em>';
-                        switch (v.sort) {
-                            case 'now':
-                                strSort = '<em>Now</em>';
-                                break;
-                            case '24hr':
-                                strSort = '<em>24hr</em>';
-                        }
-                        userPanelHTML += strSort + ' <a href="/!'+v.id+'">'+ v.title +'</a>';
-                    });
-                    userPanelHTML += '</p>';
-                }
-                userPanelHTML += '<p class="creatbtn"><a href="/x/gather">Gather X</a></p>';
-                userPanelHTML += '</div>';
-                userPanelHTML += '<div class="myexfefoot">';
-                userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
-                userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
-                userPanelHTML += '</div></div></div>';
-
-                jQuery("#global_user_info").html(userPanelHTML);
-
-                jQuery('.name').mousemove(function() {
-                    jQuery('#goldLink a').addClass('nameh');
-                    jQuery('#myexfe').show();
-                });
-                jQuery('.name').mouseout(function() {
-                    jQuery('#goldLink a').removeClass('nameh');
-                    jQuery('#myexfe').hide();
-                });
-            }else{
-                //console.log(pageReferrerURI);
-                //window.history.back(-1);
-                window.location.href="/s/profile";
             }
+            userPanelHTML += '<p class="creatbtn"><a href="/x/gather">Gather X</a></p>';
+            userPanelHTML += '</div>';
+            userPanelHTML += '<div class="myexfefoot">';
+            userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
+            userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
+            userPanelHTML += '</div></div></div>';
+
+            jQuery("#global_user_info").html(userPanelHTML);
+
+            jQuery('.name').mousemove(function() {
+                jQuery('#goldLink a').addClass('nameh');
+                jQuery('#myexfe').show();
+            });
+            jQuery('.name').mouseout(function() {
+                jQuery('#goldLink a').removeClass('nameh');
+                jQuery('#myexfe').hide();
+            });
+
 
         }
     };

@@ -105,6 +105,9 @@ class XActions extends ActionController
             echo json_encode(array('success' => false, 'error' => 'token_expired'));
             return;
         }
+        $newExfees=array();
+        $allExfees=array();
+        $delExfees=array();
 
         if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
             $old_cross=$crossDataObj->getCross($cross_id);
@@ -136,11 +139,11 @@ class XActions extends ActionController
             $placeLineTwo = strip_tags(exPost('cplaceline2'));
             $cross = array(
                 'id'          => $cross_id,
-                'title'       => mysql_real_escape_string($_POST['ctitle']),
-                'desc'        => mysql_real_escape_string($crossDesc),
+                'title'       => mysql_real_escape_string(trim($_POST['ctitle'])),
+                'desc'        => mysql_real_escape_string(trim($crossDesc)),
                 'start_time'  => $_POST['ctime'],
-                'place_line1' => mysql_real_escape_string($placeLineOne),
-                'place_line2' => mysql_real_escape_string($placeLineTwo),
+                'place_line1' => mysql_real_escape_string(trim($placeLineOne)),
+                'place_line2' => mysql_real_escape_string(trim($placeLineTwo)),
                 'identity_id' => $identity_id
             );
 
@@ -153,12 +156,8 @@ class XActions extends ActionController
                 echo json_encode($return_data);
                 exit();
             }
-
-            $xhelper = $this->getHelperByName('x');
-            $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $cross);
-            if($changed != false) {
-                $xhelper->sendXChangeMsg($cross_id, $identity_id, $changed, $old_cross);
-            }
+            header('Content-Type:application/json; charset=UTF-8');
+            echo json_encode($return_data);
         }
 
         // exclude exfee identities that already in cross
@@ -171,11 +170,63 @@ class XActions extends ActionController
 
         $newExfees=$exfees_list["newexfees"];
         $allExfees=$exfees_list["allexfees"];
+        $delExfees=$exfees_list["delexfees"];
 
-        $ehelper->sendIdentitiesInvitation($cross_id, $newExfees,$allExfees);
+        $allExfee_ids=array();
+        $newExfee_ids=array();
+        $delExfee_ids=array();
 
-        header('Content-Type:application/json; charset=UTF-8');
-        echo json_encode($return_data);
+        foreach($allExfees as $id=>$conformed)
+            array_push($allExfee_ids,$id);
+        foreach($newExfees as $id=>$conformed)
+            array_push($newExfee_ids,$id);
+        foreach($delExfees as $id=>$conformed)
+            array_push($delExfee_ids,$id);
+
+        $ehelper->sendIdentitiesInvitation($cross_id, $newExfee_ids,$allExfee_ids);
+
+
+        $xhelper = $this->getHelperByName('x');
+
+        $new_cross=$crossDataObj->getCross($cross_id);
+        if($new_cross)
+        {
+            $place_id=$new_cross["place_id"];
+            if(intval($place_id)>0)
+            {
+                $placeData=$this->getModelByName("place");
+                $place=$placeData->getPlace($place_id);
+
+                $new_cross["place_line1"]=$place["line1"];
+                $new_cross["place_line2"]=$place["line2"];
+                unset($new_cross["place_id"]);
+            }
+        }
+
+        $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        if($newExfees || $delExfees)
+            $change=true;
+        if($changed != false) {
+            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$old_cross["title"]);
+        }
+        if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
+        {
+            $identityData = $this->getModelByName('identity');
+            $new_identities=$identityData->getIdentitiesByIdentityIds($newExfee_ids);
+            $del_identities=$identityData->getIdentitiesByIdentityIds($delExfee_ids);
+            for($idx=0;$idx<sizeof($new_identities);$idx++)
+                $new_identities[$idx]["rsvp"]=$newExfees[$new_identities[$idx]["id"]];
+            for($idx=0;$idx<sizeof($del_identities);$idx++)
+                $del_identities[$idx]["rsvp"]=$delExfees[$del_identities[$idx]["id"]];
+            
+            $changed_identity["delexfees"]=$del_identities;
+            $changed_identity["newexfees"]=$new_identities;
+            //$allExfee_ids
+            //$newExfee_ids//=array();
+            //$delExfee_ids//=array();
+            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity);
+            //send identity invitation changes msg
+        }
         exit(0);
     }
 
@@ -185,14 +236,15 @@ class XActions extends ActionController
     {
         $identity_id=0;
         $identityData=$this->getModelByName("identity");
-        $cross_id=base62_to_int($_GET["id"]);
+        $base62_cross_id = $_GET["id"];
+        $cross_id=base62_to_int($base62_cross_id);
         $token=$_GET["token"];
 
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
         if ($check["allow"] == "false") {
-            $this->setVar('fromaddress', $_SERVER['HTTP_REFERER'] ?: null);
-            header('Location: /x/forbidden');
+            $referer_uri = SITE_URL."/!".$base62_cross_id;
+            header('Location: /x/forbidden?s='.urlencode($referer_uri));
             exit(0);
         }
         if($check["type"]=="token")
@@ -311,6 +363,11 @@ class XActions extends ActionController
 
     public function doForbidden()
     {
+        $referer = exGet("s");
+        if($referer != ""){
+            $referer = urldecode($referer);
+        }
+        $this->setVar('referer', $referer);
         $this->displayView();
     }
 
