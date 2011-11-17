@@ -8,16 +8,12 @@ $cross=$this->getVar("cross");
 </head>
 <body>
 <?php include "share/nav.php"; ?>
-<?php 
+<?php
 $status="mute";
 if(intval($mute["status"])==0)
     $status="resume";
 
 ?>
 cross <?php echo $cross["title"];?> status:<?php echo $status?>
-<div id="footerBao">
-</div><!--/#footerBao-->
 </body>
 </html>
-
-

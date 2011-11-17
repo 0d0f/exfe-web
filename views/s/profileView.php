@@ -208,8 +208,6 @@
 </div>
 
 <!--/#content-->
-<div id="footerBao">
-</div><!--/#footerBao-->
 
 </body>
 </html>

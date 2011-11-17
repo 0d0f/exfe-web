@@ -252,7 +252,5 @@ $token=$_GET["token"];
 </div><!--/#content-->
 </div>
 
-<div id="footerBao">
-</div><!--/#footerBao-->
 </body>
 </html>
