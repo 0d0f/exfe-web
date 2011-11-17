@@ -11,46 +11,138 @@ class Conversationemail_Job
         global $img_url;
         global $email_connect;
 
-        $mails=$this->getMailBodyWithMultiObjects($args);
-        if($mails)
-        {
-            if($email_connect=="")
-                smtp_connect();
+        $conversation_args=array();
+        $cross_changed=array();
 
-            foreach($mails as $mail)
+        foreach($args as $arg)
+        {
+            if($arg["action"]=="changed" && $arg["changed"]!="")
             {
-                $this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
+                if($cross_changed[$arg["id"]]=="")
+                    $cross_changed[$arg["id"]]=$arg;
+                 else //do mergin
+                 {
+                    foreach($arg["changed"] as $k=>$v)
+                        $cross_changed[$arg["id"]]["changed"][$k]=$v;
+
+                    unset($cross_changed[$arg["id"]]["cross"]);
+                    $cross_changed[$arg["id"]]["cross"]=$arg["cross"];
+                    $cross_changed[$arg["id"]]["timestamp"]=$arg["timestamp"];
+                    foreach($arg["action_identity"] as $identity)
+                    {
+                        $identity_size=sizeof($cross_changed[$arg["id"]]["action_identity"]);
+                        $flag=false;
+                        for($idx=0;$idx<$identity_size;$idx++)
+                        {
+                            if($cross_changed[$arg["id"]]["action_identity"][$idx]["id"]==$identity["id"])
+                            {
+                                $flag=true;
+                                break;
+                            }
+                        }
+                        if($flag==false)
+                            array_push($cross_changed[$arg["id"]]["action_identity"],$identity);
+                    }
+                 }
             }
+            else if($arg["action"]=="changed" && $arg["identities"]!="")
+            {
+                if($cross_changed[$arg["id"]]=="")
+                    $cross_changed[$arg["id"]]=$arg;
+                 else //do mergin
+                 {
+                    foreach($arg["identities"]["newexfees"] as $identity)
+                    {
+                        $newexfee_len=sizeof($cross_changed[$arg["id"]]["identities"]["newexfees"]);
+                        if($newexfee_len==0)
+                                $cross_changed[$arg["id"]]["identities"]["newexfees"]=array(0=>$identity);
+
+                        else
+                        {
+                            
+                            $flag=false;
+                            for($idx=0; $idx<$newexfee_len;$idx++)
+                                if($cross_changed[$arg["id"]]["identities"]["newexfees"][$idx]["id"]==$identity["id"])
+                                {
+                                    $flag=true;
+                                    break;
+                                }
+
+                            if($flag==false)
+                                array_push($cross_changed[$arg["id"]]["identities"]["newexfees"],$identity);
+                        }
+                    }
+                     #foreach($arg["identities"]["delexfees"])
+                     #{
+
+                     #}
+                 }
+            }
+            else
+            {
+                $key="id_".$arg["cross_id"];
+                if($conversation_args[$key]=="")
+                    $conversation_args[$key]=array();
+                array_push($conversation_args[$key],$arg);
+            }
+        #    $external_identity_list[$arg["external_identity"]]=1;
         }
 
+        if($conversation_args)
+            $conversation_objects=$this->getConversationObjects($conversation_args);
+        if($cross_changed)
+            $changed_objects=$this->getChangedObjects($cross_changed);
 
+        $mails=$this->getMailBodyWithMultiObjects($conversation_objects,$changed_objects);
+        print_r($mails);
+        #if($mails)
+        #{
+        #    if($email_connect=="")
+        #    {
+        #        smtp_connect();
+        #    }
+
+        #    foreach($mails as $mail)
+        #    {
+        #        //$this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
+        #    }
+        #}
+
+
+    }
+    public function getChangedObjects($args)
+    {
+        foreach($args as $cross_id=>$changed_data)
+        {
+
+            if((time()-$changed_data["timestamp"])>1*60)
+            {
+               print "process object ========\r\n";
+               print_r($changed_data);
+               return $changed_data;
+            }
+            else
+            {
+               date_default_timezone_set('GMT');
+               Resque::setBackend(RESQUE_SERVER);
+               $changed_data["queue_name"]="conversationemail";
+               $changed_data["jobclass_name"]="conversationemail_job";
+               $jobId = Resque::enqueue("waitingqueue","waiting_job" , $changed_data, true);
+               echo "throw to waiting queue jobid:".$jobId." \r\n";
+                //throw $changed_data back to resque
+            }
+        }
+        return NULL;
+        //print_r($args);
     }
     public function perform()
     {
     }
-    public function getMailBodyWithMultiObjects($args)
+    public function getConversationObjects($args)
     {
-        global $site_url;
-        global $img_url;
-        $template=file_get_contents("conversation_template.html");
-        $templates=split("\r|\n",$template);
-        $template_title=$templates[0];
-        unset($templates[0]);
-        $template_body=implode($templates);
-
-        $mails=array();
-        $pargs=array();
-        foreach($args as $arg)
+        $identity_posts=array();
+        foreach($args as $k=>$posts)
         {
-            $key="id_".$arg["cross_id"];
-            if($pargs[$key]=="")
-                $pargs[$key]=array();
-            array_push($pargs[$key],$arg);
-        #    $external_identity_list[$arg["external_identity"]]=1;
-        }
-        foreach($pargs as $k=>$posts)
-        {
-            $identity_posts=array();
             foreach($posts as $post)
             {
                 $to_identities=$post["to_identities"];
@@ -66,9 +158,31 @@ class Conversationemail_Job
                 }
             }
         }
-        if($identity_posts)
+        return $identity_posts;
+    }
+    public function getMailBodyWithMultiObjects($conversation_objects,$changed_objects)
+    {
+        global $site_url;
+        global $img_url;
+        $template=file_get_contents("conversation_template.html");
+        $templates=split("\r|\n",$template);
+        $template_title=$templates[0];
+        unset($templates[0]);
+        $template_body=implode($templates);
+
+        $mails=array();
+        #$pargs=array();
+        #foreach($args as $arg)
+        #{
+        #    $key="id_".$arg["cross_id"];
+        #    if($pargs[$key]=="")
+        #        $pargs[$key]=array();
+        #    array_push($pargs[$key],$arg);
+        ##    $external_identity_list[$arg["external_identity"]]=1;
+        #}
+        if($conversation_objects)
         {
-            foreach($identity_posts as $key=>$identity_post)
+            foreach($conversation_objects as $key=>$identity_post)
             {
                 $mail=array();
                 $posts=$identity_post["posts"];
