@@ -135,7 +135,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         odof.exlibs.ExDialog.createCover();
         if(dialogModal == "win"){
-            console.log("aaaa");
             jQuery("#"+ns.dialogID).bind("clickoutside",function(){
                 odof.exlibs.ExDialog.hideDialog();
                 odof.exlibs.ExDialog.destroyCover();
