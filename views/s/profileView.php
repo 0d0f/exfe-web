@@ -1,24 +1,20 @@
-<?php include "share/header.php"; ?>
+<?php include 'share/header.php'; ?>
 <script type="text/javascript" src="/static/js/user/UserProfile.js"></script>
 <script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
 <script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
 <script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
 </head>
 <body>
-<?php include "share/nav.php"; ?>
+<?php include 'share/nav.php'; ?>
 <?php
     $identities = $this->getVar('identities');
     $user       = $this->getVar('user');
-    $crosses    = $this->getVar('crosses');
-    $newInvt    = $this->getVar('newInvt');
-    $logs       = $this->getVar('logs');
-    if ($user["avatar_file_name"]=="")
-        $user["avatar_file_name"]="default.png";
+    $user['avatar_file_name'] = $user['avatar_file_name'] ?: 'default.png';
 ?>
 <div class="centerbg">
 <div class="edit_user">
     <div id="profile_avatar">
-        <img class="big_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $user["avatar_file_name"]); ?>/80_80_<?php echo $user["avatar_file_name"];?>" alt="" />
+        <img class="big_header" src="<?php echo IMG_URL.'/'.getHashFilePath('', $user['avatar_file_name']); ?>/80_80_<?php echo $user['avatar_file_name']; ?>" alt="" />
         <button style="display:none" class="change" id="changeavatar">Change...</button>
 
         <!-- upload avatar windows -->
@@ -51,6 +47,7 @@
             </div>
         </div -->
         <!-- upload avatar windows -->
+
     </div>
     <div class="u_con">
         <h1 id="profile_name" status="view"><?php echo $user["name"];?></h1>
@@ -211,8 +208,6 @@
 </div>
 
 <!--/#content-->
-<div id="footerBao">
-</div><!--/#footerBao-->
 
 </body>
 </html>

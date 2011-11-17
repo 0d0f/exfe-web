@@ -5,7 +5,7 @@
     <meta name="Author" content="EXFE Inc." />
     <meta name="viewport" content="width=1024" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7, IE=9" />
-    <link id="global-stylesheet" rel="stylesheet" href="/static/css/global.style.css" type="text/css" />
+    <link id="global-stylesheet" rel="stylesheet" href="/static/css/global.css" type="text/css" />
     <title>www.exfe.com</title>
     <meta name="robots" content="index, follow" />
     <meta name="Keywords" content="EXFE,Gather" />
@@ -13,7 +13,7 @@
     <link rel="home" href="http://www.exfe.com/" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="" />
     <link rel="index" href="http://www.exfe.com/sitemap/" />
-    <script type="text/javascript" src="/static/js/libs/jquery-1.7.js"></script>
+    <script type="text/javascript" src="/static/js/libs/jquery.js"></script>
     <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
     <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
     <script type="text/javascript" src="/static/js/comm/ExfeUtil.js"></script>
@@ -26,7 +26,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
     <script type="text/javascript">
         var site_url = "<?php echo SITE_URL; ?>";
-        var img_url = "<?php echo IMG_URL; ?>";
+        var img_url  = "<?php echo IMG_URL; ?>";
     </script>
 
     <!--[if IE 6]>

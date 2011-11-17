@@ -1,5 +1,5 @@
 <?php include "share/header.php"; ?>
-<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect-0.3.min.js"></script>
+<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
 </head>
 <body>
 <?php include "share/nav.php"; ?>
@@ -16,14 +16,14 @@ if(strlen($large_photo_exists)>0){
     $current_large_image_width = getWidth($large_image_location);
     $current_large_image_height = getHeight($large_image_location);?>
     <script type="text/javascript">
-    function preview(img, selection) { 
-    var scaleX = <?php echo $thumb_width;?> / selection.width; 
-    var scaleY = <?php echo $thumb_height;?> / selection.height; 
-    $('#thumbnail + div > img').css({ 
-        width: Math.round(scaleX * <?php echo $current_large_image_width;?>) + 'px', 
+    function preview(img, selection) {
+    var scaleX = <?php echo $thumb_width; ?> / selection.width;
+    var scaleY = <?php echo $thumb_height; ?> / selection.height;
+    $('#thumbnail + div > img').css({
+        width: Math.round(scaleX * <?php echo $current_large_image_width;?>) + 'px',
         height: Math.round(scaleY * <?php echo $current_large_image_height;?>) + 'px',
-        marginLeft: '-' + Math.round(scaleX * selection.x1) + 'px', 
-        marginTop: '-' + Math.round(scaleY * selection.y1) + 'px' 
+        marginLeft: '-' + Math.round(scaleX * selection.x1) + 'px',
+        marginTop: '-' + Math.round(scaleY * selection.y1) + 'px'
     });
     $('#x1').val(selection.x1);
     $('#y1').val(selection.y1);
@@ -31,9 +31,9 @@ if(strlen($large_photo_exists)>0){
     $('#y2').val(selection.y2);
     $('#w').val(selection.width);
     $('#h').val(selection.height);
-} 
+}
 
-$(document).ready(function () { 
+$(document).ready(function () {
    $('#save_thumb').click(function() {
         var x1 = $('#x1').val();
         var y1 = $('#y1').val();
@@ -48,10 +48,10 @@ $(document).ready(function () {
             return true;
         }
     });
-}); 
+});
 
-$(window).load(function () { 
-        $('#thumbnail').imgAreaSelect({ aspectRatio: '1:1', onSelectChange: preview }); 
+$(window).load(function () {
+        $('#thumbnail').imgAreaSelect({ aspectRatio: '1:1', onSelectChange: preview });
 });
 
 </script>
@@ -68,36 +68,28 @@ if(strlen($large_photo_exists)>0 && strlen($thumb_photo_exists)>0){
 }else{
     if(strlen($large_photo_exists)>0){?>
         <h2>Create Thumbnail</h2>
-            <div align="center">
+        <div align="center">
             <img src="/<?php echo $large_photo_exists;?>" style="float: left; margin-right: 10px;" id="thumbnail" alt="Create Thumbnail" />
             <div style="float:left; position:relative; overflow:hidden; width:<?php echo $thumb_width;?>px; height:<?php echo $thumb_height;?>px;">
-            <img src="/<?php echo $large_photo_exists;?>" style="position: relative;" alt="Thumbnail Preview" />
+                <img src="/<?php echo $large_photo_exists;?>" style="position: relative;" alt="Thumbnail Preview" />
             </div>
             <br style="clear:both;"/>
             <form name="thumbnail" action="" method="post">
-            <input type="hidden" name="x1" value="" id="x1" />
-            <input type="hidden" name="y1" value="" id="y1" />
-            <input type="hidden" name="x2" value="" id="x2" />
-            <input type="hidden" name="y2" value="" id="y2" />
-            <input type="hidden" name="w" value="" id="w" />
-            <input type="hidden" name="h" value="" id="h" />
-            <input type="submit" name="upload_thumbnail" value="Save Thumbnail" id="save_thumb" />
+                <input type="hidden" name="x1" value="" id="x1" />
+                <input type="hidden" name="y1" value="" id="y1" />
+                <input type="hidden" name="x2" value="" id="x2" />
+                <input type="hidden" name="y2" value="" id="y2" />
+                <input type="hidden" name="w" value="" id="w" />
+                <input type="hidden" name="h" value="" id="h" />
+                <input type="submit" name="upload_thumbnail" value="Save Thumbnail" id="save_thumb" />
             </form>
-            </div>
-            <hr />
-            <?php 	} ?>
-            <h2>Upload Photo</h2>
-            <form name="photo" enctype="multipart/form-data" action="" method="post">
+        </div>
+        <hr />
+    <?php 	} ?>
+        <h2>Upload Photo</h2>
+        <form name="photo" enctype="multipart/form-data" action="" method="post">
             Photo <input type="file" name="image" size="30" /> <input type="submit" name="upload" value="Upload" />
-            </form>
-            <?php } ?>
-            <div id="footerBao">
-
-            </div><!--/#footerBao-->
-
-
-
-            </body>
-            </html>
-
-
+        </form>
+<?php } ?>
+</body>
+</html>

@@ -29,6 +29,5 @@
         <?php } ?>
     </div>
 </div>
-<div id="footerBao"></div><!--/#footerBao-->
 </body>
 </html>
