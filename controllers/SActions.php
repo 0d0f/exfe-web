@@ -837,7 +837,7 @@ class SActions extends ActionController
                         if (!isset(
                                 $cleanLogs[$logI][$action][$actionI]['to_name'])
                             ) {
-                            continue;;
+                            continue;
                         }
                         $cleanLogs[$logI][$action][$actionI]['to_name']
                       = $humanIdentities[$actionItem['to_id']]['name'];
