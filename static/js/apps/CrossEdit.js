@@ -342,7 +342,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 ns.callbackActions(JSONData);
             },
             complete:function(){
-                jQuery("#edit_cross_submit_loading").hide();         
+                jQuery("#edit_cross_submit_loading").hide();
             }
         });
         //jQuery("#edit_cross_bar").slideUp(300);
@@ -781,7 +781,6 @@ jQuery(document).ready(function() {
     $('#exfee_edit').hide();
     $('.exfee_del').hide();
     $('.ex_identity').hide();
-    odof.cross.edit.updateCheckAll();
     $('.cs > em').live('click', function(event) {
         odof.cross.edit.changeRsvp(event.target);
     });
