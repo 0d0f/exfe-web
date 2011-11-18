@@ -10,6 +10,7 @@
 
     include 'share/header.php';
 ?>
+    <link type="text/css" rel="stylesheet" href="/static/css/specialpage.css"/>
 </head>
 <body id="special_page_body">
 <?php include "share/nav.php"; ?>

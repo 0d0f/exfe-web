@@ -1,0 +1,6 @@
+@charset "UTF-8";
+/* by Leask */
+
+
+#error_404_page { background-color:#F2F2F2; }
+#error_404_page .img_404{ width:500px; height:600px; margin:auto; margin-top:20px; background:url(../images/404.jpg) no-repeat 0 0; }
