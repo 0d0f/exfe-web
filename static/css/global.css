@@ -1,58 +1,100 @@
-/* global style control code */
 @charset "UTF-8";
-/** 清除内外边距 **/
-body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
-dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
-pre, /* text formatting elements 文本格式元素 */
-form, fieldset, legend, button, input, textarea, /* form elements 表单元素 */
-th, td /* table elements 表格元素 */ {
+
+
+/* global style initialization */
+* {
     margin: 0;
     padding: 0;
+    border: 0;
     -webkit-font-smoothing: antialiased;
 }
 
-/** 设置默认字体 **/
+
+/* default font */
 body, button, input, select, textarea {
-    font: 12px/1.5 "Lucida Grande", Arial, sans-serif, tahoma, arial, \5b8b\4f53, sans-serif, "Bitstream Vera Sans", Verdana, Helvetica;
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: "Verdana", "Lucida Grande", "Sans", "Helvetica", "Arial", "WenQuanYi Micro Hei", "Droid Sans Fallback", "Microsoft YaHei", "SimSun";
 }
-h1, h2, h3, h4, h5, h6 { font-size: 100%; }
-address, cite, dfn, em, var { font-style: normal; } /* 将斜体扶正 */
-code, kbd, pre, samp { font-family: courier new, courier, monospace; } /* 统一等宽字体 */
-small { font-size: 12px; } /* 小于 12px 的中文很难阅读，让 small 正常化 */
+h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+}
+address, cite, dfn, em, var {
+    font-style: normal; /* 将斜体扶正 */
+}
+code, kbd, pre, samp {
+    font-family: "courier new", courier, monospace; /* 统一等宽字体 */
+}
+small {
+    font-size: 12px; /* 小于 12px 的中文很难阅读，让 small 正常化 */
+}
+sup {
+    vertical-align: text-top; /* 减少对行高的影响 */
+}
+sub {
+    vertical-align: text-bottom; /* 减少对行高的影响 */
+}
 
-/** 重置列表元素 **/
-ul, li, ol { list-style: none; }
 
-/** 重置文本格式元素 **/
+/* reset list element */
+ul, li, ol {
+    list-style: none;
+}
+
+
+/* reset link element */
 a {
-	color: #3D4627; text-decoration: none; cursor:pointer;
-	hide-focus: expression(this.hideFocus=true); /* for ie 5+ */
-	outline: none; /* for firefox 1.5 + */
+    color: #3D4627;
+    text-decoration: none;
+    cursor:pointer;
+    hide-focus: expression(this.hideFocus=true); /* for ie 5+ */
+    outline: none; /* for firefox 1.5 + */
 }
-a:hover { color:#3D4627; text-decoration: underline; }
-
-sup { vertical-align: text-top; } /* 重置，减少对行高的影响 */
-sub { vertical-align: text-bottom; }
-
-/** 重置表单元素 **/
-legend { color: #000; } /* for ie6 */
-fieldset, img { border: 0; } /* img 搭车：让链接里的 img 无边框 */
-button, input, select, textarea { font-size: 100%; } /* 使得表单元素在 ie 下能继承字体大小 */
-/* 注：optgroup 无法扶正 */
-
-/** 重置表格元素 **/
-table { border-collapse: collapse; border-spacing: 0; }
-
-.hide_focus {
-	hide-focus: expression(this.hideFocus=true); /* for ie 5+ */
-	outline: none; /* for firefox 1.5 + */
+a:hover {
+    color:#3D4627;
+    text-decoration: underline;
 }
-.fixed{ clear:both; font-size:0px; height:0px; width:0px; padding:0px; margin:0px; }
 
-/** global body style control **/
-body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 
-/** global header **/
+/* reset form element */
+legend {
+    color: #000; /* for ie6 */
+}
+button, input, select, textarea {
+    font-size: 100%; /* 使得表单元素在 ie 下能继承字体大小 */
+}
+
+
+/* reset table element */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+/* global body style */
+body {
+    background-color: #f1f1f1;
+    background: url(../images/global_header_bg.jpg) repeat-x 0 0;
+}
+
+
+/* Cover effect style control */
+.cover_element{
+    position:fixed; z-index:200;
+    left:0px; top:0px; background-color:#333;
+    -moz-opacity:0.6; opacity: 0.6;
+    filter: alpha(opacity=60);
+    -khtml-opacity: 0.6;
+    -moz-user-select:none;
+}
+.ex_dialog{
+	position:absolute; padding:50px;
+	z-index:201; background:#FFF;
+}
+
+
+/* global header */
 #global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
 #global_header .logo{ position:relative; float:left; width:450px; height:47px; }
 #global_header .user_info{
@@ -66,8 +108,6 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 #global_header .user_info .global_sign_in_btn #home_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn{ font-weight:bold; font-style:italic; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
-
-
 #global_header .user_info .uinfo{ position:absolute; width:200px; height:47px; z-index:100; }
 #global_header .user_info .uinfo em.light{
     float:left; width:72px;height:45px;background:url(/static/images/btn.png) no-repeat left -314px;
@@ -75,7 +115,6 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 #global_header .user_info .uinfo .name{
     float:left; height:35px; margin-top:5px; text-align:center; cursor:pointer;
 }
-
 #global_header .user_info .uinfo .name #goldLink a{
     font-size:14px; color:#ffffff;font-weight:bold;font-family:Verdana;
     height:40px; width:120px; display:block;line-height:40px;
@@ -90,7 +129,6 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
     background:url(/static/images/user.png) no-repeat 0 -40px;
     font-size:13px;right:0px;top:5px;
 }
-
 #global_header .user_info .uinfo .message { width:190px; padding:50px 19px 10px; }
 #global_header .user_info .uinfo .message .na { height:40px; }
 #global_header .user_info .uinfo .message .na p { float:left;color:#333333; }
@@ -103,7 +141,7 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 #global_header .user_info .uinfo .message .info{line-height:20px;color:#202020;text-align:left;font-size:14px;margin-top:10px; }
 #global_header .user_info .uinfo .message .info span{color:#696969;font-weight:normal; }
 #global_header .user_info .uinfo .message .info em{
-    background:url(/static/images/btn.png) no-repeat left -282px;
+    background: url(/static/images/btn.png) no-repeat left -282px;
     color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;
 }
 #global_header .user_info .uinfo .message .info .hide{
@@ -122,21 +160,8 @@ body { background:url(../images/global_header_bg.jpg) repeat-x 0 0; }
 #global_header .user_info .uinfo .myexfefoot a.l{float:left }
 #global_header .user_info .uinfo .myexfefoot a.r{float:right; }
 
+
+/* moving out!!!!!!!!!!!!!!!!!!!!!!! */
 /** 404 error page style control **/
 #error_404_page { background-color:#F2F2F2; }
 #error_404_page .img_404{ width:500px; height:600px; margin:auto; margin-top:20px; background:url(../images/404.jpg) no-repeat 0 0; }
-
-/** Cover effect style control **/
-.cover_element{
-    position:fixed; z-index:200;
-    left:0px; top:0px; background-color:#333;
-    -moz-opacity:0.6; opacity: 0.6;
-    filter: alpha(opacity=60);
-    -khtml-opacity: 0.6;
-    -moz-user-select:none;
-}
-.ex_dialog{
-	position:absolute; padding:50px;
-	z-index:201; background:#FFF;
-}
-/** Cover effect style control **/
