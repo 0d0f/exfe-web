@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* EXFE style by Leask */
 
 
 /* global style initialization */
@@ -78,13 +79,13 @@ body {
     background: url(../images/global_header_bg.jpg) repeat-x 0 0;
 }
 
-/* func.js */
+/* func.js by Handaoliang */
 .fbg{
     background: #d5e6e9;
 }
 
 
-/* global header */
+/* global header by Handaoliang */
 #global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
 #global_header .logo{ position:relative; float:left; width:450px; height:47px; }
 #global_header .user_info{
@@ -151,7 +152,7 @@ body {
 #global_header .user_info .uinfo .myexfefoot a.r{ float:right; }
 
 
-/* Cover effect style control */
+/* Cover effect style control by Handaoliang */
 .cover_element{
     position:fixed; z-index:200;
     left:0px; top:0px; background-color:#333;
