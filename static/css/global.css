@@ -12,7 +12,7 @@
 
 /* default font */
 body, button, input, select, textarea {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.5;
     font-family: "Verdana", "Lucida Grande", "Sans", "Helvetica", "Arial", "WenQuanYi Micro Hei", "Droid Sans Fallback", "Microsoft YaHei", "SimSun";
 }
@@ -44,7 +44,7 @@ ul, li, ol {
 
 /* reset link element */
 a {
-    color: #3D4627;
+    color: #3f3f3f;
     text-decoration: none;
     cursor:pointer;
     hide-focus: expression(this.hideFocus=true); /* for ie 5+ */
@@ -76,6 +76,11 @@ table {
 body {
     background-color: #f1f1f1;
     background: url(../images/global_header_bg.jpg) repeat-x 0 0;
+}
+
+/* func.js */
+.fbg{
+    background: #d5e6e9;
 }
 
 
