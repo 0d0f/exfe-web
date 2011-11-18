@@ -4,7 +4,7 @@
 <script type="text/javascript" src="/static/js/apps/gather.js"></script>
 
 <!-- Exfe Calendar -->
-<link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
+<link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css"/>
 <script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
 
 </head>
