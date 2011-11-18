@@ -244,7 +244,7 @@ class XActions extends ActionController
         $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
         if ($check["allow"] == "false") {
             $referer_uri = SITE_URL."/!".$base62_cross_id;
-            header('Location: /x/forbidden?s='.urlencode($referer_uri));
+            header('Location: /x/forbidden?s='.urlencode($referer_uri).'&x='.$cross_id);
             exit(0);
         }
         if($check["type"]=="token")
@@ -364,11 +364,43 @@ class XActions extends ActionController
     public function doForbidden()
     {
         $referer = exGet("s");
-        if($referer != ""){
+        if($referer != "")
             $referer = urldecode($referer);
+        $cross_id = exGet("x");
+        if($cross_id != "" && intval($_SESSION["userid"]) > 0){
+            $cross_id = intval($cross_id);
+            $checkhelper=$this->getHelperByName("check");
+            $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>""));
+            if($check["allow"] != "false"){
+                header("location:/!".int_to_base62($cross_id));
+            }else{
+                header("location:/s/profile");
+            }
         }
         $this->setVar('referer', $referer);
+        $this->setVar('cross_id', $cross_id);
         $this->displayView();
+    }
+
+    //检查Cross是否属于当前登录用户。
+    public function doCheckforbidden(){
+        $returnData = array(
+            "success"   =>0,
+            "msg"       =>""
+        );
+        $cross_id = exPost("cid");
+        if($cross_id == ""){
+            $returnData["msg"] = "Cross ID empty";
+        }else{
+            $checkhelper=$this->getHelperByName("check");
+            $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>""));
+            if($check["allow"] != "false"){
+                $returnData["success"] = 1;
+            }
+        }
+
+        header('Content-Type:application/json; charset=UTF-8');
+        echo json_encode($returnData);
     }
 
 }

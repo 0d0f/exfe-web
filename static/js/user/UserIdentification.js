@@ -443,16 +443,34 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
                                         //如果是首页，并且是已经登录，则跳转到Profile页面。
-                                        if(typeof page_flag != "undefined" && page_flag == "home_page"){
+                                        if(typeof pageFlag != "undefined" && pageFlag == "home_page"){
                                             window.location.href="/s/profile";
                                             return;
                                         }
-                                        //如果不是从/s/login页面登录。
-                                        if(typeof showIdentificationDialog != "undefined"){
+                                        //如果是从/s/login页面登录。
+                                        if(typeof showSpecialIdentityDialog != "undefined" && pageFlag == "login"){
                                             window.location.href="/s/profile";
                                             return;
                                         }
+                                        //如果是从/x/forbidden页面登录
+                                        if(typeof showSpecialIdentityDialog != "undefined" && pageFlag == "forbidden"){
+                                            //检查当前用户是否有权限访问这个Cross。
+                                            jQuery.ajax({
+                                                type:"POST",
+                                                data:"cid="+cross_id,
+                                                url:site_url+"/x/checkforbidden",
+                                                dataType:"json",
+                                                success:function(JSONData){
+                                                    if(JSONData.success){
+                                                        window.location.href=referer;
+                                                    }else{
+                                                        window.location.href="/s/profile";
+                                                    }
+                                                }
+                                            });
 
+                                            return;
+                                        }
                                         odof.exlibs.ExDialog.hideDialog();
                                         odof.exlibs.ExDialog.destroyCover();
                                         //jQuery.modal.close();

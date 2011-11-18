@@ -13,12 +13,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /*
      * initialize dialog module
      * */
-    ns.initialize = function(dialogID, contents, dialogClassName, dialogModal){
+    ns.initialize = function(dialogID, contents, dialogClassName, dialogModal, dialogPosY){
 
         ns.createDialog(dialogID, dialogClassName, dialogModal);
         ns.dialogElement.innerHTML = contents;
 
-        var dialogWidth = 420;
+        var dialogWidth = 460;
         var dialogHeight = 420;
         var pageSize = odof.util.getPageSize();
         var pageWidth = pageSize.WinW;
@@ -38,7 +38,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var dialogTitlesHandlerJID = "#" + ns.dialogTitleHandlerID;
         var dialogCloseBtnJID = "#" + ns.dialogCloseBtnID;
 
-        jQuery(dialogJID).css({ top:pY, left:pX });
+        if(typeof dialogPosY != "undefined" && dialogPosY != null){
+            jQuery(dialogJID).css({ top:dialogPosY, left:pX });
+        }else{
+            jQuery(dialogJID).css({ top:pY, left:pX });
+        }
         jQuery(window).scroll(function() {
             if (!drag && divscroll) {
                 floatWrapX = jQuery(window).scrollLeft() + pX;
@@ -135,10 +139,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         odof.exlibs.ExDialog.createCover();
         if(dialogModal == "win"){
+            /*
             jQuery("#"+ns.dialogID).bind("clickoutside",function(){
                 odof.exlibs.ExDialog.hideDialog();
                 odof.exlibs.ExDialog.destroyCover();
             });
+            */
             jQuery("#"+ns.dialogID).addClass("ex_dialog_shadow");
             jQuery("#"+ns.coverID).addClass("cover_element_shadow");
         }

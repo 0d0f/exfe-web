@@ -10,7 +10,7 @@ $user_token = $this->getVar("userToken");
 
 <div id="userResetPwdBox" class="identification_dialog idialog_inpage"></div>
 <script type="text/javascript">
-    var showIdentificationDialog = false;
+    var showSpecialIdentityDialog = true;
     var user_identity = '<?php echo $user_identity; ?>';
     var user_name = '<?php echo $user_name; ?>';
     var user_token = '<?php echo $user_token; ?>';

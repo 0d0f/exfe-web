@@ -194,7 +194,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.comm.func.initRePassword('identification_newpwd', 'identification_renewpwd');
     };
 
-    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal){
+    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
         var html = odof.user.identification.showdialog("reg");
         if(typeof callBackFunc != "undefined" && callBackFunc != null){
             ns.callBackFunc = callBackFunc;
@@ -203,7 +203,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string" && dialogBoxID != null){
             document.getElementById(dialogBoxID).innerHTML = html;
         }else{
-            odof.exlibs.ExDialog.initialize("identification", html, null, winModal);
+            odof.exlibs.ExDialog.initialize("identification", html, null, winModal, dialogPosY);
             var dialogBoxID = "identification_dialog";
         }
 
@@ -285,17 +285,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             + '</div>';
             jQuery("#global_user_info").html(loginMenu);
 
-            //If not login page
-            if(typeof showIdentificationDialog == "undefined"){
+            //是否为定制的登录框。
+            if(typeof showSpecialIdentityDialog == "undefined"){
                 jQuery("#home_user_login_btn").unbind("click");
                 jQuery("#home_user_login_btn").bind("click",function(){
                     ns.doShowLoginDialog();
                 });
             }else{
-                jQuery("#home_user_login_btn").unbind("click");
-                jQuery("#home_user_login_btn").click(function() {
-                    jQuery("#identity").focus();
-                });
+                //专门为forbidden页面定制。/x/forbidden
+                if(typeof pageFlag != "undefined" && pageFlag == "forbidden"){
+                    jQuery("#home_user_login_btn").unbind("click");
+                    jQuery("#home_user_login_btn").bind("click",function(){
+                        ns.doShowLoginDialog(null, null, null, "win", 200);
+                    });
+                }else{
+                    //专门为登录页面定制。。/s/login
+                    jQuery("#home_user_login_btn").unbind("click");
+                    jQuery("#home_user_login_btn").click(function() {
+                        jQuery("#identity").focus();
+                    });
+                }
             }
         }else{
             var userPanelHTML = '<div class="uinfo">'

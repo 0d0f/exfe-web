@@ -383,6 +383,26 @@ function ParseURL($str)
 }
 
 /**
+ * 简单的打包Array数组
+ * @param $inArray
+ * @return 打包后的字符串
+**/
+function simplePackArray($inArray)
+{
+    return preg_replace('/(.)/es',"str_pad(dechex(ord('\\1')),2,'0',STR_PAD_LEFT)",substr(base64_encode(rand().time()),0,9).base64_encode(serialize($inArray)));
+}
+
+/**
+ * 简单的解包Array数组
+ * @param $inString
+ * @return 解包出来的Array数组
+**/
+function simpleUnpackArray($inString)
+{
+    return unserialize(base64_decode(substr(preg_replace('/(\w{2})/e',"chr(hexdec('\\1'))",$str),9)));
+}
+
+/**
  * 打包Array数组
  * @param $inArray
  * @return 打包后的字符串
