@@ -1,6 +1,15 @@
     <div id="global_header">
         <div class="logo">
-            <a href="/"><img src="/static/images/exfe_logo.png" alt="EXFE" title="EXFE.COM" /></a>
+<?php
+if(intval($_SESSION["userid"]) > 0){
+?>
+<a href="/s/profile">
+<?php
+}else{
+?>
+<a href='/'>
+<?php } ?>
+<img src="/static/images/exfe_logo.png" alt="EXFE" title="EXFE.COM" /></a>
         </div>
         <div class="user_info" id="global_user_info">
             <div class="global_sign_in_btn">
