@@ -1,7 +1,9 @@
 var moduleNameSpace = "odof.user.profile";
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
+
 (function(ns){
+
     ns.saveUsername = function(name) {
         var poststr="name="+name;
         $.ajax({
@@ -18,6 +20,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         });
     };
+
 
     ns.updateavatar = function(name) {
         $.ajax({
@@ -36,8 +39,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
-    ns.sentActiveEmail=function (external_identity,button){
 
+    ns.sentActiveEmail=function(external_identity,button) {
         var poststr="identity="+external_identity;
         $.ajax({
         type: "POST",
@@ -55,9 +58,58 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
 
+
+    ns.getCross = function() {
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/s/getcross',
+            dataType : 'json',
+            success  : function(data) {
+                console.log(data);
+            }
+        });
+    };
+
+
+    ns.getCross = function() {
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/s/getcross',
+            dataType : 'json',
+            success  : function(data) {
+                console.log(data);
+            }
+        });
+    };
+
+
+    ns.getInvitation = function() {
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/s/getinvitation',
+            dataType : 'json',
+            success  : function(data) {
+                console.log(data);
+            }
+        });
+    };
+
+
+    ns.getUpdate = function() {
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/s/getupdate',
+            dataType : 'json',
+            success  : function(data) {
+                console.log(data);
+            }
+        });
+    };
+
 })(ns);
 
-$(document).ready(function(){
+
+$(document).ready(function() {
 
     $('#editprofile').click(function(e) {
         if($('#profile_name').attr("status")=='view')
@@ -120,5 +172,10 @@ $(document).ready(function(){
     $('.acpbtn').click(function(e) {
         location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
     });
+
+    odof.user.profile.getCross();
+    odof.user.profile.getInvitation();
+    odof.user.profile.getUpdate();
+
 
 });

@@ -1,4 +1,5 @@
 <?php include 'share/header.php'; ?>
+<link rel="stylesheet" type="text/css" href="/static/css/profile.css">
 <script type="text/javascript" src="/static/js/user/UserProfile.js"></script>
 <script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
 <script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
@@ -11,7 +12,8 @@
     $user       = $this->getVar('user');
     $user['avatar_file_name'] = $user['avatar_file_name'] ?: 'default.png';
 ?>
-<div class="centerbg">
+
+<div class="content">
 <div class="edit_user">
     <div id="profile_avatar">
         <img class="big_header" src="<?php echo IMG_URL.'/'.getHashFilePath('', $user['avatar_file_name']); ?>/80_80_<?php echo $user['avatar_file_name']; ?>" alt="" />
@@ -85,9 +87,9 @@
     </div>
 </div>
 <div class="shadow_840"></div>
-<div class="profile_main">
-<div class="left">
-<?php
+<div id="cross_area">
+<div id="cross_list">
+<!--?php
     $upcoming  = '';
     $sevenDays = '';
     $later     = '';
@@ -125,10 +127,10 @@
         }
     }
     echo $upcoming . $sevenDays . $later . $past;
-?>
+?-->
 </div>
 <div class="right">
-<?php
+<!--?php
     if ($newInvt) {
         $strInvt  = '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>';
         foreach ($newInvt as $newInvtI => $newInvtItem) {
@@ -199,7 +201,7 @@
         $strLogs .= '<div class="more"><a href="">more…</a></div></div><div class="shadow_310"></div>';
         echo $strLogs;
     }
-?>
+?-->
 
 </div>
 

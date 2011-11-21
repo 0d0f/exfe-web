@@ -67,7 +67,6 @@ button, input, select, textarea {
 input, textarea {
     font-size: 14px;
     color:#696969;
-    padding:4px;
 }
 
 
@@ -80,9 +79,15 @@ table {
 
 /* global body style */
 body {
-    background-color: #f1f1f1;
-    background: url(../images/global_header_bg.jpg) repeat-x 0 0;
+    background: #f2f2f2 url(../images/global_header_bg.jpg) repeat-x 0 0;
 }
+
+
+/* global content area */
+.content {
+    margin-top: 33px;
+}
+
 
 /* func.js by Handaoliang */
 .fbg{
