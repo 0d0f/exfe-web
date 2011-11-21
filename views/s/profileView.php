@@ -11,7 +11,8 @@
     $user       = $this->getVar('user');
     $user['avatar_file_name'] = $user['avatar_file_name'] ?: 'default.png';
 ?>
-<div class="centerbg">
+
+<div class="content">
 <div class="edit_user">
     <div id="profile_avatar">
         <img class="big_header" src="<?php echo IMG_URL.'/'.getHashFilePath('', $user['avatar_file_name']); ?>/80_80_<?php echo $user['avatar_file_name']; ?>" alt="" />

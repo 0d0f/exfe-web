@@ -77,7 +77,7 @@ $host_exfee    = $cross['host_exfee'];
 $normal_exfee  = $cross['normal_exfee'];
 $confirmed     = 0;
 $allinvitation = count($host_exfee) + count($normal_exfee);
-foreach($host_exfee as $exfee) {
+foreach ($host_exfee as $exfee) {
     if ($exfee['state'] == INVITATION_YES) {
 	$confirmed = $confirmed + 1;
     }

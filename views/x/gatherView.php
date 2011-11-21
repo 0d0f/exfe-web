@@ -13,7 +13,7 @@
 <?php
     $external_identity=$this->getVar("external_identity");
 ?>
-<div class="centerbg">
+<div class="content">
   <div class="createset">
   <!--<h3>Gather for your <span>X</span></h3>-->
 <ul>

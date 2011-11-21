@@ -307,7 +307,7 @@ class SActions extends ActionController
     public function doProfile()
     {
         if (intval($_SESSION['userid']) <= 0) {
-            header( 'Location: /s/login' ) ;
+            header('Location: /s/login') ;
             exit(0);
         }
 
