@@ -9,6 +9,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns){
 
     ns.actions = "sign_in";
+    ns.userIdentityCache = "";
 
     ns.getUrlVars = function() {
         var vars = [], hash;
@@ -286,11 +287,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.identityInputBoxActions = function(userIdentity){
+
         if(typeof userIdentity == "undefined"){
             var userIdentity = jQuery('#identity').val();
         }else{//如果传入了，则需要重新设置一下identity输入框的值。
             jQuery('#identity').val(userIdentity);
         }
+        //只有当不等时，才执行轮循
+        //console.log("aaaaa");
+        if(userIdentity == ns.userIdentityCache){
+            return;
+        }else{
+            ns.userIdentityCache = jQuery('#identity').val();
+        }
+        //console.log("bbbbb");
         //added by handaoliang, check email address
         var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         if(userIdentity != "" && userIdentity.match(mailReg)){
@@ -395,11 +405,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.bindDialogEvent = function(type) {
         if(type=="reg") {
             //在KeyUP事件之上加一层TimeOut设定，延迟响应以修复.co到.com的问题。
+            /*
             jQuery('#identity').keyup(function() {
                 jQuery(this).doTimeout('typing', 250, function(){
                     ns.identityInputBoxActions();
                 });
             });
+            */
+            window.setInterval(function(){
+                ns.identityInputBoxActions();
+            },250);
 
             //绑定当焦点到密码框时，检测一下当前用户是否存在。
             jQuery('#identification_pwd').focus(function() {
