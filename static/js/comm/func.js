@@ -40,13 +40,31 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         }
     };
+    ns.getUTF8Length = function(str){ 
+        if(typeof str == "undefined" || str == ""){ return 0; } 
+        var len = 0;
+        for (var i = 0; i < str.length; i++){  
+            charCode = str.charCodeAt(i);
+            if (charCode < 0x007f){
+                len += 1;  
+            } else if ((0x0080 <= charCode) && (charCode <= 0x07ff)){
+                len += 2;
+            } else if ((0x0800 <= charCode) && (charCode <= 0xffff)){
+                len += 3;
+            }  
+        }
+        return len;
+    };
     ns.verifyDisplayName = function(dname){
         if(typeof dname == "undefined" || dname == ""){
             return false;
         }
-        var nameREG = "^[0-9a-zA-Z_\ \'\.]+$"; 
+        var nameLength = ns.getUTF8Length(dname);
+        //var nameREG = "^[0-9a-zA-Z_\ \'\.]+$"; 
+        //var nameREG = "^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$";
+        var nameREG = "^[0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+$";
         var re = new RegExp(nameREG);
-        if(!re.test(dname)){
+        if(!re.test(dname) || nameLength > 30){
             return false;
         }
         return true;
@@ -82,9 +100,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery(btnJID).bind("click",function(){
             ns.showRePassword(pwdBoxID, rePwdBoxID);
         });
-
     };
-    ns.showRePassword = function(pwdBoxID, rePwdBoxID){
+    ns.showRePassword = function(pwdBoxID, rePwdBoxID){//class 'ic3' repwd可见
         var pwdBoxJID = "#"+pwdBoxID;
         var displayPwdBoxJID = "#"+pwdBoxID+"_a";
         var btnJID = "#"+pwdBoxID+"_ic";
@@ -93,7 +110,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var rePwdBoxLiJID = "#"+rePwdBoxID+"_li";
 
         //do effect.*****************
-        if(jQuery(btnJID).hasClass("ic2")){
+        if(jQuery(btnJID).hasClass("ic2")){//rePwd可见。
             jQuery(btnJID).removeClass("ic2");
             jQuery(btnJID).addClass("ic3");
             jQuery(pwdBoxJID).show();
@@ -102,7 +119,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery(rePwdBoxLiJID).show();
             jQuery(displayPwdBoxJID).unbind("keyup");
             jQuery(rePwdBoxJID).val('');
+
+            jQuery(rePwdBoxJID).bind("blur",function(){
+                if(jQuery(pwdBoxJID).val() != jQuery(rePwdBoxJID).val()){
+                    jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords don't match.</span>");
+                    jQuery('#pwd_match_error').show();
+                    jQuery('#pwd_hint').show();
+                    setTimeout(function(){
+                        jQuery('#pwd_match_error').hide();
+                        jQuery('#pwd_hint').hide();
+                    }, 3000);
+                }
+            });
         }else{
+
             jQuery(btnJID).removeClass("ic3");
             jQuery(btnJID).addClass("ic2");
             jQuery(pwdBoxJID).hide();
@@ -112,6 +142,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var curPwd = jQuery(pwdBoxJID).val();
             jQuery(displayPwdBoxJID).val(curPwd);
             jQuery(rePwdBoxJID).val(curPwd);
+
+            //取消重复输入框的事件绑定。
+            jQuery(rePwdBoxJID).unbind("blur");
 
             //绑定事件到可见的框。
             jQuery(displayPwdBoxJID).unbind("keyup");

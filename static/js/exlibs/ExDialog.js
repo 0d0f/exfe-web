@@ -21,8 +21,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var dialogWidth = 460;
         var dialogHeight = 420;
         var pageSize = odof.util.getPageSize();
-        var pageWidth = pageSize.WinW;
-        var pageHeight = pageSize.WinH;
+        var pageWidth = pageSize.PageW;
+        var pageHeight = pageSize.PageH;
         
         var floatWrapX, floatWrapY, dragX, dragY, pX, pY, tX, tY;
         var pX = parseInt(pageWidth-dialogWidth)/2;
@@ -34,6 +34,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var divscroll = true;
         var resizeswitch = true;
 
+        //按照需求，距离上面的高度先写死。
+        var pY = 150;
+
         var dialogJID = "#" + ns.dialogID;
         var dialogTitlesHandlerJID = "#" + ns.dialogTitleHandlerID;
         var dialogCloseBtnJID = "#" + ns.dialogCloseBtnID;
@@ -43,6 +46,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }else{
             jQuery(dialogJID).css({ top:pY, left:pX });
         }
+        /*
         jQuery(window).scroll(function() {
             if (!drag && divscroll) {
                 floatWrapX = jQuery(window).scrollLeft() + pX;
@@ -50,6 +54,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery(dialogJID).css({ top: floatWrapY, left: floatWrapX });
             }
         });
+        */
+        jQuery(window).resize(function() {
+            if (!drag && resizeswitch) {
+                cX = document.documentElement.clientWidth;
+                cY = document.documentElement.clientHeight;
+                var pSize = odof.util.getPageSize();
+                var pX = parseInt(pSize.PageW-dialogWidth)/2;
+                floatWrapX = jQuery(window).scrollLeft() + pX;
+                floatWrapY = jQuery(window).scrollTop() + 150;
+                jQuery(dialogJID).css({ top: floatWrapY, left: floatWrapX });
+            }
+        });
+
 
         /*
         jQuery(window).resize(function() {

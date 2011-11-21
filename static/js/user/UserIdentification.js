@@ -286,7 +286,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.identityInputBoxActions = function(userIdentity){
-        jQuery(".notice").hide();
         if(typeof userIdentity == "undefined"){
             var userIdentity = jQuery('#identity').val();
         }else{//如果传入了，则需要重新设置一下identity输入框的值。
@@ -302,17 +301,36 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 dataType:"json",
                 success: function(data){
                     if(data!=null) {
-                        if(data.response.identity_exist=="false"){//identity
+                        //如果当前identity不存在。
+                        if(data.response.identity_exist=="false"){
                             jQuery('#hint').show();
                             //jQuery('#retype').show();
                             jQuery('#displayname').show();
                             jQuery('#resetpwd').hide();
                             jQuery('#logincheck').hide();
                             jQuery('#sign_in_btn').val("Sign Up");
+                            jQuery('input[name=displayname]').val('');
+                            jQuery('input[name=displayname]').keyup(function(){
+                                var displayName = this.value;
+                                if(displayName != "" && !odof.comm.func.verifyDisplayName(displayName)){
+                                    jQuery('#pwd_hint').html("<span style='color:#CC3333'>Display name Error.</span>");
+                                    jQuery('#displayname_error').show();
+                                    jQuery('#pwd_hint').show();
+                                    setTimeout(function(){
+                                        jQuery('#displayname_error').hide();
+                                        jQuery('#pwd_hint').hide();
+                                    }, 3000);
+                                    return false;
+                                }else{
+                                    jQuery('#displayname_error').hide();
+                                    jQuery('#pwd_hint').hide();
+                                }
+                            });
                             odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
                             jQuery('#identification_pwd').unbind("focus");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
+                            jQuery(".notice").hide();
                             if(data.response.status == "veryifing"){
                                 jQuery("#identity_forgot_pwd_dialog").show();
                                 jQuery("#f_identity").val(jQuery("#identity").val());
@@ -328,6 +346,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 });
                                 jQuery("#cancel_verification_btn").bind("click", function(){
                                     jQuery("#identity_forgot_pwd_dialog").hide();
+                                    jQuery("#identity_forgot_pwd_info").html("Verification will be sent in minutes, please check your inbox.");
                                 });
                                 jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
                             }else{
@@ -358,6 +377,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     jQuery("#identity_verify_loading").hide();
                 }
             });
+        }
+        /*
         }else{
             jQuery('#hint').hide();
             jQuery('#retype').hide();
@@ -368,13 +389,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#sign_in_btn').addClass("sign_in_btn_disabled");
             jQuery('#sign_in_btn').removeClass("sign_in_btn");
         }
+        */
     };
 
     ns.bindDialogEvent = function(type) {
         if(type=="reg") {
+            //在KeyUP事件之上加一层TimeOut设定，延迟响应以修复.co到.com的问题。
             jQuery('#identity').keyup(function() {
-                ns.identityInputBoxActions();
+                jQuery(this).doTimeout('typing', 250, function(){
+                    ns.identityInputBoxActions();
+                });
             });
+
+            //绑定当焦点到密码框时，检测一下当前用户是否存在。
             jQuery('#identification_pwd').focus(function() {
                 ns.identityInputBoxActions();
             });
