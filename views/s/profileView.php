@@ -1,4 +1,5 @@
 <?php include 'share/header.php'; ?>
+<link rel="stylesheet" type="text/css" href="/static/css/profile.css">
 <script type="text/javascript" src="/static/js/user/UserProfile.js"></script>
 <script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
 <script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
