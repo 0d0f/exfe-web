@@ -329,8 +329,7 @@ class SActions extends ActionController
     public function doGetInvitation()
     {
         if (intval($_SESSION['userid']) <= 0) {
-            //@todo: return error
-            header( 'Location: /s/login' ) ;
+            echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
 
@@ -350,6 +349,8 @@ class SActions extends ActionController
         // Get invitations
         $newInvt = $modIvit->getNewInvitationsByIdentityIds($identityIds);
         foreach ($newInvt as $newInvtI => $newInvtItem) {
+            ////////////////////////////////////////////////////////////////////@todo!!!!!!!!!!!!!
+            $cleanLogs[$logI]['base62id'] = int_to_base62($logItem['id']);
             $identity = $modIdentity->getIdentityById(
                 $newInvtItem['identity_id']
             );
@@ -369,8 +370,7 @@ class SActions extends ActionController
     public function doGetCross()
     {
         if (intval($_SESSION['userid']) <= 0) {
-            //@todo: return error
-            header( 'Location: /s/login' ) ;
+            echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
 
@@ -434,7 +434,8 @@ class SActions extends ActionController
 
         // Add confirmed informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['exfee'] = array();
+            $crosses[$crossI]['base62id'] = int_to_base62($crossItem['id']);
+            $crosses[$crossI]['exfee']    = array();
             foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
                 if ($cfedInfoItem['cross_id'] === $crossItem['id']) {
                     $exfe = $humanIdentities[$cfedInfoItem['identity_id']];
@@ -451,8 +452,7 @@ class SActions extends ActionController
     public function doGetUpdate()
     {
         if (intval($_SESSION['userid']) <= 0) {
-            //@todo: return error
-            header( 'Location: /s/login' ) ;
+            echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
 
@@ -670,6 +670,7 @@ class SActions extends ActionController
 
         // merge cross details and humanIdentities
         foreach ($cleanLogs as $logI => $logItem) {
+            $cleanLogs[$logI]['base62id'] = int_to_base62($logItem['id']);//////////////////////////////////////////////////////////@todo
             $cleanLogs[$logI]['title']
           = $allCross[$logItem['cross_id']]['title'];
             $cleanLogs[$logI]['begin_at']

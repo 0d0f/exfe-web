@@ -77,7 +77,49 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             url      : site_url + '/s/getcross',
             dataType : 'json',
             success  : function(data) {
-                console.log(data);
+                if (data && data.error) {
+                    return;
+                }
+                var upcoming  = '',
+                    sevenDays = '',
+                    later     = '',
+                    past      = '';
+                for (var i in data) {
+                    var confirmed = [];
+                    for (var j in data[i].exfee) {
+                        if (parseInt(data[i].exfee[j].rsvp) === 1) {
+                            confirmed.push(data[i].exfee[j].name);
+                        }
+                    }
+                    if (confirmed.length) {
+                        confirmed = confirmed.length+' of '+data[i].exfee.length
+                                  + ' confirmed: '  + confirmed.join(', ');
+                    } else {
+                        confirmed = '0 of '+data[i].exfee.length+' confirmed';
+                    }
+                    var strCross = '<a class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '"><div class="coming">'
+                                 +     '<div class="a_tltle">' + data[i]['title'] + '</div>'
+                                 +     '<div class="maringbt">'
+                                 +         '<p>' + data[i]['begin_at'] + '</p>'
+                                 +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <span>(' + data[i]['place_line2'] + ')</span>') : '') + '</p>'
+                                 +         '<p>' + confirmed + '</p>'
+                                 +     '</div>'
+                                 + '</div></a>';
+                    switch (data[i]['sort']) {
+                        case 'upcoming':
+                            upcoming  = (upcoming  ? upcoming  : '<div class="p_right" id="xType_upcoming"><img src="/static/images/translation.gif" class="l_icon"/>Today & Upcoming<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
+                            break;
+                        case 'sevenDays':
+                            sevenDays = (sevenDays ? sevenDays : '<div class="p_right" id="xType_sevenDays">Next 7 days<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
+                            break;
+                        case 'later':
+                            later     = (later     ? later     : '<div class="p_right" id="xType_later">Later<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
+                            break;
+                        case 'past':
+                            past      = (past      ? past      : '<div class="p_right" id="xType_past">Past<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
+                    }
+                }
+                $('#cross_list').html(upcoming + sevenDays + later + past);
             }
         });
     };
@@ -89,7 +131,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             url      : site_url + '/s/getinvitation',
             dataType : 'json',
             success  : function(data) {
-                console.log(data);
+                if (data && data.error) {
+                    return;
+                }
+                //console.log(data);
             }
         });
     };
@@ -101,7 +146,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             url      : site_url + '/s/getupdate',
             dataType : 'json',
             success  : function(data) {
-                console.log(data);
+                if (data && data.error) {
+                    return;
+                }
+                //console.log(data);
             }
         });
     };
@@ -176,6 +224,5 @@ $(document).ready(function() {
     odof.user.profile.getCross();
     odof.user.profile.getInvitation();
     odof.user.profile.getUpdate();
-
 
 });
