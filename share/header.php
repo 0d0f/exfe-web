@@ -16,6 +16,7 @@
     <script type="text/javascript" src="/static/js/libs/jquery.js"></script>
     <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
     <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
+    <script type="text/javascript" src="/static/js/libs/jquery.ba-dotimeout.js"></script>
     <script type="text/javascript" src="/static/js/comm/ExfeUtil.js"></script>
     <script type="text/javascript" src="/static/js/comm/func.js"></script>
 
