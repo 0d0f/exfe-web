@@ -87,9 +87,9 @@
     </div>
 </div>
 <div class="shadow_840"></div>
-<div class="profile_main">
-<div class="left">
-<?php
+<div id="cross_area">
+<div id="cross_list">
+<!--?php
     $upcoming  = '';
     $sevenDays = '';
     $later     = '';
@@ -127,10 +127,10 @@
         }
     }
     echo $upcoming . $sevenDays . $later . $past;
-?>
+?-->
 </div>
 <div class="right">
-<?php
+<!--?php
     if ($newInvt) {
         $strInvt  = '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>';
         foreach ($newInvt as $newInvtI => $newInvtItem) {
@@ -201,7 +201,7 @@
         $strLogs .= '<div class="more"><a href="">more…</a></div></div><div class="shadow_310"></div>';
         echo $strLogs;
     }
-?>
+?-->
 
 </div>
 
