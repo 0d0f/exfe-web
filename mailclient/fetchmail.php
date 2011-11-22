@@ -81,6 +81,7 @@ function dofetchandpost($obj)
             $head = $obj->getHeaders($i);  
             $to=$head["to"];
             $from=$head["from"];
+            $subject=$head["subject"];
             
             $cross_id="";
             #$cross_id_base62="";
@@ -156,6 +157,20 @@ function dofetchandpost($obj)
                 }
                 else
                 {
+                    if($result["error_code"]=="403")
+                    {
+                        $mail["to"]=$from;
+                        $mail["title"]=$subject;
+                        $mail["content"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
+                        $mail["content"].="\n".$body;
+                        require_once '../lib/Resque.php';
+                        date_default_timezone_set('GMT');
+                        Resque::setBackend(RESQUE_SERVER);
+                        $jobId = Resque::enqueue("textemail","textemail_job" , $mail, true);
+                        break;
+
+                        //send error mail to user @ $from
+                    }
                     $error_key=md5($cross_id.$from.$result_str);
                     $error_count=intval($errorcount[$error_key]);
                     if($error_count<=3)

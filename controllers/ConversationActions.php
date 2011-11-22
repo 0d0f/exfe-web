@@ -59,6 +59,8 @@ class ConversationActions extends ActionController {
 
                 if($r===false)
                 {
+                    $responobj["response"]["error_code"]="403";
+                    $responobj["response"]["error"]="Forbidden";
                     $responobj["response"]["success"]="false";
                 }
                 else
