@@ -53,65 +53,76 @@ h5 {
     margin-bottom: 10px;
 }
 .category_title {
-    width: 200px;
-    border-bottom: solid 1px #ccc;
-    height: 20px;
-    line-height: 20px;
-    margin-left: 275px;
     text-align: right;
+}
+#cross_list .category_title {
+    width: 300px;
+    border-bottom: solid 1px #ccc;
+    margin: auto 0px auto auto;
     cursor: default;
 }
-.xType_upcoming .category_icon {
+#xType_upcoming .category_icon {
     width: 15px;
     height: 15px;
     background: url(/static/images/icons.png) no-repeat 0 -418px;
     margin-right: 8px;
     vertical-align: middle;
 }
-.category_title img.arrow {
+.category_title .arrow {
     width: 15px;
     height: 15px;
     background: url(/static/images/icons.png) no-repeat -20px -660px;
     margin: 0 5px;
     vertical-align: middle;
 }
-.category_title img.arrow_up {
-    width: 15px;
-    height: 15px;
+.category_title .arrow_up {
+    width: 16px;
+    height: 16px;
     background: url(/static/images/icons.png) no-repeat -20px -680px;
     margin: 0 5px;
     vertical-align: middle;
 }
+#invitations .category_icon {
+    width: 16px;
+    height: 16px;
+    background: url(/static/images/icons.png) no-repeat 0px -456px;
+    margin-right: 7px;
+    vertical-align: middle;
+}
+#recently_updates .category_icon {
+    width: 16px;
+    height: 16px;
+    background: url(/static/images/icons.png) no-repeat 0px -498px;
+    margin-right: 7px;
+    vertical-align: middle;
+}
+#recently_updates .clock {
+    background: url(/static/images/icons.png) no-repeat -233px -538px;
+    padding-left: 35px;
+}
+#recently_updates .place {
+    background: url(/static/images/icons.png) no-repeat -233px -561px;
+    padding-left: 35px;
+}
 .cross_link:hover {
     text-decoration: none;
+}
+em {
+    color: #0591AC;
 }
 
 
 
-
-
-
-
 /*
-#invitation_n_update .p_right { width:190px; margin-left:100px; text-align:right; height:28px; font: 12px/28px; }
-#invitation_n_update .p_right img.text { width:16px; height:16px; background:url(/static/images/icons.png) no-repeat 0px -456px; margin-right:7px; vertical-align:middle;}
-#invitation_n_update .p_right img.update { width:17px; height:20px; background:url(/static/images/icons.png) no-repeat 0px -498px; margin-right:7px; vertical-align:middle;}
-
-#invitations .p_right a { color:#0591af;}
 #invitations dl { margin:4px auto; height:45px; padding:5px 13px; position:relative;}
 #invitations dl dt a { font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#0591af;}
 #invitations dl button { background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:5px; cursor:pointer;}
 #invitations dl.bdown { background:#ffffff;}
-
-
 #recently_updates .bgdq { background:#d5e6e9}
-#recently_updates p { padding-left:10px; font:13px/18px  "Lucida Grande","Lucida SansUnicode",Helvetica,Arial,Verdana,sans-serif ; padding-bottom:5px; }
-#recently_updates p span { color:#0591af;}
-#recently_updates p.clock { background:url(/static/images/icons.png) no-repeat -233px -538px; padding-left:35px; }
-#recently_updates p.on_line { background:url(/static/images/icons.png) no-repeat -233px -561px; padding-left:35px; }
 .more { text-align:right;font:13px/20px Verdana;width:96%}
 .more a { color:#020202}
 */
+
 
 
 /* edit user by Handaoliang */

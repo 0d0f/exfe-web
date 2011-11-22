@@ -81,7 +81,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     return;
                 }
                 var crosses = {};
-                $('.category').hide();
+                $('#cross_list > .category').hide();
                 for (var i in data) {
                     var confirmed = [];
                     for (var j in data[i].exfee) {
@@ -130,13 +130,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
                 var strInvt = '';
                 for (var i in data) {
-                    strInvt += '<dl id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
+                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
-                             +     '<dd>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</dd>'
-                             +     '<dd><button type="button" id="acpbtn_' + data[i]['base62id'] + '" class="acpbtn">Accept</button></dd>'
-                             + '</dl>';
+                             +     '<p>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</p>'
+                             +     '<button type="button" id="acpbtn_' + data[i]['base62id'] + '" class="acpbtn">Accept</button>'
+                             + '</div>';
                 }
-                $('#invitation_list').html(strInvt);
+                $('#invitations > .crosses').html(strInvt);
             }
         });
     };
@@ -154,19 +154,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var strLogs = '';
                 for (var i in data) {
                     var j, arrExfee;
-                    strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '"><div class="redate">'
-                             + '<h5>' + data[i]['title'] + '</h5>'
-                             + '<div class="maringbt">';
+                    strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
+                             +     '<div class="cross">'
+                             +         '<h5>' + data[i]['title'] + '</h5>';
                     if (data[i]['change']) {
                         if (data[i]['change']['begin_at']) {
-                            strLogs += '<p class="clock"><span>' + data[i]['change']['begin_at']['new_value'] + '</span></p>';
+                            strLogs += '<p class="clock"><em>' + data[i]['change']['begin_at']['new_value'] + '</em></p>';
                         }
                         if (data[i]['change']['place']) {
-                            strLogs += '<p class="place"><span>' + data[i]['change']['place']['new_value'] + '</span></p>';
+                            strLogs += '<p class="place"><em>' + data[i]['change']['place']['new_value'] + '</em></p>';
                         }
                         if (data[i]['change']['title']
                          && data[i]['change']['title']['old_value']) {
-                            strLogs += '<p class="title">Title changed from: <span>' + data[i]['change']['title']['old_value'] + '</span></p>';
+                            strLogs += '<p class="title">Title changed from: <em>' + data[i]['change']['title']['old_value'] + '</em></p>';
                         }
                     }
                     if (data[i]['confirmed']) {
@@ -178,11 +178,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="confirmed"><span>'
+                        strLogs += '<p class="confirmed"><em>'
                                  + data[i]['confirmed'].length
-                                 + '</span> confirmed: <span>'
-                                 + arrExfee.join('</span>, <span>') + '</span>'
-                                 + (arrExfee.length < data[i]['confirmed'].length ? ' and others' : '')
+                                 + '</em> confirmed: <em>'
+                                 + arrExfee.join('</em>, <em>') + '</em>'
+                                 + (arrExfee.length
+                                 < data[i]['confirmed'].length
+                                 ? ' and others' : '')
                                  + '.</p>';
                     }
                     if (data[i]['declined']) {
@@ -194,11 +196,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="declined"><span>'
+                        strLogs += '<p class="declined"><em>'
                                  + data[i]['declined'].length
-                                 + '</span> declined: <span>'
-                                 + arrExfee.join('</span>, <span>') + '</span>'
-                                 + (arrExfee.length < data[i]['declined'].length ? ' and others' : '')
+                                 + '</em> declined: <em>'
+                                 + arrExfee.join('</em>, <em>') + '</em>'
+                                 + (arrExfee.length
+                                 < data[i]['declined'].length
+                                 ? ' and others' : '')
                                  + '.</p>';
                     }
                     if (data[i]['addexfe']) {
@@ -212,19 +216,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                         strLogs += '<p class="invited"><span>'
                                  + data[i]['addexfe'].length
-                                 + '</span> invited: <span>'
-                                 + arrExfee.join('</span>, <span>') + '</span>'
-                                 + (arrExfee.length < data[i]['addexfe'].length ? ' and others' : '')
+                                 + '</em> invited: <em>'
+                                 + arrExfee.join('</em>, <em>') + '</em>'
+                                 + (arrExfee.length
+                                 < data[i]['addexfe'].length
+                                 ? ' and others' : '')
                                  + '.</p>';
                     }
                     if (data[i]['conversation']) {
-                        strLogs += '<p class="conversation"><span>'
-                                 + data[i]['conversation']['by_name']
-                                 + '</span>: '
-                                 + data[i]['conversation']['message'] + '</p>';
+                        strLogs += '<p class="conversation"><em>'
+                                 + data[i]['conversation']['by_name']+'</em>: '
+                                 + data[i]['conversation']['message']+'</p>';
                     }
-                    $('#update_list').html(strLogs);
+                    strLogs += '</div></a>'
                 }
+                $('#recently_updates > .crosses').html(strLogs);
             }
         });
     };
