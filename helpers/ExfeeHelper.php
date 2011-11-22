@@ -305,14 +305,14 @@ class ExfeeHelper extends ActionController
                                 if($mute===FALSE)
                                 {
                                     $identity=humanidentity($identity,null);
-                                    if($identity["provider"]=="email")
-                                    {
+                                    #if($identity["provider"]=="email")
+                                    #{
                                         #$mail["external_identity"]=$identity["external_identity"];
                                         #$mail["provider"]=$identity["provider"];
                                         #$msghelper->sentConversationEmail($mail);
                                         if($identity["provider"]=="email" && $identity["identity_id"]!=$_SESSION["identity_id"])
                                             array_push($to_identities,$identity);
-                                    }
+                                    #}
                                 }
                             }
                         }

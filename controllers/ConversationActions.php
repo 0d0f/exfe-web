@@ -29,7 +29,7 @@ class ConversationActions extends ActionController {
     {
         $responobj["meta"]["code"]=200;
         $comment=$_POST["comment"];
-        $cross_id=base62_to_int($_POST["cross_id_base62"]);
+        $cross_id=intval($_POST["cross_id"]);
         $from=$_POST["from"];
         $postkey=$_POST["postkey"];
         $checkhelper=$this->getHelperByName("check");
@@ -59,6 +59,8 @@ class ConversationActions extends ActionController {
 
                 if($r===false)
                 {
+                    $responobj["response"]["error_code"]="403";
+                    $responobj["response"]["error"]="Forbidden";
                     $responobj["response"]["success"]="false";
                 }
                 else

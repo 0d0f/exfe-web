@@ -22,7 +22,6 @@ class Changeemail_Job
                     unset($cross_changed[$arg["id"]]["cross"]);
                     $cross_changed[$arg["id"]]["cross"]=$arg["cross"];
                     $cross_changed[$arg["id"]]["timestamp"]=$arg["timestamp"];
-                    //unset($cross_changed[$arg["id"]]["description"]); // remove description from email notification
                     foreach($arg["action_identity"] as $identity)
                     {
                         $identity_size=sizeof($cross_changed[$arg["id"]]["action_identity"]);
@@ -37,19 +36,11 @@ class Changeemail_Job
                         }
                         if($flag==false)
                             array_push($cross_changed[$arg["id"]]["action_identity"],$identity);
-                            //$cross_changed[$arg["id"]]["action_identity"][$identity_size]=$identity;
                     }
                  }
             }
             if($arg["action"]=="changed" && $arg["identities"]!="")
             {
-                //if($arg["identities"]["delexfees"] && $arg["identities"]["newexfees"])
-                //    foreach($arg["identities"]["delexfees"] as $delexfee)
-                //        for($idx=0;$idx<sizeof($arg["identities"]["newexfees"]);$idx++)
-                //            if($arg["identities"]["newexfees"][$idx]["id"]==$delexfee["id"])
-                //                unset($arg["identities"]["newexfees"][$idx]);
-
-                
                 if($cross_changed[$arg["id"]]=="")
                     $cross_changed[$arg["id"]]=$arg;
                  else //do mergin
@@ -79,9 +70,6 @@ class Changeemail_Job
                      #{
 
                      #}
-                     
-                    //$arg["identities"]["delexfees"]
-                    //$arg["identities"]["newexfees"]
                  }
             }
         }
@@ -107,36 +95,10 @@ class Changeemail_Job
             }
         }
 
-        #global $site_url;
-        #global $img_url;
-        #global $email_connect;
-
-        #$mails=$this->getMailBodyWithMultiObjects($args);
-        #if($mails)
-        #{
-        #    if($email_connect=="")
-        #        smtp_connect();
-
-        #    foreach($mails as $mail)
-        #    {
-        #        $this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
-        #    }
-        #}
-
 
     }
     public function perform()
     {
-    #    global $site_url;
-    #    global $email_connect;
-    #    $args=$this->args;
-
-    #    if($email_connect=="")
-    #        smtp_connect();
-    #    $mail=$this->getMailWithTemplate($args);
-    #    $this->send($mail["title"],$mail["body"],$this->args);
-    #
-    #
     }
     public function getMailBodyWithMultiObjects($args)
     {
