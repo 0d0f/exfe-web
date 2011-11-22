@@ -304,6 +304,7 @@ class SActions extends ActionController
         }
     }
 
+
     public function doProfile()
     {
         if (intval($_SESSION['userid']) <= 0) {
@@ -320,7 +321,6 @@ class SActions extends ActionController
         $userData = $this->getModelByName('user');
         $user = $userData->getUser($_SESSION['userid']);
         $this->setVar('user', $user);
-
 
         $this->displayView();
     }
@@ -349,8 +349,8 @@ class SActions extends ActionController
         // Get invitations
         $newInvt = $modIvit->getNewInvitationsByIdentityIds($identityIds);
         foreach ($newInvt as $newInvtI => $newInvtItem) {
-            ////////////////////////////////////////////////////////////////////@todo!!!!!!!!!!!!!
-            $cleanLogs[$logI]['base62id'] = int_to_base62($logItem['id']);
+            $newInvt[$newInvtI]['base62id']
+          = int_to_base62($newInvtItem['cross_id']);
             $identity = $modIdentity->getIdentityById(
                 $newInvtItem['identity_id']
             );
@@ -385,8 +385,10 @@ class SActions extends ActionController
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
         $crosses   = $modCross->fetchCross($_SESSION['userid'], $today);
-        $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today, 'no', 'begin_at DESC', 20 - count($crosses));
-        $anytimeXs = $modCross->fetchCross($_SESSION['userid'], $today, 'anytime', 'created_at DESC', 3);
+        $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today, 'no',
+                                           'begin_at DESC', 20-count($crosses));
+        $anytimeXs = $modCross->fetchCross($_SESSION['userid'], $today,
+                                           'anytime', 'created_at DESC', 3);
 
         // sort crosses
         foreach ($crosses as $crossI => $crossItem) {
@@ -617,7 +619,7 @@ class SActions extends ActionController
                                 $action  = $logItem['change_summy'];
                             }
                             if ($action === 1) {
-                                $action = 'accepted';
+                                $action = 'confirmed';
                             } else if ($action === 2) {
                                 $action = 'declined';
                             } else {
@@ -670,19 +672,19 @@ class SActions extends ActionController
 
         // merge cross details and humanIdentities
         foreach ($cleanLogs as $logI => $logItem) {
-            $cleanLogs[$logI]['base62id'] = int_to_base62($logItem['id']);//////////////////////////////////////////////////////////@todo
+            $cleanLogs[$logI]['base62id'] = int_to_base62($logItem['cross_id']);
             $cleanLogs[$logI]['title']
           = $allCross[$logItem['cross_id']]['title'];
             $cleanLogs[$logI]['begin_at']
           = $allCross[$logItem['cross_id']]['begin_at'];
-            foreach (array('change',  'accepted', 'declined',
+            foreach (array('change',  'confirmed', 'declined',
                            'addexfe', 'delexfe') as $action) {
                 if (isset($logItem[$action])) {
                     foreach ($logItem[$action] as $actionI => $actionItem) {
                         $cleanLogs[$logI][$action][$actionI]['by_name']
                       = $humanIdentities[$actionItem['by_id']]['name'];
                         if (!isset(
-                                $cleanLogs[$logI][$action][$actionI]['to_name'])
+                                $cleanLogs[$logI][$action][$actionI]['to_id'])
                             ) {
                             continue;
                         }

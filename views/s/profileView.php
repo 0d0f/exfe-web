@@ -89,79 +89,22 @@
 <div class="shadow_840"></div>
 <div id="cross_area">
     <div id="cross_list"></div>
-    <div class="right">
-    <!--?php
-        if ($newInvt) {
-            $strInvt  = '<div class="invitations"><div class="p_right"><img class="text" src="/static/images/translation.gif"/><a href="#">invitations</a></div>';
-            foreach ($newInvt as $newInvtI => $newInvtItem) {
-                $xid62 = int_to_base62($newInvtItem['cross']['id']);
-                $strInvt .= "<dl id=\"cross_invitation_{$xid62}\" class=\"bnone\">"
-                          .     "<dt><a href=\"/!{$xid62}\">{$newInvtItem['cross']['title']}</a></dt>"
-                          .     "<dd>{$newInvtItem['cross']['begin_at']} by {$newInvtItem['sender']['name']}</dd>"
-                          .     "<dd><button type=\"button\" id=\"acpbtn_{$xid62}\" class=\"acpbtn\">Accept</button></dd>"
-                          . '</dl>';
-            }
-            $strInvt .= '</div><div class="shadow_310"></div>';
-            echo $strInvt;
-        }
-
-        if ($logs) {
-            $strLogs = '<div class="Recently_updates"><div class="p_right"><img class="update" src="/static/images/translation.gif"/><a href="#">Recently updates</a></div>';
-            foreach ($logs as $logItem) {
-                $strLogs .= '<a class="cross_link" href="/!' . int_to_base62($logItem['id']) . '"><div class="redate">'
-                          . "<h5>{$logItem['title']}</h5>"
-                          . '<div class="maringbt">';
-
-                foreach ($logItem['activity'] as $actItem) {
-                    switch ($actItem['action']) {
-                        case 'conversation':
-                            $strLogs .= "<p><span>{$actItem['from_name']['name']}</span>: {$actItem['change_summy']}</p>";
-                            break;
-                        case 'change':
-                            switch ($actItem['to_field']) {
-                                case 'title':
-                                    $strLogs .= "<p>Title: <span>{$actItem['change_summy']}</span></p>";
-                                    break;
-                                case 'description':
-                                    $strLogs .= "<p>Description: <span>{$actItem['change_summy']}</span></p>";
-                                    break;
-                                case 'begin_at':
-                                    $strLogs .= "<p class=\"clock\"><span>{$actItem['change_summy']}</span></p>";
-                                    break;
-                                // @todo: add location support // class="on_line"
-                            }
-                            break;
-                        case 'rsvp':
-                        case 'exfee':
-                            $intActv = -1;
-                            switch ($actItem['to_field']) {
-                                case '':
-                                    $to_name = $actItem['from_name']['name'];
-                                    $intActv = $actItem['change_summy'];
-                                case 'rsvp':
-                                    $to_name = $changeId ?: $actItem['to_name']['name'];
-                                    $intActv = $intActv === -1 ? $actItem['change_summy'][1] : $actItem['change_summy'][0];
-                                    switch ($intActv) {
-                                        case '0':
-                                            $strLogs .= "<p><span>{$actItem['to_name']['name']}</span> well be absent</p>";
-                                        case '1':
-                                            $strLogs .= "<p><span>{$to_name}</span> confirmed</p>";
-                                    }
-                                    break;
-                                case 'addexfe':
-                                    $strLogs .= "<p><span>{$actItem['to_name']['name']}</span> joined</p>";
-                                    break;
-                                case 'delexfe':
-                                    $strLogs .= "<p><span>{$actItem['to_name']['name']}</span> leaved</p>";
-                            }
-                    }
-                }
-                $strLogs .='</div></div></a>';
-            }
-            $strLogs .= '<div class="more"><a href="">more…</a></div></div><div class="shadow_310"></div>';
-            echo $strLogs;
-        }
-    ?-->
+    <div id="invitation_n_update">
+        <div id="invitation">
+            <div class="p_right">
+                <img class="text" src="/static/images/translation.gif"/>
+                <a href="#">invitations</a>
+            </div>
+        </div>
+        <div class="shadow_310"></div>
+        <div class="Recently_updates">
+            <div class="p_right">
+                <img class="update" src="/static/images/translation.gif"/>
+                <a href="#">Recently updates</a>
+            </div>
+            <div class="more"><a href="">more…</a></div>
+        </div>
+        <div class="shadow_310"></div>
     </div>
 
 <!--right end -->
