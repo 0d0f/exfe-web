@@ -81,15 +81,20 @@ function dofetchandpost($obj)
             $head = $obj->getHeaders($i);  
             $to=$head["to"];
             $from=$head["from"];
+            $subject=$head["subject"];
             
-            $cross_id_base62="";
-            $match_result=preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches);
+            $cross_id="";
+            #$cross_id_base62="";
+            #$match_result=preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches);
+            #if($match_result==0)
+            #    $match_result=preg_match('/<x\+([0-9a-zA-Z]+)@exfe.com>/',$to,$matches);
+            $match_result=preg_match('/^x\+([0-9]+)@exfe.com/',$to,$matches);
             if($match_result==0)
-                $match_result=preg_match('/<x\+([0-9a-zA-Z]+)@exfe.com>/',$to,$matches);
+                $match_result=preg_match('/<x\+([0-9]+)@exfe.com>/',$to,$matches);
 
             if($match_result>0)
             {
-                $cross_id_base62=$matches[1];
+                $cross_id=$matches[1];
             }
             $body=$obj->getBody($i);  
             
@@ -129,19 +134,19 @@ function dofetchandpost($obj)
                      break;
                }
             }
-            print "post comment:".$cross_id_base62." ".$from." ".$result_str."\r\n";
+            print "post comment:".$cross_id." ".$from." ".$result_str."\r\n";
         
         
-            if($cross_id_base62!="")
+            if($cross_id!="")
             {
                 print $from;
                 print "\r\n";
-                print $cross_id_base62;
+                print $cross_id;
                 print "\r\n";
                 $result_str=html_entity_decode($result_str, ENT_QUOTES, 'UTF-8');
                 print trim($result_str);
     
-                $result=postcomment($cross_id_base62,$from,$result_str);
+                $result=postcomment($cross_id,$from,$result_str);
                 if($result=="true")
                 {
                     $move_r=$obj->moveMails($i,"posted");
@@ -152,7 +157,21 @@ function dofetchandpost($obj)
                 }
                 else
                 {
-                    $error_key=md5($cross_id_base62.$from.$result_str);
+                    if($result["error_code"]=="403")
+                    {
+                        $mail["to"]=$from;
+                        $mail["title"]=$subject;
+                        $mail["content"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
+                        $mail["content"].="\n".$body;
+                        require_once '../lib/Resque.php';
+                        date_default_timezone_set('GMT');
+                        Resque::setBackend(RESQUE_SERVER);
+                        $jobId = Resque::enqueue("textemail","textemail_job" , $mail, true);
+                        break;
+
+                        //send error mail to user @ $from
+                    }
+                    $error_key=md5($cross_id.$from.$result_str);
                     $error_count=intval($errorcount[$error_key]);
                     if($error_count<=3)
                     {
@@ -173,7 +192,7 @@ function dofetchandpost($obj)
             }
             else
             {
-                    $error_key=md5($cross_id_base62.$from.$result_str);
+                    $error_key=md5($cross_id.$from.$result_str);
                     $error_count=intval($errorcount[$error_key]);
                     if($error_count<=3)
                     {
@@ -257,10 +276,10 @@ function strip_html_tags($text)
     return trim($string);
 }
 
-function postcomment($cross_id_base62,$from,$comment)
+function postcomment($cross_id,$from,$comment)
 {
     $fields = array(
-                'cross_id_base62'=>$cross_id_base62,
+                'cross_id'=>$cross_id,
                 'from'=>$from,
                 'comment'=> $comment,
                 'postkey'=> POSTKEY
