@@ -362,5 +362,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 })(ns);
 
 jQuery(document).ready(function(){
+    //odof.user.status.doShowLoginDialog();
     odof.user.status.checkUserLogin();
 });
