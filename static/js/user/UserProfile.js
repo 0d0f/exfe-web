@@ -81,7 +81,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     return;
                 }
                 var crosses = {};
-                $('.category').hide();
+                $('#cross_list > .category').hide();
                 for (var i in data) {
                     var confirmed = [];
                     for (var j in data[i].exfee) {
@@ -130,13 +130,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
                 var strInvt = '';
                 for (var i in data) {
-                    strInvt += '<dl id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
+                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
-                             +     '<dd>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</dd>'
-                             +     '<dd><button type="button" id="acpbtn_' + data[i]['base62id'] + '" class="acpbtn">Accept</button></dd>'
-                             + '</dl>';
+                             +     '<p>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</p>'
+                             +     '<button type="button" id="acpbtn_' + data[i]['base62id'] + '" class="acpbtn">Accept</button>'
+                             + '</div>';
                 }
-                $('#invitation_list').html(strInvt);
+                $('#invitations > .crosses').html(strInvt);
             }
         });
     };
@@ -154,9 +154,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var strLogs = '';
                 for (var i in data) {
                     var j, arrExfee;
-                    strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '"><div class="redate">'
-                             + '<h5>' + data[i]['title'] + '</h5>'
-                             + '<div class="maringbt">';
+                    strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
+                             +     '<div class="cross">'
+                             +         '<h5>' + data[i]['title'] + '</h5>';
                     if (data[i]['change']) {
                         if (data[i]['change']['begin_at']) {
                             strLogs += '<p class="clock"><span>' + data[i]['change']['begin_at']['new_value'] + '</span></p>';
@@ -223,8 +223,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  + '</span>: '
                                  + data[i]['conversation']['message'] + '</p>';
                     }
-                    $('#update_list').html(strLogs);
+                    strLogs += '</div></a>'
                 }
+                $('#recently_updates > .crosses').html(strLogs);
             }
         });
     };

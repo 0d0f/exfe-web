@@ -120,20 +120,20 @@
             </div>
         </div>
         <div id="invitation_n_update">
-            <div id="invitations">
-                <div class="p_right">
-                    <img class="text" src="/static/images/translation.gif"/>
-                    <a href="#">Invitations</a>
+            <div id="invitations" class="category">
+                <div class="category_title">
+                    <img src="/static/images/translation.gif" class="category_icon"/>
+                    Invitations
                 </div>
-                <div id="invitation_list"></div>
+                <div class="crosses"></div>
             </div>
             <div class="shadow_310"></div>
-            <div id="recently_updates">
-                <div class="p_right">
-                    <img class="update" src="/static/images/translation.gif"/>
-                    <a href="#">Recently updates</a>
+            <div id="recently_updates" class="category">
+                <div class="category_title">
+                    <img src="/static/images/translation.gif" class="category_icon"/>
+                    Recently updates
                 </div>
-                <div id="update_list"></div>
+                <div class="crosses"></div>
             </div>
             <div class="shadow_310"></div>
         </div>
