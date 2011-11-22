@@ -161,8 +161,8 @@ function dofetchandpost($obj)
                     {
                         $mail["to"]=$from;
                         $mail["title"]=$subject;
-                        $mail["content"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
-                        $mail["content"].="\n".$body;
+                        $mail["body"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
+                        $mail["body"].="\n".$body;
                         require_once '../lib/Resque.php';
                         date_default_timezone_set('GMT');
                         Resque::setBackend(RESQUE_SERVER);
