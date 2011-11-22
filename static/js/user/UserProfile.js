@@ -159,14 +159,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                              +         '<h5>' + data[i]['title'] + '</h5>';
                     if (data[i]['change']) {
                         if (data[i]['change']['begin_at']) {
-                            strLogs += '<p class="clock"><span>' + data[i]['change']['begin_at']['new_value'] + '</span></p>';
+                            strLogs += '<p class="clock"><em>' + data[i]['change']['begin_at']['new_value'] + '</em></p>';
                         }
                         if (data[i]['change']['place']) {
-                            strLogs += '<p class="place"><span>' + data[i]['change']['place']['new_value'] + '</span></p>';
+                            strLogs += '<p class="place"><em>' + data[i]['change']['place']['new_value'] + '</em></p>';
                         }
                         if (data[i]['change']['title']
                          && data[i]['change']['title']['old_value']) {
-                            strLogs += '<p class="title">Title changed from: <span>' + data[i]['change']['title']['old_value'] + '</span></p>';
+                            strLogs += '<p class="title">Title changed from: <em>' + data[i]['change']['title']['old_value'] + '</em></p>';
                         }
                     }
                     if (data[i]['confirmed']) {
@@ -178,11 +178,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="confirmed"><span>'
+                        strLogs += '<p class="confirmed"><em>'
                                  + data[i]['confirmed'].length
-                                 + '</span> confirmed: <span>'
-                                 + arrExfee.join('</span>, <span>') + '</span>'
-                                 + (arrExfee.length < data[i]['confirmed'].length ? ' and others' : '')
+                                 + '</em> confirmed: <em>'
+                                 + arrExfee.join('</em>, <em>') + '</em>'
+                                 + (arrExfee.length
+                                 < data[i]['confirmed'].length
+                                 ? ' and others' : '')
                                  + '.</p>';
                     }
                     if (data[i]['declined']) {
@@ -194,11 +196,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="declined"><span>'
+                        strLogs += '<p class="declined"><em>'
                                  + data[i]['declined'].length
-                                 + '</span> declined: <span>'
-                                 + arrExfee.join('</span>, <span>') + '</span>'
-                                 + (arrExfee.length < data[i]['declined'].length ? ' and others' : '')
+                                 + '</em> declined: <em>'
+                                 + arrExfee.join('</em>, <em>') + '</em>'
+                                 + (arrExfee.length
+                                 < data[i]['declined'].length
+                                 ? ' and others' : '')
                                  + '.</p>';
                     }
                     if (data[i]['addexfe']) {
@@ -212,16 +216,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                         strLogs += '<p class="invited"><span>'
                                  + data[i]['addexfe'].length
-                                 + '</span> invited: <span>'
-                                 + arrExfee.join('</span>, <span>') + '</span>'
-                                 + (arrExfee.length < data[i]['addexfe'].length ? ' and others' : '')
+                                 + '</em> invited: <em>'
+                                 + arrExfee.join('</em>, <em>') + '</em>'
+                                 + (arrExfee.length
+                                 < data[i]['addexfe'].length
+                                 ? ' and others' : '')
                                  + '.</p>';
                     }
                     if (data[i]['conversation']) {
-                        strLogs += '<p class="conversation"><span>'
-                                 + data[i]['conversation']['by_name']
-                                 + '</span>: '
-                                 + data[i]['conversation']['message'] + '</p>';
+                        strLogs += '<p class="conversation"><em>'
+                                 + data[i]['conversation']['by_name']+'</em>: '
+                                 + data[i]['conversation']['message']+'</p>';
                     }
                     strLogs += '</div></a>'
                 }
