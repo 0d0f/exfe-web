@@ -89,12 +89,24 @@ class Conversationemail_Job
         }
 
         if($conversation_args)
+        {
             $conversation_objects=$this->getConversationObjects($conversation_args);
-        if($cross_changed)
-            $changed_objects=$this->getChangedObjects($cross_changed);
+            $mails=$this->getMailBodyWithMultiObjects($conversation_objects,$cross_changed);
+            unset($cross_changed);
+        }
+        else
+        {
+            if($cross_changed)
+            {
+                $changed_objects=$this->getChangedObjects($cross_changed);
+                if($changed_objects)
+                {
+                    $mails=$this->getMailBodyWithMultiObjects(array(),$changed_objects);
+                }
+            }
+        }
+        #print_r($mails);
 
-        $mails=$this->getMailBodyWithMultiObjects($conversation_objects,$changed_objects);
-        print_r($mails);
         #if($mails)
         #{
         #    if($email_connect=="")
@@ -112,15 +124,12 @@ class Conversationemail_Job
     }
     public function getChangedObjects($args)
     {
+        $changed_objects=array();
         foreach($args as $cross_id=>$changed_data)
         {
 
             if((time()-$changed_data["timestamp"])>1*60)
-            {
-               print "process object ========\r\n";
-               print_r($changed_data);
-               return $changed_data;
-            }
+               array_push($changed_objects,$changed_data);
             else
             {
                date_default_timezone_set('GMT');
@@ -132,6 +141,8 @@ class Conversationemail_Job
                 //throw $changed_data back to resque
             }
         }
+        if(sizeof($changed_objects)>0)
+            return $changed_objects;
         return NULL;
         //print_r($args);
     }
@@ -170,6 +181,9 @@ class Conversationemail_Job
         unset($templates[0]);
         $template_body=implode($templates);
 
+        #var_dump($conversation_objects);
+        #var_dump($changed_objects);
+
         $mails=array();
         #$pargs=array();
         #foreach($args as $arg)
@@ -192,6 +206,8 @@ class Conversationemail_Job
                 $mutelink="";
                 $link="";
                 $cross_id_base62="";
+                $cross_id="";
+                //if($changed_objects[""]
                 foreach($posts as $post)
                 {
                     if($post["identity"]["external_identity"]!=$external_identity)
@@ -207,8 +223,14 @@ class Conversationemail_Job
                   //      $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img  class='exfe_mail_avatar' src='".$avartar."'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $cross_id_base62=$post["cross_id_base62"];
+                        $cross_id=$post["cross_id"];
                     }
                 }
+                if($changed_objects[$cross_id]!="")
+                {
+                    $changed_cross=$changed_objects[$cross_id];
+                }
+                
                 $to_identity=$identity_post["to_identity"];
 
                 $mail_body=str_replace("%conversations%",$html,$template_body);
@@ -224,6 +246,53 @@ class Conversationemail_Job
                 array_push($mails,$mail);
             }
         }
+        else if($changed_objects)
+        {
+                print "======";
+                print_r($changed_objects);
+                print "======";
+
+
+            foreach($changed_objects as $changed_object)
+            {
+
+                $title=$changed_object["title"];
+                $cross=$changed_object["cross"];
+                $to_identities=$cross["identities"];
+                $cross_id = $cross["id"];
+                $cross_id_base62 = int_to_base62($cross["cross_id"]);
+                $action_identities=$changed_object["action_identity"];
+                $changed_fields=$changed_object["changed"];
+
+                $html="";
+
+                foreach($to_identities as $to_identity)
+                {
+                    foreach($action_identities as $action_identity)
+                    {
+                        $html.=$action_identity["name"];
+                    }
+                    foreach($changed_fields as $k=>$v)
+                    {
+                        $html.=$k."=".$v;
+                    }
+                #$mail_body=str_replace("%conversations%",$html,$template_body);
+                #$mail_body=str_replace("%host_name%",$name,$mail_body);
+                #$mail_body=str_replace("%exfe_title%",$title,$mail_body);
+                #$mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
+                #$mail_body=str_replace("%link%",$link,$mail_body);
+
+
+                    //$mail["body"]=$mail_body;
+                    $mail["body"]=$html;
+                    $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
+                    $mail["to"]=$to_identity["external_identity"];
+                    $mail["cross_id_base62"]=$cross_id_base62;
+                    array_push($mails,$mail);
+                }
+            }
+        }
+        print_r($mails);
         return $mails;
     }
 
