@@ -80,10 +80,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 if (data && (data.error || data.length === 0)) {
                     return;
                 }
-                var upcoming  = '',
-                    sevenDays = '',
-                    later     = '',
-                    past      = '';
+                var crosses = {};
+                $('.category').hide();
                 for (var i in data) {
                     var confirmed = [];
                     for (var j in data[i].exfee) {
@@ -97,29 +95,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     } else {
                         confirmed = '0 of '+data[i].exfee.length+' confirmed';
                     }
-                    var strCross = '<a class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '"><div class="coming">'
-                                 +     '<div class="a_tltle">' + data[i]['title'] + '</div>'
-                                 +     '<div class="maringbt">'
+                    var strCross = '<a class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
+                                 +     '<div class="cross">'
+                                 +         '<h5>' + data[i]['title'] + '</h5>'
                                  +         '<p>' + data[i]['begin_at'] + '</p>'
                                  +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <span>(' + data[i]['place_line2'] + ')</span>') : '') + '</p>'
                                  +         '<p>' + confirmed + '</p>'
                                  +     '</div>'
-                                 + '</div></a>';
-                    switch (data[i]['sort']) {
-                        case 'upcoming':
-                            upcoming  = (upcoming  ? upcoming  : '<div class="p_right" id="xType_upcoming"><img src="/static/images/translation.gif" class="l_icon"/>Today & Upcoming<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
-                            break;
-                        case 'sevenDays':
-                            sevenDays = (sevenDays ? sevenDays : '<div class="p_right" id="xType_sevenDays">Next 7 days<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
-                            break;
-                        case 'later':
-                            later     = (later     ? later     : '<div class="p_right" id="xType_later">Later<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
-                            break;
-                        case 'past':
-                            past      = (past      ? past      : '<div class="p_right" id="xType_past">Past<img src="/static/images/translation.gif" class="arrow"/></div>') + strCross;
+                                 + '</a>';
+                    if (!crosses[data[i]['sort']]) {
+                        crosses[data[i]['sort']] = '';
+                    }
+                    crosses[data[i]['sort']] += strCross;
+                }
+                for (i in crosses) {
+                    $('#xType_' + i + ' > .crosses').html(crosses[i]);
+                    if (crosses[i]) {
+                        $('#xType_' + i).show();
                     }
                 }
-                $('#cross_list').html(upcoming + sevenDays + later + past);
             }
         });
     };
@@ -137,12 +131,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var strInvt = '';
                 for (var i in data) {
                     strInvt += '<dl id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
-                             +     '<dt><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></dt>'
+                             +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
                              +     '<dd>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</dd>'
                              +     '<dd><button type="button" id="acpbtn_' + data[i]['base62id'] + '" class="acpbtn">Accept</button></dd>'
                              + '</dl>';
                 }
-                strInvt += '';
+                $('#invitation_list').html(strInvt);
             }
         });
     };
@@ -157,12 +151,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 if (data && (data.error || data.length === 0)) {
                     return;
                 }
-                console.log(data);
                 var strLogs = '';
                 for (var i in data) {
                     var j, arrExfee;
-                    strLogs += '<a class="cross_link" href="/!' + int_to_base62($logItem['id']) + '"><div class="redate">'
-                             + '<h5>$logItem[title]}</h5>'
+                    strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '"><div class="redate">'
+                             + '<h5>' + data[i]['title'] + '</h5>'
                              + '<div class="maringbt">';
                     if (data[i]['change']) {
                         if (data[i]['change']['begin_at']) {
@@ -180,9 +173,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         arrExfee = [];
                         for (j in data[i]['confirmed']) {
                             if (arrExfee.push(
-                                    data[i]['confirmed'][j]['to_name'])
-                                ) {
-                                continue;
+                                    data[i]['confirmed'][j]['to_name']
+                                ) === 3) {
+                                break;
                             }
                         }
                         strLogs += '<p class="confirmed"><span>'
@@ -196,9 +189,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         arrExfee = [];
                         for (j in data[i]['declined']) {
                             if (arrExfee.push(
-                                    data[i]['declined'][j]['to_name'])
-                                ) {
-                                continue;
+                                    data[i]['declined'][j]['to_name']
+                                ) === 3) {
+                                break;
                             }
                         }
                         strLogs += '<p class="declined"><span>'
@@ -212,9 +205,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         arrExfee = [];
                         for (j in data[i]['addexfe']) {
                             if (arrExfee.push(
-                                    data[i]['addexfe'][j]['to_name'])
-                                ) {
-                                continue;
+                                    data[i]['addexfe'][j]['to_name']
+                                ) === 3) {
+                                break;
                             }
                         }
                         strLogs += '<p class="invited"><span>'
@@ -225,9 +218,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  + '.</p>';
                     }
                     if (data[i]['conversation']) {
-
+                        strLogs += '<p class="conversation"><span>'
+                                 + data[i]['conversation']['by_name']
+                                 + '</span>: '
+                                 + data[i]['conversation']['message'] + '</p>';
                     }
-                    strLogs += '';
+                    $('#update_list').html(strLogs);
                 }
             }
         });

@@ -2,51 +2,122 @@
 /* profile style by Leask */
 
 
-#cross_area { width:840px; margin:0 auto; overflow:auto; }
-#cross_list { width:480px; float:left; padding:20px 20px 20px 10px; font:12px/26px Verdana, Arial, Helvetica, sans-serif; }
+.shadow_840 {
+    background: url(/static/images/shadow.png) no-repeat;
+    height: 20px;
+    margin: 0 auto;
+    width: 840px;
+}
+.shadow_310 {
+    background: url(/static/images/shadow.png) no-repeat -530px 0px;
+    height: 20px;
+    margin: 0 auto;
+    width: 310px;
+}
+#cross_area {
+    width: 840px;
+    margin: 0 auto;
+    overflow: auto;
+}
+#cross_list {
+    width: 480px;
+    float: left;
+    padding: 20px 20px 20px 10px;
+    font-size: 12px;
+    line-height: 18px;
+    color: #333333;
+}
+#invitation_n_update {
+    width: 310px;
+    float: right;
+}
+#invitations {
+    border: solid 1px #CCCCCC;
+    background: #F0E9E9;
+    background: -moz-linear-gradient(top, #FAFAFA, #FEF2F2);
+    background: -webkit-linear-gradient(top, #FAFAFA, #FEF2F2);
+    padding: 10px 10px;
+}
+#recently_updates {
+    border: solid 1px #CCCCCC;
+    background: #E9EDF1;
+    background: -moz-linear-gradient(top, #FAFAFA, #FEF2F2);
+    background: -webkit-linear-gradient(top, #FAFAFA, #ECF8FF);
+    padding: 10px 10px;
+}
+h5 {
+    font: bold 14px/25px;
+}
+.cross {
+    padding: 5px 0px 2px 10px;
+    margin-bottom: 10px;
+}
+.category_title {
+    width: 200px;
+    border-bottom: solid 1px #ccc;
+    height: 20px;
+    line-height: 20px;
+    margin-left: 275px;
+    text-align: right;
+    cursor: default;
+}
+.xType_upcoming .category_icon {
+    width: 15px;
+    height: 15px;
+    background: url(/static/images/icons.png) no-repeat 0 -418px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+.category_title img.arrow {
+    width: 15px;
+    height: 15px;
+    background: url(/static/images/icons.png) no-repeat -20px -660px;
+    margin: 0 5px;
+    vertical-align: middle;
+}
+.category_title img.arrow_up {
+    width: 15px;
+    height: 15px;
+    background: url(/static/images/icons.png) no-repeat -20px -680px;
+    margin: 0 5px;
+    vertical-align: middle;
+}
+.cross_link:hover {
+    text-decoration: none;
+}
 
 
 
-.maringbt { margin-bottom:10px; }
-.bgcom { background:#ffffff; }
-.coming { padding:5px 0px 2px 10px; }
 
-#cross_list .a_tltle { font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#020202; clear:both;}
-#cross_list p { font:13px/18px Verdana;line-height:20px;}
-#cross_list p span {color:#a0a0a0;}
-#cross_list .p_right { width:200px; border-bottom:solid 1px #ccc; height:20px; line-height:20px; margin-left:275px; text-align:right; cursor: default;}
-#cross_list .p_right img.l_icon { width:15px; height:15px; background:url(/static/images/icons.png) no-repeat 0 -418px; margin-right:8px; vertical-align:middle;}
-#cross_list .p_right img.arrow { width:15px; height:15px; background:url(/static/images/icons.png) no-repeat -20px -660px; margin:0 5px; vertical-align:middle;}
-#cross_list .p_right img.arrow_up { width:15px; height:15px; background:url(/static/images/icons.png) no-repeat -20px -680px; margin:0 5px; vertical-align:middle;}
-#invitation_n_update { width:310px; float:right;}
-#invitation_n_update .invitations { border:solid 1px #eaedee; background:#edf8fe; padding:10px 7px 3px 7px;}
+
+
+
+/*
 #invitation_n_update .p_right { width:190px; margin-left:100px; text-align:right; height:28px; font: 12px/28px; }
 #invitation_n_update .p_right img.text { width:16px; height:16px; background:url(/static/images/icons.png) no-repeat 0px -456px; margin-right:7px; vertical-align:middle;}
 #invitation_n_update .p_right img.update { width:17px; height:20px; background:url(/static/images/icons.png) no-repeat 0px -498px; margin-right:7px; vertical-align:middle;}
 
-#invitation_n_update .invitations .p_right a { color:#0591af;}
-#invitation_n_update .invitations dl { margin:4px auto; height:45px; padding:5px 13px; position:relative;}
-#invitation_n_update .invitations dl dt a { font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#0591af;}
-#invitation_n_update .invitations dl button { background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:5px; cursor:pointer;}
-#invitation_n_update .invitations dl.bdown { background:#ffffff;}
+#invitations .p_right a { color:#0591af;}
+#invitations dl { margin:4px auto; height:45px; padding:5px 13px; position:relative;}
+#invitations dl dt a { font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#0591af;}
+#invitations dl button { background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:5px; cursor:pointer;}
+#invitations dl.bdown { background:#ffffff;}
 
-#invitation_n_update .Recently_updates { background:#ffffff; border:solid 1px #eaedee; padding:10px 10px;}
-#invitation_n_update .Recently_updates .bgdq { background:#d5e6e9}
-#invitation_n_update .Recently_updates h5 { font:bold 14px/23px Verdana, Arial, Helvetica, sans-serif; padding-left:10px;}
-#invitation_n_update .Recently_updates p { padding-left:10px; font:13px/18px  "Lucida Grande","Lucida SansUnicode",Helvetica,Arial,Verdana,sans-serif ; padding-bottom:5px; }
-#invitation_n_update .Recently_updates p span { color:#0591af;}
-#invitation_n_update .Recently_updates p.clock { background:url(/static/images/icons.png) no-repeat -233px -538px; padding-left:35px; }
-#invitation_n_update .Recently_updates p.on_line { background:url(/static/images/icons.png) no-repeat -233px -561px; padding-left:35px; }
-#invitation_n_update .more { text-align:right;font:13px/20px Verdana;width:96%}
-#invitation_n_update .more a { color:#020202}
 
-.cross_link:hover {text-decoration: none;}
-
-.shadow_840 { background:url(/static/images/shadow.png) no-repeat; height:20px; margin:0 auto; width:840px; }
-.shadow_310 { background:url(/static/images/shadow.png) no-repeat -530px 0px; height:20px; margin:0 auto; width:310px; }
+#recently_updates .bgdq { background:#d5e6e9}
+#recently_updates p { padding-left:10px; font:13px/18px  "Lucida Grande","Lucida SansUnicode",Helvetica,Arial,Verdana,sans-serif ; padding-bottom:5px; }
+#recently_updates p span { color:#0591af;}
+#recently_updates p.clock { background:url(/static/images/icons.png) no-repeat -233px -538px; padding-left:35px; }
+#recently_updates p.on_line { background:url(/static/images/icons.png) no-repeat -233px -561px; padding-left:35px; }
+.more { text-align:right;font:13px/20px Verdana;width:96%}
+.more a { color:#020202}
+*/
 
 
 /* edit user by Handaoliang */
+.bgcom {
+    background:#ffffff;
+}
 .edit_user {
     clear: both;
     width: 838px;
