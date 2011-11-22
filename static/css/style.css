@@ -135,13 +135,16 @@ b.r1{margin: 0 2px}
 b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 .identification_dialog{
-	position:absolute; padding:0; width:463px; overflow:hidden;
+	position:absolute; padding:0; width:463px; height:350px;
 	line-height:200%; z-index:201; background:transparent;
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; }
 .idialog_inpage .titles { display:none; }
 
-.identification_dialog .titles{margin:0;height:25px;padding:0 8px;background:url(/static/images/fuceng_title.png) no-repeat 0 0; }
+.identification_dialog .titles{
+    margin:0; height:25px; padding:0 8px;
+    background:url(/static/images/fuceng_title.png) no-repeat 0 0;
+}
 .identification_dialog .titles div{float:left; height:25px; width:20px;}
 .identification_dialog .titles a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
 .identification_dialog .titles div.tl{
@@ -152,9 +155,14 @@ b.r3{margin: 0px}
     display:block; margin:0; height:5px; padding:0;
     background:url(/static/images/fuceng_title.png) no-repeat 0 -25px;
 }
-.overFrame{background:#fafafa; padding-bottom:15px; }
+.identification_dialog #identity_error_msg{
+    position:absolute; left:370px; top:132px; width:112px; height:27px; padding:0px 2px 0px 15px;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:203;
+    -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
+    -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
+}
+.overFramel { background:#EFEFEF; height:320px; overflow:hidden; }
 
-.overFramel{background:#EFEFEF; overflow:hidden;}
 .overFrameh{background:#f2f2f2;padding:10px 0 15px;}
 .overFramelogin{width:390px;margin:0 auto;padding:15px 0; }
 .overFramel .identity_register_msg{

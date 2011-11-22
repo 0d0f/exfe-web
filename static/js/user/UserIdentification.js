@@ -10,6 +10,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.actions = "sign_in";
     ns.userIdentityCache = "";
+    ns.mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
     ns.getUrlVars = function() {
         var vars = [], hash;
@@ -90,7 +91,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
                  + "Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
-                 + "<div style='font-size:14px;'>Enter your identity information:</div>";
+                 + "<div id='identification_title_msg' style='font-size:14px;'>Enter your identity information:</div>";
             /*
             desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
@@ -109,7 +110,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<em class='delete' id='delete_identity' style='display:none;'></em>"
                  + "</li>"
-                 + "<li id='hint' style='display:none' class='notice'><span>Signing up new identity.</span></li>"
                  + "<li><label class='title'>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
                  + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='identification_pwd_ic'></em>"
@@ -132,8 +132,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li style='width:288px; padding:0 0 0 50px;'>"
                  + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
                  + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
-                 //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
-                 + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
+                 + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
+                 //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
                  + "</ul>"
                  + "</form>";
         } else if(type=="change_pwd"){
@@ -269,7 +269,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                    + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
                    + "<div id='identification_handler' class='tl'>"+title+"</div>"
                    + "</div>"
-                   + "<div id='overFramel' class='overFramel' style='overflow:hidden;'>"
+                   + "<div id='identity_error_msg' style='display:none;'>Invalid identity</div>"
+                   + "<div id='overFramel' class='overFramel'>"
                    + forgot_pwd
                    + sign_up_msg
                    + reg_success
@@ -302,8 +303,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         //console.log("bbbbb");
         //added by handaoliang, check email address
-        var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-        if(userIdentity != "" && userIdentity.match(mailReg)){
+        if(userIdentity != "" && userIdentity.match(ns.mailReg)){
             jQuery("#identity_verify_loading").show();
             jQuery.ajax({
                 type: "GET",
@@ -313,7 +313,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if(data!=null) {
                         //如果当前identity不存在。
                         if(data.response.identity_exist=="false"){
-                            jQuery('#hint').show();
+                            jQuery('#identification_title_msg').html('Signing up new identity:');
+                            jQuery('#identification_title_msg').css({color:'#0591AC'});
                             //jQuery('#retype').show();
                             jQuery('#displayname').show();
                             jQuery('#resetpwd').hide();
@@ -340,8 +341,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#identification_pwd').unbind("focus");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
-                            jQuery(".notice").hide();
                             if(data.response.status == "veryifing"){
+                                var vheight = parseInt(jQuery("#overFramel").height()-60);
+                                jQuery("#identity_forgot_pwd_dialog").css({height:vheight});
                                 jQuery("#identity_forgot_pwd_dialog").show();
                                 jQuery("#f_identity").val(jQuery("#identity").val());
 
@@ -360,7 +362,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 });
                                 jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
                             }else{
-                                jQuery('#hint').hide();
+                                jQuery('#identification_title_msg').html('Enter identity information:');
+                                jQuery('#identification_title_msg').css({color:'#333333'});
                                 jQuery('#retype').hide();
                                 jQuery('#displayname').hide();
                                 jQuery('#resetpwd').show();
@@ -420,6 +423,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#identification_pwd').focus(function() {
                 ns.identityInputBoxActions();
             });
+            jQuery('input[name=identity]').blur(function(){
+                var userIdentity = jQuery('input[name=identity]').val();
+                if(userIdentity == "" || !userIdentity.match(ns.mailReg)){
+                    jQuery("#identity_error_msg").show();
+                    setTimeout(function(){
+                        jQuery("#identity_error_msg").hide();
+                    }, 3000);
+                }
+            });
+
 
             jQuery('#identificationform').submit(function() {
                     var params=ns.getUrlVars();
@@ -432,11 +445,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     var auto_signin=jQuery('input[name=auto_signin]').val();
 
                     var hideErrorMsg = function(){
+                        jQuery("#identity_error_msg").hide();
                         jQuery("#reset_pwd_error_msg").hide();
                         jQuery("#displayname_error").hide();
                         jQuery("#pwd_hint").hide();
-                    }
+                    };
 
+                    if(identity == "" || !identity.match(ns.mailReg)){
+                        jQuery("#identity_error_msg").show();
+                        setTimeout(hideErrorMsg, 3000);
+                        return false;
+                    }
            
                     if(jQuery('#retype').is(':visible')==true &&  password!=retypepassword && password!="" ) {
                         jQuery('#pwd_hint').html("<span>Check Password</span>");
