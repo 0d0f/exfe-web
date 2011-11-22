@@ -252,6 +252,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         jQuery("#resetpwd").bind("click", function(){
             jQuery("#identity_forgot_pwd_info").html("Verification will be sent in minutes, please check your inbox.");
+            var vheight = parseInt(jQuery("#overFramel").height()-60);
+            jQuery("#identity_forgot_pwd_dialog").css({height:vheight});
             jQuery("#identity_forgot_pwd_dialog").show();
             jQuery("#f_identity").val(jQuery("#identity").val());
             jQuery("#cancel_verification_btn").bind("click",function(){
