@@ -48,7 +48,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
     ns.doShowVerificationDialog = function(dialogContainerID, args){
-        var html = odof.user.identification.showdialog("reg");
+        var html = odof.user.identification.showdialog("reg_login");
 
         if(typeof dialogContainerID != "undefined" && typeof dialogContainerID == "string"){
             document.getElementById(dialogContainerID).innerHTML = html;
@@ -194,20 +194,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.comm.func.initRePassword('identification_newpwd', 'identification_renewpwd');
     };
 
-    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
-        var html = odof.user.identification.showdialog("reg");
-        if(typeof callBackFunc != "undefined" && callBackFunc != null){
-            ns.callBackFunc = callBackFunc;
-        }
-
-        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string" && dialogBoxID != null){
-            document.getElementById(dialogBoxID).innerHTML = html;
-        }else{
-            odof.exlibs.ExDialog.initialize("identification", html, null, winModal, dialogPosY);
-            var dialogBoxID = "identification_dialog";
-        }
-
-        //show last login identity
+    ns.showLastIdentity = function(){
         var lastIdentity = odof.util.getCookie('last_identity');
         if(lastIdentity){
             jQuery("#identity").val(lastIdentity)
@@ -243,13 +230,30 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#delete_identity").hide();
             });
         }
+    };
 
+    ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
+        var html = odof.user.identification.showdialog("reg_login");
+        if(typeof callBackFunc != "undefined" && callBackFunc != null){
+            ns.callBackFunc = callBackFunc;
+        }
+
+        if(typeof dialogBoxID != "undefined" && typeof dialogBoxID == "string" && dialogBoxID != null){
+            document.getElementById(dialogBoxID).innerHTML = html;
+        }else{
+            odof.exlibs.ExDialog.initialize("identification", html, null, winModal, dialogPosY);
+            var dialogBoxID = "identification_dialog";
+        }
+
+        //show last login identity
+        ns.showLastIdentity();
 
         //如果传入了identity，那么要检测是注册还是登录。
         if(typeof userIdentity != "undefined" && userIdentity != null){
             odof.user.identification.identityInputBoxActions(userIdentity);
         }
 
+        /*
         jQuery("#resetpwd").bind("click", function(){
             jQuery("#identity_forgot_pwd_info").html("Verification will be sent in minutes, please check your inbox.");
             var vheight = parseInt(jQuery("#overFramel").height()-60);
@@ -270,6 +274,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 ns.doSendEmail(userIdentity,"verification");
             });
         });
+        */
+        jQuery("#resetpwd").bind("click", function(){
+            var userIdentityVal = jQuery("#identity").val();
+            jQuery("#forgot_verification_dialog").show();
+            jQuery("#forgot_identity_input").val(userIdentityVal);
+            jQuery("#cancel_forgot_verify_btn").bind("click",function(){
+                jQuery("#forgot_verification_dialog").hide();
+                jQuery("#fogot_verify_btn").unbind("click");
+            });
+            jQuery("#fogot_verify_btn").bind("click",function(){
+                ns.doSendEmail(userIdentityVal,"verification");
+            });
+        });
+
         jQuery("#sign_up_btn").bind("click", function(){
             odof.user.identification.showRegisteMsg();
         });
@@ -354,8 +372,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery('#goldLink a').removeClass('nameh');
                 jQuery('#myexfe').hide();
             });
-
-
         }
     };
 
