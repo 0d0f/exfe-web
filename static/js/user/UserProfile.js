@@ -33,7 +33,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var name=data.response.user.avatar_file_name;
                 var Timer=new Date();
                 $('#profile_avatar').html("<img class=big_header src='"+odof.comm.func.getHashFilePath(img_url,name)+"/80_80_"+name+"?"+Timer.getTime()+"'/>");
-                //<div id="profile_avatar"><img class="big_header" src=
                 }
             }
         });
@@ -129,6 +128,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     return;
                 }
                 var strInvt = '';
+                $('#invitations').hide();
+                $('#invitations_shadow').hide();
                 for (var i in data) {
                     strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
@@ -137,6 +138,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                              + '</div>';
                 }
                 $('#invitations > .crosses').html(strInvt);
+                if (strInvt) {
+                    $('#invitations').show();
+                    $('#invitations_shadow').show();
+                }
             }
         });
     };
@@ -152,6 +157,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     return;
                 }
                 var strLogs = '';
+                $('#recently_updates').hide();
+                $('#recently_updates_shadow').hide();
                 for (var i in data) {
                     var j, arrExfee;
                     strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
@@ -226,11 +233,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['conversation']) {
                         strLogs += '<p class="conversation"><em>'
                                  + data[i]['conversation']['by_name']+'</em>: '
-                                 + data[i]['conversation']['message']+'</p>';
+                                 + data[i]['conversation']['message']+'<br><em>'
+                                 + data[i]['conversation']['num_msgs']
+                                 + '</em> new post in conversation.</p>';
                     }
                     strLogs += '</div></a>'
                 }
                 $('#recently_updates > .crosses').html(strLogs);
+                if (strLogs) {
+                    $('#recently_updates').show();
+                    $('#recently_updates_shadow').show();
+                }
             }
         });
     };
@@ -239,6 +252,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
 $(document).ready(function() {
+
+    // by Handaoliang
 
     $('#editprofile').click(function(e) {
         if($('#profile_name').attr("status")=='view')
@@ -261,6 +276,7 @@ $(document).ready(function() {
         var external_identity=$(this).attr("external_identity");
         odof.user.profile.sentActiveEmail(external_identity,$(this));
     });
+
     /*
     $('#changeavatar').click(function(e) {
         var AWnd=window.open('/s/uploadavatar','fwId','resizable=yes,scrollbars=yes,width=600,height=600');
@@ -268,17 +284,8 @@ $(document).ready(function() {
     });
     */
 
-    $('.p_right').click(function(e) {
-        var strXType = e.target.id.split('_')[1],
-            objArrow = null;
-        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
-            objArrow.removeClass('arrow').addClass('arrow_up');
-            $('.x_' + strXType).hide();
-        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
-            objArrow.removeClass('arrow_up').addClass('arrow');
-            $('.x_' + strXType).show();
-        }
-    });
+
+    // by Leask Huang
 
     document.title = 'EXFE - ' + $('#profile_name').html();
 
@@ -294,6 +301,17 @@ $(document).ready(function() {
                 break;
             case 'mouseout':
                 objBtn.hide();
+        }
+    });
+
+    $('.category_title').click(function(e) {
+        var strXType  = e.target.id.split('_')[1], objArrow = null;
+        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
+            objArrow.removeClass('arrow').addClass('arrow_up');
+            $('.x_' + strXType).hide();
+        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
+            objArrow.removeClass('arrow_up').addClass('arrow');
+            $('.x_' + strXType).show();
         }
     });
 
