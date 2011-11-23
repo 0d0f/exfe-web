@@ -253,6 +253,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 $(document).ready(function() {
 
+    // by Handaoliang
+
     $('#editprofile').click(function(e) {
         if($('#profile_name').attr("status")=='view')
         {
@@ -274,6 +276,7 @@ $(document).ready(function() {
         var external_identity=$(this).attr("external_identity");
         odof.user.profile.sentActiveEmail(external_identity,$(this));
     });
+
     /*
     $('#changeavatar').click(function(e) {
         var AWnd=window.open('/s/uploadavatar','fwId','resizable=yes,scrollbars=yes,width=600,height=600');
@@ -281,17 +284,8 @@ $(document).ready(function() {
     });
     */
 
-    $('.p_right').click(function(e) {
-        var strXType = e.target.id.split('_')[1],
-            objArrow = null;
-        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
-            objArrow.removeClass('arrow').addClass('arrow_up');
-            $('.x_' + strXType).hide();
-        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
-            objArrow.removeClass('arrow_up').addClass('arrow');
-            $('.x_' + strXType).show();
-        }
-    });
+
+    // by Leask Huang
 
     document.title = 'EXFE - ' + $('#profile_name').html();
 
@@ -307,6 +301,17 @@ $(document).ready(function() {
                 break;
             case 'mouseout':
                 objBtn.hide();
+        }
+    });
+
+    $('.category_title').click(function(e) {
+        var strXType  = e.target.id.split('_')[1], objArrow = null;
+        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
+            objArrow.removeClass('arrow').addClass('arrow_up');
+            $('.x_' + strXType).hide();
+        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
+            objArrow.removeClass('arrow_up').addClass('arrow');
+            $('.x_' + strXType).show();
         }
     });
 
