@@ -134,15 +134,16 @@ b.rbottomh b{display:block;height:1px;overflow: hidden;background:#f2f2f2;border
 b.r1{margin: 0 2px}
 b.r2{margin: 0 1px}
 b.r3{margin: 0px}
+
 .identification_dialog{
-	position:absolute; padding:0; width:463px; height:350px;
-	line-height:200%; z-index:201; background:transparent;
+	position:absolute; width:463px; height:350px;
+    padding:0; z-index:201; background:transparent;
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; }
 .idialog_inpage .titles { display:none; }
 
 .identification_dialog .titles{
-    margin:0; height:25px; padding:0 8px;
+    margin:0; height:25px; padding:0 8px; line-height:180%;
     background:url(/static/images/fuceng_title.png) no-repeat 0 0;
 }
 .identification_dialog .titles div{float:left; height:25px; width:20px;}
@@ -152,19 +153,20 @@ b.r3{margin: 0px}
     font-weight:normal; text-shadow:0 0.1em #50d2dd; cursor:move;
 }
 .identification_dialog .bottom{
-    display:block; margin:0; height:5px; padding:0;
+    display:block; margin:0; height:5px; width:463px; padding:0;
     background:url(/static/images/fuceng_title.png) no-repeat 0 -25px;
 }
 .identification_dialog #identity_error_msg{
-    position:absolute; left:370px; top:132px; width:112px; height:27px; padding:0px 2px 0px 15px;
+    position:absolute; left:370px; top:130px; width:112px; height:25px; padding:2px 2px 0px 15px;
     background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:203;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
-.overFramel { background:#EFEFEF; height:320px; overflow:hidden; }
+.overFramel { background:#EFEFEF; height:320px; width:463px; overflow:hidden; }
 
-.overFrameh{background:#f2f2f2;padding:10px 0 15px;}
-.overFramelogin{width:390px;margin:0 auto;padding:15px 0; }
+.overFramel .overFramelogin { 
+    position:relative; margin:auto; width:390px; height:285px; padding-top:35px;
+}
 .overFramel .identity_register_msg{
     position:absolute; display:block; z-index:204; width:463px; padding:30px 0;
     background:#EFEFEF; text-align:center; line-height:1.5em;
@@ -172,6 +174,11 @@ b.r3{margin: 0px}
 }
 .overFramel .identity_register_msg div{
     width:230px; padding:5px; margin:auto;
+}
+
+
+.overFramel #identification_title_msg{
+    height:25px; font-size:14px; line-height:1em; 
 }
 
 .overFramel .identity_reg_success{
@@ -197,35 +204,15 @@ b.r3{margin: 0px}
     background:url(/static/images/loading_a.gif) no-repeat 0 0;
 }
 
-.invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}
-.invi dl{margin-top:5px;padding:5px 8px;position:relative;}
-.invi dl dt span{font-size:16px;color:#0591af}
-.invi dl dd button{display:none;background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:15px; cursor:pointer;padding-bottom:2px;}
-.invi .inbtn{color:#208196;font-size:14px;height:20px;text-align:right;}
-.invi .inbtn p.lb,.upd .upbtn p.uplb{width:150px;float:right;cursor:pointer;}
-.invi .inbtn button{background: url("/static/images/btn.png") no-repeat scroll 2px -176px transparent;border:0;color: #FFFFFF;font:12px Verdana;height: 20px;text-align:center;width:95px;cursor:pointer;display:none;padding-bottom:2px;float:right;margin-left:8px;}
-.identification_dialog .inbtn em,.identification_dialog .upbtn em{width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;padding-left:25px;}
-.identification_dialog .inbtn em.in,.identification_dialog .upbtn em.in{background-position:left -447px;}
-.identification_dialog .inbtn em.up,.identification_dialog .upbtn em.up{background-position:left -494px;}
-.identification_dialog .inbtn span,.identification_dialog .upbtn span{padding-left:8px;padding-top:4px;float:right}
-
-
-.upd{width:412px;margin:0 auto;line-height:20px;}
-.upd .upbtn{text-align:right;color:#656565;font-size:14px;height:20px; maggin-top:5px}
-.upd .upbtn button{background:url("/static/images/btn.png") no-repeat scroll -108px -176px;border:0;color:#FFFFFF;font:12px Verdana;height:20px;text-align:center;width:95px;cursor:pointer;display:none;padding-bottom:2px;float:right;margin-left:8px;}
-.upd dl{margin-top:15px;padding:5px 8px;position:relative;}
-.upd dl dt span{font-size:16px;color:#020202}
-.upd dl dd button{position:absolute;height:20px;right:2px;top:5px;background:url(/static/images/btn.png) no-repeat left -144px;width:20px;display:none;text-indent:-9999px;border:0 }
-
-
 /*登录*/
-.loginBao{width:325px;margin:0px auto;border:1px solid #CCCCCC;padding:50px 125px;background:#efefef;position:relative;z-index:10}
 .login{margin:0 auto;}
-.login ul{margin-top:10px;}
-.login ul li{clear:both; height:45px; }
+.login ul li{clear:both; height:32px; }
 .login ul label{ }
 .login ul label.title{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
-.login ul li input.inputText{ height:28px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px; background-color: transparent; font:18px Verdana; }
+.login ul li input.inputText{
+    width:218px; height:26px; line-height:17px; border:#c5c5c5 1px solid;
+    float:left; margin-left:8px; background-color:transparent; font:18px Verdana;
+}
 .login ul li .identity_box{ position:absolute; margin-top:0px; margin-left:118px; z-index:203; overflow:hidden; }
 .login ul li #identity_dbox{ position:absolute; height:21px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:118px; z-index:202; padding-top:7px; font-size:18px; }
 .login .loginbtn p .dx{width:55px;height:15px;position:absolute;top:10px;}
@@ -236,7 +223,7 @@ b.r3{margin: 0px}
 .login p.t{font-size:14px;margin:20px 0;text-align:center;line-height:20px;}
 
 .login .account{
-    font-size:14px;margin:20px 0 0 0;line-height:20px;
+    height:50px; font-size:18px; line-height:20px; text-align:center;
     background:url(/static/images/hr_or.png) no-repeat 0 55px;
 }
 .login .account p{ width:200px; float:left}
@@ -286,11 +273,38 @@ b.r3{margin: 0px}
 }
 .login ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
 
-.login ul .logincheck{ height:35px; margin-top:-10px; }
+.login ul .logincheck{ height:30px; }
 .login ul .logincheck input{ margin-left:118px; line-height:200%}
 .login ul .logincheck span{ margin-left:8px; font-size:14px; }
 .login ul .notice{ height:25px; color:#0591af; line-height:10px;}
 .login ul .notice span{ margin-left:120px; margin-top:0;}
+
+.login .identification_bottom_btn{
+    position:absolute; z-index:203; height:40px; width:390px; top:275px;
+}
+
+
+
+.invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}
+.invi dl{margin-top:5px;padding:5px 8px;position:relative;}
+.invi dl dt span{font-size:16px;color:#0591af}
+.invi dl dd button{display:none;background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:15px; cursor:pointer;padding-bottom:2px;}
+.invi .inbtn{color:#208196;font-size:14px;height:20px;text-align:right;}
+.invi .inbtn p.lb,.upd .upbtn p.uplb{width:150px;float:right;cursor:pointer;}
+.invi .inbtn button{background: url("/static/images/btn.png") no-repeat scroll 2px -176px transparent;border:0;color: #FFFFFF;font:12px Verdana;height: 20px;text-align:center;width:95px;cursor:pointer;display:none;padding-bottom:2px;float:right;margin-left:8px;}
+.identification_dialog .inbtn em,.identification_dialog .upbtn em{width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;padding-left:25px;}
+.identification_dialog .inbtn em.in,.identification_dialog .upbtn em.in{background-position:left -447px;}
+.identification_dialog .inbtn em.up,.identification_dialog .upbtn em.up{background-position:left -494px;}
+.identification_dialog .inbtn span,.identification_dialog .upbtn span{padding-left:8px;padding-top:4px;float:right}
+
+
+.upd{width:412px;margin:0 auto;line-height:20px;}
+.upd .upbtn{text-align:right;color:#656565;font-size:14px;height:20px; maggin-top:5px}
+.upd .upbtn button{background:url("/static/images/btn.png") no-repeat scroll -108px -176px;border:0;color:#FFFFFF;font:12px Verdana;height:20px;text-align:center;width:95px;cursor:pointer;display:none;padding-bottom:2px;float:right;margin-left:8px;}
+.upd dl{margin-top:15px;padding:5px 8px;position:relative;}
+.upd dl dt span{font-size:16px;color:#020202}
+.upd dl dd button{position:absolute;height:20px;right:2px;top:5px;background:url(/static/images/btn.png) no-repeat left -144px;width:20px;display:none;text-indent:-9999px;border:0 }
+
 
 /*ceate*/
 .createset {width:670px; margin:0px auto;padding:0 10px 15px 10px;z-index:10;}

@@ -72,7 +72,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             desc="<div class='account'><p>Authorize with your <br/> existing accounts </p><span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/twitter.png' alt='' width='32' height='32' /> "
                 +"<img src='/static/images/google.png' alt='' width='32' height='32' /> "
-                +"</span> <h4>Enter your identity information</h4></div>";
+                +"</span> <h4>Enter identity information</h4></div>";
             */
             form = "<form id='loginform' accept-charset='UTF-8' action='' method='post'>"
                  + "<ul>"
@@ -89,15 +89,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if(type=="reg") {
             title="Identification";
 
-            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
-                 + "Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
-                 + "<div id='identification_title_msg' style='font-size:14px;'>Enter your identity information:</div>";
+            desc = "<div class='account'>Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
+                 + "<div id='identification_title_msg'>Enter identity information:</div>";
             /*
             desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/twitter.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/google.png' alt='' width='32' height='32' /></span>"
-                +"<h4>Enter your identity information</h4>"
+                +"<h4>Enter identity information</h4>"
                 +"</div>";
             */
             form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
@@ -114,7 +113,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='identification_pwd_ic'></em>"
                  + "</li>"
-                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
                  + "<li id='identification_rpwd_li' style='display:none'>"
                  + "<label class='title'>Re-type:</label>"
                  + "<input type='password' id='identification_rpwd' name='retypepassword' class='inputText' />"
@@ -129,12 +127,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
                  + "<label for='auto_signin' style='cursor:pointer;'><span>Sign in automatically</span></label>"
                  + "</div></li>"
-                 + "<li style='width:288px; padding:0 0 0 50px;'>"
+                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 + "</ul>"
+                 + "<div class='identification_bottom_btn'>"
                  + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
                  + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
-                 + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' /></li>"
+                 + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' />"
                  //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
-                 + "</ul>"
+                 + "</div>"
                  + "</form>";
         } else if(type=="change_pwd"){
             title = "Change Password";
@@ -212,7 +212,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                        + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
                        + "</div>"
                        + "<div style='float:left; font-size:14px; height:30px; padding-left:36px; text-align:left; display:none;'>"
-                       + "Enter your identity information:"
+                       + "Enter identity information:"
                        + "</div>"
                        + "<div>"
                        + "<label class='title'>Identity:</label><span id='f_identity_box' style='float:left;font-size:18px; font-style:italic;'>"
@@ -319,6 +319,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#displayname').show();
                             jQuery('#resetpwd').hide();
                             jQuery('#logincheck').hide();
+                            jQuery('#login_hint').hide();
                             jQuery('#sign_in_btn').val("Sign Up");
                             jQuery('input[name=displayname]').val('');
                             jQuery('input[name=displayname]').keyup(function(){
