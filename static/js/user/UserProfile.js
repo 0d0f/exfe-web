@@ -33,7 +33,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var name=data.response.user.avatar_file_name;
                 var Timer=new Date();
                 $('#profile_avatar').html("<img class=big_header src='"+odof.comm.func.getHashFilePath(img_url,name)+"/80_80_"+name+"?"+Timer.getTime()+"'/>");
-                //<div id="profile_avatar"><img class="big_header" src=
                 }
             }
         });
