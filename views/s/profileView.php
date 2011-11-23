@@ -127,7 +127,7 @@
                 </div>
                 <div class="crosses"></div>
             </div>
-            <div class="shadow_310"></div>
+            <div id="invitations_shadow" class="shadow_310"></div>
             <div id="recently_updates" class="category">
                 <div class="category_title">
                     <img src="/static/images/translation.gif" class="category_icon"/>
@@ -135,7 +135,7 @@
                 </div>
                 <div class="crosses"></div>
             </div>
-            <div class="shadow_310"></div>
+            <div id="recently_updates_shadow" class="shadow_310"></div>
         </div>
     </div>
 </div>

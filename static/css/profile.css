@@ -13,6 +13,7 @@
     height: 20px;
     margin: 0 auto;
     width: 310px;
+    display: none;
 }
 #cross_area {
     width: 840px;
@@ -51,6 +52,9 @@ h5 {
 .cross {
     padding: 5px 0px 2px 10px;
     margin-bottom: 10px;
+}
+.category {
+    display: none;
 }
 .category_title {
     text-align: right;

@@ -128,6 +128,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     return;
                 }
                 var strInvt = '';
+                $('#invitations').hide();
+                $('#invitations_shadow').hide();
                 for (var i in data) {
                     strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
@@ -136,6 +138,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                              + '</div>';
                 }
                 $('#invitations > .crosses').html(strInvt);
+                if (strInvt) {
+                    $('#invitations').show();
+                    $('#invitations_shadow').show();
+                }
             }
         });
     };
@@ -151,6 +157,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     return;
                 }
                 var strLogs = '';
+                $('#recently_updates').hide();
+                $('#recently_updates_shadow').hide();
                 for (var i in data) {
                     var j, arrExfee;
                     strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
@@ -225,11 +233,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['conversation']) {
                         strLogs += '<p class="conversation"><em>'
                                  + data[i]['conversation']['by_name']+'</em>: '
-                                 + data[i]['conversation']['message']+'</p>';
+                                 + data[i]['conversation']['message']+'<br><em>'
+                                 + data[i]['conversation']['num_msgs']
+                                 + '</em> new post in conversation.</p>';
                     }
                     strLogs += '</div></a>'
                 }
                 $('#recently_updates > .crosses').html(strLogs);
+                if (strLogs) {
+                    $('#recently_updates').show();
+                    $('#recently_updates_shadow').show();
+                }
             }
         });
     };
