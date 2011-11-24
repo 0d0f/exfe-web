@@ -114,19 +114,18 @@ h5 {
 em {
     color: #0591AC;
 }
-
-
-
-/*
-#invitations dl { margin:4px auto; height:45px; padding:5px 13px; position:relative;}
-#invitations dl dt a { font:bold 14px/25px Verdana, Arial, Helvetica, sans-serif; color:#0591af;}
-#invitations dl button { background:url(/static/images/btn.png) no-repeat -220px -234px; color:#ffffff; font:14px/23px Verdana, Arial, Helvetica, sans-serif; width:60px; height:25px; border:0; position:absolute; right:10px; top:5px; cursor:pointer;}
-#invitations dl.bdown { background:#ffffff;}
-#recently_updates .bgdq { background:#d5e6e9}
-.more { text-align:right;font:13px/20px Verdana;width:96%}
-.more a { color:#020202}
-*/
-
+.invitation > button {
+    background: url(/static/images/btn.png) no-repeat -220px -234px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 23px;
+    width: 60px;
+    height: 25px;
+    border: 0;
+    position: absolute;
+    margin: -3px auto auto 227px;
+    cursor: pointer;
+}
 
 
 /* edit user by Handaoliang */
@@ -192,7 +191,6 @@ em {
     height: 18px;
     background: url(/static/images/add_misun.gif) no-repeat 0 -26px;
 }
-
 .edit_user .u_con p em {
     color: #a0a0a0;
     font-style: italic;

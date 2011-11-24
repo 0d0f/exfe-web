@@ -131,10 +131,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#invitations').hide();
                 $('#invitations_shadow').hide();
                 for (var i in data) {
-                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="bnone">'
+                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="invitation">'
+                             +     '<button type="button" id="accept_button_' + data[i]['base62id'] + '">Accept</button>'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
                              +     '<p>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</p>'
-                             +     '<button type="button" id="acpbtn_' + data[i]['base62id'] + '" class="acpbtn">Accept</button>'
                              + '</div>';
                 }
                 $('#invitations > .crosses').html(strInvt);
@@ -142,6 +142,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     $('#invitations').show();
                     $('#invitations_shadow').show();
                 }
+                $('.invitation > button').hide();
             }
         });
     };
@@ -289,12 +290,12 @@ $(document).ready(function() {
 
     document.title = 'EXFE - ' + $('#profile_name').html();
 
-    $('.bnone').bind('mousemove mouseout', function(event) {
+    $('.invitation').live('mousemove mouseout', function(event) {
         var objEvent = event.target;
-        while (objEvent.id.split('_').shift() !== 'cross') {
+        while (!$(objEvent).hasClass('invitation')) {
             objEvent = objEvent.parentNode;
         }
-        var objBtn   = $('#' + objEvent.id + ' > dd > .acpbtn');
+        var objBtn   = $('#' + objEvent.id + ' > button');
         switch (event.type) {
             case 'mousemove':
                 objBtn.show();
@@ -321,8 +322,7 @@ $(document).ready(function() {
         }
     });
 
-    $('.acpbtn').hide();
-    $('.acpbtn').click(function(e) {
+    $('.invitation > button').live('click', function(e) {
         location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
     });
 
