@@ -131,7 +131,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#invitations').hide();
                 $('#invitations_shadow').hide();
                 for (var i in data) {
-                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="invitation">'
+                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="invitation cross">'
                              +     '<button type="button" id="accept_button_' + data[i]['base62id'] + '">Accept</button>'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
                              +     '<p>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</p>'
@@ -319,6 +319,20 @@ $(document).ready(function() {
           = $('#' + objEvent.id + ' > .category_title > .arrow_up')).length) {
             objArrow.removeClass('arrow_up').addClass('arrow');
             $('#' + objEvent.id + ' > .crosses').show();
+        }
+    });
+
+    $('.cross').live('mousemove mouseout', function(event) {
+        var objEvent = event.target;
+        while (!$(objEvent).hasClass('cross')) {
+            objEvent = objEvent.parentNode;
+        }
+        switch (event.type) {
+            case 'mousemove':
+                $(objEvent).addClass('cross_mouseover');
+                break;
+            case 'mouseout':
+                $(objEvent).removeClass('cross_mouseover');
         }
     });
 
