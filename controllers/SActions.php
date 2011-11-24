@@ -875,7 +875,7 @@ class SActions extends ActionController
             if(intval($exist["status"])==3)
                 $responobj["response"]["status"]="connected";
             else
-                $responobj["response"]["status"]="veryifing";
+                $responobj["response"]["status"]="verifying";
 
             $responobj["response"]["identity_exist"]="true";
         }

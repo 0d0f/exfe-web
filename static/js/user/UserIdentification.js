@@ -46,47 +46,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showdialog = function(type) {
         var title="", desc="", form="";
-        if(type=="setpassword") {
-            title = "Set Password";
-            desc = "<div class='setpassword'>Please set password to keep track of <br/> RSVP status and engage in.</div>";
-
-            form = "<form id='identityform' accept-charset='UTF-8' action='' method='post'>"
-                 + "<ul>"
-                 + "<li><label class='title'>Identity:</label>"
-                 + "<input id='identity' name='identity' type='text' class='inputText' disabled='disabled' value='"
-                 + external_identity
-                 + "'><em class='ic1'></em></li>"
-                 + "<li><label class='title'>Password:</label>"
-                 + "<input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
-                 + "<li id='retype' ><label class='title'>Re-type:</label>"
-                 + "<input type='text'  name='retypepassword' class='inputText'/><em class='ic3'></em></li>"
-                 + "<li id='displayname'><label class='title'>Names:</label>"
-                 + "<input type='text'  name='displayname' class='inputText'/><em class='warning'></em></li>"
-                 + "<li><a href='#'>Cancel</a><input type='submit' name='setpwddone' value='Done' class='sub'/></li>"
-                 + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                 + "</ul>"
-                 + "</form>";
-        } else if(type=="login") {
-            title="Sign in";
-            /*
-            desc="<div class='account'><p>Authorize with your <br/> existing accounts </p><span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
-                +"<img src='/static/images/twitter.png' alt='' width='32' height='32' /> "
-                +"<img src='/static/images/google.png' alt='' width='32' height='32' /> "
-                +"</span> <h4>Enter identity information</h4></div>";
-            */
-            form = "<form id='loginform' accept-charset='UTF-8' action='' method='post'>"
-                 + "<ul>"
-                 + "<li><label class='title'>Identity:</label><input id='loginidentity' name='loginidentity' type='text' class='inputText' value='"+external_identity+"' ><em class='ic1'></em></li>"
-                 + "<li><label class='title'>Password:</label><input type='password'  name='password' class='inputText'/><em class='ic2'></em></li>"
-                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
-                 //+"<li id='retype' style='display:none'><label class='title'>Re-type:</label><input type='text'  name='retypepassword'class='inputText'/><em class='ic3'></em></li>"
-                 //+"<li id='displayname' style='display:none'><label class='title'>Names:</label><input type='text'  name='displayname'class='inputText'/><em class='warning'></em></li>"
-                 + "<li class='logincheck' id='logincheck'><input type='checkbox' value='1' name='auto_signin' id='auto_signin'><span>Sign in automatically</span></li>"
-                 + "<li><input id='resetpwd' type='submit' value='Forgot Password...' class='forgotpassword'/><input type='submit' value='Sign in' class='sub'/></li>"
-                 + "</ul>"
-                 + "</form>";
-
-        } else if(type=="reg") {
+        if(type=="reg_login") {
             title="Identification";
 
             desc = "<div class='account'>Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
@@ -109,6 +69,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<em class='delete' id='delete_identity' style='display:none;'></em>"
                  + "</li>"
+                 + "<li id='displayname' style='display:none'>"
+                 + "<label class='title' style='color:#CC3333'>Display name:</label>"
+                 + "<input type='text' name='displayname' class='inputText'/>"
+                 + "</li>"
                  + "<li><label class='title'>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
                  + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='identification_pwd_ic'></em>"
@@ -119,9 +83,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                 + "<li id='displayname' style='display:none'><label class='title'>Display name:</label>"
-                 + "<input type='text' name='displayname' class='inputText'/>"
-                 + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
                  + "<li class='logincheck'>"
                  + "<div id='logincheck' style='display:none;'>"
                  + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
@@ -132,6 +93,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<div class='identification_bottom_btn'>"
                  + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
                  + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
+                 + "<a id='startover' class='startover' style='display:none;'>Start Over</a>"
                  + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' />"
                  //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
                  + "</div>"
@@ -206,6 +168,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</ul>";
         }
 
+        var forgot_verification = "<div id='forgot_verification_dialog' style='display:none;'>"
+               + "<div style='text-align:center; height:45px; font-size:18px;'>"
+               + "Forgot password"
+               + "</div>"
+               + "<div style='height:25px; text-align:left;'>"
+               + "A verification will be sent to your identity:"
+               + "</div>"
+               + "<div style='height:40px;'>"
+               + "<input type='text' id='forgot_identity_input' disabled='disabled' />"
+               + "</div>"
+               + "<div style='height:40px; text-align:left;'>"
+               + "Confirm sending verification to your mailbox? It should arrive in minutes."
+               + "</div>"
+               + "<div class='forgot_verify_bottom_btn' style='text-align:right;'>"
+               + "<span id='forgot_verify_loading_btn' style='display:none;'></span>"
+               + "<a href='javascript:void(0);' id='cancel_forgot_verify_btn'>Cancel</a>&nbsp;&nbsp;"
+               + "<input type='button' id='fogot_verify_btn' value='Verify' />"
+               + "</div>"
+               + "</div>";
 
         var forgot_pwd = "<div id='identity_forgot_pwd_dialog' class='identity_forgot_pwd_dialog' style='display:none;'>"
                        + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
@@ -230,35 +211,40 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //var html="<div id='fBox' class='loginMask' style='display:none'>"
         var reg_success = "<div id='identity_reg_success' class='identity_reg_success' style='display:none;'>"
-                       + "<div style='font-size:18px; margin-bottom:15px;'>Hi, <span id='identity_display_box'></span></div>"
-                       + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
-                       + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
-                       + "<p style='font-size:14px;'>An utility for hanging out with friends.</p>"
+                       + "<div style='height:35px; font-size:18px;'>Hi. <span id='identity_display_box'></span></div>"
+                       + "<div class='account' style='height:23px; font-size:18px;'>"
+                       + "Thanks for using <span style='color:#0591AC;'>EXFE</span>"
                        + "</div>"
-                       + "<div>"
-                       + "<span style='color:#0591AC;'>X</span>(cross),<br />gathering of friends for anything you want to do with bunch of people. We save you from calling up every one just to confirm attendance, and lost in emails of endless discussion off the point."
+                       + "<div style='height:30px;'>"
+                       + "An utility for hanging out with friends."
                        + "</div>"
-                       + "<div>"
-                       + "Go, gather your friends!"
+                       + "<div style='height:30px; text-align:left;'>"
+                       + "Please check your mailbox for verification."
                        + "</div>"
-                       + "<div>"
+                       + "<div style='height:90px; text-align:left;'>"
+                       + "<span style='color:#0591AC;'>X</span> (cross) is a gathering of people, for anything to do with them. We save you from calling up every one RSVP, losing in endless emails messages off the point."
+                       + "</div>"
+                       + "<div style='height:23px; text-align:left;'>"
+                       + "<span style='color:#0591AC;'>EXFE</span> your friends, gather a <span style='color:#0591AC;'>X</span>"
+                       + "</div>"
+                       + "<div style='text-align:right;'>"
                        + "<input type='button' id='close_reg_success_dialog_btn' style='cursor:pointer;' value='Go' />"
                        + "</div>"
                        + "</div>";
 
         var sign_up_msg = "<div id='identity_register_msg' class='identity_register_msg' style='display:none;'>"
                        + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
-                       + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
-                       + "<p>No sign-up here!</p>"
+                       + "<p>Sign-Up-Free</p>"
                        + "</div>"
-                       + "<div>"
-                       + "We know you’re tired of signing up all around."
+                       + "<div style='height:60px;'>"
+                       + "<p>We know you’re tired of</p>"
+                       + "<p>signing up all around.</p>"
                        + "</div>"
-                       + "<div>"
-                       + "So, just enter your email and name that your friends know who you are.And set your password."
+                       + "<div style='height:50px; text-align:left;'>"
+                       + "So, just authorize with your existing accounts on other websites."
                        + "</div>"
-                       + "<div>"
-                       + "Done."
+                       + "<div style='height:90px; text-align:left;'>"
+                       + "Or, tell us your desired identity and display name that your friends know who you are, along with a password for sign-in. Identity could be your email address or phone number."
                        + "</div>"
                        + "<div style='text-align:right;'>"
                        + "<input type='button' id='close_reg_msg_btn' style='cursor:pointer;' value='I See' />"
@@ -270,7 +256,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                    + "<div id='identification_handler' class='tl'>"+title+"</div>"
                    + "</div>"
                    + "<div id='identity_error_msg' style='display:none;'>Invalid identity</div>"
+                   + "<div id='displayname_error_msg' style='display:none;'>Invalid identity</div>"
                    + "<div id='overFramel' class='overFramel'>"
+                   + forgot_verification
                    + forgot_pwd
                    + sign_up_msg
                    + reg_success
@@ -285,6 +273,55 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                    //+ "<b class='rbottom'><b class='r3'></b><b class='r2'></b><b class='r1'></b></b>";
                    //+ "</div>";
         return html;
+    };
+
+    ns.showLoginDialog = function(type){
+        jQuery('#identification_title_msg').html('Enter identity information:');
+        jQuery('#identification_title_msg').css({color:'#333333'});
+        jQuery('#retype').hide();
+        jQuery('#displayname').hide();
+        jQuery('#sign_in_btn').val("Sign In");
+        jQuery('#startover').hide();
+        jQuery('#startover').unbind("click");
+        jQuery('#logincheck').show();
+        odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
+        ns.actions = "sign_in";
+        if(type == 'init'){
+            jQuery('#identity').val('');
+            jQuery('#sign_up_btn').show();
+            jQuery('#resetpwd').hide();
+            jQuery('#sign_in_btn').attr('disabled', false);
+            jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
+            odof.user.status.showLastIdentity()
+        }else{
+            jQuery('#resetpwd').show();
+        }
+
+        //还是得绑定Password框的Onfocus事件。
+        jQuery('#identification_pwd').focus(function() {
+            odof.user.identification.identityInputBoxActions();
+        });
+    };
+
+    ns.showDisplayNameError = function(displayName){
+        if(displayName ==""){
+            jQuery('#displayname_error_msg').html("Set your display name");
+            jQuery('#displayname_error_msg').show();
+            setTimeout(function(){
+                jQuery('#displayname_error_msg').hide();
+            }, 3000);
+            return false;
+        }else if(!odof.comm.func.verifyDisplayName(displayName)){
+            jQuery('#displayname_error_msg').html("Invalid character in name");
+            jQuery('#displayname_error_msg').show();
+            setTimeout(function(){
+                jQuery('#displayname_error_msg').hide();
+            }, 3000);
+            return false;
+        }else{
+            jQuery('#displayname_error_msg').hide();
+            return true;
+        }
     };
 
     ns.identityInputBoxActions = function(userIdentity){
@@ -320,29 +357,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#resetpwd').hide();
                             jQuery('#logincheck').hide();
                             jQuery('#login_hint').hide();
+                            //注册对话框中的start over button
+                            jQuery('#startover').show();
+                            jQuery('#startover').bind('click', function(){
+                                ns.showLoginDialog('init');
+                            });
                             jQuery('#sign_in_btn').val("Sign Up");
                             jQuery('input[name=displayname]').val('');
+                            jQuery('#identification_pwd').val('');
+                            jQuery('#identification_rpwd').val('');
+                            jQuery('#identification_pwd_a').val('');
+
                             jQuery('input[name=displayname]').keyup(function(){
                                 var displayName = this.value;
-                                if(displayName != "" && !odof.comm.func.verifyDisplayName(displayName)){
-                                    jQuery('#pwd_hint').html("<span style='color:#CC3333'>Display name Error.</span>");
-                                    jQuery('#displayname_error').show();
-                                    jQuery('#pwd_hint').show();
-                                    setTimeout(function(){
-                                        jQuery('#displayname_error').hide();
-                                        jQuery('#pwd_hint').hide();
-                                    }, 3000);
-                                    return false;
-                                }else{
-                                    jQuery('#displayname_error').hide();
-                                    jQuery('#pwd_hint').hide();
-                                }
+                                ns.showDisplayNameError(displayName);
                             });
                             odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
                             jQuery('#identification_pwd').unbind("focus");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
-                            if(data.response.status == "veryifing"){
+                            if(data.response.status == "verifying"){
                                 var vheight = parseInt(jQuery("#overFramel").height()-60);
                                 jQuery("#identity_forgot_pwd_dialog").css({height:vheight});
                                 jQuery("#identity_forgot_pwd_dialog").show();
@@ -363,20 +397,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 });
                                 jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
                             }else{
-                                jQuery('#identification_title_msg').html('Enter identity information:');
-                                jQuery('#identification_title_msg').css({color:'#333333'});
-                                jQuery('#retype').hide();
-                                jQuery('#displayname').hide();
-                                jQuery('#resetpwd').show();
-                                jQuery('#sign_in_btn').val("Sign in");
-                                jQuery('#logincheck').show();
-                                odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
-                                ns.actions = "sign_in";
-
-                                //还是得绑定Password框的Onfocus事件。
-                                jQuery('#identification_pwd').focus(function() {
-                                    odof.user.identification.identityInputBoxActions();
-                                });
+                                ns.showLoginDialog();
                             }
                         }
                         jQuery('#sign_up_btn').hide();
@@ -447,24 +468,40 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                     var hideErrorMsg = function(){
                         jQuery("#identity_error_msg").hide();
+                        jQuery('#displayname_error_msg').hide();
                         jQuery("#reset_pwd_error_msg").hide();
                         jQuery("#displayname_error").hide();
                         jQuery("#pwd_hint").hide();
                     };
+
 
                     if(identity == "" || !identity.match(ns.mailReg)){
                         jQuery("#identity_error_msg").show();
                         setTimeout(hideErrorMsg, 3000);
                         return false;
                     }
+                    if(jQuery('#displayname').is(':visible')==true) {
+                        if(!ns.showDisplayNameError(displayname)){
+                            return false;
+                        }
+                    }
            
-                    if(jQuery('#retype').is(':visible')==true &&  password!=retypepassword && password!="" ) {
+                    /*
+                    if(jQuery('#retype').is(':visible') == true && password != retypepassword && password!="" ) {
                         jQuery('#pwd_hint').html("<span>Check Password</span>");
                         jQuery('#pwd_hint').show();
                         setTimeout(hideErrorMsg, 3000);
                         return false;
                     }
+                    */
                     if(ns.actions == "sign_up"){
+                        if(password == ""){
+                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords empty.</span>");
+                            jQuery('#pwd_hint').show();
+                            setTimeout(hideErrorMsg, 3000);
+                            return false;
+                        }
+
                         if(retypepassword != password){
                             jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords don't match.</span>");
                             jQuery('#pwd_match_error').show();
@@ -472,24 +509,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
-                    
                     }
-                    if(jQuery('#displayname').is(':visible')==true) {
-                        if(displayname==""){
-                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>set your display name</span>");
-                            jQuery('#displayname_error').show();
-                            jQuery('#pwd_hint').show();
-                            setTimeout(hideErrorMsg, 3000);
-                            return false;
-                        }else if(!odof.comm.func.verifyDisplayName(displayname)){
-                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>Display name Error.</span>");
-                            jQuery('#displayname_error').show();
-                            jQuery('#pwd_hint').show();
-                            setTimeout(hideErrorMsg, 3000);
+                    if(ns.actions == "sign_in"){
+                        if(password == "" || identity == ""){
+                            jQuery('#login_hint').html("<span>Identity or password empty</span>");
+                            jQuery('#login_hint').show();
                             return false;
                         }
                     }
-                    if(password!=""&& identity!="" && jQuery('#displayname').is(':visible')==false) {
+                    if(password != "" && identity != "" && jQuery('#displayname').is(':visible')==false) {
                         var poststr = "identity="+identity+"&password="
                                       + encodeURIComponent(password)+"&auto_signin="+auto_signin;
                         jQuery.ajax({
@@ -567,8 +595,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                         //显示注册成功窗口
                                         jQuery("#identity_reg_success").show();
                                         jQuery("#identity_display_box").html(identity);
+                                        jQuery("#identification_handler").html("Welcome");
                                         jQuery("#close_reg_success_dialog_btn").bind("click",function(){
                                             window.location.href="/s/profile";
+                                            return; 
                                             //odof.exlibs.ExDialog.hideDialog();
                                             //odof.exlibs.ExDialog.destroyCover();
                                         });
@@ -610,8 +640,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 })(ns);
 
+/*
 jQuery(document).ready(function(){
-
         jQuery('#loginform').submit(function() {
             var identity=jQuery('input[name=loginidentity]').val();
             var password=jQuery('input[name=password]').val();
@@ -657,8 +687,7 @@ jQuery(document).ready(function(){
                 jQuery('#pwd_hint').show();
                 return false;
             }
-            if(displayname=="")
-            {
+            if(displayname=="") {
                 jQuery('#pwd_hint').html("<span>set your display name</span>");
                 jQuery('#pwd_hint').show();
                 return false;
@@ -688,3 +717,4 @@ jQuery(document).ready(function(){
         return false;
     });
 });
+*/

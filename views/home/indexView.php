@@ -13,6 +13,8 @@
         </div>
         <div class="home_bottom_btn"></div>
     </div>
+    <img id="pre_load_btn" style="display:none;" />
+    <img id="pre_load_icons" style="display:none;" />
 </body>
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -23,6 +25,8 @@ jQuery(document).ready(function() {
         jQuery("#home_banner").css({"height":"460px"});
         jQuery("#x_code_img").css({"margin-top":"20px"});
     }
+    jQuery("#pre_load_btn")[0].src = "/static/images/btn.png";
+    jQuery("#pre_load_icons")[0].src = "/static/images/icons.png";
 });
 </script>
 </html>
