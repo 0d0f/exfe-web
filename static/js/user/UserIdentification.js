@@ -10,6 +10,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.actions = "sign_in";
     ns.userIdentityCache = "";
+    ns.userManualVerifyIdentityCache = "";
     ns.mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
     ns.getUrlVars = function() {
@@ -181,10 +182,32 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "<div style='height:40px; text-align:left;'>"
                + "Confirm sending verification to your mailbox? It should arrive in minutes."
                + "</div>"
-               + "<div class='forgot_verify_bottom_btn' style='text-align:right;'>"
-               + "<span id='forgot_verify_loading_btn' style='display:none;'></span>"
+               + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
                + "<a href='javascript:void(0);' id='cancel_forgot_verify_btn'>Cancel</a>&nbsp;&nbsp;"
                + "<input type='button' id='fogot_verify_btn' value='Verify' />"
+               + "</div>"
+               + "</div>";
+
+        //需要验证的identity，从identity输入框跳过来。1AM71 D5
+        var manual_verification = "<div id='manual_verification_dialog' style='display:none;'>"
+               + "<div style='text-align:center; height:45px; font-size:18px;'>"
+               + "Welcome to <span style='color:#0591AC;'>EXFE</span>"
+               + "</div>"
+               + "<div style='height:30px; text-align:left;'>"
+               + "Enter identity information:"
+               + "</div>"
+               + "<div style='height:40px;'>"
+               + "<label class='title'>Identity:</label>"
+               + "<input type='text' id='manual_verify_identity' />"
+               + "</div>"
+               + "<div id='manual_verification_hint_box' style='height:40px; text-align:left;'>"
+               + "<p style='color:#CC3333;'>This identity needs to be verified before using.</p>"
+               + "<p'>Confirm sending verification to your mailbox?</p>"
+               + "</div>"
+               + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
+               + "<a id='manual_startover' class='startover'>Start Over</a>"
+               + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;'>I See</a>&nbsp;&nbsp;"
+               + "<input type='button' id='manual_verification_btn' value='Done' />"
                + "</div>"
                + "</div>";
 
@@ -210,7 +233,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                        + "</div>";
 
         //var html="<div id='fBox' class='loginMask' style='display:none'>"
-        var reg_success = "<div id='identity_reg_success' class='identity_reg_success' style='display:none;'>"
+        var reg_success = "<div id='identity_reg_success' style='display:none;'>"
                        + "<div style='height:35px; font-size:18px;'>Hi. <span id='identity_display_box'></span></div>"
                        + "<div class='account' style='height:23px; font-size:18px;'>"
                        + "Thanks for using <span style='color:#0591AC;'>EXFE</span>"
@@ -259,6 +282,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                    + "<div id='displayname_error_msg' style='display:none;'>Invalid identity</div>"
                    + "<div id='overFramel' class='overFramel'>"
                    + forgot_verification
+                   + manual_verification
                    + forgot_pwd
                    + sign_up_msg
                    + reg_success
@@ -276,6 +300,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.showLoginDialog = function(type){
+        //改变titles
         jQuery('#identification_title_msg').html('Enter identity information:');
         jQuery('#identification_title_msg').css({color:'#333333'});
         jQuery('#retype').hide();
@@ -324,6 +349,54 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
+
+    ns.showManualVerificationDialog = function(){
+        jQuery("#manual_verification_dialog").show();
+
+        var userIdentity = jQuery("#identity").val();
+        ns.userManualVerifyIdentityCache = userIdentity;
+
+        jQuery("#manual_verify_identity").val(userIdentity);
+
+        jQuery("#manual_verification_btn").unbind("click");
+        jQuery("#manual_verification_btn").bind("click",function(){
+            odof.user.status.doSendEmail(userIdentity,"verification");
+            var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
+            jQuery("#manual_verification_hint_box").html(msg);
+        });
+
+        jQuery("#cancel_manual_verification_btn").unbind("click");
+        jQuery("#cancel_manual_verification_btn").bind("click", function(){
+            clearManualVerifyDialog();
+            jQuery("#manual_verification_dialog").hide();
+        });
+
+        jQuery('#manual_startover').unbind('click');
+        jQuery('#manual_startover').bind('click', function(){
+            clearManualVerifyDialog();
+            ns.showLoginDialog('init');
+        });
+
+        //监听输入框。
+        var manualVerifyTimer = window.setInterval(function(){
+            var curVerifyIdentityVal = jQuery("#manual_verify_identity").val()
+            if(curVerifyIdentityVal != ns.userManualVerifyIdentityCache){
+                ns.identityInputBoxActions(curVerifyIdentityVal);
+                clearManualVerifyDialog();
+            }
+        },250);
+
+        //清除验证对话框。
+        var clearManualVerifyDialog = function(){
+                clearInterval(manualVerifyTimer);
+                jQuery("#manual_verification_dialog").hide();
+                jQuery('#manual_startover').unbind('click');
+                jQuery("#manual_verification_btn").unbind("click");
+                jQuery("#cancel_manual_verification_btn").unbind("click");
+        };
+
+    };
+
     ns.identityInputBoxActions = function(userIdentity){
 
         if(typeof userIdentity == "undefined"){
@@ -334,7 +407,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //只有当不等时，才执行轮循
         //console.log("aaaaa");
         if(userIdentity == ns.userIdentityCache){
-            return;
+            return false;
         }else{
             ns.userIdentityCache = jQuery('#identity').val();
         }
@@ -377,25 +450,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
-                                var vheight = parseInt(jQuery("#overFramel").height()-60);
-                                jQuery("#identity_forgot_pwd_dialog").css({height:vheight});
-                                jQuery("#identity_forgot_pwd_dialog").show();
-                                jQuery("#f_identity").val(jQuery("#identity").val());
-
-                                var userIdentity = jQuery("#identity").val();
-
-                                jQuery("#send_verification_btn").attr("disabled",false);
-                                jQuery("#send_verification_btn").css({"cursor":"pointer"});
-
-                                jQuery("#send_verification_btn").unbind("click");
-                                jQuery("#send_verification_btn").bind("click",function(){
-                                    odof.user.status.doSendEmail(userIdentity,"verification");
-                                });
-                                jQuery("#cancel_verification_btn").bind("click", function(){
-                                    jQuery("#identity_forgot_pwd_dialog").hide();
-                                    jQuery("#identity_forgot_pwd_info").html("Verification will be sent in minutes, please check your inbox.");
-                                });
-                                jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
+                                ns.showManualVerificationDialog();
                             }else{
                                 ns.showLoginDialog();
                             }

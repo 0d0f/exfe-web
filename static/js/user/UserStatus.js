@@ -253,28 +253,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.user.identification.identityInputBoxActions(userIdentity);
         }
 
-        /*
-        jQuery("#resetpwd").bind("click", function(){
-            jQuery("#identity_forgot_pwd_info").html("Verification will be sent in minutes, please check your inbox.");
-            var vheight = parseInt(jQuery("#overFramel").height()-60);
-            jQuery("#identity_forgot_pwd_dialog").css({height:vheight});
-            jQuery("#identity_forgot_pwd_dialog").show();
-            jQuery("#f_identity").val(jQuery("#identity").val());
-            jQuery("#cancel_verification_btn").bind("click",function(){
-                jQuery("#identity_forgot_pwd_dialog").hide();
-                jQuery("#send_verification_btn").unbind("click");
-            });
-            jQuery('#f_identity').keyup(function() {
-                jQuery("#identity").val(jQuery("#f_identity").val());
-                jQuery("#identity_forgot_pwd_dialog").hide();
-                odof.user.identification.identityInputBoxActions();
-            });
-            var userIdentity = jQuery("#f_identity").val();
-            jQuery("#send_verification_btn").bind("click",function(){
-                ns.doSendEmail(userIdentity,"verification");
-            });
-        });
-        */
+        //用户点击忘记密码按钮。
         jQuery("#resetpwd").bind("click", function(){
             var userIdentityVal = jQuery("#identity").val();
             jQuery("#forgot_verification_dialog").show();

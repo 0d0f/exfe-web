@@ -187,13 +187,24 @@ b.r3{margin: 0px}
     height:25px; font-size:14px; line-height:1em; 
 }
 
-.identity_reg_success, #forgot_verification_dialog {
+#identity_reg_success,
+#forgot_verification_dialog,
+#manual_verification_dialog
+{
     position:absolute; display:block; z-index:204;
     width:463px; height:285px; padding-top:35px;
-    background:#EFEFEF; line-height:1.5em; font-size:14px;
+    background:#EFEFEF; line-height:20px; font-size:14px;
 }
-.identity_reg_success div, #forgot_verification_dialog div {
+#identity_reg_success div,
+#forgot_verification_dialog div,
+#manual_verification_dialog div
+{
     width:330px; margin:auto; text-align:center;
+}
+
+#manual_verify_identity{
+    width:210px; height:22px; padding:2px; border:1px solid #CCC;
+    color:#666; font-size:18px; font-style:italic;
 }
 
 .overFramel .identity_forgot_pwd_dialog{
@@ -210,12 +221,16 @@ b.r3{margin: 0px}
     position:absolute; height:16px; width:16px; z-index:205px; margin-left:115px; margin-top:3px;
     background:url(/static/images/loading_a.gif) no-repeat 0 0;
 }
-#close_reg_msg_btn, #close_reg_success_dialog_btn, #fogot_verify_btn{
+#close_reg_msg_btn,
+#close_reg_success_dialog_btn,
+#fogot_verify_btn,
+#manual_verification_btn
+{
     height:26px; border:0; width:85px; font-size:14px; float:right;
     background:url(/static/images/btn.png) no-repeat 0px -580px; cursor:pointer;
 }
 #cancel_forgot_verify_btn {
-    line-height:1.8em;
+    line-height:20px;
 }
 #forgot_identity_input {
     width:310px; height:28px; border:1px solid #CCCCCC;
@@ -223,9 +238,26 @@ b.r3{margin: 0px}
     background:transparent;
 }
 
-.forgot_verify_bottom_btn{
+.float_panel_bottom_btn{
     position:absolute; z-index:205; height:40px; width:390px; top:275px; left:62px;
 }
+
+.identification_dialog .startover{
+    display:block; float:left; height:24px; width:110px; cursor:pointer;
+    padding-top:2px; border:0; font-size:14px; text-align:center; text-decoration:none;
+    background:url(/static/images/btn.png) no-repeat 0px -610px; color:#6C6E6F;
+}
+.identification_dialog .startover:hover {
+    color:#6C6E6F; text-decoration:none;
+    background:url(/static/images/btn.png) no-repeat 0px -610px;
+}
+.identification_dialog .startover:active {
+    color:#6C6E6F; text-decoration:none;
+    background:url(/static/images/btn.png) no-repeat 0px -610px;
+}
+
+
+
 
 /*登录*/
 .login{margin:0 auto;}
@@ -276,20 +308,6 @@ b.r3{margin: 0px}
 .login .forgotpassword:active {
     color:#6C6E6F; text-decoration:none;
     background:url(/static/images/btn.png) no-repeat 0px -640px;
-}
-
-.login .startover{
-    display:block; float:left; height:24px; width:110px; cursor:pointer;
-    padding-top:2px; border:0; font-size:14px; text-align:center; text-decoration:none;
-    background:url(/static/images/btn.png) no-repeat 0px -610px; color:#6C6E6F;
-}
-.login .startover:hover {
-    color:#6C6E6F; text-decoration:none;
-    background:url(/static/images/btn.png) no-repeat 0px -610px;
-}
-.login .startover:active {
-    color:#6C6E6F; text-decoration:none;
-    background:url(/static/images/btn.png) no-repeat 0px -610px;
 }
 
 
