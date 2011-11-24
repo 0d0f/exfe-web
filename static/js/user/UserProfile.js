@@ -304,14 +304,20 @@ $(document).ready(function() {
         }
     });
 
-    $('.category_title').click(function(e) {
-        var strXType  = e.target.id.split('_')[1], objArrow = null;
-        if ((objArrow = $('#' + e.target.id + ' > .arrow')).length) {
+    $('.category_title').click(function(event) {
+        var objEvent = event.target;
+        while (!$(objEvent).hasClass('category')) {
+            objEvent = objEvent.parentNode;
+        }
+        var objArrow  = null;
+        if ((objArrow
+          = $('#' + objEvent.id + ' > .category_title > .arrow')).length) {
             objArrow.removeClass('arrow').addClass('arrow_up');
-            $('.x_' + strXType).hide();
-        } else if ((objArrow = $('#' + e.target.id + ' > .arrow_up')).length) {
+            $('#' + objEvent.id + ' > .crosses').hide();
+        } else if ((objArrow
+          = $('#' + objEvent.id + ' > .category_title > .arrow_up')).length) {
             objArrow.removeClass('arrow_up').addClass('arrow');
-            $('.x_' + strXType).show();
+            $('#' + objEvent.id + ' > .crosses').show();
         }
     });
 
