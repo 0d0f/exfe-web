@@ -50,6 +50,7 @@ function exRequest($name)
 
 function buildICS($args)
 {
+    global $site_url;
     require_once 'lib/iCalcreator.class.php';
 
     $v = new vcalendar( array( 'unique_id' => 'exfe' ));
@@ -80,6 +81,8 @@ function buildICS($args)
                    , $args['description'] );    // describe the event
     $e->setProperty( 'location'
                    , $args['place_line1']."\r\n".$args['place_line2']  );                     // locate the event
+    $e->setProperty( 'url'
+                   , $site_url.'/!'.$args['cross_id_base62']);                     // locate the event
 
     $a = & $e->newComponent( 'valarm' );           // initiate ALARM
     $a->setProperty( 'action'
