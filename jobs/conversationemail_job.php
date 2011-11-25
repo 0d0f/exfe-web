@@ -107,18 +107,18 @@ class Conversationemail_Job
         }
         #print_r($mails);
 
-        #if($mails)
-        #{
-        #    if($email_connect=="")
-        #    {
-        #        smtp_connect();
-        #    }
+        if($mails)
+        {
+            if($email_connect=="")
+            {
+                smtp_connect();
+            }
 
-        #    foreach($mails as $mail)
-        #    {
-        #        //$this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
-        #    }
-        #}
+            foreach($mails as $mail)
+            {
+                $this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
+            }
+        }
 
 
     }
@@ -173,6 +173,8 @@ class Conversationemail_Job
     }
     public function buildUpdateMailBody($changed_objects)
     {
+        global $site_url;
+        global $img_url;
         $update_array=array();
         if($changed_objects)
         {
@@ -193,6 +195,7 @@ class Conversationemail_Job
                 $updated_identity = rtrim($updated_identity , ",");
                 $title=$changed_object["title"];
                 $cross=$changed_object["cross"];
+
                 $identities=$cross["identities"];
                 $to_identities=$cross["identities"];
                 $cross_id = $cross["id"];
@@ -213,7 +216,9 @@ class Conversationemail_Job
                 #$mail_body=str_replace("%host_name%",$name,$mail_body);
 
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_template);
-                $update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
+                //$update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
+                $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
+                
                 $datetime=explode(" ",$cross["begin_at"]);
                 $date=$datetime[0];
                 $time=$datetime[1];
@@ -324,9 +329,9 @@ class Conversationemail_Job
             }
         }
 
-        print "=====mail=======\r\n";
-        print_r($mails);
-        print "=====mail=======\r\n";
+        #print "=====mail=======\r\n";
+        #print_r($mails);
+        #print "=====mail=======\r\n";
         return $mails;
     }
 
