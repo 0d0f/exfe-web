@@ -46,21 +46,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     }
 
     ns.showdialog = function(type) {
-        var title="", desc="", form="";
+        var title="", form="";
         if(type=="reg_login") {
             title="Identification";
-
-            desc = "<div class='account'>Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
-                 + "<div id='identification_title_msg'>Enter identity information:</div>";
-            /*
-            desc="<div class='account'><p>Authorize with your <br/> existing accounts </p>"
+            /*//备注，这是原来Twitter登录等的样式。暂时取消掉。
+            desc="<div class='dialog_titles'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/twitter.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/google.png' alt='' width='32' height='32' /></span>"
                 +"<h4>Enter identity information</h4>"
                 +"</div>";
             */
-            form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+            form = "<div id='identity_reg_login_dialog' class='identity_dialog_main'>"
+                 + "<div class='dialog_titles'>Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
+                 + "<div id='identification_title_msg'>Enter identity information:</div>"
+                 + "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<div class='identity_box'>"
@@ -98,53 +98,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' />"
                  //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
                  + "</div>"
-                 + "</form>";
-        } else if(type=="change_pwd"){
-            title = "Change Password";
-            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Change Password</div>"
-                 + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please enter current password and set new password.</div>";
-
-            form = "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
+                 + "</form>"
+                 + "</div>";
+        } else if(type=="reset_pwd"){ //重置密码。
+            title = "Set Password";
+            form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
+                 + "<div class='dialog_titles'>Set Password</div>"
+                 + "<div style='height:45px;'>Please set password for your identity.</div>"
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
-                 + "<div class='identity_box'>handaoliang@gmail.com</div>"
+                 + "<input type='text' id='show_identity_box' class='inputText' disabled='disabled' />"
                  + "</li>"
-                 + "<li><label class='title'>Password:</label>"
-                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
-                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
-                 + "<em class='ic3' id='identification_pwd_ic'></em>"
-                 + "</li>"
-                 + "<li>"
-                 + "<label class='title'>New password:</label>"
-                 + "<input type='password' id='identification_newpwd' name='newpassword' class='inputText' />"
-                 + "<input type='text' id='identification_newpwd_a' class='inputText' style='display:none;' />"
-                 + "<em class='ic3' id='identification_newpwd_ic'></em>"
-                 + "</li>"
-                 + "<li id='identification_renewpwd_li'>"
-                 + "<label class='title'>Re-type new:</label>"
-                 + "<input type='password' id='identification_renewpwd' name='renewpassword' class='inputText' />"
-                 + "</li>"
-                 + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                 + "<li id='displayname' style='display:none'><label class='title'>Display name:</label>"
-                 + "<input  type='text'  name='displayname'class='inputText'/>"
-                 + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
-                 + "<li class='logincheck' id='logincheck' style='display:none;'>"
-                 + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
-                 + "<span>Sign in automatically</span>"
-                 + "</li>"
-                 + "<li style='width:148px; padding:15px 0 0 190px;'>"
-                 + "<a href='javascript:void(0);'>Discard</a>"
-                 + "<input type='submit' value='Done' class='sub' />"
-                 + "</li>"
-                 + "</ul>"
-                 + "</form>";
-        } else if(type=="reset_pwd"){
-            title = "Set Password";
-            desc = "<div class='account' style='text-align:center; height:40px; font-size:18px;'>Set Password</div>"
-                 + "<div style='font-size:14px; text-align:center;width:240px; margin:auto;'>Please set password to keep track of RSVP status and engage in.</div>";
-            form = "<ul>"
-                 + "<li><label class='title'>Identity:</label>"
-                 + "<div class='identity_box' id='show_identity_box' style='font-size:14px;'></div>"
+                 + "<li id='displayname'>"
+                 + "<label class='title'>Display name:</label>"
+                 + "<input  type='text'  name='displayname' class='inputText' id='user_display_name' />"
+                 + "<em id='displayname_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li><label class='title'>Password:</label>"
                  + "<input type='password' id='identification_pwd' name='password' class='inputText' style='display:none;' />"
@@ -158,21 +126,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                 + "<li id='displayname'><label class='title'>Display name:</label>"
-                 + "<input  type='text'  name='displayname' class='inputText' id='user_display_name' />"
-                 + "<em id='displayname_error' class='warning' style='display:none;'></em></li>"
                  + "<li id='reset_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
-                 + "<li style='width:148px; padding:15px 0 0 190px; text-align:right;'>"
+                 + "</ul>"
+                 + "<div class='identification_bottom_btn'>"
                  //+ "<a href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
-                 + "<input type='submit' value='Done' class='sub' id='submit_reset_password' style='cursor:pointer;' />"
-                 + "</li>"
-                 + "</ul>";
+                 + "<input type='submit' value='Done' class='btn_85' id='submit_reset_password' style='cursor:pointer;' />"
+                 + "</div>"
+                 + "</div>";
         }
 
-        var forgot_verification = "<div id='forgot_verification_dialog' style='display:none;'>"
-               + "<div style='text-align:center; height:45px; font-size:18px;'>"
-               + "Forgot password"
-               + "</div>"
+        var forgot_verification = "<div id='forgot_verification_dialog' class='identity_visual_dialog' style='display:none;'>"
+               + "<div style='text-align:center; height:45px; font-size:18px;'>Forgot password</div>"
                + "<div style='height:25px; text-align:left;'>"
                + "A verification will be sent to your identity:"
                + "</div>"
@@ -189,7 +153,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>";
 
         //需要验证的identity，从identity输入框跳过来。1AM71 D5
-        var manual_verification = "<div id='manual_verification_dialog' style='display:none;'>"
+        var manual_verification = "<div id='manual_verification_dialog' class='identity_visual_dialog' style='display:none;'>"
                + "<div style='text-align:center; height:45px; font-size:18px;'>"
                + "Welcome to <span style='color:#0591AC;'>EXFE</span>"
                + "</div>"
@@ -212,90 +176,85 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>";
 
         var forgot_pwd = "<div id='identity_forgot_pwd_dialog' class='identity_forgot_pwd_dialog' style='display:none;'>"
-                       + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
-                       + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
-                       + "</div>"
-                       + "<div style='float:left; font-size:14px; height:30px; padding-left:36px; text-align:left; display:none;'>"
-                       + "Enter identity information:"
-                       + "</div>"
-                       + "<div>"
-                       + "<label class='title'>Identity:</label><span id='f_identity_box' style='float:left;font-size:18px; font-style:italic;'>"
-                       + "<input type='text' id='f_identity' class='inputText' />"
-                       + "</span>"
-                       + "</div>"
-                       + "<div id='identity_forgot_pwd_info' style='margin-left:80px; padding:10px; text-align:left; width:290px; font-size:14px;'>Verification will be sent in minutes, please check your inbox.</div>"
-                       + "<div style='text-align:right; width:300px;'>"
-                       + "<span id='submit_loading_btn' style='display:none;'></span>"
-                       + "<a href='javascript:void(0);' id='cancel_verification_btn'>Cancel</a>&nbsp;&nbsp;"
-                       + "<input type='button' id='send_verification_btn' style='cursor:pointer;' value='Send Verification' />"
-                       + "<input type='hidden' id='f_identity_hidden' value='' />"
-                       + "</div>"
-                       + "</div>";
+               + "<div style='text-align:center; height:45px; font-size:18px;'>"
+               + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
+               + "</div>"
+               + "<div style='float:left; font-size:14px; height:30px; padding-left:36px; text-align:left; display:none;'>"
+               + "Enter identity information:"
+               + "</div>"
+               + "<div>"
+               + "<label class='title'>Identity:</label>"
+               + "<span id='f_identity_box' style='float:left;font-size:18px; font-style:italic;'>"
+               + "<input type='text' id='f_identity' class='inputText' />"
+               + "</span>"
+               + "</div>"
+               + "<div id='identity_forgot_pwd_info' style='margin-left:80px; padding:10px; text-align:left; width:290px; font-size:14px;'>Verification will be sent in minutes, please check your inbox.</div>"
+               + "<div style='text-align:right; width:300px;'>"
+               + "<span id='submit_loading_btn' style='display:none;'></span>"
+               + "<a href='javascript:void(0);' id='cancel_verification_btn'>Cancel</a>&nbsp;&nbsp;"
+               + "<input type='button' id='send_verification_btn' style='cursor:pointer;' value='Send Verification' />"
+               + "<input type='hidden' id='f_identity_hidden' value='' />"
+               + "</div>"
+               + "</div>";
 
         //var html="<div id='fBox' class='loginMask' style='display:none'>"
-        var reg_success = "<div id='identity_reg_success' style='display:none;'>"
-                       + "<div style='height:35px; font-size:18px;'>Hi. <span id='identity_display_box'></span></div>"
-                       + "<div class='account' style='height:23px; font-size:18px;'>"
-                       + "Thanks for using <span style='color:#0591AC;'>EXFE</span>"
-                       + "</div>"
-                       + "<div style='height:30px;'>"
-                       + "An utility for hanging out with friends."
-                       + "</div>"
-                       + "<div style='height:30px; text-align:left;'>"
-                       + "Please check your mailbox for verification."
-                       + "</div>"
-                       + "<div style='height:90px; text-align:left;'>"
-                       + "<span style='color:#0591AC;'>X</span> (cross) is a gathering of people, for anything to do with them. We save you from calling up every one RSVP, losing in endless emails messages off the point."
-                       + "</div>"
-                       + "<div style='height:23px; text-align:left;'>"
-                       + "<span style='color:#0591AC;'>EXFE</span> your friends, gather a <span style='color:#0591AC;'>X</span>"
-                       + "</div>"
-                       + "<div style='text-align:right;'>"
-                       + "<input type='button' id='close_reg_success_dialog_btn' style='cursor:pointer;' value='Go' />"
-                       + "</div>"
-                       + "</div>";
+        var reg_success = "<div id='identity_reg_success' class='identity_visual_dialog' style='display:none;'>"
+               + "<div style='height:35px; font-size:18px;'>Hi. <span id='identity_display_box'></span></div>"
+               + "<div style='height:23px; font-size:18px;'>"
+               + "Thanks for using <span style='color:#0591AC;'>EXFE</span>"
+               + "</div>"
+               + "<div style='height:30px;'>"
+               + "An utility for hanging out with friends."
+               + "</div>"
+               + "<div style='height:30px; text-align:left;'>"
+               + "Please check your mailbox for verification."
+               + "</div>"
+               + "<div style='height:90px; text-align:left;'>"
+               + "<span style='color:#0591AC;'>X</span> (cross) is a gathering of people, for anything to do with them. We save you from calling up every one RSVP, losing in endless emails messages off the point."
+               + "</div>"
+               + "<div style='height:23px; text-align:left;'>"
+               + "<span style='color:#0591AC;'>EXFE</span> your friends, gather a <span style='color:#0591AC;'>X</span>"
+               + "</div>"
+               + "<div style='text-align:right;'>"
+               + "<input type='button' id='close_reg_success_dialog_btn' style='cursor:pointer;' value='Go' />"
+               + "</div>"
+               + "</div>";
 
-        var sign_up_msg = "<div id='identity_register_msg' class='identity_register_msg' style='display:none;'>"
-                       + "<div class='account' style='text-align:center; height:40px; font-size:18px;'>"
-                       + "<p>Sign-Up-Free</p>"
-                       + "</div>"
-                       + "<div style='height:60px;'>"
-                       + "<p>We know you’re tired of</p>"
-                       + "<p>signing up all around.</p>"
-                       + "</div>"
-                       + "<div style='height:50px; text-align:left;'>"
-                       + "So, just authorize with your existing accounts on other websites."
-                       + "</div>"
-                       + "<div style='height:90px; text-align:left;'>"
-                       + "Or, tell us your desired identity and display name that your friends know who you are, along with a password for sign-in. Identity could be your email address or phone number."
-                       + "</div>"
-                       + "<div style='text-align:right;'>"
-                       + "<input type='button' id='close_reg_msg_btn' style='cursor:pointer;' value='I See' />"
-                       + "</div>"
-                       + "</div>";
+        var sign_up_msg = "<div id='identity_register_msg' class='identity_visual_dialog reg_hint' style='display:none;'>"
+               + "<div style='text-align:center; height:40px; font-size:18px;'>"
+               + "<p>Sign-Up-Free</p>"
+               + "</div>"
+               + "<div style='height:60px;'>"
+               + "<p>We know you’re tired of</p>"
+               + "<p>signing up all around.</p>"
+               + "</div>"
+               + "<div style='height:50px; text-align:left;'>"
+               + "So, just authorize with your existing accounts on other websites."
+               + "</div>"
+               + "<div style='height:90px; text-align:left;'>"
+               + "Or, tell us your desired identity and display name that your friends know who you are, along with a password for sign-in. Identity could be your email address or phone number."
+               + "</div>"
+               + "<div style='text-align:right;'>"
+               + "<input type='button' id='close_reg_msg_btn' style='cursor:pointer;' value='I See' />"
+               + "</div>"
+               + "</div>";
 
         var html = "<div id='identification_titles' class='titles'>"
-                   + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
-                   + "<div id='identification_handler' class='tl'>"+title+"</div>"
-                   + "</div>"
-                   + "<div id='identity_error_msg' style='display:none;'>Invalid identity</div>"
-                   + "<div id='displayname_error_msg' style='display:none;'>Invalid identity</div>"
-                   + "<div id='overFramel' class='overFramel'>"
-                   + forgot_verification
-                   + manual_verification
-                   + forgot_pwd
-                   + sign_up_msg
-                   + reg_success
-                   + "<div class='overFramelogin'>"
-                   + "<div class='login'>"
-                   + desc
-                   + form 
-                   + "</div>"
-                   + "</div>"
-                   + "</div>"
-                   + "<div class='bottom'></div>";
-                   //+ "<b class='rbottom'><b class='r3'></b><b class='r2'></b><b class='r1'></b></b>";
-                   //+ "</div>";
+               + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
+               + "<div id='identification_handler' class='tl'>"+title+"</div>"
+               + "</div>"
+               + "<div id='identity_error_msg' style='display:none;'>Invalid identity</div>"
+               + "<div id='displayname_error_msg' style='display:none;'>Invalid identity</div>"
+               + "<div id='identification_dialog_con' class='identification_dialog_con'>"
+               + forgot_verification
+               + manual_verification
+               + forgot_pwd
+               + sign_up_msg
+               + reg_success
+               + form 
+               + "</div>"
+               + "<div class='identification_dialog_bottom'></div>";
+
         return html;
     };
 
@@ -397,12 +356,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
 
-    ns.identityInputBoxActions = function(userIdentity){
-
-        if(typeof userIdentity == "undefined"){
-            var userIdentity = jQuery('#identity').val();
+    ns.identityInputBoxActions = function(myIdentity){
+        var userIdentity = ""
+        if(typeof myIdentity == "undefined"){
+            userIdentity = jQuery('#identity').val();
         }else{//如果传入了，则需要重新设置一下identity输入框的值。
-            jQuery('#identity').val(userIdentity);
+            jQuery('#identity').val(myIdentity);
+            userIdentity = myIdentity;
         }
         //只有当不等时，才执行轮循
         //console.log("aaaaa");

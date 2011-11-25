@@ -3,8 +3,8 @@ $displayname=$this->getVar("displayname");
 ?>
 
 <div id="fBox" class="loginMask">
-<div class="overFramel">
-<div class="overFramelogin">
+<div class="identification_dialog_con">
+<div class="identification_dialog_main">
 <div class="login">
 <?php if($displayname!="") {?>
 <h4>Hi <?php echo $displayname;?>!</h4>

@@ -101,6 +101,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
+    //重置密码。
     ns.doShowResetPwdDialog =function(resetPwdCID, actions){
         var html = odof.user.identification.showdialog("reset_pwd");
         if(typeof resetPwdCID != "undefined" && typeof resetPwdCID == "string") {
@@ -183,6 +184,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
 
     };
+
+    //暂时没有用，还没有做重新设置密码这一块。
+    /*
     ns.doShowChangePwdDialog =function(changePwdCID){
         var html = odof.user.identification.showdialog("change_pwd");
         if(typeof changePwdCID != "undefined" && typeof changePwdCID == "string") {
@@ -193,6 +197,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
         odof.comm.func.initRePassword('identification_newpwd', 'identification_renewpwd');
     };
+    */
 
     ns.showLastIdentity = function(){
         var lastIdentity = odof.util.getCookie('last_identity');
@@ -234,6 +239,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
         var html = odof.user.identification.showdialog("reg_login");
+        //var html = odof.user.identification.showdialog("reset_pwd");
         if(typeof callBackFunc != "undefined" && callBackFunc != null){
             ns.callBackFunc = callBackFunc;
         }
