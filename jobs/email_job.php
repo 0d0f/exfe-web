@@ -89,8 +89,6 @@ class Email_Job
 
         $body=$this->getMailBody($mail);
 
-
-
         if($email_connect=="")
             smtp_connect();
         $this->send($body["title"],$body["body"],$icsstr,$this->args);
