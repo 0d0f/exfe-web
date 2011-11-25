@@ -204,11 +204,12 @@ class Conversationemail_Job
                 $changed_fields=$changed_object["changed"];
                 $mutelink=$changed_object["mutelink"];
                 $exfee_avartar="";
-                foreach($identities as $identity)
-                {
-                    $avartar=$img_url."/".getHashFilePath("",$identity["avatar_file_name"])."/80_80_".$identity["avatar_file_name"];
-                    $exfee_avartar.="<img width='40' height='40' src='$avartar'>";
-                }
+                if($identities)
+                    foreach($identities as $identity)
+                    {
+                        $avartar=$img_url."/".getHashFilePath("",$identity["avatar_file_name"])."/80_80_".$identity["avatar_file_name"];
+                        $exfee_avartar.="<img width='40' height='40' src='$avartar'>";
+                    }
                 #if($mail_body=="")
                 #    $mail_body=$template_body;
 
