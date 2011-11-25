@@ -7,39 +7,35 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style>
             .exfe_mail_identity_name {
+                color: #0591AC;
+            }
+            .exfe_mail_msg_identity_name {
                 color: #666666;
             }
             .exfe_mail_msg_at {
                 font-size: 12px;
-                line-height: 20px;
                 color: #999999;
             }
             .exfe_mail_msg_time {
                 font-size: 12px;
-                line-height: 20px;
                 color: #666666;
             }
         </style>
     </head>
     <body>
-        <table border="0" cellpadding="0" cellspacing="0" style="font-family: Verdana; font-size: 13px; line-height: 19px; color: #191919; font-weight: normal; width: 640px; padding: 10px 40px 30px 40px; background-color: #fbfbfb;">
+        <table border="0" cellpadding="0" cellspacing="0" style="font-family: Verdana; font-size: 13px; line-height: 20px; color: #191919; font-weight: normal; width: 640px; padding: 20px; background-color: #fbfbfb;">
+        
+         %update_part%
+
+
+            <tr><td colspan="5" height="1" background="%site_url%/static/images/mail_dash.png"></td></tr>
+            %conversation_part%
             <tr>
-                <td height="5" colspan="2">
-                </td>
-            </tr>
-            %conversations%
-            <tr>
-                <td height="20" colspan="2">
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="font-size: 12px; line-height: 19px; color: #666666;">
-                    This is an <a style="color: #0591ac; text-decoration: none;" href="http://exfe.com">EXFE</a>
-                    conversation of
-                    "<span style="color: #191919;"><a href="%link%">%exfe_title%</a></span>"
-                    by host
-                    <span style="color: #191919">%host_name%</span>.
-                    To stop receiving email of this conversation, please
+                <td colspan="5" style="font-size: 11px; line-height: 15px; color: #666666;">
+                    This update is sent from
+                    <a style="color: #0591ac; text-decoration: none;" href="https://exfe.com">EXFE</a>
+                    automatically. To stop receiving email of this
+                    <span style="color: #0591ac;">X</span>, please
                     <a style="color: #333333;" href="%mutelink%">Mute</a>.
                     <!--&nbsp;&nbsp;&nbsp;&nbsp;
                     <a style="color: #999999; text-decoration: none;" href="">Unsubscribe All?</a>-->
@@ -48,5 +44,3 @@
         </table>
     </body>
 </html>
-
-

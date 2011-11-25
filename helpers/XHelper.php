@@ -47,6 +47,7 @@ class XHelper extends ActionController
 
         $link=SITE_URL.'/!'.int_to_base62($cross_id);
         $mail["link"]=$link;
+        $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
         $mail["id"]=$cross_id;
         $mail["action"]="changed";
         $mail["objtype"]="cross";
@@ -55,6 +56,7 @@ class XHelper extends ActionController
         #$mail["exfee_name"]=$exfee_identity["name"];
         $mail["action_identity"]=array(0=>$exfee_identity);
         $mail["changed"]=$changed;
+        $mail["mutelink"]=$mutelink;
         $mail["cross"]=$new_cross;
         $mail["timestamp"]=time();
 
