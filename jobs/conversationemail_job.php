@@ -72,10 +72,6 @@ class Conversationemail_Job
                                 array_push($cross_changed[$arg["id"]]["identities"]["newexfees"],$identity);
                         }
                     }
-                     #foreach($arg["identities"]["delexfees"])
-                     #{
-
-                     #}
                  }
             }
             else
@@ -105,7 +101,6 @@ class Conversationemail_Job
                 }
             }
         }
-        #print_r($mails);
 
         if($mails)
         {
@@ -181,6 +176,10 @@ class Conversationemail_Job
             $update_part_template=file_get_contents("update_part_template.html");
             foreach($changed_objects as $changed_object)
             {
+
+                $cross_id = $changed_object["id"];
+                $cross_id_base62 = int_to_base62($changed_object["id"]);
+
                 $action_identities=$changed_object["action_identity"];
                 $updated_identity="";
                 foreach($action_identities as $action_identity)
@@ -198,9 +197,8 @@ class Conversationemail_Job
 
                 $identities=$cross["identities"];
                 $to_identities=$cross["identities"];
-                $cross_id = $cross["id"];
-                $cross_id_base62 = int_to_base62($cross["cross_id"]);
                 $action_identities=$changed_object["action_identity"];
+                $new_exfee_identities=$changed_object["identities"]["newexfees"];
                 $changed_fields=$changed_object["changed"];
                 $mutelink=$changed_object["mutelink"];
                 $exfee_avartar="";
@@ -210,11 +208,22 @@ class Conversationemail_Job
                         $avartar=$img_url."/".getHashFilePath("",$identity["avatar_file_name"])."/80_80_".$identity["avatar_file_name"];
                         $exfee_avartar.="<img width='40' height='40' src='$avartar'>";
                     }
-                #if($mail_body=="")
-                #    $mail_body=$template_body;
 
-                #$mail_body=str_replace("%conversations%",$html,$mail_body);
-                #$mail_body=str_replace("%host_name%",$name,$mail_body);
+                $new_exfee_identities_str="";
+
+                if($new_exfee_identities)
+                    foreach($new_exfee_identities as $new_exfee_identity)
+                    {
+                        if($new_exfee_identity["name"]=="")
+                            $new_exfee_identity["name"]=$new_exfee_identity["external_identity"];
+                        $new_exfee_identities_str=$new_exfee_identities_str.'<span class="exfe_mail_identity_name">'.$new_exfee_identity["name"]."</span>,";
+                    }
+                   
+                $new_exfee_identities_str= rtrim($new_exfee_identities_str, ",");
+                if($new_exfee_identities_str!="")
+                {
+                    $new_exfee_identities_str='<td colspan="5"><p style="margin: 0;">'.$new_exfee_identities_str.' are invited.'.'</p></td>';
+                }
 
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_template);
                 //$update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
@@ -229,21 +238,11 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%place_line1%",$cross["place_line1"],$update_part_body);
                 $update_part_body=str_replace("%place_line2%",$cross["place_line2"],$update_part_body);
                 $update_part_body=str_replace("%exfee_avartar%",$exfee_avartar,$update_part_body);
+                $update_part_body=str_replace("%new_exfee_update%",$new_exfee_identities_str,$update_part_body);
+                $update_part_body=str_replace("%exfe_title%",$title,$update_part_body);
                 $update_part_body=str_replace("%site_url%",$site_url,$update_part_body);
 
-                #$mail_body=str_replace("%update_part%",$update_part_body,$mail_body);
-                #$mail_body=str_replace("%conversation_part%","",$mail_body);
-                #$mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
-                #$mail_body=str_replace("%link%",$link,$mail_body);
-                #foreach($to_identities as $to_identity)
-                #{
-                #    $mail["body"]=$mail_body;
-                #    $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
-                #    $mail["to"]=$to_identity["external_identity"];
-                #    $mail["cross_id_base62"]=$cross_id_base62;
-                #    array_push($mails,$mail);
-                #}
-                $object=array("content"=>$update_part_body,"cross_id"=>$cross_id,"to_identity"=>$to_identities);
+                $object=array("content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities);
                 $update_array["id_".$cross_id]=$object;
             }
         }
@@ -308,6 +307,7 @@ class Conversationemail_Job
                 $mail_body=str_replace("%exfe_title%",$title,$mail_body);
                 $mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
                 $mail_body=str_replace("%link%",$link,$mail_body);
+                $mail_body=str_replace("%site_url%",$site_url,$mail_body);
                 $mail_body=str_replace("%conversation_part%",$conversation_part_body,$mail_body);
 
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
@@ -329,10 +329,48 @@ class Conversationemail_Job
                 array_push($mails,$mail);
             }
         }
+        else if($changed_objects)
+        {
+            foreach($changed_objects as $change_object)
+            {
+                $cross=$change_object["cross"];
+                $mutelink=$change_object["mutelink"];
+                $title=$cross["title"];
+                $cross_id=$cross["id"];
+                $cross_id_62=int_to_base62($cross["id"]);
 
-        #print "=====mail=======\r\n";
-        #print_r($mails);
-        #print "=====mail=======\r\n";
+                $mail_body=str_replace("%exfe_title%",$title,$template_body);
+                $mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
+                $mail_body=str_replace("%link%",$link,$mail_body);
+                $mail_body=str_replace("%site_url%",$site_url,$mail_body);
+                $mail_body=str_replace("%conversation_part%","",$mail_body);
+
+                $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
+                $mail["cross_id_base62"]=$cross_id_base62;
+                $mail["cross_id"]=$cross_id;
+
+                $cross_id=$change_object["id"];
+                if($update_array["id_".$cross_id]!="")
+                {
+                
+                    $change_object_content=$update_array["id_".$cross_id];
+                    $to_identities=$change_object_content["to_identity"];
+                    if($change_object_content)
+                    {
+                        $mail_body=str_replace("%update_part%",$change_object_content["content"],$mail_body);
+                        $mail["body"]=$mail_body;
+
+                        foreach($to_identities as $to_identity)
+                        {
+                            $mail["to"]=$to_identity["external_identity"];
+                            array_push($mails,$mail);
+                        }
+                    }
+                }
+                
+            }
+        }
+
         return $mails;
     }
 

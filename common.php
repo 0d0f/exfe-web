@@ -116,15 +116,21 @@ function humanIdentity($identity,$user)
 
 function humanDateTime($timestamp,$time_type=0,$lang='en')
 {
+    $timestr=", ".date("M j, Y ", $timestamp);
+    if($timestamp<0)
+    {
+        $timestamp=0;
+        $timestr="";
+    }
     $datestr="";
     if($lang=='en')
     {
         if($time_type==0)
             $datestr=date("g:i A, M j, Y ", $timestamp);
         else if($time_type==1)
-            $datestr="All day, ".date("M j, Y ", $timestamp);
+            $datestr="All day".$timestr;
         else if($time_type==2)
-            $datestr="Anytime, ".date("M j, Y ", $timestamp);
+            $datestr="Anytime".$timestr;
     }
 
     return $datestr;
