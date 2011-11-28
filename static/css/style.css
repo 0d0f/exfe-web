@@ -154,20 +154,20 @@ b.r3{margin: 0px}
 }
 
 .identification_dialog #identity_error_msg{
-    position:absolute; left:340px; top:130px; width:112px; height:25px; padding:2px 2px 0px 15px;
-    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:203;
+    position:absolute; left:340px; top:125px; width:112px; height:25px; padding:2px 2px 0px 15px;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 .identification_dialog #displayname_error_msg{
-    position:absolute; left:340px; top:158px; width:180px; height:25px; padding:3px 5px 0px 15px;
-    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -30px; color:#CC3333; z-index:203;
+    position:absolute; left:340px; top:153px; width:180px; height:25px; padding:3px 5px 0px 15px;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -30px; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 .identification_dialog #need_verify_msg{
     position:absolute; left:20px; top:290px; width:150px; height:37px; padding:5px 5px 5px 10px;
-    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -60px; color:#CC3333; z-index:203;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -60px; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
@@ -245,7 +245,7 @@ b.r3{margin: 0px}
     width:210px; height:26px; line-height:17px; border:#c5c5c5 1px solid;
     float:left; margin-left:4px; background-color:#FFF; font:18px Verdana;
 }
-.identity_dialog_main ul li .identity_box{ position:absolute; margin-top:0px; margin-left:118px; z-index:203; overflow:hidden; }
+.identity_dialog_main ul li .identity_box{ position:absolute; margin-top:0px; margin-left:114px; z-index:203; overflow:hidden; }
 .identity_dialog_main ul li #identity_dbox{ position:absolute; height:21px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:118px; z-index:202; padding-top:7px; font-size:18px; }
 .identity_dialog_main .loginbtn p .dx{width:55px;height:15px;position:absolute;top:10px;}
 .identity_dialog_main h3{font-size:19px;line-height:25px;text-align:center;}
