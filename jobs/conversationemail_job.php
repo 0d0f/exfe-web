@@ -210,6 +210,7 @@ class Conversationemail_Job
                     }
 
                 $new_exfee_identities_str="";
+                $new_exfee_table=array();
 
                 if($new_exfee_identities)
                     foreach($new_exfee_identities as $new_exfee_identity)
@@ -217,6 +218,7 @@ class Conversationemail_Job
                         if($new_exfee_identity["name"]=="")
                             $new_exfee_identity["name"]=$new_exfee_identity["external_identity"];
                         $new_exfee_identities_str=$new_exfee_identities_str.'<span class="exfe_mail_identity_name">'.$new_exfee_identity["name"]."</span>,";
+                        $new_exfee_table[$new_exfee_identity["external_identity"]]=1;
                     }
                    
                 $new_exfee_identities_str= rtrim($new_exfee_identities_str, ",");
@@ -232,6 +234,24 @@ class Conversationemail_Job
                 $datetime=explode(" ",$cross["begin_at"]);
                 $date=$datetime[0];
                 $time=$datetime[1];
+
+                if($date=="0000-00-00" && $time=="00:00:00")
+                {
+                    $date="Time";
+                    $time="To be decided.";
+                }
+                else if($time=="00:00:00")
+                    $time="Anytime";
+    
+
+                #$mail["place_line1"]=$this->args["place_line1"];
+                #$mail["place_line2"]=$this->args["place_line2"];
+                if($cross["place_line1"]=="")
+                {
+                    $cross["place_line1"]="Place";
+                    $cross["place_line2"]="To be decided.";
+                }
+
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
                 $update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
@@ -242,7 +262,7 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_body);
                 $update_part_body=str_replace("%site_url%",$site_url,$update_part_body);
 
-                $object=array("content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities);
+                $object=array("content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities,"new_exfee_table"=>$new_exfee_table);
                 $update_array["id_".$cross_id]=$object;
             }
         }
@@ -354,6 +374,7 @@ class Conversationemail_Job
                 {
                 
                     $change_object_content=$update_array["id_".$cross_id];
+                    $new_exfee_table=$change_object_content["new_exfee_table"];
                     $to_identities=$change_object_content["to_identity"];
                     if($change_object_content)
                     {
@@ -362,8 +383,11 @@ class Conversationemail_Job
 
                         foreach($to_identities as $to_identity)
                         {
-                            $mail["to"]=$to_identity["external_identity"];
-                            array_push($mails,$mail);
+                            if($new_exfee_table[$to_identity["external_identity"]]!=1)
+                            {
+                                $mail["to"]=$to_identity["external_identity"];
+                                array_push($mails,$mail);
+                            }
                         }
                     }
                 }
