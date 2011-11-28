@@ -66,7 +66,7 @@ class XHelper extends ActionController
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
     }
-    public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities)
+    public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title)
     {
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($action_identity_id);
@@ -74,13 +74,17 @@ class XHelper extends ActionController
 
         $link=SITE_URL.'/!'.int_to_base62($cross_id);
         $mail["link"]=$link;
+        $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
         $mail["id"]=$cross_id;
         $mail["action"]="changed";
         $mail["objtype"]="identity";
         $mail["template_name"]="changeidentity";
+        $mail["title"]=$old_title;
         $mail["changed"]=$changed;
         $mail["action_identity"]=array(0=>$exfee_identity);
         $mail["identities"]=$identities;
+        $mail["mutelink"]=$mutelink;
+        $mail["cross"]=$cross;
         $mail["timestamp"]=time();
 
         $msghelper=$this->getHelperByName("msg");

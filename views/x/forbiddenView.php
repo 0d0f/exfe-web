@@ -1,4 +1,5 @@
 <?php include 'share/header.php'; ?>
+<link rel="stylesheet" type="text/css" href="/static/css/forbidden.css">
 </head>
 <body id="special_page_body">
 <?php include 'share/nav.php'; ?>
