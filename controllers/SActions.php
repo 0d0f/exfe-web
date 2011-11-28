@@ -237,17 +237,81 @@ class SActions extends ActionController
         $modCross    = $this->getModelByName('x');
 
         // get crosses
-        $maxCross  = 20;
         $today     = strtotime(date('Y-m-d'));
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
-
-
-        $crosses   = $modCross->fetchCross($_SESSION['userid'], $today);
+        $futureXs  = $modCross->fetchCross($_SESSION['userid'], $today, 'yes',
+                                           '`begin_at`   DESC');
         $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today, 'no',
-                                           'begin_at DESC', 20-count($crosses));
-        $anytimeXs = $modCross->fetchCross($_SESSION['userid'], $today,
-                                           'nodate', 'created_at DESC', 3);
+                                           '`begin_at`   DESC', 3);
+        $anytimeXs = $modCross->fetchCross($_SESSION['userid'], 0, 'anytime',
+                                           '`created_at` DESC');
+
+        // sort crosses
+        $crosses   = array();
+        $xShowing  = 0;
+        $maxCross  = 20;
+        $minCross  = 3;
+        $fetchArgs = array('upcoming_folded'  => 0, 'upcoming_more'  => 1,
+                           'anytime_folded'   => 0, 'anytime_more'   => 0,
+                           'sevenDays_folded' => 0, 'sevenDays_more' => 0,
+                           'later_folded'     => 0, 'later_more'     => 0);
+        // sort upcoming crosses
+        foreach ($futureXs as $crossI => $crossItem) {
+            $crossItem['timestamp'] = strtotime($crossItem['begin_at']);
+            if ($crossItem['timestamp'] < $upcoming) {
+                $crossItem['sort'] = 'upcoming';
+                array_push($crosses, $crossItem);
+                $xShowing += !$fetchArgs['upcoming_folded'] ? 1 : 0;
+                unset($futureXs[$crossI]);
+            }
+        }
+        // sort anytime crosses
+        $xQuantity = !$fetchArgs['anytime_more']&&$xShowing>=$maxCross?3:0;
+        $iQuantity = 0;
+        foreach ($anytimeXs as $crossItem) {
+            $crossItem['sort'] = 'anytime';
+            array_push($crosses, $crossItem);
+            $xShowing += !$fetchArgs['anytime_folded'] ? 1 : 0;
+            if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                break;
+            }
+        }
+        // sort next-seven-days cross
+        $xQuantity = !$fetchArgs['sevenDays_more']&&$xShowing>=$maxCross?3:0;
+        $iQuantity = 0;
+        foreach ($futureXs as $crossI => $crossItem) {
+            $crossItem['timestamp'] = strtotime($crossItem['begin_at']);
+            if ($crossItem['timestamp']>=$upcoming && $crossItem<$sevenDays) {
+                $crossItem['sort'] = 'sevenDays';
+                array_push($crosses, $crossItem);
+                $xShowing += !$fetchArgs['sevenDays_folded'] ? 1 : 0;
+                unset($futureXs[$crossI]);
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    break;
+                }
+            }
+        }
+        // sort later cross
+        $iQuantity = 0;
+        foreach ($futureXs as $crossItem) {
+            $crossItem['timestamp'] = strtotime($crossItem['begin_at']);
+            if ($crossItem['timestamp'] >= $sevenDays) {
+                $crossItem['sort'] = 'later';
+                array_push($crosses, $crossItem);
+                $xShowing += !$fetchArgs['later_folded'] ? 1 : 0;
+                if (++$iQuantity >= $minCross) {
+                    break;
+                }
+            }
+        }
+
+
+
+/////////////////////////////////////////
+
+
+
 
         // sort crosses
         foreach ($crosses as $crossI => $crossItem) {
@@ -259,10 +323,13 @@ class SActions extends ActionController
             } else {
                 $crosses[$crossI]['sort'] = 'later';
             }
+            $xCounter[$crosses[$crossI]['sort']]++;
         }
+        //print_r($xCounter);
         foreach ($pastXs as $pastXI => $pastXItem) {
             $pastXItem['sort'] = 'past';
             array_push($crosses, $pastXItem);
+
         }
         foreach ($anytimeXs as $anytimeXI => $anytimeXItem) {
             $anytimeXItem['sort'] = 'anytime';
@@ -644,6 +711,10 @@ class SActions extends ActionController
         $tg24hr    = $today + 60 * 60 * 24;
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $crossdata = $this->getModelByName('x');
+        /**
+         * @handaoliang, why 1000 crosses limited here?
+         * by @leask
+         */
         $crosses_number = $crossdata->fetchCross($_SESSION['userid'], 0, 'yes', 'begin_at', 1000, 'count');
         $returnData["cross_num"] = $crosses_number;
 
