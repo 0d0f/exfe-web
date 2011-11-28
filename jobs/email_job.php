@@ -65,6 +65,15 @@ class Email_Job
         }
         $mail["exfee_list"]=$exfee_list;
         $mail["content"]=$this->args["description"];
+
+        include_once "../lib/markdown.php";
+        $original_desc_str = $mail["content"];
+        
+        $parser = new Markdown_Parser;
+        $parser->no_markup = true;
+        $mail["content"] = $parser->transform($original_desc_str);
+
+
         $begin_at=$this->args["begin_at"];
         $datetime=explode(" ",$begin_at);
         $mail["date"]=$datetime[0];
