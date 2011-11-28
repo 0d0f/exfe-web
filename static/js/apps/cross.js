@@ -37,7 +37,7 @@ var clickCallBackFunc = function(args){
                     jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
                 }else{
                     odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                    jQuery("#show_identity_box").html(external_identity);
+                    jQuery("#show_identity_box").val(external_identity);
                 }
             }else if(show_idbox == "login"){
                 odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
@@ -218,7 +218,7 @@ $(document).ready(function() {
                         }
                         if(show_idbox == "setpassword"){
                             odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                            jQuery("#show_identity_box").html(external_identity);
+                            jQuery("#show_identity_box").val(external_identity);
                         }else{
                             odof.user.status.doShowLoginDialog(null, callBackFunc);
                         }

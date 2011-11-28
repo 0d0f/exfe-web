@@ -88,6 +88,7 @@ class ConversationActions extends ActionController {
         else
         {
                 $responobj["response"]["success"]="false";
+                $responobj["response"]["error_code"]="403";
                 $responobj["response"]["error"]="not vaild comment";
         }
 
@@ -149,6 +150,7 @@ class ConversationActions extends ActionController {
         else
         {
                 $responobj["response"]["success"]="false";
+                $responobj["response"]["error_code"]="403";
                 $responobj["response"]["error"]="need login";
         }
         echo json_encode($responobj);

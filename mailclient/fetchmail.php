@@ -147,7 +147,7 @@ function dofetchandpost($obj)
                 print trim($result_str);
     
                 $result=postcomment($cross_id,$from,$result_str);
-                if($result=="true")
+                if($result->response->success=="true")
                 {
                     $move_r=$obj->moveMails($i,"posted");
                     echo "\r\npost send\r\n";
@@ -157,16 +157,26 @@ function dofetchandpost($obj)
                 }
                 else
                 {
-                    if($result["error_code"]=="403")
+                    if($result->response->error_code=="403")
                     {
                         $mail["to"]=$from;
                         $mail["title"]=$subject;
-                        $mail["content"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
-                        $mail["content"].="\n".$body;
+                        $mail["body"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
+                        $mail["body"].="\n".$body;
                         require_once '../lib/Resque.php';
                         date_default_timezone_set('GMT');
                         Resque::setBackend(RESQUE_SERVER);
                         $jobId = Resque::enqueue("textemail","textemail_job" , $mail, true);
+                        if($jobId!="")
+                        {
+                            $move_r=$obj->moveMails($i,"error");
+                            echo "\r\npost error\r\n";
+                            if($move_r==true)
+                            {
+                                unset($errorcount[$error_key]);
+                                echo "\r\n move mail to error box \r\n";
+                            }
+                        }
                         break;
 
                         //send error mail to user @ $from
@@ -300,7 +310,8 @@ function postcomment($cross_id,$from,$comment)
     curl_close($ch);
     
     $resultobj=json_decode($result);
-    return $resultobj->response->success;
+    return $resultobj;
+    //->response->success;
 
 }
 

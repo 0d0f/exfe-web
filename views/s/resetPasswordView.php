@@ -16,7 +16,7 @@ $user_token = $this->getVar("userToken");
     var user_token = '<?php echo $user_token; ?>';
     jQuery(document).ready(function(){
         odof.user.status.doShowResetPwdDialog("userResetPwdBox");
-        jQuery("#show_identity_box").html(user_identity);
+        jQuery("#show_identity_box").val(user_identity);
         jQuery("#user_display_name").val(user_name);
         jQuery("#identification_user_token").val(user_token);
     });

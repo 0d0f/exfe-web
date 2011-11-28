@@ -21,13 +21,14 @@ class Textemail_Job
     }
 
 
-    public function send($title,$body,$attachment,$args)
+    public function send($title,$body,$args)
     {
             global $email_connect;
             global $connect_count;
 
             $mail_mime = new Mail_mime(array('eol' => "\n"));
             $mail_mime->setTXTBody($body);
+            $mail_mime->setHTMLBody($body);
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));

@@ -18,8 +18,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.createDialog(dialogID, dialogClassName, dialogModal);
         ns.dialogElement.innerHTML = contents;
 
-        var dialogWidth = 460;
-        var dialogHeight = 420;
+        var dialogWidth = 400;
+        var dialogHeight = 350;
         var pageSize = odof.util.getPageSize();
         var pageWidth = pageSize.PageW;
         var pageHeight = pageSize.PageH;

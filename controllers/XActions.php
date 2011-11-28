@@ -230,7 +230,7 @@ class XActions extends ActionController
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
-            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity);
+            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity,$new_cross,$old_cross["title"]);
             //send identity invitation changes msg
         }
         exit(0);

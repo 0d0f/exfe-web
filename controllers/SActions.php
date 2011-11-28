@@ -1205,6 +1205,8 @@ class SActions extends ActionController
                          'name' => $name,
                          'token' => $pakageToken
                 );
+                //echo $pakageToken;
+                //exit();
                 $helper=$this->getHelperByName("identity");
                 $jobId=$helper->sendResetPassword($args);
                 if($jobId=="")

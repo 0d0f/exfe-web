@@ -50,6 +50,7 @@ function exRequest($name)
 
 function buildICS($args)
 {
+    global $site_url;
     require_once 'lib/iCalcreator.class.php';
 
     $v = new vcalendar( array( 'unique_id' => 'exfe' ));
@@ -80,6 +81,8 @@ function buildICS($args)
                    , $args['description'] );    // describe the event
     $e->setProperty( 'location'
                    , $args['place_line1']."\r\n".$args['place_line2']  );                     // locate the event
+    $e->setProperty( 'url'
+                   , $site_url.'/!'.$args['cross_id_base62']);                     // locate the event
 
     $a = & $e->newComponent( 'valarm' );           // initiate ALARM
     $a->setProperty( 'action'
@@ -113,15 +116,21 @@ function humanIdentity($identity,$user)
 
 function humanDateTime($timestamp,$time_type=0,$lang='en')
 {
+    $timestr=", ".date("M j, Y ", $timestamp);
+    if($timestamp<0)
+    {
+        $timestamp=0;
+        $timestr="";
+    }
     $datestr="";
     if($lang=='en')
     {
         if($time_type==0)
             $datestr=date("g:i A, M j, Y ", $timestamp);
         else if($time_type==1)
-            $datestr="All day, ".date("M j, Y ", $timestamp);
+            $datestr="All day".$timestr;
         else if($time_type==2)
-            $datestr="Anytime, ".date("M j, Y ", $timestamp);
+            $datestr="Anytime".$timestr;
     }
 
     return $datestr;

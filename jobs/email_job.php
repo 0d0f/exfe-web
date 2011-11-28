@@ -65,7 +65,6 @@ class Email_Job
         }
         $mail["exfee_list"]=$exfee_list;
         $mail["content"]=$this->args["description"];
-//<a id="exfe_mail_main_more" href="">...more</a>
         $begin_at=$this->args["begin_at"];
         $datetime=explode(" ",$begin_at);
         $mail["date"]=$datetime[0];
@@ -89,8 +88,6 @@ class Email_Job
 
 
         $body=$this->getMailBody($mail);
-
-
 
         if($email_connect=="")
             smtp_connect();

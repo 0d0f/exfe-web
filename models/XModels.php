@@ -54,6 +54,10 @@ class XModels extends DataModel
             $placeHelper = $this->getHelperByName('place');
             $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
         }
+        //$datetimes=explode(" ",$cross["start_time"]);
+        //$time_type=-1;
+        //if(sizeof($datetimes)>=2)
+        //    $time_type=0;
         // update cross
         $sql  = "UPDATE `crosses`
                     SET `updated_at`  = NOW(),
@@ -62,6 +66,7 @@ class XModels extends DataModel
                         `begin_at`    = '{$cross["start_time"]}',
                         `place_id`    =  {$place_id}
                   WHERE `id`          =  {$cross["id"]}";
+
         return $this->query($sql);
     }
 
