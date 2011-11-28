@@ -62,6 +62,7 @@ h5 {
     display: none;
 }
 .category_title {
+    color: #666666;
     text-align: right;
 }
 #cross_list .category_title {
@@ -90,6 +91,12 @@ h5 {
     background: url(/static/images/icons.png) no-repeat -20px -680px;
     margin: 0 5px;
     vertical-align: middle;
+}
+.invitation h5 a {
+    color: #0591AC;
+}
+#invitations .category_title {
+    color: #0591AC;
 }
 #invitations .category_icon {
     width: 16px;

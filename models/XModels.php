@@ -109,15 +109,15 @@ class XModels extends DataModel
         $identity_id_list = $this->getColumn($sql);
 
         // Get crosses id
-        for ($i=0; $i < sizeof($identity_id_list); $i++) {
+        for ($i = 0; $i < sizeof($identity_id_list); $i++) {
             $identity_id_list[$i] = '`identity_id` = ' . $identity_id_list[$i];
         }
         $str = implode(' or ', $identity_id_list);
         $sql = "SELECT distinct `cross_id` FROM `invitations` WHERE {$str}";
         $cross_id_list = $this->getColumn($sql);
 
-        //if just get corss number.
-        if($actions == 'count'){
+        // If just get corss number.
+        if ($actions === 'count') {
             return count($cross_id_list);
         }
 
@@ -125,7 +125,7 @@ class XModels extends DataModel
         if (!sizeof($cross_id_list)) {
             return array();
         }
-        for($i = 0; $i < sizeof($cross_id_list); $i++) {
+        for ($i = 0; $i < sizeof($cross_id_list); $i++) {
             $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
         }
         $str = implode(' or ', $cross_id_list);
@@ -147,12 +147,12 @@ class XModels extends DataModel
         $order_by = $order_by ? "ORDER BY {$order_by}" : '';
         $limit    = $limit    ? "LIMIT {$limit}"       : '';
 
-        if($actions == 'simple'){
-            $sql = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} {$order_by} {$limit};";
-        }else{
-            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
+        if ($actions === 'simple') {
+            $sql  = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} {$order_by} {$limit};";
+        } else {
+            $sql  = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         }
-        $crosses = $this->getAll($sql);
+        $crosses  = $this->getAll($sql);
 
         return $crosses;
     }

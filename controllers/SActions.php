@@ -391,9 +391,12 @@ class SActions extends ActionController
         $modCross    = $this->getModelByName('x');
 
         // get crosses
+        $maxCross  = 20;
         $today     = strtotime(date('Y-m-d'));
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $sevenDays = $today + 60 * 60 * 24 * 7;
+        
+
         $crosses   = $modCross->fetchCross($_SESSION['userid'], $today);
         $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today, 'no',
                                            'begin_at DESC', 20-count($crosses));
