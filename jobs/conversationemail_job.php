@@ -232,6 +232,24 @@ class Conversationemail_Job
                 $datetime=explode(" ",$cross["begin_at"]);
                 $date=$datetime[0];
                 $time=$datetime[1];
+
+                if($date=="0000-00-00" && $time=="00:00:00")
+                {
+                    $date="Time";
+                    $time="To be decided.";
+                }
+                else if($time=="00:00:00")
+                    $time="Anytime";
+    
+
+                #$mail["place_line1"]=$this->args["place_line1"];
+                #$mail["place_line2"]=$this->args["place_line2"];
+                if($cross["place_line1"]=="")
+                {
+                    $cross["place_line1"]="Place";
+                    $cross["place_line2"]="To be decided.";
+                }
+
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
                 $update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
