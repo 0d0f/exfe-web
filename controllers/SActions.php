@@ -311,31 +311,6 @@ class SActions extends ActionController
 /////////////////////////////////////////
 
 
-
-
-        // sort crosses
-        foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
-            if ($crosses[$crossI]['timestamp'] < $upcoming) {
-                $crosses[$crossI]['sort'] = 'upcoming';
-            } else if ($crosses[$crossI]['timestamp'] < $sevenDays) {
-                $crosses[$crossI]['sort'] = 'sevenDays';
-            } else {
-                $crosses[$crossI]['sort'] = 'later';
-            }
-            $xCounter[$crosses[$crossI]['sort']]++;
-        }
-        //print_r($xCounter);
-        foreach ($pastXs as $pastXI => $pastXItem) {
-            $pastXItem['sort'] = 'past';
-            array_push($crosses, $pastXItem);
-
-        }
-        foreach ($anytimeXs as $anytimeXI => $anytimeXItem) {
-            $anytimeXItem['sort'] = 'anytime';
-            array_push($crosses, $anytimeXItem);
-        }
-
         // get confirmed informations
         $crossIds = array();
         foreach ($crosses as $crossI => $crossItem) {
