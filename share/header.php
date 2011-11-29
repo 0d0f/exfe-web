@@ -7,6 +7,7 @@
     <meta name="robots" content="index, follow">
     <meta name="Keywords" content="EXFE,Gather">
     <meta name="Description" content="EXFE.COM website">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>www.exfe.com</title>
     <link rel="alternate" type="application/rss+xml" title="RSS" href="">
     <link rel="home" href="http://www.exfe.com/">

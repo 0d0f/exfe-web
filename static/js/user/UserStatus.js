@@ -84,7 +84,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     //重置密码。
     ns.doShowResetPwdDialog =function(resetPwdCID, actions){
-        var html = odof.user.identification.showdialog("reset_pwd");
+        var html = odof.user.identification.createDialogDomCode("reset_pwd");
         if(typeof resetPwdCID != "undefined" && typeof resetPwdCID == "string") {
             jQuery("#"+resetPwdCID).html(html);
         }else{
@@ -105,8 +105,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#need_verify_msg").show();
                 jQuery("#set_passwprd_discard").unbind("click");
                 jQuery("#set_passwprd_discard").bind("click", function(){
-                    odof.exlibs.ExDialog.hideDialog();
-                    odof.exlibs.ExDialog.destroyCover();
+                    odof.exlibs.ExDialog.removeDialog();
+                    odof.exlibs.ExDialog.removeCover();
                 });
             };
             jQuery("#set_passwprd_discard").show();
@@ -183,19 +183,70 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
 
-    //暂时没有用，还没有做重新设置密码这一块。
-    /*
-    ns.doShowChangePwdDialog =function(changePwdCID){
-        var html = odof.user.identification.showdialog("change_pwd");
-        if(typeof changePwdCID != "undefined" && typeof changePwdCID == "string") {
-            jQuery("#"+changePwdCID).html(html);
-        }
-        jQuery("#identification_pwd_ic").bind("click", function(){
-            odof.comm.func.displayPassword('identification_pwd');
+    ns.doShowChangePwdDialog = function(dialogBoxID, userIdentity, callBackFunc){
+        var html = odof.user.identification.createDialogDomCode("change_pwd");
+        odof.exlibs.ExDialog.initialize("identification", html);
+        //绑定事件。
+        jQuery("#show_identity_box").val(userIdentity);
+        jQuery("#o_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword("o_pwd");
         });
-        odof.comm.func.initRePassword('identification_newpwd', 'identification_renewpwd');
+        odof.comm.func.initRePassword("new_pwd", "re_new_pwd", "invisible");
+
+        jQuery("#change_pwd_discard").unbind("click");
+        jQuery("#change_pwd_discard").bind("click", function(){
+            odof.exlibs.ExDialog.removeDialog();
+            odof.exlibs.ExDialog.removeCover();
+        });
+
+        jQuery("#forgot_password").bind("click", function(){
+            ns.showForgotPwdDialog(userIdentity);
+        });
+        jQuery("#change_pwd_form").submit(function(){
+            var userPassword = jQuery("#o_pwd").val();
+            var userNewPassword = jQuery("#new_pwd").val();
+            var userReNewPassword = jQuery("#re_new_pwd").val();
+            if(userPassword == ""){
+                jQuery("#change_pwd_error_msg").html("Password cannot be empty.");
+                jQuery("#change_pwd_error_msg").show();
+                return false;
+            }
+            if(userNewPassword == ""){
+                jQuery("#change_pwd_error_msg").html("New password cannot be empty.");
+                jQuery("#change_pwd_error_msg").show();
+                return false;
+            }
+            if(userNewPassword != userReNewPassword){
+                jQuery("#change_pwd_error_msg").html("Passwords don’t match.");
+                jQuery("#change_pwd_error_msg").show();
+                return false;
+            }
+            var postData = {
+                jrand:Math.round(Math.random()*10000000000),
+                u_pwd:userPassword,
+                u_new_pwd:userNewPassword,
+                u_re_new_pwd:userReNewPassword
+            };
+
+            jQuery.ajax({
+                type: "POST",
+                data: postData,
+                url: site_url+"/s/changePassword",
+                dataType:"json",
+                success: function(JSONData){
+                    if(JSONData.error){
+                        jQuery("#change_pwd_error_msg").html(JSONData.msg);
+                        jQuery("#change_pwd_error_msg").show();
+                    }else{
+                        odof.exlibs.ExDialog.removeDialog();
+                        odof.exlibs.ExDialog.removeCover();
+                    }
+                }
+            });
+            return false;
+
+        });
     };
-    */
 
     ns.showLastIdentity = function(){
         var lastIdentity = odof.util.getCookie('last_identity');
@@ -213,7 +264,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#sign_in_btn').attr("disabled", false);
             jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
             jQuery('#sign_in_btn').addClass("sign_in_btn");
-            jQuery('#resetpwd').show();
+            jQuery('#forgot_password').show();
             jQuery('#logincheck').show();
             jQuery('#sign_up_btn').hide();
 
@@ -236,8 +287,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
-        var html = odof.user.identification.showdialog("reg_login");
-        //var html = odof.user.identification.showdialog("reset_pwd");
+        var html = odof.user.identification.createDialogDomCode("reg_login");
         if(typeof callBackFunc != "undefined" && callBackFunc != null){
             ns.callBackFunc = callBackFunc;
         }
@@ -258,31 +308,37 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         //用户点击忘记密码按钮。
-        jQuery("#resetpwd").bind("click", function(){
+        jQuery("#forgot_password").bind("click", function(){
             var userIdentityVal = jQuery("#identity").val();
-            jQuery("#forgot_verification_dialog").show();
-            jQuery("#forgot_identity_input").val(userIdentityVal);
-            jQuery("#cancel_forgot_verify_btn").bind("click",function(){
-                jQuery("#forgot_verification_dialog").hide();
-                jQuery("#fogot_verify_btn").unbind("click");
-            });
-            jQuery("#fogot_verify_btn").unbind("click");
-            jQuery("#fogot_verify_btn").bind("click",function(){
-                ns.doSendEmail(userIdentityVal,"verification");
-            });
+            ns.showForgotPwdDialog(userIdentityVal);
         });
 
         jQuery("#sign_up_btn").bind("click", function(){
             odof.user.identification.showRegisteMsg();
         });
 
-        odof.user.identification.bindDialogEvent("reg");
+        odof.user.identification.bindLoginDialogEvent("reg");
         jQuery("#identification_pwd_ic").bind("click",function(){
             odof.comm.func.displayPassword('identification_pwd');
         });
 
         jQuery("#identity").focus();
     };
+
+    ns.showForgotPwdDialog = function(userIdentity){
+        jQuery("#forgot_verification_dialog").show();
+        jQuery("#forgot_identity_input").val(userIdentity);
+        jQuery("#cancel_forgot_verify_btn").bind("click",function(){
+            jQuery("#forgot_verification_dialog").hide();
+            jQuery("#fogot_verify_btn").unbind("click");
+        });
+        jQuery("#fogot_verify_btn").unbind("click");
+        jQuery("#fogot_verify_btn").bind("click",function(){
+            ns.doSendEmail(userIdentity,"verification");
+        });
+        
+    };
+
     ns.showLoginStatus = function(userData){
         if(typeof userData == "undefined" || userData == "" || userData.user_status == 0){
             var loginMenu = '<div class="global_sign_in_btn">'

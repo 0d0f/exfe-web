@@ -238,6 +238,7 @@ b.r3{margin: 0px}
     position:relative; margin:auto; width:360px; height:285px;
     padding-top:35px; font-size:14px;
 }
+.identity_dialog_main #identity{ background:transparent; }
 .identity_dialog_main ul li{clear:both; height:32px; }
 .identity_dialog_main ul label{ }
 .identity_dialog_main ul label.title{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
@@ -246,7 +247,12 @@ b.r3{margin: 0px}
     float:left; margin-left:4px; background-color:#FFF; font:18px Verdana;
 }
 .identity_dialog_main ul li .identity_box{ position:absolute; margin-top:0px; margin-left:114px; z-index:203; overflow:hidden; }
-.identity_dialog_main ul li #identity_dbox{ position:absolute; height:21px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:118px; z-index:202; padding-top:7px; font-size:18px; }
+.identity_dialog_main ul li #identity_dbox{
+    position:absolute; height:21px; width:208px;
+    padding-left:4px; line-height:15px; color:#CCC;
+    margin-top:0px; margin-left:114px; z-index:202;
+    padding-top:7px; font-size:18px; background-color:#FFF;
+}
 .identity_dialog_main .loginbtn p .dx{width:55px;height:15px;position:absolute;top:10px;}
 .identity_dialog_main h3{font-size:19px;line-height:25px;text-align:center;}
 .identity_dialog_main h3 a{color:#0591af;}
@@ -283,16 +289,16 @@ b.r3{margin: 0px}
 
 
 
-.identity_dialog_main .forgotpassword{
+.identity_dialog_main .forgot_password{
     display:block; float:left; height:24px; width:150px; cursor:pointer;
     padding-top:2px; border:0; font-size:14px; text-align:center; text-decoration:none;
     background:url(/static/images/btn.png) no-repeat 0px -640px; color:#6C6E6F;
 }
-.identity_dialog_main .forgotpassword:hover {
+.identity_dialog_main .forgot_password:hover {
     color:#6C6E6F; text-decoration:none;
     background:url(/static/images/btn.png) no-repeat 0px -640px;
 }
-.identity_dialog_main .forgotpassword:active {
+.identity_dialog_main .forgot_password:active {
     color:#6C6E6F; text-decoration:none;
     background:url(/static/images/btn.png) no-repeat 0px -640px;
 }
