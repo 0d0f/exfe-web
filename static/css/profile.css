@@ -138,6 +138,10 @@ em {
     margin: -3px auto auto 210px;
     cursor: pointer;
 }
+.more_or_less {
+    text-align: right;
+    margin-bottom: 20px;
+}
 
 
 /* edit user by Handaoliang */

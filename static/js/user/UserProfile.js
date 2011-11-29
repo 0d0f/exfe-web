@@ -140,10 +140,44 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             && fetchArgs[i + '_folded']) {
                         $(xCtgrId + ' > .category_title > .arrow').removeClass('arrow').addClass('arrow_up');
                         $(xListId).hide();
+                        $(xCtgrId + ' > .more_or_less').hide();
                     }
                 }
             }
         });
+    };
+
+
+    ns.getMoreCross = function(event) {
+        var objEvent = event.target;
+        while (!$(objEvent).hasClass('category')) {
+            objEvent = objEvent.parentNode;
+        }
+        var strXType = objEvent.id.split('_')[1];
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/s/getcross',
+            data     : {
+                'upcoming_included'  : strXType === 'upcoming',
+                'upcoming_more'      : true,
+                'anytime_included'   : strXType === 'anytime',
+                'anytime_more'       : true,
+                'sevenDays_included' : strXType === 'sevenDays',
+                'sevenDays_more'     : true,
+                'later_included'     : strXType === 'later',
+                'later_more'         : true,
+                'past_included'      : strXType === 'past',
+                'past_more'          : true
+            },
+            dataType : 'json',
+            success  : function(data) {
+                if (data && (data.error || data.length === 0)) {
+                    return;
+                }
+                console.log(data);
+            }
+        });
+        console.log();
     };
 
 
@@ -353,11 +387,13 @@ $(document).ready(function() {
           = $('#' + objEvent.id + ' > .category_title > .arrow')).length) {
             objArrow.removeClass('arrow').addClass('arrow_up');
             $('#' + objEvent.id + ' > .crosses').hide();
+            $('#' + objEvent.id + ' > .more_or_less').hide();
             bolFolded = true;
         } else if ((objArrow
           = $('#' + objEvent.id + ' > .category_title > .arrow_up')).length) {
             objArrow.removeClass('arrow_up').addClass('arrow');
             $('#' + objEvent.id + ' > .crosses').show();
+            $('#' + objEvent.id + ' > .more_or_less').show();
             bolFolded = false;
         }
         if (fetchArgs) {
@@ -384,6 +420,8 @@ $(document).ready(function() {
     $('.invitation > button').live('click', function(e) {
         location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
     });
+
+    $('.more_or_less > a').click(odof.user.profile.getMoreCross);
 
     odof.user.profile.getCross();
     odof.user.profile.getInvitation();
