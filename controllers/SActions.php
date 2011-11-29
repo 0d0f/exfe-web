@@ -258,10 +258,10 @@ class SActions extends ActionController
                            'later_folded'     => 0, 'later_more'     => 0);
         // sort upcoming crosses
         foreach ($futureXs as $crossI => $crossItem) {
-            $crossItem['timestamp'] = strtotime($crossItem['begin_at']);
-            if ($crossItem['timestamp'] < $upcoming) {
-                $crossItem['sort'] = 'upcoming';
-                array_push($crosses, $crossItem);
+            $futureXs[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
+            if ($futureXs[$crossI]['timestamp'] < $upcoming) {
+                $futureXs[$crossI]['sort'] = 'upcoming';
+                array_push($crosses, $futureXs[$crossI]);
                 $xShowing += !$fetchArgs['upcoming_folded'] ? 1 : 0;
                 unset($futureXs[$crossI]);
             }
@@ -277,12 +277,13 @@ class SActions extends ActionController
                 break;
             }
         }
+        unset($anytimeXs);
         // sort next-seven-days cross
         $xQuantity = !$fetchArgs['sevenDays_more']&&$xShowing>=$maxCross?3:0;
         $iQuantity = 0;
         foreach ($futureXs as $crossI => $crossItem) {
-            $crossItem['timestamp'] = strtotime($crossItem['begin_at']);
-            if ($crossItem['timestamp']>=$upcoming && $crossItem<$sevenDays) {
+            if ($crossItem['timestamp'] >= $upcoming
+             && $crossItem['timestamp'] <  $sevenDays) {
                 $crossItem['sort'] = 'sevenDays';
                 array_push($crosses, $crossItem);
                 $xShowing += !$fetchArgs['sevenDays_folded'] ? 1 : 0;
@@ -295,7 +296,6 @@ class SActions extends ActionController
         // sort later cross
         $iQuantity = 0;
         foreach ($futureXs as $crossItem) {
-            $crossItem['timestamp'] = strtotime($crossItem['begin_at']);
             if ($crossItem['timestamp'] >= $sevenDays) {
                 $crossItem['sort'] = 'later';
                 array_push($crosses, $crossItem);
@@ -305,11 +305,7 @@ class SActions extends ActionController
                 }
             }
         }
-
-
-
-/////////////////////////////////////////
-
+        unset($futureXs);
 
         // get confirmed informations
         $crossIds = array();
