@@ -115,8 +115,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             drag = false;
         });
         jQuery(dialogCloseBtnJID).click(function() {
-            ns.hideDialog();
-            ns.destroyCover();
+            ns.removeDialog();
+            ns.removeCover();
             floatshowOne = 0;
         });
 
@@ -158,8 +158,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if(dialogModal == "win"){
             /*
             jQuery("#"+ns.dialogID).bind("clickoutside",function(){
-                odof.exlibs.ExDialog.hideDialog();
-                odof.exlibs.ExDialog.destroyCover();
+                odof.exlibs.ExDialog.removeDialog();
+                odof.exlibs.ExDialog.removeCover();
             });
             */
             jQuery("#"+ns.dialogID).addClass("ex_dialog_shadow");
@@ -167,9 +167,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
-    ns.hideDialog = function(){
-        jQuery("#" + ns.dialogID).hide();
-    };
+    ns.removeDialog= function(){
+        jQuery("#" + ns.dialogID).remove();
+    }
 
     /*
      * initialize cover module
@@ -182,7 +182,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             // Create a element for display cover
             ns.coverElement = odof.util.createElement("div", ns.coverID, "cover_element");
             ns.resizeCover();
-            document.body.appendChild(ns.coverElement);
+            //document.body.appendChild(ns.coverElement);
+            document.body.insertBefore(ns.coverElement,document.body.firstChild);
             //jQuery("#"+ns.coverID).dblclick(function(){ return false; });
             
             jQuery(window).resize(ns.resizeCover);
@@ -207,7 +208,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     /*
      * distroy cover element 
      * */
-    ns.destroyCover = function() {
+    ns.removeCover = function() {
         //Find cover element
         var coverElementObj = document.getElementById(ns.coverID);
         // If have cover element, delete it.
@@ -219,11 +220,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#"+ns.coverID).unbind("selectstart");
     };
 
-
 })(ns);
 
-jQuery(document).ready(function() {
-
-
-
-});
+jQuery(document).ready(function() { });

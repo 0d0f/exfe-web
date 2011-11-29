@@ -1237,4 +1237,54 @@ class SActions extends ActionController
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
     }
+
+    //change password
+    public function doChangePassword() {
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+        header("Content-Type:application/json; charset=UTF-8");
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $userPassword = exPost("u_pwd");
+        $userNewPassword = exPost("u_new_pwd");
+        $userReNewPassword = exPost("u_re_new_pwd");
+        if($userPassword == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Password cannot be empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+        if($userNewPassword == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "New password cannot be empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+        if($userNewPassword != $userReNewPassword){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Passwords don’t match.";
+            echo json_encode($returnData);
+            exit();
+        }
+        $identityObj = $this->getModelByName("identity");
+        $result = $identityObj->checkUserPassword($userID, $userPassword);
+        if(!$result){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Passwords error.";
+            echo json_encode($returnData);
+            exit();
+        }
+        $identityObj->updateUserPassword($userID, $userNewPassword);
+        echo json_encode($returnData);
+        exit();
+    }
 }

@@ -45,9 +45,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#close_reg_msg_btn").unbind("click");
     }
 
-    ns.showdialog = function(type) {
+    ns.createDialogDomCode = function(type) {
         var title="", form="";
-        if(type=="reg_login") {
+        if(type == "reg_login") {
             title="Identification";
             /*//备注，这是原来Twitter登录等的样式。暂时取消掉。
             desc="<div class='dialog_titles'><p>Authorize with your <br/> existing accounts </p>"
@@ -64,7 +64,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<div class='identity_box'>"
-                 + "<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' onkeyup='javascript:odof.user.identification.showIdentityInfo();' onchange='javascript:odof.user.identification.showIdentityInfo();' />"
+                 + "<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' />"
                  + "</div>"
                  + "<div id='identity_dbox'>Your email here</div>"
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
@@ -74,7 +74,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<label class='title' style='color:#CC3333'>Display name:</label>"
                  + "<input type='text' name='displayname' class='inputText'/>"
                  + "</li>"
-                 + "<li><label class='title'>Password:</label><input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<li><label class='title'>Password:</label>"
+                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
                  + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='identification_pwd_ic'></em>"
                  + "</li>"
@@ -92,7 +93,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
                  + "</ul>"
                  + "<div class='identification_bottom_btn'>"
-                 + "<a id='resetpwd' class='forgotpassword' style='display:none;'>Forgot Password...</a>"
+                 + "<a id='forgot_password' class='forgot_password' style='display:none;'>Forgot Password...</a>"
                  + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
                  + "<a id='startover' class='startover' style='display:none;'>Start Over</a>"
                  + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' />"
@@ -100,7 +101,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>"
                  + "</form>"
                  + "</div>";
-        } else if(type=="reset_pwd"){ //重置密码。
+        } else if( type=="reset_pwd" ){ //重置密码。
             title = "Set Password";
             form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
                  + "<div id='set_password_titles' class='dialog_titles'>Set Password</div>"
@@ -109,7 +110,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li><label class='title'>Identity:</label>"
                  + "<input type='text' id='show_identity_box' class='inputText' disabled='disabled' />"
                  + "</li>"
-                 + "<li id='displayname'>"
+                 + "<li>"
                  + "<label class='title'>Display name:</label>"
                  + "<input  type='text'  name='displayname' class='inputText' id='user_display_name' />"
                  + "<em id='displayname_error' class='warning' style='display:none;'></em>"
@@ -133,6 +134,43 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='submit' value='Done' class='btn_85' id='submit_reset_password' style='cursor:pointer;' />"
                  + "</div>"
                  + "</div>";
+        } else if(type == "change_pwd"){ //用户修改密码，从Profile页面触发。
+            title = "Change Password";
+            form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
+                 + "<div id='set_password_titles' class='dialog_titles'>Change Password</div>"
+                 + "<div id='set_password_desc' style='height:45px;line-height:18px;'>"
+                 + "Please enter current password and set new password."
+                 + "</div>"
+                 + "<form id='change_pwd_form' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li><label class='title'>Identity:</label>"
+                 + "<input type='text' id='show_identity_box' class='inputText' disabled='disabled' />"
+                 + "</li>"
+                 + "<li>"
+                 + "<label class='title'>Password:</label>"
+                 + "<input type='password' name='o_pwd' id='o_pwd' class='inputText' />"
+                 + "<input  type='text'  name='o_pwd_a' id='o_pwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='o_pwd_ic'></em>"
+                 + "</li>"
+                 + "<li><label class='title'>New password:</label>"
+                 + "<input type='password' name='new_pwd' id='new_pwd' class='inputText' />"
+                 + "<input type='text' name='new_pwd_a' id='new_pwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='new_pwd_ic'></em>"
+                 + "</li>"
+                 + "<li id='re_new_pwd_li' style='display:block;'>"
+                 + "<label class='title'>Re-type new:</label>"
+                 + "<input type='password' name='re_new_pwd' id='re_new_pwd' class='inputText' />"
+                 + "</li>"
+                 + "<li id='change_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
+                 + "</ul>"
+                 + "<div class='identification_bottom_btn' style='text-align:right;'>"
+                 + "<a id='forgot_password' class='forgot_password'>Forgot Password...</a>"
+                 + "<a id='change_pwd_discard' href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
+                 + "<input type='submit' value='Done' class='btn_85' id='submit_reset_password' style='cursor:pointer;' />"
+                 + "</form>"
+                 + "</div>"
+                 + "</div>";
+       
         }
 
         //新的找回密码对话框。用户点击Forgot Password进去。
@@ -252,12 +290,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if(type == 'init'){
             jQuery('#identity').val('');
             jQuery('#sign_up_btn').show();
-            jQuery('#resetpwd').hide();
+            jQuery('#forgot_password').hide();
             jQuery('#sign_in_btn').attr('disabled', false);
             jQuery('#sign_in_btn').removeClass("sign_in_btn_disabled");
             odof.user.status.showLastIdentity()
         }else{
-            jQuery('#resetpwd').show();
+            jQuery('#forgot_password').show();
         }
 
         //还是得绑定Password框的Onfocus事件。
@@ -309,7 +347,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#cancel_manual_verification_btn").unbind("click");
         jQuery("#cancel_manual_verification_btn").bind("click", function(){
             clearManualVerifyDialog();
-            jQuery("#manual_verification_dialog").hide();
+            //jQuery("#manual_verification_dialog").hide();
+            ns.showLoginDialog('init');
+            jQuery("#identity").val(jQuery("#manual_verify_identity").val());
         });
 
         jQuery('#manual_startover').unbind('click');
@@ -320,7 +360,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //监听输入框。
         var manualVerifyTimer = window.setInterval(function(){
-            var curVerifyIdentityVal = jQuery("#manual_verify_identity").val()
+            var curVerifyIdentityVal = jQuery("#manual_verify_identity").val();
             if(curVerifyIdentityVal != ns.userManualVerifyIdentityCache){
                 ns.identityInputBoxActions(curVerifyIdentityVal);
                 clearManualVerifyDialog();
@@ -368,7 +408,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#identification_title_msg').css({color:'#0591AC'});
                             //jQuery('#retype').show();
                             jQuery('#displayname').show();
-                            jQuery('#resetpwd').hide();
+                            jQuery('#forgot_password').hide();
                             jQuery('#logincheck').hide();
                             jQuery('#login_hint').hide();
                             //注册对话框中的start over button
@@ -414,7 +454,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#hint').hide();
             jQuery('#retype').hide();
             jQuery('#displayname').hide();
-            jQuery('#resetpwd').hide();
+            jQuery('#forgot_password').hide();
             jQuery('#logincheck').hide();
             jQuery('#sign_up_btn').show();
             jQuery('#sign_in_btn').addClass("sign_in_btn_disabled");
@@ -423,7 +463,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         */
     };
 
-    ns.bindDialogEvent = function(type) {
+    ns.bindLoginDialogEvent = function(type) {
         if(type=="reg") {
             //在KeyUP事件之上加一层TimeOut设定，延迟响应以修复.co到.com的问题。
             /*
@@ -435,14 +475,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             */
             window.setInterval(function(){
                 ns.identityInputBoxActions();
-            },250);
+            },1000);
 
             //绑定当焦点到密码框时，检测一下当前用户是否存在。
             jQuery('#identification_pwd').focus(function() {
                 ns.identityInputBoxActions();
             });
-            jQuery('input[name=identity]').blur(function(){
-                var userIdentity = jQuery('input[name=identity]').val();
+
+            //绑定两个显示的事件。
+            jQuery('#identity').keyup(function(){ ns.showIdentityInfo(); });
+            jQuery('#identity').change(function(){
+                ns.showIdentityInfo();
+                var userIdentity = jQuery('#identity').val();
                 if(userIdentity == "" || !userIdentity.match(ns.mailReg)){
                     jQuery("#identity_error_msg").show();
                     setTimeout(function(){
@@ -450,7 +494,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }, 3000);
                 }
             });
-
 
             jQuery('#identificationform').submit(function() {
                     var params=ns.getUrlVars();
@@ -557,9 +600,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                                             return;
                                         }
-                                        odof.exlibs.ExDialog.hideDialog();
-                                        odof.exlibs.ExDialog.destroyCover();
-                                        //jQuery.modal.close();
+                                        odof.exlibs.ExDialog.removeDialog();
+                                        odof.exlibs.ExDialog.removeCover();
                                     }
                                     //added by handaoliang
                                     //callback check UserLogin
@@ -595,8 +637,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                         jQuery("#close_reg_success_dialog_btn").bind("click",function(){
                                             window.location.href="/s/profile";
                                             return; 
-                                            //odof.exlibs.ExDialog.hideDialog();
-                                            //odof.exlibs.ExDialog.destroyCover();
+                                            //odof.exlibs.ExDialog.removeDialog();
+                                            //odof.exlibs.ExDialog.removeCover();
                                         });
                                         odof.user.status.checkUserLogin();
                                     }

@@ -12,7 +12,6 @@
     $user       = $this->getVar('user');
     $user['avatar_file_name'] = $user['avatar_file_name'] ?: 'default.png';
 ?>
-
 <div class="content">
     <div class="edit_user">
         <div id="profile_avatar">
@@ -66,7 +65,13 @@
                         if($identity["provider"]=="email")
                             $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
                     ?>
-                    <p><img class="s_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="id_name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status;?> <?php echo $button?></i></p>
+                    <p>
+                        <img class="s_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" />
+                        <b><span class="id_name"><?php echo $identity["name"];?></span>
+                        <em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
+                        </b>
+                        <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status;?> <?php echo $button?></i>
+                    </p>
                     <?php
                     }
                     else
