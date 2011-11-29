@@ -157,11 +157,11 @@ class IdentityModels extends DataModel{
                     $cookie_loginsequ=$userrow["cookie_loginsequ"];
             }
 
-            setcookie('uid', $userid, time()+31536000, "/",".exfe.com");
-            setcookie('id', $identity_id, time()+31536000, "/",".exfe.com");
-            setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/",".exfe.com");
-            setcookie('logintoken', $cookie_logintoken, time()+31536000, "/",".exfe.com");
-            setcookie('last_identity', $identity, time()+31536000, "/",".exfe.com");//one year.
+            setcookie('uid', $userid, time()+31536000, "/", COOKIES_DOMAIN);
+            setcookie('id', $identity_id, time()+31536000, "/", COOKIES_DOMAIN);
+            setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/", COOKIES_DOMAIN);
+            setcookie('logintoken', $cookie_logintoken, time()+31536000, "/", COOKIES_DOMAIN);
+            setcookie('last_identity', $identity, time()+31536000, "/", COOKIES_DOMAIN);//one year.
     }
 
     public function loginByCookie($source='')
@@ -189,10 +189,10 @@ class IdentityModels extends DataModel{
                 unset($_COOKIE["id"]);
                 unset($_COOKIE["loginsequ"]);
                 unset($_COOKIE["logintoken"]);
-                setcookie('uid', NULL, -1,"/",".exfe.com");
-                setcookie('id', NULL, -1,"/",".exfe.com");
-                setcookie('loginsequ', NULL,-1,"/",".exfe.com");
-                setcookie('logintoken',NULL,-1,"/",".exfe.com");
+                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
+                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
                 if($source == ""){
                     header( 'Location: /s/login' ) ;
                 }
@@ -404,10 +404,10 @@ class IdentityModels extends DataModel{
                 unset($_COOKIE["loginsequ"]);
                 unset($_COOKIE["logintoken"]);
 
-                setcookie('uid', NULL, -1,"/",".exfe.com");
-                setcookie('id', NULL, -1,"/",".exfe.com");
-                setcookie('loginsequ', NULL,-1,"/",".exfe.com");
-                setcookie('logintoken',NULL,-1,"/",".exfe.com");
+                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
+                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
             }
         }
         return $identity_id;

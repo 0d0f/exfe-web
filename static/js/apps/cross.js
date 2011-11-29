@@ -33,8 +33,7 @@ var clickCallBackFunc = function(args){
             if(show_idbox == 'setpassword'){//如果要求弹设置密码窗口。
                 if(token_expired == "true"){
                     var args = {"identity":external_identity};
-                    odof.user.status.doShowVerificationDialog(null, args);
-                    jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
+                    odof.user.status.doShowCrossPageVerifyDialog(null, args);
                 }else{
                     odof.user.status.doShowResetPwdDialog(null, 'setpwd');
                     jQuery("#show_identity_box").val(external_identity);
@@ -43,8 +42,7 @@ var clickCallBackFunc = function(args){
                 odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
             }else{
                 var args = {"identity":external_identity};
-                odof.user.status.doShowVerificationDialog(null, args);
-                jQuery("#identity_forgot_pwd_info").html("<span style='color:#CC3333'>This identify needs verification.</span><br />Verification will be sent in minutes, please check your inbox.");
+                odof.user.status.doShowCrossPageVerifyDialog(null, args);
             }
         }
 

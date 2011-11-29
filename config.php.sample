@@ -1,16 +1,18 @@
 <?php
-$dbhost="localhost";
+$dbhost="127.0.0.1";
 $dbuser="root";
 $dbpasswd="";
 $dbname="exfe_dev";
 
 $site_url="http://local.exfe.com";
-
 define("SITE_URL", "http://local.exfe.com");
 
-$img_url="http://localimg.exfe.com";
-define("IMG_URL", "http://localimg.exfe.com");
+$img_url="http://images.exfe.com";
+define("IMG_URL", "http://images.exfe.com");
 
+$resque_server="127.0.0.1:6379";
 define("RESQUE_SERVER", "127.0.0.1:6379");
+
+define('COOKIES_DOMAIN', '.exfe.com');
 
 define("EmailPost_Key","589895idklf873iu3D1kkjdkja");

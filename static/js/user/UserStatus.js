@@ -47,26 +47,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
-    ns.doShowVerificationDialog = function(dialogContainerID, args){
-        var html = odof.user.identification.showdialog("reg_login");
-
-        if(typeof dialogContainerID != "undefined" && typeof dialogContainerID == "string"){
-            document.getElementById(dialogContainerID).innerHTML = html;
-        }else{
-            odof.exlibs.ExDialog.initialize("identification", html);
-            var dialogContainerID = "identification_dialog";
-        }
-
-        jQuery("#identity_forgot_pwd_dialog").show();
-        jQuery("#f_identity_box").html(args.identity);
-        jQuery("#f_identity_box").css({"padding-top":"5px"});
-        jQuery("#f_identity_hidden").val(args.identity);
-
-        var userIdentity = jQuery("#f_identity_hidden").val();
-        jQuery("#send_verification_btn").bind("click",function(){
-            ns.doSendEmail(userIdentity);
-        });
-
+    
+    ns.doShowCrossPageVerifyDialog = function(dialogContainerID, args){
+        ns.doShowLoginDialog(dialogContainerID);
+        odof.util.delCookie('last_identity', "/", cookies_domain);
+        odof.util.setCookie("last_identity", args.identity, 365, cookies_domain);
+        odof.user.identification.userIdentityCache = args.identity;
+        odof.user.identification.showManualVerificationDialog(args.identity);
     };
 
     ns.doSendEmail = function(userIdentity, doActions){
@@ -84,15 +71,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 dataType: "json",
                 data: postData,
                 success: function(JSONData){
-                    //jQuery("#identity_forgot_pwd_info").css({"color":"#CC3333"});
-                    //jQuery("#identity_forgot_pwd_info").html("You’re requesting verification too frequently, please wait for several hours.");
-                    jQuery("#identity_forgot_pwd_info").html("Verification sent.");
-                    jQuery("#send_verification_btn").unbind("click");
-                    jQuery("#send_verification_btn").attr("disabled",true);
-                    jQuery("#send_verification_btn").css({"cursor":"default"});
-
                     setTimeout(function(){
-                        jQuery("#identity_forgot_pwd_dialog").hide();
+                        jQuery("#manual_verification_dialog").hide();
+                        jQuery("#forgot_verification_dialog").hide();
                     }, 3000);
                 },
                 complete: function(){
@@ -117,6 +98,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             actions = "resetpwd";
         }
 
+        if(actions == 'setpwd'){
+            jQuery("#set_password_titles").html("Welcome to <span style='color:#0591AC;'>EXFE</span>");
+            jQuery("#set_password_desc").html("Please set password to keep track of attendees update, and engage in.");
+            var showWarning = function(){
+                jQuery("#need_verify_msg").show();
+                jQuery("#set_passwprd_discard").unbind("click");
+                jQuery("#set_passwprd_discard").bind("click", function(){
+                    odof.exlibs.ExDialog.hideDialog();
+                    odof.exlibs.ExDialog.destroyCover();
+                });
+            };
+            jQuery("#set_passwprd_discard").show();
+            jQuery("#set_passwprd_discard").bind("click", function(){
+                showWarning();
+            });
+        }
+
         jQuery("#submit_reset_password").bind("click", function(){
             var userPassword = jQuery("#identification_pwd").val();
             var userRePassword = jQuery("#identification_repwd").val();
@@ -127,16 +125,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#displayname_error").hide();
                 jQuery("#pwd_match_error").hide();
             }
-            if(userPassword == ""){
-                jQuery("#reset_pwd_error_msg").show();
-                setTimeout(hideErrorMsg, 3000);
-                jQuery("#reset_pwd_error_msg").html("Please input a password.");
-            }else if(userPassword != userRePassword){
-                jQuery("#reset_pwd_error_msg").show();
-                jQuery("#pwd_match_error").show();
-                setTimeout(hideErrorMsg, 3000);
-                jQuery("#reset_pwd_error_msg").html("Passwords don't match.");
-            }else if(userDisplayName == ""){
+            if(userDisplayName == ""){
                 jQuery("#reset_pwd_error_msg").show();
                 jQuery("#displayname_error").show();
                 setTimeout(hideErrorMsg, 3000);
@@ -146,6 +135,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#displayname_error").show();
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Display name Error.");
+            }else if(userPassword == ""){
+                jQuery("#reset_pwd_error_msg").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Please input a password.");
+            }else if(userPassword != userRePassword){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#pwd_match_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Passwords don't match.");
             }else{
                 var postData = {
                     jrand:Math.round(Math.random()*10000000000),
@@ -226,7 +224,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             */
 
             jQuery("#delete_identity").click(function(){
-                odof.util.delCookie('last_identity', "/", ".exfe.com");
+                odof.util.delCookie('last_identity', "/", cookies_domain);
                 jQuery("#identity").val("");
                 jQuery("#identity_dbox").html("Your email here");
                 jQuery("#identity").unbind("mouseover");
@@ -268,6 +266,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#forgot_verification_dialog").hide();
                 jQuery("#fogot_verify_btn").unbind("click");
             });
+            jQuery("#fogot_verify_btn").unbind("click");
             jQuery("#fogot_verify_btn").bind("click",function(){
                 ns.doSendEmail(userIdentityVal,"verification");
             });

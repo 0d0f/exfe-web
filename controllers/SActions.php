@@ -768,10 +768,10 @@ class SActions extends ActionController
         unset($_COOKIE["loginsequ"]);
         unset($_COOKIE["logintoken"]);
 
-        setcookie('uid', NULL, -1,"/",".exfe.com");
-        setcookie('id', NULL, -1,"/",".exfe.com");
-        setcookie('loginsequ', NULL,-1,"/",".exfe.com");
-        setcookie('logintoken',NULL,-1,"/",".exfe.com");
+        setcookie('uid', NULL, -1,"/",COOKIES_DOMAIN);
+        setcookie('id', NULL, -1,"/",COOKIES_DOMAIN);
+        setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
+        setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
 
         header('location:/');
 

@@ -27,6 +27,7 @@
     <script type="text/javascript">
         var site_url = "<?php echo SITE_URL; ?>";
         var img_url  = "<?php echo IMG_URL; ?>";
+        var cookies_domain = "<?php echo COOKIES_DOMAIN ?>";
     </script>
 
     <!--[if IE 6]>

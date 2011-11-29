@@ -498,7 +498,7 @@ var odof = {
         }
         if(expires !=null && expires !=0){
             var exp  = new Date();
-            exp.setTime(exp.getTime() + expires*60*60*24*1080);
+            exp.setTime(exp.getTime() + expires*60*60*24);
             cookieValue += ";expires=" + exp.toGMTString();
         }
         document.cookie = cookieValue;

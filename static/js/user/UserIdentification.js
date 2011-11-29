@@ -103,8 +103,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if(type=="reset_pwd"){ //重置密码。
             title = "Set Password";
             form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
-                 + "<div class='dialog_titles'>Set Password</div>"
-                 + "<div style='height:45px;'>Please set password for your identity.</div>"
+                 + "<div id='set_password_titles' class='dialog_titles'>Set Password</div>"
+                 + "<div id='set_password_desc' style='height:45px;line-height:18px;'>Please set password for your identity.</div>"
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<input type='text' id='show_identity_box' class='inputText' disabled='disabled' />"
@@ -128,13 +128,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                  + "<li id='reset_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
-                 + "<div class='identification_bottom_btn'>"
-                 //+ "<a href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
+                 + "<div class='identification_bottom_btn' style='text-align:right;'>"
+                 + "<a id='set_passwprd_discard' style='display:none;' href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
                  + "<input type='submit' value='Done' class='btn_85' id='submit_reset_password' style='cursor:pointer;' />"
                  + "</div>"
                  + "</div>";
         }
 
+        //新的找回密码对话框。用户点击Forgot Password进去。
         var forgot_verification = "<div id='forgot_verification_dialog' class='identity_visual_dialog' style='display:none;'>"
                + "<div style='text-align:center; height:45px; font-size:18px;'>Forgot password</div>"
                + "<div style='height:25px; text-align:left;'>"
@@ -172,28 +173,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "<a id='manual_startover' class='startover'>Start Over</a>"
                + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;'>I See</a>&nbsp;&nbsp;"
                + "<input type='button' id='manual_verification_btn' value='Done' />"
-               + "</div>"
-               + "</div>";
-
-        var forgot_pwd = "<div id='identity_forgot_pwd_dialog' class='identity_forgot_pwd_dialog' style='display:none;'>"
-               + "<div style='text-align:center; height:45px; font-size:18px;'>"
-               + "<p>Welcome to <span style='color:#0591AC;'>EXFE</span></p>"
-               + "</div>"
-               + "<div style='float:left; font-size:14px; height:30px; padding-left:36px; text-align:left; display:none;'>"
-               + "Enter identity information:"
-               + "</div>"
-               + "<div>"
-               + "<label class='title'>Identity:</label>"
-               + "<span id='f_identity_box' style='float:left;font-size:18px; font-style:italic;'>"
-               + "<input type='text' id='f_identity' class='inputText' />"
-               + "</span>"
-               + "</div>"
-               + "<div id='identity_forgot_pwd_info' style='margin-left:80px; padding:10px; text-align:left; width:290px; font-size:14px;'>Verification will be sent in minutes, please check your inbox.</div>"
-               + "<div style='text-align:right; width:300px;'>"
-               + "<span id='submit_loading_btn' style='display:none;'></span>"
-               + "<a href='javascript:void(0);' id='cancel_verification_btn'>Cancel</a>&nbsp;&nbsp;"
-               + "<input type='button' id='send_verification_btn' style='cursor:pointer;' value='Send Verification' />"
-               + "<input type='hidden' id='f_identity_hidden' value='' />"
                + "</div>"
                + "</div>";
 
@@ -245,10 +224,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>"
                + "<div id='identity_error_msg' style='display:none;'>Invalid identity</div>"
                + "<div id='displayname_error_msg' style='display:none;'>Invalid identity</div>"
+               + "<div id='need_verify_msg' style='display:none;'>You couldn’t sign in or edit if you left now</div>"
                + "<div id='identification_dialog_con' class='identification_dialog_con'>"
                + forgot_verification
                + manual_verification
-               + forgot_pwd
                + sign_up_msg
                + reg_success
                + form 
@@ -309,17 +288,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.showManualVerificationDialog = function(){
+    ns.showManualVerificationDialog = function(curUserIdentity, doActions){
         jQuery("#manual_verification_dialog").show();
 
-        var userIdentity = jQuery("#identity").val();
+        var userIdentity = curUserIdentity;
+        if(typeof curUserIdentity == "undefined" || curUserIdentity == "" || curUserIdentity == null){
+            userIdentity = jQuery("#identity").val();
+        }
         ns.userManualVerifyIdentityCache = userIdentity;
 
         jQuery("#manual_verify_identity").val(userIdentity);
 
         jQuery("#manual_verification_btn").unbind("click");
         jQuery("#manual_verification_btn").bind("click",function(){
-            odof.user.status.doSendEmail(userIdentity,"verification");
+            odof.user.status.doSendEmail(userIdentity,doActions);
             var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
             jQuery("#manual_verification_hint_box").html(msg);
         });
@@ -365,7 +347,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userIdentity = myIdentity;
         }
         //只有当不等时，才执行轮循
-        //console.log("aaaaa");
         if(userIdentity == ns.userIdentityCache){
             return false;
         }else{
@@ -410,7 +391,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
-                                ns.showManualVerificationDialog();
+                                ns.showManualVerificationDialog(null, "verification");
                             }else{
                                 ns.showLoginDialog();
                             }

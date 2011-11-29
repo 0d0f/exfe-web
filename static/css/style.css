@@ -154,17 +154,24 @@ b.r3{margin: 0px}
 }
 
 .identification_dialog #identity_error_msg{
-    position:absolute; left:340px; top:130px; width:112px; height:25px; padding:2px 2px 0px 15px;
-    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:203;
+    position:absolute; left:340px; top:125px; width:112px; height:25px; padding:2px 2px 0px 15px;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 .identification_dialog #displayname_error_msg{
-    position:absolute; left:340px; top:158px; width:180px; height:25px; padding:3px 5px 0px 15px;
-    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -30px; color:#CC3333; z-index:203;
+    position:absolute; left:340px; top:153px; width:180px; height:25px; padding:3px 5px 0px 15px;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -30px; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
+.identification_dialog #need_verify_msg{
+    position:absolute; left:20px; top:290px; width:150px; height:37px; padding:5px 5px 5px 10px;
+    background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -60px; color:#CC3333; z-index:204;
+    -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
+    -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
+}
+
 .identification_dialog_con { background:#EFEFEF; height:320px; width:400px; overflow:hidden; }
 
 .identification_dialog_con #identification_title_msg{
@@ -194,20 +201,6 @@ b.r3{margin: 0px}
     color:#666; font-size:18px; font-style:italic;
 }
 
-.identification_dialog_con .identity_forgot_pwd_dialog{
-    position:absolute; display:block; z-index:204; width:400px; height:220px; padding:30px 0;
-    background:#EFEFEF; text-align:center; line-height:1.5em;
-    /*-moz-opacity: 0.5; opacity: 0.5; filter: alpha(opacity=50); -khtml-opacity: 0.5;*/
-}
-.identity_forgot_pwd_dialog div{
-    clear:both; width:380px; padding:5px; margin:auto; overflow:hidden;
-}
-.identity_forgot_pwd_dialog input.inputText{ height:28px;line-height:17px;border:#c5c5c5 1px solid;width:218px;float:left;margin-left:8px; background-color: transparent; font:18px Verdana; }
-.identity_forgot_pwd_dialog label{width:110px;height:28px; padding-top:5px; float:left;text-align:right; font-size:14px; }
-.identity_forgot_pwd_dialog #submit_loading_btn{
-    position:absolute; height:16px; width:16px; z-index:205px; margin-left:115px; margin-top:3px;
-    background:url(/static/images/loading_a.gif) no-repeat 0 0;
-}
 #close_reg_msg_btn,
 #close_reg_success_dialog_btn,
 #fogot_verify_btn,
@@ -250,9 +243,9 @@ b.r3{margin: 0px}
 .identity_dialog_main ul label.title{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
 .identity_dialog_main ul li input.inputText{
     width:210px; height:26px; line-height:17px; border:#c5c5c5 1px solid;
-    float:left; margin-left:8px; background-color:#FFF; font:18px Verdana;
+    float:left; margin-left:4px; background-color:#FFF; font:18px Verdana;
 }
-.identity_dialog_main ul li .identity_box{ position:absolute; margin-top:0px; margin-left:118px; z-index:203; overflow:hidden; }
+.identity_dialog_main ul li .identity_box{ position:absolute; margin-top:0px; margin-left:114px; z-index:203; overflow:hidden; }
 .identity_dialog_main ul li #identity_dbox{ position:absolute; height:21px; width:214px; padding-left:4px; line-height:15px; color:#CCC; padding-top:2px; margin-top:0px; margin-left:118px; z-index:202; padding-top:7px; font-size:18px; }
 .identity_dialog_main .loginbtn p .dx{width:55px;height:15px;position:absolute;top:10px;}
 .identity_dialog_main h3{font-size:19px;line-height:25px;text-align:center;}
@@ -308,12 +301,12 @@ b.r3{margin: 0px}
 .identity_dialog_main .sign_up_btn:hover { font-style:italic; }
 .identity_dialog_main ul li p{height:26px;width:60px;margin:0 auto;}
 .identity_dialog_main ul li em{
-    float:left; width:30px; height:20px; cursor:pointer; margin-top:5px;
+    float:left; width:25px; height:20px; cursor:pointer; margin-top:5px;
     background:url(/static/images/icons.png) no-repeat;
 }
-.identity_dialog_main ul li em.ic1{background-position:8px -284px;}
-.identity_dialog_main ul li em.ic2{background-position:8px -330px;}
-.identity_dialog_main ul li em.ic3{background-position:8px -374px;}
+.identity_dialog_main ul li em.ic1{background-position:4px -284px;}
+.identity_dialog_main ul li em.ic2{background-position:4px -330px;}
+.identity_dialog_main ul li em.ic3{background-position:4px -374px;}
 .identity_dialog_main ul li em.loading{
     position:absolute; display:block; width:16px; height:16px;
     margin-left:340px; margin-top:8px; z-index:203; cursor:default;
@@ -324,7 +317,10 @@ b.r3{margin: 0px}
     margin-left:310px; margin-top:8px; z-index:203; cursor:pointer;
     background:url(/static/images/icons.png) no-repeat left -691px;
 }
-.identity_dialog_main ul li em.warning{  background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;margin-left:8px}
+.identity_dialog_main ul li em.warning{
+    background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;
+    margin-left:4px
+}
 
 .identity_dialog_main ul .logincheck{ height:30px; }
 .identity_dialog_main ul .logincheck input{ margin-left:118px; line-height:200%}
