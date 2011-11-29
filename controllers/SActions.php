@@ -252,10 +252,20 @@ class SActions extends ActionController
         $xShowing  = 0;
         $maxCross  = 20;
         $minCross  = 3;
-        $fetchArgs = array('upcoming_folded'  => 0, 'upcoming_more'  => 1,
-                           'anytime_folded'   => 0, 'anytime_more'   => 0,
-                           'sevenDays_folded' => 0, 'sevenDays_more' => 0,
-                           'later_folded'     => 0, 'later_more'     => 0);
+        $fetchArgs = array(
+            'upcoming_included'  => isset($_GET['upcoming_included'])  && $_GET['upcoming_included']  === 'false' ? 0 : 1,
+            'upcoming_folded'    => isset($_GET['upcoming_folded'])    && $_GET['upcoming_folded']    === 'true'  ? 1 : 0,
+            'upcoming_more'      => isset($_GET['upcoming_more'])      && $_GET['upcoming_more']      === 'false' ? 0 : 1,
+            'anytime_included'   => isset($_GET['anytime_included'])   && $_GET['anytime_included']   === 'false' ? 0 : 1,
+            'anytime_folded'     => isset($_GET['anytime_folded'])     && $_GET['anytime_folded']     === 'true'  ? 1 : 0,
+            'anytime_more'       => isset($_GET['anytime_more'])       && $_GET['anytime_more']       === 'true'  ? 1 : 0,
+            'sevenDays_included' => isset($_GET['sevenDays_included']) && $_GET['sevenDays_included'] === 'false' ? 0 : 1,
+            'sevenDays_folded'   => isset($_GET['sevenDays_folded'])   && $_GET['sevenDays_folded']   === 'true'  ? 1 : 0,
+            'sevenDays_more'     => isset($_GET['sevenDays_more'])     && $_GET['sevenDays_more']     === 'true'  ? 1 : 0,
+            'later_included'     => isset($_GET['later_included'])     && $_GET['later_included']     === 'false' ? 0 : 1,
+            'later_folded'       => isset($_GET['later_folded'])       && $_GET['later_folded']       === 'true'  ? 1 : 0,
+            'later_more'         => isset($_GET['later_more'])         && $_GET['later_more']         === 'true'  ? 1 : 0,
+        );
         // sort upcoming crosses
         foreach ($futureXs as $crossI => $crossItem) {
             $futureXs[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
