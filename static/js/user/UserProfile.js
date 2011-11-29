@@ -61,15 +61,35 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.getCross = function() {
-        $.ajax({
-            type     : 'GET',
-            url      : site_url + '/s/getcross',
-            dataType : 'json',
-            success  : function(data) {
-                console.log(data);
+    ns.makeCross = function(data) {
+        var crosses = {};
+        for (var i in data) {
+            var confirmed = [];
+            for (var j in data[i].exfee) {
+                if (parseInt(data[i].exfee[j].rsvp) === 1) {
+                    confirmed.push(data[i].exfee[j].name);
+                }
             }
-        });
+            if (confirmed.length) {
+                confirmed = confirmed.length+' of '+data[i].exfee.length
+                          + ' confirmed: '  + confirmed.join(', ');
+            } else {
+                confirmed = '0 of '+data[i].exfee.length+' confirmed';
+            }
+            var strCross = '<a class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
+                         +     '<div class="cross">'
+                         +         '<h5>' + data[i]['title'] + '</h5>'
+                         +         '<p>' + data[i]['begin_at'] + '</p>'
+                         +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <span>(' + data[i]['place_line2'] + ')</span>') : '') + '</p>'
+                         +         '<p>' + confirmed + '</p>'
+                         +     '</div>'
+                         + '</a>';
+            if (!crosses[data[i]['sort']]) {
+                crosses[data[i]['sort']] = '';
+            }
+            crosses[data[i]['sort']] += strCross;
+        }
+        return crosses;
     };
 
 
@@ -92,35 +112,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 if (data && (data.error || data.length === 0)) {
                     return;
                 }
-                var crosses = {};
+                var crosses   = odof.user.profile.makeCross(data),
+                    fetchArgs = null;
                 $('#cross_list > .category').hide();
-                for (var i in data) {
-                    var confirmed = [];
-                    for (var j in data[i].exfee) {
-                        if (parseInt(data[i].exfee[j].rsvp) === 1) {
-                            confirmed.push(data[i].exfee[j].name);
-                        }
-                    }
-                    if (confirmed.length) {
-                        confirmed = confirmed.length+' of '+data[i].exfee.length
-                                  + ' confirmed: '  + confirmed.join(', ');
-                    } else {
-                        confirmed = '0 of '+data[i].exfee.length+' confirmed';
-                    }
-                    var strCross = '<a class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
-                                 +     '<div class="cross">'
-                                 +         '<h5>' + data[i]['title'] + '</h5>'
-                                 +         '<p>' + data[i]['begin_at'] + '</p>'
-                                 +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <span>(' + data[i]['place_line2'] + ')</span>') : '') + '</p>'
-                                 +         '<p>' + confirmed + '</p>'
-                                 +     '</div>'
-                                 + '</a>';
-                    if (!crosses[data[i]['sort']]) {
-                        crosses[data[i]['sort']] = '';
-                    }
-                    crosses[data[i]['sort']] += strCross;
-                }
-                var fetchArgs = null;
                 if (typeof localStorage !== 'undefined') {
                     fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
                     try {
@@ -129,7 +123,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         fetchArgs = {};
                     }
                 }
-                for (i in crosses) {
+                for (var i in crosses) {
                     var xCtgrId = '#xType_' + i,
                         xListId = xCtgrId + ' > .crosses';
                     $(xListId).html(crosses[i]);
@@ -174,10 +168,33 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 if (data && (data.error || data.length === 0)) {
                     return;
                 }
-                console.log(data);
+                var crosses   = odof.user.profile.makeCross(data),
+                    fetchArgs = null;
+                $('#cross_list > .category').hide();
+                if (typeof localStorage !== 'undefined') {
+                    fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
+                    try {
+                        fetchArgs = JSON.parse(fetchArgs);
+                    } catch (err) {
+                        fetchArgs = {};
+                    }
+                }
+                for (var i in crosses) {
+                    var xCtgrId = '#xType_' + i,
+                        xListId = xCtgrId + ' > .crosses';
+                    $(xListId).html(crosses[i]);
+                    if (crosses[i]) {
+                        $(xCtgrId).show();
+                    }
+                    if (typeof fetchArgs[i + '_folded'] !== 'undefined'
+                            && fetchArgs[i + '_folded']) {
+                        $(xCtgrId + ' > .category_title > .arrow').removeClass('arrow').addClass('arrow_up');
+                        $(xListId).hide();
+                        $(xCtgrId + ' > .more_or_less').hide();
+                    }
+                }
             }
         });
-        console.log();
     };
 
 
