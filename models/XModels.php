@@ -107,7 +107,9 @@ class XModels extends DataModel
     }
 
 
-    public function fetchCross($userid, $begin_at = 0, $opening = 'yes', $order_by = 'begin_at', $limit = null, $actions = '')
+    public function fetchCross($userid, $begin_at = 0, $opening = 'yes',
+                               $order_by = '`begin_at`', $limit = null,
+                               $actions  = '')
     {
         // Get user identities
         $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid};";
@@ -143,7 +145,7 @@ class XModels extends DataModel
                 $strTime = "AND `begin_at` <  FROM_UNIXTIME({$begin_at})
                             AND `begin_at` <> 0";
                 break;
-            case 'nodate':
+            case 'anytime':
                 $strTime = "AND `begin_at`  = 0";
                 break;
             default:

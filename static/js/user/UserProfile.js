@@ -1,8 +1,11 @@
-var moduleNameSpace = "odof.user.profile";
+var moduleNameSpace = 'odof.user.profile';
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
 (function(ns){
+
+    ns.strLsKey = 'profile_cross_fetchArgs';
+
 
     ns.saveUsername = function(name) {
         var poststr="name="+name;
@@ -71,9 +74,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.getCross = function() {
+        var fetchArgs = null;
+        if (typeof localStorage !== 'undefined') {
+            fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
+            try {
+                fetchArgs = JSON.parse(fetchArgs);
+            } catch (err) {
+                fetchArgs = {};
+            }
+        }
         $.ajax({
             type     : 'GET',
             url      : site_url + '/s/getcross',
+            data     : fetchArgs,
             dataType : 'json',
             success  : function(data) {
                 if (data && (data.error || data.length === 0)) {
@@ -107,10 +120,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                     crosses[data[i]['sort']] += strCross;
                 }
+                var fetchArgs = null;
+                if (typeof localStorage !== 'undefined') {
+                    fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
+                    try {
+                        fetchArgs = JSON.parse(fetchArgs);
+                    } catch (err) {
+                        fetchArgs = {};
+                    }
+                }
                 for (i in crosses) {
-                    $('#xType_' + i + ' > .crosses').html(crosses[i]);
+                    var xCtgrId = '#xType_' + i,
+                        xListId = xCtgrId + ' > .crosses';
+                    $(xListId).html(crosses[i]);
                     if (crosses[i]) {
-                        $('#xType_' + i).show();
+                        $(xCtgrId).show();
+                    }
+                    if (typeof fetchArgs[i + '_folded'] !== 'undefined'
+                            && fetchArgs[i + '_folded']) {
+                        $(xCtgrId + ' > .category_title > .arrow').removeClass('arrow').addClass('arrow_up');
+                        $(xListId).hide();
                     }
                 }
             }
@@ -262,9 +291,7 @@ $(document).ready(function() {
             $('#profile_name').html("<input id='edit_profile_name' value='"+$('#profile_name').html()+"'>");
             $('#profile_name').attr("status","edit");
             $('#changeavatar').show();
-        }
-        else
-        {
+        } else {
             var name_val=$("#edit_profile_name").val();
             $('#profile_name').html(name_val);
             odof.user.profile.saveUsername(name_val);
@@ -310,15 +337,33 @@ $(document).ready(function() {
         while (!$(objEvent).hasClass('category')) {
             objEvent = objEvent.parentNode;
         }
-        var objArrow  = null;
+        var fetchArgs = null,
+            objArrow  = null,
+            bolFolded = false,
+            strXType  = objEvent.id.split('_')[1];
+        if (typeof localStorage !== 'undefined') {
+            fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
+            try {
+                fetchArgs = JSON.parse(fetchArgs);
+            } catch (err) {
+                fetchArgs = {};
+            }
+        }
         if ((objArrow
           = $('#' + objEvent.id + ' > .category_title > .arrow')).length) {
             objArrow.removeClass('arrow').addClass('arrow_up');
             $('#' + objEvent.id + ' > .crosses').hide();
+            bolFolded = true;
         } else if ((objArrow
           = $('#' + objEvent.id + ' > .category_title > .arrow_up')).length) {
             objArrow.removeClass('arrow_up').addClass('arrow');
             $('#' + objEvent.id + ' > .crosses').show();
+            bolFolded = false;
+        }
+        if (fetchArgs) {
+            fetchArgs[strXType + '_folded'] = bolFolded;
+            localStorage.setItem(odof.user.profile.strLsKey,
+                                 JSON.stringify(fetchArgs));
         }
     });
 

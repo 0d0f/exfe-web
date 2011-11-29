@@ -102,6 +102,13 @@
                 </div>
                 <div class="crosses"></div>
             </div>
+            <div id="xType_anytime" class="category">
+                <div class="category_title">
+                    No date
+                    <img src="/static/images/translation.gif" class="arrow"/>
+                </div>
+                <div class="crosses"></div>
+            </div>
             <div id="xType_sevenDays" class="category">
                 <div class="category_title">
                     Next 7 days
