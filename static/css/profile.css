@@ -142,6 +142,9 @@ em {
     text-align: right;
     margin-bottom: 20px;
 }
+.more_or_less a {
+    text-decoration: underline;
+}
 
 
 /* edit user by Handaoliang */

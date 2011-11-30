@@ -262,8 +262,8 @@ class SActions extends ActionController
             $fetchArgs['past_quantity'] = intval($_GET['past_quantity']);
         }
         if ($fetchArgs['upcoming_included']
-         && $fetchArgs['sevenDays_included']
-         && $fetchArgs['later_included']) {
+         || $fetchArgs['sevenDays_included']
+         || $fetchArgs['later_included']) {
             $futureXs  = $modCross->fetchCross($_SESSION['userid'], $today,
                                                'yes', '`begin_at` DESC');
         }
@@ -283,8 +283,8 @@ class SActions extends ActionController
         $minCross  = 3;
         // sort upcoming crosses
         if ($fetchArgs['upcoming_included']
-         && $fetchArgs['sevenDays_included']
-         && $fetchArgs['later_included']) {
+         || $fetchArgs['sevenDays_included']
+         || $fetchArgs['later_included']) {
             foreach ($futureXs as $crossI => $crossItem) {
                 $futureXs[$crossI]['timestamp']
               = strtotime($crossItem['begin_at']);
