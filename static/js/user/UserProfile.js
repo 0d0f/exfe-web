@@ -151,46 +151,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $.ajax({
             type     : 'GET',
             url      : site_url + '/s/getcross',
-            data     : {
-                'upcoming_included'  : strXType === 'upcoming',
-                'upcoming_more'      : true,
-                'anytime_included'   : strXType === 'anytime',
-                'anytime_more'       : true,
-                'sevenDays_included' : strXType === 'sevenDays',
-                'sevenDays_more'     : true,
-                'later_included'     : strXType === 'later',
-                'later_more'         : true,
-                'past_included'      : strXType === 'past',
-                'past_more'          : true
-            },
+            data     : {'upcoming_included'  : strXType === 'upcoming',
+                        'upcoming_more'      : true,
+                        'anytime_included'   : strXType === 'anytime',
+                        'anytime_more'       : true,
+                        'sevenDays_included' : strXType === 'sevenDays',
+                        'sevenDays_more'     : true,
+                        'later_included'     : strXType === 'later',
+                        'later_more'         : true,
+                        'past_included'      : strXType === 'past',
+                        'past_more'          : true},
             dataType : 'json',
             success  : function(data) {
                 if (data && (data.error || data.length === 0)) {
                     return;
                 }
-                var crosses   = odof.user.profile.makeCross(data),
-                    fetchArgs = null;
-                $('#cross_list > .category').hide();
-                if (typeof localStorage !== 'undefined') {
-                    fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
-                    try {
-                        fetchArgs = JSON.parse(fetchArgs);
-                    } catch (err) {
-                        fetchArgs = {};
-                    }
-                }
+                var crosses   = odof.user.profile.makeCross(data);
                 for (var i in crosses) {
-                    var xCtgrId = '#xType_' + i,
-                        xListId = xCtgrId + ' > .crosses';
-                    $(xListId).html(crosses[i]);
                     if (crosses[i]) {
-                        $(xCtgrId).show();
-                    }
-                    if (typeof fetchArgs[i + '_folded'] !== 'undefined'
-                            && fetchArgs[i + '_folded']) {
-                        $(xCtgrId + ' > .category_title > .arrow').removeClass('arrow').addClass('arrow_up');
-                        $(xListId).hide();
-                        $(xCtgrId + ' > .more_or_less').hide();
+                        $('#xType_' + i + ' > .crosses').html(crosses[i]);
                     }
                 }
             }
