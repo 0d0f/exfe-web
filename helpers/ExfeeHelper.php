@@ -54,7 +54,7 @@ class ExfeeHelper extends ActionController
                     }
                     continue;
                 }
-                
+
                 $newExfees[$identity_id]=$confirmed;
                 //array_push($newExfees, $identity_id);
             }
@@ -67,6 +67,7 @@ class ExfeeHelper extends ActionController
             }
 
             $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
+            $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
         }
         if($addrelation==TRUE)
         {
@@ -82,7 +83,7 @@ class ExfeeHelper extends ActionController
                     $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
                     $delExfees[$identity_id]=$confirmed;
                     //array_push($delExfees, $identity_id);
-                    
+
                 }
             }
         }
