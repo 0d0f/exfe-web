@@ -1,4 +1,5 @@
 <?php include "share/header.php"; ?>
+<?php global $exfe_res;?>
 <script type="text/javascript" src="/static/js/libs/showdown.js"></script>
 <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
 <script type="text/javascript" src="/static/js/apps/gather.js"></script>
@@ -19,13 +20,13 @@
 <ul>
 
     <li>
-        <label class="title">Title</label>
+        <label class="title"><?php echo $exfe_res["gather"]["Title"];?></label>
         <input type="text" name="title" id="g_title" class="gather_blur" value="<?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?>" />
     </li>
 
     <li id="gather_desc_blank">
-        <div id="gather_desc_bg" class="gather_blur">Write some words about this X.</div>
-        <label class="description">Description</label>
+        <div id="gather_desc_bg" class="gather_blur"><?php echo $exfe_res["gather"]["Write_some_words_about_this_X"];?></div>
+        <label class="description"><?php echo $exfe_res["gather"]["Description"];?></label>
         <textarea name="description" id="g_description"></textarea>
     </li>
 

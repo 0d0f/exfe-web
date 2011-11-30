@@ -14,5 +14,6 @@ $resque_server="127.0.0.1:6379";
 define("RESQUE_SERVER", "127.0.0.1:6379");
 
 define('COOKIES_DOMAIN', '.exfe.com');
+define('INTL_RESOURCES', '/Users/huoju/www/exfe/intl');
 
 define("EmailPost_Key","589895idklf873iu3D1kkjdkja");

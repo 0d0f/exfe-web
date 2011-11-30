@@ -1,6 +1,12 @@
 <?php
 
+require_once("config.php");
+
 define("EXFE_PUB_KEY","h_#%2)a^n!@7d@a0*o!l&i)a%n#@g&*2");
+
+$locale=Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+$exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
+
 
 /*
  * 判断并获取GET数据
