@@ -101,6 +101,7 @@
                     <img src="/static/images/translation.gif" class="arrow"/>
                 </div>
                 <div class="crosses"></div>
+                <div class="more_or_less"></div>
             </div>
             <div id="xType_anytime" class="category">
                 <div class="category_title">
@@ -108,6 +109,7 @@
                     <img src="/static/images/translation.gif" class="arrow"/>
                 </div>
                 <div class="crosses"></div>
+                <div class="more_or_less"><a>more...</a></div>
             </div>
             <div id="xType_sevenDays" class="category">
                 <div class="category_title">
@@ -115,6 +117,7 @@
                     <img src="/static/images/translation.gif" class="arrow"/>
                 </div>
                 <div class="crosses"></div>
+                <div class="more_or_less"><a>more...</a></div>
             </div>
             <div id="xType_later" class="category">
                 <div class="category_title">
@@ -122,6 +125,7 @@
                     <img src="/static/images/translation.gif" class="arrow"/>
                 </div>
                 <div class="crosses"></div>
+                <div class="more_or_less"><a>more...</a></div>
             </div>
             <div id="xType_past" class="category">
                 <div class="category_title">
