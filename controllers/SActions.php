@@ -257,11 +257,19 @@ class SActions extends ActionController
             'past_folded'        => isset($_GET['past_folded'])        && $_GET['past_folded']        === 'true'  ? 1 : 0,
             'past_more'          => isset($_GET['past_more'])          && $_GET['past_more']          === 'true'  ? 1 : 0,
         );
-        $futureXs  = $modCross->fetchCross($_SESSION['userid'], $today, 'yes',
-                                           '`begin_at` DESC');
+        $fetchArgs['past_quantity'] = 0;
+        if (isset($_GET['past_quantity'])) {
+            $fetchArgs['past_quantity'] = intval($_GET['past_quantity']);
+        }
+        if ($fetchArgs['upcoming_included']
+         && $fetchArgs['sevenDays_included']
+         && $fetchArgs['later_included']) {
+            $futureXs  = $modCross->fetchCross($_SESSION['userid'], $today,
+                                               'yes', '`begin_at` DESC');
+        }
         if ($fetchArgs['past_included']) {
             $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today,
-                                               'no', '`begin_at` DESC');
+                                               'no',  '`begin_at` DESC');
         }
         if ($fetchArgs['anytime_included']) {
             $anytimeXs = $modCross->fetchCross($_SESSION['userid'], 0,
@@ -274,16 +282,21 @@ class SActions extends ActionController
         $maxCross  = 20;
         $minCross  = 3;
         // sort upcoming crosses
-        foreach ($futureXs as $crossI => $crossItem) {
-            $futureXs[$crossI]['timestamp'] = strtotime($crossItem['begin_at']);
-            if (!$fetchArgs['upcoming_included']) {
-                continue;
-            }
-            if ($futureXs[$crossI]['timestamp'] < $upcoming) {
-                $futureXs[$crossI]['sort'] = 'upcoming';
-                array_push($crosses, $futureXs[$crossI]);
-                $xShowing += !$fetchArgs['upcoming_folded'] ? 1 : 0;
-                unset($futureXs[$crossI]);
+        if ($fetchArgs['upcoming_included']
+         && $fetchArgs['sevenDays_included']
+         && $fetchArgs['later_included']) {
+            foreach ($futureXs as $crossI => $crossItem) {
+                $futureXs[$crossI]['timestamp']
+              = strtotime($crossItem['begin_at']);
+                if (!$fetchArgs['upcoming_included']) {
+                    continue;
+                }
+                if ($futureXs[$crossI]['timestamp'] < $upcoming) {
+                    $futureXs[$crossI]['sort'] = 'upcoming';
+                    array_push($crosses, $futureXs[$crossI]);
+                    $xShowing += !$fetchArgs['upcoming_folded'] ? 1 : 0;
+                    unset($futureXs[$crossI]);
+                }
             }
         }
         // sort anytime crosses
@@ -291,12 +304,18 @@ class SActions extends ActionController
             $xQuantity = !$fetchArgs['anytime_more'] && $xShowing >= $maxCross
                        ? $minCross : 0;
             $iQuantity = 0;
+            $enough    = false;
             foreach ($anytimeXs as $crossItem) {
+                if ($enough) {
+                    array_push($crosses,
+                               array('sort'=>'anytime', 'more'=>true));
+                    continue;
+                }
                 $crossItem['sort'] = 'anytime';
                 array_push($crosses, $crossItem);
                 $xShowing += !$fetchArgs['anytime_folded'] ? 1 : 0;
                 if ($xQuantity && ++$iQuantity >= $xQuantity) {
-                    break;
+                    $enough = true;
                 }
             }
             unset($anytimeXs);
@@ -306,15 +325,21 @@ class SActions extends ActionController
             $xQuantity = !$fetchArgs['sevenDays_more'] && $xShowing >= $maxCross
                        ? $minCross : 0;
             $iQuantity = 0;
+            $enough    = false;
             foreach ($futureXs as $crossI => $crossItem) {
                 if ($crossItem['timestamp'] >= $upcoming
                  && $crossItem['timestamp'] <  $sevenDays) {
+                    if ($enough) {
+                        array_push($crosses,
+                                   array('sort'=>'sevenDays', 'more'=>true));
+                        continue;
+                    }
                     $crossItem['sort'] = 'sevenDays';
                     array_push($crosses, $crossItem);
                     $xShowing += !$fetchArgs['sevenDays_folded'] ? 1 : 0;
                     unset($futureXs[$crossI]);
                     if ($xQuantity && ++$iQuantity >= $xQuantity) {
-                        break;
+                        $enough = true;
                     }
                 }
             }
@@ -324,14 +349,20 @@ class SActions extends ActionController
             $xQuantity = !$fetchArgs['later_more'] && $xShowing >= $maxCross
                        ? $minCross : 0;
             $iQuantity = 0;
+            $enough    = false;
             foreach ($futureXs as $crossItem) {
                 if ($crossItem['timestamp'] >= $sevenDays) {
+                    if ($enough) {
+                        array_push($crosses,
+                                   array('sort'=>'later', 'more'=>true));
+                        continue;
+                    }
                     $crossItem['sort'] = 'later';
                     array_push($crosses, $crossItem);
                     $xShowing += !$fetchArgs['later_folded'] ? 1 : 0;
                     unset($futureXs[$crossI]);
                     if ($xQuantity && ++$iQuantity >= $xQuantity) {
-                        break;
+                        $enough = true;
                     }
                 }
             }
@@ -342,12 +373,21 @@ class SActions extends ActionController
             $xQuantity = !$fetchArgs['past_more'] && $xShowing >= $maxCross
                        ? $minCross : 0;
             $iQuantity = 0;
+            $enough    = false;
             foreach ($pastXs as $crossItem) {
+                if ($fetchArgs['past_quantity']-- > 0) {
+                    continue;
+                }
+                if ($enough) {
+                    array_push($crosses,
+                               array('sort'=>'past', 'more'=>true));
+                    continue;
+                }
                 $crossItem['sort'] = 'past';
                 array_push($crosses, $crossItem);
                 $xShowing += !$fetchArgs['past_folded'] ? 1 : 0;
                 if ($xQuantity && ++$iQuantity >= $xQuantity) {
-                    break;
+                    $enough = true;
                 }
             }
             unset($pastXs);

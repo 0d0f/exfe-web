@@ -62,8 +62,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.makeCross = function(data) {
-        var crosses = {};
+        var result = {crosses : {}, more : {}};
         for (var i in data) {
+            if (!result['crosses'][data[i]['sort']]) {
+                result['crosses'][data[i]['sort']] = '';
+                result['more'][data[i]['sort']] = 0;
+            }
+            if (data[i]['more']) {
+                result['more'][data[i]['sort']]++;
+                continue;
+            }
             var confirmed = [];
             for (var j in data[i].exfee) {
                 if (parseInt(data[i].exfee[j].rsvp) === 1) {
@@ -71,12 +79,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             if (confirmed.length) {
-                confirmed = confirmed.length+' of '+data[i].exfee.length
-                          + ' confirmed: '  + confirmed.join(', ');
+                confirmed = confirmed.length + ' of ' + data[i].exfee.length
+                          + ' confirmed: '   + confirmed.join(', ');
             } else {
-                confirmed = '0 of '+data[i].exfee.length+' confirmed';
+                confirmed = '0 of ' + data[i].exfee.length + ' confirmed';
             }
-            var strCross = '<a class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
+            var strCross = '<a id="past_cross_' + data[i]['id'] + '" class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
                          +     '<div class="cross">'
                          +         '<h5>' + data[i]['title'] + '</h5>'
                          +         '<p>' + data[i]['begin_at'] + '</p>'
@@ -84,12 +92,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                          +         '<p>' + confirmed + '</p>'
                          +     '</div>'
                          + '</a>';
-            if (!crosses[data[i]['sort']]) {
-                crosses[data[i]['sort']] = '';
-            }
-            crosses[data[i]['sort']] += strCross;
+            result['crosses'][data[i]['sort']] += strCross;
         }
-        return crosses;
+        return result;
     };
 
 
@@ -123,18 +128,31 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         fetchArgs = {};
                     }
                 }
-                for (var i in crosses) {
+                for (var i in crosses['crosses']) {
                     var xCtgrId = '#xType_' + i,
                         xListId = xCtgrId + ' > .crosses';
-                    $(xListId).html(crosses[i]);
-                    if (crosses[i]) {
+                    $(xListId).html(crosses['crosses'][i]);
+                    if (crosses['crosses'][i]) {
                         $(xCtgrId).show();
+                    }
+                    if (crosses['more'][i]) {
+                        if (i === 'past') {
+                            endlessScrollAvail = true;
+                        } else {
+                            $(xCtgrId + ' > .more_or_less_area > .more_or_less').show();
+                        }
+                    } else {
+                        if (i === 'past') {
+                            endlessScrollAvail = false;
+                        } else {
+                            $(xCtgrId + ' > .more_or_less_area > .more_or_less').hide();
+                        }
                     }
                     if (typeof fetchArgs[i + '_folded'] !== 'undefined'
                             && fetchArgs[i + '_folded']) {
                         $(xCtgrId + ' > .category_title > .arrow').removeClass('arrow').addClass('arrow_up');
                         $(xListId).hide();
-                        $(xCtgrId + ' > .more_or_less').hide();
+                        $(xCtgrId + ' > .more_or_less_area').hide();
                     }
                 }
             }
@@ -142,12 +160,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.getMoreCross = function(event) {
-        var objEvent = event.target;
-        while (!$(objEvent).hasClass('category')) {
-            objEvent = objEvent.parentNode;
+    ns.rawGetCross = function(strXType) {
+        if (!strXType) {
+            return;
         }
-        var strXType = objEvent.id.split('_')[1];
         $.ajax({
             type     : 'GET',
             url      : site_url + '/s/getcross',
@@ -160,20 +176,53 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         'later_included'     : strXType === 'later',
                         'later_more'         : true,
                         'past_included'      : strXType === 'past',
-                        'past_more'          : true},
+                        'past_more'          : true,
+                        'past_quantity'      : $('#xType_past > .crosses > a').length},
             dataType : 'json',
             success  : function(data) {
                 if (data && (data.error || data.length === 0)) {
                     return;
                 }
                 var crosses   = odof.user.profile.makeCross(data);
-                for (var i in crosses) {
-                    if (crosses[i]) {
-                        $('#xType_' + i + ' > .crosses').html(crosses[i]);
+                for (var i in crosses['crosses']) {
+                    var xCtgrId = '#xType_' + i;
+                    switch (i) {
+                        case 'upcoming':
+                        case 'anytime':
+                        case 'sevenDays':
+                        case 'later':
+                            if (crosses['crosses'][i]) {
+                                $(xCtgrId + ' > .crosses').html(crosses['crosses'][i]);
+                            }
+                            if (crosses['more'][i]) {
+                                $(xCtgrId + ' > .more_or_less_area > .more_or_less').show();
+                            } else {
+                                $(xCtgrId + ' > .more_or_less_area > .more_or_less').hide();
+                            }
+                            break;
+                        case 'past':
+                            if (crosses['crosses'][i]) {
+                                $(xCtgrId + ' > .crosses').append(crosses['crosses'][i]);
+                            }
+                            if (crosses['more'][i]) {
+                                endlessScrollAvail = true;
+                            } else {
+                                endlessScrollAvail = false;
+                            }
+                            endlessScrollDoing = false;
                     }
                 }
             }
         });
+    };
+
+
+    ns.getMoreCross = function(event) {
+        var objEvent = event.target;
+        while (!$(objEvent).hasClass('category')) {
+            objEvent = objEvent.parentNode;
+        }
+        ns.rawGetCross(objEvent.id.split('_')[1]);
     };
 
 
@@ -308,6 +357,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+
+    ns.endlessScroll = function() {
+        if (!endlessScrollAvail) {
+            endlessScrollDoing = false;
+            return;
+        }
+        var objDoc   = $(document);
+        if (objDoc.scrollTop() + odof.util.getClientSize()['height']
+        === objDoc.height()) {
+            if (endlessScrollDoing) {
+                return;
+            }
+            endlessScrollDoing = true;
+            ns.rawGetCross('past');
+        }
+    };
+
 })(ns);
 
 
@@ -383,13 +449,13 @@ $(document).ready(function() {
           = $('#' + objEvent.id + ' > .category_title > .arrow')).length) {
             objArrow.removeClass('arrow').addClass('arrow_up');
             $('#' + objEvent.id + ' > .crosses').hide();
-            $('#' + objEvent.id + ' > .more_or_less').hide();
+            $('#' + objEvent.id + ' > .more_or_less_area').hide();
             bolFolded = true;
         } else if ((objArrow
           = $('#' + objEvent.id + ' > .category_title > .arrow_up')).length) {
             objArrow.removeClass('arrow_up').addClass('arrow');
             $('#' + objEvent.id + ' > .crosses').show();
-            $('#' + objEvent.id + ' > .more_or_less').show();
+            $('#' + objEvent.id + ' > .more_or_less_area').show();
             bolFolded = false;
         }
         if (fetchArgs) {
@@ -418,6 +484,11 @@ $(document).ready(function() {
     });
 
     $('.more_or_less > a').click(odof.user.profile.getMoreCross);
+
+    window.endlessScrollDoing = false;
+    window.endlessScrollAvail = false;
+    window.endlessScrollTimer = setInterval('odof.user.profile.endlessScroll()',
+                                            500);
 
     odof.user.profile.getCross();
     odof.user.profile.getInvitation();

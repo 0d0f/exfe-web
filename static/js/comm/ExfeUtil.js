@@ -1108,4 +1108,16 @@ var odof = {
         return text;
     };
 
+    /**
+     * get browser available size
+     * by Leask
+     */
+    util.getClientSize = function()
+    {
+        return {
+            width  : window.innerWidth  || document.documentElement.clientWidth,
+            height : window.innerHeight || document.documentElement.clientHeight
+        };
+    };
+
 })(odof);
