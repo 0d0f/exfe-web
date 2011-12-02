@@ -45,7 +45,7 @@
         <textarea name="place" id="g_place" ></textarea>
     </li>
 
-    <li style="margin-top:15px;">
+    <li>
         <label class="hostby">Host By</label>
         <input type="text" name="hostby" id="hostby" class="gather_blur" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
     </li>
