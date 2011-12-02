@@ -17,7 +17,7 @@ class Welcomeandactivecode_Job
 
 
         $url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
-        $parturl=substr($url,0,45)."...";
+        $parturl=substr($url,0,35)."...";
         $mail["exfe_title"]='Welcome to EXFE!';
         $mail["link"]=$url;
         $mail["partlink"]=$parturl;
