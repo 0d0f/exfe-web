@@ -160,6 +160,7 @@ body {
 }
 #global_header .user_info .uinfo .myexfefoot a.l{ float:left; }
 #global_header .user_info .uinfo .myexfefoot a.r{ float:right; }
+#global_header .user_info .uinfo .message .info{ margin-top: 20px; }
 
 
 /* Cover effect style control by Handaoliang */
