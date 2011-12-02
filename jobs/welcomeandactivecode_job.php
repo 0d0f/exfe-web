@@ -39,14 +39,16 @@ class Welcomeandactivecode_Job
         $template_body=implode($templates);
         $mail_title=str_replace("%exfe_title%",$mail["exfe_title"],$template_title);
 
+        $mail_body=str_replace("%title%", 'Welcome to EXFE!', $template_body);
+
         $mail_body=str_replace("%name%",$mail["name"],$template_body);
 
         $mail_body=str_replace(
             "%link%",
             '<p>'
-          +     '<span style="font-size:14px; color:#333;">Please click here to verify your identity:</span>'
-          +     "<a style=\"color:#191919; text-decoration: underline;\" href=\"{$mail["link"]}\">{$mail["partlink"]}</a>"
-          + '</p>',
+          .     '<span style="font-size:14px; color:#333;">Please click here to verify your identity:</span>'
+          .     "<a style=\"color:#191919; text-decoration: underline;\" href=\"{$mail["link"]}\">{$mail["partlink"]}</a>"
+          . '</p>',
             $mail_body
         );
 
