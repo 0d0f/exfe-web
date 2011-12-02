@@ -175,7 +175,7 @@ b.r3{margin: 0px}
 .identification_dialog_con { background:#EFEFEF; height:320px; width:400px; overflow:hidden; }
 
 .identification_dialog_con #identification_title_msg{
-    height:25px; font-size:14px; line-height:1em; 
+    height:25px; font-size:14px; line-height:1em;
 }
 
 .identification_dialog_bottom{
@@ -234,7 +234,7 @@ b.r3{margin: 0px}
 #show_identity_box{ color:#666; font-size:18px; font-style:italic; background:transparent; }
 
 /*登录*/
-.identity_dialog_main { 
+.identity_dialog_main {
     position:relative; margin:auto; width:360px; height:285px;
     padding-top:35px; font-size:14px;
 }
@@ -657,6 +657,7 @@ b.r3{margin: 0px}
 .cross_view_container .enable_click { cursor:pointer; }
 .cross_view_container .enable_click:hover { background-color:#D9E8EB; }
 .cross_view_container .cross_titles_textarea{ width:780px; height:45px; font-size:24pt; color:#0591AF; margin-top:10px; }
+.cross_view_centerbg input, .cross_view_centerbg textarea { border: 1px #CCCCCC solid; }
 
 .cross_view_container #cross_desc{ overflow:hidden; width:500px; min-height: 50px; }
 .cross_view_container #cross_desc p{ width:500px; overflow:hidden }
