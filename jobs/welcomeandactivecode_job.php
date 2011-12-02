@@ -18,6 +18,7 @@ class Welcomeandactivecode_Job
 
         $url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
         $parturl=substr($url,0,45)."...";
+        $mail["exfe_title"]='Welcome to EXFE!';
         $mail["link"]=$url;
         $mail["partlink"]=$parturl;
         $mail["name"]=$name;
@@ -37,12 +38,8 @@ class Welcomeandactivecode_Job
         $template_title=$templates[0];
         unset($templates[0]);
         $template_body=implode($templates);
-        $mail_title=str_replace("%exfe_title%",$mail["exfe_title"],$template_title);
-
-        $mail_body=str_replace("%title%", 'Welcome to EXFE!', $template_body);
-
+        $mail_title=str_replace("%title%", $mail["exfe_title"], $template_title);
         $mail_body=str_replace("%name%",$mail["name"],$template_body);
-
         $mail_body=str_replace(
             "%link%",
             '<p>'
@@ -51,7 +48,6 @@ class Welcomeandactivecode_Job
           . '</p>',
             $mail_body
         );
-
         $mail_body=str_replace("%external_identity%",$mail["external_identity"],$mail_body);
         $mail_body=str_replace("%site_url%",$site_url,$mail_body);
 
