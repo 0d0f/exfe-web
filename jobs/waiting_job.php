@@ -14,8 +14,8 @@ class Waiting_Job
                {
                 date_default_timezone_set('GMT');
                 Resque::setBackend(RESQUE_SERVER);
-                $changed_data["queue_name"]="changeemail";
-                $changed_data["jobclass_name"]="changeemail_job";
+                $changed_data["queue_name"]="conversationemail";
+                $changed_data["jobclass_name"]="conversationemail_job";
                 $jobId = Resque::enqueue($arg["queue_name"],$arg["jobclass_name"] , $arg, true);
                 echo "throw back jobid: $jobId\r\n";
                }

@@ -229,7 +229,15 @@ class Conversationemail_Job
 
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_template);
                 //$update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
+                print "====\r\n";
+                print_r($changed_fields);
+                print "====\r\n";
                 $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
+
+                if(trim($changed_fields["title"])!="")
+                    $update_part_body=str_replace("%title_hl%","color: #0591ac;",$update_part_body);
+                else
+                    $update_part_body=str_replace("%title_hl%","",$update_part_body);
                 
                 $datetime=explode(" ",$cross["begin_at"]);
                 $date=$datetime[0];
@@ -243,6 +251,10 @@ class Conversationemail_Job
                 else if($time=="00:00:00")
                     $time="Anytime";
     
+                if(trim($changed_fields["begin_at"])!="")
+                    $update_part_body=str_replace("%beginat_hl%","color: #0591ac;",$update_part_body);
+                else
+                    $update_part_body=str_replace("%beginat_hl%","color: #333333;",$update_part_body);
 
                 #$mail["place_line1"]=$this->args["place_line1"];
                 #$mail["place_line2"]=$this->args["place_line2"];
@@ -251,6 +263,10 @@ class Conversationemail_Job
                     $cross["place_line1"]="Place";
                     $cross["place_line2"]="To be decided.";
                 }
+                if(trim($changed_fields["place_line1"])!=""||trim($changed_fields["place_line2"])!="")
+                    $update_part_body=str_replace("%place_hl%","color: #0591ac;",$update_part_body);
+                else
+                    $update_part_body=str_replace("%place_hl%","color: #333333;",$update_part_body);
 
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
