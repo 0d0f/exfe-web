@@ -1,5 +1,6 @@
 <?php $page="cross";?>
 <?php include "share/header.php"; ?>
+<script type="text/javascript" src="/static/js/libs/showdown.js"></script>
 <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
 <script type="text/javascript" src="/static/js/apps/CrossEdit.js"></script>
 <!-- Exfe Calendar -->

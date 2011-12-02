@@ -170,7 +170,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</form>"
                  + "</div>"
                  + "</div>";
-       
+
         }
 
         //新的找回密码对话框。用户点击Forgot Password进去。
@@ -243,7 +243,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>"
                + "<div style='height:60px;'>"
                + "<p>We know you’re tired of</p>"
-               + "<p>signing up all around.</p>"
+               + "<p>signing up all around.</p>"
                + "</div>"
                + "<div style='height:50px; text-align:left;'>"
                + "So, just authorize with your existing accounts on other websites."
@@ -268,7 +268,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + manual_verification
                + sign_up_msg
                + reg_success
-               + form 
+               + form
                + "</div>"
                + "<div class='identification_dialog_bottom'></div>";
 
@@ -524,7 +524,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             return false;
                         }
                     }
-           
+
                     /*
                     if(jQuery('#retype').is(':visible') == true && password != retypepassword && password!="" ) {
                         jQuery('#pwd_hint').html("<span>Check Password</span>");
@@ -636,7 +636,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                         jQuery("#identification_handler").html("Welcome");
                                         jQuery("#close_reg_success_dialog_btn").bind("click",function(){
                                             window.location.href="/s/profile";
-                                            return; 
+                                            return;
                                             //odof.exlibs.ExDialog.removeDialog();
                                             //odof.exlibs.ExDialog.removeCover();
                                         });
@@ -651,7 +651,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                     jQuery.ajax({
                         type: "GET",
-                        url: site_url+"/identity/get?identity="+identity, 
+                        url: site_url+"/identity/get?identity="+identity,
                         dataType:"json",
                         success: function(data){
                         var exfee_pv="";

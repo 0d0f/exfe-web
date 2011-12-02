@@ -301,14 +301,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.formateString = function(str){
-        var strstr = "0107a88030bfca5e5f72346966901d6a";
-            str = str.replace(/(\r\n|\n|\r)/gm,strstr);
-        var strArr = str.split(strstr);
-        var reString = "";
-        for(var i=0; i<strArr.length; i++){
-            reString += '<p class="text">'+ strArr[i] +'</p>';
-        }
-        return reString;
+        var converter = new Showdown.converter();
+        return converter.makeHtml(str);
     };
 
     /**
