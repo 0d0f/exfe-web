@@ -1215,20 +1215,20 @@ class SActions extends ActionController
     }
 
     public function doActive() {
-        $identity_id=intval($_GET["id"]);
-        $activecode=$_GET["activecode"];
-        if($identity_id>0)
-        {
-            $identityData= $this->getModelByName("identity");
-            $result=$identityData->activeIdentity($identity_id,$activecode);
+        $identity_id = intval($_GET["id"]);
+        $activecode = $_GET["activecode"];
+        if ($identity_id > 0) {
+            $identityData = $this->getModelByName("identity");
+            $result = $identityData->activeIdentity($identity_id,$activecode);
 
             $identity = $identityData->getIdentityById($identity_id);
-            if($result["result"]=="verified")
-            {
+            if($result['result'] === 'verified') {
                 $identityData->loginByIdentityId($identity_id,0,$identity["external_identity"]);
+                header('refresh: 0; url=/s/profile');
+                return;
             }
         }
-        $this->setVar("result",$result);
+        $this->setVar('result',$result);
         $this->displayView();
     }
 
