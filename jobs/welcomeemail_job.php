@@ -35,6 +35,7 @@ class Welcomeemail_Job
         $mail_body = str_replace("%name%",$mail["name"],$template_body);
         $mail_body = str_replace("%external_identity%",$mail["external_identity"],$mail_body);
         $mail_body = str_replace("%site_url%",$site_url,$mail_body);
+        $mail_body = str_replace("%link%", '', $mail_body);
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }
@@ -50,7 +51,7 @@ class Welcomeemail_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));

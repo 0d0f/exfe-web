@@ -32,7 +32,7 @@ class Welcomeandactivecode_Job
     public function getMailBody($mail)
     {
         global $site_url;
-        $template=file_get_contents("welcomeandactivecode_template.html");
+        $template=file_get_contents("welcome_template.html");
         $templates=split("\r|\n",$template);
         $template_title=$templates[0];
         unset($templates[0]);
@@ -40,8 +40,16 @@ class Welcomeandactivecode_Job
         $mail_title=str_replace("%exfe_title%",$mail["exfe_title"],$template_title);
 
         $mail_body=str_replace("%name%",$mail["name"],$template_body);
-        $mail_body=str_replace("%link%",$mail["link"],$mail_body);
-        $mail_body=str_replace("%partlink%",$mail["partlink"],$mail_body);
+
+        $mail_body=str_replace(
+            "%link%",
+            '<p>'
+          +     '<span style="font-size:14px; color:#333;">Please click here to verify your identity:</span>'
+          +     "<a style=\"color:#191919; text-decoration: underline;\" href=\"{$mail["link"]}\">{$mail["partlink"]}</a>"
+          + '</p>',
+            $mail_body
+        );
+
         $mail_body=str_replace("%external_identity%",$mail["external_identity"],$mail_body);
         $mail_body=str_replace("%site_url%",$site_url,$mail_body);
 
@@ -59,7 +67,7 @@ class Welcomeandactivecode_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));
