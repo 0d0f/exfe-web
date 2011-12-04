@@ -229,7 +229,10 @@ class Conversationemail_Job
 
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_template);
                 //$update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
-                $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
+                if($changed_fields["title"]!="")
+                    $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
+                else
+                    $update_part_body=str_replace("%content%",$title,$update_part_body);
 
                 if(trim($changed_fields["title"])!="")
                     $update_part_body=str_replace("%title_hl%","color: #0591ac;",$update_part_body);
@@ -265,9 +268,16 @@ class Conversationemail_Job
                 else
                     $update_part_body=str_replace("%place_hl%","color: #333333;",$update_part_body);
 
+
+                if(trim($changed_fields["title"])!="")
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity ";
+                else
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity ";
+
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
-                $update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
+                $update_part_body=str_replace("%update_title_info%",$update_title_info,$update_part_body);
+                #$update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
                 $update_part_body=str_replace("%place_line1%",$cross["place_line1"],$update_part_body);
                 $update_part_body=str_replace("%place_line2%",$cross["place_line2"],$update_part_body);
                 $update_part_body=str_replace("%exfee_avartar%",$exfee_avartar,$update_part_body);
