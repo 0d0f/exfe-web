@@ -178,7 +178,7 @@ class Conversationemail_Job
             {
 
                 $cross_id = $changed_object["id"];
-                $cross_id_base62 = int_to_base62($changed_object["id"]);
+                $cross_id_base62 = int_to_base62($cross_id);
 
                 $action_identities=$changed_object["action_identity"];
                 $updated_identity="";
@@ -229,9 +229,6 @@ class Conversationemail_Job
 
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_template);
                 //$update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
-                print "====\r\n";
-                print_r($changed_fields);
-                print "====\r\n";
                 $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
 
                 if(trim($changed_fields["title"])!="")
@@ -348,8 +345,8 @@ class Conversationemail_Job
 
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["to"]=$to_identity["external_identity"];
-                $mail["cross_id_base62"]=$cross_id_base62;
                 $mail["cross_id"]=$cross_id;
+                $mail["cross_id_base62"]=int_to_base62($cross_id);
                 if($update_array["id_".$cross_id]!="")
                 {
                     $change_object=$update_array["id_".$cross_id];
@@ -382,8 +379,8 @@ class Conversationemail_Job
                 $mail_body=str_replace("%conversation_part%","",$mail_body);
 
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
-                $mail["cross_id_base62"]=$cross_id_base62;
                 $mail["cross_id"]=$cross_id;
+                $mail["cross_id_base62"]=int_to_base62($cross_id);
 
                 $cross_id=$change_object["id"];
                 if($update_array["id_".$cross_id]!="")
