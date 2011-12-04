@@ -139,7 +139,6 @@ class Conversationemail_Job
         if(sizeof($changed_objects)>0)
             return $changed_objects;
         return NULL;
-        //print_r($args);
     }
     public function perform()
     {
@@ -419,7 +418,6 @@ class Conversationemail_Job
             }
         }
 
-print_r($mails);
         return $mails;
     }
 
