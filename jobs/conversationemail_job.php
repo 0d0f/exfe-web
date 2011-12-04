@@ -270,9 +270,9 @@ class Conversationemail_Job
 
 
                 if(trim($changed_fields["title"])!="")
-                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity ";
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity . ";
                 else
-                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity ";
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity . ";
 
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
@@ -285,7 +285,7 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_body);
                 $update_part_body=str_replace("%site_url%",$site_url,$update_part_body);
 
-                $object=array("content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities,"new_exfee_table"=>$new_exfee_table);
+                $object=array("old_title"=>$title,"content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities,"new_exfee_table"=>$new_exfee_table);
                 $update_array["id_".$cross_id]=$object;
             }
         }
@@ -388,7 +388,7 @@ class Conversationemail_Job
                 $mail_body=str_replace("%site_url%",$site_url,$mail_body);
                 $mail_body=str_replace("%conversation_part%","",$mail_body);
 
-                $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
+                #$mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["cross_id"]=$cross_id;
                 $mail["cross_id_base62"]=int_to_base62($cross_id);
 
@@ -402,6 +402,7 @@ class Conversationemail_Job
                     if($change_object_content)
                     {
                         $mail_body=str_replace("%update_part%",$change_object_content["content"],$mail_body);
+                        $mail["title"]=str_replace("%exfe_title%",$change_object_content["old_title"],$template_title);
                         $mail["body"]=$mail_body;
 
                         foreach($to_identities as $to_identity)
@@ -418,6 +419,7 @@ class Conversationemail_Job
             }
         }
 
+print_r($mails);
         return $mails;
     }
 
