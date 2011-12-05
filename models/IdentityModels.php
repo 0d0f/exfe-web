@@ -444,17 +444,17 @@ class IdentityModels extends DataModel{
     }
     public function getIdentitiesByUser($userid)
     {
-        $sql="select identityid from user_identity where userid=$userid";
+        $sql="select identityid,status from user_identity where userid=$userid";
         $rows=$this->getAll($sql);
         $identities=array();
         foreach($rows as $row)
         {
             if(intval($row["identityid"])>0)
             {
-
                 $identity_id=$row["identityid"];
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
+                $identity["status"]=$row["status"];
                 array_push($identities,$identity);
                 //$identity=;
             }
