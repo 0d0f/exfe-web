@@ -269,9 +269,9 @@ class Conversationemail_Job
 
 
                 if(trim($changed_fields["title"])!="")
-                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity . ";
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity. ";
                 else
-                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity . ";
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity. ";
 
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
