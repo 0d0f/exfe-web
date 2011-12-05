@@ -11,7 +11,7 @@ class Welcomeemail_Job
         global $site_url;
 
         $mail["name"]=$this->args['name'];
-        $mail["title"]="Hello. ".$mail["name"];
+        $mail["title"]='Welcome to EXFE!';
         $mail["external_identity"]=$this->args['external_identity'];
 
         $body=$this->getMailBody($mail);
