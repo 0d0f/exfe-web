@@ -139,7 +139,6 @@ class Conversationemail_Job
         if(sizeof($changed_objects)>0)
             return $changed_objects;
         return NULL;
-        //print_r($args);
     }
     public function perform()
     {
@@ -178,7 +177,7 @@ class Conversationemail_Job
             {
 
                 $cross_id = $changed_object["id"];
-                $cross_id_base62 = int_to_base62($changed_object["id"]);
+                $cross_id_base62 = int_to_base62($cross_id);
 
                 $action_identities=$changed_object["action_identity"];
                 $updated_identity="";
@@ -229,10 +228,10 @@ class Conversationemail_Job
 
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_template);
                 //$update_part_body=str_replace("%content%",$cross["description"],$update_part_body);
-                print "====\r\n";
-                print_r($changed_fields);
-                print "====\r\n";
-                $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
+                if($changed_fields["title"]!="")
+                    $update_part_body=str_replace("%content%",$changed_fields["title"],$update_part_body);
+                else
+                    $update_part_body=str_replace("%content%",$title,$update_part_body);
 
                 if(trim($changed_fields["title"])!="")
                     $update_part_body=str_replace("%title_hl%","color: #0591ac;",$update_part_body);
@@ -268,9 +267,16 @@ class Conversationemail_Job
                 else
                     $update_part_body=str_replace("%place_hl%","color: #333333;",$update_part_body);
 
+
+                if(trim($changed_fields["title"])!="")
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity . ";
+                else
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity . ";
+
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
-                $update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
+                $update_part_body=str_replace("%update_title_info%",$update_title_info,$update_part_body);
+                #$update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
                 $update_part_body=str_replace("%place_line1%",$cross["place_line1"],$update_part_body);
                 $update_part_body=str_replace("%place_line2%",$cross["place_line2"],$update_part_body);
                 $update_part_body=str_replace("%exfee_avartar%",$exfee_avartar,$update_part_body);
@@ -278,7 +284,7 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_body);
                 $update_part_body=str_replace("%site_url%",$site_url,$update_part_body);
 
-                $object=array("content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities,"new_exfee_table"=>$new_exfee_table);
+                $object=array("old_title"=>$title,"content"=>$update_part_body,"cross_id"=>$cross_id,"cross"=>$cross,"to_identity"=>$to_identities,"new_exfee_table"=>$new_exfee_table);
                 $update_array["id_".$cross_id]=$object;
             }
         }
@@ -348,18 +354,22 @@ class Conversationemail_Job
 
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["to"]=$to_identity["external_identity"];
-                $mail["cross_id_base62"]=$cross_id_base62;
                 $mail["cross_id"]=$cross_id;
+                $mail["cross_id_base62"]=int_to_base62($cross_id);
                 if($update_array["id_".$cross_id]!="")
                 {
                     $change_object=$update_array["id_".$cross_id];
                     if($change_object)
                     {
+                        $mail_body=str_replace("%split_line%","<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr>",$mail_body);
                         $mail_body=str_replace("%update_part%",$change_object["content"],$mail_body);
                     }
                 }
                 else
+                {
                         $mail_body=str_replace("%update_part%","",$mail_body);
+                        $mail_body=str_replace("%split_line%","",$mail_body);
+                }
 
                 $mail["body"]=$mail_body;
                 array_push($mails,$mail);
@@ -381,9 +391,9 @@ class Conversationemail_Job
                 $mail_body=str_replace("%site_url%",$site_url,$mail_body);
                 $mail_body=str_replace("%conversation_part%","",$mail_body);
 
-                $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
-                $mail["cross_id_base62"]=$cross_id_base62;
+                #$mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["cross_id"]=$cross_id;
+                $mail["cross_id_base62"]=int_to_base62($cross_id);
 
                 $cross_id=$change_object["id"];
                 if($update_array["id_".$cross_id]!="")
@@ -394,7 +404,12 @@ class Conversationemail_Job
                     $to_identities=$change_object_content["to_identity"];
                     if($change_object_content)
                     {
+                        if($conversation_objects)
+                            $mail_body=str_replace("%split_line%","<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr>",$mail_body);
+                        else
+                            $mail_body=str_replace("%split_line%","",$mail_body);
                         $mail_body=str_replace("%update_part%",$change_object_content["content"],$mail_body);
+                        $mail["title"]=str_replace("%exfe_title%",$change_object_content["old_title"],$template_title);
                         $mail["body"]=$mail_body;
 
                         foreach($to_identities as $to_identity)

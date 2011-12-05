@@ -42,7 +42,10 @@ class XHelper extends ActionController
     {
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
-        $exfee_identity=humanIdentity($exfee_identity,NULL);
+        $userData=$this->getModelByName("user");
+        $user=$userData->getUserProfileByIdentityId($host_identity_id);
+        
+        $exfee_identity=humanIdentity($exfee_identity,$user);
         $cross_id=$new_cross["id"];
 
         $link=SITE_URL.'/!'.int_to_base62($cross_id);
