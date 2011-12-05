@@ -361,11 +361,15 @@ class Conversationemail_Job
                     $change_object=$update_array["id_".$cross_id];
                     if($change_object)
                     {
+                        $mail_body=str_replace("%split_line%","<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr>",$mail_body);
                         $mail_body=str_replace("%update_part%",$change_object["content"],$mail_body);
                     }
                 }
                 else
+                {
                         $mail_body=str_replace("%update_part%","",$mail_body);
+                        $mail_body=str_replace("%split_line%","",$mail_body);
+                }
 
                 $mail["body"]=$mail_body;
                 array_push($mails,$mail);
