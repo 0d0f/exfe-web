@@ -59,7 +59,7 @@ class Conversationemail_Job
 
                         else
                         {
-                            
+
                             $flag=false;
                             for($idx=0; $idx<$newexfee_len;$idx++)
                                 if($cross_changed[$arg["id"]]["identities"]["newexfees"][$idx]["id"]==$identity["id"])
@@ -219,7 +219,7 @@ class Conversationemail_Job
                         $new_exfee_identities_str=$new_exfee_identities_str.'<span class="exfe_mail_identity_name">'.$new_exfee_identity["name"]."</span>,";
                         $new_exfee_table[$new_exfee_identity["external_identity"]]=1;
                     }
-                   
+
                 $new_exfee_identities_str= rtrim($new_exfee_identities_str, ",");
                 if($new_exfee_identities_str!="")
                 {
@@ -237,7 +237,7 @@ class Conversationemail_Job
                     $update_part_body=str_replace("%title_hl%","color: #0591ac;",$update_part_body);
                 else
                     $update_part_body=str_replace("%title_hl%","",$update_part_body);
-                
+
                 $datetime=explode(" ",$cross["begin_at"]);
                 $date=$datetime[0];
                 $time=$datetime[1];
@@ -249,7 +249,7 @@ class Conversationemail_Job
                 }
                 else if($time=="00:00:00")
                     $time="Anytime";
-    
+
                 if(trim($changed_fields["begin_at"])!="")
                     $update_part_body=str_replace("%beginat_hl%","color: #0591ac;",$update_part_body);
                 else
@@ -340,7 +340,7 @@ class Conversationemail_Job
                 {
                     $changed_cross=$changed_objects[$cross_id];
                 }
-                
+
                 $to_identity=$identity_post["to_identity"];
 
                 $conversation_part_body=str_replace("%conversations%",$html,$conversation_part_template);
@@ -361,7 +361,11 @@ class Conversationemail_Job
                     $change_object=$update_array["id_".$cross_id];
                     if($change_object)
                     {
-                        $mail_body=str_replace("%split_line%","<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr>",$mail_body);
+                        $mail_body=str_replace(
+                            "%split_line%",
+                            "<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr><tr><td colspan=\"5\" height=\"20\"></td></tr>",
+                            $mail_body
+                        );
                         $mail_body=str_replace("%update_part%",$change_object["content"],$mail_body);
                     }
                 }
@@ -398,7 +402,7 @@ class Conversationemail_Job
                 $cross_id=$change_object["id"];
                 if($update_array["id_".$cross_id]!="")
                 {
-                
+
                     $change_object_content=$update_array["id_".$cross_id];
                     $new_exfee_table=$change_object_content["new_exfee_table"];
                     $to_identities=$change_object_content["to_identity"];
@@ -422,7 +426,7 @@ class Conversationemail_Job
                         }
                     }
                 }
-                
+
             }
         }
 
@@ -440,7 +444,7 @@ class Conversationemail_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id_base62.'@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $to));

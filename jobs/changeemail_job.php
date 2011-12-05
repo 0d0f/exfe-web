@@ -53,7 +53,7 @@ class Changeemail_Job
 
                         else
                         {
-                            
+
                             $flag=false;
                             for($idx=0; $idx<$newexfee_len;$idx++)
                                 if($cross_changed[$arg["id"]]["identities"]["newexfees"][$idx]["id"]==$identity["id"])
@@ -73,7 +73,7 @@ class Changeemail_Job
                  }
             }
         }
-       
+
 
         foreach($cross_changed as $cross_id=>$changed_data)
         {
@@ -104,7 +104,7 @@ class Changeemail_Job
     {
         global $site_url;
         global $img_url;
-        $template=file_get_contents("conversation_template.html");
+            $template=file_get_contents("conversation_template.html");
         $templates=split("\r|\n",$template);
         $template_title=$templates[0];
         unset($templates[0]);
@@ -196,7 +196,7 @@ class Changeemail_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id_base62.'@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $to));
