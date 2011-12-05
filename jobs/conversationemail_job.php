@@ -276,6 +276,7 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
                 $update_part_body=str_replace("%update_title_info%",$update_title_info,$update_part_body);
+                $update_part_body=str_replace("%cross_link%",$site_url . "/!{$cross_id_base62}",$update_part_body);
                 #$update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
                 $update_part_body=str_replace("%place_line1%",$cross["place_line1"],$update_part_body);
                 $update_part_body=str_replace("%place_line2%",$cross["place_line2"],$update_part_body);

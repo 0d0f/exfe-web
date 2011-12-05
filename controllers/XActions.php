@@ -221,7 +221,7 @@ class XActions extends ActionController
                 $new_identities[$idx]["rsvp"]=$newExfees[$new_identities[$idx]["id"]];
             for($idx=0;$idx<sizeof($del_identities);$idx++)
                 $del_identities[$idx]["rsvp"]=$delExfees[$del_identities[$idx]["id"]];
-            
+
             $changed_identity["delexfees"]=$del_identities;
             $changed_identity["newexfees"]=$new_identities;
             //$allExfee_ids
