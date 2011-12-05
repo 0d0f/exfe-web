@@ -400,6 +400,10 @@ class Conversationemail_Job
                     $to_identities=$change_object_content["to_identity"];
                     if($change_object_content)
                     {
+                        if($conversation_objects)
+                            $mail_body=str_replace("%split_line%","<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr>",$mail_body);
+                        else
+                            $mail_body=str_replace("%split_line%","",$mail_body);
                         $mail_body=str_replace("%update_part%",$change_object_content["content"],$mail_body);
                         $mail["title"]=str_replace("%exfe_title%",$change_object_content["old_title"],$template_title);
                         $mail["body"]=$mail_body;
