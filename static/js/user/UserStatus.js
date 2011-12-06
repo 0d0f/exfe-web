@@ -58,8 +58,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.doSendEmail = function(userIdentity, doActions){
         var actionURI = site_url+"/s/sendActiveEmail";
-        if(typeof doActions != "undefined" && doActions == 'verification'){
-            actionURI = site_url+"/s/SendVerification";
+        if(typeof doActions != "undefined" && doActions == 'resetPassword'){
+            actionURI = site_url+"/s/SendResetPasswordMail";
         }
         var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         if(userIdentity != "" && userIdentity.match(mailReg)){
@@ -334,7 +334,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
         jQuery("#fogot_verify_btn").unbind("click");
         jQuery("#fogot_verify_btn").bind("click",function(){
-            ns.doSendEmail(userIdentity,"verification");
+            ns.doSendEmail(userIdentity,"resetPassword");
         });
         
     };

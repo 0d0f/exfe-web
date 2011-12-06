@@ -1148,7 +1148,7 @@ class SActions extends ActionController
      * 忘记密码发送验证邮件
      *
      **/
-    public function doSendVerification()
+    public function doSendResetPasswordMail()
     {
         $returnData = array(
             "error" => 0,
