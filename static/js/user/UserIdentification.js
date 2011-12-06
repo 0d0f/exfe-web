@@ -49,7 +49,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var title="", form="";
         if(type == "reg_login") {
             title="Identification";
-            /*//备注，这是原来Twitter登录等的样式。暂时取消掉。
+            /*
+            //备注，这是原来Twitter登录等的样式。暂时取消掉。
             desc="<div class='dialog_titles'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/twitter.png' alt='' width='32' height='32' />"
@@ -209,8 +210,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>"
                + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
                + "<a id='manual_startover' class='startover'>Start Over</a>"
-               + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;'>I See</a>&nbsp;&nbsp;"
-               + "<input type='button' id='manual_verification_btn' value='Done' />"
+               + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;display:none;'>I See</a>&nbsp;&nbsp;"
+               + "<input type='button' id='manual_verification_btn' value='Verify' />"
                + "</div>"
                + "</div>";
 
@@ -344,6 +345,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery("#manual_verification_hint_box").html(msg);
         });
 
+        /*
         jQuery("#cancel_manual_verification_btn").unbind("click");
         jQuery("#cancel_manual_verification_btn").bind("click", function(){
             clearManualVerifyDialog();
@@ -351,6 +353,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.showLoginDialog('init');
             jQuery("#identity").val(jQuery("#manual_verify_identity").val());
         });
+        */
 
         jQuery('#manual_startover').unbind('click');
         jQuery('#manual_startover').bind('click', function(){
@@ -373,7 +376,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#manual_verification_dialog").hide();
                 jQuery('#manual_startover').unbind('click');
                 jQuery("#manual_verification_btn").unbind("click");
-                jQuery("#cancel_manual_verification_btn").unbind("click");
+                //jQuery("#cancel_manual_verification_btn").unbind("click");
         };
 
     };
@@ -431,7 +434,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
-                                ns.showManualVerificationDialog(null, "verification");
+                                ns.showManualVerificationDialog(null, "resetPassword");
                             }else{
                                 ns.showLoginDialog();
                             }
