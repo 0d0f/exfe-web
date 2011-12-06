@@ -873,7 +873,7 @@ class SActions extends ActionController
         //取得变量。
         $identity=$_POST["identity"];
         $password=$_POST["password"];
-        $repassword=$_POST["retypepassword"];
+        //$repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
         if(intval($autosignin)==1){
@@ -882,7 +882,8 @@ class SActions extends ActionController
 
         $isNewIdentity=FALSE;
 
-        if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
+        //if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
+        if($identity!="" && $password!="" && $displayname!="" )
         {
             $Data = $this->getModelByName("user");
             $userid = $Data->AddUser($password);
@@ -932,7 +933,7 @@ class SActions extends ActionController
     {
         $identity=$_POST["identity"];
         $password=$_POST["password"];
-        $repassword=$_POST["retypepassword"];
+        //$repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
         if(intval($autosignin)==1)

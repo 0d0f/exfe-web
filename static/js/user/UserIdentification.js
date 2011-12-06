@@ -286,7 +286,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery('#startover').hide();
         jQuery('#startover').unbind("click");
         jQuery('#logincheck').show();
-        odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
+        //因为取消显示Re-type，所以这个也不需要了。
+        //odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
         ns.actions = "sign_in";
         if(type == 'init'){
             jQuery('#identity').val('');
@@ -422,14 +423,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#sign_in_btn').val("Sign Up");
                             jQuery('input[name=displayname]').val('');
                             jQuery('#identification_pwd').val('');
+                            /*
+                            //取消显示Re-type。
                             jQuery('#identification_rpwd').val('');
                             jQuery('#identification_pwd_a').val('');
+                            */
 
                             jQuery('input[name=displayname]').keyup(function(){
                                 var displayName = this.value;
                                 ns.showDisplayNameError(displayName);
                             });
-                            odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
+                            //取消显示Re-type。
+                            //odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
+                            //换成单Password输入框。并且隐藏。
+                            //odof.comm.func.displayPassword("identification_pwd");
                             jQuery('#identification_pwd').unbind("focus");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
@@ -504,7 +511,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     //var token=params["token"];
                     var identity=jQuery('input[name=identity]').val();
                     var password=jQuery('input[name=password]').val();
-                    var retypepassword=jQuery('input[name=retypepassword]').val();
+                    //var retypepassword=jQuery('input[name=retypepassword]').val();
                     var displayname=jQuery('input[name=displayname]').val();
                     var auto_signin=jQuery('input[name=auto_signin]').val();
 
@@ -543,7 +550,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
-
+                        /*
                         if(retypepassword != password){
                             jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords don't match.</span>");
                             jQuery('#pwd_match_error').show();
@@ -551,6 +558,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
+                        */
                     }
                     if(ns.actions == "sign_in"){
                         if(password == "" || identity == ""){
@@ -612,10 +620,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 }
                             }
                         });
-                    } else if(password!=""&& identity!="" && retypepassword==password &&  displayname!="") {
+                    //} else if(password!=""&& identity!="" && retypepassword==password && displayname!="") {
+                    } else if(password!=""&& identity!="" && displayname!="") {
+                        /*
                         var poststr="identity="+identity+"&password="+encodeURIComponent(password)
                                     +"&repassword="+encodeURIComponent(retypepassword)
                                     +"&displayname="+encodeURIComponent(displayname);
+                        */
+                        var poststr = "identity="+identity
+                                    + "&password="+encodeURIComponent(password)
+                                    + "&displayname="+encodeURIComponent(displayname);
+
                         jQuery.ajax({
                             type: "POST",
                             data: poststr,
