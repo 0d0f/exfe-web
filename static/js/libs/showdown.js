@@ -1085,7 +1085,6 @@ var _FormParagraphs = function(text) {
 			str = _RunSpanGamut(str);
                      // changed by Leask
 		     // str = str.replace(/\n/g,"<br />");  // ** GFM **
-
 			str = str.replace(/^([ \t]*)/g,"<p>");
 			str += "</p>"
 			grafsOut.push(str);

@@ -205,7 +205,7 @@ class Conversationemail_Job
                     foreach($identities as $identity)
                     {
                         $avartar=$img_url."/".getHashFilePath("",$identity["avatar_file_name"])."/80_80_".$identity["avatar_file_name"];
-                        $exfee_avartar.="<img width='40' height='40' src='$avartar'>";
+                        $exfee_avartar.="<img style=\"padding-right: 5px;\" width=\"40\" height=\"40\" src=\"$avartar\">";
                     }
 
                 $new_exfee_identities_str="";
@@ -276,6 +276,7 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
                 $update_part_body=str_replace("%update_title_info%",$update_title_info,$update_part_body);
+                $update_part_body=str_replace("%cross_link%",$site_url . "/!{$cross_id_base62}",$update_part_body);
                 #$update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
                 $update_part_body=str_replace("%place_line1%",$cross["place_line1"],$update_part_body);
                 $update_part_body=str_replace("%place_line2%",$cross["place_line2"],$update_part_body);
