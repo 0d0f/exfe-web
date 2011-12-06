@@ -111,7 +111,7 @@ class Conversationemail_Job
 
             foreach($mails as $mail)
             {
-                $this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id_base62"]);
+                $this->send($mail["title"],$mail["body"],$mail["to"],$mail["cross_id"]);
             }
         }
 
@@ -269,9 +269,9 @@ class Conversationemail_Job
 
 
                 if(trim($changed_fields["title"])!="")
-                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity . ";
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> \"<span style='color: #191919;'>$title</span>\" has been updated by $updated_identity. ";
                 else
-                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity . ";
+                    $update_title_info = "Your <span style='color: #0591ac;'>X</span> has been updated by $updated_identity. ";
 
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
@@ -434,7 +434,7 @@ class Conversationemail_Job
         return $mails;
     }
 
-    public function send($title,$body,$to,$cross_id_base62)
+    public function send($title,$body,$to,$cross_id)
     {
             global $email_connect;
             global $connect_count;
@@ -444,7 +444,7 @@ class Conversationemail_Job
             #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
 
             $body = $mail_mime->get();
-            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id_base62.'@exfe.com', 'Subject' => "$title"));
+            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id.'@exfe.com', 'Subject' => "$title"));
 
             $message = $headers . "\r\n" . $body;
 
