@@ -488,7 +488,7 @@ $(document).ready(function() {
     });
 
     $('.invitation > button').live('click', function(e) {
-        location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
+        location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[2];
     });
 
     $('.more_or_less > a').click(odof.user.profile.getMoreCross);
