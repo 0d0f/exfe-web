@@ -205,7 +205,7 @@ class Conversationemail_Job
                     foreach($identities as $identity)
                     {
                         $avartar=$img_url."/".getHashFilePath("",$identity["avatar_file_name"])."/80_80_".$identity["avatar_file_name"];
-                        $exfee_avartar.="<img width='40' height='40' src='$avartar'>";
+                        $exfee_avartar.="<img style=\"padding-right: 5px;\" width=\"40\" height=\"40\" src=\"$avartar\">";
                     }
 
                 $new_exfee_identities_str="";
