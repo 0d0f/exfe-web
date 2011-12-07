@@ -122,11 +122,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='hidden' id='identification_user_token' value='' />"
                  + "<em class='ic2' id='identification_pwd_ic'></em>"
                  + "</li>"
+                 /*
                  + "<li id='identification_repwd_li' style='display:none;'>"
                  + "<label class='title'>Re-type:</label>"
                  + "<input type='password' id='identification_repwd' name='repassword' class='inputText' />"
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
+                 */
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                  + "<li id='reset_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
@@ -137,7 +139,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>";
         } else if(type == "change_pwd"){ //用户修改密码，从Profile页面触发。
             title = "Change Password";
-            form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
+            form = "<div id='identity_change_pwd_dialog' class='identity_dialog_main'>"
                  + "<div id='set_password_titles' class='dialog_titles'>Change Password</div>"
                  + "<div id='set_password_desc' style='height:45px;line-height:18px;'>"
                  + "Please enter current password and set new password."
@@ -158,10 +160,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='text' name='new_pwd_a' id='new_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='new_pwd_ic'></em>"
                  + "</li>"
+                 /*
                  + "<li id='re_new_pwd_li' style='display:block;'>"
                  + "<label class='title'>Re-type new:</label>"
                  + "<input type='password' name='re_new_pwd' id='re_new_pwd' class='inputText' />"
                  + "</li>"
+                 */
                  + "<li id='change_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
                  + "<div class='identification_bottom_btn' style='text-align:right;'>"
@@ -171,7 +175,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</form>"
                  + "</div>"
                  + "</div>";
-
         }
 
         //新的找回密码对话框。用户点击Forgot Password进去。
@@ -344,6 +347,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.user.status.doSendEmail(userIdentity,doActions);
             var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
             jQuery("#manual_verification_hint_box").html(msg);
+            jQuery("#manual_verification_btn").val("Done");
+            jQuery("#manual_verification_btn").unbind("click");
+            jQuery("#manual_verification_btn").bind("click",function(){
+                clearManualVerifyDialog();
+                ns.showLoginDialog('init');
+            });
         });
 
         /*

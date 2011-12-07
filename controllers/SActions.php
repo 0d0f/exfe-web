@@ -1190,8 +1190,8 @@ class SActions extends ActionController
                     $returnData["msg"] = "mail server error";
                 }
             } else {
-                    $returnData["error"] = 1;
-                    $returnData["msg"] = "can't reset password";
+                $returnData["error"] = 1;
+                $returnData["msg"] = "can't reset password";
             }
             //echo "get $userIdentity";
             //@Huoju
@@ -1297,7 +1297,8 @@ class SActions extends ActionController
 
         $userPassword = exPost("u_pwd");
         $userNewPassword = exPost("u_new_pwd");
-        $userReNewPassword = exPost("u_re_new_pwd");
+        //去掉Re-type
+        //$userReNewPassword = exPost("u_re_new_pwd");
         if($userPassword == ""){
             $returnData["error"] = 1;
             $returnData["msg"] = "Password cannot be empty.";
@@ -1310,12 +1311,15 @@ class SActions extends ActionController
             echo json_encode($returnData);
             exit();
         }
+        //去掉Re-type
+        /*
         if($userNewPassword != $userReNewPassword){
             $returnData["error"] = 1;
             $returnData["msg"] = "Passwords don’t match.";
             echo json_encode($returnData);
             exit();
         }
+        */
         $identityObj = $this->getModelByName("identity");
         $result = $identityObj->checkUserPassword($userID, $userPassword);
         if(!$result){
