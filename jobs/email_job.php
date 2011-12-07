@@ -78,8 +78,11 @@ class Email_Job
 
         $parser = new Markdown_Parser;
         $parser->no_markup = true;
-        $mail["content"] = $parser->transform($original_desc_str);
-
+        $mail['content'] = str_replace(
+            '<p>',
+            '<p style="margin: 0;">',
+            $parser->transform($original_desc_str)
+        );
 
         $begin_at=$this->args["begin_at"];
         $datetime=explode(" ",$begin_at);
