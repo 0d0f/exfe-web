@@ -32,7 +32,7 @@ class Email_Job
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
 
-        $mail["hint_title"]='Invitation from <span style="font-weight:bold;">'.$host_name."</span>.";
+        $mail["hint_title"]='Invitation from <span>'.$host_name."</span>.";
 
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
             $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X</span>.";
