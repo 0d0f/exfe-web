@@ -40,10 +40,7 @@ class Email_Job
         if (intval($this->args['rsvp_status'])===1) { //INVITATION_YES
             $mail["rsvp_status"] = '<tr><td style="line-height:19px; padding-top: 30px;">'
                                  . '<span style="display: block; float: left; color: #333333;">'
-                                 . "You're <span style=\"font-weight: bold; color: #0591AC;\">CONFIRMED</span>";
-            if ($this->args["by_identity"]['external_identity'] !== $this->args['external_identity']) {
-                $mail["rsvp_status"] .= " by <span class=\"exfe_mail_identity_name\">{$by_identity_name}</span> to attend.</span>";
-            }
+                                 . "You're <span style=\"font-weight: bold; color: #0591AC;\"> CONFIRMED </span> to attend.</span>";
             $mail["rsvp_status"] .= '</td></tr>';
             $mail['button_padding_top'] = '';
             $mail["rsvp_accept"] = '';
