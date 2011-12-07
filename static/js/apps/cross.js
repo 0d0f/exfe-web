@@ -45,7 +45,6 @@ var clickCallBackFunc = function(args){
                 odof.user.status.doShowCrossPageVerifyDialog(null, args);
             }
         }
-
     };
 
     ns.formatCross = function() {

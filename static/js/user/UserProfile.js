@@ -122,9 +122,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#cross_list > .category').hide();
                 if (typeof localStorage !== 'undefined') {
                     fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
-                    try {
-                        fetchArgs = JSON.parse(fetchArgs);
-                    } catch (err) {
+                    if (fetchArgs) {
+                        try {
+                            fetchArgs = JSON.parse(fetchArgs);
+                        } catch (err) {
+                            fetchArgs = {};
+                        }
+                    } else {
                         fetchArgs = {};
                     }
                 }
@@ -439,9 +443,13 @@ $(document).ready(function() {
             strXType  = objEvent.id.split('_')[1];
         if (typeof localStorage !== 'undefined') {
             fetchArgs = localStorage.getItem(odof.user.profile.strLsKey);
-            try {
-                fetchArgs = JSON.parse(fetchArgs);
-            } catch (err) {
+            if (fetchArgs) {
+                try {
+                    fetchArgs = JSON.parse(fetchArgs);
+                } catch (err) {
+                    fetchArgs = {};
+                }
+            } else {
                 fetchArgs = {};
             }
         }
@@ -480,7 +488,7 @@ $(document).ready(function() {
     });
 
     $('.invitation > button').live('click', function(e) {
-        location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[1];
+        location.href = '/rsvp/accept?xid=' + e.target.id.split('_')[2];
     });
 
     $('.more_or_less > a').click(odof.user.profile.getMoreCross);

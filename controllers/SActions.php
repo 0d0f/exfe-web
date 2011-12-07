@@ -873,7 +873,7 @@ class SActions extends ActionController
         //取得变量。
         $identity=$_POST["identity"];
         $password=$_POST["password"];
-        $repassword=$_POST["retypepassword"];
+        //$repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
         if(intval($autosignin)==1){
@@ -882,7 +882,8 @@ class SActions extends ActionController
 
         $isNewIdentity=FALSE;
 
-        if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
+        //if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
+        if($identity!="" && $password!="" && $displayname!="" )
         {
             $Data = $this->getModelByName("user");
             $userid = $Data->AddUser($password);
@@ -932,7 +933,7 @@ class SActions extends ActionController
     {
         $identity=$_POST["identity"];
         $password=$_POST["password"];
-        $repassword=$_POST["retypepassword"];
+        //$repassword=$_POST["retypepassword"];
         $displayname=$_POST["displayname"];
         $autosignin=$_POST["auto_signin"];
         if(intval($autosignin)==1)
@@ -1148,7 +1149,7 @@ class SActions extends ActionController
      * 忘记密码发送验证邮件
      *
      **/
-    public function doSendVerification()
+    public function doSendResetPasswordMail()
     {
         $returnData = array(
             "error" => 0,
@@ -1189,8 +1190,8 @@ class SActions extends ActionController
                     $returnData["msg"] = "mail server error";
                 }
             } else {
-                    $returnData["error"] = 1;
-                    $returnData["msg"] = "can't reset password";
+                $returnData["error"] = 1;
+                $returnData["msg"] = "can't reset password";
             }
             //echo "get $userIdentity";
             //@Huoju
@@ -1296,7 +1297,8 @@ class SActions extends ActionController
 
         $userPassword = exPost("u_pwd");
         $userNewPassword = exPost("u_new_pwd");
-        $userReNewPassword = exPost("u_re_new_pwd");
+        //去掉Re-type
+        //$userReNewPassword = exPost("u_re_new_pwd");
         if($userPassword == ""){
             $returnData["error"] = 1;
             $returnData["msg"] = "Password cannot be empty.";
@@ -1309,12 +1311,15 @@ class SActions extends ActionController
             echo json_encode($returnData);
             exit();
         }
+        //去掉Re-type
+        /*
         if($userNewPassword != $userReNewPassword){
             $returnData["error"] = 1;
             $returnData["msg"] = "Passwords don’t match.";
             echo json_encode($returnData);
             exit();
         }
+        */
         $identityObj = $this->getModelByName("identity");
         $result = $identityObj->checkUserPassword($userID, $userPassword);
         if(!$result){

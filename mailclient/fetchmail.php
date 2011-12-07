@@ -96,6 +96,7 @@ function dofetchandpost($obj)
             {
                 $cross_id=$matches[1];
             }
+
             $body=$obj->getBody($i);  
             
             if($body["charset"]!="" && strtolower($body["charset"])!="utf-8")

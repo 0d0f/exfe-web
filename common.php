@@ -1,8 +1,5 @@
 <?php
-
 require_once("config.php");
-
-define("EXFE_PUB_KEY","h_#%2)a^n!@7d@a0*o!l&i)a%n#@g&*2");
 
 $locale = $_COOKIE["locale"];
 if($locale == "")

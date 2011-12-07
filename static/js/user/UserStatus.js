@@ -13,6 +13,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      *
      * */
     ns.callBackFunc = null;
+    ns.showResetPasswordStatus = 0;
     ns.checkUserLogin = function(){
         //专门针对Cross页面，如果以Token进入，则预先设置一个ID为：cross_identity_btn的元素节点。
         //具体的事件绑定在odof.cross.index里面实现。
@@ -58,8 +59,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.doSendEmail = function(userIdentity, doActions){
         var actionURI = site_url+"/s/sendActiveEmail";
-        if(typeof doActions != "undefined" && doActions == 'verification'){
-            actionURI = site_url+"/s/SendVerification";
+        if(typeof doActions != "undefined" && doActions == 'resetPassword'){
+            actionURI = site_url+"/s/SendResetPasswordMail";
         }
         var mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
         if(userIdentity != "" && userIdentity.match(mailReg)){
@@ -92,32 +93,51 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var dialogBoxID = "identification_dialog";
         }
 
-        odof.comm.func.initRePassword("identification_pwd", "identification_repwd");
+        //去掉Re-type
+        //odof.comm.func.initRePassword("identification_pwd", "identification_repwd");
+        odof.comm.func.displayPassword("identification_pwd");
 
+        //默认为重置密码。
         if(typeof actions == "undefined"){
             actions = "resetpwd";
         }
 
+        //如果为Cross页面的设置密码。
         if(actions == 'setpwd'){
             jQuery("#set_password_titles").html("Welcome to <span style='color:#0591AC;'>EXFE</span>");
             jQuery("#set_password_desc").html("Please set password to keep track of attendees update, and engage in.");
             var showWarning = function(){
                 jQuery("#need_verify_msg").show();
+                //显示Discard按钮，并且绑定关闭事件。
+                jQuery("#set_passwprd_discard").show();
                 jQuery("#set_passwprd_discard").unbind("click");
-                jQuery("#set_passwprd_discard").bind("click", function(){
+                jQuery("#identification_close_btn").unbind("click");
+                jQuery("#set_passwprd_discard, #identification_close_btn").bind("click", function(){
                     odof.exlibs.ExDialog.removeDialog();
                     odof.exlibs.ExDialog.removeCover();
                 });
+                ns.showResetPasswordStatus = 1;
             };
-            jQuery("#set_passwprd_discard").show();
-            jQuery("#set_passwprd_discard").bind("click", function(){
+
+            //使用ns.showResetPasswordStatus来记录状态，如果已经点击过了。则需要一直显示状态。
+            if(ns.showResetPasswordStatus == 0){
+                jQuery("#identification_close_btn").unbind("click");
+                jQuery("#identification_close_btn").bind("click", function(){
+                    showWarning();
+                });
+                jQuery("#identification_dialog").bind("clickoutside",function(event){
+                    if(event.target == jQuery("#identification_cover")[0]){
+                        showWarning();
+                    }
+                });
+            }else{
                 showWarning();
-            });
+            }
         }
 
         jQuery("#submit_reset_password").bind("click", function(){
             var userPassword = jQuery("#identification_pwd").val();
-            var userRePassword = jQuery("#identification_repwd").val();
+            //var userRePassword = jQuery("#identification_repwd").val();
             var userDisplayName = jQuery("#user_display_name").val();
             var userToken = jQuery("#identification_user_token").val();
             var hideErrorMsg = function(){
@@ -125,6 +145,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#displayname_error").hide();
                 jQuery("#pwd_match_error").hide();
             }
+
+            /*else if(userPassword != userRePassword){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#pwd_match_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Passwords don't match.");
+            } */
+
             if(userDisplayName == ""){
                 jQuery("#reset_pwd_error_msg").show();
                 jQuery("#displayname_error").show();
@@ -139,11 +167,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#reset_pwd_error_msg").show();
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Please input a password.");
-            }else if(userPassword != userRePassword){
-                jQuery("#reset_pwd_error_msg").show();
-                jQuery("#pwd_match_error").show();
-                setTimeout(hideErrorMsg, 3000);
-                jQuery("#reset_pwd_error_msg").html("Passwords don't match.");
             }else{
                 var postData = {
                     jrand:Math.round(Math.random()*10000000000),
@@ -191,7 +214,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#o_pwd_ic").bind("click",function(){
             odof.comm.func.displayPassword("o_pwd");
         });
-        odof.comm.func.initRePassword("new_pwd", "re_new_pwd", "invisible");
+        //去掉Re-type
+        //odof.comm.func.initRePassword("new_pwd", "re_new_pwd", "invisible");
+        //换成替换成单密码输入框。
+        jQuery("#new_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword("new_pwd");
+        });
 
         jQuery("#change_pwd_discard").unbind("click");
         jQuery("#change_pwd_discard").bind("click", function(){
@@ -205,7 +233,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#change_pwd_form").submit(function(){
             var userPassword = jQuery("#o_pwd").val();
             var userNewPassword = jQuery("#new_pwd").val();
-            var userReNewPassword = jQuery("#re_new_pwd").val();
+            //去掉Re-type
+            //var userReNewPassword = jQuery("#re_new_pwd").val();
             if(userPassword == ""){
                 jQuery("#change_pwd_error_msg").html("Password cannot be empty.");
                 jQuery("#change_pwd_error_msg").show();
@@ -216,6 +245,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#change_pwd_error_msg").show();
                 return false;
             }
+            //去掉Re-type
+            /*
             if(userNewPassword != userReNewPassword){
                 jQuery("#change_pwd_error_msg").html("Passwords don’t match.");
                 jQuery("#change_pwd_error_msg").show();
@@ -226,6 +257,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 u_pwd:userPassword,
                 u_new_pwd:userNewPassword,
                 u_re_new_pwd:userReNewPassword
+            };
+            */
+            var postData = {
+                jrand:Math.round(Math.random()*10000000000),
+                u_pwd:userPassword,
+                u_new_pwd:userNewPassword
             };
 
             jQuery.ajax({
@@ -334,7 +371,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
         jQuery("#fogot_verify_btn").unbind("click");
         jQuery("#fogot_verify_btn").bind("click",function(){
-            ns.doSendEmail(userIdentity,"verification");
+            ns.doSendEmail(userIdentity,"resetPassword");
         });
         
     };

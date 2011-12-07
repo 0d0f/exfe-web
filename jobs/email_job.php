@@ -37,15 +37,22 @@ class Email_Job
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
             $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X</span>.";
 
-        if(intval($this->args['rsvp_status'])===1) //INVITATION_YES
-        {
-            $mail["rsvp_status"]="<tr> <td> <span style='margin-left:15px; display: block; float: left; color: #333333;'> You're <span style='font-weight: bold;'>CONFIRMED</span>";
-            if($this->args["by_identity"]['external_identity']!=$this->args['external_identity'])
-                $mail["rsvp_status"].=" by <span class='exfe_mail_identity_name'>$by_identity_name</span> to attend.</span> </td> </tr>";
+        if (intval($this->args['rsvp_status'])===1) { //INVITATION_YES
+            $mail["rsvp_status"] = '<tr><td style="line-height:19px; padding-top: 30px;">'
+                                 . '<span style="display: block; float: left; color: #333333;">'
+                                 . "You're <span style=\"font-weight: bold; color: #0591AC;\">CONFIRMED</span>";
+            if ($this->args["by_identity"]['external_identity'] !== $this->args['external_identity']) {
+                $mail["rsvp_status"] .= " by <span class=\"exfe_mail_identity_name\">{$by_identity_name}</span> to attend.</span>";
+            }
+            $mail["rsvp_status"] .= '</td></tr>';
+            $mail['button_padding_top'] = '';
+            $mail["rsvp_accept"] = '';
+            $mail['check_it_out_style'] = '';
+        } else {
+            $mail['button_padding_top'] = 'padding-top: 30px;';
+            $mail["rsvp_accept"] = "<a style=\"float: left; display: block; text-decoration: none; border: 1px solid #bebebe; background-color: #add1dc; color: #000000; padding: 5px 30px 5px 30px; margin-left: 25px;\" alt=\"Accept\" href=\"{$rsvpyeslink}\">Accept</a>";
+            $mail['check_it_out_style'] = 'margin-left: 15px;';
         }
-        else
-            $mail["rsvp_accept"]="<a style='float: left; display: block; text-decoration: none; border: 1px solid #bebebe; background-color: #add1dc; color: #000000; padding: 5px 30px 5px 30px; margin-left: 30px;' alt='Accept' href='$rsvpyeslink'>Accept</a>";
-
         $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'];
         $mail["host_avatar"]=$img_url."/".getHashFilePath("",$host_avatar)."/80_80_".$host_avatar;
         $invitations=$this->args["invitations"];
@@ -68,7 +75,7 @@ class Email_Job
 
         include_once "../lib/markdown.php";
         $original_desc_str = $mail["content"];
-        
+
         $parser = new Markdown_Parser;
         $parser->no_markup = true;
         $mail["content"] = $parser->transform($original_desc_str);
@@ -117,7 +124,9 @@ class Email_Job
         $mail_body=str_replace("%hint_title%",$mail["hint_title"],$mail_body);
         $mail_body=str_replace("%host_name%",$mail["host_name"],$mail_body);
         $mail_body=str_replace("%rsvp_status%",$mail["rsvp_status"],$mail_body);
+        $mail_body=str_replace("%button_padding_top%",$mail["button_padding_top"],$mail_body);
         $mail_body=str_replace("%rsvp_accept%",$mail["rsvp_accept"],$mail_body);
+        $mail_body=str_replace("%check_it_out_style",$mail["check_it_out_style"],$mail_body);
         $mail_body=str_replace("%exfe_link%",$mail["exfe_link"],$mail_body);
         $mail_body=str_replace("%host_avatar%",$mail["host_avatar"],$mail_body);
         $mail_body=str_replace("%exfee_list%",$mail["exfee_list"],$mail_body);
@@ -142,7 +151,7 @@ class Email_Job
                 $mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
 
             $body = $mail_mime->get();
-            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$args['cross_id_base62'].'@exfe.com', 'Subject' => "$title"));
+            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$args['cross_id'].'@exfe.com', 'Subject' => "$title"));
 
             $message = $headers . "\r\n" . $body;
 

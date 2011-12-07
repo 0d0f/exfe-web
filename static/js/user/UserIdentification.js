@@ -49,7 +49,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var title="", form="";
         if(type == "reg_login") {
             title="Identification";
-            /*//备注，这是原来Twitter登录等的样式。暂时取消掉。
+            /*
+            //备注，这是原来Twitter登录等的样式。暂时取消掉。
             desc="<div class='dialog_titles'><p>Authorize with your <br/> existing accounts </p>"
                 +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
                 +"<img src='/static/images/twitter.png' alt='' width='32' height='32' />"
@@ -121,11 +122,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='hidden' id='identification_user_token' value='' />"
                  + "<em class='ic2' id='identification_pwd_ic'></em>"
                  + "</li>"
+                 /*
                  + "<li id='identification_repwd_li' style='display:none;'>"
                  + "<label class='title'>Re-type:</label>"
                  + "<input type='password' id='identification_repwd' name='repassword' class='inputText' />"
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
+                 */
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                  + "<li id='reset_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
@@ -136,7 +139,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>";
         } else if(type == "change_pwd"){ //用户修改密码，从Profile页面触发。
             title = "Change Password";
-            form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
+            form = "<div id='identity_change_pwd_dialog' class='identity_dialog_main'>"
                  + "<div id='set_password_titles' class='dialog_titles'>Change Password</div>"
                  + "<div id='set_password_desc' style='height:45px;line-height:18px;'>"
                  + "Please enter current password and set new password."
@@ -157,10 +160,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='text' name='new_pwd_a' id='new_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='new_pwd_ic'></em>"
                  + "</li>"
+                 /*
                  + "<li id='re_new_pwd_li' style='display:block;'>"
                  + "<label class='title'>Re-type new:</label>"
                  + "<input type='password' name='re_new_pwd' id='re_new_pwd' class='inputText' />"
                  + "</li>"
+                 */
                  + "<li id='change_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
                  + "<div class='identification_bottom_btn' style='text-align:right;'>"
@@ -170,7 +175,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</form>"
                  + "</div>"
                  + "</div>";
-
         }
 
         //新的找回密码对话框。用户点击Forgot Password进去。
@@ -209,8 +213,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>"
                + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
                + "<a id='manual_startover' class='startover'>Start Over</a>"
-               + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;'>I See</a>&nbsp;&nbsp;"
-               + "<input type='button' id='manual_verification_btn' value='Done' />"
+               + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;display:none;'>I See</a>&nbsp;&nbsp;"
+               + "<input type='button' id='manual_verification_btn' value='Verify' />"
                + "</div>"
                + "</div>";
 
@@ -285,7 +289,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery('#startover').hide();
         jQuery('#startover').unbind("click");
         jQuery('#logincheck').show();
-        odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
+        //因为取消显示Re-type，所以这个也不需要了。
+        //odof.comm.func.removeRePassword("identification_pwd", "identification_rpwd");
         ns.actions = "sign_in";
         if(type == 'init'){
             jQuery('#identity').val('');
@@ -342,8 +347,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.user.status.doSendEmail(userIdentity,doActions);
             var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
             jQuery("#manual_verification_hint_box").html(msg);
+            jQuery("#manual_verification_btn").val("Done");
+            jQuery("#manual_verification_btn").unbind("click");
+            jQuery("#manual_verification_btn").bind("click",function(){
+                clearManualVerifyDialog();
+                ns.showLoginDialog('init');
+            });
         });
 
+        /*
         jQuery("#cancel_manual_verification_btn").unbind("click");
         jQuery("#cancel_manual_verification_btn").bind("click", function(){
             clearManualVerifyDialog();
@@ -351,6 +363,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.showLoginDialog('init');
             jQuery("#identity").val(jQuery("#manual_verify_identity").val());
         });
+        */
 
         jQuery('#manual_startover').unbind('click');
         jQuery('#manual_startover').bind('click', function(){
@@ -373,7 +386,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#manual_verification_dialog").hide();
                 jQuery('#manual_startover').unbind('click');
                 jQuery("#manual_verification_btn").unbind("click");
-                jQuery("#cancel_manual_verification_btn").unbind("click");
+                //jQuery("#cancel_manual_verification_btn").unbind("click");
         };
 
     };
@@ -419,19 +432,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#sign_in_btn').val("Sign Up");
                             jQuery('input[name=displayname]').val('');
                             jQuery('#identification_pwd').val('');
+                            /*
+                            //取消显示Re-type。
                             jQuery('#identification_rpwd').val('');
                             jQuery('#identification_pwd_a').val('');
+                            */
 
                             jQuery('input[name=displayname]').keyup(function(){
                                 var displayName = this.value;
                                 ns.showDisplayNameError(displayName);
                             });
-                            odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
+                            //取消显示Re-type。
+                            //odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
+                            //换成单Password输入框。并且隐藏。
+                            //odof.comm.func.displayPassword("identification_pwd");
                             jQuery('#identification_pwd').unbind("focus");
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
-                                ns.showManualVerificationDialog(null, "verification");
+                                ns.showManualVerificationDialog(null, "resetPassword");
                             }else{
                                 ns.showLoginDialog();
                             }
@@ -501,7 +520,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     //var token=params["token"];
                     var identity=jQuery('input[name=identity]').val();
                     var password=jQuery('input[name=password]').val();
-                    var retypepassword=jQuery('input[name=retypepassword]').val();
+                    //var retypepassword=jQuery('input[name=retypepassword]').val();
                     var displayname=jQuery('input[name=displayname]').val();
                     var auto_signin=jQuery('input[name=auto_signin]').val();
 
@@ -540,7 +559,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
-
+                        /*
                         if(retypepassword != password){
                             jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords don't match.</span>");
                             jQuery('#pwd_match_error').show();
@@ -548,6 +567,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
+                        */
                     }
                     if(ns.actions == "sign_in"){
                         if(password == "" || identity == ""){
@@ -609,10 +629,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 }
                             }
                         });
-                    } else if(password!=""&& identity!="" && retypepassword==password &&  displayname!="") {
+                    //} else if(password!=""&& identity!="" && retypepassword==password && displayname!="") {
+                    } else if(password!=""&& identity!="" && displayname!="") {
+                        /*
                         var poststr="identity="+identity+"&password="+encodeURIComponent(password)
                                     +"&repassword="+encodeURIComponent(retypepassword)
                                     +"&displayname="+encodeURIComponent(displayname);
+                        */
+                        var poststr = "identity="+identity
+                                    + "&password="+encodeURIComponent(password)
+                                    + "&displayname="+encodeURIComponent(displayname);
+
                         jQuery.ajax({
                             type: "POST",
                             data: poststr,

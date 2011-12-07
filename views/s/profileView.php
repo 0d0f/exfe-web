@@ -77,7 +77,9 @@
                     else
                     {
                     ?>
-                    <p><img class="s_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="id_name"><?php echo $identity["name"];?></span> <em><?php echo $identity["external_identity"];?></em></b> </p>
+                    <p><img class="s_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="id_name"><?php echo $identity["name"];?></span>
+<em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
+</b></p>
                     <?php
                     }
                 }

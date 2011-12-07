@@ -456,7 +456,6 @@ class IdentityModels extends DataModel{
                 $identity=$this->getRow($sql);
                 $identity["status"]=$row["status"];
                 array_push($identities,$identity);
-                //$identity=;
             }
         }
         return $identities;

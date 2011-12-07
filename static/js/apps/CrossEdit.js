@@ -284,19 +284,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.bindEditDescEvent = function(){
         jQuery("#cross_desc").hide();
         jQuery("#cross_desc_textarea").slideDown(400);
-        jQuery('#cross_desc_textarea').bind("clickoutside",function(event) {
-            if (event.target.id === 'cross_desc') {
+        jQuery('#cross_desc_textarea').bind('clickoutside', function(event) {
+            var target = event.target;
+            while (target.id !== 'cross_desc' && target.parentNode) {
+                target = target.parentNode;
+            }
+            if (target.id === 'cross_desc') {
                 return;
             }
-            if (event.target.parentNode != jQuery("#cross_desc")[0]){
-                var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
-                $('#cross_desc').html(
-                    $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
-                );
-                jQuery("#cross_desc_textarea").slideUp(400);
-                jQuery("#cross_desc_textarea").unbind("clickoutside");
-                jQuery("#cross_desc").show();
-            }
+            var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
+            $('#cross_desc').html(
+                $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
+            );
+            jQuery("#cross_desc_textarea").slideUp(400);
+            jQuery("#cross_desc_textarea").unbind("clickoutside");
+            jQuery("#cross_desc").show();
         });
     };
 
