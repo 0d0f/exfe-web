@@ -92,7 +92,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var dialogBoxID = "identification_dialog";
         }
 
-        odof.comm.func.initRePassword("identification_pwd", "identification_repwd");
+        //去掉Re-type
+        //odof.comm.func.initRePassword("identification_pwd", "identification_repwd");
+        odof.comm.func.displayPassword("identification_pwd");
 
         if(typeof actions == "undefined"){
             actions = "resetpwd";
@@ -117,7 +119,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         jQuery("#submit_reset_password").bind("click", function(){
             var userPassword = jQuery("#identification_pwd").val();
-            var userRePassword = jQuery("#identification_repwd").val();
+            //var userRePassword = jQuery("#identification_repwd").val();
             var userDisplayName = jQuery("#user_display_name").val();
             var userToken = jQuery("#identification_user_token").val();
             var hideErrorMsg = function(){
@@ -125,6 +127,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#displayname_error").hide();
                 jQuery("#pwd_match_error").hide();
             }
+
+            /*else if(userPassword != userRePassword){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#pwd_match_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Passwords don't match.");
+            } */
+
             if(userDisplayName == ""){
                 jQuery("#reset_pwd_error_msg").show();
                 jQuery("#displayname_error").show();
@@ -139,11 +149,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#reset_pwd_error_msg").show();
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Please input a password.");
-            }else if(userPassword != userRePassword){
-                jQuery("#reset_pwd_error_msg").show();
-                jQuery("#pwd_match_error").show();
-                setTimeout(hideErrorMsg, 3000);
-                jQuery("#reset_pwd_error_msg").html("Passwords don't match.");
             }else{
                 var postData = {
                     jrand:Math.round(Math.random()*10000000000),
@@ -191,7 +196,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#o_pwd_ic").bind("click",function(){
             odof.comm.func.displayPassword("o_pwd");
         });
-        odof.comm.func.initRePassword("new_pwd", "re_new_pwd", "invisible");
+        //去掉Re-type
+        //odof.comm.func.initRePassword("new_pwd", "re_new_pwd", "invisible");
+        //换成替换成单密码输入框。
+        jQuery("#new_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword("new_pwd");
+        });
 
         jQuery("#change_pwd_discard").unbind("click");
         jQuery("#change_pwd_discard").bind("click", function(){
@@ -205,7 +215,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#change_pwd_form").submit(function(){
             var userPassword = jQuery("#o_pwd").val();
             var userNewPassword = jQuery("#new_pwd").val();
-            var userReNewPassword = jQuery("#re_new_pwd").val();
+            //去掉Re-type
+            //var userReNewPassword = jQuery("#re_new_pwd").val();
             if(userPassword == ""){
                 jQuery("#change_pwd_error_msg").html("Password cannot be empty.");
                 jQuery("#change_pwd_error_msg").show();
@@ -216,6 +227,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#change_pwd_error_msg").show();
                 return false;
             }
+            //去掉Re-type
+            /*
             if(userNewPassword != userReNewPassword){
                 jQuery("#change_pwd_error_msg").html("Passwords don’t match.");
                 jQuery("#change_pwd_error_msg").show();
@@ -226,6 +239,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 u_pwd:userPassword,
                 u_new_pwd:userNewPassword,
                 u_re_new_pwd:userReNewPassword
+            };
+            */
+            var postData = {
+                jrand:Math.round(Math.random()*10000000000),
+                u_pwd:userPassword,
+                u_new_pwd:userNewPassword
             };
 
             jQuery.ajax({

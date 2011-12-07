@@ -122,11 +122,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='hidden' id='identification_user_token' value='' />"
                  + "<em class='ic2' id='identification_pwd_ic'></em>"
                  + "</li>"
+                 /*
                  + "<li id='identification_repwd_li' style='display:none;'>"
                  + "<label class='title'>Re-type:</label>"
                  + "<input type='password' id='identification_repwd' name='repassword' class='inputText' />"
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
+                 */
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
                  + "<li id='reset_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
@@ -158,10 +160,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<input type='text' name='new_pwd_a' id='new_pwd_a' class='inputText' style='display:none;' />"
                  + "<em class='ic3' id='new_pwd_ic'></em>"
                  + "</li>"
+                 /*
                  + "<li id='re_new_pwd_li' style='display:block;'>"
                  + "<label class='title'>Re-type new:</label>"
                  + "<input type='password' name='re_new_pwd' id='re_new_pwd' class='inputText' />"
                  + "</li>"
+                 */
                  + "<li id='change_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></li>"
                  + "</ul>"
                  + "<div class='identification_bottom_btn' style='text-align:right;'>"
