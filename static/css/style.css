@@ -460,12 +460,12 @@ b.r3{margin: 0px}
 }
 /*preview datetime*/
 #pv_relativetime {
-    color:#0591af; overflow:hidden; font-weight:normal; padding:5px;
+    color:#0591af; overflow:hidden; font-weight:normal;
     margin-top:10px; word-break: break-all; font-size:36px; font-weight: normal;
 }
 /*preview place*/
 #pv_place_line1 {
-    color:#0591ac; overflow:hidden; font-weight:normal; padding:5px; margin-top:10px; word-break: break-all;
+    color:#0591ac; overflow:hidden; font-weight:normal; margin-top:10px; word-break: break-all;
 }
 .pv_place_line1_normal {
     font-size:36px; line-height: 46px;
