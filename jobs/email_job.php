@@ -31,6 +31,7 @@ class Email_Job
         $mail["exfe_title"]=$this->args['title'];
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
+        $mail["by_identity_name"]=$by_identity_name;
 
         $mail["hint_title"]='Invitation from <span>'.$host_name."</span>.";
 
@@ -136,6 +137,7 @@ class Email_Job
         $mail_body=str_replace("%place_line1%",$mail["place_line1"],$mail_body);
         $mail_body=str_replace("%place_line2%",$mail["place_line2"],$mail_body);
         $mail_body=str_replace("%site_url%",$site_url,$mail_body);
+        $mail_body=str_replace("%by_identity_names%",$mail["by_identity_names"],$mail_body);
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }
