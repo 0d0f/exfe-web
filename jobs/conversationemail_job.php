@@ -236,7 +236,7 @@ class Conversationemail_Job
                 if(trim($changed_fields["title"])!="")
                     $update_part_body=str_replace("%title_hl%","color: #0591ac;",$update_part_body);
                 else
-                    $update_part_body=str_replace("%title_hl%","",$update_part_body);
+                    $update_part_body=str_replace("%title_hl%","color: #191919;",$update_part_body);
 
                 $datetime=explode(" ",$cross["begin_at"]);
                 $date=$datetime[0];
