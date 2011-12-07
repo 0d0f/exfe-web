@@ -364,7 +364,9 @@ class Conversationemail_Job
                     {
                         $mail_body=str_replace(
                             "%split_line%",
-                            "<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr><tr><td colspan=\"5\" height=\"20\"></td></tr>",
+                            '<tr><td colspan="5" height="10"></td></tr>'
+                          . "<tr><td colspan=\"5\" height=\"1\" background=\"$site_url/static/images/mail_dash.png\"></td></tr>"
+                          . '<tr><td colspan="5" height="20"></td></tr>',
                             $mail_body
                         );
                         $mail_body=str_replace("%update_part%",$change_object["content"],$mail_body);
@@ -456,7 +458,7 @@ class Conversationemail_Job
             }
             else
             {
-                  print("Mail not sent; error is " . (string) $r->body->Error->Message . "\n");
+                print("Mail not sent; error is " . (string) $r->body->Error->Message . "\n");
             }
 
 
