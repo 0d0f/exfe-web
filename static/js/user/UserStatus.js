@@ -13,6 +13,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      *
      * */
     ns.callBackFunc = null;
+    ns.showResetPasswordStatus = 0;
     ns.checkUserLogin = function(){
         //专门针对Cross页面，如果以Token进入，则预先设置一个ID为：cross_identity_btn的元素节点。
         //具体的事件绑定在odof.cross.index里面实现。
@@ -96,25 +97,42 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //odof.comm.func.initRePassword("identification_pwd", "identification_repwd");
         odof.comm.func.displayPassword("identification_pwd");
 
+        //默认为重置密码。
         if(typeof actions == "undefined"){
             actions = "resetpwd";
         }
 
+        //如果为Cross页面的设置密码。
         if(actions == 'setpwd'){
             jQuery("#set_password_titles").html("Welcome to <span style='color:#0591AC;'>EXFE</span>");
             jQuery("#set_password_desc").html("Please set password to keep track of attendees update, and engage in.");
             var showWarning = function(){
                 jQuery("#need_verify_msg").show();
+                //显示Discard按钮，并且绑定关闭事件。
+                jQuery("#set_passwprd_discard").show();
                 jQuery("#set_passwprd_discard").unbind("click");
-                jQuery("#set_passwprd_discard").bind("click", function(){
+                jQuery("#identification_close_btn").unbind("click");
+                jQuery("#set_passwprd_discard, #identification_close_btn").bind("click", function(){
                     odof.exlibs.ExDialog.removeDialog();
                     odof.exlibs.ExDialog.removeCover();
                 });
+                ns.showResetPasswordStatus = 1;
             };
-            jQuery("#set_passwprd_discard").show();
-            jQuery("#set_passwprd_discard").bind("click", function(){
+
+            //使用ns.showResetPasswordStatus来记录状态，如果已经点击过了。则需要一直显示状态。
+            if(ns.showResetPasswordStatus == 0){
+                jQuery("#identification_close_btn").unbind("click");
+                jQuery("#identification_close_btn").bind("click", function(){
+                    showWarning();
+                });
+                jQuery("#identification_dialog").bind("clickoutside",function(event){
+                    if(event.target == jQuery("#identification_cover")[0]){
+                        showWarning();
+                    }
+                });
+            }else{
                 showWarning();
-            });
+            }
         }
 
         jQuery("#submit_reset_password").bind("click", function(){

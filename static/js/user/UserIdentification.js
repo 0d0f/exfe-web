@@ -139,7 +139,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>";
         } else if(type == "change_pwd"){ //用户修改密码，从Profile页面触发。
             title = "Change Password";
-            form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
+            form = "<div id='identity_change_pwd_dialog' class='identity_dialog_main'>"
                  + "<div id='set_password_titles' class='dialog_titles'>Change Password</div>"
                  + "<div id='set_password_desc' style='height:45px;line-height:18px;'>"
                  + "Please enter current password and set new password."
@@ -175,7 +175,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</form>"
                  + "</div>"
                  + "</div>";
-
         }
 
         //新的找回密码对话框。用户点击Forgot Password进去。
@@ -348,6 +347,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.user.status.doSendEmail(userIdentity,doActions);
             var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
             jQuery("#manual_verification_hint_box").html(msg);
+            jQuery("#manual_verification_btn").val("Done");
+            jQuery("#manual_verification_btn").unbind("click");
+            jQuery("#manual_verification_btn").bind("click",function(){
+                clearManualVerifyDialog();
+                ns.showLoginDialog('init');
+            });
         });
 
         /*

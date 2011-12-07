@@ -1190,8 +1190,8 @@ class SActions extends ActionController
                     $returnData["msg"] = "mail server error";
                 }
             } else {
-                    $returnData["error"] = 1;
-                    $returnData["msg"] = "can't reset password";
+                $returnData["error"] = 1;
+                $returnData["msg"] = "can't reset password";
             }
             //echo "get $userIdentity";
             //@Huoju
