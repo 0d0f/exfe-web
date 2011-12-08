@@ -449,7 +449,7 @@ b.r3{margin: 0px}
 }
 /*preview title*/
 #pv_title {
-    color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+    color:#0591ac; font-family:Helvetica; font-weight:normal; word-break: break-all;
     margin-bottom: 20px;
 }
 .pv_title_normal {
@@ -857,7 +857,7 @@ b.r3{margin: 0px}
 
 /** cross - edit ** by leask **/
 #cross_titles {
-    color:#0591ac; font-family:Verdana; font-weight:normal; word-break: break-all;
+    color:#0591ac; font-family:Helvetica; font-weight:normal; word-break: break-all;
     margin-bottom: 20px;
 }
 
