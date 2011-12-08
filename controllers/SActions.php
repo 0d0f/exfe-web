@@ -699,15 +699,16 @@ class SActions extends ActionController
 
         if($exist!==FALSE)
         {
-            if(intval($exist["status"])==3)
+            if(intval($exist["status"])==3){
                 $responobj["response"]["status"]="connected";
-            else
+            }else{
                 $responobj["response"]["status"]="verifying";
+            }
 
             $responobj["response"]["identity_exist"]="true";
-        }
-        else
+        } else {
             $responobj["response"]["identity_exist"]="false";
+        }
         echo json_encode($responobj);
         exit();
     }
@@ -1145,9 +1146,9 @@ class SActions extends ActionController
         }
     }
 
+
     /**
-     * 忘记密码发送验证邮件
-     *
+     * 用户忘记密码时，发送重置邮件
      **/
     public function doSendResetPasswordMail()
     {
@@ -1215,6 +1216,63 @@ class SActions extends ActionController
 
     }
 
+    public function doVerifyIdentity(){
+        $userToken = exGet("token");
+        if($userToken == ""){
+            header("location:/x/forbidden");
+        }else{
+            $identityInfo = unpackArray($token);
+            print_r($identityInfo);
+        }
+    }
+
+    /**
+     * 发送验证邮件。
+     * */
+    public function doSendVerifyingMail(){
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>"",
+            "identity"  =>""
+        );
+
+        $userIdentity = exPost("identity");
+        if($userIdentity == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "User Identity is empty";
+        }else{
+            $identityHandler = $this->getModelByName("identity");
+            $result = $identityHandler->getIdentity($userIdentity);
+            $identityID = intval($result["id"]);
+            if($identityID > 0){
+                $r = $identityHandler->getVerifyingCode($identityID);
+                $tokenArray = array(
+                    "identityid"        =>$identityID,
+                    "activecode"        =>$r["activecode"]
+                );
+                $verifyingToken = packArray($tokenArray);
+                $args = array(
+                    "external_identity"     =>$result["external_identity"],
+                    "name"                  =>$result["name"],
+                    "avatar_file_name"      =>$result["avatar_file_name"],
+                    "token"                 =>$verifyingToken
+                );
+                if($r["provider"]=="email") {
+                    $helperHandler=$this->getHelperByName("identity");
+                    $jobId=$helperHandler->sentVerifyingEmail($args);
+                    if($jobId == "") {
+                        $returnData["error"] = 1;
+                        $returnData["msg"] = "Send mail error.";
+                        $returnData["identity"] = $result["external_identity"];
+                    }
+                }
+            }
+        }
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
+
+    }
+
     public function doActive() {
         $identity_id = intval($_GET["id"]);
         $activecode = $_GET["activecode"];
@@ -1233,7 +1291,7 @@ class SActions extends ActionController
         $this->displayView();
     }
 
-    public function doSendActiveEmail() {
+    public function doSendActiveMail() {
         $returnData = array(
             "error"     => 0,
             "msg"       =>"",

@@ -5,6 +5,7 @@
  **/
 var odof = {
     version:"0.1",
+    mailReg:/^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/,
     Browser: (function(){
         var ua = navigator.userAgent;
         var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]';
