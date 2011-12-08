@@ -11,7 +11,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.actions = "sign_in";
     ns.userIdentityCache = "";
     ns.userManualVerifyIdentityCache = "";
-    ns.mailReg = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
     ns.getUrlVars = function() {
         var vars = [], hash;
@@ -407,7 +406,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         //console.log("bbbbb");
         //added by handaoliang, check email address
-        if(userIdentity != "" && userIdentity.match(ns.mailReg)){
+        if(userIdentity != "" && userIdentity.match(odof.mailReg)){
             jQuery("#identity_verify_loading").show();
             jQuery.ajax({
                 type: "GET",
@@ -450,7 +449,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
-                                ns.showManualVerificationDialog(null, "resetPassword");
+                                ns.showManualVerificationDialog();
                             }else{
                                 ns.showLoginDialog();
                             }
@@ -506,7 +505,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#identity').change(function(){
                 ns.showIdentityInfo();
                 var userIdentity = jQuery('#identity').val();
-                if(userIdentity == "" || !userIdentity.match(ns.mailReg)){
+                if(userIdentity == "" || !userIdentity.match(odof.mailReg)){
                     jQuery("#identity_error_msg").show();
                     setTimeout(function(){
                         jQuery("#identity_error_msg").hide();
@@ -533,7 +532,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     };
 
 
-                    if(identity == "" || !identity.match(ns.mailReg)){
+                    if(identity == "" || !identity.match(odof.mailReg)){
                         jQuery("#identity_error_msg").show();
                         setTimeout(hideErrorMsg, 3000);
                         return false;

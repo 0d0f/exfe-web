@@ -319,19 +319,23 @@ class IdentityModels extends DataModel{
         }
         return 0;
     }
+
     public function getIdentityById($identity_id)
     {
         $sql="select id,external_identity,name,bio,avatar_file_name from identities where id='$identity_id'";
         $row=$this->getRow($sql);
-        if($row)
+        if($row){
             return $row;
+        }
     }
+
     public function getIdentity($identity)
     {
         $sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";
         $row=$this->getRow($sql);
-        if($row)
+        if($row){
             return $row;
+        }
     }
 
     public function loginWithXToken($cross_id,$token)
@@ -603,6 +607,22 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+
+    public function getVerifyingCode($identity_id){
+        if(intval($identity_id) > 0){
+            $sql = "SELECT provider,activecode FROM identities WHERE id={$identity_id}";
+            $result = $this->getRow($sql);
+            if($result["activecode"] != ""){
+                return $result;
+            }else{
+                $activecode = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+                $sql="UPDATE identities SET activecode='$activecode' WHERE id={$identity_id}";
+                $queryResult = $this->query($sql);
+                return array("provider"=>$result["provider"], "activecode"=>$activecode);
+            }
+        }
+    }
+
     public function reActiveIdentity($identity_id)
     {
         if(intval($identity_id)>0)
