@@ -1,0 +1,275 @@
+gather page:
+	Meet $global_name
+	Edit title here
+	Write some words about this X.
+	Sometime
+	Date & Time
+	Incorrect format. e.g:6:30pm, 1/15/2011
+	Somewhere
+	Location
+	Host By
+	Enter attendees’ email or id
+	Exfee
+	Mark all as confirmed
+	count: 1
+	No more than 12 attendees. Sorry we're still working on it.
+	Only attendees can access, and change other's status.
+	Discard
+	Submit
+	Submission failed.
+	Write some words about this X.
+	Expand
+	Yes
+	No
+	interested
+	0 of 0 confirmed
+	Sorry, public X is not supported yet, we're still working on it.
+
+
+x page:
+	Editing X
+	Done
+	Revert
+	Private X: Only attendees can access, and change other’s status.
+	Edit this cross.
+	Expand
+	Accept
+	Decline
+	interested
+	Your RSVP is "" Change?
+	Somewhere
+	0 of 0 confirmed
+	Invite!
+	Enter attendees' information
+	Revert
+	Done
+	Edit...
+	Remove...
+	Check all
+	
+
+forbidden page:
+	Sorry, the X you're requesting is private.
+	Please sign in as attendee.
+	Sign in
+
+
+Welcome page:
+	An utility for hanging out with friends.
+	X (cross), gathering of friends for anything you want to do with bunch of people. We saves you from calling up every one just to confirm attendance, or losing in emails of endless discussion off the point.
+	Go meet friends, offline.
+
+
+verifiation page:
+	Identity email % verifiation has been expired.
+	
+
+profile page:
+	Change...
+	Close Window
+	Portrait
+	Drag and drop your portrait here
+	Small Avatar 80x80px
+	ReSend
+	Authorization failed
+	Resend
+	57 exfes attended
+	Edit
+	Today & Upcoming
+	No date
+	Next 7 days
+	more...
+	Invitations
+	Recently updates
+	
+	
+	
+
+	
+uploadavatar page:
+	Error!
+	If the thumbnail image looks the same as the previous one, just hit refresh a couple of times.
+	Delete Images
+	Create Thumbnail
+	Thumbnail Preview
+	Upload Photo
+	Photo
+
+
+500 page:
+	Sorry, the X you're requesting is not available at the moment. Please wait for several minutes and try again.
+
+
+calendar:
+	Sun
+	Mon
+	Tue
+	Wed
+	Thu
+	Fri
+	Sat
+	Sunday
+	Monday
+	Tuesday
+	Wednesday
+	Thursday
+	Friday
+	Saturday
+	Sunday
+	January
+	February
+	March
+	April
+	May
+	June
+	July
+	August
+	September
+	October
+	November
+	December
+	Today
+	Time
+	All-day
+	日
+	一
+	二
+	三
+	四
+	五
+	六
+	星期日
+	星期一
+	星期二
+	星期三
+	星期四
+	星期五
+	星期六
+	一月
+	二月
+	三月
+	四月
+	五月
+	六月
+	七月
+	八月
+	九月
+	十月
+	十一月
+	十二月
+	今天
+	时间
+	全天
+	
+file upload:
+	% has invalid extension. Only % are allowed.
+    % is too large, maximum file size is %.
+    % is too small, minimum file size is %.
+    % is empty, please select files again without it.
+    The files are being uploaded, if you leave now the upload will be cancelled.
+    Upload a file
+    Failed
+    Cancel
+    
+    
+upload avatar:
+	Drag and drop your portrait here
+	Small Avatar 80x80px
+	
+	
+UserIdentification:
+	Your email here
+	Identification
+	Authorize with your existing accounts 
+	Enter identity information
+    Welcome to EXFE
+    Enter identity information:
+	Identity:
+	Your email here
+	Display name:
+	Password
+	Re-type:
+	check password
+	Sign in automatically
+	Incorrect identity or password
+	Forgot Password...
+	Sign Up?
+	Start Over
+	Set Password
+	Please set password for your identity.
+	Identity:
+	Display name:
+	Password:
+	Re-type:
+	check password
+	Discard
+	Change Password
+	Please enter current password and set new password."
+    Identity:
+    Password:
+    New password:
+    Re-type new:
+    Forgot Password...
+    Discard
+    Forgot password
+    A verification will be sent to your identity:
+    Confirm sending verification to your mailbox? It should arrive in minutes.
+    Cancel
+    Welcome to EXFE
+    Enter identity information:
+    Identity:
+    This identity needs to be verified before using.
+    Confirm sending verification to your mailbox?
+    Start Over
+    I See
+    Hi. 
+    Thanks for using EXFE
+    An utility for hanging out with friends.
+    Please check your mailbox for verification."
+    X (cross) is a gathering of people, for anything to do with them. We save you from calling up every one RSVP, losing in endless emails messages off the point.
+	EXFE your friends, gather a X
+	Sign-Up-Free
+	We know you’re tired of
+	signing up all around.
+	So, just authorize with your existing accounts on other websites.
+	Or, tell us your desired identity and display name that your friends know who you are, along with a password for sign-in. Identity could be your email address or phone number."
+    Close
+    Invalid identity
+    You couldn’t sign in or edit if you left now
+	Enter identity information:
+	Sign In
+	click
+	Set your display name
+	Invalid character in name
+	Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.
+	Signing up new identity:
+	Sign Up
+	Check Password
+	Passwords empty.
+	Passwords don't match.
+	Identity or password empty
+	Welcome
+	host
+	
+	
+	
+header
+    Welcome to EXFE
+	Please set password to keep track of attendees update, and engage in.
+	Please input a display name.
+	Display name Error.
+	Please input a password.
+	Password cannot be empty.
+    New password cannot be empty.
+    Your email here
+    Upcoming:
+    Now
+    24hr
+    Gather X
+    Setting
+    Sign out
+    
+
+	
+	
+
