@@ -2,7 +2,7 @@
 require_once("../lib/class.phpmailer.php");
 require_once("../common.php");
 require_once("../config.php");
-class Emailactivecode_Job
+class Emailverifying_Job
 {
     public function perform()
     {
