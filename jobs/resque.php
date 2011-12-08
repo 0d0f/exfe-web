@@ -2,7 +2,8 @@
 date_default_timezone_set('GMT');
 #require 'bad_job.php';
 require_once 'email_job.php';
-require_once 'emailactivecode_job.php';
+#require_once 'emailactivecode_job.php';
+require_once 'emailverifying_job.php';
 require_once 'emailresetpassword_job.php';
 require_once 'welcomeandactivecode_job.php';
 require_once 'welcomeemail_job.php';
