@@ -134,8 +134,8 @@ $token=$_GET["token"];
             <a id="desc_expand_btn" href="javascript:void(0);">Expand</a>
             </div>
             <ul class="ynbtn" id="rsvp_options" <?php echo $myrsvp ? 'style="display:none"' : ''; ?> >
-                <li><a id='rsvp_yes' value="yes" href="javascript:void(0);" class="yes">Yes</a></li>
-                <li><a id='rsvp_no' value="no" href="javascript:void(0);" class="no">No</a></li>
+                <li><a id='rsvp_yes' value="yes" href="javascript:void(0);" class="yes">Accept</a></li>
+                <li><a id='rsvp_no' value="no" href="javascript:void(0);" class="no">Decline</a></li>
                 <li><a id='rsvp_maybe' value="maybe" href="javascript:void(0);" class="maybe">interested</a> <div style="display:none" id="rsvp_loading" ></div> <li>
             </ul>
             <div id="rsvp_submitted" <?php echo $myrsvp ? '' : 'style="display:none"'; ?>><span>Your RSVP is "<span id="rsvp_status"></span>". </span> <a href="javascript:void(0);" id="changersvp">Change?</a></div>

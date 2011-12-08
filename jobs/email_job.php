@@ -31,8 +31,9 @@ class Email_Job
         $mail["exfe_title"]=$this->args['title'];
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
+        $mail["by_identity_name"]=$by_identity_name;
 
-        $mail["hint_title"]='Invitation from <span style="font-weight:bold;">'.$host_name."</span>.";
+        $mail["hint_title"]='Invitation from <span>'.$host_name."</span>.";
 
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
             $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X</span>.";
@@ -40,10 +41,7 @@ class Email_Job
         if (intval($this->args['rsvp_status'])===1) { //INVITATION_YES
             $mail["rsvp_status"] = '<tr><td style="line-height:19px; padding-top: 30px;">'
                                  . '<span style="display: block; float: left; color: #333333;">'
-                                 . "You're <span style=\"font-weight: bold; color: #0591AC;\">CONFIRMED</span>";
-            if ($this->args["by_identity"]['external_identity'] !== $this->args['external_identity']) {
-                $mail["rsvp_status"] .= " by <span class=\"exfe_mail_identity_name\">{$by_identity_name}</span> to attend.</span>";
-            }
+                                 . "You're <span style=\"font-weight: bold; color: #0591AC;\"> CONFIRMED </span> to attend.</span>";
             $mail["rsvp_status"] .= '</td></tr>';
             $mail['button_padding_top'] = '';
             $mail["rsvp_accept"] = '';
@@ -78,8 +76,11 @@ class Email_Job
 
         $parser = new Markdown_Parser;
         $parser->no_markup = true;
-        $mail["content"] = $parser->transform($original_desc_str);
-
+        $mail['content'] = str_replace(
+            '<p>',
+            '<p style="margin: 0;">',
+            $parser->transform($original_desc_str)
+        );
 
         $begin_at=$this->args["begin_at"];
         $datetime=explode(" ",$begin_at);
@@ -136,6 +137,7 @@ class Email_Job
         $mail_body=str_replace("%place_line1%",$mail["place_line1"],$mail_body);
         $mail_body=str_replace("%place_line2%",$mail["place_line2"],$mail_body);
         $mail_body=str_replace("%site_url%",$site_url,$mail_body);
+        $mail_body=str_replace("%by_identity_names%",$mail["by_identity_names"],$mail_body);
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }

@@ -1,39 +1,39 @@
-<?
+<?php
 require_once("../lib/class.phpmailer.php");
 require_once("../common.php");
 require_once("../config.php");
-class Emailresetpassword_Job
+class Emailactivecode_Job
 {
     public function perform()
     {
-        $title = "EXFE forgot password process";
-        $external_identity = $this->args['external_identity'];
-        $token = $this->args['token'];
-
         global $email_connect;
         global $site_url;
 
-        $url = $site_url.'/s/resetPassword?token='.$token;
+        $title="EXFE identity verification";
+        $name=$this->args['name'];
+        $avatar_file_name=$this->args['avatar_file_name'];
+        $token=$this->args['token'];
+
+
+        $url=$site_url.'/s/verifyIdentity?token='.$token;
         $parturl=substr($url,0,45)."...";
-        $mail["site_url"]=$site_url;
         $mail["link"]=$url;
+        $mail["site_url"] = $site_url;
         $mail["partlink"]=$parturl;
-        $mail["name"]=$this->args['name'];
+        $mail["name"]=$name;
         $mail["external_identity"]=$this->args['external_identity'];
-        $mail["title"]=$title;
+
         $mail_body=$this->getMailBody($mail);
-       
+
         if($email_connect==""){
             smtp_connect();
         }
-        $this->send($title, $mail_body, $this->args);
+        $this->send($title,$mail_body,$this->args);
     }
     public function getMailBody($mail)
     {
-        $template_con = file_get_contents("resetpassword_template.html");
-
-        $mail_body=str_replace("%title%",$mail["title"],$template_con);
-        $mail_body=str_replace("%name%",$mail["name"],$mail_body);
+        $template_con = file_get_contents("verifying_template.html");
+        $mail_body=str_replace("%name%",$mail["name"],$template_con);
         $mail_body=str_replace("%link%",$mail["link"],$mail_body);
         $mail_body=str_replace("%partlink%",$mail["partlink"],$mail_body);
         $mail_body=str_replace("%external_identity%",$mail["external_identity"],$mail_body);
@@ -42,7 +42,7 @@ class Emailresetpassword_Job
         return $mail_body;
     }
 
-    public function send($title,$body,$args)
+    public function send($title,$body,$attachment,$args)
     {
             global $email_connect;
             global $connect_count;
@@ -70,4 +70,3 @@ class Emailresetpassword_Job
     }
 }
 ?>
-
