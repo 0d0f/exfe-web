@@ -140,7 +140,7 @@ class XActions extends ActionController {
             //echo "get conversation";
             //echo $params["updated_since"];
             $postData=$this->getModelByName("conversation");
-            $result=$postData->getConversation($cross_id,"cross",intval($params["updated_since"]));
+            $result=$postData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
             $responobj["meta"]["code"]=200;
             $responobj["response"]["conversations"]=$result;
             echo json_encode($responobj);
