@@ -5,4 +5,3 @@ root:table {
         Write_some_words_about_this_X {"Write some words about this X."}
       }
 }
-
