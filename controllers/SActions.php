@@ -1411,4 +1411,10 @@ class SActions extends ActionController
         echo json_encode($returnData);
         exit();
     }
+
+    public function doExfee()
+    {
+        $this->displayView();
+    }
+
 }
