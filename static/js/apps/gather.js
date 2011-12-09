@@ -559,7 +559,10 @@ function identity()
                     avatar_file_name = data.response.identities[i].avatar_file_name;
                     name             = data.response.identities[i].name;
                 if (!$('#exfee_' + id).length) {
-                    name = name ? name : identity;
+                    name = name ? name : identity.split('@')[0].replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ');
+                    while (odof.util.initNameSpace.getUTF8Length(name) > 30) {
+                        name = name.substring(0, name.length - 1);
+                    }
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
                       +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
