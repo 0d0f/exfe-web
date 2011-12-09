@@ -44,8 +44,6 @@ root:table {
         of_confirmed {"% of % confirmed"}
         Invite {"Invite!"}
         Enter_attendees_information {"Enter attendees' information"}
-        Revert {"Revert"}
-        Done {"Done"}
         Edit {"Edit..."}
         Remove {"Remove..."}
         Check_all {"Check all"}
@@ -116,7 +114,6 @@ root:table {
         Thursday {"Thursday"}
         Friday {"Friday"}
         Saturday {"Saturday"}
-        Sunday {"Sunday"}
         January {"January"}
         February {"February"}
         March {"March"}
@@ -156,39 +153,30 @@ root:table {
         Authorize_with_your_existing_accounts {"Authorize with your existing accounts"}
         Enter_identity_information {"Enter identity information"}
         Welcome_to_EXFE {"Welcome to EXFE"}
-        Enter_identity_information {"Enter identity information:"}
         Identity {"Identity:"}
-        Your_email_here {"Your email here"}
         Display_name {"Display name:"}
         Password {"Password"}
         Re_type {"Re-type:"}
         check_password {"check password"}
         Sign_in_automatically {"Sign in automatically"}
         Incorrect_identity_or_password {"Incorrect identity or password"}
-        Forgot_Password {"Forgot Password..."}
-        Sign_Up {"Sign Up?"}
+        Sign_Up_Question {"Sign Up?"}
         Start_Over {"Start Over"}
         Set_Password {"Set Password"}
         set_password_for_your_identity {"Please set password for your identity."}
-        Identity {"Identity:"}
-        Display_name {"Display name:"}
         Discard {"Discard"}
         Change_Password {"Change Password"}
         enter_current_password_and_set_new password {"Please enter current password and set new password."}
         New_password {"New password:"}
         Re_type_new {"Re-type new:"}
-        Forgot_Password {"Forgot Password..."}
-        Discard {"Discard"}
+        Forgot_Password_etc {"Forgot Password..."}
         Forgot_password {"Forgot password"}
         verification_will_be_sent {"A verification will be sent to your identity:"}
         Confirm_sending_verification {"Confirm sending verification to your mailbox? It should arrive in minutes."}
         Cancel {"Cancel"}
-        Welcome_to_EXFE {"Welcome to EXFE"}
         Enter_identity {"Enter identity information:"}
-        Identity {"Identity:"}
         identity_needs_to_be_verified {"This identity needs to be verified before using."}
         sending_verification_to_your_mailbox {"Confirm sending verification to your mailbox?"}
-        Start_Over {"Start Over"}
         I_See {"I See"}
         Hi {"Hi."}
         Thanks_for_using_EXFE {"Thanks for using EXFE"}
@@ -204,7 +192,7 @@ root:table {
         Close {"Close"}
         Invalid_identity {"Invalid identity"}
         You_couldnt_sign_in_or_edit_if_you_left_now {"You couldn’t sign in or edit if you left now"}
-        Enter_identity_information {"Enter identity information:"}
+        Enter_identity_information_etc {"Enter identity information:"}
         Sign_In {"Sign In"}
         click {"click"}
         Set_your_display_name {"Set your display name"}
