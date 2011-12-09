@@ -23,7 +23,7 @@ class IdentityModels extends DataModel{
             return  intval($row["id"]);
 
         $external_identity=mysql_real_escape_string($external_identity);
-        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,activecode) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username','$activecode')";
+        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
         $result=$this->query($sql);
         $identityid=intval($result["insert_id"]);
         if($identityid>0)
@@ -42,16 +42,23 @@ class IdentityModels extends DataModel{
 
             //TOdO: commit as a transaction
             $time=time();
-            $sql="insert into user_identity (identityid,userid,created_at) values ($identityid,$user_id,FROM_UNIXTIME($time))";
+            $sql="insert into user_identity (identityid,userid,created_at,activecode) values ($identityid,$user_id,FROM_UNIXTIME($time),'{$activecode}')";
             $this->query($sql);
 
+            $verifyTokenArray = array(
+                "identityid"    =>$identityid,
+                "activecode"    =>$activecode
+            );
+            $verifyToken = packArray($verifyTokenArray);
+
             $args = array(
-                     'identityid' => $identityid,
-                     'external_identity' => $external_identity,
-                     'name' => $name,
-                     'avatar_file_name' => $avatar_file_name,
-                     'activecode' => $activecode
-             );
+                     'identityid'           =>$identityid,
+                     'external_identity'    =>$external_identity,
+                     'name'                 =>$name,
+                     'avatar_file_name'     =>$avatar_file_name,
+                     'activecode'           =>$activecode,
+                     'token'                =>$verifyToken
+            );
             /*
             if($provider=="email")
             {
@@ -277,7 +284,11 @@ class IdentityModels extends DataModel{
 
     public function login($identity,$password,$setcookie=false)
     {
-        $password=md5($password.$this->salt);
+        $password = md5($password.$this->salt);
+        return $this->loginAsHashPassword($identity, $password, $setcookie);
+    }
+
+    public function loginAsHashPassword($identity,$password,$setcookie=false){
         $sql="select * from identities where external_identity='$identity' limit 1";
 #update last_sign_in_at,last_sign_in_ip...
         $identityrow=$this->getRow($sql);
@@ -540,13 +551,18 @@ class IdentityModels extends DataModel{
                 $this->query($sql);
             }
             if (intval($row["status"]) == 2) { // if status is verifying, set identity activecode ,send active email ,
-                $sql="update identities set activecode='$token' where  id=$identity_id;";
+                //$sql="update identities set activecode='$token' where  id=$identity_id;";
+                $sql="update user_identity set activecode='$token' where identityid=$identity_id;";
                 $this->query($sql);
             } else if(intval($row["status"]) == 1) {	//if disconnect, change to verifying, set identity activecode ,send active email
                 //$sql="update identities set status='2',activecode='$token' where  id=$identity_id;";
+                /*
                 $sql="update identities set activecode='$token' where  id=$identity_id;";
                 $this->query($sql);
                 $sql="update user_identity set status=2 where identityid=$identity_id;";
+                $this->query($sql);
+                 */
+                $sql="update user_identity set status=2, activecode='$token' where identityid=$identity_id;";
                 $this->query($sql);
             }
            
@@ -563,6 +579,50 @@ class IdentityModels extends DataModel{
             return array();
         }
     }
+
+    //验证
+    public function verifyIdentify($identity_id, $active_code){
+        $returnData = array(
+            "identity"          =>"",
+            "display_name"      =>"",
+            "avatar"            =>"",
+            "password"          =>"",
+            "reset_pwd_token"   =>"",
+            "status"            =>"ok",
+            "set_pwd"           =>"yes"
+        );
+        $activecode = mysql_real_escape_string($activecode);
+        $sql = "SELECT identityid,userid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'"; 
+        $row = $this->getRow($sql);
+        $sql = "SELECT external_identity,name,avatar_file_name FROM identities WHERE id={$identity_id}";
+        $identityInfo = $this->getRow($sql);
+        $returnData["identity"] = $identityInfo["external_identity"];
+        $returnData["display_name"] = $identityInfo["name"];
+        $returnData["avatar"] = $identityInfo["avatar_file_name"];
+
+        if(is_array($row)){
+            $userID = $row["userid"];
+            $sql = "SELECT encrypted_password FROM users WHERE id={$userID}";
+            $userInfo = $this->getRow($sql);
+            //如果用户密码为空，则需要设置reset_password_token，同时告诉客户端需要设置密码。
+            if(trim($userInfo["encrypted_password"]) == ""){
+                $returnData["set_pwd"] = "no";
+                $resetPwdToken = md5(base64_encode(pack('N6',mt_rand(),mt_rand(),mt_rand(),mt_rand(),mt_rand(),uniqid())));
+                $sql = "UPDATE users SET reset_password_token='{$resetPwdToken}' WHERE id={$userID}";
+                $this->query($sql);
+                $returnData["reset_pwd_token"] = $resetPwdToken;
+            }else{//设置用户的Status为3，并且设置ActiveCode为空。
+                $returnData["password"] = $userInfo["encrypted_password"];
+                $sql = "UPDATE User_identity SET status=3, activecode='' WHERE identityid={$identity_id}";
+                $this->query($sql);
+            }
+        }else{
+            $returnData["status"] = "fail";
+        }
+        return $returnData;
+    }
+
+    //activeIdentity方法已经作废。By: handaoliang
     public function activeIdentity($identity_id,$activecode)
     {
         $activecode=mysql_real_escape_string($activecode);
@@ -610,19 +670,22 @@ class IdentityModels extends DataModel{
 
     public function getVerifyingCode($identity_id){
         if(intval($identity_id) > 0){
-            $sql = "SELECT provider,activecode FROM identities WHERE id={$identity_id}";
-            $result = $this->getRow($sql);
-            if($result["activecode"] != ""){
-                return $result;
+            $sql = "SELECT provider FROM identities WHERE id={$identity_id}";
+            $row_p = $this->getRow($sql);
+            $sql = "SELECT activecode FROM user_identity WHERE identityid={$identity_id}";
+            $row_c = $this->getRow($sql);
+            if($row_c["activecode"] != ""){
+                return array("provider"=>$row_p["provider"], "activecode"=>$row_c["activecode"]);
             }else{
                 $activecode = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
-                $sql="UPDATE identities SET activecode='$activecode' WHERE id={$identity_id}";
+                $sql="UPDATE user_identity SET activecode='$activecode' WHERE identityid={$identity_id}";
                 $queryResult = $this->query($sql);
                 return array("provider"=>$result["provider"], "activecode"=>$activecode);
             }
         }
     }
 
+    //reActiveIdentity函数作废。By:handaoliang
     public function reActiveIdentity($identity_id)
     {
         if(intval($identity_id)>0)

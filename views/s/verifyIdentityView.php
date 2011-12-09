@@ -8,24 +8,39 @@
 </head>
 <body style="background-color:#EFEFEF;">
 <?php
-$user_identity = $this->getVar("userIdentity");
-$user_name = $this->getVar("userName");
-$user_token = $this->getVar("userToken");
+$identityInfo = $this->getVar("identityInfo");
 ?>
 <?php include "share/nav.php"; ?>
-
+<?php
+//如果已经设置密码。则直接显示验证成功的效果。
+if($identityInfo["status"] == "ok" && $identityInfo["set_pwd"] == "yes"){
+?>
+<div style="font-size:34px; margin-top:140px;" id="verify_success" class="identification_dialog idialog_inpage">Verification completed</div>
+<script type="text/javascript">
+jQuery("#verify_success").fadeTo("slow", 0.3, function(){
+    window.location.href="/s/profile";
+});
+</script>
+<?php
+}else{
+?>
 <div id="userResetPwdBox" class="identification_dialog idialog_inpage"></div>
 <script type="text/javascript">
     var showSpecialIdentityDialog = true;
-    var user_identity = '<?php echo $user_identity; ?>';
-    var user_name = '<?php echo $user_name; ?>';
-    var user_token = '<?php echo $user_token; ?>';
+    var user_identity = '<?php echo $identityInfo["identity"]; ?>';
+    var user_name = '<?php echo $identityInfo["display_name"]; ?>';
+    var user_token = '<?php echo $identityInfo["reset_pwd_token"]; ?>';
     jQuery(document).ready(function(){
         odof.user.status.doShowResetPwdDialog("userResetPwdBox");
         jQuery("#show_identity_box").val(user_identity);
         jQuery("#user_display_name").val(user_name);
         jQuery("#identification_user_token").val(user_token);
+        jQuery("#set_password_titles").html("Identity verified");
+        jQuery("#set_password_desc").html("Please set password to complete.");
     });
 </script>
+<?php
+}
+?>
 </body>
 </html>

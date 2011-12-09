@@ -414,7 +414,7 @@ class SActions extends ActionController
         foreach ($relatedIdentities as $ridI => $ridItem) {
             $user = $modUser->getUserByIdentityId($ridItem['identity_id']);
             $humanIdentities[$ridItem['id']] = humanIdentity($ridItem, $user);
-            unset($humanIdentities[$ridItem['id']]['activecode']);
+            //unset($humanIdentities[$ridItem['id']]['activecode']);
         }
 
         // Add confirmed informations into crosses
@@ -1106,9 +1106,7 @@ class SActions extends ActionController
                 if(!$result["result"]){
                     $result["error"] = 1;
                     $result["msg"] = "System Error.";
-                }
-                else
-                {
+                } else {
                     $identityData = $this->getModelByName("identity");
                     $identityData->login($userIdentity,$userPassword,"true");
 
@@ -1174,8 +1172,9 @@ class SActions extends ActionController
 
                 $pakageToken = packArray($userInfo);
                 $name=$result["name"];
-                if($name=="")
+                if($name==""){
                     $name=$userIdentity;
+                }
                 $args = array(
                          'external_identity' => $userIdentity,
                          'name' => $name,
@@ -1221,8 +1220,28 @@ class SActions extends ActionController
         if($userToken == ""){
             header("location:/x/forbidden");
         }else{
-            $identityInfo = unpackArray($token);
-            print_r($identityInfo);
+            $identityInfo = unpackArray($userToken);
+            //如果Token串有问题。
+            if(!$identityInfo){
+                header("location:/x/forbidden");
+                exit;
+            }
+            $identityID = $identityInfo["identityid"];
+            $activeCode = $identityInfo["activecode"];
+
+            $identityHandler = $this->getModelByName("identity");
+            $result = $identityHandler->verifyIdentify($identityID, $activeCode);
+
+            if($result["status"] == "ok"){
+                if($result["set_pwd"] == "yes"){
+                    $identityHandler->loginAsHashPassword($result["identity"], $result["password"], "true");
+                }
+                unset($result["password"]);
+                $this->setVar("identityInfo", $result);
+                $this->displayView();
+            }else{
+                header("location:/x/forbidden");
+            }
         }
     }
 
@@ -1257,6 +1276,8 @@ class SActions extends ActionController
                     "avatar_file_name"      =>$result["avatar_file_name"],
                     "token"                 =>$verifyingToken
                 );
+                //echo $verifyingToken;
+                //exit;
                 if($r["provider"]=="email") {
                     $helperHandler=$this->getHelperByName("identity");
                     $jobId=$helperHandler->sentVerifyingEmail($args);

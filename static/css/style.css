@@ -340,7 +340,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .notice span{ margin-left:120px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
-    position:absolute; z-index:203; height:40px; width:360px; top:275px;
+    position:absolute; z-index:203; height:40px; width:360px; top:275px; text-align:right;
 }
 
 .invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}
