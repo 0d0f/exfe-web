@@ -71,7 +71,7 @@ class XModels extends DataModel
     }
 
 
-    public function getCrossByUserId($userid, $updated_since=0)
+    public function getCrossByUserId($userid, $updated_since="")
     {
         //get all identityid
         $sql="select identityid from user_identity where userid=$userid ;";
@@ -87,7 +87,7 @@ class XModels extends DataModel
         if (intval($updated_since)==0)
             $sql="select distinct cross_id from invitations where  ($str)  order by created_at limit 50";
         else
-            $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
+            $sql="select distinct cross_id from invitations where  ($str) and created_at>'$updated_since' order by created_at limit 50";
         $cross_id_list=$this->getColumn($sql);
         if(sizeof($cross_id_list)>0)
         {

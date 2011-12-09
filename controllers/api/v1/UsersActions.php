@@ -44,7 +44,7 @@ class UsersActions extends ActionController {
         //print $params["updated_since"];
 
         $Data=$this->getModelByName("X");
-        $crosses=$Data->getCrossByUserId(intval($params["id"]),intval($params["updated_since"]));
+        $crosses=$Data->getCrossByUserId(intval($params["id"]),urldecode($params["updated_since"]));
         if($crosses=="")
             $crosses=array();
         
@@ -57,7 +57,8 @@ class UsersActions extends ActionController {
             $cross_id=intval($crosses[$i]["id"]);
             if($cross_id>0)
             {
-                $conversations=$conversationData->getConversation($cross_id,'cross',10);
+                #$conversations=$conversationData->getConversation($cross_id,'cross',10);
+                $conversations = $postData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
                 $crosses[$i]["conversations"]=$conversations;
                 $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
                 $user=$userData->getUserByIdentityId(intval($crosses[$i]["host_id"]));
