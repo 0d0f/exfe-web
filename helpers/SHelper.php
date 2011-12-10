@@ -2,7 +2,7 @@
 
 class SHelper extends ActionController
 {
-        public function GetAllUpdate($userid,$updated_since="")
+        public function GetAllUpdate($userid,$updated_since="",$limit=200)
         {
         // init models
         $modIdentity = $this->getModelByName('identity');
@@ -19,7 +19,7 @@ class SHelper extends ActionController
         $allCrossIds = array_keys($allCross);
 
         // Get recently logs
-        $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds,$updated_since);
+        $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds,$updated_since,$limit);
 
         // clean logs
         $loged   = array();

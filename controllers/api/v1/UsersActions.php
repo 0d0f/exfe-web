@@ -25,6 +25,27 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
     }
+    public function doGetUpdate()
+    {
+        $params=$this->params;
+        $uid=$params["id"];
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAPIAllow("user_getupdate",$params["token"],array("user_id"=>$params["id"]));
+        if($check["check"]==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+        $shelper=$this->getHelperByName("s");
+        $cleanLogs=$shelper->GetAllUpdate($uid,urldecode($_GET["updated_since"]));
+
+        $responobj["meta"]["code"]=200;
+        $responobj["response"]=$cleanLogs;
+        echo json_encode($responobj);
+
+    }
     public function doX()
     {
         //check if this token allow 
@@ -58,7 +79,7 @@ class UsersActions extends ActionController {
             if($cross_id>0)
             {
                 #$conversations=$conversationData->getConversation($cross_id,'cross',10);
-                $conversations = $postData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
+                $conversations = $conversationData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
                 $crosses[$i]["conversations"]=$conversations;
                 $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
                 $user=$userData->getUserByIdentityId(intval($crosses[$i]["host_id"]));
