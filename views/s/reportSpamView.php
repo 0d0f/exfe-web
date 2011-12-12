@@ -7,13 +7,13 @@
 </head>
 <body style="background-color:#EFEFEF;">
 <?php include "share/nav.php"; ?>
-<div class="reporting_msg" id="reporting_msg" style="display:none;">
+<div class="reporting_msg" id="reporting_msg">
     <p class="titles">Thank you for reporting spam.</p>
     <p>Redirecting to <span style="color:#0591AC">EXFE</span> in seconds…</p>
 </div>
 <script type="text/javascript">
 jQuery(document).ready(function(){
-    jQuery("#reporting_msg").fadeIn(3000);
+    //jQuery("#reporting_msg").fadeIn(3000);
     jQuery("#reporting_msg").fadeTo(4000, 0.2, function(){
         window.location.href="/";
     });

@@ -1179,7 +1179,7 @@ class SActions extends ActionController
         exit();
     }
 
-    public function doReportingSpam() {
+    public function doReportSpam() {
         $token = exGet("token");
         if($token == ""){
             header("location:/x/forbidden");
