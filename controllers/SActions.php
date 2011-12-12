@@ -1038,8 +1038,8 @@ class SActions extends ActionController
                     "avatar_file_name"      =>$result["avatar_file_name"],
                     "token"                 =>$verifyingToken
                 );
-                //echo $verifyingToken;
-                //exit;
+                echo $verifyingToken;
+                exit;
                 if($r["provider"]=="email") {
                     $helperHandler=$this->getHelperByName("identity");
                     $jobId=$helperHandler->sentVerifyingEmail($args);
@@ -1056,6 +1056,8 @@ class SActions extends ActionController
 
     }
 
+    //active 相关的操作都去掉。全部替换成verifying
+    /**
     public function doActive() {
         $identity_id = intval($_GET["id"]);
         $activecode = $_GET["activecode"];
@@ -1119,6 +1121,7 @@ class SActions extends ActionController
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
     }
+     */
 
     //change password
     public function doChangePassword() {

@@ -623,6 +623,7 @@ class IdentityModels extends DataModel{
     }
 
     //activeIdentity方法已经作废。By: handaoliang
+    /*
     public function activeIdentity($identity_id,$activecode)
     {
         $activecode=mysql_real_escape_string($activecode);
@@ -643,6 +644,8 @@ class IdentityModels extends DataModel{
         $row=$this->getRow($sql);
         return array("result"=>"","external_identity"=>$row["external_identity"]);
     }
+    */
+
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $result=$this->ifIdentityExist($external_identity);
@@ -686,6 +689,7 @@ class IdentityModels extends DataModel{
     }
 
     //reActiveIdentity函数作废。By:handaoliang
+    /*
     public function reActiveIdentity($identity_id)
     {
         if(intval($identity_id)>0)
@@ -703,6 +707,7 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+    */
     public function buildIndex($userid,$identities)
     {
         //$identities=$this->getIdentitiesByUser($userid);

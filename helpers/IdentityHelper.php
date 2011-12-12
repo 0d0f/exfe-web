@@ -2,6 +2,8 @@
 
 class IdentityHelper extends ActionController
 {
+    //sentActiveEmail 函数作废，By:handaoliang
+    /*
     public function sentActiveEmail($args)
     {
             require 'lib/Resque.php';
@@ -10,6 +12,7 @@ class IdentityHelper extends ActionController
             $jobId = Resque::enqueue("email","emailactivecode_job" , $args, true);
             return $jobId;
     }
+     */
     public function sentVerifyingEmail($args)
     {
             require 'lib/Resque.php';
