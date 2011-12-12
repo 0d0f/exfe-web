@@ -54,14 +54,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.util.delCookie('last_identity', "/", cookies_domain);
         odof.util.setCookie("last_identity", args.identity, 365, cookies_domain);
         odof.user.identification.userIdentityCache = args.identity;
-        odof.user.identification.showManualVerificationDialog(args.identity, "sendActiveMail");
+        odof.user.identification.showManualVerificationDialog(args.identity);
     };
 
     ns.doSendEmail = function(userIdentity, doActions){
         var actionURI = "";
-        if(typeof doActions != "undefined" && doActions == 'sendActiveMail'){
-            actionURI = site_url+"/s/sendActiveMail";
-        }else if(typeof doActions != "undefined" && doActions == 'resetPassword'){
+        if(typeof doActions != "undefined" && doActions == 'resetPassword'){
             actionURI = site_url+"/s/SendResetPasswordMail";
         }else{
             actionURI = site_url+"/s/SendVerifyingMail";

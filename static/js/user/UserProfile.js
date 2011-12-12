@@ -47,7 +47,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $.ajax({
         type: "POST",
         data: poststr,
-        url: site_url+"/s/sendActiveMail",
+        url: site_url+"/s/sendVerifyingMail",
         dataType:"json",
         success: function(JSONData){
             if(!JSONData.error)
