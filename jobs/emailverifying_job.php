@@ -13,7 +13,7 @@ class Emailverifying_Job
         $name=$this->args['name'];
         $user_name = trim($this->args['user_name']);
         if($user_name != ""){
-            $user_name = "by span style='color: #191919;'>".$user_name."</span>";
+            $user_name = "by <span style='color:#191919;'>".$user_name."</span>";
         }
         $avatar_file_name=$this->args['avatar_file_name'];
         $token=$this->args['token'];
