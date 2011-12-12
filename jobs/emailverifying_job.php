@@ -14,10 +14,11 @@ class Emailverifying_Job
         $avatar_file_name=$this->args['avatar_file_name'];
         $token=$this->args['token'];
 
-
         $url=$site_url.'/s/verifyIdentity?token='.$token;
+        $reporting_spam_url = $site_url.'/s/reportingSpam?token='.$token;;
         $parturl=substr($url,0,45)."...";
         $mail["link"]=$url;
+        $mail["reporting_spam_url"] = $reporting_spam_url;
         $mail["site_url"] = $site_url;
         $mail["partlink"]=$parturl;
         $mail["name"]=$name;
@@ -35,6 +36,7 @@ class Emailverifying_Job
         $template_con = file_get_contents("verifying_template.html");
         $mail_body=str_replace("%name%",$mail["name"],$template_con);
         $mail_body=str_replace("%link%",$mail["link"],$mail_body);
+        $mail_body=str_replace("%reporting_spam_url%",$mail["reporting_spam_url"],$mail_body);
         $mail_body=str_replace("%partlink%",$mail["partlink"],$mail_body);
         $mail_body=str_replace("%external_identity%",$mail["external_identity"],$mail_body);
         $mail_body=str_replace("%site_url%",$mail["site_url"],$mail_body);

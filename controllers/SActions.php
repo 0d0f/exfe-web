@@ -927,6 +927,7 @@ class SActions extends ActionController
             if($result["token"]!="" && intval($result["uid"])>0)
             {
                 $userInfo = array(
+                    "actions"           =>"resetPassword",
                     "user_id"           =>$result["uid"],
                     "user_identity"     =>$userIdentity,
                     "user_token"        =>$result["token"]
@@ -1028,6 +1029,7 @@ class SActions extends ActionController
             if($identityID > 0){
                 $r = $identityHandler->getVerifyingCode($identityID);
                 $tokenArray = array(
+                    "actions"           =>"verifyIdentity",
                     "identityid"        =>$identityID,
                     "activecode"        =>$r["activecode"]
                 );
@@ -1038,8 +1040,8 @@ class SActions extends ActionController
                     "avatar_file_name"      =>$result["avatar_file_name"],
                     "token"                 =>$verifyingToken
                 );
-                echo $verifyingToken;
-                exit;
+                //echo $verifyingToken;
+                //exit;
                 if($r["provider"]=="email") {
                     $helperHandler=$this->getHelperByName("identity");
                     $jobId=$helperHandler->sentVerifyingEmail($args);
@@ -1175,6 +1177,30 @@ class SActions extends ActionController
         $identityObj->updateUserPassword($userID, $userNewPassword);
         echo json_encode($returnData);
         exit();
+    }
+
+    public function doReportingSpam() {
+        $token = exGet("token");
+        if($token == ""){
+            header("location:/x/forbidden");
+            exit;
+        }
+
+        $reportingInfo = unpackArray($token);
+        //如果Token串有问题。
+        if(!$reportingInfo){
+            header("location:/x/forbidden");
+            exit;
+        }
+        if($reportingInfo["actions"] == "verifyIdentity"){
+            $identityID = $reportingInfo["identityid"];
+            $activeCode = $reportingInfo["activecode"];
+
+            $identityHandler = $this->getModelByName("identity");
+            $result = $identityHandler->delVerifyCode($identityID, $activeCode);
+        }
+
+        $this->displayView();
     }
 
     public function doExfee()
