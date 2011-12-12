@@ -59,7 +59,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.doSendEmail = function(userIdentity, doActions, callBackFunc){
         var actionURI = "";
-        if(typeof doActions != "undefined" && doActions == 'resetPassword'){
+        if(typeof doActions != "undefined" && doActions != null && doActions == 'resetPassword')
+        {
             actionURI = site_url+"/s/SendResetPasswordMail";
         }else{
             actionURI = site_url+"/s/SendVerifyingMail";
@@ -77,9 +78,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if(typeof callBackFunc != "undefined"){
                         callBackFunc();
                     }
-                    setTimeout(function(){
-                        jQuery("#manual_verification_dialog").hide();
-                    }, 3000);
                 },
                 complete: function(){
                     jQuery("#submit_loading_btn").hide();
