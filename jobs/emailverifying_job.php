@@ -11,17 +11,22 @@ class Emailverifying_Job
 
         $title="EXFE identity verification";
         $name=$this->args['name'];
+        $user_name = trim($this->args['user_name']);
+        if($user_name != ""){
+            $user_name = "by span style='color: #191919;'>".$user_name."</span>";
+        }
         $avatar_file_name=$this->args['avatar_file_name'];
         $token=$this->args['token'];
 
         $url=$site_url.'/s/verifyIdentity?token='.$token;
-        $reporting_spam_url = $site_url.'/s/reportingSpam?token='.$token;;
+        $report_spam_url = $site_url.'/s/reportSpam?token='.$token;;
         $parturl=substr($url,0,45)."...";
         $mail["link"]=$url;
-        $mail["reporting_spam_url"] = $reporting_spam_url;
+        $mail["report_spam_url"] = $report_spam_url;
         $mail["site_url"] = $site_url;
         $mail["partlink"]=$parturl;
         $mail["name"]=$name;
+        $mail["user_name"]=$user_name;
         $mail["external_identity"]=$this->args['external_identity'];
 
         $mail_body=$this->getMailBody($mail);
@@ -36,9 +41,10 @@ class Emailverifying_Job
         $template_con = file_get_contents("verifying_template.html");
         $mail_body=str_replace("%name%",$mail["name"],$template_con);
         $mail_body=str_replace("%link%",$mail["link"],$mail_body);
-        $mail_body=str_replace("%reporting_spam_url%",$mail["reporting_spam_url"],$mail_body);
         $mail_body=str_replace("%partlink%",$mail["partlink"],$mail_body);
+        $mail_body=str_replace("%report_spam_url%",$mail["report_spam_url"],$mail_body);
         $mail_body=str_replace("%external_identity%",$mail["external_identity"],$mail_body);
+        $mail_body=str_replace("%user_name%",$mail["user_name"],$mail_body);
         $mail_body=str_replace("%site_url%",$mail["site_url"],$mail_body);
 
         return $mail_body;

@@ -331,6 +331,17 @@ class IdentityModels extends DataModel{
         return 0;
     }
 
+    public function getUserNameByIdentityId($identity_id){
+        $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
+                WHERE a.identityid={$identity_id} LIMIT 1";
+        $row = $this->getRow($sql);
+        if($row){
+            return $row["name"];
+        }else{
+            return "";
+        }
+    }
+
     public function getIdentityById($identity_id)
     {
         $sql="select id,external_identity,name,bio,avatar_file_name from identities where id='$identity_id'";
