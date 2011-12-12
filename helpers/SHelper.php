@@ -2,8 +2,9 @@
 
 class SHelper extends ActionController
 {
-        public function GetAllUpdate($userid,$updated_since="",$limit=200,$complexobject=false)
-        {
+
+    public function GetAllUpdate($userid, $updated_since = '',$limit = 200, $complexobject = false)
+    {
         // init models
         $modIdentity = $this->getModelByName('identity');
         $modUser     = $this->getModelByName('user');
@@ -91,8 +92,8 @@ class SHelper extends ActionController
                             $dnaValue  = array('action' => 'rsvp',
                                                'offset' => $logI);
                             break;
-                        case 'addexfe':
-                        case 'delexfe':
+                        case 'addexfee':
+                        case 'delexfee':
                             $changeDna = "{$xId}_exfee_"
                                        . "{$logItem['change_summy']}";
                             $dnaValue  = array('action' => $logItem['to_field'],
@@ -106,15 +107,15 @@ class SHelper extends ActionController
                         break;
                     }
                     if (isset($loged[$changeDna])) {
-                        if ($dnaValue['action'] === 'addexfe'
+                        if ($dnaValue['action'] === 'addexfee'
                          && $loged[$changeDna]['action'] === 'rsvp'
                          && $loged[$changeDna]['soft_rsvp']) {
                             $rawLogs[$loged[$changeDna]['offset']] = $logItem;
                             $loged[$changeDna] = $dnaValue;
-                        } else if (($loged[$changeDna]['action'] === 'addexfe'
-                          && $dnaValue['action'] === 'delexfe')
-                         || ($loged[$changeDna]['action'] === 'delexfe'
-                          && $dnaValue['action'] === 'addexfe')) {
+                        } else if (($loged[$changeDna]['action'] === 'addexfee'
+                          && $dnaValue['action'] === 'delexfee')
+                         || ($loged[$changeDna]['action'] === 'delexfee'
+                          && $dnaValue['action'] === 'addexfee')) {
                             $loged[$changeDna]['action'] = 'skipped';
                             unset($rawLogs[$loged[$changeDna]['offset']]);
                         }
@@ -153,7 +154,7 @@ class SHelper extends ActionController
                     $myidentity=$identityData->getIdentityById($logItem['from_id']);
                     $user=$userData->getUserByIdentityId($logItem['from_id']);
                     $identity=humanIdentity($myidentity,$user);
-                    
+
                 }
                     $cleanLogs[$xlogsHash[$xId]]['conversation']
                   = array('time'      => $logItem['time'],
@@ -161,7 +162,7 @@ class SHelper extends ActionController
                           'message'   => $logItem['change_summy'],
                           'meta'   => $logItem['meta'],
                           'num_msgs'  => $logItem['num_conversation'],
-                          'identity'  => $identity 
+                          'identity'  => $identity
                           );
                     array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
@@ -195,8 +196,8 @@ class SHelper extends ActionController
                             array_push($relatedIdentityIds,$logItem['from_id']);
                             array_push($relatedIdentityIds,$toExfee);
                             break;
-                        case 'addexfe':
-                        case 'delexfe':
+                        case 'addexfee':
+                        case 'delexfee':
                             $action = $logItem['action'];
                             if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
@@ -235,8 +236,8 @@ class SHelper extends ActionController
           = $allCross[$logItem['cross_id']]['title'];
             $cleanLogs[$logI]['begin_at']
           = $allCross[$logItem['cross_id']]['begin_at'];
-            foreach (array('change',  'confirmed', 'declined',
-                           'addexfe', 'delexfe') as $action) {
+            foreach (array('change',   'confirmed', 'declined',
+                           'addexfee', 'delexfee') as $action) {
                 if (isset($logItem[$action])) {
                     foreach ($logItem[$action] as $actionI => $actionItem) {
                         $cleanLogs[$logI][$action][$actionI]['by_name']
@@ -258,6 +259,6 @@ class SHelper extends ActionController
         }
 
         return $cleanLogs;
-        }
+    }
 
 }
