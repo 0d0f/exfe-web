@@ -36,7 +36,7 @@ class IdentityModels extends DataModel{
                 $userrow["bio"]=$bio;
             if($userrow["avatar_file_name"]=="")
                 $userrow["avatar_file_name"]=$avatar_file_name;
-           
+
             $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."' where id=$user_id;";
             $this->query($sql);
 
@@ -565,7 +565,7 @@ class IdentityModels extends DataModel{
                 $sql="update user_identity set status=2, activecode='$token' where identityid=$identity_id;";
                 $this->query($sql);
             }
-           
+
         }
     }
 
@@ -592,7 +592,7 @@ class IdentityModels extends DataModel{
             "set_pwd"           =>"yes"
         );
         $activecode = mysql_real_escape_string($activecode);
-        $sql = "SELECT identityid,userid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'"; 
+        $sql = "SELECT identityid,userid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'";
         $row = $this->getRow($sql);
         $sql = "SELECT external_identity,name,avatar_file_name FROM identities WHERE id={$identity_id}";
         $identityInfo = $this->getRow($sql);
@@ -626,8 +626,8 @@ class IdentityModels extends DataModel{
     public function activeIdentity($identity_id,$activecode)
     {
         $activecode=mysql_real_escape_string($activecode);
-        //$sql="select id,status,external_identity from identities where id=$identity_id and activecode='$activecode';"; 
-        $sql="SELECT id,external_identity FROM identities WHERE id=$identity_id AND activecode='$activecode';"; 
+        //$sql="select id,status,external_identity from identities where id=$identity_id and activecode='$activecode';";
+        $sql="SELECT id,external_identity FROM identities WHERE id=$identity_id AND activecode='$activecode';";
         $row=$this->getRow($sql);
         $external_identity=$row["external_identity"];
         if(intval($row["id"])==$identity_id && intval($row["id"])>0)
@@ -639,7 +639,7 @@ class IdentityModels extends DataModel{
             $this->query($sql);
             return array("result"=>"verified","external_identity"=>$external_identity);
         }
-        $sql="select external_identity from identities where id=$identity_id;"; 
+        $sql="select external_identity from identities where id=$identity_id;";
         $row=$this->getRow($sql);
         return array("result"=>"","external_identity"=>$row["external_identity"]);
     }

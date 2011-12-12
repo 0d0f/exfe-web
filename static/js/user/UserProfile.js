@@ -273,21 +273,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#recently_updates').hide();
                 $('#recently_updates_shadow').hide();
                 for (var i in data) {
-                    var j, arrExfee;
-                    strLogs += '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
-                             +     '<div class="cross">'
-                             +         '<h5>' + data[i]['title'] + '</h5>';
+                    var j, arrExfee,
+                        strLogX = '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
+                                +     '<div class="cross">'
+                                +         '<h5>' + data[i]['title'] + '</h5>',
+                        numChgs = 0;
                     if (data[i]['change']) {
                         if (data[i]['change']['begin_at']) {
-                            strLogs += '<p class="clock"><em>' + data[i]['change']['begin_at']['new_value'] + '</em></p>';
+                            strLogX += '<p class="clock"><em>' + data[i]['change']['begin_at']['new_value'] + '</em></p>';
                         }
                         if (data[i]['change']['place']) {
-                            strLogs += '<p class="place"><em>' + data[i]['change']['place']['new_value'] + '</em></p>';
+                            strLogX += '<p class="place"><em>' + data[i]['change']['place']['new_value'] + '</em></p>';
                         }
                         if (data[i]['change']['title']
                          && data[i]['change']['title']['old_value']) {
-                            strLogs += '<p class="title">Title changed from: <em>' + data[i]['change']['title']['old_value'] + '</em></p>';
+                            strLogX += '<p class="title">Title changed from: <em>' + data[i]['change']['title']['old_value'] + '</em></p>';
                         }
+                        numChgs++;
                     }
                     if (data[i]['confirmed']) {
                         arrExfee = [];
@@ -298,7 +300,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="confirmed"><em>'
+                        strLogX += '<p class="confirmed"><em>'
                                  + data[i]['confirmed'].length
                                  + '</em> confirmed: <em>'
                                  + arrExfee.join('</em>, <em>') + '</em>'
@@ -306,6 +308,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  < data[i]['confirmed'].length
                                  ? ' and others' : '')
                                  + '.</p>';
+                        numChgs++;
                     }
                     if (data[i]['declined']) {
                         arrExfee = [];
@@ -316,7 +319,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="declined"><em>'
+                        strLogX += '<p class="declined"><em>'
                                  + data[i]['declined'].length
                                  + '</em> declined: <em>'
                                  + arrExfee.join('</em>, <em>') + '</em>'
@@ -324,8 +327,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  < data[i]['declined'].length
                                  ? ' and others' : '')
                                  + '.</p>';
+                        numChgs++;
                     }
-                    if (data[i]['addexfe']) {
+                    if (data[i]['addexfee']) {
                         arrExfee = [];
                         for (j in data[i]['addexfe']) {
                             if (arrExfee.push(
@@ -334,7 +338,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 break;
                             }
                         }
-                        strLogs += '<p class="invited"><span>'
+                        strLogX += '<p class="invited"><span>'
                                  + data[i]['addexfe'].length
                                  + '</em> invited: <em>'
                                  + arrExfee.join('</em>, <em>') + '</em>'
@@ -342,15 +346,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  < data[i]['addexfe'].length
                                  ? ' and others' : '')
                                  + '.</p>';
+                        numChgs++;
                     }
                     if (data[i]['conversation']) {
-                        strLogs += '<p class="conversation"><em>'
+                        strLogX += '<p class="conversation"><em>'
                                  + data[i]['conversation']['by_name']+'</em>: '
                                  + data[i]['conversation']['message']+'<br><em>'
                                  + data[i]['conversation']['num_msgs']
                                  + '</em> new post in conversation.</p>';
+                        numChgs++;
                     }
-                    strLogs += '</div></a>'
+                    strLogX += '</div></a>';
+                    strLogs += numChgs ? strLogX : '';
                 }
                 $('#recently_updates > .crosses').html(strLogs);
                 if (strLogs) {
