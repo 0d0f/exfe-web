@@ -365,7 +365,7 @@ function autoLink($text) {
    $text = preg_replace("/href='www/", "href='http://www", $text);
 
    return $text;
-} 
+}
 
 function cleanText($content)
 {
@@ -482,7 +482,7 @@ function _HEX2BIN($str)
 
 /**
  * ******************************************************
- * 通用加密解密方法 
+ * 通用加密解密方法
  * 开始
 **/
 function long2str($v, $w) {
@@ -586,7 +586,7 @@ function exDecrypt($str, $key) {
     return long2str($v, true);
 }
 /**
- * 通用加密解密方法 
+ * 通用加密解密方法
  * 结束
  * ******************************************************
 **/
