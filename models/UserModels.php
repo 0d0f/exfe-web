@@ -337,14 +337,17 @@ class UserModels extends DataModel{
 
         if($uid>0)
         {
-            $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
-            $sql="update users set reset_password_token='$activecode' where id=$uid";
+            $resetPasswordToken = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+            $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
             $this->query($sql);
+            /*
             $sql="select reset_password_token from users where id=$uid";
             $row=$this->getRow($sql);
             $token=$row["reset_password_token"];
-            if($token==$activecode)
-                return array("uid"=>$uid,"name"=>$name,"token"=>$activecode);
+            if($token==$resetPasswordToken)
+                return array("uid"=>$uid,"name"=>$name,"token"=>$resetPasswordToken);
+            */
+            return array("uid"=>$uid,"name"=>$name,"token"=>$resetPasswordToken);
         }
         return "";
     }

@@ -42,7 +42,7 @@ class Emailverifying_Job
         return $mail_body;
     }
 
-    public function send($title,$body,$attachment,$args)
+    public function send($title,$body,$args)
     {
             global $email_connect;
             global $connect_count;

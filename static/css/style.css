@@ -290,8 +290,7 @@ b.r3{margin: 0px}
 .identity_dialog_main input.btn_85:hover { background:url(/static/images/btn.png) no-repeat 0px -580px; }
 .identity_dialog_main input.btn_85:active { background:url(/static/images/btn.png) no-repeat 0px -580px; }
 
-
-
+.identity_dialog_main #set_password_desc{ height:45px;line-height:18px; }
 
 .identity_dialog_main .forgot_password{
     display:block; float:left; height:24px; width:150px; cursor:pointer;
@@ -340,7 +339,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .notice span{ margin-left:120px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
-    position:absolute; z-index:203; height:40px; width:360px; top:275px;
+    position:absolute; z-index:203; height:40px; width:360px; top:275px; text-align:right;
 }
 
 .invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}

@@ -10,13 +10,15 @@ class Welcomeandactivecode_Job
         global $site_url;
 
         $title="欢迎并激活EXFE帐号";
-        $name=$this->args['name'];
-        $identity_id=$this->args['identityid'];
-        $avatar_file_name=$this->args['avatar_file_name'];
-        $activecode=$this->args['activecode'];
+        $name = $this->args['name'];
+        $identity_id = $this->args['identityid'];
+        $avatar_file_name = $this->args['avatar_file_name'];
+        $activecode = $this->args['activecode'];
+        $token = $this->args["token"];
 
 
-        $url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
+        //$url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
+        $url=$site_url.'/s/verifyIdentity?token='.$token;
         $parturl=substr($url,0,35)."...";
         $mail["exfe_title"]='Welcome to EXFE!';
         $mail["link"]=$url;

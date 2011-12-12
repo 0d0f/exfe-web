@@ -197,7 +197,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             if(actions == "setpwd") {
                                 window.location.href="/!"+JSONData.cross_id;
                             } else{
-                                window.location.href="/s/profile";
+                                jQuery("#userResetPwdBox").hide();
+                                jQuery("#resetPwdSuccess").show();
+                                jQuery("#resetPwdSuccess").fadeTo("slow", 0.3, function(){
+                                    window.location.href="/s/profile";
+                                });
                             }
                         }else{
                             jQuery("#reset_pwd_error_msg").show();
