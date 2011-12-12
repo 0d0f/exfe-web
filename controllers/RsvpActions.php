@@ -81,6 +81,7 @@ class RSVPActions extends ActionController {
     {
         $invitationData=$this->getModelByName('invitation');
         $r=$invitationData->rsvp($cross_id,$identity_id,$state);
+        $id=$r["id"];
         //if($state==INVITATION_YES)
         //{
         //    //if(intval($_SESSION['userid'])>0)
@@ -97,8 +98,11 @@ class RSVPActions extends ActionController {
         //    //}
         //}
 
-        $logdata=$this->getModelByName("log");
-        $logdata->addLog('identity', $identity_id, 'rsvp', 'cross', $cross_id, '', $state);
+        if($id>0)
+        {
+            $logdata=$this->getModelByName("log");
+            $logdata->addLog('identity', $identity_id, 'rsvp', 'cross', $cross_id, '', $state,"{\"id\":$id}");
+        }
         return $r;
     }
 
