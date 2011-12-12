@@ -811,25 +811,29 @@ class SActions extends ActionController
         if($actions == ""){
             $token = exGet("token");
             if($token == ""){
-                header("location:/x/forbidden");
+                header("location:/s/linkInvalid");
+                exit;
+            }
+            $userInfo = unpackArray($token);
+            if(!is_array($userInfo)){
+                header("location:/s/linkInvalid");
+                exit;
+            }
+            $userToken = $userInfo["user_token"];
+            $userId = $userInfo["user_id"];
+            $userIdentity = $userInfo["user_identity"];
+
+            //验证当前重置密码操作是否有效。
+            $userDataObj = $this->getModelByName("user");
+            $result = $userDataObj->verifyResetPassword($userId, $userToken);
+
+            if(is_array($result)){
+                $this->setVar("userIdentity", $userIdentity);
+                $this->setVar("userName", $result["name"]);
+                $this->setVar("userToken", $token);
+                $this->displayView();
             }else{
-                $userInfo = unpackArray($token);
-                $userToken = $userInfo["user_token"];
-                $userId = $userInfo["user_id"];
-                $userIdentity = $userInfo["user_identity"];
-
-                //验证当前重置密码操作是否有效。
-                $userDataObj = $this->getModelByName("user");
-                $result = $userDataObj->verifyResetPassword($userId, $userToken);
-
-                if(is_array($result)){
-                    $this->setVar("userIdentity", $userIdentity);
-                    $this->setVar("userName", $result["name"]);
-                    $this->setVar("userToken", $token);
-                    $this->displayView();
-                }else{
-                    header("location:/x/forbidden");
-                }
+                header("location:/s/linkInvalid");
             }
         }else{
             //do update password.
@@ -981,12 +985,12 @@ class SActions extends ActionController
     public function doVerifyIdentity(){
         $userToken = exGet("token");
         if($userToken == ""){
-            header("location:/x/forbidden");
+            header("location:/s/linkInvalid");
         }else{
             $identityInfo = unpackArray($userToken);
             //如果Token串有问题。
-            if(!$identityInfo){
-                header("location:/x/forbidden");
+            if(!is_array($identityInfo)){
+                header("location:/s/linkInvalid");
                 exit;
             }
             $identityID = $identityInfo["identityid"];
@@ -1003,7 +1007,7 @@ class SActions extends ActionController
                 $this->setVar("identityInfo", $result);
                 $this->displayView();
             }else{
-                header("location:/x/forbidden");
+                header("location:/s/linkInvalid");
             }
         }
     }
@@ -1027,6 +1031,8 @@ class SActions extends ActionController
             $result = $identityHandler->getIdentity($userIdentity);
             $identityID = intval($result["id"]);
             if($identityID > 0){
+                $userName = $identityHandler->getUserNameByIdentityId($identityID);
+
                 $r = $identityHandler->getVerifyingCode($identityID);
                 $tokenArray = array(
                     "actions"           =>"verifyIdentity",
@@ -1037,9 +1043,11 @@ class SActions extends ActionController
                 $args = array(
                     "external_identity"     =>$result["external_identity"],
                     "name"                  =>$result["name"],
+                    "user_name"             =>$userName,
                     "avatar_file_name"      =>$result["avatar_file_name"],
                     "token"                 =>$verifyingToken
                 );
+                //print_r($args);
                 //echo $verifyingToken;
                 //exit;
                 if($r["provider"]=="email") {
@@ -1055,7 +1063,6 @@ class SActions extends ActionController
         }
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
-
     }
 
     //active 相关的操作都去掉。全部替换成verifying
@@ -1182,14 +1189,14 @@ class SActions extends ActionController
     public function doReportSpam() {
         $token = exGet("token");
         if($token == ""){
-            header("location:/x/forbidden");
+            header("location:/s/linkInvalid");
             exit;
         }
 
         $reportingInfo = unpackArray($token);
         //如果Token串有问题。
-        if(!$reportingInfo){
-            header("location:/x/forbidden");
+        if(!is_array($reportingInfo)){
+            header("location:/s/linkInvalid");
             exit;
         }
         if($reportingInfo["actions"] == "verifyIdentity"){
@@ -1200,6 +1207,10 @@ class SActions extends ActionController
             $result = $identityHandler->delVerifyCode($identityID, $activeCode);
         }
 
+        $this->displayView();
+    }
+
+    public function doLinkInvalid() {
         $this->displayView();
     }
 
