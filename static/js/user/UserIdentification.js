@@ -332,7 +332,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.showManualVerificationDialog = function(curUserIdentity, doActions){
+    ns.showManualVerificationDialog = function(curUserIdentity){
         jQuery("#manual_verification_dialog").show();
 
         var userIdentity = curUserIdentity;
@@ -345,7 +345,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         jQuery("#manual_verification_btn").unbind("click");
         jQuery("#manual_verification_btn").bind("click",function(){
-            odof.user.status.doSendEmail(userIdentity,doActions);
+            odof.user.status.doSendEmail(userIdentity);
             var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
             jQuery("#manual_verification_hint_box").html(msg);
             jQuery("#manual_verification_btn").val("Done");
@@ -389,7 +389,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#manual_verification_btn").unbind("click");
                 //jQuery("#cancel_manual_verification_btn").unbind("click");
         };
-
     };
 
     ns.identityInputBoxActions = function(myIdentity){

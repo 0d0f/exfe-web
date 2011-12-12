@@ -39,7 +39,7 @@ class UsersActions extends ActionController {
             exit(0);
         }
         $shelper=$this->getHelperByName("s");
-        $cleanLogs=$shelper->GetAllUpdate($uid,urldecode($_GET["updated_since"]));
+        $cleanLogs=$shelper->GetAllUpdate($uid,urldecode($params["updated_since"]),200,true);
 
         $responobj["meta"]["code"]=200;
         $responobj["response"]=$cleanLogs;

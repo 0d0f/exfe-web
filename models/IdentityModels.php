@@ -581,7 +581,7 @@ class IdentityModels extends DataModel{
     }
 
     //验证
-    public function verifyIdentify($identity_id, $active_code){
+    public function verifyIdentity($identity_id, $active_code){
         $returnData = array(
             "identity"          =>"",
             "display_name"      =>"",
@@ -589,7 +589,7 @@ class IdentityModels extends DataModel{
             "password"          =>"",
             "reset_pwd_token"   =>"",
             "status"            =>"ok",
-            "set_pwd"           =>"yes"
+            "need_set_pwd"      =>"no"
         );
         $activecode = mysql_real_escape_string($activecode);
         $sql = "SELECT identityid,userid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'";
@@ -604,17 +604,21 @@ class IdentityModels extends DataModel{
             $userID = $row["userid"];
             $sql = "SELECT encrypted_password FROM users WHERE id={$userID}";
             $userInfo = $this->getRow($sql);
+
+            //设置用户的Status为3，并且设置ActiveCode为空。
+            $sql = "UPDATE user_identity SET status=3, activecode='' WHERE identityid={$identity_id}";
+            $this->query($sql);
+            
             //如果用户密码为空，则需要设置reset_password_token，同时告诉客户端需要设置密码。
             if(trim($userInfo["encrypted_password"]) == ""){
-                $returnData["set_pwd"] = "no";
+                $returnData["need_set_pwd"] = "yes";
                 $resetPwdToken = md5(base64_encode(pack('N6',mt_rand(),mt_rand(),mt_rand(),mt_rand(),mt_rand(),uniqid())));
                 $sql = "UPDATE users SET reset_password_token='{$resetPwdToken}' WHERE id={$userID}";
                 $this->query($sql);
                 $returnData["reset_pwd_token"] = $resetPwdToken;
-            }else{//设置用户的Status为3，并且设置ActiveCode为空。
+            }else{
                 $returnData["password"] = $userInfo["encrypted_password"];
-                $sql = "UPDATE User_identity SET status=3, activecode='' WHERE identityid={$identity_id}";
-                $this->query($sql);
+                $returnData["need_set_pwd"] = "no";
             }
         }else{
             $returnData["status"] = "fail";
@@ -623,6 +627,7 @@ class IdentityModels extends DataModel{
     }
 
     //activeIdentity方法已经作废。By: handaoliang
+    /*
     public function activeIdentity($identity_id,$activecode)
     {
         $activecode=mysql_real_escape_string($activecode);
@@ -643,6 +648,8 @@ class IdentityModels extends DataModel{
         $row=$this->getRow($sql);
         return array("result"=>"","external_identity"=>$row["external_identity"]);
     }
+    */
+
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $result=$this->ifIdentityExist($external_identity);
@@ -686,6 +693,7 @@ class IdentityModels extends DataModel{
     }
 
     //reActiveIdentity函数作废。By:handaoliang
+    /*
     public function reActiveIdentity($identity_id)
     {
         if(intval($identity_id)>0)
@@ -703,6 +711,7 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+    */
     public function buildIndex($userid,$identities)
     {
         //$identities=$this->getIdentitiesByUser($userid);
