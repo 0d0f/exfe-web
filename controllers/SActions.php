@@ -992,10 +992,10 @@ class SActions extends ActionController
             $activeCode = $identityInfo["activecode"];
 
             $identityHandler = $this->getModelByName("identity");
-            $result = $identityHandler->verifyIdentify($identityID, $activeCode);
+            $result = $identityHandler->verifyIdentity($identityID, $activeCode);
 
             if($result["status"] == "ok"){
-                if($result["set_pwd"] == "yes"){
+                if($result["need_set_pwd"] == "no") {
                     $identityHandler->loginAsHashPassword($result["identity"], $result["password"], "true");
                 }
                 unset($result["password"]);
