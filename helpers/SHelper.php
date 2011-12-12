@@ -2,7 +2,7 @@
 
 class SHelper extends ActionController
 {
-        public function GetAllUpdate($userid,$updated_since="",$limit=200)
+        public function GetAllUpdate($userid,$updated_since="",$limit=200,$complexobject=false)
         {
         // init models
         $modIdentity = $this->getModelByName('identity');
@@ -146,11 +146,23 @@ class SHelper extends ActionController
                     array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'conversation':
+                if($complexobject==true)
+                {
+                    $identityData=$this->getModelByName("identity");
+                    $userData=$this->getModelByName("user");
+                    $myidentity=$identityData->getIdentityById($logItem['from_id']);
+                    $user=$userData->getUserByIdentityId($logItem['from_id']);
+                    $identity=humanIdentity($myidentity,$user);
+                    
+                }
                     $cleanLogs[$xlogsHash[$xId]]['conversation']
                   = array('time'      => $logItem['time'],
                           'by_id'     => $logItem['from_id'],
                           'message'   => $logItem['change_summy'],
-                          'num_msgs'  => $logItem['num_conversation']);
+                          'meta'   => $logItem['meta'],
+                          'num_msgs'  => $logItem['num_conversation'],
+                          'identity'  => $identity 
+                          );
                     array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'rsvp':
