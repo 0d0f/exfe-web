@@ -105,7 +105,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             title = "Set Password";
             form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
                  + "<div id='set_password_titles' class='dialog_titles'>Set Password</div>"
-                 + "<div id='set_password_desc' style='height:45px;line-height:18px;'>"
+                 + "<div id='set_password_desc'>"
                  + "Please set password for your identity."
                  + "</div>"
                  + "<ul>"

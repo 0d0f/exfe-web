@@ -290,8 +290,7 @@ b.r3{margin: 0px}
 .identity_dialog_main input.btn_85:hover { background:url(/static/images/btn.png) no-repeat 0px -580px; }
 .identity_dialog_main input.btn_85:active { background:url(/static/images/btn.png) no-repeat 0px -580px; }
 
-
-
+.identity_dialog_main #set_password_desc{ height:45px;line-height:18px; }
 
 .identity_dialog_main .forgot_password{
     display:block; float:left; height:24px; width:150px; cursor:pointer;

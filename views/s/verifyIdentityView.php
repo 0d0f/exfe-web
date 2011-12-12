@@ -1,9 +1,10 @@
 <?php include "share/header.php"; ?>
 <style type="text/css">
 #set_password_titles{ font-size:34px;height:60px; }
-#set_password_desc{ height:70px;line-height:18px;text-align:center;font-size:21px; }
+.identity_dialog_main #set_password_desc{ height:65px;line-height:18px;text-align:center;font-size:21px; }
 .identity_dialog_main .identification_bottom_btn{ text-align:center; }
 .identity_dialog_main input.btn_85{ float:none; }
+.identity_dialog_main .identification_bottom_btn { top:290px; }
 </style>
 </head>
 <body style="background-color:#EFEFEF;">
@@ -15,7 +16,7 @@ $identityInfo = $this->getVar("identityInfo");
 //如果已经设置密码。则直接显示验证成功的效果。
 if($identityInfo["status"] == "ok" && $identityInfo["set_pwd"] == "yes"){
 ?>
-<div style="font-size:34px; margin-top:140px;" id="verify_success" class="identification_dialog idialog_inpage">Verification completed</div>
+<div id="verify_success" style="text-align:center; font-size:34px; margin-top:140px;" class="identification_dialog idialog_inpage">Verification completed</div>
 <script type="text/javascript">
 jQuery("#verify_success").fadeTo("slow", 0.3, function(){
     window.location.href="/s/profile";
