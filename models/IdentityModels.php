@@ -612,7 +612,7 @@ class IdentityModels extends DataModel{
                 $returnData["reset_pwd_token"] = $resetPwdToken;
             }else{//设置用户的Status为3，并且设置ActiveCode为空。
                 $returnData["password"] = $userInfo["encrypted_password"];
-                $sql = "UPDATE User_identity SET status=3, activecode='' WHERE identityid={$identity_id}";
+                $sql = "UPDATE user_identity SET status=3, activecode='' WHERE identityid={$identity_id}";
                 $this->query($sql);
             }
         }else{
