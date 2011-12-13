@@ -191,6 +191,7 @@ class SHelper extends ActionController
                                 $cleanLogs[$xlogsHash[$xId]][$action],
                                 array('time'  => $logItem['time'],
                                       'by_id' => $logItem['from_id'],
+                                      'meta'   => $logItem['meta'],
                                       'to_id' => $toExfee)
                             );
                             array_push($relatedIdentityIds,$logItem['from_id']);
