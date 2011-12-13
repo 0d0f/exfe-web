@@ -3,7 +3,7 @@
 class SHelper extends ActionController
 {
 
-    public function GetAllUpdate($userid, $updated_since = '',$limit = 200, $complexobject = false)
+    public function GetAllUpdate($userid, $updated_since = '', $limit = 200, $complexobject = false)
     {
         // init models
         $modIdentity = $this->getModelByName('identity');
@@ -55,14 +55,8 @@ class SHelper extends ActionController
                     }
                     break;
                 case 'conversation':
-                    $changeDna = "{$xId}_conversation";
-                    if (isset($loged[$changeDna])) {
-                        unset($rawLogs[$logI]);
-                        $rawLogs[$loged[$changeDna]]['num_conversation']++;
-                    } else {
-                        $loged[$changeDna] = $logI;
-                        $rawLogs[$loged[$changeDna]]['num_conversation'] = 1;
-                    }
+                    // $changeDna = "{$xId}_conversation";
+                    // $loged[$changeDna] = $logI;
                     break;
                 case 'rsvp':
                 case 'exfee':
@@ -147,23 +141,21 @@ class SHelper extends ActionController
                     array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'conversation':
-                if($complexobject==true)
-                {
-                    $identityData=$this->getModelByName("identity");
-                    $userData=$this->getModelByName("user");
-                    $myidentity=$identityData->getIdentityById($logItem['from_id']);
-                    $user=$userData->getUserByIdentityId($logItem['from_id']);
-                    $identity=humanIdentity($myidentity,$user);
-
-                }
-                    $cleanLogs[$xlogsHash[$xId]]['conversation']
-                  = array('time'      => $logItem['time'],
-                          'by_id'     => $logItem['from_id'],
-                          'message'   => $logItem['change_summy'],
-                          'meta'   => $logItem['meta'],
-                          'num_msgs'  => $logItem['num_conversation'],
-                          'identity'  => $identity
-                          );
+                    if ($complexobject === true) {
+                        $myidentity = $modIdentity->getIdentityById($logItem['from_id']);
+                        $user = $modUser->getUserByIdentityId($logItem['from_id']);
+                        $identity = humanIdentity($myidentity, $user);
+                    }
+                    if (!isset($cleanLogs[$xlogsHash[$xId]]['conversation'])) {
+                        $cleanLogs[$xlogsHash[$xId]]['conversation'] = array();
+                    }
+                    array_push($cleanLogs[$xlogsHash[$xId]]['conversation'],
+                               array('time'     => $logItem['time'],
+                                     'by_id'    => $logItem['from_id'],
+                                     'message'  => $logItem['change_summy'],
+                                     'meta'     => $logItem['meta'],
+                                     'num_msgs' => $logItem['num_conversation'],
+                                     'identity' => $identity));
                     array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'rsvp':
@@ -236,7 +228,7 @@ class SHelper extends ActionController
           = $allCross[$logItem['cross_id']]['title'];
             $cleanLogs[$logI]['begin_at']
           = $allCross[$logItem['cross_id']]['begin_at'];
-            foreach (array('change',   'confirmed', 'declined',
+            foreach (array('change', 'conversation', 'confirmed', 'declined',
                            'addexfee', 'delexfee') as $action) {
                 if (isset($logItem[$action])) {
                     foreach ($logItem[$action] as $actionI => $actionItem) {
@@ -252,12 +244,8 @@ class SHelper extends ActionController
                     }
                 }
             }
-            if (isset($logItem['conversation'])) {
-                $cleanLogs[$logI]['conversation']['by_name']
-              = $humanIdentities[$logItem['conversation']['by_id']]['name'];
-            }
         }
-
+print_r($cleanLogs);
         return $cleanLogs;
     }
 
