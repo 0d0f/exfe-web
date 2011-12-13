@@ -14,9 +14,12 @@ class Emailresetpassword_Job
         global $site_url;
 
         $url = $site_url.'/s/resetPassword?token='.$token;
+        $report_spam_url = $site_url.'/s/reportSpam?token='.$token;;
+
         $parturl=substr($url,0,45)."...";
         $mail["site_url"]=$site_url;
         $mail["link"]=$url;
+        $mail["report_spam_url"] = $report_spam_url;
         $mail["partlink"]=$parturl;
         $mail["name"]=$this->args['name'];
         $mail["external_identity"]=$this->args['external_identity'];
@@ -36,6 +39,7 @@ class Emailresetpassword_Job
         $mail_body=str_replace("%name%",$mail["name"],$mail_body);
         $mail_body=str_replace("%link%",$mail["link"],$mail_body);
         $mail_body=str_replace("%partlink%",$mail["partlink"],$mail_body);
+        $mail_body=str_replace("%report_spam_url%",$mail["report_spam_url"],$mail_body);
         $mail_body=str_replace("%external_identity%",$mail["external_identity"],$mail_body);
         $mail_body=str_replace("%site_url%",$mail["site_url"],$mail_body);
 

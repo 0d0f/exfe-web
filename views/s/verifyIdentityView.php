@@ -14,7 +14,7 @@ $identityInfo = $this->getVar("identityInfo");
 <?php include "share/nav.php"; ?>
 <?php
 //如果已经设置密码。则直接显示验证成功的效果。
-if($identityInfo["status"] == "ok" && $identityInfo["set_pwd"] == "yes"){
+if($identityInfo["need_set_pwd"] == "no"){
 ?>
 <div id="verify_success" style="text-align:center; font-size:34px; margin-top:140px;" class="identification_dialog idialog_inpage">Verification completed</div>
 <script type="text/javascript">

@@ -6,7 +6,7 @@ class IdentityModels extends DataModel{
 
     public function addIdentity($user_id,$provider,$external_identity,$identityDetail=array())
     {
-        $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+        $activecode = createToken();
 
         $name=mysql_real_escape_string($identityDetail["name"]);
         $bio=mysql_real_escape_string($identityDetail["bio"]);
@@ -267,10 +267,10 @@ class IdentityModels extends DataModel{
     }
     //check user password
     public function checkUserPassword($userid, $password){
-        $password=md5($password.$this->salt);
+        $password = md5($password.$this->salt);
         $sql="SELECT encrypted_password FROM users WHERE id={$userid} LIMIT 1";
         $row=$this->getRow($sql);
-        if($row["encrypted_password"]==$password){
+        if($row["encrypted_password"] == $password){
             return true;
         }
         return false;
@@ -511,7 +511,7 @@ class IdentityModels extends DataModel{
     {
         if(intval($identity_id)>0 )
         {
-            $token=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+            $token = createToken();
             $sql="select userid from user_identity where identityid=$identity_id;";
             $user=$this->getRow($sql);
             if(intval($user["userid"])==0)
@@ -634,7 +634,7 @@ class IdentityModels extends DataModel{
             //如果用户密码为空，则需要设置reset_password_token，同时告诉客户端需要设置密码。
             if(trim($userInfo["encrypted_password"]) == ""){
                 $returnData["need_set_pwd"] = "yes";
-                $resetPwdToken = md5(base64_encode(pack('N6',mt_rand(),mt_rand(),mt_rand(),mt_rand(),mt_rand(),uniqid())));
+                $resetPwdToken = createToken();
                 $sql = "UPDATE users SET reset_password_token='{$resetPwdToken}' WHERE id={$userID}";
                 $this->query($sql);
                 $returnData["reset_pwd_token"] = $resetPwdToken;
@@ -706,7 +706,7 @@ class IdentityModels extends DataModel{
             if($row_c["activecode"] != ""){
                 return array("provider"=>$row_p["provider"], "activecode"=>$row_c["activecode"]);
             }else{
-                $activecode = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+                $activecode = createToken();
                 $sql="UPDATE user_identity SET activecode='$activecode' WHERE identityid={$identity_id}";
                 $queryResult = $this->query($sql);
                 return array("provider"=>$result["provider"], "activecode"=>$activecode);
@@ -720,7 +720,7 @@ class IdentityModels extends DataModel{
     {
         if(intval($identity_id)>0)
         {
-            $activecode=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+            $activecode = createToken();
             $sql="update identities set activecode='$activecode' where id=$identity_id";
             $r=$this->query($sql);
             if(intval($r)>0)
