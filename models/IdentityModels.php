@@ -592,7 +592,7 @@ class IdentityModels extends DataModel{
 
     public function delVerifyCode($identity_id, $active_code){
         $activecode = mysql_real_escape_string($activecode);
-        $sql = "SELECT identityid,userid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'"; 
+        $sql = "SELECT identityid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'"; 
         $row = $this->getRow($sql);
         if(is_array($row)){
             $sql = "UPDATE user_identity SET activecode='' WHERE identityid={$identity_id} AND activecode='{$active_code}'";

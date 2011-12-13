@@ -1213,8 +1213,8 @@ class SActions extends ActionController
             $resetPasswordToken = $reportInfo["user_token"];
             $userIdentity = $reportInfo["user_identity"];
 
-            //$userHandler = $this->getModelByName("user");
-            //$result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
+            $userHandler = $this->getModelByName("user");
+            $result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
         }
         $this->displayView();
     }
