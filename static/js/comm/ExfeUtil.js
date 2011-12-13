@@ -771,7 +771,7 @@ var odof = {
      * @config, the path, for example:[{"tagName", "class"},{},...]
      * This function will return one Error that match the condition
      */
-    util.findElements = function(el, config){
+    util.findElements = function(el, config) {
         var findEls = function(el, config){
             var els = el.children;
             var ret = [];
@@ -1119,6 +1119,31 @@ var odof = {
             width  : window.innerWidth  || document.documentElement.clientWidth,
             height : window.innerHeight || document.documentElement.clientHeight
         };
+    };
+
+    /**
+     * recursive clone a javascript object
+     * by Leask
+     */
+    util.clone = function(variable)
+    {
+        switch (Object.prototype.toString.call(variable)) {
+            case '[object Object]':       // Object instanceof Object
+                var variableNew = {};
+                for (var i in variable) {
+                    variableNew[i] = this.clone(variable[i]);
+                }
+                break;
+            case '[object Array]':        // Object instanceof Array
+                variableNew = [];
+                for (i in variable) {
+                    variableNew.push(this.clone(variable[i]));
+                }
+                break;
+            default:                      // typeof Object === "function" || etc
+                variableNew = variable;
+        }
+        return variableNew;
     };
 
 })(odof);

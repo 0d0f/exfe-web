@@ -44,6 +44,8 @@ class IdentityActions extends ActionController
 
         exit();
     }
+
+
     public function doComplete()
     {
         $rangelen=50;
@@ -102,7 +104,6 @@ class IdentityActions extends ActionController
             }
         }
         echo json_encode($resultarray, JSON_FORCE_OBJECT);
-
     }
 
 }

@@ -560,7 +560,7 @@ function identity()
                     name             = data.response.identities[i].name;
                 if (!$('#exfee_' + id).length) {
                     name = name ? name : identity.split('@')[0].replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ');
-                    while (odof.util.initNameSpace.getUTF8Length(name) > 30) {
+                    while (odof.comm.func.getUTF8Length(name) > 30) {
                         name = name.substring(0, name.length - 1);
                     }
                     exfee_pv.push(
