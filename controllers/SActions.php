@@ -927,8 +927,8 @@ class SActions extends ActionController
         }else{
 
             $userData = $this->getModelByName("user");
-            $result=$userData->setPasswordToken($userIdentity);
-            if($result["token"]!="" && intval($result["uid"])>0)
+            $result=$userData->getResetPasswordToken($userIdentity);
+            if($result["token"] != "" && intval($result["uid"]) > 0)
             {
                 $userInfo = array(
                     "actions"           =>"resetPassword",
@@ -943,9 +943,9 @@ class SActions extends ActionController
                     $name=$userIdentity;
                 }
                 $args = array(
-                         'external_identity' => $userIdentity,
-                         'name' => $name,
-                         'token' => $pakageToken
+                    'external_identity' => $userIdentity,
+                    'name' => $name,
+                    'token' => $pakageToken
                 );
                 //echo $pakageToken;
                 //exit();
@@ -1193,20 +1193,29 @@ class SActions extends ActionController
             exit;
         }
 
-        $reportingInfo = unpackArray($token);
+        $reportInfo = unpackArray($token);
         //如果Token串有问题。
-        if(!is_array($reportingInfo)){
+        if(!is_array($reportInfo)){
             header("location:/s/linkInvalid");
             exit;
         }
-        if($reportingInfo["actions"] == "verifyIdentity"){
-            $identityID = $reportingInfo["identityid"];
-            $activeCode = $reportingInfo["activecode"];
+        //如果是身份验证邮件的ReportSpam
+        if($reportInfo["actions"] == "verifyIdentity"){
+            $identityID = $reportInfo["identityid"];
+            $activeCode = $reportInfo["activecode"];
 
             $identityHandler = $this->getModelByName("identity");
             $result = $identityHandler->delVerifyCode($identityID, $activeCode);
         }
+        //如果是重置密码邮件的ReportSpam
+        if($reportInfo["actions"] == "resetPassword"){
+            $userID = $reportInfo["user_id"];
+            $resetPasswordToken = $reportInfo["user_token"];
+            $userIdentity = $reportInfo["user_identity"];
 
+            //$userHandler = $this->getModelByName("user");
+            //$result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
+        }
         $this->displayView();
     }
 

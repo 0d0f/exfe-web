@@ -350,9 +350,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                     if (data[i]['conversation']) {
                         strLogX += '<p class="conversation"><em>'
-                                 + data[i]['conversation']['by_name']+'</em>: '
-                                 + data[i]['conversation']['message']+'<br><em>'
-                                 + data[i]['conversation']['num_msgs']
+                                 + data[i]['conversation'][0]['by_name']+'</em>: '
+                                 + data[i]['conversation'][0]['message']+'<br><em>'
+                                 + data[i]['conversation'].length
                                  + '</em> new post in conversation.</p>';
                         numChgs++;
                     }

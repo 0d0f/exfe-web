@@ -591,3 +591,8 @@ function exDecrypt($str, $key) {
  * ******************************************************
 **/
 
+function createToken(){
+    $randString = randStr(16);
+    $hashString = md5(base64_encode(pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+    return md5($hashStr.$randString.getMicrotime().uniqid());
+}

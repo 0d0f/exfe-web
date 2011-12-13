@@ -16,11 +16,11 @@ class UserModels extends DataModel{
     public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
     {
 
-        $external_identity=mysql_real_escape_string($external_identity);
-        $displayname=mysql_real_escape_string($displayname);
+        $external_identity = mysql_real_escape_string($external_identity);
+        $displayname = mysql_real_escape_string($displayname);
 
 
-        if($identity_id==0 && $external_identity!="")
+        if($identity_id == 0 && $external_identity != "")
         {
             $sql="select id from identities where external_identity='$external_identity';";
             $result=$this->getRow($sql);
@@ -30,38 +30,36 @@ class UserModels extends DataModel{
         $sql="select userid from user_identity where identityid=$identity_id";
         
         $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
+        if(intval($result["userid"]) > 0)
         {
             $uid=intval($result["userid"]);
             return array("uid"=>$uid,"identity_id"=>$identity_id);
-        }
-        else
-        {
-                $time=time();
-                $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
-                $result=$this->query($sql);
-                if(intval($result["insert_id"])>0)
+        } else {
+            $time=time();
+            $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
+            $result=$this->query($sql);
+            if(intval($result["insert_id"])>0)
+            {
+                $uid=intval($result["insert_id"]);
+                $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+                $this->query($sql);
+                $sql="select userid from user_identity where identityid=$identity_id";
+                $result=$this->getRow($sql);
+                if(intval($result["userid"])>0)
                 {
-                    $uid=intval($result["insert_id"]);
-                    $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
-                    $this->query($sql);
-                    $sql="select userid from user_identity where identityid=$identity_id";
-                    $result=$this->getRow($sql);
-                    if(intval($result["userid"])>0)
+                    if($displayname!="")
                     {
-                        if($displayname!="")
-                        {
-                            //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
-                            $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
-                            $this->query($sql);
-                            $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
-                            $this->query($sql);
-                        }
-                        if($uid==intval($result["userid"]))
-                            return array("uid"=>$uid,"identity_id"=>$identity_id);
-                        return false;
+                        //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                        $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                        $this->query($sql);
+                        $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
+                        $this->query($sql);
                     }
+                    if($uid==intval($result["userid"]))
+                        return array("uid"=>$uid,"identity_id"=>$identity_id);
+                    return false;
                 }
+            }
         }
 
     }
@@ -187,7 +185,7 @@ class UserModels extends DataModel{
     }
     public function addUserByToken($cross_id,$password,$displayname,$token)
     {
-        $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
+        $sql = "select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
         if($identity_id > 0)
@@ -322,7 +320,7 @@ class UserModels extends DataModel{
         }
         return FALSE;
     }
-    public function setPasswordToken($external_identity)
+    public function getResetPasswordToken($external_identity)
     {
         $sql="select b.userid as uid ,a.name as name from identities a,user_identity b where a.external_identity='$external_identity' and a.id=b.identityid;";
         $row=$this->getRow($sql);
@@ -335,19 +333,23 @@ class UserModels extends DataModel{
                 $uid=intval($result["uid"]);
         }
 
-        if($uid>0)
+        if($uid > 0)
         {
-            $resetPasswordToken = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
-            $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
-            $this->query($sql);
-            /*
-            $sql="select reset_password_token from users where id=$uid";
-            $row=$this->getRow($sql);
-            $token=$row["reset_password_token"];
-            if($token==$resetPasswordToken)
-                return array("uid"=>$uid,"name"=>$name,"token"=>$resetPasswordToken);
-            */
-            return array("uid"=>$uid,"name"=>$name,"token"=>$resetPasswordToken);
+            $sql = "SELECT reset_password_token FROM users WHERE id={$uid}";
+            $result = $this->getRow($sql);
+            $resetPasswordToken = $result["reset_password_token"];
+            if(trim($resetPasswordToken) == "" || $resetPasswordToken == null){
+                $resetPasswordToken = createToken();
+                $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                $this->query($sql);
+            }
+            $returnData = array(
+                "uid"   =>$uid,
+                "name"  =>$name,
+                "token" =>$resetPasswordToken
+            );
+            
+            return $returnData;
         }
         return "";
     }
@@ -365,8 +367,9 @@ class UserModels extends DataModel{
         $userrow = $this->getRow($sql);
         $newUser = false;
 
-        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]=="")
-            $newUser = true;    
+        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]==""){
+            $newUser = true;
+        }
 
         $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $result = $this->query($sql);
