@@ -245,7 +245,7 @@ class SHelper extends ActionController
                 }
             }
         }
-print_r($cleanLogs);
+
         return $cleanLogs;
     }
 
