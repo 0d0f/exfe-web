@@ -187,8 +187,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "<div style='height:40px;'>"
                + "<input type='text' id='forgot_identity_input' disabled='disabled' />"
                + "</div>"
-               + "<div style='height:40px; text-align:left;'>"
-               + "Confirm sending verification to your mailbox? It should arrive in minutes."
+               + "<div id='forgot_verification_msg' style='height:40px; text-align:left;'>"
+               + "Confirm sending verification to your mailbox?"
                + "</div>"
                + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
                + "<a href='javascript:void(0);' id='cancel_forgot_verify_btn'>Cancel</a>&nbsp;&nbsp;"
@@ -210,7 +210,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>"
                + "<div id='manual_verification_hint_box' style='height:40px; text-align:left;'>"
                + "<p style='color:#CC3333;'>This identity needs to be verified before using.</p>"
-               + "<p'>Confirm sending verification to your mailbox?</p>"
+               + "<p>Confirm sending verification to your mailbox?</p>"
                + "</div>"
                + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
                + "<a id='manual_startover' class='startover'>Start Over</a>"
@@ -343,17 +343,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         jQuery("#manual_verify_identity").val(userIdentity);
 
+        jQuery("#manual_verification_hint_box").html("<p style='color:#CC3333;'>This identity needs to be verified before using.</p><p>Confirm sending verification to your mailbox?</p>");
         jQuery("#manual_verification_btn").unbind("click");
+        jQuery("#manual_verification_btn").val("Verify");
         jQuery("#manual_verification_btn").bind("click",function(){
-            odof.user.status.doSendEmail(userIdentity);
-            var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
-            jQuery("#manual_verification_hint_box").html(msg);
-            jQuery("#manual_verification_btn").val("Done");
-            jQuery("#manual_verification_btn").unbind("click");
-            jQuery("#manual_verification_btn").bind("click",function(){
-                clearManualVerifyDialog();
-                ns.showLoginDialog('init');
-            });
+            var callBackFunc = function(){
+                var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
+                jQuery("#manual_verification_hint_box").html(msg);
+                jQuery("#manual_verification_btn").val("Done");
+                jQuery("#manual_verification_btn").unbind("click");
+                jQuery("#manual_verification_btn").bind("click",function(){
+                    clearManualVerifyDialog();
+                    ns.showLoginDialog('init');
+                });
+            };
+            odof.user.status.doSendEmail(userIdentity, null, callBackFunc);
         });
 
         /*

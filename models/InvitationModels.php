@@ -51,7 +51,7 @@ class InvitationModels extends DataModel
         //$sql="update invitations set  where cross_id=$cross_id and token='$token';";
         //$this->query($sql);
 
-        $sql="select state,tokenexpired from invitations where identity_id=$identity_id and cross_id=$cross_id;";
+        $sql="select id,state,tokenexpired from invitations where identity_id=$identity_id and cross_id=$cross_id;";
         $result=$this->getRow($sql);
         if(intval($result["state"])===intval($state))
             $result["success"]=1;

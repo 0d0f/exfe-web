@@ -365,8 +365,9 @@ class UserModels extends DataModel{
         $userrow = $this->getRow($sql);
         $newUser = false;
 
-        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]=="")
-            $newUser = true;    
+        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]==""){
+            $newUser = true;
+        }
 
         $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $result = $this->query($sql);

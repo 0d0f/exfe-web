@@ -57,9 +57,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.user.identification.showManualVerificationDialog(args.identity);
     };
 
-    ns.doSendEmail = function(userIdentity, doActions){
+    ns.doSendEmail = function(userIdentity, doActions, callBackFunc){
         var actionURI = "";
-        if(typeof doActions != "undefined" && doActions == 'resetPassword'){
+        if(typeof doActions != "undefined" && doActions != null && doActions == 'resetPassword')
+        {
             actionURI = site_url+"/s/SendResetPasswordMail";
         }else{
             actionURI = site_url+"/s/SendVerifyingMail";
@@ -74,10 +75,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 dataType: "json",
                 data: postData,
                 success: function(JSONData){
-                    setTimeout(function(){
-                        jQuery("#manual_verification_dialog").hide();
-                        jQuery("#forgot_verification_dialog").hide();
-                    }, 3000);
+                    if(typeof callBackFunc != "undefined"){
+                        callBackFunc();
+                    }
                 },
                 complete: function(){
                     jQuery("#submit_loading_btn").hide();
@@ -375,9 +375,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery("#forgot_verification_dialog").hide();
             jQuery("#fogot_verify_btn").unbind("click");
         });
+        jQuery("#forgot_verification_msg").html("Confirm sending reset token to your mailbox?");
         jQuery("#fogot_verify_btn").unbind("click");
+        jQuery("#fogot_verify_btn").val("Verify");
         jQuery("#fogot_verify_btn").bind("click",function(){
-            ns.doSendEmail(userIdentity,"resetPassword");
+            var callBackFunc = function(){
+                jQuery("#forgot_verification_msg").html("Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.");
+                jQuery("#fogot_verify_btn").val("Done");
+                jQuery("#fogot_verify_btn").unbind("click");
+                jQuery("#fogot_verify_btn").bind("click",function(){
+                    jQuery("#forgot_verification_dialog").hide();
+                    jQuery("#fogot_verify_btn").unbind("click");
+                });
+            };
+            ns.doSendEmail(userIdentity,"resetPassword", callBackFunc);
         });
         
     };
