@@ -702,13 +702,28 @@ class IdentityModels extends DataModel{
             $row_p = $this->getRow($sql);
             $sql = "SELECT activecode FROM user_identity WHERE identityid={$identity_id}";
             $row_c = $this->getRow($sql);
-            if($row_c["activecode"] != ""){
-                return array("provider"=>$row_p["provider"], "activecode"=>$row_c["activecode"]);
+            if($row_c["activecode"] != ""){//这个时候要判断一下ActiveCode是否过期
+                $activecode = $row_c["activecode"];
+                $activeCodeTS = substr($activecode, 32);
+                $curTimeStamp = time();
+                if(intval($activeCodeTS)+5*24*60*60 < $curTimeStamp){
+                    $activecode = createToken();
+                    $sql="UPDATE user_identity SET activecode='$activecode' WHERE identityid={$identity_id}";
+                    $queryResult = $this->query($sql);
+                }
+
+                return array(
+                    "provider"=>$row_p["provider"], 
+                    "activecode"=>$activecode
+                );
             }else{
                 $activecode = createToken();
                 $sql="UPDATE user_identity SET activecode='$activecode' WHERE identityid={$identity_id}";
                 $queryResult = $this->query($sql);
-                return array("provider"=>$result["provider"], "activecode"=>$activecode);
+                return array(
+                    "provider"=>$result["provider"],
+                    "activecode"=>$activecode
+                );
             }
         }
     }

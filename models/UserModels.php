@@ -342,6 +342,15 @@ class UserModels extends DataModel{
                 $resetPasswordToken = createToken();
                 $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
                 $this->query($sql);
+            }else{
+                $tokenTimeStamp = substr($resetPasswordToken, 32);
+                $curTimeStamp = time();
+                //如果Token已经过期。
+                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
+                    $resetPasswordToken = createToken();
+                    $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                    $this->query($sql);
+                }
             }
             $returnData = array(
                 "uid"   =>$uid,

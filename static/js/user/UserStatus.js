@@ -137,7 +137,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
 
-        jQuery("#submit_reset_password").bind("click", function(){
+
+        jQuery("#reset_pwd_form").submit(function(){
             var userPassword = jQuery("#identification_pwd").val();
             //var userRePassword = jQuery("#identification_repwd").val();
             var userDisplayName = jQuery("#user_display_name").val();
@@ -160,54 +161,60 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#displayname_error").show();
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Please input a display name.");
-            }else if(!odof.comm.func.verifyDisplayName(userDisplayName)){
+                return false;
+            }
+            if(!odof.comm.func.verifyDisplayName(userDisplayName)){
                 jQuery("#reset_pwd_error_msg").show();
                 jQuery("#displayname_error").show();
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Display name Error.");
-            }else if(userPassword == ""){
+                return false;
+            }
+            if(userPassword == ""){
                 jQuery("#reset_pwd_error_msg").show();
                 setTimeout(hideErrorMsg, 3000);
                 jQuery("#reset_pwd_error_msg").html("Please input a password.");
-            }else{
-                var postData = {
+                return false;
+            }
+            // post data
+            var postData = {
+                jrand:Math.round(Math.random()*10000000000),
+                u_pwd:userPassword,
+                u_dname:userDisplayName,
+                u_token:userToken
+            };
+            if(actions == "setpwd"){
+                postData = {
                     jrand:Math.round(Math.random()*10000000000),
                     u_pwd:userPassword,
                     u_dname:userDisplayName,
-                    u_token:userToken
+                    c_id:cross_id,
+                    c_token:token
                 };
-                if(actions == "setpwd"){
-                    postData = {
-                        jrand:Math.round(Math.random()*10000000000),
-                        u_pwd:userPassword,
-                        u_dname:userDisplayName,
-                        c_id:cross_id,
-                        c_token:token
-                    };
-                }
-                jQuery.ajax({
-                    type: "POST",
-                    url: site_url+"/s/resetPassword?act="+actions,
-                    dataType:"json",
-                    data:postData,
-                    success: function(JSONData){
-                        if(!JSONData.error){
-                            if(actions == "setpwd") {
-                                window.location.href="/!"+JSONData.cross_id;
-                            } else{
-                                jQuery("#userResetPwdBox").hide();
-                                jQuery("#resetPwdSuccess").show();
-                                jQuery("#resetPwdSuccess").fadeTo("slow", 0.3, function(){
-                                    window.location.href="/s/profile";
-                                });
-                            }
-                        }else{
-                            jQuery("#reset_pwd_error_msg").show();
-                            setTimeout(hideErrorMsg, 3000);
-                        }
-                    }
-                });
             }
+            jQuery.ajax({
+                type: "POST",
+                url: site_url+"/s/resetPassword?act="+actions,
+                dataType:"json",
+                data:postData,
+                success: function(JSONData){
+                    if(!JSONData.error){
+                        if(actions == "setpwd") {
+                            window.location.href="/!"+JSONData.cross_id;
+                        } else{
+                            jQuery("#userResetPwdBox").hide();
+                            jQuery("#resetPwdSuccess").show();
+                            jQuery("#resetPwdSuccess").fadeTo("slow", 0.3, function(){
+                                window.location.href="/s/profile";
+                            });
+                        }
+                    }else{
+                        jQuery("#reset_pwd_error_msg").show();
+                        setTimeout(hideErrorMsg, 3000);
+                    }
+                }
+            });
+            return false;
         });
 
     };
