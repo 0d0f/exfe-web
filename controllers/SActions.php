@@ -822,6 +822,13 @@ class SActions extends ActionController
             $userToken = $userInfo["user_token"];
             $userId = $userInfo["user_id"];
             $userIdentity = $userInfo["user_identity"];
+            //验证Token是否过期。
+            $tokenTimeStamp = substr($userToken, 32);
+            $curTimeStamp = time();
+            if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
+                header("location:/s/linkInvalid");
+                exit;
+            }
 
             //验证当前重置密码操作是否有效。
             $userDataObj = $this->getModelByName("user");
@@ -844,15 +851,15 @@ class SActions extends ActionController
             $userPassword = exPost("u_pwd");
             $userDisplayName = mysql_real_escape_string(exPost("u_dname"));
             if($userPassword == ""){
-                $result["error"] = 1;
-                $result["msg"] = "must set password";
+                $returnData["error"] = 1;
+                $returnData["msg"] = "must set password";
                 header("Content-Type:application/json; charset=UTF-8");
                 echo json_encode($returnData);
                 exit();
             }
             if($userDisplayName == ""){
-                $result["error"] = 1;
-                $result["msg"] = "must set display name";
+                $returnData["error"] = 1;
+                $returnData["msg"] = "must set display name";
                 header("Content-Type:application/json; charset=UTF-8");
                 echo json_encode($returnData);
                 exit();
@@ -866,28 +873,43 @@ class SActions extends ActionController
                 $userToken = $userInfo["user_token"];
                 $userIdentity= $userInfo["user_identity"];
 
+                //检查Token是否过期。
+                $tokenTimeStamp = substr($userToken, 32);
+                $curTimeStamp = time();
+                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "Token is expired.";
+                    header("Content-Type:application/json; charset=UTF-8");
+                    echo json_encode($returnData);
+                    exit();
+                }
+
+
                 $userDataObj = $this->getModelByName("user");
                 $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
 
                 if(!$result["result"]){
-                    $result["error"] = 1;
-                    $result["msg"] = "System Error.";
-                } else {
-                    $identityData = $this->getModelByName("identity");
-                    $identityData->login($userIdentity,$userPassword,"true");
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "System Error.";
+                    echo json_encode($returnData);
+                    exit();
+                }
 
-                    if($result["newuser"])
-                    {
-                        $msghelper=$this->getHelperByName("msg");
-                        $identity = $identityData->getIdentity($userIdentity);
+                $identityData = $this->getModelByName("identity");
+                $identityData->login($userIdentity,$userPassword,"true");
 
-                        $args=array("name"=>$userDisplayName,"external_identity"=>$identity["external_identity"]);
+                if($result["newuser"])
+                {
+                    $msghelper=$this->getHelperByName("msg");
+                    $identity = $identityData->getIdentity($userIdentity);
 
-                        if($args["name"]=="")
-                            $args["name"]=$identity["external_identity"];
+                    $args=array("name"=>$userDisplayName,"external_identity"=>$identity["external_identity"]);
 
-                        $msghelper->sentWelcomeEmail($args);
+                    if($args["name"]==""){
+                        $args["name"]=$identity["external_identity"];
                     }
+
+                    $msghelper->sentWelcomeEmail($args);
                 }
             }
             if($actions == "setpwd"){
@@ -898,9 +920,7 @@ class SActions extends ActionController
                 if($result==false){
                     $returnData["error"] = 1;
                     $returnData["msg"] = "System Error.";
-                }
-                else
-                {
+                } else {
                     $returnData["uid"]=$result["uid"];
                     $returnData["cross_id"]=int_to_base62($crossID);
                 }
@@ -995,7 +1015,13 @@ class SActions extends ActionController
             }
             $identityID = $identityInfo["identityid"];
             $activeCode = $identityInfo["activecode"];
-
+            //要先判断ActiveCode是否过期。
+            $activeCodeTS = substr($activeCode, 32);
+            $curTimeStamp = time();
+            if(intval($activeCodeTS)+5*24*60*60 < $curTimeStamp){
+                header("location:/s/linkInvalid");
+                exit;
+            }
             $identityHandler = $this->getModelByName("identity");
             $result = $identityHandler->verifyIdentity($identityID, $activeCode);
 
@@ -1032,7 +1058,6 @@ class SActions extends ActionController
             $identityID = intval($result["id"]);
             if($identityID > 0){
                 $userName = $identityHandler->getUserNameByIdentityId($identityID);
-
                 $r = $identityHandler->getVerifyingCode($identityID);
                 $tokenArray = array(
                     "actions"           =>"verifyIdentity",
@@ -1213,8 +1238,8 @@ class SActions extends ActionController
             $resetPasswordToken = $reportInfo["user_token"];
             $userIdentity = $reportInfo["user_identity"];
 
-            //$userHandler = $this->getModelByName("user");
-            //$result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
+            $userHandler = $this->getModelByName("user");
+            $result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
         }
         $this->displayView();
     }

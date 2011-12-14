@@ -108,6 +108,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<div id='set_password_desc'>"
                  + "Please set password for your identity."
                  + "</div>"
+                 + "<form id='reset_pwd_form' accept-charset='UTF-8' action='' method='post'>"
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<input type='text' id='show_identity_box' class='inputText' disabled='disabled' />"
@@ -137,6 +138,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<a id='set_passwprd_discard' style='display:none;' href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
                  + "<input type='submit' value='Done' class='btn_85' id='submit_reset_password' style='cursor:pointer;' />"
                  + "</div>"
+                 + "</form>"
                  + "</div>";
         } else if(type == "change_pwd"){ //用户修改密码，从Profile页面触发。
             title = "Change Password";
@@ -172,9 +174,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<div class='identification_bottom_btn' style='text-align:right;'>"
                  + "<a id='forgot_password' class='forgot_password'>Forgot Password...</a>"
                  + "<a id='change_pwd_discard' href='javascript:void(0);'>Discard</a>&nbsp;&nbsp;"
-                 + "<input type='submit' value='Done' class='btn_85' id='submit_reset_password' style='cursor:pointer;' />"
-                 + "</form>"
+                 + "<input type='submit' value='Done' class='btn_85' id='submit_change_password' style='cursor:pointer;' />"
                  + "</div>"
+                 + "</form>"
                  + "</div>";
         }
 

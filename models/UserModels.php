@@ -342,6 +342,15 @@ class UserModels extends DataModel{
                 $resetPasswordToken = createToken();
                 $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
                 $this->query($sql);
+            }else{
+                $tokenTimeStamp = substr($resetPasswordToken, 32);
+                $curTimeStamp = time();
+                //如果Token已经过期。
+                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
+                    $resetPasswordToken = createToken();
+                    $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                    $this->query($sql);
+                }
             }
             $returnData = array(
                 "uid"   =>$uid,
@@ -354,10 +363,19 @@ class UserModels extends DataModel{
         return "";
     }
 
-    public function verifyResetPassword($userID, $userToken){
-        $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$userToken}'";
+    public function verifyResetPassword($userID, $resetPasswordToken){
+        $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
         $row = $this->getRow($sql);
         return $row;
+    }
+
+    public function delResetPasswordToken($userID, $resetPasswordToken){
+        $sql = "SELECT id FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
+        $row = $this->getRow($sql);
+        if(is_array($row)){
+            $sql = "UPDATE users SET `reset_password_token`=NULL WHERE `id`={$userID}";
+            $this->query($sql);
+        }
     }
 
     public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
