@@ -13,11 +13,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns)
 {
 
-//    ns.cross_id = cross_id;
-//    ns.btn_val = null;
-//    ns.token = token;
-//    ns.location_uri = location_uri;
-
     ns.exfeeAvailableKey = 'exfee_available';
 
     ns.id                = '';
@@ -34,7 +29,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.curComplete       = {};
 
-    ns.exfeeChecked      = {};
+    ns.exfeeChecked      = [];
 
 
     ns.make = function(domId, curExfee, editable)
@@ -74,13 +69,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
 
-    ns.addExfee = function()
+    ns.addExfee = function(exfee)
     {
-
+        var strItems = '';
+        for (var i in exfee) {
+            /**
+             * id,
+             * type,
+             */
+            var keyIdentity = exfee[i].external_identity.toLowerCase();
+            if (typeof this.exfeeInput[keyIdentity] === 'undefined') {
+                continue;
+            }
+            this.exfeeInput[keyIdentity] = exfee[i];
+            strItems += '<li identity="' + exfee[i].external_identity + '">'
+                      +     '<img src="' + odof.comm.func.getHashFilePath(
+                           img_url,    exfee[i].avatar_file_name)
+                     +     '/80_80_' + exfee[i].avatar_file_name + '">'
+                     +     '<span class="exfee_name">'
+                     +         exfee[i].name
+                     +     '</span>'
+                     +     '<span class="exfee_identity">'
+                     +         exfee[i].external_identity
+                     +     '</span>'
+                     + '</li>';
+        }
+        if (strItems) {
+            $('#' + this.id + '_exfeegadget_listarea > ul').append(strItems);
+        }
     };
 
 
-    ns.delExfee = function()
+    ns.delExfee = function(exfee)
     {
 
     };
@@ -111,6 +131,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.exfee.gadget.inputed  =  strInput;
         }
         for (var i in arrInput) {
+            arrInput[i] = odof.util.trim(arrInput[i]);
+            if (!arrInput[i]) {
+                delete arrInput[i];
+            }
+        }
+        for (i in arrInput) {
             var item = odof.util.parseId(arrInput[i]);
             if (item.type !== 'unknow' && parseInt(i) < arrInput.length - 1) {
                 arrValid.push(item);
@@ -118,7 +144,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 arrInValid.push(item.id);
             }
         }
-        objInput.val(arrInValid.join('; '));
+        var newInput = arrInValid.join('; ');
+        if (newInput !== strInput) {
+            objInput.val(newInput);
+        }
         odof.exfee.gadget.addExfee(arrValid);
         odof.exfee.gadget.chkComplete(arrInValid.pop());
     };
@@ -141,19 +170,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showComplete = function(key, exfee)
     {
-        var idAutoComplete  = this.id + '_exfeegadget_autocomplete',
-            objAutoComplete = $('#' + idAutoComplete),
-            strItems = objAutoComplete.html();
+        var objAutoComplete = $('#' + this.id + '_exfeegadget_autocomplete > ol'),
+            strItems        = '';
         if (this.keyComplete !== key) {
-            strItems = '';
             this.curComplete = {};
+            objAutoComplete.html('');
         }
         this.keyComplete = key;
         if (exfee && exfee.length) {
             for (var i in exfee) {
                 var curIdentity = exfee[i].external_identity.toLowerCase();
                 if (typeof this.curComplete[curIdentity] !== 'undefined') {
-                    console.log('mm');
                     continue;
                 }
                 this.curComplete[curIdentity] = true;
@@ -170,8 +197,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                           + '</li>';
             }
         }
-        objAutoComplete.html(strItems);
-        this.displayComplete(key && strItems);
+        if (strItems) {
+            objAutoComplete.append(strItems)
+        }
+        this.displayComplete(key && odof.util.count(this.curComplete));
     };
 
 
@@ -190,10 +219,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.ajaxComplete = function(key)
     {
-        if (typeof this.exfeeChecked[key] !== 'undefined' || !key.length) {
+        if (!key.length) {
             return;
         }
-        this.exfeeChecked[key] = true;
+        for (var i in this.exfeeChecked) {
+            if (key.indexOf(this.exfeeChecked[i]) !== -1) {
+                return;
+            }
+        }
+        this.exfeeChecked.push(key);
         $.ajax({
             type     : 'GET',
             url      : site_url + '/identity/complete?key=' + key,
@@ -202,7 +236,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             success  : function(data) {
                 var gotExfee = [];
                 for (var i in data) {
-                    var item  = odof.util.trim(data[i]).split(' '),
+                    var item  = odof.util.trim(i).split(' '),
                         strId = item.pop(),
                         user  = {avatar_file_name  : 'default.png',
                                  bio               : '',

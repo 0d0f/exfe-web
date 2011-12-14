@@ -1035,7 +1035,20 @@ var odof = {
      */
     util.trim = function(str)
     {
-        return str.replace(/^\s+|\s+$/g, '');
+        return str ? str.replace(/^\s+|\s+$/g, '') : '';
+    };
+
+    /**
+     * count object items
+     * by Leask
+     */
+    util.count = function(object)
+    {
+        var num = 0;
+        for (var i in object) {
+            num++;
+        }
+        return num;
     };
 
     /**
