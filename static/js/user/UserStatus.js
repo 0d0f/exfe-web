@@ -19,9 +19,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //具体的事件绑定在odof.cross.index里面实现。
         //页面上写有external_identity
         if(typeof login_type != "undefined" && login_type == "token"){
+            var display_name = external_identity;
+            if(typeof token_expired != "undefined" && token_expired == "false"){
+                display_name = id_name;
+            }
             var navMenu = '<div class="global_sign_in_btn">'
                             + '<a id="cross_identity_btn" href="javascript:void(0);">'
-                            + external_identity
+                            + display_name
                             + '</a>'
                             + '</div>';
             jQuery("#global_user_info").html(navMenu);

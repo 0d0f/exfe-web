@@ -221,11 +221,11 @@ class InvitationModels extends DataModel
     {
         $sql="select id,tokenexpired from invitations where token='$token' and  cross_id=$cross_id;";
         $row=$this->getRow($sql);
-        if($row && intval($row["tokenexpired"])<2)
+        if($row && intval($row["tokenexpired"])<2) {
             return array("allow"=>"true","tokenexpired"=>"false");
-        else if ($row && intval($row["tokenexpired"])>=2)
+        } else if ($row && intval($row["tokenexpired"])>=2) {
             return array("allow"=>"true","tokenexpired"=>"true");
-
+        }
         return array("allow"=>"false");
     }
     public function ifIdentityHasInvitationByIdentity($identity,$cross_id)
