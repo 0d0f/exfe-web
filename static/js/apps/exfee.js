@@ -66,55 +66,43 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-
-
-
     ns.addExfee = function(exfee)
     {
-        var strItems = '';
         for (var i in exfee) {
-            /**
-             * id,
-             * type,
-             */
-            var keyIdentity = exfee[i].external_identity.toLowerCase();
-            if (typeof this.exfeeInput[keyIdentity] === 'undefined') {
+            var keyIdentity = exfee[i].id.toLowerCase(),
+                objExfee    = {avatar_file_name  : 'default.png',
+                               bio               : '',
+                               external_identity : exfee[i].id,
+                               name              : exfee[i].name};
+            if (typeof this.exfeeInput[keyIdentity] !== 'undefined') {
                 continue;
             }
-            this.exfeeInput[keyIdentity] = exfee[i];
-            /////////////////
-            for (var i in this.exfeeAvailable) {
-                if (this.exfeeAvailable[i].name.indexOf(key) !== -1
-                 || this.exfeeAvailable[i].external_identity.indexOf(key) !== -1) {
-                    arrCatched.push(odof.util.clone(this.exfeeAvailable[i]));
+            for (var j in this.exfeeAvailable) {
+                if (this.exfeeAvailable[j].external_identity.toLowerCase()
+                === keyIdentity) {
+                    objExfee = odof.util.clone(this.exfeeAvailable[j]);
+                    break;
                 }
             }
-            ///////////////////
-            strItems += '<li identity="' + exfee[i].external_identity + '">'
-                      +     '<img src="' + odof.comm.func.getHashFilePath(
-                            img_url,    exfee[i].avatar_file_name)
-                      +     '/80_80_' + exfee[i].avatar_file_name + '">'
-                      +     '<span class="exfee_name">'
-                      +         exfee[i].name
-                      +     '</span>'
-                      +     '<span class="exfee_identity">'
-                      +         exfee[i].external_identity
-                      +     '</span>'
-                      + '</li>';
-        }
-        if (strItems) {
-            $('#' + this.id + '_exfeegadget_listarea > ul').append(strItems);
+            $('#' + this.id + '_exfeegadget_listarea > ul').append(
+                '<li identity="' + objExfee.external_identity + '">'
+              +     '<img src="' + odof.comm.func.getHashFilePath(
+                    img_url,    objExfee.avatar_file_name)
+              +     '/80_80_' + objExfee.avatar_file_name + '">'
+              +     '<span class="exfee_name">'
+              +         objExfee.name
+              +     '</span>'
+              +     '<span class="exfee_identity">'
+              +         objExfee.external_identity
+              +     '</span>'
+              + '</li>'
+            );
+            this.exfeeInput[keyIdentity] = objExfee;
         }
     };
 
 
     ns.delExfee = function(exfee)
-    {
-
-    };
-
-
-    ns.drawExfee = function(exfee)
     {
 
     };
