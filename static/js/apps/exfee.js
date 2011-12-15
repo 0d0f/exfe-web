@@ -82,17 +82,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 continue;
             }
             this.exfeeInput[keyIdentity] = exfee[i];
+            /////////////////
+            for (var i in this.exfeeAvailable) {
+                if (this.exfeeAvailable[i].name.indexOf(key) !== -1
+                 || this.exfeeAvailable[i].external_identity.indexOf(key) !== -1) {
+                    arrCatched.push(odof.util.clone(this.exfeeAvailable[i]));
+                }
+            }
+            ///////////////////
             strItems += '<li identity="' + exfee[i].external_identity + '">'
                       +     '<img src="' + odof.comm.func.getHashFilePath(
-                           img_url,    exfee[i].avatar_file_name)
-                     +     '/80_80_' + exfee[i].avatar_file_name + '">'
-                     +     '<span class="exfee_name">'
-                     +         exfee[i].name
-                     +     '</span>'
-                     +     '<span class="exfee_identity">'
-                     +         exfee[i].external_identity
-                     +     '</span>'
-                     + '</li>';
+                            img_url,    exfee[i].avatar_file_name)
+                      +     '/80_80_' + exfee[i].avatar_file_name + '">'
+                      +     '<span class="exfee_name">'
+                      +         exfee[i].name
+                      +     '</span>'
+                      +     '<span class="exfee_identity">'
+                      +         exfee[i].external_identity
+                      +     '</span>'
+                      + '</li>';
         }
         if (strItems) {
             $('#' + this.id + '_exfeegadget_listarea > ul').append(strItems);

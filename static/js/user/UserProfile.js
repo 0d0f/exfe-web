@@ -331,19 +331,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                     if (data[i]['addexfee']) {
                         arrExfee = [];
-                        for (j in data[i]['addexfe']) {
+                        for (j in data[i]['addexfee']) {
                             if (arrExfee.push(
-                                    data[i]['addexfe'][j]['to_name']
+                                    data[i]['addexfee'][j]['to_name']
                                 ) === 3) {
                                 break;
                             }
                         }
                         strLogX += '<p class="invited"><span>'
-                                 + data[i]['addexfe'].length
+                                 + data[i]['addexfee'].length
                                  + '</em> invited: <em>'
                                  + arrExfee.join('</em>, <em>') + '</em>'
                                  + (arrExfee.length
-                                 < data[i]['addexfe'].length
+                                 < data[i]['addexfee'].length
                                  ? ' and others' : '')
                                  + '.</p>';
                         numChgs++;
