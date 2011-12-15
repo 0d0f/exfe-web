@@ -31,6 +31,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.exfeeChecked      = [];
 
+    ns.exfeeSelected     = {};
+
+    ns.completing        = false;
+
 
     ns.make = function(domId, curExfee, editable)
     {
@@ -63,6 +67,58 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.completimer = setInterval(odof.exfee.gadget.chkInput, 50);
+        $('#' + this.id + '_exfeegadget_inputbox').bind(
+            'keydown',
+            this.keydownInputbox
+        );
+        $('#' + this.id + '_exfeegadget_autocomplete > ol > li').live(
+            'mousemove',
+            this.mousemoveCompleteItem
+        );
+//        $('#' + this.id + '_exfeegadget_autocomplete').keyDown = function()
+//        {
+//
+//        };
+    };
+
+
+    ns.keydownInputbox = function(event)
+    {
+        switch (event.which) {
+            case 40:
+                if (!odof.exfee.gadget.completing) {
+                    return;
+                }
+                odof.exfee.gadget.selectCompleteResult(
+                    $('#' + odof.exfee.gadget.id
+                    + '_exfeegadget_autocomplete > ol > li:first').attr('identity')
+                );
+        }
+
+        //this.
+    };
+
+
+    ns.mousemoveCompleteItem = function(event)
+    {
+        var objEvent = event.target;
+        while (!$(objEvent).hasClass('autocomplete_item')) {
+            objEvent = objEvent.parentNode;
+        }
+        var identity = $(objEvent).attr('identity');
+        if (!identity) {
+            return;
+        }
+        odof.exfee.gadget.selectCompleteResult(identity);
+    };
+
+
+    ns.selectCompleteResult = function(identity)
+    {
+        var strBaseId = '#' + this.id + '_exfeegadget_autocomplete > ol > li',
+            className = 'autocomplete_selected';
+        $(strBaseId).removeClass(className);
+        $(strBaseId + '[identity="' + identity + '"]').addClass(className);
     };
 
 
@@ -85,7 +141,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             $('#' + this.id + '_exfeegadget_listarea > ul').append(
-                '<li identity="' + objExfee.external_identity + '">'
+                '<li identity="' + keyIdentity + '">'
               +     '<img src="' + odof.comm.func.getHashFilePath(
                     img_url,    objExfee.avatar_file_name)
               +     '/80_80_' + objExfee.avatar_file_name + '">'
@@ -102,9 +158,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.delExfee = function(exfee)
+    ns.delExfee = function()
     {
-
+        for (var i in this.exfeeSelected) {
+            var keyIdentity = exfee[i].toLowerCase();
+            if (typeof this.exfeeInput[keyIdentity] === 'undefined') {
+                continue;
+            }
+            $('#' + this.id + '_exfeegadget_listarea > ul > li[identity="' + keyIdentity + '"]').remove();
+            delete this.exfeeInput[keyIdentity];
+        }
     };
 
 
@@ -166,7 +229,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showComplete = function(key, exfee)
     {
-        var objAutoComplete = $('#' + this.id + '_exfeegadget_autocomplete > ol'),
+        var baseId          = '#' + this.id + '_exfeegadget_autocomplete > ol',
+            objAutoComplete = $(baseId),
             strItems        = '';
         if (this.keyComplete !== key) {
             this.curComplete = {};
@@ -180,7 +244,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     continue;
                 }
                 this.curComplete[curIdentity] = true;
-                strItems += '<li identity="' + exfee[i].external_identity + '">'
+                strItems += '<li identity="' + curIdentity + '" '
+                          +     'class="autocomplete_item">'
                           +     '<img src="' + odof.comm.func.getHashFilePath(
                                 img_url,    exfee[i].avatar_file_name)
                           +     '/80_80_' + exfee[i].avatar_file_name + '">'
@@ -195,6 +260,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         if (strItems) {
             objAutoComplete.append(strItems)
+        }
+        if (!$(baseId + ' > .autocomplete_selected').length) {
+            this.selectCompleteResult($(baseId + ' > li:first').attr('identity'));
         }
         this.displayComplete(key && odof.util.count(this.curComplete));
     };
@@ -261,6 +329,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.displayComplete = function(display)
     {
+        this.completing = display;
         var objCompleteBox = $('#' + this.id + '_exfeegadget_autocomplete');
         if (display) {
             objCompleteBox.slideDown(50);
