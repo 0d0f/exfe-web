@@ -332,7 +332,19 @@ class Conversationemail_Job
                         $link=$post["link"];
                         $create_at=humanDateTime($post["create_at"]);
                         $avartar=$img_url."/".getHashFilePath("",$avatar_file_name)."/80_80_".$avatar_file_name;
-                        $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_msg_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
+                        $html .= '<tr>'
+                               .     '<td valign="top" width="50" align="left">'
+                               .         "<img width=\"40\" height=\"40\" src=\"{$avartar}\">"
+                               .     '</td>'
+                               .     '<td valign="top">'
+                               .         "<span class=\"exfe_mail_message\">{$content}</span>"
+                               .         "<br>"
+                               .         "<span class=\"exfe_mail_msg_identity_name\">{$name}</span> "
+                               .         '<span class="exfe_mail_msg_at">at</span> '
+                               .         "<span class=\"exfe_mail_msg_time\">{$create_at}</span>"
+                               .     '</td>'
+                               . '</tr>'
+                               . '<tr><td colspan="2" height="20"></td></tr>';
                         $cross_id_base62=$post["cross_id_base62"];
                         $cross_id=$post["cross_id"];
                     }

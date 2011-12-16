@@ -73,10 +73,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + this.id + '_exfeegadget_autocomplete > ol > li').live(
             'mousemove click', this.eventCompleteItem
         );
-//        $('#' + this.id + '_exfeegadget_autocomplete').keyDown = function()
-//        {
-//
-//        };
     };
 
 
@@ -189,6 +185,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.complete = function()
     {
 
+    };
+
+
+    ns.input = function()
+    {
+        ffff
     };
 
 
