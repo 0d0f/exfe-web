@@ -40,8 +40,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     {
         this.id     = domId;
         var strHtml = '<div id="' + this.id + '_exfeegadget_inputarea">'
-                    +     '<input id="' + this.id + '_exfeegadget_inputbox" type="text">'
-                    +     '<button>+</button>'
+                    +     '<input  id="' + this.id + '_exfeegadget_inputbox" type="text">'
+                    +     '<button id="' + this.id + '_exfeegadget_addbtn">+</button>'
                     +     '<div id="' + this.id + '_exfeegadget_autocomplete">'
                     +         '<ol></ol>'
                     +     '</div>'
@@ -70,6 +70,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + this.id + '_exfeegadget_inputbox').bind(
             'keydown', this.keydownInputbox
         );
+        $('#' + this.id + '_exfeegadget_addbtn').bind(
+            'keydown click', this.eventAddbutton
+        );
         $('#' + this.id + '_exfeegadget_autocomplete > ol > li').live(
             'mousemove click', this.eventCompleteItem
         );
@@ -79,7 +82,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.keydownInputbox = function(event)
     {
         switch (event.which) {
-            case 40:
+            case 9:  // tab
+            case 13: // enter
+                odof.exfee.gadget.chkInput(true);
+                break;
+            case 40: // down
                 if (!odof.exfee.gadget.completing) {
                     return;
                 }
@@ -88,8 +95,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     + '_exfeegadget_autocomplete > ol > li:first').attr('identity')
                 );
         }
+    };
 
-        //this.
+
+    ns.eventAddbutton = function(event)
+    {
+        if (event.type === 'click'
+        || (event.type === 'keydown' && event.which === 13)) {
+            odof.exfee.gadget.chkInput(true);
+        }
     };
 
 
@@ -182,26 +196,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.complete = function()
-    {
-
-    };
-
-
-    ns.input = function()
-    {
-        ffff
-    };
-
-
-    ns.chkInput = function()
+    ns.chkInput = function(force)
     {
         var objInput   = $('#' + odof.exfee.gadget.id + '_exfeegadget_inputbox'),
             strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
             arrValid   = [],
             arrInValid = [];
-        if (odof.exfee.gadget.inputed === strInput) {
+        if (odof.exfee.gadget.inputed === strInput && !force) {
             return;
         } else {
             odof.exfee.gadget.inputed  =  strInput;
@@ -214,7 +216,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         for (i in arrInput) {
             var item = odof.util.parseId(arrInput[i]);
-            if (item.type !== 'unknow' && parseInt(i) < arrInput.length - 1) {
+            if (item.type !== 'unknow'
+                && (parseInt(i) < arrInput.length - 1 || force)) {
                 arrValid.push(item);
             } else {
                 arrInValid.push(item.id);
