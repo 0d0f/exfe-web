@@ -191,7 +191,8 @@ class SHelper extends ActionController
                             break;
                         case 'addexfee':
                         case 'delexfee':
-                            $action = $logItem['action'];
+                         // $action = $logItem['action'];
+                            $action = $logItem['to_field'];
                             if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
                             }
