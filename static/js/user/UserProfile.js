@@ -35,7 +35,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 {
                 var name=data.response.user.avatar_file_name;
                 var Timer=new Date();
-                $('#profile_avatar').html("<img class=big_header src='"+odof.comm.func.getHashFilePath(img_url,name)+"/80_80_"+name+"?"+Timer.getTime()+"'/>");
+                $('#profile_avatar').html("<img class='big_header' src='"+odof.comm.func.getUserAvatar(name, 80, img_url)+"'/>");
                 }
             }
         });
@@ -331,19 +331,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                     if (data[i]['addexfee']) {
                         arrExfee = [];
-                        for (j in data[i]['addexfe']) {
+                        for (j in data[i]['addexfee']) {
                             if (arrExfee.push(
-                                    data[i]['addexfe'][j]['to_name']
+                                    data[i]['addexfee'][j]['to_name']
                                 ) === 3) {
                                 break;
                             }
                         }
                         strLogX += '<p class="invited"><span>'
-                                 + data[i]['addexfe'].length
+                                 + data[i]['addexfee'].length
                                  + '</em> invited: <em>'
                                  + arrExfee.join('</em>, <em>') + '</em>'
                                  + (arrExfee.length
-                                 < data[i]['addexfe'].length
+                                 < data[i]['addexfee'].length
                                  ? ' and others' : '')
                                  + '.</p>';
                         numChgs++;

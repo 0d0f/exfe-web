@@ -1035,7 +1035,29 @@ var odof = {
      */
     util.trim = function(str)
     {
-        return str.replace(/^\s+|\s+$/g, '');
+        return str ? str.replace(/^\s+|\s+$/g, '') : '';
+    };
+
+    /**
+     * count object items
+     * by Leask
+     */
+    util.count = function(object)
+    {
+        var num = 0;
+        for (var i in object) {
+            num++;
+        }
+        return num;
+    };
+
+    util.cutLongName = function(strName)
+    {
+        strName = strName ? strName.replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ') : '';
+        while (odof.comm.func.getUTF8Length(strName) > 30) {
+            strName = strName.substring(0, strName.length - 1);
+        }
+        return strName;
     };
 
     /**
@@ -1048,14 +1070,15 @@ var odof = {
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
                 iGt = strId.indexOf('>');
-            return {name : this.trim(strId.substring(0,     iLt)).replace(/^"|^'|"$|'$/g, ''),
+            return {name : this.trim(this.cutLongName(this.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
                     id   : this.trim(strId.substring(++iLt, iGt)),
                     type : 'email'};
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
-            return {id   : this.trim(strId),
+            return {name : this.trim(this.cutLongName(strId.split('@')[0])),
+                    id   : strId,
                     type : 'email'};
         } else {
-            return {id   : this.trim(strId),
+            return {id   : strId,
                     type : 'unknow'};
         }
     };

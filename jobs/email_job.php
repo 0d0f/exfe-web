@@ -52,7 +52,7 @@ class Email_Job
             $mail['check_it_out_style'] = 'margin-left: 15px;';
         }
         $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'];
-        $mail["host_avatar"]=$img_url."/".getHashFilePath("",$host_avatar)."/80_80_".$host_avatar;
+        $mail["host_avatar"]=getUserAvatar($host_avatar, 80);
         $invitations=$this->args["invitations"];
         $exfee_list="";
         foreach($invitations as $invitation)
@@ -61,7 +61,7 @@ class Email_Job
             {
                 #$exfee_idx=$exfee_idx+1;
                 //http://local.exfe.com/eimgs/80_80_default.png
-                $exfee_avatar=$img_url."/".getHashFilePath("",$invitation["avatar_file_name"])."/80_80_".$invitation["avatar_file_name"];
+                $exfee_avatar=getUserAvatar($invitation["avatar_file_name"],80);
                 $exfee_name=$invitation['name'];
                 if($exfee_name=="")
                     $exfee_name=$invitation['external_identity'];

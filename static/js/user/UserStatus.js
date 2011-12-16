@@ -19,9 +19,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //具体的事件绑定在odof.cross.index里面实现。
         //页面上写有external_identity
         if(typeof login_type != "undefined" && login_type == "token"){
+            var display_name = external_identity;
+            if(typeof token_expired != "undefined" && token_expired == "false"){
+                display_name = id_name;
+            }
             var navMenu = '<div class="global_sign_in_btn">'
                             + '<a id="cross_identity_btn" href="javascript:void(0);">'
-                            + external_identity
+                            + display_name
                             + '</a>'
                             + '</div>';
             jQuery("#global_user_info").html(navMenu);
@@ -438,7 +442,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
             userPanelHTML += '<span class="x_attended">X</span> attended';
             userPanelHTML += '</p>';
-            userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getHashFilePath(img_url,userData.user_avatar)+'/80_80_'+ userData.user_avatar +'"></a>';
+            userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getUserAvatar(userData.user_avatar, 80, img_url)+'"></a>';
             userPanelHTML += '</div>';
             if(userData.crosses != ""){
                 userPanelHTML += '<p class="info">';

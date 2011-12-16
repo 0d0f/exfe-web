@@ -66,7 +66,7 @@ function afterLogin(status) {
                     name = name ? name : identity;
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn">'
-                      +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
+                      +     '<p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p>'
                       +     '<p class="smcomment">'
                       +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
                       +             name
@@ -565,7 +565,7 @@ function identity()
                     }
                     exfee_pv.push(
                         '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
-                      +     '<p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_' + avatar_file_name + '" alt="" /></p>'
+                      +     '<p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p>'
                       +     '<p class="smcomment">'
                       +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
                       +             name
@@ -654,7 +654,7 @@ function updateExfeeList()
         numSummary++;
         var avatarFile = exfees[i].avatar ? exfees[i].avatar : 'default.png';
         htmExfeeList += '<li id="exfee_list_item_' + numSummary + '" class="exfee_item">'
-                      +     '<p class="pic20"><img alt="" src="'+odof.comm.func.getHashFilePath(img_url,avatarFile)+'/80_80_' + avatarFile + '"></p>'
+                      +     '<p class="pic20"><img alt="" src="'+odof.comm.func.getUserAvatar(avatarFile, 80, img_url)+'"></p>'
                       +     '<div class="smcomment">'
                       +         '<div>'
                       +             '<span class="ex_name' + (exfees[i].exfee_name === exfees[i].exfee_identity ? ' external_identity' : '') + '">'

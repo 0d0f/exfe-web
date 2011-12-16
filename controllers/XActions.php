@@ -284,9 +284,9 @@ class XActions extends ActionController
                 }
                 header('Location: /!'.$_GET["id"]);
             }
-        }
-        else if($check["type"]=="session" || $check["type"]=="cookie")
+        } else if($check["type"]=="session" || $check["type"]=="cookie"){
             $identity_id=$_SESSION["identity_id"];
+        }
         $showlogin="";
         if($check["type"]=="token")
         {
@@ -298,8 +298,9 @@ class XActions extends ActionController
 
             $identityData=$this->getModelByName("user");
             $user=$identityData->getUserByIdentityId($identity_id);
-            if($_SESSION["tokenIdentity"]["token_expired"]=="true")
+            if($_SESSION["tokenIdentity"]["token_expired"]=="true"){
                 $this->setVar("token_expired", "true");
+            }
         }
         $this->setVar("showlogin", $showlogin);
         $this->setVar("token", $_GET["token"]);
@@ -309,8 +310,7 @@ class XActions extends ActionController
         $cross["title"] = htmlspecialchars($cross["title"]);
         $cross["description"] = $cross["description"];
 
-        if($cross)
-        {
+        if($cross) {
             $place_id=$cross["place_id"];
             $cross_id=$cross["id"];
             if(intval($place_id)>0)
@@ -332,9 +332,7 @@ class XActions extends ActionController
                 $this->setVar("user", $user);
 
                 $myidentities=$identityData->getIdentitiesIdsByUser($_SESSION["userid"]);
-            }
-            else
-            {
+            } else {
                 $myidentities=array($identity_id);
             }
             $myidentity=$identityData->getIdentityById($identity_id);
