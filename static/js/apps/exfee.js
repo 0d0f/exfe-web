@@ -31,6 +31,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.exfeeChecked      = [];
 
+    ns.exfeeIdentified   = {};
+
     ns.exfeeSelected     = {};
 
     ns.completing        = false;
@@ -290,12 +292,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.ajaxIdentity = function(identities)
     {
+        for (var i in identities) {
+            if (typeof this.exfeeIdentified[identities[i].id.toLowerCase()]
+            !== 'undefined') {
+                delete identities[i];
+            }
+        }
         $.ajax({
             type     : 'GET',
-            url      : site_url + '/identity/get?identities=' + JSON.stringify(identities),
+            url      : site_url + '/identity/get',
+            data     : {identities : JSON.stringify(identities)},
             dataType : 'json',
             success  : function(data) {
-                console.log(data.response.identities);
+                var updated     = false;
+                for (var i in data.response.identities) {
+                    var curIdentity = data.response.identities[i]
+                                          .external_identity.toLowerCase();
+                    for (var j in odof.exfee.gadget.exfeeAvailable) {
+                        if (odof.exfee.gadget.exfeeAvailable[j]
+                            .external_identity.toLowerCase() === curIdentity) {
+                            odof.exfee.gadget.exfeeAvailable[j]
+                          = data.response.identities[i];
+                            updated = true;
+                            break;
+                        }
+                    }
+                    if (!updated) {
+                        odof.exfee.gadget.exfeeAvailable.unshift(
+                            data.response.identities[i]
+                        );
+                    }
+                    odof.exfee.gadget.exfeeIdentified[curIdentity] = true;
+                }
             }
         });
     };
@@ -314,7 +342,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.exfeeChecked.push(key);
         $.ajax({
             type     : 'GET',
-            url      : site_url + '/identity/complete?key=' + key,
+            url      : site_url + '/identity/complete',
+            data     : {key : key},
             key      : key,
             dataType : 'json',
             success  : function(data) {
@@ -328,8 +357,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  name              : item.join(' ')},
                         exist = false;
                     for (var j in odof.exfee.gadget.exfeeAvailable) {
-                        if (odof.exfee.gadget.exfeeAvailable[j].external_identity
-                        === user.external_identity) {
+                        if (odof.exfee.gadget.exfeeAvailable[j]
+                                .external_identity.toLowerCase()
+                        === user.external_identity.toLowerCase()) {
                             exist = true;
                             break;
                         }

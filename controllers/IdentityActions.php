@@ -11,10 +11,9 @@ class IdentityActions extends ActionController
 
         $responobj['response']['identities'] = array();
 
-        if($arrIdentities)
+        if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
                 $identity = $IdentityData->getIdentity($identityItem['id']);
-
                 if (intval($identity['id']) > 0) {
                     if (!$identity['avatar_file_name'] || !$identity['name']) {
                         $userData = $this->getModelByName('user');
@@ -27,6 +26,7 @@ class IdentityActions extends ActionController
                     $responobj['response']['identities'][] = $identity;
                 }
             }
+        }
 
         $responobj['meta']['code'] = 200;
         //$responobj['meta']['errType'] = 'Bad Request';
