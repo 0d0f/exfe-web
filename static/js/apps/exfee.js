@@ -39,7 +39,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.make = function(domId, curExfee, editable)
     {
         this.id     = domId;
-        this.exfee  = odof.util.clone(curExfee);
         var strHtml = '<div id="' + this.id + '_exfeegadget_inputarea">'
                     +     '<input id="' + this.id + '_exfeegadget_inputbox" type="text">'
                     +     '<button>+</button>'
@@ -51,6 +50,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     +     '<ul></ul>'
                     + '</div>';
         $('#' + this.id).html(strHtml);
+        this.addExfee(curExfee);
         if (!editable) {
             return;
         }
@@ -68,12 +68,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         this.completimer = setInterval(odof.exfee.gadget.chkInput, 50);
         $('#' + this.id + '_exfeegadget_inputbox').bind(
-            'keydown',
-            this.keydownInputbox
+            'keydown', this.keydownInputbox
         );
         $('#' + this.id + '_exfeegadget_autocomplete > ol > li').live(
-            'mousemove',
-            this.mousemoveCompleteItem
+            'mousemove click', this.eventCompleteItem
         );
 //        $('#' + this.id + '_exfeegadget_autocomplete').keyDown = function()
 //        {
@@ -99,7 +97,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.mousemoveCompleteItem = function(event)
+    ns.eventCompleteItem = function(event)
     {
         var objEvent = event.target;
         while (!$(objEvent).hasClass('autocomplete_item')) {
@@ -109,7 +107,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (!identity) {
             return;
         }
-        odof.exfee.gadget.selectCompleteResult(identity);
+        switch (event.type) {
+            case 'mousemove':
+                odof.exfee.gadget.selectCompleteResult(identity);
+                break;
+            case 'click':
+                for (var i in odof.exfee.gadget.exfeeAvailable) {
+                    if (odof.exfee.gadget.exfeeAvailable[i]
+                            .external_identity.toLowerCase() === identity) {
+                        odof.exfee.gadget.addExfee([
+                            odof.exfee.gadget.exfeeAvailable[i]
+                        ]);
+                        odof.exfee.gadget.displayComplete(false);
+                        break;
+                    }
+                }
+        }
     };
 
 
@@ -125,11 +138,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.addExfee = function(exfee)
     {
         for (var i in exfee) {
-            var keyIdentity = exfee[i].id.toLowerCase(),
-                objExfee    = {avatar_file_name  : 'default.png',
+            var objExfee    = typeof exfee[i].external_identity === 'undefined'
+                            ? {avatar_file_name  : 'default.png',
                                bio               : '',
                                external_identity : exfee[i].id,
-                               name              : exfee[i].name};
+                               name              : exfee[i].name}
+                            : exfee[i],
+                keyIdentity = objExfee.external_identity.toLowerCase();
             if (typeof this.exfeeInput[keyIdentity] !== 'undefined') {
                 continue;
             }
