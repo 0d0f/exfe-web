@@ -161,7 +161,7 @@ class Changeemail_Job
                         $mutelink=$post["mutelink"];
                         $link=$post["link"];
                         $create_at=humanDateTime($post["create_at"]);
-                        $avartar=$img_url."/".getHashFilePath("",$avatar_file_name)."/80_80_".$avatar_file_name;
+                        $avartar=getUserAvatar($avatar_file_name, 80);
                   //      $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img  class='exfe_mail_avatar' src='".$avartar."'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $cross_id_base62=$post["cross_id_base62"];

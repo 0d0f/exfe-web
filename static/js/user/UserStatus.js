@@ -442,7 +442,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
             userPanelHTML += '<span class="x_attended">X</span> attended';
             userPanelHTML += '</p>';
-            userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getHashFilePath(img_url,userData.user_avatar)+'/80_80_'+ userData.user_avatar +'"></a>';
+            userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getUserAvatar(userData.user_avatar, 80, img_url)+'"></a>';
             userPanelHTML += '</div>';
             if(userData.crosses != ""){
                 userPanelHTML += '<p class="info">';

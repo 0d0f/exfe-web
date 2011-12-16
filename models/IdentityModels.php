@@ -160,8 +160,8 @@ class IdentityModels extends DataModel{
                 $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
                 $this->query($sql);
             } else {
-                    $cookie_logintoken=$userrow["cookie_logintoken"];
-                    $cookie_loginsequ=$userrow["cookie_loginsequ"];
+                $cookie_logintoken=$userrow["cookie_logintoken"];
+                $cookie_loginsequ=$userrow["cookie_loginsequ"];
             }
 
             setcookie('uid', $userid, time()+31536000, "/", COOKIES_DOMAIN);

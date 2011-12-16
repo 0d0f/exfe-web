@@ -143,7 +143,7 @@ $token=$_GET["token"];
             <div class="Conversation">
             <h3>Conversation</h3>
                 <div class="commenttext">
-                    <img style="width:40px;height:40px" src="<?php echo IMG_URL."/".getHashFilePath("", $global_avatar_file_name); ?>/80_80_<?php echo $global_avatar_file_name;?>">
+                    <img style="width:40px;height:40px" src="<?php echo getUserAvatar($global_avatar_file_name, 80); ?>">
                     <input type="submit" value="" title="Say!" name="post_commit" id="post_submit">
                     <textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
                 </div>
@@ -164,7 +164,7 @@ $token=$_GET["token"];
                     //    $identity["name"]=$identity["external_identity"];
                 ?>
                 <li>
-                <p class="pic40"><img src="<?php echo IMG_URL."/".getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span>&nbsp;<?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
+                <p class="pic40"><img src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt=""></p> <p class="comment"><span><?php echo $identity["name"]; ?>:</span>&nbsp;<?php echo $conversation["content"];?></p> <p class="times"><?php echo $posttime?></p>
                 </li>
                 <?php
                     }
@@ -202,7 +202,7 @@ $token=$_GET["token"];
                     identityid="<?php echo $exfee["identity_id"]; ?>"
                     class="exfee_exist exfee_item">
                     <p class="pic20">
-                        <img src="<?php echo IMG_URL."/".getHashFilePath("", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt="">
+                        <img src="<?php echo getUserAvatar($exfee["avatar_file_name"], 80); ?>" alt="">
                     </p>
                     <div class="smcomment"><div>
                         <span class="ex_name<?php echo $exfee["external_identity"] === $exfee["name"] ? ' external_identity' : ''; ?>">
@@ -224,7 +224,7 @@ $token=$_GET["token"];
                     identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
                     <button type="button" class="exfee_del"></button>
                     <p class="pic20">
-                        <img src="<?php echo IMG_URL."/".getHashFilePath("", $exfee["avatar_file_name"]); ?>/80_80_<?php echo $exfee["avatar_file_name"];?>" alt="">
+                        <img src="<?php echo getUserAvatar($exfee["avatar_file_name"], 80); ?>" alt="">
                     </p>
                     <div class="smcomment"><div>
                         <span class="ex_name<?php echo $exfee["external_identity"] === $exfee["name"] ? ' external_identity' : ''; ?>">

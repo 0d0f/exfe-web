@@ -140,7 +140,7 @@ b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 
 .identification_dialog{
-	position:absolute; width:400px; height:350px;
+	position:absolute; width:400px; height:380px;
     padding:0; z-index:201; background:transparent;
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; }
@@ -158,25 +158,25 @@ b.r3{margin: 0px}
 }
 
 .identification_dialog #identity_error_msg{
-    position:absolute; left:340px; top:125px; width:112px; height:25px; padding:2px 2px 0px 15px;
+    position:absolute; left:340px; top:190px; width:112px; height:25px; padding:2px 2px 0px 15px;
     background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 .identification_dialog #displayname_error_msg{
-    position:absolute; left:340px; top:153px; width:180px; height:25px; padding:3px 5px 0px 15px;
+    position:absolute; left:340px; top:218px; width:180px; height:25px; padding:3px 5px 0px 15px;
     background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -30px; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 .identification_dialog #need_verify_msg{
-    position:absolute; left:40px; top:270px; width:150px; height:37px; padding:5px 5px 5px 10px;
+    position:absolute; left:40px; top:310px; width:150px; height:37px; padding:5px 5px 5px 10px;
     background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 -60px; color:#CC3333; z-index:204;
     -webkit-transform:rotate(-5deg); -moz-transform:rotate(-5deg); -o-transform: rotate(-5deg);
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { background:#EFEFEF; height:320px; width:400px; overflow:hidden; }
+.identification_dialog_con { background:#EFEFEF; height:350px; width:400px; overflow:hidden; }
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
@@ -189,7 +189,7 @@ b.r3{margin: 0px}
 
 .identity_visual_dialog {
     position:absolute; display:block; z-index:204;
-    width:400px; height:285px; padding-top:35px;
+    width:400px; height:315px; padding-top:35px;
     background:#EFEFEF; line-height:20px; font-size:14px;
 }
 .identity_visual_dialog div {
@@ -220,7 +220,7 @@ b.r3{margin: 0px}
     background:transparent;
 }
 
-.float_panel_bottom_btn{ position:absolute; z-index:205; height:40px; width:400px; top:275px; left:30px; }
+.float_panel_bottom_btn{ position:absolute; z-index:205; height:40px; width:400px; top:305px; left:30px; }
 
 .identification_dialog .startover{
     display:block; float:left; height:24px; width:110px; cursor:pointer;
@@ -239,7 +239,7 @@ b.r3{margin: 0px}
 
 /*登录*/
 .identity_dialog_main {
-    position:relative; margin:auto; width:360px; height:285px;
+    position:relative; margin:auto; width:360px; height:315px;
     padding-top:35px; font-size:14px;
 }
 .identity_dialog_main #identity{ background:transparent; }
@@ -265,10 +265,20 @@ b.r3{margin: 0px}
 .identity_dialog_main p.t{font-size:14px;margin:20px 0;text-align:center;line-height:20px;}
 
 .identity_dialog_main .dialog_titles{
-    height:45px; font-size:18px; text-align:center;
-    /*background:url(/static/images/hr_or.png) no-repeat 0 55px;*/
+    height:45px; font-size:18px; text-align:center; clear:both;
+    background:url(/static/images/hr_or.png) no-repeat 0 90px;
 }
-.identity_dialog_main .dialog_titles p{ width:200px; float:left}
+.identity_dialog_main p.oauth_title{ float:left; text-align:left; width:160px; font-size:14px; }
+.identity_dialog_main p.oauth_icon{ width:180px; float:right }
+.identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
+.identity_dialog_main p.oauth_icon a.twitter_oauth{ background:url(/static/images/oauth_logo.png) no-repeat 0 0; }
+.identity_dialog_main p.oauth_icon a.twitter_oauth:hover { background:url(/static/images/oauth_logo.png) no-repeat -40px 0; }
+.identity_dialog_main p.oauth_icon a.facebook_oauth{ background:url(/static/images/oauth_logo.png) no-repeat 0 -40px; }
+.identity_dialog_main p.oauth_icon a.facebook_oauth:hover { background:url(/static/images/oauth_logo.png) no-repeat -40px -40px; }
+.identity_dialog_main p.oauth_icon a.google_oauth{ background:url(/static/images/oauth_logo.png) no-repeat 0 -80px; }
+.identity_dialog_main p.oauth_icon a.google_oauth:hover { background:url(/static/images/oauth_logo.png) no-repeat -40px -80px; }
+
+/*.identity_dialog_main .dialog_titles p{ width:200px; float:left}*/
 .identity_dialog_main .dialog_titles span{ width:150px}
 .identity_dialog_main .dialog_titles span img{ padding:2px 6px }
 .identity_dialog_main .dialog_titles h4{ font-size:14px; font-weight:normal; text-align:left; margin-top:30px}
@@ -339,7 +349,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .notice span{ margin-left:120px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
-    position:absolute; z-index:203; height:40px; width:360px; top:275px; text-align:right;
+    position:absolute; z-index:203; height:40px; width:360px; top:305px; text-align:right;
 }
 
 .invi{width:412px;margin:0 auto;padding-top:20px;color:#020202;font-size:13px;line-height:20px;}
