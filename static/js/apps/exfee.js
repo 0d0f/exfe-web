@@ -171,7 +171,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 '<li identity="' + keyIdentity + '">'
               +     '<img src="' + odof.comm.func.getHashFilePath(
                     img_url,    objExfee.avatar_file_name)
-              +     '/80_80_' + objExfee.avatar_file_name + '">'
+              +     '/80_80_' + objExfee.avatar_file_name
+              +     '" class="exfee_avatar">'
               +     '<span class="exfee_name">'
               +         objExfee.name
               +     '</span>'
@@ -304,28 +305,53 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             data     : {identities : JSON.stringify(identities)},
             dataType : 'json',
             success  : function(data) {
-                var updated     = false;
                 for (var i in data.response.identities) {
-                    var curIdentity = data.response.identities[i]
-                                          .external_identity.toLowerCase();
-                    for (var j in odof.exfee.gadget.exfeeAvailable) {
-                        if (odof.exfee.gadget.exfeeAvailable[j]
-                            .external_identity.toLowerCase() === curIdentity) {
-                            odof.exfee.gadget.exfeeAvailable[j]
-                          = data.response.identities[i];
-                            updated = true;
-                            break;
-                        }
-                    }
-                    if (!updated) {
-                        odof.exfee.gadget.exfeeAvailable.unshift(
-                            data.response.identities[i]
+                    var curId    = data.response.identities[i]
+                                       .external_identity.toLowerCase(),
+                        objExfee = $(
+                            '#' + this.id
+                                + '_exfeegadget_listarea > ul > li[identity="'
+                                + curId + '"]'
+                        );
+                    if (objExfee.length) {
+                        objExfee.child('.exfee_avatar').attr(
+                            'src', odof.comm.func.getHashFilePath(
+                                img_url,
+                                data.response.identities[i].avatar_file_name
+                            ) + '/80_80_'
+                              + data.response.identities[i].avatar_file_name
+                        );
+                        objExfee.child('.exfee_name').html(
+                            data.response.identities[i].name
+                        );
+                        objExfee.child('.exfee_identity').html(
+                            data.response.identities[i].external_identity
                         );
                     }
-                    odof.exfee.gadget.exfeeIdentified[curIdentity] = true;
+                    odof.exfee.gadget.exfeeIdentified[curId] = true;
                 }
+                odof.exfee.gadget.cacheExfee(data.response.identities);
             }
         });
+    };
+
+
+    ns.cacheExfee = function(exfees)
+    {
+        for (var i in exfees) {
+            var curIdentity = exfees[i].external_identity.toLowerCase();
+            for (var j in this.exfeeAvailable) {
+                if (this.exfeeAvailable[j].external_identity.toLowerCase()
+                === curIdentity) {
+                    delete this.exfeeAvailable[j];
+                }
+            }
+            this.exfeeAvailable.unshift(odof.util.clone(exfees[i]));
+        }
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(this.exfeeAvailableKey,
+                                 JSON.stringify(this.exfeeAvailable));
+        }
     };
 
 
@@ -355,20 +381,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  bio               : '',
                                  external_identity : strId,
                                  name              : item.join(' ')},
+                        curId = user.external_identity.toLowerCase(),
                         exist = false;
                     for (var j in odof.exfee.gadget.exfeeAvailable) {
                         if (odof.exfee.gadget.exfeeAvailable[j]
-                                .external_identity.toLowerCase()
-                        === user.external_identity.toLowerCase()) {
+                                .external_identity.toLowerCase() === curId) {
                             exist = true;
                             break;
                         }
                     }
                     if (!exist) {
-                        odof.exfee.gadget.exfeeAvailable.unshift(user);
                         gotExfee.push(user);
                     }
                 }
+                odof.exfee.gadget.cacheExfee(gotExfee);
                 if (this.key === odof.exfee.gadget.keyComplete) {
                     odof.exfee.gadget.showComplete(this.key, gotExfee);
                 }
