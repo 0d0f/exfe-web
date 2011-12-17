@@ -300,6 +300,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 delete identities[i];
             }
         }
+        if (!identities.length) {
+            return;
+        }
         $.ajax({
             type     : 'GET',
             url      : site_url + '/identity/get',
@@ -310,20 +313,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     var curId    = data.response.identities[i]
                                        .external_identity.toLowerCase(),
                         objExfee = $(
-                            '#' + this.id
+                            '#' + odof.exfee.gadget.id
                                 + '_exfeegadget_listarea > ul > li[identity="'
                                 + curId + '"]'
                         );
                     if (objExfee.length) {
-                        objExfee.child('.exfee_avatar').attr(
+                        objExfee.children('.exfee_avatar').attr(
                             'src', odof.comm.func.getUserAvatar(
                             data.response.identities[i].avatar_file_name,
                             80, img_url)
                         );
-                        objExfee.child('.exfee_name').html(
+                        objExfee.children('.exfee_name').html(
                             data.response.identities[i].name
                         );
-                        objExfee.child('.exfee_identity').html(
+                        objExfee.children('.exfee_identity').html(
                             data.response.identities[i].external_identity
                         );
                     }
@@ -334,17 +337,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.cacheExfee = function(exfees)
+    ns.cacheExfee = function(exfees, noIdentity) // @todo: temp noIdentity
     {
         for (var i in exfees) {
             var curIdentity = exfees[i].external_identity.toLowerCase();
             for (var j in this.exfeeAvailable) {
                 if (this.exfeeAvailable[j].external_identity.toLowerCase()
                 === curIdentity) {
-                    delete this.exfeeAvailable[j];
+                    this.exfeeAvailable.splice(i, 1);
                 }
             }
             this.exfeeAvailable.unshift(odof.util.clone(exfees[i]));
+            if (noIdentity) {
+                continue;
+            }
             this.exfeeIdentified[curIdentity] = true;
         }
         if (typeof localStorage !== 'undefined') {
@@ -393,7 +399,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         gotExfee.push(user);
                     }
                 }
-                odof.exfee.gadget.cacheExfee(gotExfee);
+                odof.exfee.gadget.cacheExfee(gotExfee, true);
                 if (this.key === odof.exfee.gadget.keyComplete) {
                     odof.exfee.gadget.showComplete(this.key, gotExfee);
                 }
@@ -417,5 +423,5 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
 $(document).ready(function() {
-    odof.exfee.gadget.make('test', {}, true);
+    odof.exfee.gadget.make('test', [], true);
 });
