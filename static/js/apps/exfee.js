@@ -52,10 +52,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     +     '<ul></ul>'
                     + '</div>';
         $('#' + this.id).html(strHtml);
-        this.addExfee(curExfee);
-        if (!editable) {
-            return;
-        }
         if (typeof localStorage !== 'undefined') {
             this.exfeeAvailable = localStorage.getItem(this.exfeeAvailableKey);
             if (this.exfeeAvailable) {
@@ -67,6 +63,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             } else {
                 this.exfeeAvailable = [];
             }
+        }
+        this.cacheExfee(curExfee);
+        this.addExfee(curExfee);
+        if (!editable) {
+            return;
         }
         this.completimer = setInterval(odof.exfee.gadget.chkInput, 50);
         $('#' + this.id + '_exfeegadget_inputbox').bind(
@@ -147,15 +148,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.addExfee = function(exfee)
+    ns.addExfee = function(exfees)
     {
-        for (var i in exfee) {
-            var objExfee    = typeof exfee[i].external_identity === 'undefined'
+        for (var i in exfees) {
+            var objExfee    = typeof exfees[i].external_identity === 'undefined'
                             ? {avatar_file_name  : 'default.png',
                                bio               : '',
-                               external_identity : exfee[i].id,
-                               name              : exfee[i].name}
-                            : exfee[i],
+                               external_identity : exfees[i].id,
+                               name              : exfees[i].name}
+                            : exfees[i],
                 keyIdentity = objExfee.external_identity.toLowerCase();
             if (typeof this.exfeeInput[keyIdentity] !== 'undefined') {
                 continue;
@@ -183,6 +184,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             );
             this.exfeeInput[keyIdentity] = objExfee;
         }
+        this.ajaxIdentity(exfees);
     };
 
 
@@ -193,7 +195,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if (typeof this.exfeeInput[keyIdentity] === 'undefined') {
                 continue;
             }
-            $('#' + this.id + '_exfeegadget_listarea > ul > li[identity="' + keyIdentity + '"]').remove();
+            $('#' + this.id + '_exfeegadget_listarea > ul > li[identity="'
+                  + keyIdentity + '"]').remove();
             delete this.exfeeInput[keyIdentity];
         }
     };
@@ -328,7 +331,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             data.response.identities[i].external_identity
                         );
                     }
-                    odof.exfee.gadget.exfeeIdentified[curId] = true;
                 }
                 odof.exfee.gadget.cacheExfee(data.response.identities);
             }
@@ -347,6 +349,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             this.exfeeAvailable.unshift(odof.util.clone(exfees[i]));
+            this.exfeeIdentified[curIdentity] = true;
         }
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(this.exfeeAvailableKey,
