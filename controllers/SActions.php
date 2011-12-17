@@ -1,5 +1,4 @@
 <?php
-
 class SActions extends ActionController
 {
 
@@ -72,7 +71,7 @@ class SActions extends ActionController
         $img_x = $_POST["iX"];
         $img_y = $_POST["iY"];
         $img_dir = "eimgs";
-        $img_path = getHashFilePath($img_dir, $img_name);
+        $img_path = getHashFilePath($img_name, $img_dir);
 
         $img_info = array(
             "source_image"      =>$img_path."/"."240_240_".$img_name,

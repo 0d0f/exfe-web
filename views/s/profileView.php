@@ -15,7 +15,7 @@
 <div class="content">
     <div class="edit_user">
         <div id="profile_avatar">
-            <img class="big_header" src="<?php echo IMG_URL.'/'.getHashFilePath('', $user['avatar_file_name']); ?>/80_80_<?php echo $user['avatar_file_name']; ?>" alt="" />
+            <img class="big_header" src="<?php echo getUserAvatar($user['avatar_file_name'], 80); ?>" alt="" />
             <button style="display:none" class="change" id="changeavatar">Change...</button>
 
             <!-- upload avatar windows -->
@@ -66,7 +66,8 @@
                             $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
                     ?>
                     <p>
-                        <img class="s_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" />
+                    
+                        <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
                         <b><span class="id_name"><?php echo $identity["name"];?></span>
                         <em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
                         </b>
@@ -77,7 +78,7 @@
                     else
                     {
                     ?>
-                    <p><img class="s_header" src="<?php echo IMG_URL.'/'.getHashFilePath("", $identity["avatar_file_name"]); ?>/80_80_<?php echo $identity["avatar_file_name"];?>" alt="" /><b><span class="id_name"><?php echo $identity["name"];?></span>
+                    <p><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" /><b><span class="id_name"><?php echo $identity["name"];?></span>
 <em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
 </b></p>
                     <?php

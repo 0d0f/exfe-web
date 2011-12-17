@@ -48,17 +48,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var title="", form="";
         if(type == "reg_login") {
             title="Identification";
-            /*
-            //备注，这是原来Twitter登录等的样式。暂时取消掉。
-            desc="<div class='dialog_titles'><p>Authorize with your <br/> existing accounts </p>"
-                +"<span><img src='/static/images/facebook.png' alt='' width='32' height='32' />"
-                +"<img src='/static/images/twitter.png' alt='' width='32' height='32' />"
-                +"<img src='/static/images/google.png' alt='' width='32' height='32' /></span>"
-                +"<h4>Enter identity information</h4>"
-                +"</div>";
-            */
+            desc = "<div class='dialog_titles' style='height:110px;'>"
+                + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>" 
+                + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
+                + "<p class='oauth_icon'>"
+                + "<a href='javascript:void(0);' class='facebook_oauth' alt='FaceBookOAuth'></a>"
+                + "<a href='/oAuth/twitterRedirect' class='twitter_oauth' alt='TwitterOAuth'></a>"
+                + "<a href='javascript:void(0);' class='google_oauth' alt='GoogleOAuth'></a>"
+                + "</p>"
+                + "</div>";
             form = "<div id='identity_reg_login_dialog' class='identity_dialog_main'>"
-                 + "<div class='dialog_titles'>Welcome to <span style='color:#0591AC;'>EXFE</span></div>"
+                 + desc
                  + "<div id='identification_title_msg'>Enter identity information:</div>"
                  + "<form id='identificationform' accept-charset='UTF-8' action='' method='post'>"
                  + "<ul>"
@@ -94,7 +94,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</ul>"
                  + "<div class='identification_bottom_btn'>"
                  + "<a id='forgot_password' class='forgot_password' style='display:none;'>Forgot Password...</a>"
-                 + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>"
+                 + "<a href='#' id='sign_up_btn' class='sign_up_btn'>Sign Up?</a>&nbsp;&nbsp;"
                  + "<a id='startover' class='startover' style='display:none;'>Start Over</a>"
                  + "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn_disabled' disabled='disabled' />"
                  //+ "<input type='submit' value='Sign in' id='sign_in_btn' class='sign_in_btn' /></li>"
@@ -255,7 +255,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "<div style='height:50px; text-align:left;'>"
                + "So, just authorize with your existing accounts on other websites."
                + "</div>"
-               + "<div style='height:90px; text-align:left;'>"
+               + "<div style='height:120px; text-align:left;'>"
                + "Or, tell us your desired identity and display name that your friends know who you are, along with a password for sign-in. Identity could be your email address or phone number."
                + "</div>"
                + "<div style='text-align:right;'>"
@@ -698,7 +698,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             {
                                 if(name=="")
                                     name=identity;
-                                exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="'+odof.comm.func.getHashFilePath(img_url,avatar_file_name)+'/80_80_'+avatar_file_name+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
+                                exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
                             }
                         }
 

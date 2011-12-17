@@ -343,19 +343,34 @@ function hashFileSavePath($savePath, $fileName=''){
 
 /**
  * 获取散列存储路径
- * @param $rootPath, $fileName
+ * @param $fileName, $specialFilePath
  * @return string
  **/
-function getHashFilePath($rootPath='', $fileName=''){
+function getHashFilePath($fileName='', $specialFilePath=''){
     if($fileName == ''){
         return false;
-    }else if($fileName == "default.png"){
+    }
+    if($fileName == "default.png"){
         return "web";
     }
-    #$rootPath = $rootPath == '' ? $rootPath : strtok($rootPath,"/")."/";
-    if($rootPath == "")
-        return substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
-    return $rootPath."/".substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
+    if($specialFilePath != ""){
+        return $specialFilePath."/".substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
+    }
+    return substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
+}
+
+/**
+ * 获取用户头像
+ * @param $fileName, $avatarSize
+ * @return string
+ **/
+function getUserAvatar($fileName, $avatarSize){
+    $pattern = "/(http[s]?:\/\/)/is";
+    if(preg_match($pattern, $fileName)){
+        return $fileName;
+    }else{
+        return IMG_URL."/".getHashFilePath($fileName)."/".$avatarSize."_".$avatarSize."_".$fileName;
+    }
 }
 
 function autoLink($text) {

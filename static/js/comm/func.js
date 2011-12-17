@@ -238,9 +238,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
-    ns.getHashFilePath = function(rootPath, fileName){
+    ns.getHashFilePath = function(fileName, rootPath){
         if(fileName == "default.png"){ return rootPath+"/web"; }
-        return rootPath+"/"+fileName.substring(0,1)+"/"+fileName.substring(1,3);
+        if(typeof rootPath != "undefined"){
+            return rootPath+"/"+fileName.substring(0,1)+"/"+fileName.substring(1,3);
+        }
+        return fileName.substring(0,1)+"/"+fileName.substring(1,3);
+    };
+    ns.getUserAvatar = function(fileName, fileSize, rootPath){
+        pattern = /^(http[s]?:\/\/)/;
+        if(fileName.match(pattern)){
+            return fileName;
+        }
+        var avatarURL = ns.getHashFilePath(fileName,rootPath) + "/" + fileSize + "_" + fileSize + "_" + fileName;
+        return avatarURL;
     };
     /*
     ns.cancel = function(){

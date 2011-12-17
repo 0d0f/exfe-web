@@ -204,7 +204,7 @@ class Conversationemail_Job
                 if($identities)
                     foreach($identities as $identity)
                     {
-                        $avartar=$img_url."/".getHashFilePath("",$identity["avatar_file_name"])."/80_80_".$identity["avatar_file_name"];
+                        $avartar=getUserAvatar($identity["avatar_file_name"], 80);
                         $exfee_avartar.="<img style=\"padding-right: 5px;\" width=\"40\" height=\"40\" src=\"$avartar\">";
                     }
 
@@ -331,6 +331,10 @@ class Conversationemail_Job
                         $mutelink=$post["mutelink"];
                         $link=$post["link"];
                         $create_at=humanDateTime($post["create_at"]);
+<<<<<<< HEAD
+                        $avartar=getUserAvatar($avatar_file_name, 80);
+                        $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_msg_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
+=======
                         $avartar=$img_url."/".getHashFilePath("",$avatar_file_name)."/80_80_".$avatar_file_name;
                         $html .= '<tr>'
                                .     '<td valign="top" width="50" align="left">'
@@ -345,6 +349,7 @@ class Conversationemail_Job
                                .     '</td>'
                                . '</tr>'
                                . '<tr><td colspan="2" height="20"></td></tr>';
+>>>>>>> 00b16234556da5b2333ef4a3a74314ac9c2266db
                         $cross_id_base62=$post["cross_id_base62"];
                         $cross_id=$post["cross_id"];
                     }
