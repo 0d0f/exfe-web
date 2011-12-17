@@ -170,9 +170,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
             $('#' + this.id + '_exfeegadget_listarea > ul').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<img src="' + odof.comm.func.getHashFilePath(
-                    img_url,    objExfee.avatar_file_name)
-              +     '/80_80_' + objExfee.avatar_file_name
+              +     '<img src="' + odof.comm.func.getUserAvatar(
+                    objExfee.avatar_file_name, 80, img_url)
               +     '" class="exfee_avatar">'
               +     '<span class="exfee_name">'
               +         objExfee.name
@@ -272,9 +271,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 this.curComplete[curIdentity] = true;
                 strItems += '<li identity="' + curIdentity + '" '
                           +     'class="autocomplete_item">'
-                          +     '<img src="' + odof.comm.func.getHashFilePath(
-                                img_url,    exfee[i].avatar_file_name)
-                          +     '/80_80_' + exfee[i].avatar_file_name + '">'
+                          +     '<img src="' + odof.comm.func.getUserAvatar(
+                                exfee[i].avatar_file_name, 80, img_url) + '">'
                           +     '<span class="exfee_name">'
                           +         exfee[i].name
                           +     '</span>'
@@ -318,11 +316,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         );
                     if (objExfee.length) {
                         objExfee.child('.exfee_avatar').attr(
-                            'src', odof.comm.func.getHashFilePath(
-                                img_url,
-                                data.response.identities[i].avatar_file_name
-                            ) + '/80_80_'
-                              + data.response.identities[i].avatar_file_name
+                            'src', odof.comm.func.getUserAvatar(
+                            data.response.identities[i].avatar_file_name,
+                            80, img_url)
                         );
                         objExfee.child('.exfee_name').html(
                             data.response.identities[i].name
