@@ -1,5 +1,7 @@
 <?php
-require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth/TwitterOAuth.php";
+require_once dirname(dirname(__FILE__))."/lib/OAuth.php";
+require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth.php";
+require_once dirname(dirname(__FILE__))."/lib/FacebookOAuth.php";
 class OAuthActions extends ActionController {
     public function doIndex() {
         header("location:/s/login");
@@ -21,6 +23,7 @@ class OAuthActions extends ActionController {
                 echo 'Could not connect to Twitter. Refresh the page or try again later.';
         }
     }
+
     public function doTwitterCallBack(){
         if (isset($_REQUEST['oauth_token']) && $_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
             $_SESSION['oauth_status'] = 'oldtoken';
@@ -59,6 +62,7 @@ class OAuthActions extends ActionController {
             $twitterUserInfo = (array)$twitterUserInfo;
         }
         $oAuthUserInfo = array(
+            "provider"  =>"twitter",
             "id"        =>$twitterUserInfo["id"],
             "name"      =>$twitterUserInfo["name"],
             "sname"     =>$twitterUserInfo["screen_name"],
@@ -84,5 +88,56 @@ class OAuthActions extends ActionController {
         session_start();
         session_destroy();
         header('Location:/');
+    }
+
+    public function doLoginWithFacebook(){
+        $facebookHandler = new FacebookOauth(array(
+                'appId'  =>FACEBOOK_APP_ID,
+                'secret' =>FACEBOOK_SECRET_KEY,
+                'cookie' =>true
+        ));
+        $facebookSession = $facebookHandler->getSession();
+
+        $facebookUserInfo = null;
+        if ($facebookSession) {
+            try {
+                $uid = $facebookHandler->getUser();
+                $facebookUserInfo = $facebookHandler->api('/me');
+            } catch (FacebookApiException $e) {
+                error_log($e);
+            }
+        }
+        if (!$facebookUserInfo) {
+            $params = array();
+            $loginUrl = $facebookHandler->getLoginUrl($params);
+            header("location:".$loginUrl);
+        } else {
+
+            if(gettype($facebookUserInfo) == "object"){
+                $facebookUserInfo = (array)$facebookUserInfo;
+            }
+            $oAuthUserInfo = array(
+                "provider"  =>"facebook",
+                "id"        =>$facebookUserInfo["id"],
+                "name"      =>$facebookUserInfo["name"],
+                "sname"     =>$facebookUserInfo["username"],
+                "desc"      =>array_key_exists("bio", $facebookUserInfo) ? $facebookUserInfo["bio"] : "",
+                "avatar"    =>"https://graph.facebook.com/".$facebookUserInfo["id"]."/picture?type=large"
+            );
+
+            $OAuthModel = $this->getModelByName("oAuth");
+            $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
+            $identityID = $result["identityID"];
+            $userID = $result["userID"];
+            if(!$identityID || !$userID){
+                die("OAuth error.");
+            }
+
+            $identityModels = $this->getModelByName("identity");
+            $identityModels->loginByIdentityId($identityID, $userID);
+
+            header("location:/s/login");
+        }
+
     }
 }
