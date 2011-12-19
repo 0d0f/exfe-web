@@ -1,6 +1,8 @@
 <?php
 
-class TestActions extends ActionController {
+class TestActions extends ActionController
+{
+
     public function doAdd()
     {
         $email=$_GET["email"];
@@ -17,8 +19,8 @@ class TestActions extends ActionController {
         $user=$Data->login($email,$password);
 
         print_r($user);
-
     }
+
     public function doIndex()
     {
         $r=$external_identity=mysql_real_escape_string("123");;
@@ -38,23 +40,23 @@ class TestActions extends ActionController {
 
         print $template;
 
-
         print_r($mail);
-
     }
 
-        function escape($str)
-        {
-                $search=array("\\","\0","\n","\r","\x1a","'",'"');
-                $replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
-                return str_replace($search,$replace,$str);
-        }
+    function escape($str)
+    {
+            $search=array("\\","\0","\n","\r","\x1a","'",'"');
+            $replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+            return str_replace($search,$replace,$str);
+    }
+
     function reverse_escape($str)
     {
       $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
       $replace=array("\\","\0","\n","\r","\x1a","'",'"');
       return str_replace($search,$replace,$str);
     }
+
     public function doTest()
     {
         var_dump(base62_to_int("q0X"));
@@ -103,7 +105,6 @@ class TestActions extends ActionController {
 #        require 'lib/Resque.php';
 #        date_default_timezone_set('GMT');
 #        Resque::setBackend(RESQUE_SERVER);
-#
 #
 #        print $str;
 
