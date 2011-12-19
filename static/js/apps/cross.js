@@ -14,10 +14,10 @@ var clickCallBackFunc = function(args){
 
 (function(ns){
 
-    ns.cross_id = cross_id;
-    ns.btn_val = null;
-    ns.token = token;
-    ns.location_uri = location_uri;
+    ns.cross_id     = 0;
+    ns.btn_val      = null;
+    ns.token        = null;
+    ns.location_uri = null;
 
     ns.setreadonly = function(callBackFunc) {
         /*
@@ -41,7 +41,7 @@ var clickCallBackFunc = function(args){
             }else if(show_idbox == "login"){
                 odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
             }else{
-                var args = {"identity":external_identity};
+                args = {"identity":external_identity};
                 odof.user.status.doShowCrossPageVerifyDialog(null, args);
             }
         }
@@ -116,6 +116,10 @@ var clickCallBackFunc = function(args){
 
 
 $(document).ready(function() {
+
+    odof.cross.index.cross_id     = cross_id;
+    odof.cross.index.token        = token;
+    odof.cross.index.location_uri = location_uri;
 
     $('#rsvp_loading').activity({
         segments: 8,

@@ -11,7 +11,7 @@
     <p class="titles">Thank you for reporting spam.</p>
     <p>Redirecting to <span style="color:#0591AC">EXFE</span> in seconds…</p>
 </div>
-<script type="text/javascript">
+<script>
 jQuery(document).ready(function(){
     //jQuery("#reporting_msg").fadeIn(3000);
     jQuery("#reporting_msg").fadeTo(4000, 0.2, function(){

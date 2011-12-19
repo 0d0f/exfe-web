@@ -5,38 +5,26 @@
     <meta charset="UTF-8">
     <meta name="Author" content="EXFE Inc.">
     <meta name="robots" content="index, follow">
-    <meta name="Keywords" content="EXFE,Gather">
+    <meta name="Keywords" content="EXFE, Gather">
     <meta name="Description" content="EXFE.COM website">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>www.exfe.com</title>
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="">
-    <link rel="home" href="http://www.exfe.com/">
-    <link rel="index" href="http://www.exfe.com/sitemap/">
+    <title>EXFE.COM</title>
     <link rel="stylesheet" type="text/css" href="/static/css/global.css">
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <script type="text/javascript" src="/static/js/libs/jquery.js"></script>
-    <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
-    <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
-    <script type="text/javascript" src="/static/js/libs/jquery.ba-dotimeout.js"></script>
-    <script type="text/javascript" src="/static/js/comm/ExfeUtil.js"></script>
-    <script type="text/javascript" src="/static/js/comm/func.js"></script>
+    <script src="/static/js/libs/jquery.js"></script>
+    <script src="/static/js/libs/activity-indicator.js"></script>
+    <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+    <script src="/static/js/libs/jquery.ba-dotimeout.js"></script>
+    <script src="/static/js/comm/ExfeUtil.js"></script>
+    <script src="/static/js/comm/func.js"></script>
+    <script src="/static/js/user/UserIdentification.js"></script>
+    <script src="/static/js/exlibs/ExDialog.js"></script>
+    <script src="/static/js/user/UserStatus.js"></script>
 
-    <script type="text/javascript" src="/static/js/user/UserIdentification.js"></script>
-    <script type="text/javascript" src="/static/js/exlibs/ExDialog.js"></script>
-    <script type="text/javascript" src="/static/js/user/UserStatus.js"></script>
-
-    <script type="text/javascript">
+    <script>
         var site_url = "<?php echo SITE_URL; ?>";
         var img_url  = "<?php echo IMG_URL; ?>";
         var cookies_domain = "<?php echo COOKIES_DOMAIN ?>";
     </script>
-
-    <!--[if IE 6]>
-    <script type="text/javascript" src="/static/js/libs/PNG.js"></script>
-    <script type="text/javascript">
-        DD_belatedPNG.fix('#header .logo,#header .mygear');
-    </script>
-    <![endif]-->
 
     <?php
     if($_SESSION["tokenIdentity"]!="" && $_GET["token"]!="")

@@ -5,7 +5,7 @@
 <?php include 'share/nav.php'; ?>
 <?php $referer = $this->getVar('referer'); ?>
 <?php $cross_id = $this->getVar('cross_id'); ?>
-<script type="text/javascript">
+<script>
 var referer = "<?php echo strip_tags($referer);  ?>";
 var cross_id = "<?php echo strip_tags($cross_id); ?>";
 </script>
@@ -18,7 +18,7 @@ var cross_id = "<?php echo strip_tags($cross_id); ?>";
         <button onclick="javascript:location.href = '/s/login';">Sign in</button>
     </div -->
 </div>
-<script type="text/javascript">
+<script>
     var showSpecialIdentityDialog = true;
     var pageFlag = "forbidden";
     jQuery(document).ready(function(){

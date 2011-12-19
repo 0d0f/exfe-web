@@ -1,9 +1,9 @@
 <?php include 'share/header.php'; ?>
 <link rel="stylesheet" type="text/css" href="/static/css/profile.css">
-<script type="text/javascript" src="/static/js/user/UserProfile.js"></script>
-<script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
-<script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
+<script src="/static/js/user/UserProfile.js"></script>
+<script src="/static/js/user/UploadAvatar.js"></script>
+<script src="/static/js/user/FileUploader.js"></script>
+<script src="/static/js/libs/jquery.imgareaselect.js"></script>
 </head>
 <body>
 <?php include 'share/nav.php'; ?>
@@ -66,7 +66,7 @@
                             $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
                     ?>
                     <p>
-                    
+
                         <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
                         <b><span class="id_name"><?php echo $identity["name"];?></span>
                         <em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
