@@ -26,19 +26,19 @@
     }
     $login_type=$this->getVar("login_type");
 
-    echo "<script>\r\n";
-    echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
-    echo "var cross_id=".$cross["id"].";\r\n";
-    echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
-    //echo "var show_idbox='login'; \r\n";
-    echo "var login_type='".$login_type."'; \r\n";
-    echo "var token_expired='".$token_expired."'; \r\n";
-    //echo "var token_expired='true'; \r\n";
-    echo "var myrsvp=".intval($myrsvp)."; \r\n";
-    echo "var token='".$_GET["token"]."'; \r\n";
-    echo "var id_name='".$global_name."'; \r\n";
-    echo "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n";
-    echo "</script>\r\n";
+    echo "<script>\r\n"
+       . "var external_identity='".$myidentity["external_identity"]."';\r\n"
+       . "var cross_id=".$cross["id"].";\r\n"
+       . "var show_idbox='".$this->getVar("showlogin")."'; \r\n"
+    // . "var show_idbox='login'; \r\n"
+       . "var login_type='".$login_type."'; \r\n"
+       . "var token_expired='".$token_expired."'; \r\n"
+    // . "var token_expired='true'; \r\n"
+       . "var myrsvp=".intval($myrsvp)."; \r\n"
+       . "var token='".$_GET["token"]."'; \r\n"
+       . "var id_name='".$global_name."'; \r\n"
+       . "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n"
+       . "</script>\r\n";
 
     include_once "lib/markdown.php";
     $original_desc_str = $cross["description"];
