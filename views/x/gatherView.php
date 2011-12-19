@@ -1,12 +1,12 @@
 <?php include 'share/header.php'; ?>
 <?php global $exfe_res;?>
-<script type="text/javascript" src="/static/js/libs/showdown.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
-<script type="text/javascript" src="/static/js/apps/gather.js"></script>
+<script src="/static/js/libs/showdown.js"></script>
+<script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<script src="/static/js/apps/gather.js"></script>
 
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css"/>
-<script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
+<script src="/static/js/exlibs/excal/excal.js"></script>
 
 </head>
 <body>
@@ -53,7 +53,11 @@
                 <div id="gather_exfee_bg" class="gather_blur">Enter attendees’ email or id</div>
                 <select id="exfee_complete" size="5"></select>
                 <label class="exfee">Exfee</label>
-                <p class="count"><a id="confirmed_all" check=false href="javascript:void(0);"> Mark all as confirmed</a> count: <span id="exfee_count">1</span></p>
+                <p class="count">
+                    <a id="confirmed_all" check=false href="javascript:void(0);">Mark all as confirmed</a>
+                    count:
+                    <span id="exfee_count">1</span>
+                </p>
                 <textarea id="exfee"></textarea>
                 <div id="identity_ajax"></div>
                 <div class="creattext">

@@ -14,26 +14,26 @@
     <link rel="index" href="http://www.exfe.com/sitemap/">
     <link rel="stylesheet" type="text/css" href="/static/css/global.css">
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <script type="text/javascript" src="/static/js/libs/jquery.js"></script>
-    <script type="text/javascript" src="/static/js/libs/activity-indicator.js"></script>
-    <script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
-    <script type="text/javascript" src="/static/js/libs/jquery.ba-dotimeout.js"></script>
-    <script type="text/javascript" src="/static/js/comm/ExfeUtil.js"></script>
-    <script type="text/javascript" src="/static/js/comm/func.js"></script>
+    <script src="/static/js/libs/jquery.js"></script>
+    <script src="/static/js/libs/activity-indicator.js"></script>
+    <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+    <script src="/static/js/libs/jquery.ba-dotimeout.js"></script>
+    <script src="/static/js/comm/ExfeUtil.js"></script>
+    <script src="/static/js/comm/func.js"></script>
 
-    <script type="text/javascript" src="/static/js/user/UserIdentification.js"></script>
-    <script type="text/javascript" src="/static/js/exlibs/ExDialog.js"></script>
-    <script type="text/javascript" src="/static/js/user/UserStatus.js"></script>
+    <script src="/static/js/user/UserIdentification.js"></script>
+    <script src="/static/js/exlibs/ExDialog.js"></script>
+    <script src="/static/js/user/UserStatus.js"></script>
 
-    <script type="text/javascript">
+    <script>
         var site_url = "<?php echo SITE_URL; ?>";
         var img_url  = "<?php echo IMG_URL; ?>";
         var cookies_domain = "<?php echo COOKIES_DOMAIN ?>";
     </script>
 
     <!--[if IE 6]>
-    <script type="text/javascript" src="/static/js/libs/PNG.js"></script>
-    <script type="text/javascript">
+    <script src="/static/js/libs/PNG.js"></script>
+    <script>
         DD_belatedPNG.fix('#header .logo,#header .mygear');
     </script>
     <![endif]-->

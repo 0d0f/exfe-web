@@ -1,11 +1,11 @@
 <?php $page="cross";?>
 <?php include "share/header.php"; ?>
-<script type="text/javascript" src="/static/js/libs/showdown.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
-<script type="text/javascript" src="/static/js/apps/CrossEdit.js"></script>
+<script src="/static/js/libs/showdown.js"></script>
+<script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<script src="/static/js/apps/CrossEdit.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
-<script type="text/javascript" src="/static/js/exlibs/excal/excal.js"></script>
+<script src="/static/js/exlibs/excal/excal.js"></script>
 </head>
 
 <body>
@@ -21,7 +21,7 @@ if($token_expired=="")
     $token_expired="false";
 $login_type=$this->getVar("login_type");
 
-echo "<script type='text/javascript'>\r\n";
+echo "<script>\r\n";
 echo "var external_identity='".$myidentity["external_identity"]."';\r\n";
 echo "var cross_id=".$cross["id"].";\r\n";
 echo "var show_idbox='".$this->getVar("showlogin")."'; \r\n";
@@ -247,7 +247,7 @@ $token=$_GET["token"];
             </div>
         </div><!--exfee-->
     </div><!--exfer-->
-<script type="text/javascript" src="/static/js/apps/cross.js"></script>
+<script src="/static/js/apps/cross.js"></script>
 
 </div><!--/#index-->
 </div><!--/#content-->

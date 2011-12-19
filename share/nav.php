@@ -18,7 +18,7 @@ if(intval($_SESSION["userid"]) > 0){
         </div>
     </div>
     <img src="/static/images/user.png" style="display:none;" width="0" height="0" />
-    <script type="text/javascript">
+    <script>
         if(typeof showSpecialIdentityDialog == "undefined"){
             jQuery("#global_user_login_btn").unbind("click");
             jQuery("#global_user_login_btn").bind("click",function(){

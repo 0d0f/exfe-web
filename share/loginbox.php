@@ -1,5 +1,5 @@
 <div id="userLoginBox" class="identification_dialog idialog_inpage"></div>
-<script type="text/javascript">
+<script>
     var showSpecialIdentityDialog = true;
     var pageFlag = "login";
     jQuery(document).ready(function(){

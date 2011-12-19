@@ -1,5 +1,5 @@
 <?php include "share/header.php"; ?>
-<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
+<script src="/static/js/libs/jquery.imgareaselect.js"></script>
 </head>
 <body>
 <?php include "share/nav.php"; ?>
@@ -15,7 +15,7 @@ $large_image_location=$this->getVar("large_image_location");
 if(strlen($large_photo_exists)>0){
     $current_large_image_width = getWidth($large_image_location);
     $current_large_image_height = getHeight($large_image_location);?>
-    <script type="text/javascript">
+    <script>
     function preview(img, selection) {
     var scaleX = <?php echo $thumb_width; ?> / selection.width;
     var scaleY = <?php echo $thumb_height; ?> / selection.height;
