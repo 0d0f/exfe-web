@@ -7,13 +7,13 @@
 <script src="/static/js/apps/cross.js"></script>
 <script src="/static/js/apps/CrossEdit.js"></script>
 <!-- Exfe Calendar -->
-<link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet" />
+<link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet">
 <script src="/static/js/exlibs/excal/excal.js"></script>
 </head>
 
 <body>
 <?php
-    include "share/nav.php";
+    include 'share/nav.php';
 
     $cross=$this->getVar("cross");
     $user=$this->getVar("user");
@@ -21,7 +21,7 @@
     $myrsvp=$this->getVar("myrsvp");
 
     $token_expired=$this->getVar("token_expired");
-    if($token_expired=="") {
+    if ($token_expired=="") {
         $token_expired="false";
     }
     $login_type=$this->getVar("login_type");
@@ -74,7 +74,7 @@
     #{
     #    $display_desc .= '<p class="text">'.ParseURL($s).'</p>';
     #}
-    //=============================================================
+    #//=============================================================
 
     $place_line1   = $cross['place']['line1'];
     $place_line2   = str_replace('\r', "\n", $cross['place']['line2']);
@@ -109,6 +109,7 @@
             <a id="revert_cross_btn" href="javascript:;">Revert</a>
         </p>
     </div>
+
     <div id="content" class="cross_view_container">
         <div class="exfe_bubble" id="cross_time_bubble" style="display:none;">
             <div class="cross_dt_input">

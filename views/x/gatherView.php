@@ -3,11 +3,9 @@
 <script src="/static/js/libs/showdown.js"></script>
 <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
 <script src="/static/js/apps/gather.js"></script>
-
 <!-- Exfe Calendar -->
-<link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css"/>
+<link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
-
 </head>
 <body>
 <?php
