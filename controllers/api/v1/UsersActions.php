@@ -3,7 +3,31 @@ class UsersActions extends ActionController {
 
     public function doIndex()
     {
+    }
+    public function doGetProfile()
+    {
+        $params=$this->params;
+        $uid=$params["id"];
 
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAPIAllow("user_getprofile",$params["token"],array("user_id"=>$params["id"]));
+        if($check["check"]==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+        $identityData=$this->getModelByName("identity");
+        $userData=$this->getModelByName("user");
+        $identity=$identityData->getIdentitiesByUser($uid);
+        $user=$userData->getUser($uid);
+
+        $responobj["meta"]["code"]=200;
+        $responobj["response"]["identities"]=$identity;
+        $responobj["response"]["user"]=$user;
+        echo json_encode($responobj);
+        exit(0);
     }
     public function doLogin()
     {
