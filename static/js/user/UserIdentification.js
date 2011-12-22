@@ -85,12 +85,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                 + "<li class='logincheck'>"
-                 + "<div id='logincheck' style='display:none;'>"
+                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 + "<li class='logincheck' id='logincheck' style='display:none;'>"
                  + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
                  + "<label for='auto_signin' style='cursor:pointer;'><span>Sign in automatically</span></label>"
-                 + "</div></li>"
-                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 + "</li>"
                  + "</ul>"
                  + "<div class='identification_bottom_btn'>"
                  + "<a id='forgot_password' class='forgot_password' style='display:none;'>Forgot Password...</a>"
@@ -536,6 +535,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         jQuery("#reset_pwd_error_msg").hide();
                         jQuery("#displayname_error").hide();
                         jQuery("#pwd_hint").hide();
+                        jQuery("#login_hint").hide();
                     };
 
 
@@ -579,6 +579,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         if(password == "" || identity == ""){
                             jQuery('#login_hint').html("<span>Identity or password empty</span>");
                             jQuery('#login_hint').show();
+                            setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
                     }
@@ -594,6 +595,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 if(data!=null) {
                                     if(data.response.success=="false") {
                                         jQuery('#login_hint').show();
+                                        setTimeout(hideErrorMsg, 3000);
                                     } else if(data.response.success=="true") {
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
@@ -654,12 +656,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             success: function(data){
                                 if(data!=null)
                                 {
-                                    if(data.response.success=="false")
-                                    {
+                                    if(data.response.success=="false") {
                                         jQuery('#login_hint').show();
-                                    }
-                                    else if(data.response.success=="true")
-                                    {
+                                        setTimeout(function(){
+                                            jQuery('#login_hint').hide();
+                                        }, 3000);
+                                    } else if(data.response.success=="true") {
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
 

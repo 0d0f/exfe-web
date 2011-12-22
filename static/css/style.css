@@ -346,7 +346,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .logincheck span{ margin-left:8px; font-size:14px; }
 /*.login ul .notice{ height:25px; color:#0591af; line-height:10px;}*/
 .identity_dialog_main ul .notice{ height:25px; color:#CC3333;}
-.identity_dialog_main ul .notice span{ margin-left:120px; margin-top:0;}
+.identity_dialog_main ul .notice span{ margin-left:115px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
     position:absolute; z-index:203; height:40px; width:360px; top:305px; text-align:right;
