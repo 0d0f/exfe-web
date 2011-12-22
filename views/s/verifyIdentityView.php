@@ -17,7 +17,7 @@ $identityInfo = $this->getVar("identityInfo");
 if($identityInfo["need_set_pwd"] == "no"){
 ?>
 <div id="verify_success" style="text-align:center; font-size:34px; margin-top:140px;" class="identification_dialog idialog_inpage">Verification completed</div>
-<script type="text/javascript">
+<script>
 jQuery("#verify_success").fadeTo("slow", 0.3, function(){
     window.location.href="/s/profile";
 });
@@ -26,7 +26,7 @@ jQuery("#verify_success").fadeTo("slow", 0.3, function(){
 }else{
 ?>
 <div id="userResetPwdBox" class="identification_dialog idialog_inpage"></div>
-<script type="text/javascript">
+<script>
     var showSpecialIdentityDialog = true;
     var user_identity = '<?php echo $identityInfo["identity"]; ?>';
     var user_name = '<?php echo $identityInfo["display_name"]; ?>';

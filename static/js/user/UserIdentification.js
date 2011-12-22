@@ -52,9 +52,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>" 
                 + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
                 + "<p class='oauth_icon'>"
-                + "<a href='javascript:void(0);' class='facebook_oauth' alt='FaceBookOAuth'></a>"
+                + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
                 + "<a href='/oAuth/twitterRedirect' class='twitter_oauth' alt='TwitterOAuth'></a>"
-                + "<a href='javascript:void(0);' class='google_oauth' alt='GoogleOAuth'></a>"
+                + "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
                 + "</p>"
                 + "</div>";
             form = "<div id='identity_reg_login_dialog' class='identity_dialog_main'>"

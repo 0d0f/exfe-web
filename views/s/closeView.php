@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript">
+        <script>
             window.opener.updateavatar();
             window.close();
         </script>

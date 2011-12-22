@@ -1,9 +1,9 @@
 <?php include 'share/header.php'; ?>
 <link rel="stylesheet" type="text/css" href="/static/css/profile.css">
-<script type="text/javascript" src="/static/js/user/UserProfile.js"></script>
-<script type="text/javascript" src="/static/js/user/UploadAvatar.js"></script>
-<script type="text/javascript" src="/static/js/user/FileUploader.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.imgareaselect.js"></script>
+<script src="/static/js/user/UserProfile.js"></script>
+<script src="/static/js/user/UploadAvatar.js"></script>
+<script src="/static/js/user/FileUploader.js"></script>
+<script src="/static/js/libs/jquery.imgareaselect.js"></script>
 </head>
 <body>
 <?php include 'share/nav.php'; ?>
@@ -16,10 +16,10 @@
     <div class="edit_user">
         <div id="profile_avatar">
             <img class="big_header" src="<?php echo getUserAvatar($user['avatar_file_name'], 80); ?>" alt="" />
-            <button style="display:none" class="change" id="changeavatar">Change...</button>
+            <button style="display:none;" class="change" id="changeavatar">Change...</button>
 
-            <!-- upload avatar windows -->
-            <!-- div id="upload_avatar_window" class="upload_avatar_dialog" style="display:none;">
+            <!-- upload avatar windows
+            <div id="upload_avatar_window" class="upload_avatar_dialog" style="display:none;">
                 <div class="titles">
                     <p class="l"><a href="javascript:void(0);" id="close_upload_avatar_window_btn">Close Window</a></p>
                     <p class="r">Portrait</p>
@@ -46,8 +46,8 @@
                         </div>
                     </div>
                 </div>
-            </div -->
-            <!-- upload avatar windows -->
+            </div>
+            upload avatar windows -->
 
         </div>
         <div class="u_con">
@@ -66,7 +66,7 @@
                             $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
                     ?>
                     <p>
-                    
+
                         <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
                         <b><span class="id_name"><?php echo $identity["name"];?></span>
                         <em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>

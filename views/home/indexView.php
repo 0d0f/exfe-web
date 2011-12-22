@@ -1,6 +1,6 @@
 <?php include "share/header.php" ?>
     <link type="text/css" rel="stylesheet" href="/static/css/home.css" />
-    <script type="text/javascript">
+    <script>
         var pageFlag = "home_page";
     </script>
 </head>
@@ -16,7 +16,7 @@
     <img id="pre_load_btn" style="display:none;" />
     <img id="pre_load_icons" style="display:none;" />
 </body>
-<script type="text/javascript">
+<script>
 jQuery(document).ready(function() {
     document.title = 'EXFE';
     var winSize = odof.util.getWindowSize();

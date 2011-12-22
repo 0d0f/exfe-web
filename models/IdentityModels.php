@@ -267,9 +267,11 @@ class IdentityModels extends DataModel{
     }
     //check user password
     public function checkUserPassword($userid, $password){
-        $password = md5($password.$this->salt);
-        $sql="SELECT encrypted_password FROM users WHERE id={$userid} LIMIT 1";
+        //$password = md5($password.$this->salt);
+        $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
         $row=$this->getRow($sql);
+
+        $password=md5($password.$row["password_salt"]);
         if($row["encrypted_password"] == $password){
             return true;
         }
@@ -277,18 +279,16 @@ class IdentityModels extends DataModel{
     }
     //update user password
     public function updateUserPassword($userid, $password){
-        $password=md5($password.$this->salt);
-        $sql="UPDATE users SET encrypted_password='{$password}' WHERE id={$userid}";
+        //$password=md5($password.$this->salt);
+        $passwordSalt = md5(createToken());
+        $password=md5($password.$passwordSalt);
+        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
         $this->query($sql);
     }
 
-    public function login($identity,$password,$setcookie=false)
+    public function login($identity,$password,$setcookie=false, $password_hashed=false)
     {
-        $password = md5($password.$this->salt);
-        return $this->loginAsHashPassword($identity, $password, $setcookie);
-    }
-
-    public function loginAsHashPassword($identity,$password,$setcookie=false){
+        //$password = md5($password.$this->salt);
         $sql="select * from identities where external_identity='$identity' limit 1";
 #update last_sign_in_at,last_sign_in_ip...
         $identityrow=$this->getRow($sql);
@@ -301,8 +301,14 @@ class IdentityModels extends DataModel{
             if(intval($row["userid"])>0)
             {
                 $userid=intval($row["userid"]);
-                $sql="select encrypted_password,name,avatar_file_name from users where id=$userid";
+
+
+                $sql="select encrypted_password,password_salt,name,avatar_file_name from users where id=$userid";
                 $row=$this->getRow($sql);
+                if(!$password_hashed){
+                    $password=md5($password.$row["password_salt"]);
+                }
+
                 if($row["encrypted_password"]==$password)
                 {
                     $this->loginByIdentityId( $identity_id,$userid,$identity,$row,$identityrow,"password",$setcookie);

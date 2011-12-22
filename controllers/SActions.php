@@ -711,8 +711,9 @@ class SActions extends ActionController
                 $userid = $Data->AddUser($password);
                 $identityData = $this->getModelByName("identity");
                 $provider= $_POST["provider"];
-                if($provider=="")
+                if($provider==""){
                     $provider="email";
+                }
                 $identity_id=$identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
@@ -1026,7 +1027,7 @@ class SActions extends ActionController
 
             if($result["status"] == "ok"){
                 if($result["need_set_pwd"] == "no") {
-                    $identityHandler->loginAsHashPassword($result["identity"], $result["password"], "true");
+                    $identityHandler->login($result["identity"], $result["password"], true, true);
                 }
                 unset($result["password"]);
                 $this->setVar("identityInfo", $result);
