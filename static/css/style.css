@@ -2,8 +2,6 @@
 
 
 /*header*/
-#content{width:880px;margin: auto;}
-#content_x{width:880px;margin: 20px auto;}
 #content:after { content: ".";display: block;height: 0;clear: both;visibility: hidden;}
 #index{width:800px;margin:0 auto;padding:30px 0;}
 

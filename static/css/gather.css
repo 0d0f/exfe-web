@@ -1,2 +1,12 @@
 @charset "UTF-8";
 /* by Leask */
+
+#content {
+    width: 880px;
+    margin: auto;
+}
+
+#gather_form {
+    margin: 40px auto;
+}
+

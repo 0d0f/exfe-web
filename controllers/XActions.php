@@ -247,127 +247,120 @@ class XActions extends ActionController
     // 此参数setVar供view中使用
     public function doIndex()
     {
-        $identity_id=0;
-        $identityData=$this->getModelByName("identity");
-        $base62_cross_id = $_GET["id"];
-        $cross_id=base62_to_int($base62_cross_id);
-        $token=$_GET["token"];
+        // init models
+        $modIdentity   = $this->getModelByName('identity');
+        $modUser       = $this->getModelByName('user');
+        $modPlace      = $this->getModelByName('place');
+        $modInvitation = $this->getModelByName('invitation');
+        $modConversion = $this->getModelByName('conversation');
+        $modData       = $this->getModelByName('x');
 
-        $checkhelper=$this->getHelperByName("check");
-        $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>$token));
-        if ($check["allow"] == "false") {
-            $referer_uri = SITE_URL."/!".$base62_cross_id;
-            header('Location: /x/forbidden?s='.urlencode($referer_uri).'&x='.$cross_id);
+        // init helper
+        $hlpCheck      = $this->getHelperByName('check');
+
+        $identity_id = 0;
+        $base62_cross_id = $_GET['id'];
+        $cross_id = base62_to_int($base62_cross_id);
+        $token = $_GET['token'];
+
+        $check = $hlpCheck->isAllow(
+            'x',
+            'index',
+            array('cross_id' => $cross_id, 'token' => $token)
+        );
+        if ($check['allow'] === 'false') {
+            $referer_uri = SITE_URL . "/!{$base62_cross_id}";
+            header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
             exit(0);
         }
-        if($check["type"]=="token")
-        {
-            $identity_id=$identityData->loginWithXToken($cross_id, $token);
-
-            $identityData=$this->getModelByName("user");
-            $user=$identityData->getUserByIdentityId($identity_id);
-
-            if(intval($user)==0)
-            {
-                $identityData->addUserByToken($cross_id,"","",$token);
+        if ($check['type'] === 'token') {
+            $identity_id  = $modIdentity->loginWithXToken($cross_id, $token);
+            $user = $modUser->getUserByIdentityId($identity_id);
+            if (intval($user) === 0) {
+                $modUser->addUserByToken($cross_id, '', '', $token);
             }
-
-            if($_SESSION["identity_id"]==$identity_id)
-            {
-                $check["type"]="session";
-
-                $identityData=$this->getModelByName("identity");
-                $status=$identityData->checkIdentityStatus($identity_id);
-                if($status!=STATUS_CONNECTED)
-                {
-                    $identityData->setRelation($identity_id,STATUS_CONNECTED);
+            if ($_SESSION['identity_id'] === $identity_id) {
+                $check['type'] = 'session';
+                $status        = $modIdentity->checkIdentityStatus($identity_id);
+                if ($status !== STATUS_CONNECTED) {
+                    $modIdentity->setRelation($identity_id, STATUS_CONNECTED);
                 }
-                header('Location: /!'.$_GET["id"]);
+                header("Location: /!{$_GET['id']}");
             }
-        } else if($check["type"]=="session" || $check["type"]=="cookie"){
-            $identity_id=$_SESSION["identity_id"];
+        } else if ($check['type'] === 'session' || $check['type'] === 'cookie') {
+            $identity_id = $_SESSION['identity_id'];
         }
-        $showlogin="";
-        if($check["type"]=="token")
-        {
-            $this->setVar("login_type", "token");
-            if(trim($user["encrypted_password"])=="")
-                $showlogin= "setpassword";
-            else //if($identity_id!=$_SESSION["identity_id"])
-                $showlogin= "login";
-
-            $identityData=$this->getModelByName("user");
-            $user=$identityData->getUserByIdentityId($identity_id);
-            if($_SESSION["tokenIdentity"]["token_expired"]=="true"){
-                $this->setVar("token_expired", "true");
+        $showlogin = '';
+        if ($check['type'] === 'token') {
+            $this->setVar('login_type', 'token');
+            if (trim($user['encrypted_password']) === '') {
+                $showlogin = 'setpassword';
+            } else { // if ($identity_id !== $_SESSION['identity_id'])
+                $showlogin = 'login';
+            }
+            $user = $modUser->getUserByIdentityId($identity_id);
+            if ($_SESSION['tokenIdentity']['token_expired'] === 'true') {
+                $this->setVar('token_expired', 'true');
             }
         }
-        $this->setVar("showlogin", $showlogin);
-        $this->setVar("token", $_GET["token"]);
+        $this->setVar('showlogin', $showlogin);
+        $this->setVar('token', $_GET['token']);
 
-        $Data=$this->getModelByName("x");
-        $cross=$Data->getCross(base62_to_int($_GET["id"]));
-        $cross["title"] = htmlspecialchars($cross["title"]);
-        $cross["description"] = $cross["description"];
+        $cross = $modData->getCross(base62_to_int($_GET['id']));
+        $cross['title'] = htmlspecialchars($cross['title']);
+        $cross['description'] = $cross['description'];
 
-        if($cross) {
-            $place_id=$cross["place_id"];
-            $cross_id=$cross["id"];
-            if(intval($place_id)>0)
-            {
-                $placeData=$this->getModelByName("place");
-                $place=$placeData->getPlace($place_id);
-                $place["line1"]=htmlspecialchars($place["line1"]);
-                $place["line2"]=htmlspecialchars($place["line2"]);
-                $cross["place"]=$place;
+        if ($cross) {
+            $place_id = $cross['place_id'];
+            $cross_id = $cross['id'];
+            if (intval($place_id) > 0) {
+                $place = $modPlace->getPlace($place_id);
+                $place['line1'] = htmlspecialchars($place['line1']);
+                $place['line2'] = htmlspecialchars($place['line2']);
+                $cross['place'] = $place;
             }
-            $invitationData=$this->getModelByName("invitation");
-            $invitations=$invitationData->getInvitation_Identities($cross_id);
-            $identityData=$this->getModelByName("identity");
+            $invitations = $modInvitation->getInvitation_Identities($cross_id);
 
-            if(intval($_SESSION["userid"])>0)
-            {
-                $userData = $this->getModelByName("user");
-                $user=$userData->getUser($_SESSION["userid"]);
-                $this->setVar("user", $user);
-
-                $myidentities=$identityData->getIdentitiesIdsByUser($_SESSION["userid"]);
+            if (intval($_SESSION['userid']) > 0) {
+                $user = $modUser->getUser($_SESSION['userid']);
+                $this->setVar('user', $user);
+                $myidentities = $modIdentity->getIdentitiesIdsByUser($_SESSION['userid']);
             } else {
-                $myidentities=array($identity_id);
+                $myidentities = array($identity_id);
             }
-            $myidentity=$identityData->getIdentityById($identity_id);
+            $myidentity = $modIdentity->getIdentityById($identity_id);
 
-            $humanMyIdentity=humanIdentity($myidentity,$user);
-            $this->setVar("myidentity", $humanMyIdentity);
+            $humanMyIdentity = humanIdentity($myidentity, $user);
+            $this->setVar('myidentity', $humanMyIdentity);
 
-            $host_exfee=array();
-            $normal_exfee=array();
+            $host_exfee   = array();
+            $normal_exfee = array();
 
-            if($invitations)
-                foreach ($invitations as $invitation)
-                {
-                    if(in_array($invitation["identity_id"],$myidentities)==true)
-                    {
-                        $this->setVar("myrsvp",$invitation["state"]);
-                        if(intval($invitation["state"])>0)
-                            $this->setVar("interested","yes");
+            if ($invitations) {
+                foreach ($invitations as $invitation) {
+                    if (in_array($invitation['identity_id'], $myidentities) === true) {
+                        $this->setVar('myrsvp', $invitation['state']);
+                        if (intval($invitation['state']) > 0) {
+                            $this->setVar('interested', 'yes');
+                        }
                     }
-                    //$invitation["identity_id"]
-                    // $invitation["state"];
-                    if ($invitation["identity_id"]==$cross["host_id"])
-                        array_push($host_exfee,$invitation);
-                    else
-                        array_push($normal_exfee,$invitation);
+                    // $invitation['identity_id']
+                    // $invitation['state'];
+                    if ($invitation['identity_id'] === $cross['host_id']) {
+                        array_push($host_exfee, $invitation);
+                    } else {
+                        array_push($normal_exfee, $invitation);
+                    }
                 }
+            }
 
-            $cross["host_exfee"]=$host_exfee;
-            $cross["normal_exfee"]=$normal_exfee;
+            $cross['host_exfee'] = $host_exfee;
+            $cross['normal_exfee'] = $normal_exfee;
 
-            $ConversionData=$this->getModelByName("conversation");
-            $conversationPosts=$ConversionData->getConversation(base62_to_int($_GET["id"]),'cross');
-            $cross["conversation"]=$conversationPosts;
+            $conversationPosts = $modConversion->getConversation(base62_to_int($_GET['id']), 'cross');
+            $cross['conversation'] = $conversationPosts;
 
-            $this->setVar("cross", $cross);
+            $this->setVar('cross', $cross);
             $this->displayView();
         }
     }

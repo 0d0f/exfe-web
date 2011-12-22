@@ -4,6 +4,62 @@
  * @CopyRights:     http://www.exfe.com
 **/
 
+var moduleNameSpace = 'odof.cross.render';
+var ns = odof.util.initNameSpace(moduleNameSpace);
+
+(function(ns)
+{
+
+    ns.x = {};
+
+    ns.crossHtml = '<div id="x_title_area">'
+                 +     '<h2 id="x_title" class="x_title_normal"></h2>'
+                 +     '<input id="x_title_edit" style="display:none;">'
+                 + '</div>'
+                 + '<div id="x_desc_area">'
+                 +     '<div id="x_desc"></div>'
+                 +     '<textarea id="x_desc_edit" style="display:none;"></textarea>'
+                 +     '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
+                 + '</div>'
+                 + '<div id="x_rsvp_area">'
+                 +     '<span id="x_rsvp_msg">'
+                 +         'Your RSVP is "<span id="x_rsvp_status"></span>".'
+                 +     '</span>'
+                 +     '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
+                 +     '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
+                 +     '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
+                 +     '<a id="x_rsvp_change" href="javascript:void(0);">Change?</a>'
+                 + '</div>'
+                 + '<div id="x_conversation_area">'
+                 +     '<h3>Conversation</h3>'
+                 +     '<div id="x_conversation_input_area">'
+                 +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
+                 +         '<textarea id="x_conversation_input"></textarea>'
+                 +         '<input id="x_conversation_submit" type="button" title="Say!">'
+                 +     '</div>'
+                 +     '<ol id="x_conversation_list"></ol>'
+                 + '</div>'
+                 + '<div id="x_time_area">'
+                 +     '<h3   id="x_time_relative"></h3>'
+                 +     '<span id="x_time_absolute"></span>'
+                 + '</div>'
+                 + '<div id="x_place_area">'
+                 +     '<h3   id="x_place_line1"></h3>'
+                 +     '<span id="x_place_line2"></span>'
+                 + '</div>'
+                 + '<div id="x_exfee_area"></div>';
+
+    ns.show = function(id, objX)
+    {
+        this.x = objX;
+        $('#' + id).html(this.crossHtml);
+
+    };
+
+})(ns);
+
+
+
 var moduleNameSpace = "odof.cross.index";
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
@@ -115,8 +171,10 @@ var clickCallBackFunc = function(args){
 })(ns);
 
 
-$(document).ready(function() {
 
+
+$(document).ready(function() {
+return;
     odof.cross.index.cross_id     = cross_id;
     odof.cross.index.token        = token;
     odof.cross.index.location_uri = location_uri;

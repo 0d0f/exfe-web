@@ -1,2 +1,7 @@
 @charset "UTF-8";
 /* by Leask */
+
+#content {
+    width: 880px;
+    margin: auto;
+}

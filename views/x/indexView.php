@@ -1,11 +1,11 @@
 <?php
-    $page='cross';
+    $page = 'cross';
     include 'share/header.php';
 ?>
 <script src="/static/js/libs/showdown.js"></script>
 <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
-<script src="/static/js/apps/cross.js"></script>
-<script src="/static/js/apps/CrossEdit.js"></script>
+<script src="/static/js/apps/x.js"></script>
+<script src="/static/js/apps/xedit.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet">
 <script src="/static/js/exlibs/excal/excal.js"></script>
@@ -97,6 +97,14 @@
     $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]),intval($cross["time_type"]));
     $token=$_GET["token"];
 ?>
+<div id="content">
+    <div id="x_view"></div>
+</div>
+
+
+
+
+//////////////////////////////////////////////////
 <div class="cross_view_centerbg">
     <div id="edit_cross_bar" style="display:none;">
         <div id='edit_cross_submit_loading' style="display:none;"></div>
@@ -314,5 +322,8 @@
         </div>
     </div>
 </div>
+//////////////////////////////////////////////////
+
+
 </body>
 </html>
