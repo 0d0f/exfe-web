@@ -3,6 +3,7 @@ require_once dirname(dirname(__FILE__))."/lib/OAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/FacebookOAuth.php";
 class OAuthActions extends ActionController {
+
     public function doIndex() {
         header("location:/s/login");
     }
@@ -45,7 +46,7 @@ class OAuthActions extends ActionController {
             header('Location: /oAuth/clearTwitterSessions');
         }
     }
-    public Function doLoginWithTwitter(){
+    public function doLoginWithTwitter() {
         if (empty($_SESSION['access_token']) ||
             empty($_SESSION['access_token']['oauth_token']) ||
             empty($_SESSION['access_token']['oauth_token_secret'])
