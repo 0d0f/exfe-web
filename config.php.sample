@@ -18,6 +18,7 @@ define('INTL_RESOURCES', '/Users/huoju/www/exfe/intl');
 
 define("EmailPost_Key","589895idklf873iu3D1kkjdkja");
 define("EXFE_PUB_KEY","h_#%2)a^n!@7d@a0*o!l&i)a%n#@g&*2");
+define("EXFE_PASSWORD_SALT","f(#)u&^c!k*G@F%W81_&0=ro-ifl+c");
 
 /*********OAuth config***********/
 define('TWITTER_CONSUMER_KEY', 'nCjPcQsjbQAh6NavknHHw');

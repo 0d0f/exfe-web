@@ -270,8 +270,14 @@ class IdentityModels extends DataModel{
         //$password = md5($password.$this->salt);
         $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
         $row=$this->getRow($sql);
+        $passwordSalt = $row["password_salt"];
+        if($passwordSalt == $this->salt){
+            $password=md5($password.$this->salt);
+        }else{
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        }
 
-        $password=md5($password.$row["password_salt"]);
+
         if($row["encrypted_password"] == $password){
             return true;
         }
@@ -281,7 +287,7 @@ class IdentityModels extends DataModel{
     public function updateUserPassword($userid, $password){
         //$password=md5($password.$this->salt);
         $passwordSalt = md5(createToken());
-        $password=md5($password.$passwordSalt);
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
         $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
         $this->query($sql);
     }
@@ -302,11 +308,15 @@ class IdentityModels extends DataModel{
             {
                 $userid=intval($row["userid"]);
 
-
                 $sql="select encrypted_password,password_salt,name,avatar_file_name from users where id=$userid";
                 $row=$this->getRow($sql);
                 if(!$password_hashed){
-                    $password=md5($password.$row["password_salt"]);
+                    $passwordSalt = $row["password_salt"];
+                    if($passwordSalt == $this->salt){
+                        $password=md5($password.$this->salt);
+                    }else{
+                        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+                    }
                 }
 
                 if($row["encrypted_password"]==$password)
