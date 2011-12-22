@@ -6,7 +6,7 @@ class UserModels extends DataModel{
     public function addUser($password)
     {
         $passwordSalt = md5(createToken());
-        $password=md5($password.$passwordSalt);
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
         $time=time();
         $sql="INSERT INTO users (encrypted_password, password_salt, created_at) VALUES ('{$password}','{$passwordSalt}',FROM_UNIXTIME($time));";
         $result=$this->query($sql);
@@ -104,7 +104,11 @@ class UserModels extends DataModel{
             $sql = "SELECT password_salt FROM users WHERE id={$uid}";
             $result = $this->getRow($sql);
             $passwordSalt = $result["password_salt"];
-            $password=md5($password.$passwordSalt);
+            if($passwordSalt == $this->salt){
+                $password=md5($password.$this->salt);
+            }else{
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+            }
 
             $sql="select id,auth_token from users where id=$uid and encrypted_password='$password'";
             $row=$this->getRow($sql);
@@ -168,16 +172,15 @@ class UserModels extends DataModel{
         {
             $userid=intval($result["userid"]);
 
-            $sql = "SELECT password_salt FROM users WHERE id={$userid}";
-            $result = $this->getRow($sql);
-            $passwordSalt = $result["password_salt"];
-            $password=md5($password.$passwordSalt);
+            $passwordSalt = md5(createToken());
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
             //$password=md5($password.$this->salt);
-            $sql="update users set encrypted_password ='$password',name='$displayname' where id=$userid;";
+            $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}',name='{$displayname}' WHERE id={$userid}";
             $result=$this->query($sql);
             if($result==1)
             {
-                $sql="update identities set name='$displayname' where id=$identity_id";
+                $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
                 $result=$this->query($sql);
                 return true;
             }
@@ -200,7 +203,7 @@ class UserModels extends DataModel{
                 return array("uid"=>intval($result["userid"]),"identity_id"=>$identity_id);
             } else {
                 $passwordSalt = md5(createToken());
-                $password=md5($password.$passwordSalt);
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
 
                 $time=time();
                 $sql="INSERT INTO users (encrypted_password,password_salt,name,created_at) VALUES ('{$password}','{$passwordSalt}','{$displayname}',FROM_UNIXTIME($time));";
@@ -250,12 +253,10 @@ class UserModels extends DataModel{
             {
                 $userid=intval($result["userid"]);
 
-                $sql = "SELECT password_salt FROM users WHERE id={$userid}";
-                $result = $this->getRow($sql);
-                $passwordSalt = $result["password_salt"];
-                $password=md5($password.$passwordSalt);
+                $passwordSalt = md5(createToken());
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
                 //$password=md5($password.$this->salt);
-                $sql="update users set encrypted_password ='$password',name='$displayname' where id=$userid;";
+                $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}', name='{$displayname}' WHERE id={$userid}";
                 $result=$this->query($sql);
                 if($result==1)
                 {
@@ -396,7 +397,7 @@ class UserModels extends DataModel{
         }
 
         $passwordSalt = md5(createToken());
-        $passWord=md5($userPwd.$passwordSalt);
+        $passWord=md5($userPwd.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
 
         $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $result = $this->query($sql);
