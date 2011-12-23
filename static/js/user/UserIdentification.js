@@ -118,10 +118,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='displayname_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li><label class='title'>Password:</label>"
-                 + "<input type='password' id='identification_pwd' name='password' class='inputText' style='display:none;' />"
-                 + "<input type='text' id='identification_pwd_a' class='inputText' />"
+                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<input type='hidden' id='identification_user_token' value='' />"
-                 + "<em class='ic2' id='identification_pwd_ic'></em>"
+                 + "<em class='ic3' id='identification_pwd_ic'></em>"
                  + "</li>"
                  /*
                  + "<li id='identification_repwd_li' style='display:none;'>"

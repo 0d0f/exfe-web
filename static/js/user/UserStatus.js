@@ -101,7 +101,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //去掉Re-type
         //odof.comm.func.initRePassword("identification_pwd", "identification_repwd");
-        odof.comm.func.displayPassword("identification_pwd");
+
+        jQuery("#identification_pwd_ic").click(function(){
+            odof.comm.func.displayPassword("identification_pwd");
+        });
 
         //默认为重置密码。
         if(typeof actions == "undefined"){
@@ -140,7 +143,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 showWarning();
             }
         }
-
 
         jQuery("#reset_pwd_form").submit(function(){
             var userPassword = jQuery("#identification_pwd").val();
