@@ -135,7 +135,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         while (!$(objEvent).hasClass('autocomplete_item')) {
             objEvent = objEvent.parentNode;
         }
-        var domId    = objEvent.id,
+        var domId    = objEvent.parentNode.parentNode.id.split('_')[0],
             identity = $(objEvent).attr('identity');
         if (!identity) {
             return;
@@ -315,6 +315,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.ajaxIdentity = function(identities)
     {
         for (var i in identities) {
+            if (typeof identities[i].external_identity !== 'undefined') {
+                identities[i] = {id   : identities[i].external_identity,
+                                 name : identities[i].name,
+                                 type : 'email'};
+            }
             if (typeof this.exfeeIdentified[identities[i].id.toLowerCase()]
             !== 'undefined') {
                 delete identities[i];
