@@ -337,25 +337,19 @@ class XActions extends ActionController
             $normal_exfee = array();
 
             if ($invitations) {
-                foreach ($invitations as $invitation) {
-                    if (in_array($invitation['identity_id'], $myidentities) === true) {
+                foreach ($invitations as $idx => $invitation) {
+                    if (in_array($invitation['identity_id'], $myidentities)) {
                         $this->setVar('myrsvp', $invitation['state']);
                         if (intval($invitation['state']) > 0) {
                             $this->setVar('interested', 'yes');
                         }
                     }
-                    // $invitation['identity_id']
-                    // $invitation['state'];
-                    if ($invitation['identity_id'] === $cross['host_id']) {
-                        array_push($host_exfee, $invitation);
-                    } else {
-                        array_push($normal_exfee, $invitation);
-                    }
+                    unset($invitations[$idx]['token']);
+                    $invitations[$idx]['host'] = $invitation['identity_id'] === $cross['host_id'];
                 }
             }
 
-            $cross['host_exfee'] = $host_exfee;
-            $cross['normal_exfee'] = $normal_exfee;
+            $cross['exfee'] = $invitations;
 
             $conversationPosts = $modConversion->getConversation(base62_to_int($_GET['id']), 'cross');
             $cross['conversation'] = $conversationPosts;

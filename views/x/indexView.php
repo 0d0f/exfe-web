@@ -15,17 +15,19 @@
 <?php
     include 'share/nav.php';
 
-    $cross=$this->getVar("cross");
-    $user=$this->getVar("user");
-    $myidentity=$this->getVar("myidentity");
-    $myrsvp=$this->getVar("myrsvp");
 
-    $token_expired=$this->getVar("token_expired");
-    if ($token_expired=="") {
-        $token_expired="false";
+    $cross      = $this->getVar('cross');
+ // $user       = $this->getVar('user');
+    $myrsvp     = $this->getVar('myrsvp');
+
+
+    // handle login box
+    $myidentity    = $this->getVar('myidentity');
+    $token_expired = $this->getVar('token_expired');
+    if ($token_expired === '') {
+        $token_expired = 'false';
     }
-    $login_type=$this->getVar("login_type");
-
+    $login_type = $this->getVar('login_type');
     echo "<script>\r\n"
        . "var external_identity='".$myidentity["external_identity"]."';\r\n"
        . "var cross_id=".$cross["id"].";\r\n"
@@ -40,6 +42,15 @@
        . "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n"
        . "</script>\r\n";
 
+
+    // ready cross data
+    echo '<script>'
+       . 'var crossData = ' . json_encode($cross) . ','
+       .     "myrsvp    = {$myrsvp};"
+       . '</script>';
+
+return;
+    // format
     include_once "lib/markdown.php";
     $original_desc_str = $cross["description"];
 
@@ -104,8 +115,8 @@
 
 
 
-//////////////////////////////////////////////////
-<div class="cross_view_centerbg">
+
+<!--div class="cross_view_centerbg">
     <div id="edit_cross_bar" style="display:none;">
         <div id='edit_cross_submit_loading' style="display:none;"></div>
         <p class="titles">Editing <span>X</span></p>
@@ -321,8 +332,8 @@
             </div>
         </div>
     </div>
-</div>
-//////////////////////////////////////////////////
+</div-->
+
 
 
 </body>
