@@ -64,11 +64,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<div class='identity_box'>"
-                 + "<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' />"
+                 + "<input id='identity' name='identity' type='text' class='inputText' autocomplete='off' disableautocomplete='' />"
+                 + "</div>"
+                 + "<div class='account_hint_list' id='account_hint_list' style='display:none;'>"
+                 + "<ul>"
+                 + "<li class='facebook'><span id='fb_name'></span>@Facebook</li>"
+                 + "<li class='twitter'><span id='tw_name'></span>@Twitter</li>"
+                 + "<li class='google'><span id='gg_name'></span>@gmail.com</li>"
+                 + "</ul>"
                  + "</div>"
                  + "<div id='identity_dbox'>Your email here</div>"
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<em class='delete' id='delete_identity' style='display:none;'></em>"
+                 + "<img class='avatar' id='user_avatar' style='display:none;' src='' />"
                  + "</li>"
                  + "<li id='displayname' style='display:none'>"
                  + "<label class='title' style='color:#CC3333'>Display name:</label>"
@@ -429,6 +437,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#forgot_password').hide();
                             jQuery('#logincheck').hide();
                             jQuery('#login_hint').hide();
+                            jQuery("#user_avatar").hide();
                             //注册对话框中的start over button
                             jQuery('#startover').show();
                             jQuery('#startover').bind('click', function(){
@@ -457,6 +466,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             if(data.response.status == "verifying"){
                                 ns.showManualVerificationDialog();
                             }else{
+                                if(typeof data.response.avatar != "undefined" && data.response.avatar != ""){
+                                    jQuery("#user_avatar").show();
+                                    jQuery("#user_avatar")[0].src=odof.comm.func.getUserAvatar(data.response.avatar,80,img_url);
+                                }else{
+                                    jQuery("#user_avatar").hide();
+                                }
                                 ns.showLoginDialog();
                             }
                         }
@@ -495,6 +510,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery(this).doTimeout('typing', 250, function(){
                     ns.identityInputBoxActions();
                 });
+            });
+            */
+            /*
+            jQuery('#identity').keyup(function() {
+                var currentIdentity = jQuery('#identity').val();
+                if(currentIdentity == ""){
+                    jQuery("#account_hint_list").hide();
+                }else{
+                    if(currentIdentity.indexOf("@") < 0){
+                        jQuery("#account_hint_list").show();
+                        jQuery("#fb_name,#gg_name").html(currentIdentity);
+                        jQuery("#tw_name").html("@"+currentIdentity);
+                    }else{
+                        jQuery("#account_hint_list").hide();
+                    }
+                }
             });
             */
             window.setInterval(function(){

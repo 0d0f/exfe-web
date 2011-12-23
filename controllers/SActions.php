@@ -452,16 +452,19 @@ class SActions extends ActionController
         //TODO: private API ,must check session
         $identity=$_GET["identity"];
         $identityData = $this->getModelByName("identity");
-        $exist=$identityData->ifIdentityExist($identity);
+        $result = $identityData->ifIdentityExist($identity);
 
         $responobj["meta"]["code"]=200;
         //$responobj["meta"]["errType"]="Bad Request";
         //$responobj["meta"]["errorDetail"]="invalid_auth";
 
-        if($exist!==FALSE)
+        if($result !== false)
         {
-            if(intval($exist["status"])==3){
+            if(intval($result["status"]) == 3){
                 $responobj["response"]["status"]="connected";
+                if(array_key_exists("user_avatar", $result)){
+                    $responobj["response"]["avatar"]=trim($result["user_avatar"]);
+                }
             }else{
                 $responobj["response"]["status"]="verifying";
             }

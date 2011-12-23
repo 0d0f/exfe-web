@@ -356,7 +356,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         //show last login identity
-        ns.showLastIdentity();
+        //ns.showLastIdentity();
 
         //如果传入了identity，那么要检测是注册还是登录。
         if(typeof userIdentity != "undefined" && userIdentity != null){
@@ -485,6 +485,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 })(ns);
 
 jQuery(document).ready(function(){
-    //odof.user.status.doShowLoginDialog();
-    odof.user.status.checkUserLogin();
+    odof.user.status.doShowLoginDialog();
+    //odof.user.status.checkUserLogin();
 });
