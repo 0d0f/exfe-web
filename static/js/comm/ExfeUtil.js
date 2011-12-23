@@ -1134,8 +1134,9 @@ var odof = {
 
 
     /**
-     * get relative time
+     * get human datetime
      * by Leask
+     * @todo apply this function while rendering the X!!!
      */
     util.getHumanDateTime = function(timestamp, time_type, lang)
     {

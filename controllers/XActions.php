@@ -317,8 +317,11 @@ class XActions extends ActionController
                 $place = $modPlace->getPlace($place_id);
                 $place['line1'] = htmlspecialchars($place['line1']);
                 $place['line2'] = htmlspecialchars($place['line2']);
-                $cross['place'] = $place;
+            } else {
+                $place['line1'] = '';
+                $place['line2'] = '';
             }
+            $cross['place'] = $place;
             $invitations = $modInvitation->getInvitation_Identities($cross_id);
 
             if (intval($_SESSION['userid']) > 0) {

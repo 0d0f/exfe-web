@@ -760,10 +760,42 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 $(document).ready(function()
 {
-    odof.cross.render.show('x_view', {});
+    odof.cross.render.show();
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////
 jQuery(document).ready(function() {
 return;
     jQuery("#edit_icon").bind("click",function() {

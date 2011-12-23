@@ -10,7 +10,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns)
 {
 
-    ns.x = {};
+    ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
     ns.crossHtml = '<div id="x_title_area">'
                  +     '<h2 id="x_title" class="x_title_normal"></h2>'
@@ -49,14 +49,94 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + '</div>'
                  + '<div id="x_exfee_area"></div>';
 
-    ns.show = function(id, objX)
-    {
-        this.x = objX;
-        $('#' + id).html(this.crossHtml);
 
+    ns.showTime = function()
+    {
+        $('#x_time_relative').html(odof.util.getRelativeTime(
+            Date.parse(odof.util.getDateFromString(crossData.begin_at)) / 1000
+        ));
+        $('#x_time_absolute').html(crossData.begin_at);
+    };
+
+
+    ns.showPlace = function()
+    {
+        $('#x_place_line1').html(crossData.place.line1);
+        $('#x_place_line2').html(crossData.place.line2);
+    };
+
+
+    ns.showConversation = function()
+    {
+        var strMessage = '';
+        for (var i in crossData.conversation) {
+            strMessage += this.makeMessage(crossData.conversation[i]);
+        }
+        $('#x_conversation_list').html(strMessage);
+    };
+
+
+    ns.makeMessage = function(objItem)
+    {
+        return '<li>'
+             +     '<p class="x_conversation_avatar">'
+             +         '<img src="' + odof.comm.func.getUserAvatar(
+                       objItem.identity.avatar_file_name, 80, img_url) + '">'
+             +     '</p>'
+             +     '<p class="x_conversation_message">'
+             +         '<span class="x_conversation_identity">'
+             +             objItem.identity.name + ':'
+             +         '</span>'
+             +         '<span class="x_conversation_content">'
+             +             objItem.content
+             +         '</span>'
+             +     '</p>'
+             +     '<p class="x_conversation_time">'
+             +         odof.util.getRelativeTime(Date.parse(
+                           odof.util.getDateFromString(objItem.created_at)
+                       ) / 1000)
+             +     '</p>'
+             + '</li>';
+    };
+
+
+    ns.show = function()
+    {
+        $('#x_view').html(this.crossHtml);
+        $('#x_title').html(crossData.title);
+        $('#x_desc').html(crossData.description);
+        if (myrsvp) {
+            $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
+            $('#x_rsvp_msg').show();
+            $('#x_rsvp_yes').hide();
+            $('#x_rsvp_no').hide();
+            $('#x_rsvp_maybe').hide();
+            $('#x_rsvp_change').show();
+        } else {
+            $('#x_rsvp_msg').hide();
+            $('#x_rsvp_yes').show();
+            $('#x_rsvp_no').show();
+            $('#x_rsvp_maybe').show();
+            $('#x_rsvp_change').hide();
+        }
+        this.showTime();
+        this.showPlace();
+        this.showConversation();
     };
 
 })(ns);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

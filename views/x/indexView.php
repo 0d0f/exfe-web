@@ -16,9 +16,9 @@
     include 'share/nav.php';
 
 
-    $cross      = $this->getVar('cross');
- // $user       = $this->getVar('user');
-    $myrsvp     = $this->getVar('myrsvp');
+    $cross  = $this->getVar('cross');
+ // $user   = $this->getVar('user');
+    $myrsvp = intval($this->getVar('myrsvp'));
 
 
     // handle login box
@@ -36,7 +36,7 @@
        . "var login_type='".$login_type."'; \r\n"
        . "var token_expired='".$token_expired."'; \r\n"
     // . "var token_expired='true'; \r\n"
-       . "var myrsvp=".intval($myrsvp)."; \r\n"
+       . "var myrsvp=".$myrsvp."; \r\n"
        . "var token='".$_GET["token"]."'; \r\n"
        . "var id_name='".$global_name."'; \r\n"
        . "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n"
@@ -49,7 +49,9 @@
        .     "myrsvp    = {$myrsvp};"
        . '</script>';
 
-return;
+
+
+if(0) {
     // format
     include_once "lib/markdown.php";
     $original_desc_str = $cross["description"];
@@ -107,6 +109,7 @@ return;
     $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
     $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]),intval($cross["time_type"]));
     $token=$_GET["token"];
+}
 ?>
 <div id="content">
     <div id="x_view"></div>
