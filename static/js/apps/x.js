@@ -16,38 +16,58 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  +     '<h2 id="x_title" class="x_title_normal"></h2>'
                  +     '<input id="x_title_edit" style="display:none;">'
                  + '</div>'
-                 + '<div id="x_desc_area">'
-                 +     '<div id="x_desc"></div>'
-                 +     '<textarea id="x_desc_edit" style="display:none;"></textarea>'
-                 +     '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
-                 + '</div>'
-                 + '<div id="x_rsvp_area">'
-                 +     '<span id="x_rsvp_msg">'
-                 +         'Your RSVP is "<span id="x_rsvp_status"></span>".'
-                 +     '</span>'
-                 +     '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
-                 +     '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
-                 +     '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
-                 +     '<a id="x_rsvp_change" href="javascript:void(0);">Change?</a>'
-                 + '</div>'
-                 + '<div id="x_conversation_area">'
-                 +     '<h3>Conversation</h3>'
-                 +     '<div id="x_conversation_input_area">'
-                 +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
-                 +         '<textarea id="x_conversation_input"></textarea>'
-                 +         '<input id="x_conversation_submit" type="button" title="Say!">'
+                 + '<div id="x_content" class="cleanup">'
+                 +     '<div id="x_mainarea">'
+                 +         '<div id="x_desc_area">'
+                 +             '<div id="x_desc"></div>'
+                 +             '<textarea id="x_desc_edit" style="display:none;"></textarea>'
+                 +             '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
+                 +         '</div>'
+                 +         '<div id="x_rsvp_area">'
+                 +             '<span id="x_rsvp_msg">'
+                 +                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
+                 +             '</span>'
+                 +             '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
+                 +             '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
+                 +             '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
+                 +             '<a id="x_rsvp_change" href="javascript:void(0);">Change?</a>'
+                 +         '</div>'
+                 +         '<div id="x_conversation_area">'
+                 +             '<h3>Conversation</h3>'
+                 +             '<div id="x_conversation_input_area" class="cleanup">'
+                 +                 '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
+                 +                 '<textarea id="x_conversation_input"></textarea>'
+                 +                 '<input id="x_conversation_submit" type="button" title="Say!">'
+                 +             '</div>'
+                 +             '<ol id="x_conversation_list"></ol>'
+                 +         '</div>'
                  +     '</div>'
-                 +     '<ol id="x_conversation_list"></ol>'
-                 + '</div>'
-                 + '<div id="x_time_area">'
-                 +     '<h3   id="x_time_relative"></h3>'
-                 +     '<span id="x_time_absolute"></span>'
-                 + '</div>'
-                 + '<div id="x_place_area">'
-                 +     '<h3   id="x_place_line1"></h3>'
-                 +     '<span id="x_place_line2"></span>'
-                 + '</div>'
-                 + '<div id="x_exfee_area"></div>';
+                 +     '<div id="x_sidebar">'
+                 +         '<div id="x_time_area">'
+                 +             '<h3   id="x_time_relative"></h3>'
+                 +             '<span id="x_time_absolute"></span>'
+                 +         '</div>'
+                 +         '<div id="x_place_area">'
+                 +             '<h3   id="x_place_line1"></h3>'
+                 +             '<span id="x_place_line2"></span>'
+                 +         '</div>'
+                 +         '<div id="x_exfee_area"></div>'
+                 +     '</div>'
+                 + '</div>';
+
+
+    ns.showTitle = function()
+    {
+        var objTitle = $('#x_title');
+        objTitle.html(crossData.title);
+        document.title = 'EXFE - ' + crossData.title;
+        if (objTitle.hasClass('x_title_double') && objTitle.height() < 112) {
+            objTitle.addClass('x_title_normal').removeClass('x_title_double');
+        }
+        if (objTitle.hasClass('x_title_normal') && objTitle.height() > 70) {
+            objTitle.addClass('x_title_double').removeClass('x_title_normal');
+        }
+    }
 
 
     ns.showTime = function()
@@ -61,8 +81,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showPlace = function()
     {
-        $('#x_place_line1').html(crossData.place.line1);
+        var objPlace = $('#x_place_line1');
+        objPlace.html(crossData.place.line1);
         $('#x_place_line2').html(crossData.place.line2);
+        if (objPlace.hasClass('x_place_line1_double') && objPlace.height() < 70) {
+            objPlace.addClass('x_place_line1_normal').removeClass('x_place_line1_double');
+        }
+        if (objPlace.hasClass('x_place_line1_normal') && objPlace.height() > 53) {
+            objPlace.addClass('x_place_line1_double').removeClass('x_place_line1_normal');
+        }
     };
 
 
@@ -78,24 +105,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.makeMessage = function(objItem)
     {
-        return '<li>'
-             +     '<p class="x_conversation_avatar">'
-             +         '<img src="' + odof.comm.func.getUserAvatar(
-                       objItem.identity.avatar_file_name, 80, img_url) + '">'
-             +     '</p>'
-             +     '<p class="x_conversation_message">'
-             +         '<span class="x_conversation_identity">'
-             +             objItem.identity.name + ':'
+        return '<li class="cleanup">'
+             +     '<img src="' + odof.comm.func.getUserAvatar(
+                   objItem.identity.avatar_file_name, 80, img_url)
+             +     '" class="x_conversation_avatar">'
+             +     '<div class="x_conversation_message">'
+             +         '<p class="x_conversation_content_area">'
+             +             '<span class="x_conversation_identity">'
+             +                 objItem.identity.name + ': '
+             +             '</span>'
+             +             '<span class="x_conversation_content">'
+             +                 objItem.content
+             +             '</span>'
+             +         '</p>'
+             +         '<span class="x_conversation_time">'
+             +             odof.util.getRelativeTime(Date.parse(
+                               odof.util.getDateFromString(objItem.created_at)
+                           ) / 1000)
              +         '</span>'
-             +         '<span class="x_conversation_content">'
-             +             objItem.content
-             +         '</span>'
-             +     '</p>'
-             +     '<p class="x_conversation_time">'
-             +         odof.util.getRelativeTime(Date.parse(
-                           odof.util.getDateFromString(objItem.created_at)
-                       ) / 1000)
-             +     '</p>'
+             +     '</div>'
              + '</li>';
     };
 
@@ -103,8 +131,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.show = function()
     {
         $('#x_view').html(this.crossHtml);
-        $('#x_title').html(crossData.title);
         $('#x_desc').html(crossData.description);
+        $('#x_conversation_my_avatar').attr('src', odof.comm.func.getUserAvatar(
+            myIdentity.avatar_file_name, 80, img_url
+        ));
         if (myrsvp) {
             $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
             $('#x_rsvp_msg').show();
@@ -119,6 +149,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             $('#x_rsvp_maybe').show();
             $('#x_rsvp_change').hide();
         }
+        this.showTitle();
         this.showTime();
         this.showPlace();
         this.showConversation();
@@ -183,70 +214,7 @@ var clickCallBackFunc = function(args){
         }
     };
 
-    ns.formatCross = function() {
-        // format title
-        if ($('#cross_titles').hasClass('pv_title_double') && $('#cross_titles').height() < 112) {
-            $('#cross_titles').addClass('pv_title_normal').removeClass('pv_title_double');
-        }
-        if ($('#cross_titles').hasClass('pv_title_normal') && $('#cross_titles').height() > 70) {
-            $('#cross_titles').addClass('pv_title_double').removeClass('pv_title_normal');
-        }
-
-        // format address
-        if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 70) {
-            $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
-        }
-        if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
-            $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
-        }
-    };
-
-    ns.postConversation = function() {
-        var comment = odof.util.trim($('textarea[name=comment]').val());
-
-        if (submitting || comment === '') {
-            return;
-        }
-        submitting = true;
-
-        var poststr = "cross_id=" + cross_id + "&comment=" + comment + '&token=' + token;
-        $('textarea[name=comment]').activity({outside: true, align: 'right', valign: 'top', padding: 5, segments: 10, steps: 2, width: 2, space: 0, length: 3, color: '#000', speed: 1.5});
-        $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
-
-        $.ajax({
-            type: 'POST',
-            data: poststr,
-            url: site_url + '/conversation/save',
-            dataType: 'json',
-            success: function(data) {
-                if (data != null) {
-                    if (data.response.success == 'false') {
-                        //$('#pwd_hint').html("<span>Error identity </span>");
-                        //$('#login_hint').show();
-                    } else if(data.response.success == 'true') {
-                        var name   = data.response.identity.name == ''
-                                   ? data.response.identity.external_identity
-                                   : data.response.identity.name,
-                            avatar = data.response.identity.avatar_file_name;
-                        var html = '<li><p class="pic40"><img src="'+odof.comm.func.getUserAvatar(avatar, 80, img_url)+'" alt=""></p> <p class="comment"><span>' + name + ':</span>&nbsp;' + data.response.comment+'</p> <p class="times">'+data.response.created_at+'</p></li>';
-                        $('#commentlist').prepend(html);
-                        $('textarea[name=comment]').val('');
-                    }
-                    odof.cross.index.setreadonly(clickCallBackFunc);
-                }
-                $('textarea[name=comment]').activity(false);
-                $('textarea[name=comment]').focus();
-                $('#post_submit').css('background', 'url("/static/images/enter.png")');
-                submitting = false;
-            },
-            error: function(date) {
-                $('textarea[name=comment]').activity(false);
-                $('textarea[name=comment]').focus();
-                $('#post_submit').css('background', 'url("/static/images/enter.png")');
-                submitting = false;
-            }
-        });
-    };
+    
 
 })(ns);
 
@@ -269,8 +237,6 @@ return;
         color: '#0b0b0b',
         speed: 1.5
     });
-
-    document.title = 'EXFE - ' + $('#cross_titles').html();
 
     $('#changersvp').click(function(e) {
         $('#rsvp_options').show();
