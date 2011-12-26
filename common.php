@@ -31,12 +31,11 @@ function exGet($name)
 */
 function exPost($name)
 {
-    if (array_key_exists($name,$_POST))
-	{
-		return $_POST[$name];
-	}else{
-		return ("");
-	}
+    if (array_key_exists($name,$_POST)) {
+        return $_POST[$name];
+    } else {
+        return ('');
+    }
 }
 
 /**

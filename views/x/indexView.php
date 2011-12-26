@@ -117,37 +117,28 @@ if(0) {
 }
 ?>
 <div class="content">
-    <div id="x_view"></div>
-</div>
-
-
-
-
-
-<div class="cross_view_centerbg">
-    <div id="edit_cross_bar" style="display:none;">
-        <div id='edit_cross_submit_loading' style="display:none;"></div>
+    <div id="edit_x_bar" style="display:none;">
+        <div id='edit_x_submit_loading' style="display:none;"></div>
         <p class="titles">Editing <span>X</span></p>
         <p id="error_msg" class="error_msg"></p>
         <p class="done_btn">
             <a href="javascript:void(0);" id="submit_data">Done</a>
         </p>
         <p class="revert">
-            <a id="revert_cross_btn" href="javascript:;">Revert</a>
+            <a id="revert_cross_btn" href="javascript:void(0);">Revert</a>
         </p>
     </div>
-
-    <div id="content" class="cross_view_container">
-        <div class="exfe_bubble" id="cross_time_bubble" style="display:none;">
-            <div class="cross_dt_input">
-                <input name="cross_datetime_original" id="cross_datetime_original" value="" />
+    <div id="x_view">
+        <div class="exfe_bubble" id="x_time_bubble" style="display:none;">
+            <div class="x_dt_input">
+                <input name="x_datetime_original" id="x_datetime_original">
             </div>
-            <div class="cross_dt_msg"></div>
-            <div id="cross_time_container"></div>
+            <div class="x_dt_msg"></div>
+            <div id="x_time_container"></div>
         </div>
-        <div class="exfe_bubble" id="cross_place_bubble" style="display:none;">
+        <div class="exfe_bubble" id="x_place_bubble" style="display:none;">
             <div class="input_box">
-                <textarea name="place_content" id="place_content"><?php echo "{$place_line1}\n{$place_line2}"; ?></textarea>
+                <textarea name="place_content" id="place_content"></textarea>
                 <span class="icon"></span>
             </div>
         </div>
@@ -163,11 +154,13 @@ if(0) {
                 Edit this cross.
             </p>
         </div>
-        <div id="index" class="step">
-            <input id="cross_titles_textarea" class="cross_titles_textarea" style="display:none;" value="<?php echo $cross["title"] ?>">
-            <h2 id="cross_titles" class="pv_title_normal">
-                <?php echo $cross["title"]; ?>
-            </h2>
+    </div>
+</div>
+
+
+
+
+
             <div class="exfel">
                 <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
                 <div id="cross_desc"<?php if($desc_str_len > $define_str_len){ ?> style="display:none"<?php } ?>>
@@ -193,48 +186,6 @@ if(0) {
                     <span>Your RSVP is "<span id="rsvp_status"></span>". </span>
                     <a href="javascript:void(0);" id="changersvp">Change?</a>
                 </div>
-                <div class="Conversation">
-                    <h3>Conversation</h3>
-                    <div class="commenttext">
-                        <img style="width:40px;height:40px" src="<?php echo getUserAvatar($global_avatar_file_name, 80); ?>">
-                        <input type="submit" value="" title="Say!" name="post_commit" id="post_submit">
-                        <textarea tabindex="4" rows="10" class="ctext" name="comment"></textarea>
-                    </div>
-                    <ul id="commentlist" class="commentlist">
-                        <?php
-                        if($cross["conversation"])
-                        {
-                            foreach($cross["conversation"] as $conversation)
-                            {
-                            $posttime=RelativeTime(strtotime($conversation["updated_at"]));
-                            $identity=$conversation["identity"];
-                            //if($identity["name"]=="")
-                            //    $identity["name"]=$user["name"];
-                            //if($identity["avatar_file_name"]=="")
-                            //    $identity["avatar_file_name"]=$user["avatar_file_name"];
-
-                            //if($identity["name"]=="")
-                            //    $identity["name"]=$identity["external_identity"];
-                        ?>
-                        <li>
-                            <p class="pic40">
-                                <img src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="">
-                            </p>
-                            <p class="comment">
-                                <span><?php echo $identity["name"]; ?>:</span>
-                                <?php echo $conversation["content"];?>
-                            </p>
-                            <p class="times">
-                                <?php echo $posttime?>
-                            </p>
-                        </li>
-                        <?php
-                            }
-                        }
-                        ?>
-                    </ul>
-
-                </div>
             </div>
             <div id="cross_container" class="exfer">
                 <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>">
@@ -255,10 +206,6 @@ if(0) {
                     </p>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
 
 
 

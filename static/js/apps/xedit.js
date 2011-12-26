@@ -875,18 +875,6 @@ return;
         odof.cross.edit.expandDesc();
     });
 
-    // exfee edit init
-    $('#exfee_edit_box').hide();
-    $('#exfee_remove').hide();
-    $('#exfee_edit').hide();
-    $('.exfee_del').hide();
-    $('.ex_identity').hide();
-    $('.cs > em').live('click', function(event) {
-        odof.cross.edit.changeRsvp(event.target);
-    });
-    $('#check_all').bind('click', function() {
-        odof.cross.edit.checkAll();
-    });
     $('.exfee_item').live('mouseenter mouseleave', function(event) {
         odof.cross.edit.showExternalIdentity(event);
     });

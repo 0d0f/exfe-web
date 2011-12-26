@@ -130,7 +130,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.show = function()
     {
-        $('#x_view').html(this.crossHtml);
+        $('#x_view').append(this.crossHtml);
         $('#x_desc').html(crossData.description);
         $('#x_conversation_my_avatar').attr('src', odof.comm.func.getUserAvatar(
             myIdentity.avatar_file_name, 80, img_url
