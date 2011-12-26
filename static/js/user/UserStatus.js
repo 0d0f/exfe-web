@@ -373,7 +373,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             odof.user.identification.showRegisteMsg();
         });
 
-        odof.user.identification.bindLoginDialogEvent("reg");
+        odof.user.identification.bindLoginDialogEvent();
         jQuery("#identification_pwd_ic").bind("click",function(){
             odof.comm.func.displayPassword('identification_pwd');
         });
@@ -485,6 +485,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 })(ns);
 
 jQuery(document).ready(function(){
-    odof.user.status.doShowLoginDialog();
-    //odof.user.status.checkUserLogin();
+    //odof.user.status.doShowLoginDialog();
+    odof.user.status.checkUserLogin();
 });
