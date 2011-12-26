@@ -99,44 +99,34 @@ class IdentityModels extends DataModel{
         return $identityid;
     }
 
-
-    //modified by handaoliang
     public function ifIdentityExist($external_identity)
     {
-        $external_identity=mysql_real_escape_string($external_identity);
-        //----han_mod_01-----
-        //$sql="select id,status from  identities where external_identity='$external_identity'";
-        $sql="SELECT id FROM identities WHERE external_identity='$external_identity'";
-        $row=$this->getRow($sql);
-        if (intval($row["id"])>0)
-        {
-            $identity_id=intval($row["id"]);
-            //----han_mod_02-----
-            $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
+        $external_identity = mysql_real_escape_string($external_identity);
+        $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
+        $row = $this->getRow($sql);
+        $identity_id = intval($row["id"]);
+        if ($identity_id > 0) {
+            $sql = "SELECT userid, status FROM user_identity WHERE identityid={$identity_id}";
             $result = $this->getRow($sql);
-            //if(intval($row["status"])==3)
-            if(intval($result["status"])==3)
-            {
-                $sql="select userid from user_identity where identityid=$identity_id";
-                $userIdRow=$this->getRow($sql);
-                if(intval($userIdRow["userid"])>0)
-                {
-                    $uid=intval($userIdRow["userid"]);
-                    $sql = "select id,encrypted_password from users WHERE id=$uid;";
-                    $userrow = $this->getRow($sql);
+            $uid = intval($result["userid"]);
+            $user_status = intval($result["status"]);
+            if($user_status == 3 && $uid > 0) {
+                $sql = "SELECT id, encrypted_password, avatar_file_name FROM users WHERE id={$uid}";
+                $user_info = $this->getRow($sql);
 
-                    $newUser = false;
-                    if(intval($userrow["id"])>0 && trim($userrow["encrypted_password"])==""){
-                        return  array("id"=>$identity_id,"status"=>2);
-                    }
+                if(intval($user_info["id"])>0 && trim($user_info["encrypted_password"])==""){
+                    return  array("id"=>$identity_id,"status"=>2);
                 }
-            }
 
-            //----han_mod_02-----
-            //return  array("id"=>intval($row["id"]),"status"=>intval($row["status"]));
-            return  array("id"=>intval($row["id"]),"status"=>intval($result["status"]));
+                return array(
+                    "id"=>$identity_id,
+                    "status"=>$user_status,
+                    "user_avatar"=>$user_info["avatar_file_name"]
+                );
+            }
+            return array("id"=>$identity_id, "status"=>$user_status);
         } else {
-            return FALSE;
+            return false;
         }
     }
 
@@ -267,9 +257,17 @@ class IdentityModels extends DataModel{
     }
     //check user password
     public function checkUserPassword($userid, $password){
-        $password = md5($password.$this->salt);
-        $sql="SELECT encrypted_password FROM users WHERE id={$userid} LIMIT 1";
+        //$password = md5($password.$this->salt);
+        $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
         $row=$this->getRow($sql);
+        $passwordSalt = $row["password_salt"];
+        if($passwordSalt == $this->salt){
+            $password=md5($password.$this->salt);
+        }else{
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        }
+
+
         if($row["encrypted_password"] == $password){
             return true;
         }
@@ -277,18 +275,16 @@ class IdentityModels extends DataModel{
     }
     //update user password
     public function updateUserPassword($userid, $password){
-        $password=md5($password.$this->salt);
-        $sql="UPDATE users SET encrypted_password='{$password}' WHERE id={$userid}";
+        //$password=md5($password.$this->salt);
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
         $this->query($sql);
     }
 
-    public function login($identity,$password,$setcookie=false)
+    public function login($identity,$password,$setcookie=false, $password_hashed=false)
     {
-        $password = md5($password.$this->salt);
-        return $this->loginAsHashPassword($identity, $password, $setcookie);
-    }
-
-    public function loginAsHashPassword($identity,$password,$setcookie=false){
+        //$password = md5($password.$this->salt);
         $sql="select * from identities where external_identity='$identity' limit 1";
 #update last_sign_in_at,last_sign_in_ip...
         $identityrow=$this->getRow($sql);
@@ -301,8 +297,18 @@ class IdentityModels extends DataModel{
             if(intval($row["userid"])>0)
             {
                 $userid=intval($row["userid"]);
-                $sql="select encrypted_password,name,avatar_file_name from users where id=$userid";
+
+                $sql="select encrypted_password,password_salt,name,avatar_file_name from users where id=$userid";
                 $row=$this->getRow($sql);
+                if(!$password_hashed){
+                    $passwordSalt = $row["password_salt"];
+                    if($passwordSalt == $this->salt){
+                        $password=md5($password.$this->salt);
+                    }else{
+                        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+                    }
+                }
+
                 if($row["encrypted_password"]==$password)
                 {
                     $this->loginByIdentityId( $identity_id,$userid,$identity,$row,$identityrow,"password",$setcookie);

@@ -452,16 +452,19 @@ class SActions extends ActionController
         //TODO: private API ,must check session
         $identity=$_GET["identity"];
         $identityData = $this->getModelByName("identity");
-        $exist=$identityData->ifIdentityExist($identity);
+        $result = $identityData->ifIdentityExist($identity);
 
         $responobj["meta"]["code"]=200;
         //$responobj["meta"]["errType"]="Bad Request";
         //$responobj["meta"]["errorDetail"]="invalid_auth";
 
-        if($exist!==FALSE)
+        if($result !== false)
         {
-            if(intval($exist["status"])==3){
+            if(intval($result["status"]) == 3){
                 $responobj["response"]["status"]="connected";
+                if(array_key_exists("user_avatar", $result)){
+                    $responobj["response"]["avatar"]=trim($result["user_avatar"]);
+                }
             }else{
                 $responobj["response"]["status"]="verifying";
             }
@@ -711,8 +714,9 @@ class SActions extends ActionController
                 $userid = $Data->AddUser($password);
                 $identityData = $this->getModelByName("identity");
                 $provider= $_POST["provider"];
-                if($provider=="")
+                if($provider==""){
                     $provider="email";
+                }
                 $identity_id=$identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
@@ -1026,7 +1030,7 @@ class SActions extends ActionController
 
             if($result["status"] == "ok"){
                 if($result["need_set_pwd"] == "no") {
-                    $identityHandler->loginAsHashPassword($result["identity"], $result["password"], "true");
+                    $identityHandler->login($result["identity"], $result["password"], true, true);
                 }
                 unset($result["password"]);
                 $this->setVar("identityInfo", $result);

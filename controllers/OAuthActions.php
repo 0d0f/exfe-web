@@ -3,6 +3,7 @@ require_once dirname(dirname(__FILE__))."/lib/OAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/FacebookOAuth.php";
 class OAuthActions extends ActionController {
+
     public function doIndex() {
         header("location:/s/login");
     }
@@ -16,8 +17,8 @@ class OAuthActions extends ActionController {
         switch ($twitterConn->http_code) {
             case 200:
                 $token = $requestToken['oauth_token'];
-                $url = $twitterConn->getAuthorizeURL($token);
-                header('Location:'.$url); 
+                $twitterOAuthURL = $twitterConn->getAuthorizeURL($token);
+                header('Location:'.$twitterOAuthURL); 
                 break;
             default:
                 echo 'Could not connect to Twitter. Refresh the page or try again later.';
@@ -45,7 +46,7 @@ class OAuthActions extends ActionController {
             header('Location: /oAuth/clearTwitterSessions');
         }
     }
-    public Function doLoginWithTwitter(){
+    public function doLoginWithTwitter() {
         if (empty($_SESSION['access_token']) ||
             empty($_SESSION['access_token']['oauth_token']) ||
             empty($_SESSION['access_token']['oauth_token_secret'])
@@ -139,5 +140,83 @@ class OAuthActions extends ActionController {
             header("location:/s/login");
         }
 
+    }
+
+    public function doLoginWithGoogle(){
+        $scopeArray = array(
+            'https://www.google.com/m8/feeds/',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+        );
+        $scopeString = implode(' ', $scopeArray);
+        $googleAPIConf = array('client_id'      => GOOGLE_CLIENT_ID,
+                               'redirect_uri'   => GOOGLE_REDIRECT_URIS,
+                               'scope'          => $scopeString,
+                               'response_type'  => 'code'
+        );
+
+        $googleOAuthURL = 'https://accounts.google.com/o/oauth2';
+        $googleOAuthURL .= '/auth?'.http_build_query($googleAPIConf);
+
+        header("location:".$googleOAuthURL);
+    }
+
+    public function doGoogleOAuthCallback(){
+        $googleAPIConf = array('code'           =>$_REQUEST['code'],
+                               'client_id'      =>GOOGLE_CLIENT_ID,
+                               'client_secret'  =>GOOGLE_CLIENT_SECRET,
+                               'redirect_uri'   =>GOOGLE_REDIRECT_URIS,
+                               'grant_type'     =>'authorization_code'
+        ); 
+
+        $curlHandler = curl_init('https://accounts.google.com/o/oauth2/token');
+        curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlHandler, CURLOPT_NOSIGNAL, 1);
+        curl_setopt($curlHandler, CURLOPT_POST, TRUE);
+        curl_setopt($curlHandler, CURLOPT_POSTFIELDS, $googleAPIConf);
+        $tokenData = curl_exec($curlHandler);
+        curl_close($curlHandler);
+
+        $googleToken = (array)json_decode($tokenData);
+        $googleUserDataURL = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=";
+        $googleUserDataURL .= $googleToken["access_token"];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $googleUserDataURL);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        $googleUserData = curl_exec($ch);
+        curl_close($ch);
+
+        $googleUserInfo = (array)json_decode($googleUserData);
+
+        if(is_array($googleUserInfo) && array_key_exists("id", $googleUserInfo)){
+            $googleUserAvatar = array_key_exists("picture", $googleUserInfo) ? $googleUserInfo["picture"]."?sz=240" : "";
+            $googleUserDesc = array_key_exists("description", $googleUserInfo) ? $googleUserInfo["description"] : "";
+
+            $oAuthUserInfo = array(
+                "provider"  =>"google",
+                "id"        =>$googleUserInfo["id"],
+                "name"      =>$googleUserInfo["name"],
+                "sname"     =>$googleUserInfo["email"],
+                "desc"      =>$googleUserDesc,
+                "avatar"    =>$googleUserAvatar
+            );
+
+            $OAuthModel = $this->getModelByName("oAuth");
+            $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
+            $identityID = $result["identityID"];
+            $userID = $result["userID"];
+            if(!$identityID || !$userID){
+                die("OAuth error.");
+            }
+
+            $identityModels = $this->getModelByName("identity");
+            $identityModels->loginByIdentityId($identityID, $userID);
+
+            header("location:/s/login");
+        }else{
+            header("location:/s/login");
+        }
     }
 }

@@ -9,7 +9,7 @@ class CheckHelper extends ActionController {
         if(intval($uid)==0)
             return array("check"=>false);
 
-        if($api=="user_x" || $api=="user_regdevicetoken" || $api=="user_getupdate")
+        if($api=="user_x" || $api=="user_regdevicetoken" || $api=="user_getupdate" || $api=="user_getprofile")
         {
             if($uid==$args["user_id"])
                 return array("check"=>true,"uid"=>$uid);

@@ -5,9 +5,10 @@ class UserModels extends DataModel{
 
     public function addUser($password)
     {
-        $password=md5($password.$this->salt);
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
         $time=time();
-        $sql="insert into users (encrypted_password,created_at) values('$password',FROM_UNIXTIME($time));";
+        $sql="INSERT INTO users (encrypted_password, password_salt, created_at) VALUES ('{$password}','{$passwordSalt}',FROM_UNIXTIME($time));";
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
@@ -94,13 +95,21 @@ class UserModels extends DataModel{
 
     public function loginForAuthToken($user,$password)
     {
-        $password=md5($password.$this->salt);
         $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
         $row=$this->getRow($sql);
         $result=array();
         if(intval($row["uid"])>0)
         {
             $uid=intval($row["uid"]);
+            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
+            $result = $this->getRow($sql);
+            $passwordSalt = $result["password_salt"];
+            if($passwordSalt == $this->salt){
+                $password=md5($password.$this->salt);
+            }else{
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+            }
+
             $sql="select id,auth_token from users where id=$uid and encrypted_password='$password'";
             $row=$this->getRow($sql);
             if(intval($row["id"])==$uid )
@@ -118,14 +127,6 @@ class UserModels extends DataModel{
             }
         }
         return $result;
-    }
-
-    public function login($email,$password)
-    {
-        $password=md5($password.$this->salt);
-        $sql="select * from users where email='$email' and encrypted_password='$password'";
-#update last_sign_in_at,last_sign_in_ip...
-        return $this->getRow($sql);
     }
 
     public function getUserProfileByIdentityId($identity_id)
@@ -170,12 +171,16 @@ class UserModels extends DataModel{
         if(intval($result["userid"])>0)
         {
             $userid=intval($result["userid"]);
-            $password=md5($password.$this->salt);
-            $sql="update users set encrypted_password ='$password',name='$displayname' where id=$userid;";
+
+            $passwordSalt = md5(createToken());
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
+            //$password=md5($password.$this->salt);
+            $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}',name='{$displayname}' WHERE id={$userid}";
             $result=$this->query($sql);
             if($result==1)
             {
-                $sql="update identities set name='$displayname' where id=$identity_id";
+                $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
                 $result=$this->query($sql);
                 return true;
             }
@@ -196,13 +201,12 @@ class UserModels extends DataModel{
             {
                 //user exist, set password
                 return array("uid"=>intval($result["userid"]),"identity_id"=>$identity_id);
-            }
-            else
-            {
-                if($password!="")
-                    $password=md5($password.$this->salt);
+            } else {
+                $passwordSalt = md5(createToken());
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
                 $time=time();
-                $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
+                $sql="INSERT INTO users (encrypted_password,password_salt,name,created_at) VALUES ('{$password}','{$passwordSalt}','{$displayname}',FROM_UNIXTIME($time));";
                 $result=$this->query($sql);
                 if(intval($result["insert_id"])>0)
                 {
@@ -248,8 +252,11 @@ class UserModels extends DataModel{
             if(intval($result["userid"])>0)
             {
                 $userid=intval($result["userid"]);
-                $password=md5($password.$this->salt);
-                $sql="update users set encrypted_password ='$password',name='$displayname' where id=$userid;";
+
+                $passwordSalt = md5(createToken());
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+                //$password=md5($password.$this->salt);
+                $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}', name='{$displayname}' WHERE id={$userid}";
                 $result=$this->query($sql);
                 if($result==1)
                 {
@@ -379,17 +386,20 @@ class UserModels extends DataModel{
     }
 
     public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
-        $passWord=md5($userPwd.$this->salt);
         $ts = time();
         $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $userrow = $this->getRow($sql);
         $newUser = false;
 
+
         if(intval($userrow["id"])>0 && $userrow["encrypted_password"]==""){
             $newUser = true;
         }
 
-        $sql = "UPDATE users SET encrypted_password='{$passWord}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
+        $passwordSalt = md5(createToken());
+        $passWord=md5($userPwd.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $result = $this->query($sql);
 
         $external_identity=mysql_real_escape_string($external_identity);

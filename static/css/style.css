@@ -248,7 +248,27 @@ b.r3{margin: 0px}
     width:210px; height:26px; line-height:17px; border:#c5c5c5 1px solid;
     float:left; margin-left:4px; background-color:#FFF; font:18px Verdana;
 }
-.identity_dialog_main ul li .identity_box{ position:absolute; margin-top:0px; margin-left:114px; z-index:203; overflow:hidden; }
+.identity_dialog_main ul li .identity_box{
+    position:absolute; margin-top:0px; margin-left:110px;
+    z-index:203; overflow:hidden;
+}
+.identity_dialog_main .account_hint_list {
+    position:absolute; margin-top:26px; margin-left:114px; width:210px;
+    z-index:205; overflow:hidden; border: 1px solid #C5C5C5; background:#FFF;
+}
+.identity_dialog_main .account_hint_list ul { clear:both; }
+.identity_dialog_main .account_hint_list ul li { clear:both; height:22px; width:208px; padding-top:4px; line-height:15px; }
+.identity_dialog_main .account_hint_list ul li span { padding:0 5px; font-style:italic; }
+.identity_dialog_main .account_hint_list ul li.facebook { 
+    background:url(/static/images/oauth_account_logo.png) no-repeat right 3px;
+}
+.identity_dialog_main .account_hint_list ul li.twitter { 
+    background:url(/static/images/oauth_account_logo.png) no-repeat right -33px;
+}
+.identity_dialog_main .account_hint_list ul li.google { 
+    background:url(/static/images/oauth_account_logo.png) no-repeat right -68px;
+}
+
 .identity_dialog_main ul li #identity_dbox{
     position:absolute; height:21px; width:208px;
     padding-left:4px; line-height:15px; color:#CCC;
@@ -334,6 +354,10 @@ b.r3{margin: 0px}
     margin-left:310px; margin-top:8px; z-index:203; cursor:pointer;
     background:url(/static/images/icons.png) no-repeat left -691px;
 }
+.identity_dialog_main ul li img.avatar{
+    position:absolute; display:block; width:24px; height:24px;
+    margin-left:300px; margin-top:2px; z-index:205;
+}
 .identity_dialog_main ul li em.warning{
     background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;
     margin-left:4px
@@ -344,7 +368,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .logincheck span{ margin-left:8px; font-size:14px; }
 /*.login ul .notice{ height:25px; color:#0591af; line-height:10px;}*/
 .identity_dialog_main ul .notice{ height:25px; color:#CC3333;}
-.identity_dialog_main ul .notice span{ margin-left:120px; margin-top:0;}
+.identity_dialog_main ul .notice span{ margin-left:115px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
     position:absolute; z-index:203; height:40px; width:360px; top:305px; text-align:right;

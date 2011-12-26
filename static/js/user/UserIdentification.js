@@ -54,7 +54,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 + "<p class='oauth_icon'>"
                 + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
                 + "<a href='/oAuth/twitterRedirect' class='twitter_oauth' alt='TwitterOAuth'></a>"
-                + "<a href='javascript:void(0);' class='google_oauth' alt='GoogleOAuth'></a>"
+                + "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
                 + "</p>"
                 + "</div>";
             form = "<div id='identity_reg_login_dialog' class='identity_dialog_main'>"
@@ -64,11 +64,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<div class='identity_box'>"
-                 + "<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' />"
+                 + "<input id='identity' name='identity' type='text' class='inputText' autocomplete='off' disableautocomplete='' />"
+                 + "</div>"
+                 + "<div class='account_hint_list' id='account_hint_list' style='display:none;'>"
+                 + "<ul>"
+                 + "<li class='facebook'><span id='fb_name'></span>@Facebook</li>"
+                 + "<li class='twitter'><span id='tw_name'></span>@Twitter</li>"
+                 + "<li class='google'><span id='gg_name'></span>@gmail.com</li>"
+                 + "</ul>"
                  + "</div>"
                  + "<div id='identity_dbox'>Your email here</div>"
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<em class='delete' id='delete_identity' style='display:none;'></em>"
+                 + "<img class='avatar' id='user_avatar' style='display:none;' src='' />"
                  + "</li>"
                  + "<li id='displayname' style='display:none'>"
                  + "<label class='title' style='color:#CC3333'>Display name:</label>"
@@ -85,12 +93,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='pwd_match_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li id='pwd_hint' style='display:none' class='notice'><span>check password</span></li>"
-                 + "<li class='logincheck'>"
-                 + "<div id='logincheck' style='display:none;'>"
+                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 + "<li class='logincheck' id='logincheck' style='display:none;'>"
                  + "<input type='checkbox' value='1' name='auto_signin' id='auto_signin' checked />"
                  + "<label for='auto_signin' style='cursor:pointer;'><span>Sign in automatically</span></label>"
-                 + "</div></li>"
-                 + "<li id='login_hint' style='display:none' class='notice'><span>Incorrect identity or password</span></li>"
+                 + "</li>"
                  + "</ul>"
                  + "<div class='identification_bottom_btn'>"
                  + "<a id='forgot_password' class='forgot_password' style='display:none;'>Forgot Password...</a>"
@@ -119,10 +126,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='displayname_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li><label class='title'>Password:</label>"
-                 + "<input type='password' id='identification_pwd' name='password' class='inputText' style='display:none;' />"
-                 + "<input type='text' id='identification_pwd_a' class='inputText' />"
+                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<input type='hidden' id='identification_user_token' value='' />"
-                 + "<em class='ic2' id='identification_pwd_ic'></em>"
+                 + "<em class='ic3' id='identification_pwd_ic'></em>"
                  + "</li>"
                  /*
                  + "<li id='identification_repwd_li' style='display:none;'>"
@@ -430,6 +437,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#forgot_password').hide();
                             jQuery('#logincheck').hide();
                             jQuery('#login_hint').hide();
+                            jQuery("#user_avatar").hide();
                             //注册对话框中的start over button
                             jQuery('#startover').show();
                             jQuery('#startover').bind('click', function(){
@@ -458,6 +466,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             if(data.response.status == "verifying"){
                                 ns.showManualVerificationDialog();
                             }else{
+                                if(typeof data.response.avatar != "undefined" && data.response.avatar != ""){
+                                    jQuery("#user_avatar").show();
+                                    jQuery("#user_avatar")[0].src=odof.comm.func.getUserAvatar(data.response.avatar,80,img_url);
+                                }else{
+                                    jQuery("#user_avatar").hide();
+                                }
                                 ns.showLoginDialog();
                             }
                         }
@@ -498,6 +512,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 });
             });
             */
+            /*
+            jQuery('#identity').keyup(function() {
+                var currentIdentity = jQuery('#identity').val();
+                if(currentIdentity == ""){
+                    jQuery("#account_hint_list").hide();
+                }else{
+                    if(currentIdentity.indexOf("@") < 0){
+                        jQuery("#account_hint_list").show();
+                        jQuery("#fb_name,#gg_name").html(currentIdentity);
+                        jQuery("#tw_name").html("@"+currentIdentity);
+                    }else{
+                        jQuery("#account_hint_list").hide();
+                    }
+                }
+            });
+            */
             window.setInterval(function(){
                 ns.identityInputBoxActions();
             },1000);
@@ -536,6 +566,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         jQuery("#reset_pwd_error_msg").hide();
                         jQuery("#displayname_error").hide();
                         jQuery("#pwd_hint").hide();
+                        jQuery("#login_hint").hide();
                     };
 
 
@@ -579,6 +610,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         if(password == "" || identity == ""){
                             jQuery('#login_hint').html("<span>Identity or password empty</span>");
                             jQuery('#login_hint').show();
+                            setTimeout(hideErrorMsg, 3000);
                             return false;
                         }
                     }
@@ -594,6 +626,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 if(data!=null) {
                                     if(data.response.success=="false") {
                                         jQuery('#login_hint').show();
+                                        setTimeout(hideErrorMsg, 3000);
                                     } else if(data.response.success=="true") {
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
@@ -654,12 +687,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             success: function(data){
                                 if(data!=null)
                                 {
-                                    if(data.response.success=="false")
-                                    {
+                                    if(data.response.success=="false") {
                                         jQuery('#login_hint').show();
-                                    }
-                                    else if(data.response.success=="true")
-                                    {
+                                        setTimeout(function(){
+                                            jQuery('#login_hint').hide();
+                                        }, 3000);
+                                    } else if(data.response.success=="true") {
                                         jQuery("#hostby").val(identity);
                                         jQuery("#hostby").attr("enter","true");
 
