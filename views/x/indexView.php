@@ -124,7 +124,7 @@ if(0) {
 
 
 
-<!--div class="cross_view_centerbg">
+<div class="cross_view_centerbg">
     <div id="edit_cross_bar" style="display:none;">
         <div id='edit_cross_submit_loading' style="display:none;"></div>
         <p class="titles">Editing <span>X</span></p>
@@ -254,93 +254,21 @@ if(0) {
                         <?php echo ParseURL(str_replace('\r', '<br />', $cross["place"]["line2"])); ?>
                     </p>
                 </div>
-                <div id="exfee_area" class="exfee">
-                    <div class="feetop">
-                        <h3>Exfee</h3>
-                        <p class="of">
-                            <em class="bignb">
-                                <?php echo $confirmed; ?>
-                            </em>
-                            of
-                            <em class="malnb">
-                                <?php echo $allinvitation; ?>
-                            </em>
-                            <br>
-                            confirmed
-                        </p>
-                    </div>
-                    <div id="exfee_edit_box">
-                        <div id="exfee_submit" title="Invite!"></div>
-                        <input type="text" id="exfee_input" value="Enter attendees' information">
-                        <div id="identity_ajax"></div>
-                        <select id="exfee_complete" size="5"></select>
-                        <span id="exfee_edit_buttons">
-                            <span id="exfee_revert">Revert</span>
-                            <button id="exfee_done" type="button" class="edit_button">Done</button>
-                        </span>
-                    </div>
-                    <ul class="samlcommentlist">
-                        <?php foreach($host_exfee as $exfee) { ?>
-                        <li id="exfee_<?php echo $exfee["identity_id"];?>"
-                            identity="<?php echo $exfee["external_identity"]; ?>"
-                            identityid="<?php echo $exfee["identity_id"]; ?>"
-                            class="exfee_exist exfee_item">
-                            <p class="pic20">
-                                <img src="<?php echo getUserAvatar($exfee["avatar_file_name"], 80); ?>" alt="">
-                            </p>
-                            <div class="smcomment">
-                                <div>
-                                    <span class="ex_name<?php echo $exfee["external_identity"] === $exfee["name"] ? ' external_identity' : ''; ?>">
-                                        <?php echo $exfee["name"]; ?>
-                                    </span>
-                                    <span class="lb">host</span>
-                                    <span class="ex_identity external_identity">
-                                        <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <p class="cs">
-                                <em class="c<?php echo $exfee["state"]; ?>"></em>
-                            </p>
-                        </li>
-                        <?php } ?>
-                        <?php foreach($normal_exfee as $exfee) { ?>
-                        <li id="exfee_<?php echo $exfee["identity_id"];?>"
-                            identity="<?php echo $exfee["external_identity"]; ?>"
-                            identityid="<?php echo $exfee["identity_id"]; ?>" class="exfee_exist exfee_item">
-                            <button type="button" class="exfee_del"></button>
-                            <p class="pic20">
-                                <img src="<?php echo getUserAvatar($exfee["avatar_file_name"], 80); ?>" alt="">
-                            </p>
-                            <div class="smcomment">
-                                <div>
-                                    <span class="ex_name<?php echo $exfee["external_identity"] === $exfee["name"] ? ' external_identity' : ''; ?>">
-                                        <?php echo $exfee["name"]; ?>
-                                    </span>
-                                    <span class="ex_identity external_identity">
-                                        <?php echo $exfee["external_identity"] === $exfee["name"] ? '' : $exfee["external_identity"]; ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <p class="cs">
-                                <em class="c<?php echo $exfee["state"]; ?>"></em>
-                            </p>
-                        </li>
-                        <?php } ?>
-                    </ul>
-                    <div>
-                        <button id="exfee_edit"   type="button" class="edit_button">Edit...</button>
-                        <button id="exfee_remove" type="button" class="edit_button">Remove...</button>
-                        <span id="check_all">
-                            <span>Check all</span>
-                            <em class="c1"></em>
-                        </span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
-</div-->
+</div>
+
+
+
+
+
+
+
+
+
+
+
 
 
 

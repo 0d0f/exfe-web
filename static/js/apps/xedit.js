@@ -10,73 +10,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
 
+    ns.editURI = window.location.href;
+
+    ns.cross_time_bubble_status = 0;
+
     ns.msgSubmitting = false;
 
-
-    ns.postMessage = function()
-    {
-        var objMsg  = $('#x_conversation_input'),
-            message = odof.util.trim(objMsg.val());
-        if (this.msgSubmitting || message === '') {
-            return;
-        }
-        this.msgSubmitting = true;
-        //$('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
-        $.ajax({
-            type : 'POST',
-            data : {cross_id : cross_id,
-                    message  : message,
-                    token    : token},
-            url  : site_url + '/conversation/save',
-            dataType : 'json',
-            success  : function(data) {
-                if (data) {
-                    switch (data.response.success) {
-                        case 'true':
-                            $('#x_conversation_list').prepend(
-                                odof.cross.render.makeMessage(data.response)
-                            );
-                            objMsg.val('');
-                            break;
-                        case 'false':
-                            // $('#pwd_hint').html("<span>Error identity </span>");
-                            // $('#login_hint').show();
-                    }
-                    odof.cross.index.setreadonly(clickCallBackFunc);
-                }
-                objMsg.focus();
-                //$('#post_submit').css('background', 'url("/static/images/enter.png")');
-                odof.x.edit.msgSubmitting = false;
-            },
-            error: function(date) {
-                objMsg.focus();
-                //$('#post_submit').css('background', 'url("/static/images/enter.png")');
-                odof.x.edit.msgSubmitting = false;
-            }
-        });
-    };
-
-})(ns);
-
-
-
-
-
-
-
-
-
-
-if (0) {
-(function(ns){
-
-    ns.editURI = window.location.href;
-    ns.cross_time_bubble_status = 0;
 
     /**
      * display edit bar
      *
-     * */
+     **/
     ns.showEditBar = function(){
         jQuery("#edit_cross_bar").slideDown(300);
         jQuery("#submit_data").bind("click",function(){
@@ -235,6 +179,66 @@ if (0) {
         });
 
     };
+
+
+    ns.postMessage = function()
+    {
+        var objMsg  = $('#x_conversation_input'),
+            message = odof.util.trim(objMsg.val());
+        if (this.msgSubmitting || message === '') {
+            return;
+        }
+        this.msgSubmitting = true;
+        //$('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+        $.ajax({
+            type : 'POST',
+            data : {cross_id : cross_id,
+                    message  : message,
+                    token    : token},
+            url  : site_url + '/conversation/save',
+            dataType : 'json',
+            success  : function(data) {
+                if (data) {
+                    switch (data.response.success) {
+                        case 'true':
+                            $('#x_conversation_list').prepend(
+                                odof.cross.render.makeMessage(data.response)
+                            );
+                            objMsg.val('');
+                            break;
+                        case 'false':
+                            // $('#pwd_hint').html("<span>Error identity </span>");
+                            // $('#login_hint').show();
+                    }
+                    odof.cross.index.setreadonly(clickCallBackFunc);
+                }
+                objMsg.focus();
+                //$('#post_submit').css('background', 'url("/static/images/enter.png")');
+                odof.x.edit.msgSubmitting = false;
+            },
+            error: function(date) {
+                objMsg.focus();
+                //$('#post_submit').css('background', 'url("/static/images/enter.png")');
+                odof.x.edit.msgSubmitting = false;
+            }
+        });
+    };
+
+})(ns);
+
+
+
+
+
+
+
+
+
+
+if (0) {
+(function(ns){
+
+
 
     /**
      * while user click titles, show edit textarea.
