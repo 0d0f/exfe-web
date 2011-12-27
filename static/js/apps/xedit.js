@@ -10,6 +10,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
 
+    ns.cross_id     = 0;
+
+    ns.btn_val      = null;
+
+    ns.token        = null;
+
+    ns.location_uri = null;
+
     ns.editURI = window.location.href;
 
     ns.cross_time_bubble_status = 0;
@@ -202,7 +210,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     switch (data.response.success) {
                         case 'true':
                             $('#x_conversation_list').prepend(
-                                odof.cross.render.makeMessage(data.response)
+                                odof.x.render.makeMessage(data.response)
                             );
                             objMsg.val('');
                             break;
@@ -224,7 +232,100 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+    /**
+     * by Handaoliang
+     */
+    ns.setreadonly = function(callBackFunc) {
+        /*
+        if(typeof token_expired != "undefined" && token_expired == "false"){
+            //Token 还没有过期，用户点击之后弹窗，这个在回调中实现。
+        }
+        //Token已经过期，用户点击之前弹窗口
+        if(typeof token_expired != "undefined" && token_expired == "true"){
+        }
+        //======End=====Token已经过期，用户点击之前弹窗口
+        */
+        if(token != ""){
+            if(show_idbox == 'setpassword'){//如果要求弹设置密码窗口。
+                if(token_expired == "true"){
+                    var args = {"identity":external_identity};
+                    odof.user.status.doShowCrossPageVerifyDialog(null, args);
+                }else{
+                    odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                    jQuery("#show_identity_box").val(external_identity);
+                }
+            }else if(show_idbox == "login"){
+                odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
+            }else{
+                args = {"identity":external_identity};
+                odof.user.status.doShowCrossPageVerifyDialog(null, args);
+            }
+        }
+    };
+
 })(ns);
+
+
+$(document).ready(function()
+{
+    odof.x.render.show();
+    odof.x.edit.cross_id     = cross_id;
+    odof.x.edit.token        = token;
+    odof.x.edit.location_uri = location_uri;
+
+
+return;
+    jQuery("#edit_icon").bind("click",function() {
+        odof.cross.edit.showEditBar();
+    });
+
+    jQuery("#revert_cross_btn").bind("click",function() {
+        odof.cross.edit.revertCross();
+    });
+
+    jQuery("#desc_expand_btn").bind("click",function() {
+        odof.cross.edit.expandDesc();
+    });
+
+    $('.exfee_item').live('mouseenter mouseleave', function(event) {
+        odof.cross.edit.showExternalIdentity(event);
+    });
+    odof.cross.edit.rollingExfee = null;
+    odof.cross.edit.exfeeRollingTimer = setInterval(odof.cross.edit.rollExfee, 50);
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -821,64 +922,3 @@ if (0) {
 
 })(ns);
 }
-
-
-$(document).ready(function()
-{
-    odof.cross.render.show();
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////
-jQuery(document).ready(function() {
-return;
-    jQuery("#edit_icon").bind("click",function() {
-        odof.cross.edit.showEditBar();
-    });
-
-    jQuery("#revert_cross_btn").bind("click",function() {
-        odof.cross.edit.revertCross();
-    });
-
-    jQuery("#desc_expand_btn").bind("click",function() {
-        odof.cross.edit.expandDesc();
-    });
-
-    $('.exfee_item').live('mouseenter mouseleave', function(event) {
-        odof.cross.edit.showExternalIdentity(event);
-    });
-    odof.cross.edit.rollingExfee = null;
-    odof.cross.edit.exfeeRollingTimer = setInterval(odof.cross.edit.rollExfee, 50);
-
-});

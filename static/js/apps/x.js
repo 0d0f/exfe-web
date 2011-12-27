@@ -4,8 +4,13 @@
  * @CopyRights:     http://www.exfe.com
 **/
 
-var moduleNameSpace = 'odof.cross.render';
+var moduleNameSpace = 'odof.x.render';
 var ns = odof.util.initNameSpace(moduleNameSpace);
+
+// 这个回调函数在后面要被覆盖 by Handaoliang
+var clickCallBackFunc = function(args){
+    window.location.href = odof.cross.index.location_uri;
+};
 
 (function(ns)
 {
@@ -171,61 +176,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
 
-var moduleNameSpace = "odof.cross.index";
-var ns = odof.util.initNameSpace(moduleNameSpace);
-
-//这个回调函数在后面要被覆盖。
-var clickCallBackFunc = function(args){
-    window.location.href = odof.cross.index.location_uri;
-};
-
-(function(ns){
-
-    ns.cross_id     = 0;
-    ns.btn_val      = null;
-    ns.token        = null;
-    ns.location_uri = null;
-
-    ns.setreadonly = function(callBackFunc) {
-        /*
-        if(typeof token_expired != "undefined" && token_expired == "false"){
-            //Token 还没有过期，用户点击之后弹窗，这个在回调中实现。
-        }
-        //Token已经过期，用户点击之前弹窗口
-        if(typeof token_expired != "undefined" && token_expired == "true"){
-        }
-        //======End=====Token已经过期，用户点击之前弹窗口
-        */
-        if(token != ""){
-            if(show_idbox == 'setpassword'){//如果要求弹设置密码窗口。
-                if(token_expired == "true"){
-                    var args = {"identity":external_identity};
-                    odof.user.status.doShowCrossPageVerifyDialog(null, args);
-                }else{
-                    odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                    jQuery("#show_identity_box").val(external_identity);
-                }
-            }else if(show_idbox == "login"){
-                odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
-            }else{
-                args = {"identity":external_identity};
-                odof.user.status.doShowCrossPageVerifyDialog(null, args);
-            }
-        }
-    };
-
-
-
-})(ns);
-
 
 
 
 $(document).ready(function() {
 return;
-    odof.cross.index.cross_id     = cross_id;
-    odof.cross.index.token        = token;
-    odof.cross.index.location_uri = location_uri;
+
 
     $('#rsvp_loading').activity({
         segments: 8,
