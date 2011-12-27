@@ -2,7 +2,6 @@
 /* by Leask */
 
 #x_view {
-    padding: 40px;
     background-color: #ffffff;
     border: 1px solid #DDDDDD;
     -webkit-border-radius: 6px;
@@ -11,6 +10,10 @@
     -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
     -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+#x_view_content {
+    padding: 0 40px 40px 40px;
 }
 
 #x_title {

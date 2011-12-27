@@ -4,7 +4,7 @@
 #x_menu_bar {
     position: relative;
     height: 30px;
-    padding-top: 5px;
+    padding-top: 10px;
 }
 
 #x_menu_bar .lock_icon {
@@ -27,13 +27,19 @@
 
 #x_menu_bar .lock_icon_desc, #x_menu_bar .edit_icon_desc {
     right: 10px;
-    top: 32px;width:220px;padding:8px;z-index:10
-    background:#f4fcfe; border:#90c3ce 1px solid;
-    line-height:20px; position:absolute; background-color:#FFF;
+    top: 40px;
+    width: 220px;
+    padding: 10px;
+    z-index: 10;
+    background: #f4fcfe;
+    border: #90c3ce 1px solid;
+    font-size: 14px;
+    line-height: 20px;
+    position: absolute;
+    background-color: #FFF;
 }
 
-    /*font-size:14px;*/
-#edit_x_bar{
+#edit_x_bar {
     width: 880px;
     height: 30px;
     padding-top: 10px;
@@ -67,7 +73,7 @@
 #edit_x_bar p.titles {
     padding-left: 10px;
     font-weight: bold;
-    font-size: 12pt;
+    font-size: 12px;
 }
 
 #edit_x_bar p.titles span {

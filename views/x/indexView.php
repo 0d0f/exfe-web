@@ -154,6 +154,7 @@ if(0) {
                 Edit this cross.
             </p>
         </div>
+        <div id="x_view_content"></div>
     </div>
 </div>
 
