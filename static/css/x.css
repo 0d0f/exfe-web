@@ -17,10 +17,13 @@
 }
 
 #x_title {
-    color: #0591ac;
-    font-family: Helvetica;
     font-weight: normal;
     word-break: break-all;
+}
+
+.x_title {
+    color: #0591ac;
+    font-family: Helvetica;
 }
 
 .x_title_normal {

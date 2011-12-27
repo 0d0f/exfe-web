@@ -35,20 +35,12 @@ class XActions extends ActionController
                         'datetime'    => $_POST['datetime']
                     );
 
-                    $cross_id = $crossdata->gatherCross($identity_id, $cross);
+                    $cross_id = $crossdata->gatherCross(
+                        $identity_id, $cross,
+                        json_decode($_POST['exfee'], true), $_POST['draft_id']
+                    );
 
                     if ($cross_id) {
-                        $logdata = $this->getModelByName('log');
-                        $logdata->addLog('identity', $identity_id, 'gather', 'cross', $cross_id, '', $_POST['title'], '');
-
-                        $helper = $this->getHelperByName('exfee');
-                        $helper->addExfeeIdentify($cross_id, json_decode($_POST['exfee'], true), $identity_id);
-                        $helper->sendInvitation($cross_id, $identity_id);
-
-                        // remove draft
-                        $XDraft = $this->getModelByName('XDraft');
-                        $XDraft->delDraft($_POST['draft_id']);
-
                         $result = array('success' => true, 'crossid' => int_to_base62($cross_id));
                     } else {
                         $result = array('success' => false, 'error' => 'unknow');

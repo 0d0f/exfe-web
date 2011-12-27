@@ -2,6 +2,7 @@
 
 class XHelper extends ActionController
 {
+
     public function addCrossDiffLog($cross_id, $identity_id, $old_cross, $crossobj)
     {
         $changed=array();
@@ -38,13 +39,14 @@ class XHelper extends ActionController
         return $changed;
     }
 
+
     public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title)
     {
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
         $userData=$this->getModelByName("user");
         $user=$userData->getUserProfileByIdentityId($host_identity_id);
-        
+
         $exfee_identity=humanIdentity($exfee_identity,$user);
         $cross_id=$new_cross["id"];
 
@@ -69,6 +71,8 @@ class XHelper extends ActionController
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
     }
+
+
     public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title)
     {
         $identityData=$this->getModelByName("identity");
@@ -92,6 +96,22 @@ class XHelper extends ActionController
 
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
-        
+
     }
+
+
+    public function logX($identity_id, $cross_id, $cross_title)
+    {
+        $modLog = $this->getModelByName('log');
+        $modLog->addLog('identity', $identity_id, 'gather', 'cross',
+                        $cross_id, '', $cross_title, '');
+    }
+
+
+    public function delDraft($draft_id)
+    {
+        $modXDraft = $this->getModelByName('XDraft');
+        $modXDraft->delDraft($draft_id);
+    }
+
 }
