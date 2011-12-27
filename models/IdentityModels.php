@@ -99,44 +99,45 @@ class IdentityModels extends DataModel{
         return $identityid;
     }
 
-
-    //modified by handaoliang
-    public function ifIdentityExist($external_identity)
+    public function ifIdentityExist($external_identity, $provider="")
     {
-        $external_identity=mysql_real_escape_string($external_identity);
-        //----han_mod_01-----
-        //$sql="select id,status from  identities where external_identity='$external_identity'";
-        $sql="SELECT id FROM identities WHERE external_identity='$external_identity'";
-        $row=$this->getRow($sql);
-        if (intval($row["id"])>0)
-        {
-            $identity_id=intval($row["id"]);
-            //----han_mod_02-----
-            $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
+        $external_identity = mysql_real_escape_string($external_identity);
+        $provider = mysql_real_escape_string($provider);
+        $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
+
+        if($provider != ""){
+            $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}'";
+        }
+
+        $row = $this->getRow($sql);
+        $identity_id = intval($row["id"]);
+        if ($identity_id > 0) {
+            $sql = "SELECT userid, status FROM user_identity WHERE identityid={$identity_id}";
             $result = $this->getRow($sql);
-            //if(intval($row["status"])==3)
-            if(intval($result["status"])==3)
-            {
-                $sql="select userid from user_identity where identityid=$identity_id";
-                $userIdRow=$this->getRow($sql);
-                if(intval($userIdRow["userid"])>0)
-                {
-                    $uid=intval($userIdRow["userid"]);
-                    $sql = "select id,encrypted_password from users WHERE id=$uid;";
-                    $userrow = $this->getRow($sql);
+            $uid = intval($result["userid"]);
+            $user_status = intval($result["status"]);
 
-                    $newUser = false;
-                    if(intval($userrow["id"])>0 && trim($userrow["encrypted_password"])==""){
-                        return  array("id"=>$identity_id,"status"=>2);
-                    }
+            $returnData = array(
+                "id"=>$identity_id,
+                "status"=>$user_status,
+                "user_avatar"=>""
+            );
+
+            if($user_status == 3 && $uid > 0) {
+                $sql = "SELECT id, encrypted_password, avatar_file_name FROM users WHERE id={$uid}";
+                $user_info = $this->getRow($sql);
+
+                if(intval($user_info["id"])>0 && trim($user_info["encrypted_password"])==""){
+                    $returnData["status"] = 2;
                 }
-            }
 
-            //----han_mod_02-----
-            //return  array("id"=>intval($row["id"]),"status"=>intval($row["status"]));
-            return  array("id"=>intval($row["id"]),"status"=>intval($result["status"]));
+                $returnData["user_avatar"] = $user_info["avatar_file_name"];
+                return $returnData;
+            }
+            return $returnData;
+
         } else {
-            return FALSE;
+            return false;
         }
     }
 

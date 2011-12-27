@@ -11,6 +11,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.actions = "sign_in";
     ns.userIdentityCache = "";
     ns.userManualVerifyIdentityCache = "";
+    ns.specialDomain = ["facebook", "twitter", "google"];
 
     ns.getUrlVars = function() {
         var vars = [], hash;
@@ -64,11 +65,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<ul>"
                  + "<li><label class='title'>Identity:</label>"
                  + "<div class='identity_box'>"
-                 + "<input id='identity' name='identity' type='text' class='inputText' style='margin-left:0px;' />"
+                 + "<input id='identity' name='identity' type='text' class='inputText' autocomplete='off' disableautocomplete='' />"
+                 + "</div>"
+                 + "<div class='account_hint_list' id='account_hint_list' style='display:none;'>"
+                 + "<ul>"
+                 + "<li class='facebook' id='facebook'><span id='facebook_name'></span>@Facebook</li>"
+                 + "<li class='twitter' id='twitter'><span id='twitter_name'></span>@Twitter</li>"
+                 + "<li class='google' id='google'><span id='google_name'></span>@Google</li>"
+                 + "</ul>"
                  + "</div>"
                  + "<div id='identity_dbox'>Your email here</div>"
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<em class='delete' id='delete_identity' style='display:none;'></em>"
+                 + "<img class='avatar' id='user_avatar' style='display:none;' src='' />"
                  + "</li>"
                  + "<li id='displayname' style='display:none'>"
                  + "<label class='title' style='color:#CC3333'>Display name:</label>"
@@ -118,10 +127,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<em id='displayname_error' class='warning' style='display:none;'></em>"
                  + "</li>"
                  + "<li><label class='title'>Password:</label>"
-                 + "<input type='password' id='identification_pwd' name='password' class='inputText' style='display:none;' />"
-                 + "<input type='text' id='identification_pwd_a' class='inputText' />"
+                 + "<input type='password' id='identification_pwd' name='password' class='inputText' />"
+                 + "<input type='text' id='identification_pwd_a' class='inputText' style='display:none;' />"
                  + "<input type='hidden' id='identification_user_token' value='' />"
-                 + "<em class='ic2' id='identification_pwd_ic'></em>"
+                 + "<em class='ic3' id='identification_pwd_ic'></em>"
                  + "</li>"
                  /*
                  + "<li id='identification_repwd_li' style='display:none;'>"
@@ -410,9 +419,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }else{
             ns.userIdentityCache = jQuery('#identity').val();
         }
-        //console.log("bbbbb");
-        //added by handaoliang, check email address
-        if(userIdentity != "" && userIdentity.match(odof.mailReg)){
+
+        var curDomain = userIdentity.split("@")[1];
+
+        //check email address
+        if(userIdentity != "" && (userIdentity.match(odof.mailReg) || odof.util.inArray(ns.specialDomain,curDomain))) {
             jQuery("#identity_verify_loading").show();
             jQuery.ajax({
                 type: "GET",
@@ -429,6 +440,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             jQuery('#forgot_password').hide();
                             jQuery('#logincheck').hide();
                             jQuery('#login_hint').hide();
+                            jQuery("#user_avatar").hide();
                             //注册对话框中的start over button
                             jQuery('#startover').show();
                             jQuery('#startover').bind('click', function(){
@@ -457,6 +469,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             if(data.response.status == "verifying"){
                                 ns.showManualVerificationDialog();
                             }else{
+                                if(data.response.status == "empty_pwd"){
+                                    jQuery("#login_hint").show();
+                                    jQuery("#login_hint").html("<span>Password empty!</span>");
+                                }
+
+                                if(typeof data.response.avatar != "undefined" && data.response.avatar != ""){
+                                    jQuery("#user_avatar").show();
+                                    jQuery("#user_avatar")[0].src=odof.comm.func.getUserAvatar(data.response.avatar,80,img_url);
+                                }else{
+                                    jQuery("#user_avatar").hide();
+                                }
                                 ns.showLoginDialog();
                             }
                         }
@@ -487,229 +510,262 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         */
     };
 
-    ns.bindLoginDialogEvent = function(type) {
-        if(type=="reg") {
-            //在KeyUP事件之上加一层TimeOut设定，延迟响应以修复.co到.com的问题。
-            /*
-            jQuery('#identity').keyup(function() {
-                jQuery(this).doTimeout('typing', 250, function(){
-                    ns.identityInputBoxActions();
-                });
-            });
-            */
-            window.setInterval(function(){
-                ns.identityInputBoxActions();
-            },1000);
-
-            //绑定当焦点到密码框时，检测一下当前用户是否存在。
-            jQuery('#identification_pwd').focus(function() {
+    ns.bindLoginDialogEvent = function(){
+        //在KeyUP事件之上加一层TimeOut设定，延迟响应以修复.co到.com的问题。
+        /*
+        jQuery('#identity').keyup(function() {
+            jQuery(this).doTimeout('typing', 250, function(){
                 ns.identityInputBoxActions();
             });
+        });
+        */
+        jQuery('#identity').keyup(function() {
+            var identity = jQuery('#identity').val();
+            var currentIdentity = identity.split("@")[0];
+            var curDomain = identity.split("@")[1];
 
-            //绑定两个显示的事件。
-            jQuery('#identity').keyup(function(){ ns.showIdentityInfo(); });
-            jQuery('#identity').change(function(){
-                ns.showIdentityInfo();
-                var userIdentity = jQuery('#identity').val();
-                if(userIdentity == "" || !userIdentity.match(odof.mailReg)){
-                    jQuery("#identity_error_msg").show();
-                    setTimeout(function(){
-                        jQuery("#identity_error_msg").hide();
-                    }, 3000);
+            if(currentIdentity == ""){
+                jQuery("#account_hint_list").hide();
+            }else{
+                if(identity.indexOf("@") < 0 || odof.util.inArray(ns.specialDomain,curDomain)){
+                    jQuery("#account_hint_list").show();
+                    jQuery("#account_hint_list").unbind("clickoutside");
+                    jQuery("#account_hint_list").bind("clickoutside",function(event){
+                        jQuery("#account_hint_list").hide();
+                        jQuery("#account_hint_list").unbind("clickoutside");
+                    });
+                    jQuery("#facebook_name, #twitter_name, #google_name").html(currentIdentity);
+                    jQuery("#facebook, #twitter, #google").unbind("click");
+                    jQuery("#facebook, #twitter, #google").bind("click", function(data){
+                        var objID = data.currentTarget.id;
+                        jQuery("#identity").val(jQuery("#"+objID+"_name").html()+"@"+objID);
+                        jQuery("#account_hint_list").hide();
+                        jQuery("#facebook, #twitter, #google").unbind("click");
+                    });
+                }else{
+                    jQuery("#account_hint_list").unbind("clickoutside");
+                    jQuery("#account_hint_list").hide();
                 }
-            });
+            }
+        });
 
-            jQuery('#identificationform').submit(function() {
-                    var params=ns.getUrlVars();
-                    //ajax set password
-                    //var token=params["token"];
-                    var identity=jQuery('input[name=identity]').val();
-                    var password=jQuery('input[name=password]').val();
-                    //var retypepassword=jQuery('input[name=retypepassword]').val();
-                    var displayname=jQuery('input[name=displayname]').val();
-                    var auto_signin=jQuery('input[name=auto_signin]').val();
+        window.setInterval(function(){
+            ns.identityInputBoxActions();
+        },1000);
 
-                    var hideErrorMsg = function(){
-                        jQuery("#identity_error_msg").hide();
-                        jQuery('#displayname_error_msg').hide();
-                        jQuery("#reset_pwd_error_msg").hide();
-                        jQuery("#displayname_error").hide();
-                        jQuery("#pwd_hint").hide();
-                        jQuery("#login_hint").hide();
-                    };
+        //绑定当焦点到密码框时，检测一下当前用户是否存在。
+        jQuery('#identification_pwd').focus(function() {
+            ns.identityInputBoxActions();
+        });
+
+        //绑定两个显示的事件。
+        jQuery('#identity').keyup(function(){ ns.showIdentityInfo(); });
+        /*
+        jQuery('#identity').change(function(){
+            ns.showIdentityInfo();
+            var userIdentity = jQuery('#identity').val();
+            if(userIdentity == "" || !userIdentity.match(odof.mailReg)){
+                jQuery("#identity_error_msg").show();
+                setTimeout(function(){
+                    jQuery("#identity_error_msg").hide();
+                }, 3000);
+            }
+        });
+        */
+
+        jQuery('#identificationform').submit(function() {
+                var params=ns.getUrlVars();
+                //ajax set password
+                //var token=params["token"];
+                var identity=jQuery('input[name=identity]').val();
+                var password=jQuery('input[name=password]').val();
+                //var retypepassword=jQuery('input[name=retypepassword]').val();
+                var displayname=jQuery('input[name=displayname]').val();
+                var auto_signin=jQuery('input[name=auto_signin]').val();
+
+                var hideErrorMsg = function(){
+                    jQuery("#identity_error_msg").hide();
+                    jQuery('#displayname_error_msg').hide();
+                    jQuery("#reset_pwd_error_msg").hide();
+                    jQuery("#displayname_error").hide();
+                    jQuery("#pwd_hint").hide();
+                    jQuery("#login_hint").hide();
+                };
 
 
-                    if(identity == "" || !identity.match(odof.mailReg)){
+                if(identity == "" || !identity.match(odof.mailReg)){
+                    var curDomain = identity.split("@")[1];
+                    if(!odof.util.inArray(ns.specialDomain,curDomain)){
                         jQuery("#identity_error_msg").show();
                         setTimeout(hideErrorMsg, 3000);
                         return false;
                     }
-                    if(jQuery('#displayname').is(':visible')==true) {
-                        if(!ns.showDisplayNameError(displayname)){
-                            return false;
-                        }
+                }
+                if(jQuery('#displayname').is(':visible')==true) {
+                    if(!ns.showDisplayNameError(displayname)){
+                        return false;
                     }
+                }
 
+                /*
+                if(jQuery('#retype').is(':visible') == true && password != retypepassword && password!="" ) {
+                    jQuery('#pwd_hint').html("<span>Check Password</span>");
+                    jQuery('#pwd_hint').show();
+                    setTimeout(hideErrorMsg, 3000);
+                    return false;
+                }
+                */
+                if(ns.actions == "sign_up"){
+                    if(password == ""){
+                        jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords empty.</span>");
+                        jQuery('#pwd_hint').show();
+                        setTimeout(hideErrorMsg, 3000);
+                        return false;
+                    }
                     /*
-                    if(jQuery('#retype').is(':visible') == true && password != retypepassword && password!="" ) {
-                        jQuery('#pwd_hint').html("<span>Check Password</span>");
+                    if(retypepassword != password){
+                        jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords don't match.</span>");
+                        jQuery('#pwd_match_error').show();
                         jQuery('#pwd_hint').show();
                         setTimeout(hideErrorMsg, 3000);
                         return false;
                     }
                     */
-                    if(ns.actions == "sign_up"){
-                        if(password == ""){
-                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords empty.</span>");
-                            jQuery('#pwd_hint').show();
-                            setTimeout(hideErrorMsg, 3000);
-                            return false;
-                        }
-                        /*
-                        if(retypepassword != password){
-                            jQuery('#pwd_hint').html("<span style='color:#CC3333'>Passwords don't match.</span>");
-                            jQuery('#pwd_match_error').show();
-                            jQuery('#pwd_hint').show();
-                            setTimeout(hideErrorMsg, 3000);
-                            return false;
-                        }
-                        */
+                }
+                if(ns.actions == "sign_in"){
+                    if(password == "" || identity == ""){
+                        jQuery('#login_hint').html("<span>Identity or password empty</span>");
+                        jQuery('#login_hint').show();
+                        setTimeout(hideErrorMsg, 3000);
+                        return false;
                     }
-                    if(ns.actions == "sign_in"){
-                        if(password == "" || identity == ""){
-                            jQuery('#login_hint').html("<span>Identity or password empty</span>");
-                            jQuery('#login_hint').show();
-                            setTimeout(hideErrorMsg, 3000);
-                            return false;
-                        }
-                    }
-                    if(password != "" && identity != "" && jQuery('#displayname').is(':visible')==false) {
-                        var poststr = "identity="+identity+"&password="
-                                      + encodeURIComponent(password)+"&auto_signin="+auto_signin;
-                        jQuery.ajax({
-                            type: "POST",
-                            data: poststr,
-                            url: site_url+"/s/dialoglogin",
-                            dataType:"json",
-                            success: function(data){
-                                if(data!=null) {
-                                    if(data.response.success=="false") {
-                                        jQuery('#login_hint').show();
-                                        setTimeout(hideErrorMsg, 3000);
-                                    } else if(data.response.success=="true") {
-                                        jQuery("#hostby").val(identity);
-                                        jQuery("#hostby").attr("enter","true");
-                                        //如果是首页，并且是已经登录，则跳转到Profile页面。
-                                        if(typeof pageFlag != "undefined" && pageFlag == "home_page"){
-                                            window.location.href="/s/profile";
-                                            return;
-                                        }
-                                        //如果是从/s/login页面登录。
-                                        if(typeof showSpecialIdentityDialog != "undefined" && pageFlag == "login"){
-                                            window.location.href="/s/profile";
-                                            return;
-                                        }
-                                        //如果是从/x/forbidden页面登录
-                                        if(typeof showSpecialIdentityDialog != "undefined" && pageFlag == "forbidden"){
-                                            //检查当前用户是否有权限访问这个Cross。
-                                            jQuery.ajax({
-                                                type:"POST",
-                                                data:"cid="+cross_id,
-                                                url:site_url+"/x/checkforbidden",
-                                                dataType:"json",
-                                                success:function(JSONData){
-                                                    if(JSONData.success){
-                                                        window.location.href=referer;
-                                                    }else{
-                                                        window.location.href="/s/profile";
-                                                    }
-                                                }
-                                            });
-
-                                            return;
-                                        }
-                                        odof.exlibs.ExDialog.removeDialog();
-                                        odof.exlibs.ExDialog.removeCover();
+                }
+                if(password != "" && identity != "" && jQuery('#displayname').is(':visible')==false) {
+                    var poststr = "identity="+identity+"&password="
+                                  + encodeURIComponent(password)+"&auto_signin="+auto_signin;
+                    jQuery.ajax({
+                        type: "POST",
+                        data: poststr,
+                        url: site_url+"/s/dialoglogin",
+                        dataType:"json",
+                        success: function(data){
+                            if(data!=null) {
+                                if(data.response.success=="false") {
+                                    jQuery('#login_hint').show();
+                                    setTimeout(hideErrorMsg, 3000);
+                                } else if(data.response.success=="true") {
+                                    jQuery("#hostby").val(identity);
+                                    jQuery("#hostby").attr("enter","true");
+                                    //如果是首页，并且是已经登录，则跳转到Profile页面。
+                                    if(typeof pageFlag != "undefined" && pageFlag == "home_page"){
+                                        window.location.href="/s/profile";
+                                        return;
                                     }
-                                    //added by handaoliang
-                                    //callback check UserLogin
+                                    //如果是从/s/login页面登录。
+                                    if(typeof showSpecialIdentityDialog != "undefined" && pageFlag == "login"){
+                                        window.location.href="/s/profile";
+                                        return;
+                                    }
+                                    //如果是从/x/forbidden页面登录
+                                    if(typeof showSpecialIdentityDialog != "undefined" && pageFlag == "forbidden"){
+                                        //检查当前用户是否有权限访问这个Cross。
+                                        jQuery.ajax({
+                                            type:"POST",
+                                            data:"cid="+cross_id,
+                                            url:site_url+"/x/checkforbidden",
+                                            dataType:"json",
+                                            success:function(JSONData){
+                                                if(JSONData.success){
+                                                    window.location.href=referer;
+                                                }else{
+                                                    window.location.href="/s/profile";
+                                                }
+                                            }
+                                        });
+
+                                        return;
+                                    }
+                                    odof.exlibs.ExDialog.removeDialog();
+                                    odof.exlibs.ExDialog.removeCover();
+                                }
+                                //added by handaoliang
+                                //callback check UserLogin
+                                odof.user.status.checkUserLogin();
+                            }
+                        }
+                    });
+                //} else if(password!=""&& identity!="" && retypepassword==password && displayname!="") {
+                } else if(password!=""&& identity!="" && displayname!="") {
+                    /*
+                    var poststr="identity="+identity+"&password="+encodeURIComponent(password)
+                                +"&repassword="+encodeURIComponent(retypepassword)
+                                +"&displayname="+encodeURIComponent(displayname);
+                    */
+                    var poststr = "identity="+identity
+                                + "&password="+encodeURIComponent(password)
+                                + "&displayname="+encodeURIComponent(displayname);
+
+                    jQuery.ajax({
+                        type: "POST",
+                        data: poststr,
+                        url: site_url+"/s/dialogaddidentity",
+                        dataType:"json",
+                        success: function(data){
+                            if(data!=null)
+                            {
+                                if(data.response.success=="false") {
+                                    jQuery('#login_hint').show();
+                                    setTimeout(function(){
+                                        jQuery('#login_hint').hide();
+                                    }, 3000);
+                                } else if(data.response.success=="true") {
+                                    jQuery("#hostby").val(identity);
+                                    jQuery("#hostby").attr("enter","true");
+
+                                    //显示注册成功窗口
+                                    jQuery("#identity_reg_success").show();
+                                    jQuery("#identity_display_box").html(identity);
+                                    jQuery("#identification_handler").html("Welcome");
+                                    jQuery("#close_reg_success_dialog_btn").bind("click",function(){
+                                        window.location.href="/s/profile";
+                                        return;
+                                        //odof.exlibs.ExDialog.removeDialog();
+                                        //odof.exlibs.ExDialog.removeCover();
+                                    });
                                     odof.user.status.checkUserLogin();
                                 }
                             }
-                        });
-                    //} else if(password!=""&& identity!="" && retypepassword==password && displayname!="") {
-                    } else if(password!=""&& identity!="" && displayname!="") {
-                        /*
-                        var poststr="identity="+identity+"&password="+encodeURIComponent(password)
-                                    +"&repassword="+encodeURIComponent(retypepassword)
-                                    +"&displayname="+encodeURIComponent(displayname);
-                        */
-                        var poststr = "identity="+identity
-                                    + "&password="+encodeURIComponent(password)
-                                    + "&displayname="+encodeURIComponent(displayname);
+                        }
+                    });
+                } else { //reg
+                    return false;
+                }
 
-                        jQuery.ajax({
-                            type: "POST",
-                            data: poststr,
-                            url: site_url+"/s/dialogaddidentity",
-                            dataType:"json",
-                            success: function(data){
-                                if(data!=null)
-                                {
-                                    if(data.response.success=="false") {
-                                        jQuery('#login_hint').show();
-                                        setTimeout(function(){
-                                            jQuery('#login_hint').hide();
-                                        }, 3000);
-                                    } else if(data.response.success=="true") {
-                                        jQuery("#hostby").val(identity);
-                                        jQuery("#hostby").attr("enter","true");
-
-                                        //显示注册成功窗口
-                                        jQuery("#identity_reg_success").show();
-                                        jQuery("#identity_display_box").html(identity);
-                                        jQuery("#identification_handler").html("Welcome");
-                                        jQuery("#close_reg_success_dialog_btn").bind("click",function(){
-                                            window.location.href="/s/profile";
-                                            return;
-                                            //odof.exlibs.ExDialog.removeDialog();
-                                            //odof.exlibs.ExDialog.removeCover();
-                                        });
-                                        odof.user.status.checkUserLogin();
-                                    }
-                                }
-                            }
-                        });
-                    } else { //reg
-                        return false;
+                jQuery.ajax({
+                    type: "GET",
+                    url: site_url+"/identity/get?identity="+identity,
+                    dataType:"json",
+                    success: function(data){
+                    var exfee_pv="";
+                    if(data.response.identity!=null)
+                    {
+                        var identity=data.response.identity.external_identity;
+                        var id=data.response.identity.id;
+                        var name=data.response.identity.name;
+                        var avatar_file_name=data.response.identity.avatar_file_name;
+                        if(jQuery('#exfee_'+id).attr("id")==null)
+                        {
+                            if(name=="")
+                                name=identity;
+                            exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
+                        }
                     }
 
-                    jQuery.ajax({
-                        type: "GET",
-                        url: site_url+"/identity/get?identity="+identity,
-                        dataType:"json",
-                        success: function(data){
-                        var exfee_pv="";
-                        if(data.response.identity!=null)
-                        {
-                            var identity=data.response.identity.external_identity;
-                            var id=data.response.identity.id;
-                            var name=data.response.identity.name;
-                            var avatar_file_name=data.response.identity.avatar_file_name;
-                            if(jQuery('#exfee_'+id).attr("id")==null)
-                            {
-                                if(name=="")
-                                    name=identity;
-                                exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
-                            }
-                        }
-
-                        jQuery("ul.samlcommentlist").append(exfee_pv);
-                        }
-                });
-                return false;
+                    jQuery("ul.samlcommentlist").append(exfee_pv);
+                    }
             });
-        }
+            return false;
+        });
     };
 })(ns);
 
