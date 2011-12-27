@@ -142,7 +142,7 @@ if(0) {
                 <span class="icon"></span>
             </div>
         </div>
-        <div class="menu_bar">
+        <div id="x_menu_bar">
             <p class="lock_icon" id="private_icon"></p>
             <p class="lock_icon_desc" id="private_hint" style="display:none" >
                 <span>Private X:</span>
@@ -161,51 +161,25 @@ if(0) {
 
 
 
-            <div class="exfel">
-                <textarea id="cross_desc_textarea" style="display:none;"><?php echo $cross["description"]; ?></textarea>
-                <div id="cross_desc"<?php if($desc_str_len > $define_str_len){ ?> style="display:none"<?php } ?>>
-                    <?php echo $description; ?>
-                </div>
-                <div id="cross_desc_short"<?php if($desc_str_len <= $define_str_len){ ?> style="display:none"<?php } ?>>
-                    <?php echo $display_desc; ?>
-                    <a id="desc_expand_btn" href="javascript:void(0);">Expand</a>
-                </div>
-                <ul class="ynbtn" id="rsvp_options" <?php echo $myrsvp ? 'style="display:none"' : ''; ?> >
-                    <li>
-                        <a id='rsvp_yes' value="yes" href="javascript:void(0);" class="yes">Accept</a>
-                    </li>
-                    <li>
-                        <a id='rsvp_no' value="no" href="javascript:void(0);" class="no">Decline</a>
-                    </li>
-                    <li>
-                        <a id='rsvp_maybe' value="maybe" href="javascript:void(0);" class="maybe">interested</a>
-                        <div style="display:none" id="rsvp_loading" ></div>
-                    <li>
-                </ul>
-                <div id="rsvp_submitted" <?php echo $myrsvp ? '' : 'style="display:none"'; ?>>
-                    <span>Your RSVP is "<span id="rsvp_status"></span>". </span>
-                    <a href="javascript:void(0);" id="changersvp">Change?</a>
-                </div>
+        <div id="cross_container" class="exfer">
+            <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>">
+            <div id="cross_times_area">
+                <h3 id="pv_relativetime">
+                    <?php if($begin_at_relativetime == 0){ echo "Anytime"; } else { echo $begin_at_relativetime; } ?>
+                </h3>
+                <p class="tm" id="cross_times">
+                    <?php echo $begin_at_humandatetime;?>
+                </p>
             </div>
-            <div id="cross_container" class="exfer">
-                <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>">
-                <div id="cross_times_area">
-                    <h3 id="pv_relativetime">
-                        <?php if($begin_at_relativetime == 0){ echo "Anytime"; } else { echo $begin_at_relativetime; } ?>
-                    </h3>
-                    <p class="tm" id="cross_times">
-                        <?php echo $begin_at_humandatetime;?>
-                    </p>
-                </div>
-                <div id="cross_place_area">
-                    <h3 id="pv_place_line1" class="pv_place_line1_normal">
-                        <?php echo ParseURL($place_line1) ?: 'Somewhere'; ?>
-                    </h3>
-                    <p id="pv_place_line2" class="tm">
-                        <?php echo ParseURL(str_replace('\r', '<br />', $cross["place"]["line2"])); ?>
-                    </p>
-                </div>
+            <div id="cross_place_area">
+                <h3 id="pv_place_line1" class="pv_place_line1_normal">
+                    <?php echo ParseURL($place_line1) ?: 'Somewhere'; ?>
+                </h3>
+                <p id="pv_place_line2" class="tm">
+                    <?php echo ParseURL(str_replace('\r', '<br />', $cross["place"]["line2"])); ?>
+                </p>
             </div>
+        </div>
 
 
 
