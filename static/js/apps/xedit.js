@@ -273,7 +273,23 @@ $(document).ready(function()
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
 
+    $('#private_icon').mousemove(function()
+    {
+        $('#private_hint').show();
+    });
+    $('#private_icon').mouseout(function()
+    {
+        $('#private_hint').hide();
+    });
+    $('#edit_icon').mousemove(function()
+    {
+        $('#edit_icon_desc').show();
+    });
+    $('#edit_icon').mouseout(function() {
+        $('#edit_icon_desc').hide();
+    });
 
+    
 return;
     jQuery("#edit_icon").bind("click",function() {
         odof.cross.edit.showEditBar();
@@ -337,10 +353,6 @@ return;
 
 
 if (0) {
-(function(ns){
-
-
-
     /**
      * while user click titles, show edit textarea.
      *
@@ -919,6 +931,4 @@ if (0) {
         ns.identityExfee();
         $('#exfee_input').focus();
     };
-
-})(ns);
 }

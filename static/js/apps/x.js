@@ -163,25 +163,9 @@ var clickCallBackFunc = function(args){
 })(ns);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $(document).ready(function() {
-return;
 
+    return;
 
     $('#rsvp_loading').activity({
         segments: 8,

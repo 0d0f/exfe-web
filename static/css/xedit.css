@@ -60,6 +60,7 @@
     float: left;
 }
 
+/* removing */
 #edit_x_bar #edit_cross_submit_loading {
     position: absolute;
     width: 16px;
