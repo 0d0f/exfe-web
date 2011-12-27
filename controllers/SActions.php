@@ -2,6 +2,8 @@
 class SActions extends ActionController
 {
 
+    private $specialDomain = array("facebook", "twitter", "google");
+
     public function doTestUser()
     {
         $identityData = $this->getModelByName("identity");
@@ -459,8 +461,7 @@ class SActions extends ActionController
         if(count($identityArrayInfo) > 1){
             $currentDomain = $identityArrayInfo[1];
             $specialIdentity = $identityArrayInfo[0];
-            $specialDomain = array("facebook", "twitter", "google");
-            if(in_array($currentDomain, $specialDomain)){
+            if(in_array($currentDomain, $this->specialDomain)){
                 if($currentDomain == "google"){
                     $specialIdentity .= "@gmail.com";
                 }
@@ -786,18 +787,35 @@ class SActions extends ActionController
         if(isset($identity) && isset($password))
         {
             $Data=$this->getModelByName("identity");
-            $userid=$Data->login($identity,$password,$autosignin);
 
-            if(intval($userid)>0)
-            {
+            $identityArrayInfo = explode("@", $identity);
+            if(count($identityArrayInfo) < 2){
+                $responobj["response"]["success"]="false";
+                echo json_encode($responobj);
+                exit();
+            }
+
+            $currentDomain = $identityArrayInfo[1];
+            $specialIdentity = $identityArrayInfo[0];
+            if(in_array($currentDomain, $this->specialDomain)){
+                if($currentDomain == "google"){
+                    $specialIdentity .= "@gmail.com";
+                }
+                $identityArr = array("provider"=>$currentDomain,"ex_username"=>$specialIdentity);
+                $userid=$Data->login($identityArr,$password,$autosignin,false,true);
+            } else {
+                $userid=$Data->login($identity,$password,$autosignin);
+            }
+
+            if(intval($userid)>0) {
                 $responobj["response"]["success"]="true";
                 $responobj["response"]["userid"]=$userid;
-            }
-            else
+            } else {
                 $responobj["response"]["success"]="false";
-        }
-        else
+            }
+        } else {
             $responobj["response"]["success"]="false";
+        }
         echo json_encode($responobj);
         exit();
     }
@@ -960,6 +978,55 @@ class SActions extends ActionController
             header("Content-Type:application/json; charset=UTF-8");
             echo json_encode($returnData);
         }
+    }
+
+    public function doSetOAuthAccountPassword(){
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+        header("Content-Type:application/json; charset=UTF-8");
+        $userIdentity = exPost("u_identity");
+        $userDisplayName = exPost("u_dname");
+        $userNewPassword = exPost("u_passwd");
+        if($userDisplayName == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Display Name cannot be empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+        if($userNewPassword == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Password cannot be empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0) {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityObj = $this->getModelByName("identity");
+
+        $identityInfo = $identityObj->getIdentity($userIdentity);
+        if(is_array($identityInfo)){
+            if($identityInfo["userid"] != $userID){
+                $returnData["error"] = 1;
+                $returnData["msg"] = "Identity error.";
+                echo json_encode($returnData);
+                exit();
+            }
+        }
+
+        $userDataObj = $this->getModelByName("user");
+        $result = $userDataObj->doSetOAuthAccountPassword($userNewPassword, $userDisplayName, $userID);
+
+        echo json_encode($returnData);
+        exit();
     }
 
 
@@ -1196,15 +1263,7 @@ class SActions extends ActionController
             "msg"       =>""
         );
         header("Content-Type:application/json; charset=UTF-8");
-        $userID = intval($_SESSION["userid"]);
-        if($userID <= 0)
-        {
-            $returnData["error"] = 1;
-            $returnData["msg"] = "Please login first.";
-            echo json_encode($returnData);
-            exit();
-        }
-
+        $userIdentity = exPost("u_identity");
         $userPassword = exPost("u_pwd");
         $userNewPassword = exPost("u_new_pwd");
         //去掉Re-type
@@ -1230,7 +1289,26 @@ class SActions extends ActionController
             exit();
         }
         */
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
         $identityObj = $this->getModelByName("identity");
+
+        $identityInfo = $identityObj->getIdentity($userIdentity);
+        if(is_array($identityInfo)){
+            if($identityInfo["userid"] != $userID){
+                $returnData["error"] = 1;
+                $returnData["msg"] = "Identity error.";
+                echo json_encode($returnData);
+                exit();
+            }
+        }
+
         $result = $identityObj->checkUserPassword($userID, $userPassword);
         if(!$result){
             $returnData["error"] = 1;

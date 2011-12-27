@@ -56,31 +56,37 @@
                 if( $identity["provider"]!="iOSAPN")
                 {
                     $identity=humanIdentity($identity,NULL);
-                    if($identity["name"]==$identity["external_identity"])
+                    if($identity["name"]==$identity["external_identity"]){
                         $identity["name"]="";
+                    }
                     if($identity["status"]!=3 )
                     {
-                        if($identity["status"]==2)
-                            $status="Verifying";
-                        if($identity["provider"]=="email")
+                        if($identity["status"]==2){
+                            $status = "Verifying";
+                        }
+                        if($identity["provider"]=="email"){
                             $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>ReSend</button>";
+                        }
                     ?>
                     <p>
-
                         <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
                         <b><span class="id_name"><?php echo $identity["name"];?></span>
-                        <em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
+                        <em><?php echo $identity["external_identity"]; ?></em>
                         </b>
                         <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status;?> <?php echo $button?></i>
                     </p>
                     <?php
-                    }
-                    else
-                    {
+                    } else {
                     ?>
-                    <p><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" /><b><span class="id_name"><?php echo $identity["name"];?></span>
-<em><a href="javascript:odof.user.status.doShowChangePwdDialog(null, '<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
-</b></p>
+                    <p><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
+                        <b><span class="id_name"><?php echo $identity["name"];?></span>
+                        <?php if($identity["provider"]=="email"){ ?>
+                        <em><a href="javascript:odof.user.status.doShowChangePwdDialog('<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
+                        <?php }else{ ?>
+                        <em><a href="javascript:odof.user.status.changeOAuthAccountPWD('<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_identity"]; ?></a></em>
+                        <?php } ?>
+                         </b>
+                    </p>
                     <?php
                     }
                 }

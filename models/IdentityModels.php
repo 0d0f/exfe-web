@@ -293,15 +293,22 @@ class IdentityModels extends DataModel{
         $this->query($sql);
     }
 
-    public function login($identity,$password,$setcookie=false, $password_hashed=false)
+    public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false)
     {
         //$password = md5($password.$this->salt);
-        $sql="select * from identities where external_identity='$identity' limit 1";
-#update last_sign_in_at,last_sign_in_ip...
+        $sql="select * from identities where external_identity='$identityInfo' limit 1";
+        if($oauth_login){
+            $provider = $identityInfo["provider"];
+            $ex_username = $identityInfo["ex_username"];
+            $sql = "SELECT * FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}'";
+        }
+
         $identityrow=$this->getRow($sql);
         if(intval($identityrow["id"])>0)
         {
             $identity_id=intval($identityrow["id"]);
+            $identity = $identityrow["external_identity"];
+
             $userid=0;
             $sql="select userid from user_identity where identityid=$identity_id";
             $row=$this->getRow($sql);
@@ -323,23 +330,6 @@ class IdentityModels extends DataModel{
                 if($row["encrypted_password"]==$password)
                 {
                     $this->loginByIdentityId( $identity_id,$userid,$identity,$row,$identityrow,"password",$setcookie);
-
-                    //$_SESSION["userid"]=$userid;
-                    //$_SESSION["identity_id"]=$identity_id;
-                    //$identity=array();
-                    //$identity["external_identity"]=$identityrow["external_identity"];
-                    //$identity["name"]=$identityrow["name"];
-                    //if(trim($identity["name"]==""))
-                    //   $identity["name"]=$row["name"];
-                    //if(trim($identity["name"]==""))
-                    //   $identity["name"]=$identityrow["external_identity"];
-
-                    //$identity["bio"]=$identityrow["bio"];
-                    //$identity["avatar_file_name"]=$identityrow["avatar_file_name"];
-                    //if(trim($identity["avatar_file_name"])=="")
-                    //   $identity["avatar_file_name"]=$row["avatar_file_name"];
-                    //$_SESSION["identity"]=$identity;
-                    //unset($_SESSION["tokenIdentity"]);
                     return $userid;
                 }
 
@@ -363,18 +353,14 @@ class IdentityModels extends DataModel{
     {
         $sql="select id,external_identity,name,bio,avatar_file_name from identities where id='$identity_id'";
         $row=$this->getRow($sql);
-        if($row){
-            return $row;
-        }
+        return $row;
     }
 
     public function getIdentity($identity)
     {
-        $sql="select id,external_identity,name,bio,avatar_file_name from identities where external_identity='$identity'";
+        $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_identity='$identity'";
         $row=$this->getRow($sql);
-        if($row){
-            return $row;
-        }
+        return $row;
     }
 
     public function loginWithXToken($cross_id,$token)

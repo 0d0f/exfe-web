@@ -225,7 +225,87 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
 
-    ns.doShowChangePwdDialog = function(dialogBoxID, userIdentity, callBackFunc){
+    ns.changeOAuthAccountPWD = function(userIdentity, callBackFunc){
+        var html = odof.user.identification.createDialogDomCode("reset_pwd");
+        odof.exlibs.ExDialog.initialize("identification", html);
+
+        jQuery("#show_identity_box").val(userIdentity);
+        jQuery("#user_display_name").val(jQuery("#profile_name").html());
+
+        jQuery("#identification_pwd_ic").click(function(){
+            odof.comm.func.displayPassword("identification_pwd");
+        });
+
+        //显示Discard按钮，并且绑定关闭事件。
+        jQuery("#set_passwprd_discard").show();
+        jQuery("#set_passwprd_discard").unbind("click");
+        jQuery("#identification_close_btn").unbind("click");
+        jQuery("#set_passwprd_discard, #identification_close_btn").bind("click", function(){
+            odof.exlibs.ExDialog.removeDialog();
+            odof.exlibs.ExDialog.removeCover();
+        });
+
+        jQuery("#reset_pwd_form").submit(function(){
+            var userIdentity = jQuery("#show_identity_box").val();
+            var userPassword = jQuery("#identification_pwd").val();
+            var userDisplayName = jQuery("#user_display_name").val();
+            var hideErrorMsg = function(){
+                jQuery("#reset_pwd_error_msg").hide();
+                jQuery("#displayname_error").hide();
+                jQuery("#pwd_match_error").hide();
+            }
+
+            if(userDisplayName == ""){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#displayname_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Please input a display name.");
+                return false;
+            }
+            if(!odof.comm.func.verifyDisplayName(userDisplayName)){
+                jQuery("#reset_pwd_error_msg").show();
+                jQuery("#displayname_error").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Display name Error.");
+                return false;
+            }
+            if(userPassword == ""){
+                jQuery("#reset_pwd_error_msg").show();
+                setTimeout(hideErrorMsg, 3000);
+                jQuery("#reset_pwd_error_msg").html("Please input a password.");
+                return false;
+            }
+            // post data
+            var postData = {
+                jrand:Math.round(Math.random()*10000000000),
+                u_identity:userIdentity,
+                u_passwd:userPassword,
+                u_dname:userDisplayName
+            };
+
+            jQuery.ajax({
+                type: "POST",
+                url: site_url+"/s/setOAuthAccountPassword",
+                dataType:"json",
+                data:postData,
+                success: function(JSONData){
+                    if(JSONData.error){
+                        jQuery("#reset_pwd_error_msg").html(JSONData.msg);
+                        jQuery("#reset_pwd_error_msg").show();
+                        setTimeout(function(){
+                            jQuery("#reset_pwd_error_msg").hide();
+                        }, 3000);
+                    }else{
+                        odof.exlibs.ExDialog.removeDialog();
+                        odof.exlibs.ExDialog.removeCover();
+                    }
+                }
+            });
+            return false;
+        });
+    };
+
+    ns.doShowChangePwdDialog = function(userIdentity, callBackFunc){
         var html = odof.user.identification.createDialogDomCode("change_pwd");
         odof.exlibs.ExDialog.initialize("identification", html);
         //绑定事件。
@@ -250,6 +330,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.showForgotPwdDialog(userIdentity);
         });
         jQuery("#change_pwd_form").submit(function(){
+            var userIdentity = jQuery("#show_identity_box").val();
             var userPassword = jQuery("#o_pwd").val();
             var userNewPassword = jQuery("#new_pwd").val();
             //去掉Re-type
@@ -280,6 +361,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             */
             var postData = {
                 jrand:Math.round(Math.random()*10000000000),
+                u_identity:userIdentity,
                 u_pwd:userPassword,
                 u_new_pwd:userNewPassword
             };
