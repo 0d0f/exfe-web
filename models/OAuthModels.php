@@ -11,7 +11,7 @@ class OAuthModels extends DataModel{
 
         $currentTimeStamp = time();
 
-        $sql = "SELECT id FROM identities WHERE external_identity={$oAuthUserID}";
+        $sql = "SELECT id FROM identities WHERE external_identity='{$oAuthUserID}'";
         $rows = $this->getRow($sql);
         if(!is_array($rows)){
             $sql = "INSERT INTO identities (`provider`, `external_identity`, `created_at`, `updated_at`, `name`, `bio`, `avatar_file_name`, `external_username`) VALUES ('{$oAuthProvider}', '{$oAuthUserID}', FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserDesc}', '{$oAuthUserAvatar}', '{$oAuthScreenName}')";

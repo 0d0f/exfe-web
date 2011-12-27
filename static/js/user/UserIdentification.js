@@ -471,7 +471,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             }else{
                                 if(data.response.status == "empty_pwd"){
                                     jQuery("#login_hint").show();
-                                    jQuery("#login_hint").html("<span>Password empty!</span>");
+                                    jQuery("#login_hint").html("<span>OAuth User,Password empty!</span>");
                                 }
 
                                 if(typeof data.response.avatar != "undefined" && data.response.avatar != ""){

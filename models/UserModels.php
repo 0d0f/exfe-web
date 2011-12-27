@@ -329,7 +329,7 @@ class UserModels extends DataModel{
     }
     public function getResetPasswordToken($external_identity)
     {
-        $sql="select b.userid as uid ,a.name as name from identities a,user_identity b where a.external_identity='$external_identity' and a.id=b.identityid;";
+        $sql="SELECT b.userid AS uid, a.name AS name FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
         $row=$this->getRow($sql);
         $uid=intval($row["uid"]);
         $name=$row["name"];
@@ -385,6 +385,19 @@ class UserModels extends DataModel{
         }
     }
 
+    public function doSetOAuthAccountPassword($userPassword, $userDisplayName, $userID){
+        $passwordSalt = md5(createToken());
+        $passWord = md5($userPassword.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $userName = mysql_real_escape_string($userDisplayName);
+
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID}";
+        $result = $this->query($sql);
+        if($result){
+            return true;
+        }
+        return false;
+    }
+
     public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
         $ts = time();
         $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";
@@ -402,20 +415,21 @@ class UserModels extends DataModel{
         $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $result = $this->query($sql);
 
-        $external_identity=mysql_real_escape_string($external_identity);
-        //$sql="select id,status from identities where external_identity='$external_identity' limit 1";
-        $sql="select id from identities where external_identity='$external_identity' limit 1";
-        $identityrow=$this->getRow($sql);
-        $identity_id=intval($identityrow["id"]);
+        if($result){
+            $external_identity=mysql_real_escape_string($external_identity);
+            $sql="select id from identities where external_identity='$external_identity' limit 1";
+            $identityrow=$this->getRow($sql);
+            $identity_id=intval($identityrow["id"]);
 
-        $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
-        $rows = $this->getRow($sql);
+            $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
+            $rows = $this->getRow($sql);
 
-        if($rows["status"]!=STATUS_CONNECTED && $identity_id>0)
-        {
-            //$sql="update identities set status=3 where id=$identity_id;";
-            $sql="UPDATE user_identity SET status=3 WHERE identityid={$identity_id}";
-            $this->query($sql);
+            if($rows["status"]!=STATUS_CONNECTED && $identity_id>0)
+            {
+                //$sql="update identities set status=3 where id=$identity_id;";
+                $sql="UPDATE user_identity SET status=3 WHERE identityid={$identity_id}";
+                $this->query($sql);
+            }
         }
         return array("result"=>$result,"newuser"=>$newUser);
     }
