@@ -27,165 +27,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     /**
      * display edit bar
-     *
      **/
-    ns.showEditBar = function(){
-        jQuery("#edit_cross_bar").slideDown(300);
-        jQuery("#submit_data").bind("click",function(){
-            odof.cross.edit.submitData();
-        });
-        jQuery("#cross_titles").addClass("enable_click");
-        jQuery("#cross_titles").bind("click",function(){
-            odof.cross.edit.bindEditTitlesEvent();
-        });
-
-        //bind event for cross time container
-        jQuery("#cross_times_area").addClass("enable_click");
-        jQuery("#cross_times_area").bind("click", odof.cross.edit.bindEditTimesEvent);
-
-        //format edit place container
-        //bind event for cross place container
-        //console.log(jQuery("#cross_place_area").html());
-        var placeContainer = odof.util.stripTags(jQuery("#cross_place_area").html(), ["<p>","<h3>","<br>"]);
-        //console.log(placeContainer);
-        jQuery("#cross_place_area").html(placeContainer);
-
-        jQuery("#cross_place_area").addClass("enable_click");
-        jQuery("#cross_place_area").bind("click",odof.cross.edit.bindEditPlaceEvent);
-
-        jQuery("#cross_desc").show();
-        jQuery("#cross_desc_short").hide();
-
-        //format cross description edit area
-        var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
-        $('#cross_desc').html(
-            $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
-        );
-
-        jQuery("#cross_desc").addClass("enable_click");
-        jQuery("#cross_desc").bind("click",function(){
-            odof.cross.edit.bindEditDescEvent();
-        });
-
-        // exfee edit begins
-        odof.cross.edit.numNewIdentity = 0;
-        odof.cross.edit.exfeeInputTips = $('#exfee_input').val();
-        $('#exfee_edit').fadeIn();
-        $('#exfee_edit').bind('click', function() {
-            odof.cross.edit.exfeeEdit('edit');
-        });
-        $('#exfee_remove').bind('click', function() {
-            odof.cross.edit.exfeeEdit('remove');
-        });
-        $('#exfee_input').bind('focus', function() {
-            $('#exfee_input').val(
-                $('#exfee_input').val() === odof.cross.edit.exfeeInputTips ? '' : $('#exfee_input').val()
-            );
-        });
-        $('#exfee_input').bind('blur', function() {
-            $('#exfee_input').val(
-                $('#exfee_input').val()
-              ? $('#exfee_input').val()
-              : odof.cross.edit.exfeeInputTips
-            );
-        });
-        $('#exfee_submit').css('background', 'url("/static/images/enter_gray.png")');
-        odof.cross.edit.completeTimer = null;
-        $('#exfee_input').keyup(function(e) {
-            clearTimeout(odof.cross.edit.completeTimer);
-            odof.cross.edit.completeTimer = null;
-            switch (e.keyCode ? e.keyCode : e.which) {
-                case 13:
-                    odof.cross.edit.identityExfee();
-                    e.preventDefault();
-                    break;
-                case 27:
-                    $('#exfee_complete').slideUp(50);
-                    return;
-            }
-            var strExfee = $(this).val();
-            if (strExfee) {
-                var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
-                if (strKey) {
-                    odof.cross.edit.completeTimer = setTimeout("odof.cross.edit.chkComplete('" + strKey + "')", 500);
-                } else {
-                    $('#exfee_complete').slideUp(50);
-                }
-            } else {
-                $('#exfee_complete').slideUp(50);
-            }
-        });
-        $('#exfee_input').keydown(function(e) {
-            switch (e.keyCode ? e.keyCode : e.which) {
-                case 9:
-                case 40:
-                    $('#exfee_complete').focus();
-                    e.preventDefault();
-                    break;
-                case 13:
-                    e.preventDefault();
-                    break;
-                default:
-                    $('#exfee_submit').css('background', 'url("/static/images/enter' + (odof.cross.edit.chkExfeeFormat() ? '' : '_gray') + '.png")');
-            }
-        });
-        $('#exfee_complete').hide();
-        $('#exfee_complete').bind('click keydown', function(e) {
-            var intKey = e.keyCode ? e.keyCode : e.which;
-            switch (e.type) {
-                case 'click':
-                    complete();
-                    break;
-                case 'keydown':
-                    switch (intKey) {
-                        case 9:
-                            if (e.shiftKey) {
-                                $('#exfee_input').focus();
-                                e.preventDefault();
-                            }
-                            break;
-                        case 13:
-                            odof.cross.edit.complete();
-                            break;
-                        case 27:
-                            clearTimeout(odof.cross.edit.completeTimer);
-                            odof.cross.edit.completeTimer = null;
-                            $('#exfee_complete').slideUp(50);
-                        case 8:
-                            $('#exfee_input').focus();
-                            e.preventDefault();
-                            break;
-                        case 38:
-                            if ($('#exfee_complete').val() === odof.cross.edit.strExfeeCompleteDefault) {
-                                $('#exfee_input').focus();
-                                e.preventDefault();
-                            }
-                            break;
-                        default:
-                            if ((intKey > 64 && intKey < 91) || (intKey > 47 && intKey < 58)) {
-                                $('#exfee').focus();
-                            }
-                    }
-            }
-        });
-        $('#exfee_complete').bind('clickoutside', function() {
-            clearTimeout(odof.cross.edit.completeTimer);
-            odof.cross.edit.completeTimer = null;
-            $('#exfee_complete').slideUp(50);
-        });
-        $('#exfee_submit').bind('click', function() {
-            odof.cross.edit.identityExfee();
-        });
-        $('.exfee_del').live('click', function() {
-            $(this.parentNode).remove();
-        });
-        $('#exfee_revert').bind('click', function() {
-            odof.cross.edit.revertExfee();
-        });
-        $('#exfee_done').bind('click', function() {
-            odof.cross.edit.exfeeEdit();
-        });
-
+    ns.startEdit = function(){
+        // submit
+        $('#edit_x_bar').slideDown(300);
+        // title
+        $('#x_titles').addClass('enable_click');
+        $('#x_title').bind('click', odof.x.edit.editTitle);
+        // desc
+        // 'Write some words about this X.'
+        $('#x_desc').addClass('enable_click');
+        $('#x_desc').bind('click', odof.x.edit.editDesc);
+        // time
+        $("#x_time_area").addClass('enable_click');
+        $("#x_time_area").bind('click', odof.x.edit.editTime);
+        // place
+        $('#x_place_area').addClass('enable_click');
+        $('#cross_place_area').bind('click', odof.x.edit.editPlace);
     };
 
 
@@ -273,27 +131,15 @@ $(document).ready(function()
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
 
-    $('#private_icon').mousemove(function()
-    {
-        $('#private_hint').show();
-    });
-    $('#private_icon').mouseout(function()
-    {
-        $('#private_hint').hide();
-    });
-    $('#edit_icon').mousemove(function()
-    {
-        $('#edit_icon_desc').show();
-    });
-    $('#edit_icon').mouseout(function() {
-        $('#edit_icon_desc').hide();
-    });
+    $('#private_icon').mousemove(function(){$('#private_hint').show();});
+    $('#private_icon').mouseout(function(){$('#private_hint').hide();});
+    $('#edit_icon').mousemove(function(){$('#edit_icon_desc').show();});
+    $('#edit_icon').mouseout(function(){$('#edit_icon_desc').hide();});
+    $("#submit_data").bind('click', odof.x.edit.submitData);
+    $("#edit_icon").bind('click', odof.x.edit.startEdit);
 
-    
 return;
-    jQuery("#edit_icon").bind("click",function() {
-        odof.cross.edit.showEditBar();
-    });
+
 
     jQuery("#revert_cross_btn").bind("click",function() {
         odof.cross.edit.revertCross();
