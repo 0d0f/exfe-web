@@ -653,10 +653,6 @@ b.r3{margin: 0px}
     -moz-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
     box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
 }
-.cross_view_container #index{ padding:0px; }
-
-.cross_view_container .enable_click { cursor:pointer; }
-.cross_view_container .enable_click:hover { background-color:#D9E8EB; }
 .cross_view_container .cross_titles_textarea{ width:780px; height:45px; font-size:24pt; color:#0591AF; margin-top:10px; }
 .cross_view_centerbg input, .cross_view_centerbg textarea { border: 1px #CCCCCC solid; }
 

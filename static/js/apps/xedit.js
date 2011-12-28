@@ -32,17 +32,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         // submit
         $('#edit_x_bar').slideDown(300);
         // title
-        $('#x_titles').addClass('enable_click');
+        $('#x_title').addClass('x_editable');
         $('#x_title').bind('click', odof.x.edit.editTitle);
         // desc
         // 'Write some words about this X.'
-        $('#x_desc').addClass('enable_click');
+        $('#x_desc').addClass('x_editable');
         $('#x_desc').bind('click', odof.x.edit.editDesc);
         // time
-        $("#x_time_area").addClass('enable_click');
+        $("#x_time_area").addClass('x_editable');
         $("#x_time_area").bind('click', odof.x.edit.editTime);
         // place
-        $('#x_place_area').addClass('enable_click');
+        $('#x_place_area').addClass('x_editable');
         $('#cross_place_area').bind('click', odof.x.edit.editPlace);
     };
 
@@ -119,6 +119,51 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 odof.user.status.doShowCrossPageVerifyDialog(null, args);
             }
         }
+    };
+
+
+    ns.editTitle = function()
+    {
+        $('#x_title').hide();
+        $('#x_title_edit').val(crossData.title);
+        $('#x_title_edit').show();
+        $('#x_title_area').bind('clickoutside', function(event) {
+            //if(event.target != $('#x_title')[0]){
+                crossData.title = odof.util.trim($('#x_title_edit').val());
+                crossData.title = crossData.title === '' ? ('Meet ' + id_name)
+                                                         : crossData.title;
+                odof.x.render.showTitle();
+                $('#x_title_edit').hide();
+                $('#x_title_edit').unbind('clickoutside');
+                $('#x_title').show();
+            //}
+        });
+    };
+
+
+    ns.editDesc = function()
+    {
+        $("#x_desc").hide();
+        $("#x_desc_edit").show();
+        $('#x_desc_area').bind('clickoutside', function(event)
+        {
+            // dsfsdaf
+
+            var target = event.target;
+            while (target.id !== 'cross_desc' && target.parentNode) {
+                target = target.parentNode;
+            }
+            if (target.id === 'cross_desc') {
+                return;
+            }
+            var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
+            $('#cross_desc').html(
+                $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
+            );
+            jQuery("#cross_desc_textarea").slideUp(400);
+            jQuery("#cross_desc_textarea").unbind("clickoutside");
+            jQuery("#cross_desc").show();
+        });
     };
 
 })(ns);
@@ -199,27 +244,7 @@ return;
 
 
 if (0) {
-    /**
-     * while user click titles, show edit textarea.
-     *
-     * */
-    ns.bindEditTitlesEvent = function(){
-        jQuery('#cross_titles').hide();
-        jQuery('#cross_titles_textarea').show();
-        jQuery('#cross_titles_textarea').bind('clickoutside', function(event) {
-            if(event.target != $('#cross_titles')[0]){
-                var strTitle = odof.util.trim($('#cross_titles_textarea').val());
-                strTitle = strTitle ? strTitle : ('Meet ' + id_name);
-                $('#cross_titles_textarea').hide();
-                $('#cross_titles_textarea').unbind('clickoutside');
-                $('#cross_titles').show();
-                $('#cross_titles_textarea').val(strTitle);
-                $('#cross_titles').html(strTitle);
-                document.title = 'EXFE - ' + strTitle;
-                odof.cross.index.formatCross();
-            }
-        });
-    };
+
 
     /**
      * user edit time, show edit time area.
@@ -300,30 +325,7 @@ if (0) {
         }
     };
 
-    /**
-     * User Edit cross description
-     *
-     * */
-    ns.bindEditDescEvent = function(){
-        jQuery("#cross_desc").hide();
-        jQuery("#cross_desc_textarea").slideDown(400);
-        jQuery('#cross_desc_textarea').bind('clickoutside', function(event) {
-            var target = event.target;
-            while (target.id !== 'cross_desc' && target.parentNode) {
-                target = target.parentNode;
-            }
-            if (target.id === 'cross_desc') {
-                return;
-            }
-            var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
-            $('#cross_desc').html(
-                $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
-            );
-            jQuery("#cross_desc_textarea").slideUp(400);
-            jQuery("#cross_desc_textarea").unbind("clickoutside");
-            jQuery("#cross_desc").show();
-        });
-    };
+
 
     ns.formateString = function(str){
         var converter = new Showdown.converter();

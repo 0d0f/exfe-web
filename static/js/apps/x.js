@@ -18,8 +18,8 @@ var clickCallBackFunc = function(args){
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
     ns.crossHtml = '<div id="x_title_area">'
-                 +     '<h2 id="x_title" class="x_title_normal"></h2>'
-                 +     '<input id="x_title_edit" style="display:none;">'
+                 +     '<h2 id="x_title" class="x_title x_title_normal"></h2>'
+                 +     '<input id="x_title_edit" class="x_title" style="display:none;">'
                  + '</div>'
                  + '<div id="x_content" class="cleanup">'
                  +     '<div id="x_mainarea">'

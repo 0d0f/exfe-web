@@ -119,3 +119,17 @@
     padding-top: 12px;
     line-height: 0px;
 }
+
+#x_title_edit {
+    line-height: 70px;
+    font-size: 64px;
+    border: 1px #ccc dashed;
+}
+
+.x_editable {
+    cursor: pointer;
+}
+
+.x_editable:hover {
+    background-color: #D9E8EB;
+}
