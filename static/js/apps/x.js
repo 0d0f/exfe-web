@@ -87,17 +87,23 @@ var clickCallBackFunc = function(args){
 
     ns.showTime = function()
     {
-        $('#x_time_relative').html(odof.util.getRelativeTime(
-            Date.parse(odof.util.getDateFromString(crossData.begin_at)) / 1000
-        ));
-        $('#x_time_absolute').html(crossData.begin_at);
+        var strRelativeTime = '',
+            strAbsoluteTime = '';
+        if (crossData.begin_at === '0000-00-00 00:00:00') {
+            strRelativeTime = 'Sometime';
+        } else {
+            strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
+            strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
+        }
+        $('#x_time_relative').html(strRelativeTime);
+        $('#x_time_absolute').html(strAbsoluteTime);
     };
 
 
     ns.showPlace = function()
     {
         var objPlace = $('#x_place_line1');
-        objPlace.html(crossData.place.line1);
+        objPlace.html(crossData.place.line1 ? crossData.place.line1 : 'Somewhere');
         $('#x_place_line2').html(crossData.place.line2);
         if (objPlace.hasClass('x_place_line1_double') && objPlace.height() < 70) {
             objPlace.addClass('x_place_line1_normal').removeClass('x_place_line1_double');
@@ -134,9 +140,7 @@ var clickCallBackFunc = function(args){
              +             '</span>'
              +         '</p>'
              +         '<span class="x_conversation_time">'
-             +             odof.util.getRelativeTime(Date.parse(
-                               odof.util.getDateFromString(objItem.created_at)
-                           ) / 1000)
+             +             odof.util.getRelativeTime(objItem.created_at)
              +         '</span>'
              +     '</div>'
              + '</li>';

@@ -9,12 +9,6 @@
 
 .Preview{background:url("/static/images/Preview.png") no-repeat;height:50px;width:166px;left:-46px;top:-25px;position:relative;}
 
-.preview_hr{width:880px;height:20px;background:url(/static/images/pvhr.jpg) no-repeat 0 8px;margin:0 auto; margin-top:20px; margin-bottom:20px}
-.preview_hr a{width:40px;height:20px;display:block;color:#6a6a6a;font-size:14px;line-height:20px;background: url("/static/images/btn.png") no-repeat left -103px;padding-left: 20px;margin:0 auto;
-}
-.preview_hr a .display{width:40px;height:20px;display:block;color:#6a6a6a;font-size:14px;line-height:20px;background: url("/static/images/btn.png") no-repeat left -113px;padding-left: 20px;margin:0 auto;
-}
-
 .exfel{float:left;width:480px;
 }
 
@@ -71,12 +65,6 @@
 .pic20 img{width:20px;height:20px;}
 /* comment list */
 .Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:15px 0 0 434px; }
-.commentlist {margin: 10px 0px;line-height: 130%;}
-.commentlist li {margin:20px 0;overflow:hidden;line-height:20px;}
-.comment {float:left;font-size:13px;width:360px;}
-.comment span{color:#020202;font-weight:bold;}
-.times {float:right;color:#a0a0a0}
-
 .samlcommentlist {margin:10px 0px;line-height: 130%;}
 .samlcommentlist li {margin:10px 0;overflow:hidden;line-height:20px;}
 .smcomment { float:left; font-size:12px; width: 190px; overflow: hidden; white-space: nowrap; }
@@ -447,36 +435,6 @@ b.r3{margin: 0px}
 #exfee_warning {
     position:absolute; margin-left:144px;color: red;display: none;
 }
-/*preview title*/
-#pv_title {
-    color:#0591ac; font-family:Helvetica; font-weight:normal; word-break: break-all;
-    margin-bottom: 20px;
-}
-.pv_title_normal {
-    line-height: 70px; font-size: 64px;
-}
-.pv_title_double {
-    line-height: 56px; font-size: 52px; max-height: 112px; overflow: hidden;
-}
-/*preview datetime*/
-#pv_relativetime {
-    color:#0591af; overflow:hidden; font-weight:normal;
-    margin-top:10px; word-break: break-all; font-size:36px; font-weight: normal;
-}
-/*preview place*/
-#pv_place_line1 {
-    color:#0591ac; overflow:hidden; font-weight:normal; margin-top:10px; word-break: break-all;
-}
-.pv_place_line1_normal {
-    font-size:36px; line-height: 46px;
-}
-.pv_place_line1_double {
-    font-size:30px; line-height: 36px; max-height: 70px;
-}
-#pv_place_line2 {
-    color: #666666; font-family: Verdana; font-size: 18px; line-height: 24px;
-    word-break: break-all; max-height: 96px; overflow: hidden;
-}
 #gather_submit_blank {
     height: 50px;
 }
@@ -616,53 +574,10 @@ b.r3{margin: 0px}
 #pv_place_line1 { min-height: 40px; }
 #place_content { resize: none; }
 
-.cross_view_container #cross_time_bubble { width:310px; height:220px; margin-left:210px; margin-top:125px; }
-.cross_view_container #cross_time_bubble:before { top:29px; left:330px; }
-.cross_view_container #cross_time_bubble:after { top:29px; left:330px; }
-.cross_view_container #cross_time_bubble .cross_dt_input{ width:310px; height:25px; background: url("/static/images/icons.png") no-repeat scroll right -535px transparent; }
-.cross_view_container #cross_time_bubble .cross_dt_msg{ width:310px; height:20px; color:#FF0000; }
-.cross_view_container #cross_time_bubble #cross_datetime_original{ height:18px; background-color:#FAFAFA; padding:0; border:1px solid #999; width:250px; }
-
-.cross_view_container #cross_place_bubble { width:210px; height:120px; margin-left:310px; margin-top:195px; }
-.cross_view_container #cross_place_bubble:before { top:29px; left:230px; }
-.cross_view_container #cross_place_bubble:after { top:29px; left:230px; }
-.cross_view_container #cross_place_bubble .input_box{ width:210px; height:120px; }
-.cross_view_container #cross_place_bubble .input_box textarea{ position:relative; float:left; width:180px; height:118px; border:1px solid #CCCCCC; }
-.cross_view_container #cross_place_bubble .input_box span{ position:relative; float:right; display:block; width:20px; height:20px; background: url("/static/images/icons.png") no-repeat scroll right -570px transparent; }
 
 
 
-/*********** bubble style control by handaoliang *************/
-.exfe_bubble {
-    position:absolute; width:300px; height:200px; padding:10px;
-    background-color:#EEEEEE; border:1px solid #BBBBBB; z-index:5;
-    /* css3 */
-    -webkit-border-radius:10px;
-    -moz-border-radius:10px;
-    border-radius:10px;
-    -webkit-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.2);
-    box-shadow:5px 5px 5px rgba(0, 0, 0, 0.2);
-}
-.exfe_bubble:before {
-    content:""; position:absolute;
-    top:29px; left:320px;
-    border-width:11px 0px 21px 21px;
-    border-style:solid;
-    border-color:transparent #BBBBBB;
-    /* reduce the damage in FF3.0 */
-    display:block; width:0;
-}
-.exfe_bubble:after {
-    content:""; position:absolute;
-    top:30px; left:320px;
-    border-width:10px 0px 20px 20px;
-    border-style:solid;
-    border-color:transparent #EEEEEE;
-    /* reduce the damage in FF3.0 */
-    display:block; width:0;
-}
-/******************************************************************/
+
 
 /******* upload user avatar window style by handaoliang ***********/
 .upload_avatar_dialog{ position:absolute; width:400px; height:325px; padding:0px; background:transparent; z-index:201; }

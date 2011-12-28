@@ -154,6 +154,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+    ns.editTime = function()
+    {
+        // check if had bind a event for #cross_time_bubble
+        if(!$('#x_time_bubble').data('events')){
+            $('#x_time_bubble').bind('clickoutside', function(event) {
+                if (event.target.parentNode === $('#x_time_area')[0]) {
+                    $('#x_time_bubble').show();
+                } else {
+                    $('#x_time_bubble').hide();
+                    $('#x_time_bubble').unbind('clickoutside');
+                }
+            });
+        }
+        // init calendar
+        exCal.initCalendar(
+            document.getElementById('x_datetime_original'),
+            'x_time_container',
+            function(displayCalString, standardTimeString) {
+                
+                console.log(displayCalString);
+                console.log(standardTimeString);
+                $('#x_time').html(displayCalString);
+                $('#datetime').val(standardTimeString);
+                $('#cross_times_area > h3').html(
+                    odof.util.getRelativeTime(Date.parse(
+                        odof.util.getDateFromString(standardTimeString)
+                    ) / 1000)
+                );
+            }
+        );
+    };
+
 })(ns);
 
 
@@ -232,49 +264,6 @@ return;
 
 
 if (0) {
-
-
-    /**
-     * user edit time, show edit time area.
-     *
-     * */
-    ns.bindEditTimesEvent = function(){
-        //check if had bind a event for #cross_time_bubble
-        var eventTemp = jQuery("#cross_time_bubble").data("events");
-        //console.log(eventTemp);
-        if(!eventTemp){
-            jQuery('#cross_time_bubble').bind("clickoutside",function(event) {
-                //console.log(event.target.parentNode);
-                if(event.target.parentNode != jQuery("#cross_times_area")[0]){
-                    //console.log("aaaa");
-                    jQuery("#cross_time_bubble").hide();
-                    jQuery("#cross_time_bubble").unbind("clickoutside");
-                }else{
-                    //console.log("bbbb");
-                    jQuery("#cross_time_bubble").show();
-                }
-            });
-        }
-
-        /*
-        jQuery(document).bind('click',function(e){
-            console.log(e.target.parentNode);
-        });
-        */
-        var calCallBack = function(displayCalString, standardTimeString) {
-            $('#cross_times').html(displayCalString);
-            $('#datetime').val(standardTimeString);
-            $('#cross_times_area > h3').html(
-                odof.util.getRelativeTime(
-                    Date.parse(odof.util.getDateFromString(standardTimeString)) / 1000
-                )
-            );
-        };
-
-        var timeDisplayContainer = document.getElementById('cross_datetime_original');
-        exCal.initCalendar(timeDisplayContainer, 'cross_time_container', calCallBack);
-    };
-
     /**
      * user edit place, show edit place area.
      *

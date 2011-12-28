@@ -120,41 +120,5 @@ if(0) {
         <div id="x_view_content"></div>
     </div>
 </div>
-
-
-
-
-
-
-            <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>">
-            <div id="cross_times_area">
-                <h3 id="pv_relativetime">
-                    <?php if($begin_at_relativetime == 0){ echo "Anytime"; } else { echo $begin_at_relativetime; } ?>
-                </h3>
-                <p class="tm" id="cross_times">
-                    <?php echo $begin_at_humandatetime;?>
-                </p>
-            </div>
-            <div id="cross_place_area">
-                <h3 id="pv_place_line1" class="pv_place_line1_normal">
-                    <?php echo ParseURL($place_line1) ?: 'Somewhere'; ?>
-                </h3>
-                <p id="pv_place_line2" class="tm">
-                    <?php echo ParseURL(str_replace('\r', '<br />', $cross["place"]["line2"])); ?>
-                </p>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </body>
 </html>

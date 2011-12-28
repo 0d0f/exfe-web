@@ -1099,10 +1099,11 @@ var odof = {
      * get relative time
      * by Leask
      */
-    util.getRelativeTime = function(timestamp)
+    util.getRelativeTime = function(strTime)
     {
+        var timestamp = Date.parse(this.getDateFromString(strTime)) / 1000;
         if (timestamp < 0) {
-            return 0;
+            return '';
         }
         var difference = Date.parse(new Date()) / 1000 - timestamp,
             periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
@@ -1138,21 +1139,37 @@ var odof = {
      * by Leask
      * @todo apply this function while rendering the X!!!
      */
-    util.getHumanDateTime = function(timestamp, time_type, lang)
+    util.getHumanDateTime = function(strTime, lang)
     {
-        var timestr = '';
+        var objDate   = this.getDateFromString(strTime),
+            timestamp = Date.parse(objDate) / 1000,
+            time_type = 0,
+            timestr   = '';
         if (timestamp < 0) {
-            timestamp = 0;
-            timestr = '';
-        } else {
-            timestr = ', ' + date('M j, Y ', timestamp);
+            objDate  = this.getDateFromString('0000-00-00 00:00:00');
+        }
+        var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            year     = objDate.getFullYear(),
+            month    = arrMonth[objDate.getMonth()],
+            date     = objDate.getDate(),
+            hour24   = objDate.getHours(),
+            hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
+            ampm     = hour24 > 12 ? 'AM'          : 'PM',
+            minute   = objDate.getMinutes(),
+            stdDate  = month + ' ' + date + ', ' + year;
+        if (timestamp >= 0) {
+            timestr  = ', '  + stdDate;
+        }
+        if (strTime.split(' ').length === 1) {
+            time_type = 2 // TIMETYPE_ANYTIME
         }
         switch (lang) {
             case 'en':
             default:
                 switch (time_type) {
                     case 0:
-                        return date('g:i A, M j, Y ', timestamp);
+                        return hour12 + ':' + minute + ' ' + ampm + ', ' + stdDate;
                         break;
                     case 1:
                         return 'All day' + timestr;
