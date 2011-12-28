@@ -27,28 +27,6 @@
 .exfel p.text a{background:url(/static/images/btn.png) no-repeat 50px -107px;padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
 }
 
-#cross_desc p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px; }
-#cross_desc p {font-size:14px;margin-top:10px;line-height:22px; }
-#cross_desc img {max-width:480px;}
-#cross_desc h1 {font-size:14px; line-height:20px; margin-top:20px; margin-bottom:20px; }
-#cross_desc h2 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
-#cross_desc h3 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
-#cross_desc ul, #cross_desc ol{padding-left: 25px;}
-#cross_desc ul li {list-style: disc;}
-#cross_desc ol li {list-style: decimal;}
-#cross_desc li {font-size:14px; line-height:20px;}
-
-#cross_desc_short p a{padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px; }
-#cross_desc_short p {font-size:14px;margin-top:10px;line-height:22px; }
-#cross_desc_short img {max-width:480px;}
-#cross_desc_short h1 {font-size:14px; line-height:20px; margin-top:20px; margin-bottom:20px; }
-#cross_desc_short h2 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
-#cross_desc_short h3 {font-size:14px; line-height:20px; margin-top:6px; margin-bottom:6px;}
-#cross_desc_short ul, #cross_desc_short ol {padding-left: 20px;}
-#cross_desc_short ul li {list-style: disc;}
-#cross_desc_short ol li {list-style: decimal;}
-#cross_desc_short li {font-size:14px; line-height:20px;}
-
 .exfel ul.ynbtn{margin:25px 0;height:30px;
 }
 .exfel ul.ynbtn li{width:150px;float:left;
@@ -643,23 +621,6 @@ b.r3{margin: 0px}
 
 
 /* ----------------------------------- modified by handaoliang --------------------------*/
-.cross_view_centerbg{ width:1000px; margin:0 auto; padding:30px 0 45px; }
-.cross_view_container{
-    background-color:#ffffff; border:1px solid #DDDDDD;
-    -webkit-border-radius:6px;
-    -moz-border-radius:6px;
-    border-radius:6px;
-    -webkit-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
-    -moz-box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
-    box-shadow:5px 5px 5px rgba(0, 0, 0, 0.1);
-}
-.cross_view_container .cross_titles_textarea{ width:780px; height:45px; font-size:24pt; color:#0591AF; margin-top:10px; }
-.cross_view_centerbg input, .cross_view_centerbg textarea { border: 1px #CCCCCC solid; }
-
-.cross_view_container #cross_desc{ overflow:hidden; width:500px; min-height: 50px; }
-.cross_view_container #cross_desc p{ width:500px; overflow:hidden }
-.cross_view_container #cross_desc p a{ background:none; }
-.cross_view_container #cross_desc_textarea{ width:500px; height:120px; font-size:9pt; margin-top:10px; resize: none;}
 .cross_view_container #cross_desc_short #desc_expand_btn{ display:block; float:right; margin-right:10px; color:#0591AF; font-weight:bold; }
 
 .cross_view_container #rsvp_submitted{ padding:30px 0 0; font-size:12pt; }

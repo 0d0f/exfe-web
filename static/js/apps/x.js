@@ -53,7 +53,7 @@ var clickCallBackFunc = function(args){
                  +             '<span id="x_time_absolute"></span>'
                  +         '</div>'
                  +         '<div id="x_place_area">'
-                 +             '<h3   id="x_place_line1"></h3>'
+                 +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
                  +             '<span id="x_place_line2"></span>'
                  +         '</div>'
                  +         '<div id="x_exfee_area"></div>'

@@ -47,6 +47,62 @@
     word-break: break-all;
 }
 
+#x_desc a {
+    padding-right: 20px;
+    color: #aaaaaa;
+    font-style: italic;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+#x_desc p {
+    font-size: 14px;
+    margin-top: 10px;
+    line-height: 22px;
+}
+
+#x_desc img {
+    max-width: 480px;
+}
+
+#x_desc h1 {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#x_desc h2 {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+#x_desc h3 {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+#x_desc ul, #x_desc ol {
+    padding-left: 25px;
+}
+
+#x_desc ul li {
+    list-style: disc;
+}
+
+#x_desc ol li {
+    list-style: decimal;
+}
+
+#x_desc li {
+    font-size: 14px;
+    line-height: 20px;
+}
+
 .x_desc {
     color: #333333;
     font-size: 14px;
@@ -106,6 +162,7 @@
     border: 1px #E5E5E5 solid;
     height: 40px;
     float: right;
+    resize: none;
 }
 
 #x_conversation_input_area {

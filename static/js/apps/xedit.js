@@ -580,8 +580,8 @@ if (0) {
             $('#check_all > em').attr('class', 'c0');
         }
         // submit
-        jQuery.ajax({
-            url : location.href.split('?').shift() + '/crossEdit',
+        $.ajax({
+            url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
             data : {ctitle     : $('#cross_titles_textarea').val(),
