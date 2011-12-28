@@ -8,11 +8,12 @@ class XModels extends DataModel
         // gather a empty cross, state=draft
         // state=1 draft
         $time = time();
-        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
+        // $sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
 
-        //$begin_at=$cross["begin_at"];
-        //$end_at=$cross["end_at"];
-        //$duration=$cross["duration"];
+        // $begin_at=$cross["begin_at"];
+        // $end_at=$cross["end_at"];
+        // $duration=$cross["duration"];
+        // time type
         $cross_datetime = $cross['datetime'];
         $datetime_array = explode(' ', $cross_datetime);
         $time_type = 0;
@@ -74,10 +75,6 @@ class XModels extends DataModel
             $placeHelper = $this->getHelperByName('place');
             $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
         }
-        //$datetimes=explode(" ",$cross["start_time"]);
-        //$time_type=-1;
-        //if(sizeof($datetimes)>=2)
-        //    $time_type=0;
         // update cross
         $sql  = "UPDATE `crosses`
                     SET `updated_at`  = NOW(),

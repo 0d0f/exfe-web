@@ -57,6 +57,7 @@ class XActions extends ActionController
         $this->displayView();
     }
 
+
     public function doSaveDraft()
     {
         $identity_id = $_SESSION['identity_id'];
@@ -71,6 +72,7 @@ class XActions extends ActionController
         echo json_encode(array('draft_id' => $result));
     }
 
+
     public function doGetDraft()
     {
         $identity_id = $_SESSION['identity_id'];
@@ -79,7 +81,7 @@ class XActions extends ActionController
         echo $identity_id && $_POST['draft_id'] ? $XDraft->getDraft($identity_id, $_POST['draft_id']) : json_encode(null);
     }
 
-    //编辑Cross功能。
+
     public function doCrossEdit()
     {
         $crossDataObj = $this->getDataModel('x');
@@ -235,6 +237,7 @@ class XActions extends ActionController
         exit(0);
     }
 
+
     // $_SESSION["tokenIdentity"]["token_expired"] 用来标记是否第一次打开token链接
     // 此参数setVar供view中使用
     public function doIndex()
@@ -354,6 +357,7 @@ class XActions extends ActionController
         }
     }
 
+
     public function doForbidden()
     {
         $referer = exGet("s");
@@ -374,6 +378,7 @@ class XActions extends ActionController
         $this->setVar('cross_id', $cross_id);
         $this->displayView();
     }
+
 
     //检查Cross是否属于当前登录用户。
     public function doCheckforbidden(){
