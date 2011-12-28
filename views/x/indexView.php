@@ -57,43 +57,6 @@
 
 
 if(0) {
-    // format
-    include_once "lib/markdown.php";
-    $original_desc_str = $cross["description"];
-
-    $parser = new Markdown_Parser;
-    $parser->no_markup = true;
-    $description= $parser->transform($original_desc_str);
-
-    $text_desc_str=strip_tags($description);
-    $desc_str_len = mb_strlen($text_desc_str);
-
-    $define_str_len = 300;
-
-    $desc_len=0;
-    $display_desc="";
-    if($desc_str_len>$define_str_len )
-    {
-        $description_lines=preg_split ("/\r\n|\r|\n/", $description);
-        foreach($description_lines as $line)
-        {
-            $line_len=mb_strlen(strip_tags($line));
-            $desc_len=$desc_len+$line_len;
-            $display_desc.=$line;
-            if($desc_len>$define_str_len)
-                break;
-        }
-    }
-    #//=============================================================
-    #$short_desc_str = mbString($original_desc_str, $define_str_len);
-    #$temp_lines=preg_split ("/\r\n|\r|\n/", $short_desc_str);
-    #$display_desc = "";
-    #foreach($temp_lines as $s)
-    #{
-    #    $display_desc .= '<p class="text">'.ParseURL($s).'</p>';
-    #}
-    #//=============================================================
-
     $place_line1   = $cross['place']['line1'];
     $place_line2   = str_replace('\r', "\n", $cross['place']['line2']);
     $host_exfee    = $cross['host_exfee'];
@@ -162,7 +125,7 @@ if(0) {
 
 
 
-        <div id="cross_container" class="exfer">
+
             <input type="hidden" name="datetime" id="datetime" value="<?php echo $cross["begin_at"]; ?>">
             <div id="cross_times_area">
                 <h3 id="pv_relativetime">
@@ -180,7 +143,6 @@ if(0) {
                     <?php echo ParseURL(str_replace('\r', '<br />', $cross["place"]["line2"])); ?>
                 </p>
             </div>
-        </div>
 
 
 
