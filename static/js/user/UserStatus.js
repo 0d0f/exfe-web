@@ -520,7 +520,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var userPanelHTML = '<div class="uinfo">'
                                 + '<em class="light" style="background:none;"></em>'
                                 + '<div class="name" >'
-                                + '<div id="goldLink"><a href="#" >'+userData.user_name+'</a></div>';
+                                + '<div id="goldLink"><a href="/s/profile" >'+userData.user_name+'</a></div>';
             userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
             userPanelHTML += '<p class="h">';
             userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
