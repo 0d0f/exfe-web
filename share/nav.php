@@ -1,11 +1,11 @@
     <div id="global_header">
         <div class="logo">
 <?php
-if(intval($_SESSION["userid"]) > 0){
+if (intval($_SESSION["userid"]) > 0) {
 ?>
 <a href="/s/profile">
 <?php
-}else{
+} else {
 ?>
 <a href='/'>
 <?php } ?>
@@ -19,12 +19,12 @@ if(intval($_SESSION["userid"]) > 0){
     </div>
     <img src="/static/images/user.png" style="display:none;" width="0" height="0" />
     <script>
-        if(typeof showSpecialIdentityDialog == "undefined"){
+        if (typeof showSpecialIdentityDialog == "undefined") {
             jQuery("#global_user_login_btn").unbind("click");
-            jQuery("#global_user_login_btn").bind("click",function(){
+            jQuery("#global_user_login_btn").bind("click",function() {
                 odof.user.status.doShowLoginDialog();
             });
-        }else{
+        } else {
             jQuery("#global_user_login_btn").unbind("click");
             jQuery("#global_user_login_btn").click(function() {
                 jQuery("#identity").focus();

@@ -3,27 +3,48 @@
 class XModels extends DataModel
 {
 
-    public function gatherCross($identityId, $cross)
+    public function gatherCross($identityId, $cross, $exfee, $draft_id = 0)
     {
         // gather a empty cross, state=draft
         // state=1 draft
-        $time=time();
-        //$sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
+        $time = time();
+        // $sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
 
-        //$begin_at=$cross["begin_at"];
-        //$end_at=$cross["end_at"];
-        //$duration=$cross["duration"];
-        $cross_datetime=$cross["datetime"];
-        $datetime_array=explode(" ",$cross_datetime);
-        $time_type=0;
-        if(sizeof($datetime_array)==1)
-            $time_type=TIMETYPE_ANYTIME; //allday
+        // $begin_at=$cross["begin_at"];
+        // $end_at=$cross["end_at"];
+        // $duration=$cross["duration"];
+        // time type
+        $cross_datetime = $cross['datetime'];
+        $datetime_array = explode(' ', $cross_datetime);
+        $time_type = 0;
+        if (sizeof($datetime_array) === 1) {
+            $time_type = TIMETYPE_ANYTIME; // allday
+        }
 
-        $sql="insert into crosses (host_id,created_at,time_type,updated_at,state,title,description,begin_at,end_at,duration,place_id) values($identityId,FROM_UNIXTIME($time),$time_type,FROM_UNIXTIME($time),'1','".$cross["title"]."','".$cross["description"]."','".$cross["datetime"]."','$end_at','$duration',".$cross["place_id"].");";
+        $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
+                state, title, description, begin_at, end_at, duration, place_id)
+                values({$identityId}, FROM_UNIXTIME({$time}), {$time_type},
+                FROM_UNIXTIME({$time}), '1', '{$cross['title']}',
+                '{$cross['description']}', '{$cross['datetime']}', '{$end_at}',
+                '{$duration}', {$cross['place_id']});";
 
-        $result=$this->query($sql);
-        if(intval($result["insert_id"])>0)
-            return intval($result["insert_id"]);
+        $result   = $this->query($sql);
+        $cross_id = intval($result['insert_id']);
+        if($cross_id > 0) {
+            // invit exfee
+            $hlpExfee = $this->getHelperByName('exfee');
+            $hlpExfee->addExfeeIdentify($cross_id, $exfee, $identityId);
+            $hlpExfee->sendInvitation($cross_id, $identityId);
+            // log x
+            $hlpX = $this->getHelperByName('x');
+            $hlpX->logX($identityId, $cross_id, $cross['title']);
+            // del draft
+            if ($draft_id) {
+                $hlpX->delDraft($draft_id);
+            }
+            // return
+            return $cross_id;
+        }
     }
 
 
@@ -54,10 +75,6 @@ class XModels extends DataModel
             $placeHelper = $this->getHelperByName('place');
             $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
         }
-        //$datetimes=explode(" ",$cross["start_time"]);
-        //$time_type=-1;
-        //if(sizeof($datetimes)>=2)
-        //    $time_type=0;
         // update cross
         $sql  = "UPDATE `crosses`
                     SET `updated_at`  = NOW(),

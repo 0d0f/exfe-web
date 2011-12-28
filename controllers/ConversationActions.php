@@ -1,29 +1,6 @@
 <?php
-class ConversationActions extends ActionController {
-
-    /**
-     * @todo remove this code
-    public function doAdd()
-    {
-        $checkhelper=$this->getHelperByName("check");
-        $check=$checkhelper->isAllow("conversion","",array("cross_id"=>$cross_id,"token"=>$token));
-        if($check["allow"]=="false")
-        {
-            header( 'Location: /s/login' ) ;
-            exit(0);
-        }
-
-        $postData=$this->getModelByName("conversation");
-        $cross_id=intval($_GET["id"]);
-        $identity_id=$_SESSION["identity_id"];
-        $postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["comment"]);
-
-        $cross_id=intval($_GET["id"]);
-        $cross_id_base62=int_to_base62($cross_id);
-        header( "Location: /!$cross_id_base62" ) ;
-        exit(0);
-    }
-    */
+class ConversationActions extends ActionController
+{
 
     public function doEmailSave() //for email api
     {
@@ -97,10 +74,10 @@ class ConversationActions extends ActionController {
         exit();
     }
 
-    public function doSave() //for ajax api
+    public function doSave() // for ajax api
     {
         $responobj["meta"]["code"]=200;
-        $comment=htmlspecialchars($_POST["comment"]);
+        $comment=htmlspecialchars($_POST["message"]);
         $cross_id=$_POST["cross_id"];
         $token=$_POST["token"];
 
@@ -137,8 +114,8 @@ class ConversationActions extends ActionController {
                     $user=$userData->getUserProfileByIdentityId($identity_id);
                     $userIdentity=humanIdentity($identity,$user);
 
-                    $responobj["response"]["comment"]=$comment;
-                    $responobj["response"]["created_at"]=RelativeTime(time());
+                    $responobj["response"]["content"]=$comment;
+                    $responobj["response"]["created_at"]=date('Y-m-d H:i:s', time() + 3600 * 21); // @todo: 时区修正！
                     $responobj["response"]["cross_id"]=$cross_id;
 
                     $responobj["response"]["identity"]=$userIdentity;
