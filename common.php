@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once dirname(__FILE__)."/config.php";
 
 $locale = $_COOKIE["locale"];
 if($locale == "")
@@ -31,12 +31,11 @@ function exGet($name)
 */
 function exPost($name)
 {
-    if (array_key_exists($name,$_POST))
-	{
-		return $_POST[$name];
-	}else{
-		return ("");
-	}
+    if (array_key_exists($name,$_POST)) {
+        return $_POST[$name];
+    } else {
+        return ('');
+    }
 }
 
 /**

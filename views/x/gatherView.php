@@ -1,11 +1,14 @@
-<?php include 'share/header.php'; ?>
-<?php global $exfe_res;?>
-<script src="/static/js/libs/showdown.js"></script>
-<script src="/static/js/libs/jquery.ba-outside-events.js"></script>
-<script src="/static/js/apps/gather.js"></script>
+<?php
+    include 'share/header.php';
+    global $exfe_res;
+?>
+<link type="text/css" rel="stylesheet" href="/static/css/gather.css">
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
+<script src="/static/js/libs/showdown.js"></script>
+<script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<script src="/static/js/apps/gather.js"></script>
 </head>
 <body>
 <?php

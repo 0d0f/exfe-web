@@ -1132,6 +1132,39 @@ var odof = {
         return text;
     };
 
+
+    /**
+     * get human datetime
+     * by Leask
+     * @todo apply this function while rendering the X!!!
+     */
+    util.getHumanDateTime = function(timestamp, time_type, lang)
+    {
+        var timestr = '';
+        if (timestamp < 0) {
+            timestamp = 0;
+            timestr = '';
+        } else {
+            timestr = ', ' + date('M j, Y ', timestamp);
+        }
+        switch (lang) {
+            case 'en':
+            default:
+                switch (time_type) {
+                    case 0:
+                        return date('g:i A, M j, Y ', timestamp);
+                        break;
+                    case 1:
+                        return 'All day' + timestr;
+                        break;
+                    case 2:
+                        return 'Anytime' + timestr;
+                }
+        }
+        return '';
+    };
+
+
     /**
      * get browser available size
      * by Leask

@@ -15,14 +15,21 @@ class IdentityModels extends DataModel{
         $avatar_content_type=$identityDetail["avatar_content_type"];
         $avatar_file_size=$identityDetail["avatar_file_size"];
         $avatar_updated_at=$identityDetail["avatar_updated_at"];
-        $external_username=mysql_real_escape_string($identityDetail["external_username"]);
+        $external_username = trim(mysql_real_escape_string($identityDetail["external_username"]));
+        
         $time=time();
         $sql="select id from identities where external_identity='$external_identity' limit 1";
         $row=$this->getRow($sql);
-        if(intval($row["id"])>0)
+        if(intval($row["id"])>0){
             return  intval($row["id"]);
+        }
 
         $external_identity=mysql_real_escape_string($external_identity);
+
+        if($external_username == ""){
+            $external_username = $external_identity;
+        }
+
         $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
         $result=$this->query($sql);
         $identityid=intval($result["insert_id"]);
@@ -351,7 +358,7 @@ class IdentityModels extends DataModel{
 
     public function getIdentityById($identity_id)
     {
-        $sql="select id,external_identity,name,bio,avatar_file_name from identities where id='$identity_id'";
+        $sql="select id,external_identity,name,bio,avatar_file_name,external_username from identities where id='$identity_id'";
         $row=$this->getRow($sql);
         return $row;
     }
@@ -380,18 +387,6 @@ class IdentityModels extends DataModel{
                 $this->query($sql);
             }
 
-            //modified by handaoliang
-            //----han_mod_01------
-            //$sql="select name,status,avatar_file_name,bio from identities where id=$identity_id limit 1";
-            //$identityrow=$this->getRow($sql);
-            /*
-            if($identityrow["status"]!=STATUS_CONNECTED)
-            {
-                $sql="update identities set status=3 where id=$identity_id;";
-                $this->query($sql);
-            }
-             */
-            //----han_mod_01------
             $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
             $row = $this->getRow($sql);
             if($row["status"]!=STATUS_CONNECTED)
@@ -400,10 +395,8 @@ class IdentityModels extends DataModel{
                 $this->query($sql);
             }
 
-            //++++++++han_mod_02+++++++
             $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
             $identityrow=$this->getRow($sql);
-            //++++++++han_mod_02+++++++
 
             if($identityrow["name"]=="" || $identityrow["avatar_file_name"]=="" || $identityrow["bio"]=="")
             {
@@ -475,7 +468,7 @@ class IdentityModels extends DataModel{
     {
         $sql="select identityid,status from user_identity where userid=$userid";
         $rows=$this->getAll($sql);
-        $identities=array();
+        $userIdentityInfo = array();
         foreach($rows as $row)
         {
             if(intval($row["identityid"])>0)
@@ -484,30 +477,20 @@ class IdentityModels extends DataModel{
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
                 $identity["status"]=$row["status"];
-                array_push($identities,$identity);
+                array_push($userIdentityInfo,$identity);
             }
         }
-        return $identities;
+        return $userIdentityInfo;
 
     }
 
-    //------modified by handaoliang-------
-    /*
-    public function checkIdentityStatus($identity_id)
-    {
-        $sql="select status from identities where id=$identity_id;";
-        $result=$this->getRow($sql);
-        return intval($result["status"]);
-    }
-     */
-    //+++++++++++by handaoliang++++++++
+
     public function checkIdentityStatus($identity_id)
     {
         $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
         $result=$this->getRow($sql);
         return intval($result["status"]);
     }
-    //+++++++++++by handaoliang++++++++
 
     public function setRelation($identity_id,$status=0)
     {
@@ -533,15 +516,6 @@ class IdentityModels extends DataModel{
                     $this->query($sql);
 
                     //set identity state to verifying, set identity activecode
-
-
-                    //-----modified by handaoliang----
-                    /*
-                    if($status==STATUS_CONNECTED)
-                        $sql="update identities set status=$status where id=$identity_id;";
-                    else
-                        $sql="update identities set status=2 where id=$identity_id;";
-                     */
                     if($status==STATUS_CONNECTED){
                         $sql="update user_identity set status=$status where identityid=$identity_id;";
                     }else{
@@ -553,8 +527,6 @@ class IdentityModels extends DataModel{
                 }
             }
 
-            //----han_mod_1---
-            //$sql="select status from identities where id=$identity_id;";
             $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
             $row=$this->getRow($sql);
 
@@ -569,12 +541,7 @@ class IdentityModels extends DataModel{
                 $this->query($sql);
             } else if(intval($row["status"]) == 1) {	//if disconnect, change to verifying, set identity activecode ,send active email
                 //$sql="update identities set status='2',activecode='$token' where  id=$identity_id;";
-                /*
-                $sql="update identities set activecode='$token' where  id=$identity_id;";
-                $this->query($sql);
-                $sql="update user_identity set status=2 where identityid=$identity_id;";
-                $this->query($sql);
-                 */
+
                 $sql="update user_identity set status=2, activecode='$token' where identityid=$identity_id;";
                 $this->query($sql);
             }
@@ -650,30 +617,6 @@ class IdentityModels extends DataModel{
         return $returnData;
     }
 
-    //activeIdentity方法已经作废。By: handaoliang
-    /*
-    public function activeIdentity($identity_id,$activecode)
-    {
-        $activecode=mysql_real_escape_string($activecode);
-        //$sql="select id,status,external_identity from identities where id=$identity_id and activecode='$activecode';";
-        $sql="SELECT id,external_identity FROM identities WHERE id=$identity_id AND activecode='$activecode';";
-        $row=$this->getRow($sql);
-        $external_identity=$row["external_identity"];
-        if(intval($row["id"])==$identity_id && intval($row["id"])>0)
-        {
-            //$sql="update identities set status=3,activecode='' where id=$identity_id;";
-            $sql="UPDATE identities SET activecode='' WHERE id=$identity_id;";
-            $this->query($sql);
-            $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id;";
-            $this->query($sql);
-            return array("result"=>"verified","external_identity"=>$external_identity);
-        }
-        $sql="select external_identity from identities where id=$identity_id;";
-        $row=$this->getRow($sql);
-        return array("result"=>"","external_identity"=>$row["external_identity"]);
-    }
-    */
-
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $result=$this->ifIdentityExist($external_identity);
@@ -687,6 +630,7 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+
     public function ifIdentityIdBelongsUser($identity_id,$user_id)
     {
         if(intval($identity_id)>0 && intval($user_id)>0)
@@ -731,26 +675,6 @@ class IdentityModels extends DataModel{
         }
     }
 
-    //reActiveIdentity函数作废。By:handaoliang
-    /*
-    public function reActiveIdentity($identity_id)
-    {
-        if(intval($identity_id)>0)
-        {
-            $activecode = createToken();
-            $sql="update identities set activecode='$activecode' where id=$identity_id";
-            $r=$this->query($sql);
-            if(intval($r)>0)
-            {
-                $sql="select id,provider,external_identity,name,avatar_file_name,activecode from identities where id=$identity_id;";
-                $r=$this->getRow($sql);
-                return $r;
-                //success
-            }
-        }
-        return FALSE;
-    }
-    */
     public function buildIndex($userid,$identities)
     {
         //$identities=$this->getIdentitiesByUser($userid);
@@ -788,7 +712,6 @@ class IdentityModels extends DataModel{
                 }
             }
         }
-
 
     }
 }

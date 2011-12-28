@@ -85,7 +85,17 @@ body {
 
 /* global content area */
 .content {
-    margin-top: 33px;
+    width: 880px;
+    margin: 30px auto 40px auto;
+}
+
+/* clean up */
+.cleanup:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
 }
 
 
