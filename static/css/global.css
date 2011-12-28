@@ -127,8 +127,8 @@ body {
     float:left; height:35px; margin-top:5px; text-align:center; cursor:pointer;
 }
 #global_header .user_info .uinfo .name #goldLink a{
-    font-size:14px; color:#ffffff;font-weight:bold;font-family:Verdana;
-    height:40px; width:120px; display:block;line-height:40px;
+    font-size:14px; color:#ffffff;font-weight:bold;font-family:Verdana; white-space:nowrap;
+    height:40px; width:120px; display:block;line-height:40px; overflow:hidden;
 }
 #global_header .user_info .uinfo .name #goldLink a.nameh{
     position:absolute;color:#000000;background:url(/static/images/user.png) no-repeat;

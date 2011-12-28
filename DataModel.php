@@ -1,5 +1,5 @@
 <?php
-require "config.php";
+require_once dirname(__FILE__)."/config.php";
 
 function stripslashes_deep($value) {
     return is_array($value) ? array_map('reverse_escape', $value) : reverse_escape($value);
