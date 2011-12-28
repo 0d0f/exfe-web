@@ -1,5 +1,5 @@
 <?php
-require_once("config.php");
+require_once dirname(__FILE__)."/config.php";
 
 $locale = $_COOKIE["locale"];
 if($locale == "")
