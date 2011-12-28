@@ -35,7 +35,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#x_title').addClass('x_editable');
         $('#x_title').bind('click', odof.x.edit.editTitle);
         // desc
-        // 'Write some words about this X.'
+        odof.x.render.showDesc(true);
         $('#x_desc').addClass('x_editable');
         $('#x_desc').bind('click', odof.x.edit.editDesc);
         // time
@@ -127,42 +127,30 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#x_title').hide();
         $('#x_title_edit').val(crossData.title);
         $('#x_title_edit').show();
-        $('#x_title_area').bind('clickoutside', function(event) {
-            //if(event.target != $('#x_title')[0]){
-                crossData.title = odof.util.trim($('#x_title_edit').val());
-                crossData.title = crossData.title === '' ? ('Meet ' + id_name)
-                                                         : crossData.title;
-                odof.x.render.showTitle();
-                $('#x_title_edit').hide();
-                $('#x_title_edit').unbind('clickoutside');
-                $('#x_title').show();
-            //}
+        $('#x_title_area').bind('clickoutside', function() {
+            crossData.title = odof.util.trim($('#x_title_edit').val());
+            crossData.title = crossData.title === ''
+                            ? ('Meet ' + id_name) : crossData.title;
+            odof.x.render.showTitle();
+            $('#x_title_edit').hide();
+            $('#x_title_edit').unbind('clickoutside');
+            $('#x_title').show();
         });
     };
 
 
     ns.editDesc = function()
     {
-        $("#x_desc").hide();
-        $("#x_desc_edit").show();
-        $('#x_desc_area').bind('clickoutside', function(event)
+        $('#x_desc').hide();
+        $('#x_desc_edit').val(crossData.description);
+        $('#x_desc_edit').show();
+        $('#x_desc_area').bind('clickoutside', function()
         {
-            // dsfsdaf
-
-            var target = event.target;
-            while (target.id !== 'cross_desc' && target.parentNode) {
-                target = target.parentNode;
-            }
-            if (target.id === 'cross_desc') {
-                return;
-            }
-            var str = odof.cross.edit.formateString(jQuery("#cross_desc_textarea").val());
-            $('#cross_desc').html(
-                $('#cross_desc_textarea').val() ? str : 'Write some words about this X.'
-            );
-            jQuery("#cross_desc_textarea").slideUp(400);
-            jQuery("#cross_desc_textarea").unbind("clickoutside");
-            jQuery("#cross_desc").show();
+            crossData.description = odof.util.trim($('#x_desc_edit').val());
+            odof.x.render.showDesc(true);
+            $('#x_desc_edit').hide();
+            $('#x_desc_edit').unbind("clickoutside");
+            $('#x_desc').show();
         });
     };
 
@@ -327,10 +315,6 @@ if (0) {
 
 
 
-    ns.formateString = function(str){
-        var converter = new Showdown.converter();
-        return converter.makeHtml(str);
-    };
 
     /**
      * while user submit data

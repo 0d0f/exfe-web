@@ -24,8 +24,8 @@ var clickCallBackFunc = function(args){
                  + '<div id="x_content" class="cleanup">'
                  +     '<div id="x_mainarea">'
                  +         '<div id="x_desc_area">'
-                 +             '<div id="x_desc"></div>'
-                 +             '<textarea id="x_desc_edit" style="display:none;"></textarea>'
+                 +             '<div id="x_desc" class="x_desc"></div>'
+                 +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
                  +             '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
                  +         '</div>'
                  +         '<div id="x_rsvp_area">'
@@ -72,7 +72,17 @@ var clickCallBackFunc = function(args){
         if (objTitle.hasClass('x_title_normal') && objTitle.height() > 70) {
             objTitle.addClass('x_title_double').removeClass('x_title_normal');
         }
-    }
+    };
+
+
+    ns.showDesc = function(editing)
+    {
+        var strDesc = crossData.description === '' && editing
+                    ? 'Write some words about this X.'
+                    : crossData.description;
+        var converter = new Showdown.converter();
+        $('#x_desc').html(converter.makeHtml(strDesc));
+    };
 
 
     ns.showTime = function()
@@ -136,7 +146,7 @@ var clickCallBackFunc = function(args){
     ns.show = function()
     {
         $('#x_view_content').html(this.crossHtml);
-        $('#x_desc').html(crossData.description);
+
         $('#x_conversation_my_avatar').attr('src', odof.comm.func.getUserAvatar(
             myIdentity.avatar_file_name, 80, img_url
         ));
@@ -155,6 +165,7 @@ var clickCallBackFunc = function(args){
             $('#x_rsvp_change').hide();
         }
         this.showTitle();
+        this.showDesc();
         this.showTime();
         this.showPlace();
         this.showConversation();

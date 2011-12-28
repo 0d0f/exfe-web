@@ -126,6 +126,10 @@
     border: 1px #ccc dashed;
 }
 
+#x_desc_edit {
+    border: 1px #ccc dashed;
+}
+
 .x_editable {
     cursor: pointer;
 }
