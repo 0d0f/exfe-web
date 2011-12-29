@@ -88,7 +88,7 @@ if(0) {
             <a href="javascript:void(0);" id="submit_data">Done</a>
         </p>
         <p class="revert">
-            <a id="revert_cross_btn" href="javascript:void(0);">Revert</a>
+            <a id="revert_x_btn" href="javascript:void(0);">Revert</a>
         </p>
     </div>
     <div id="x_view">

@@ -24,12 +24,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.msgSubmitting = false;
 
+    ns.xBackup      = {};
 
-    /**
-     * display edit bar
-     **/
+
     ns.startEdit = function(){
-        // submit
+        // backup current x
+        odof.x.edit.xBackup = odof.util.clone(crossData);
+        // edit bar
         $('#edit_x_bar').slideDown(300);
         // title
         $('#x_title').addClass('x_editable');
@@ -44,6 +45,24 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         // place
         $('#x_place_area').addClass('x_editable');
         $('#x_place_area').bind('click', odof.x.edit.editPlace);
+    };
+
+
+    ns.revertX = function()
+    {
+        // edit bar
+        $('#edit_x_bar').slideUp(300);
+        // title
+        odof.x.edit.editTitle(false);
+        // desc
+        odof.x.edit.editDesc(false);
+        // time
+        odof.x.edit.editTime(false);
+        // place
+        odof.x.edit.editPlace(false);
+        // restore x from backup
+        crossData = odof.util.clone(odof.x.edit.xBackup);
+        odof.x.render.showComponents();
     };
 
 
@@ -122,95 +141,137 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.editTitle = function()
+    ns.editTitle = function(event)
     {
-        $('#x_title').hide();
-        $('#x_title_edit').val(crossData.title);
-        $('#x_title_edit').show();
-        $('#x_title_area').bind('clickoutside', function() {
-            crossData.title = odof.util.trim($('#x_title_edit').val());
-            crossData.title = crossData.title === ''
-                            ? ('Meet ' + id_name) : crossData.title;
-            odof.x.render.showTitle();
+        if (event) {
+            $('#x_title').hide();
+            $('#x_title_edit').val(crossData.title);
+            $('#x_title_edit').show();
+            $('#x_title_area').bind('clickoutside', function(event) {
+                if (event.target.id === 'revert_x_btn') {
+                    return;
+                }
+                crossData.title = odof.util.trim($('#x_title_edit').val());
+                crossData.title = crossData.title === ''
+                                ? ('Meet ' + id_name) : crossData.title;
+                odof.x.render.showTitle();
+                $('#x_title_edit').hide();
+                $('#x_title_area').unbind('clickoutside');
+                $('#x_title').show();
+            });
+        } else {
+            $('#x_title').removeClass('x_editable');
+            $('#x_title').unbind('click');
             $('#x_title_edit').hide();
-            $('#x_title_edit').unbind('clickoutside');
+            $('#x_title_area').unbind('clickoutside');
             $('#x_title').show();
-        });
-    };
-
-
-    ns.editDesc = function()
-    {
-        $('#x_desc').hide();
-        $('#x_desc_edit').val(crossData.description);
-        $('#x_desc_edit').show();
-        $('#x_desc_area').bind('clickoutside', function()
-        {
-            crossData.description = odof.util.trim($('#x_desc_edit').val());
-            odof.x.render.showDesc(true);
-            $('#x_desc_edit').hide();
-            $('#x_desc_edit').unbind("clickoutside");
-            $('#x_desc').show();
-        });
-    };
-
-
-    ns.editTime = function()
-    {
-        // check if had bind a event for #cross_time_bubble
-        if (!$('#x_time_bubble').data('events')) {
-            $('#x_time_bubble').bind('clickoutside', function(event) {
-                if (event.target.parentNode === $('#x_time_area')[0]) {
-                    $('#x_time_bubble').show();
-                } else {
-                    $('#x_time_bubble').hide();
-                    $('#x_time_bubble').unbind('clickoutside');
-                }
-            });
         }
-        // init calendar
-        exCal.initCalendar(
-            document.getElementById('x_datetime_original'),
-            'x_time_container',
-            function(displayCalString, standardTimeString) {
-                crossData.begin_at = standardTimeString;
-                odof.x.render.showTime();
-            }
-        );
     };
 
 
-    ns.editPlace = function()
+    ns.editDesc = function(event)
     {
-        if (!$('#x_place_bubble').data('events')) {
-            $('#x_place_bubble').bind('clickoutside', function(event)
+        if (event) {
+            $('#x_desc').hide();
+            $('#x_desc_edit').val(crossData.description);
+            $('#x_desc_edit').show();
+            $('#x_desc_area').bind('clickoutside', function(event)
             {
-                if (event.target.parentNode === $('#x_place_area')[0]) {
-                    $('#place_content').bind('keyup', function()
-                    {
-                        var strPlace = $('#place_content').val(),
-                            arrPlace = strPlace.split(/\r|\n|\r\n/),
-                            prvPlace = [];
-                        arrPlace.forEach(function(item, i) {
-                            if ((item = odof.util.trim(item)) !== '') {
-                                prvPlace.push(item);
-                            }
-                        });
-                        if (prvPlace.length) {
-                            crossData.place.line1 = prvPlace.shift();
-                            crossData.place.line2 = prvPlace.join("\n");
-                        } else {
-                            crossData.place.line1 = '';
-                            crossData.place.line2 = '';
-                        }
-                        odof.x.render.showPlace();
-                    });
-                    $('#x_place_bubble').show();
-                } else {
-                    $('#x_place_bubble').hide();
-                    $('#x_place_bubble').unbind('clickoutside');
+                if (event.target.id === 'revert_x_btn') {
+                    return;
                 }
+                crossData.description = odof.util.trim($('#x_desc_edit').val());
+                odof.x.render.showDesc(true);
+                $('#x_desc_edit').hide();
+                $('#x_desc_area').unbind('clickoutside');
+                $('#x_desc').show();
             });
+        } else {
+            $('#x_desc').removeClass('x_editable');
+            $('#x_desc').unbind('click');
+            $('#x_desc_edit').hide();
+            $('#x_desc_area').unbind('clickoutside');
+            $('#x_desc').show();
+        }
+    };
+
+
+    ns.editTime = function(event)
+    {
+        if (event) {
+            // check if had bind a event for #cross_time_bubble
+            if (!$('#x_time_bubble').data('events')) {
+                $('#x_time_bubble').bind('clickoutside', function(event) {
+                    if (event.target.id === 'revert_x_btn') {
+                        return;
+                    }
+                    if (event.target.parentNode === $('#x_time_area')[0]) {
+                        $('#x_time_bubble').show();
+                    } else {
+                        $('#x_time_bubble').hide();
+                        $('#x_time_bubble').unbind('clickoutside');
+                    }
+                });
+            }
+            // init calendar
+            exCal.initCalendar(
+                document.getElementById('x_datetime_original'),
+                'x_time_container',
+                function(displayCalString, standardTimeString) {
+                    crossData.begin_at = standardTimeString;
+                    odof.x.render.showTime();
+                }
+            );
+        } else {
+            $("#x_time_area").removeClass('x_editable');
+            $("#x_time_area").unbind('click');
+            $('#x_time_bubble').hide();
+            $('#x_time_bubble').unbind('clickoutside');
+        }
+    };
+
+
+    ns.editPlace = function(event)
+    {
+        if (event) {
+            if (!$('#x_place_bubble').data('events')) {
+                $('#x_place_bubble').bind('clickoutside', function(event)
+                {
+                    if (event.target.id === 'revert_x_btn') {
+                        return;
+                    }
+                    if (event.target.parentNode === $('#x_place_area')[0]) {
+                        $('#place_content').bind('keyup', function()
+                        {
+                            var strPlace = $('#place_content').val(),
+                                arrPlace = strPlace.split(/\r|\n|\r\n/),
+                                prvPlace = [];
+                            arrPlace.forEach(function(item, i) {
+                                if ((item = odof.util.trim(item)) !== '') {
+                                    prvPlace.push(item);
+                                }
+                            });
+                            if (prvPlace.length) {
+                                crossData.place.line1 = prvPlace.shift();
+                                crossData.place.line2 = prvPlace.join("\n");
+                            } else {
+                                crossData.place.line1 = '';
+                                crossData.place.line2 = '';
+                            }
+                            odof.x.render.showPlace();
+                        });
+                        $('#x_place_bubble').show();
+                    } else {
+                        $('#x_place_bubble').hide();
+                        $('#x_place_bubble').unbind('clickoutside');
+                    }
+                });
+            }
+        } else {
+            $('#x_place_area').removeClass('x_editable');
+            $('#x_place_area').unbind('click');
+            $('#x_place_bubble').hide();
+            $('#x_place_bubble').unbind('clickoutside');
         }
     };
 
@@ -228,28 +289,10 @@ $(document).ready(function()
     $('#private_icon').mouseout(function(){$('#private_hint').hide();});
     $('#edit_icon').mousemove(function(){$('#edit_icon_desc').show();});
     $('#edit_icon').mouseout(function(){$('#edit_icon_desc').hide();});
-    $("#submit_data").bind('click', odof.x.edit.submitData);
-    $("#edit_icon").bind('click', odof.x.edit.startEdit);
-
-return;
-
-
-    jQuery("#revert_cross_btn").bind("click",function() {
-        odof.cross.edit.revertCross();
-    });
-
-    jQuery("#desc_expand_btn").bind("click",function() {
-        odof.cross.edit.expandDesc();
-    });
-
-    $('.exfee_item').live('mouseenter mouseleave', function(event) {
-        odof.cross.edit.showExternalIdentity(event);
-    });
-    odof.cross.edit.rollingExfee = null;
-    odof.cross.edit.exfeeRollingTimer = setInterval(odof.cross.edit.rollExfee, 50);
-
+    $('#submit_data').bind('click', odof.x.edit.submitData);
+    $('#edit_icon').bind('click', odof.x.edit.startEdit);
+    $('#revert_x_btn').bind('click', odof.x.edit.revertX);
 });
-
 
 
 

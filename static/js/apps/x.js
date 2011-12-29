@@ -82,6 +82,13 @@ var clickCallBackFunc = function(args){
                     : crossData.description;
         var converter = new Showdown.converter();
         $('#x_desc').html(converter.makeHtml(strDesc));
+
+        /**
+         * @todo
+        $('#x_expand_btn').bind('click', function() {
+            odof.x.render.expandDesc();
+        });
+         */
     };
 
 
@@ -150,7 +157,6 @@ var clickCallBackFunc = function(args){
     ns.show = function()
     {
         $('#x_view_content').html(this.crossHtml);
-
         $('#x_conversation_my_avatar').attr('src', odof.comm.func.getUserAvatar(
             myIdentity.avatar_file_name, 80, img_url
         ));
@@ -168,11 +174,17 @@ var clickCallBackFunc = function(args){
             $('#x_rsvp_maybe').show();
             $('#x_rsvp_change').hide();
         }
+        this.showComponents();
+        this.showConversation();
+    };
+
+
+    ns.showComponents = function()
+    {
         this.showTitle();
         this.showDesc();
         this.showTime();
         this.showPlace();
-        this.showConversation();
     };
 
 })(ns);
