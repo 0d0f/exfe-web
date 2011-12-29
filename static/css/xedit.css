@@ -45,7 +45,6 @@
     padding-top: 10px;
     background: #C4E246;
     margin: 0 auto 10px;
-    /* css3 */
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#F4FCD1), to(#C4E246));
     background: -moz-linear-gradient(#F4FCD1, #C4E246);
     background: -o-linear-gradient(#F4FCD1, #C4E246);

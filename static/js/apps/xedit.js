@@ -38,8 +38,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#x_desc').addClass('x_editable');
         $('#x_desc').bind('click', odof.x.edit.editDesc);
         // time
-        $("#x_time_area").addClass('x_editable');
-        $("#x_time_area").bind('click', odof.x.edit.editTime);
+        $('#x_time_area').addClass('x_editable');
+        $('#x_time_area').bind('click', odof.x.edit.editTime);
         // place
         $('#x_place_area').addClass('x_editable');
         $('#x_place_area').bind('click', odof.x.edit.editPlace);
@@ -93,7 +93,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             // $('#pwd_hint').html("<span>Error identity </span>");
                             // $('#login_hint').show();
                     }
-                    odof.cross.index.setreadonly(clickCallBackFunc);
+                    odof.x.edit.setreadonly(clickCallBackFunc);
                 }
                 objMsg.focus();
                 //$('#post_submit').css('background', 'url("/static/images/enter.png")');
@@ -338,6 +338,35 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             event.preventDefault();
         }
     };
+ 
+ 
+    ns.submitData = function() {
+        // exfee = JSON.stringify(ns.getexfee());
+        // $('#edit_cross_submit_loading').show();
+        $.ajax({
+            url  : location.href.split('?').shift() + '/crossEdit',
+            type : 'POST',
+            dataType : 'json',
+            data:{
+                jrand       : Math.round(Math.random() * 10000000000),
+                ctitle      : crossData.title,
+                ctime       : crossData.begin_at,
+                cdesc       : crossData.description,
+                cplaceline1 : crossData.place.line1,
+                cplaceline2 : crossData.place.line2 //,
+             // exfee       : exfee
+            },
+            success : function(data) {
+                if(data.error){
+                    $('#error_msg').html(data.msg);
+                }
+            },
+            complete : function() {
+             // $('#edit_x_bar').slideUp(300);
+             // $('#edit_cross_submit_loading').hide();
+            }
+        });
+    };
 
 })(ns);
 
@@ -366,87 +395,94 @@ $(document).ready(function()
 
 
 
+$(document).ready(function() {
+                  
+    return;
 
+    $('#rsvp_loading').activity({
+                              segments: 8,
+                              steps: 3,
+                              opacity: 0.3,
+                              width: 4,
+                              space: 0,
+                              length: 5,
+                              color: '#0b0b0b',
+                              speed: 1.5
+                              });
 
+    $('#changersvp').click(function(e) {
+                         $('#rsvp_options').show();
+                         $('#rsvp_submitted').hide();
+                         });
 
+    odof.cross.index.formatCross();
 
+    window.submitting = false;
+    window.arrRvsp    = ['', 'Accepted', 'Declined', 'Interested'];
 
+    $('#rsvp_status').html(arrRvsp[myrsvp]);
 
+    $('textarea[name=comment]').focus();
 
+    $('textarea[name=comment]').keydown(function(e) {
+                                      switch (e.keyCode) {
+                                      case 9:
+                                      $('#post_submit').focus();
+                                      e.preventDefault();
+                                      break;
+                                      case 13:
+                                      if (!e.shiftKey) {
+                                      odof.cross.index.postConversation();
+                                      e.preventDefault();
+                                      }
+                                      }
+                                      });
 
+    $('#post_submit').click(function() {
+                          odof.cross.index.postConversation();
+                          });
 
+    if(token_expired == 'true') {
+    //$('textarea[name=comment]').attr("disabled","disabled");
+    //$('textarea[name=comment]').val("pls login");
+    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
+    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
+                                                ns.btn_val = $(this).attr('value');
+                                                var clickCallBackFunc = function(args){
+                                                var poststr = {
+                                                cross_id:odof.cross.index.cross_id,
+                                                rsvp:odof.cross.index.btn_val
+                                                };
+                                                $.ajax({
+                                                       type: 'POST',
+                                                       data: poststr,
+                                                       url: site_url + '/rsvp/save',
+                                                       dataType: 'json',
+                                                       success: function(data) { }
+                                                       });
+                                                window.location.href = odof.cross.index.location_uri;
+                                                //console.log(args);
+                                                }
+                                                
+                                                odof.cross.index.setreadonly(clickCallBackFunc);
+                                                });
 
+    $('textarea[name=comment], #cross_identity_btn').unbind("click");
+    $('textarea[name=comment]').blur();
+    $('textarea[name=comment], #cross_identity_btn').click(function(e) {
+                                                         odof.cross.index.setreadonly(clickCallBackFunc);
+                                                         });
+    }
 
+    if(token_expired == 'false') {
+    $('#cross_identity_btn').unbind("click");
+    $('#cross_identity_btn').click(function(e) {
+                                 var clickCallBackFunc = function(args){
+                                 window.location.href = odof.cross.index.location_uri;
+                                 };
+                                 odof.cross.index.setreadonly(clickCallBackFunc);
+                                 });
+    }
 
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if (0) {
-    /**
-     * while user submit data
-     *
-     * */
-    ns.submitData = function() {
-        var title = jQuery("#cross_titles_textarea").val(),
-            time  = jQuery("#datetime").val(),
-            place = odof.util.trim($('#place_content').val()),
-            placeline1 = place ? $('#pv_place_line1').html() : '',
-            placeline2 = place ? $('#pv_place_line2').html().replace(/<br>/g, '\\r') : '',
-            desc  = jQuery("#cross_desc_textarea").val(),
-            exfee = JSON.stringify(ns.getexfee());
-        jQuery("#edit_cross_submit_loading").show();
-        jQuery.ajax({
-            url:location.href.split('?').shift() + '/crossEdit',
-            type:"POST",
-            dataType:"json",
-            data:{
-                jrand  : Math.round(Math.random()*10000000000),
-                ctitle : title,
-                ctime  : time,
-                cdesc  : desc,
-                cplaceline1 : placeline1,
-                cplaceline2 : placeline2,
-                exfee  : exfee
-            },
-            //回调
-            success:function(JSONData){
-                ns.callbackActions(JSONData);
-            },
-            complete:function(){
-                jQuery("#edit_cross_submit_loading").hide();
-            }
-        });
-        //jQuery("#edit_cross_bar").slideUp(300);
-    };
-
-    /**
-     * submit call back actions
-     *
-     * */
-    ns.callbackActions = function(JSONData){
-        if(JSONData.error){
-            $("#error_msg").html(JSONData.msg);
-        }
-
-    };
-
-}
