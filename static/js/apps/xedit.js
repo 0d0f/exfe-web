@@ -18,8 +18,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.location_uri = null;
 
-    ns.editURI = window.location.href;
-
     ns.cross_time_bubble_status = 0;
 
     ns.msgSubmitting = false;
@@ -377,29 +375,10 @@ if (0) {
      *
      * */
     ns.callbackActions = function(JSONData){
-        if(!JSONData.error){
-            window.location.href = ns.editURI;
-        }else{
-            jQuery("#error_msg").html(JSONData.msg);
+        if(JSONData.error){
+            $("#error_msg").html(JSONData.msg);
         }
 
-    };
-
-    /**
-     * revert cross page
-     *
-     * */
-    ns.revertCross = function(){
-        window.location.href=ns.editURI;
-    };
-
-    /**
-     * expand cross description
-     *
-     * */
-    ns.expandDesc = function(){
-        jQuery("#cross_desc").show();
-        jQuery("#cross_desc_short").hide();
     };
 
     /**

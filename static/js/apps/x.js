@@ -88,6 +88,10 @@ var clickCallBackFunc = function(args){
         $('#x_expand_btn').bind('click', function() {
             odof.x.render.expandDesc();
         });
+        ns.expandDesc = function(){
+            $("#cross_desc").show();
+            #("#cross_desc_short").hide();
+        };
          */
     };
 
