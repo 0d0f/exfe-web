@@ -243,4 +243,7 @@
     font-weight: bold;
     color: #666666;
     word-break: break-all;
+    display: block;
+    max-height: 96px;
+    overflow: hidden;
 }

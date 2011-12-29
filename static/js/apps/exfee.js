@@ -448,3 +448,419 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 $(document).ready(function() {
     odof.exfee.gadget.make('test', [], true);
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////////// OLD exfee editing code from x page ////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+if (0) {
+    /**
+     * update "check all" status
+     * by Leask
+     * */
+    ns.updateCheckAll = function() {
+        if ($('.cs > .c1').length < $('.samlcommentlist > li').length) {
+            $('#check_all > span').html('Check all');
+            $('#check_all > em').attr('class', 'c1');
+        } else {
+            $('#check_all > span').html('Uncheck all');
+            $('#check_all > em').attr('class', 'c0');
+        }
+        // submit
+        $.ajax({
+            url  : location.href.split('?').shift() + '/crossEdit',
+            type : 'POST',
+            dataType : 'json',
+            data : {ctitle     : $('#cross_titles_textarea').val(),
+                    exfee_only : true,
+                    exfee      : JSON.stringify(ns.getexfee())},
+            success:function(data){
+                if (!data) {
+                    return;
+                }
+                if (!data.success) {
+                    switch (data.error) {
+                        case 'token_expired':
+                            odof.cross.index.setreadonly();
+                    }
+                }
+            }
+        });
+    };
+
+    /**
+     * do "check all" or "uncheck all"
+     * by Leask
+     * */
+    ns.checkAll = function() {
+        switch ($('#check_all > em')[0].className) {
+            case 'c0':
+                $('.cs > em').attr('class', 'c0');
+                break;
+            case 'c1':
+                $('.cs > em').attr('class', 'c1');
+        }
+        ns.updateCheckAll();
+    };
+
+    /**
+     * get exfee editing result
+     * by Leask
+     * */
+    ns.getexfee = function() {
+        var result = [];
+        function collect(obj, exist)
+        {
+            var exfee_identity = $(obj).attr('identity'),
+                element_id     = $(obj).attr('id'),
+                item           = {exfee_name     : $(obj).attr('identityname'),
+                                  exfee_identity : exfee_identity,
+                                  confirmed      : parseInt($('#' + element_id + ' > .cs > em')[0].className.substr(1)),
+                                  identity_type  : odof.util.parseId(exfee_identity).type};
+            if (exist) {
+                item.exfee_id  = $(obj).attr('identityid');
+            }
+            result.push(item);
+        }
+        $('.exfee_exist').each(function() {
+            collect(this, true);
+        });
+        $('.exfee_new').each(function() {
+            collect(this);
+        });
+        return result;
+    };
+
+    /**
+     * show external identity
+     * by Leask
+     * */
+    ns.showExternalIdentity = function(event) {
+        var target = $(event.target);
+        while (!target.hasClass('exfee_item')) {
+            target = $(target[0].parentNode);
+        }
+        var id     = target[0].id;
+        if (!id) {
+            return;
+        }
+        switch (event.type) {
+            case 'mouseenter':
+                ns.rollingExfee = id;
+                $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn(100);
+                break;
+            case 'mouseleave':
+                ns.rollingExfee = null;
+                $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut(100);
+                var rollE = $('#' + id + ' > .smcomment > div');
+                rollE.animate({
+                    marginLeft : '+=' + (0 - parseInt(rollE.css('margin-left')))},
+                    700
+                );
+        }
+    };
+
+    /**
+     * roll the exfee that with long name
+     * by Leask
+     * */
+    ns.rollExfee = function() {
+        var maxWidth = 200;
+        if (!ns.rollingExfee) {
+            return;
+        }
+        var rollE    = $('#' + ns.rollingExfee + ' > .smcomment > div'),
+            orlWidth = rollE.width(),
+            curLeft  = parseInt(rollE.css('margin-left')) - 1;
+        if (orlWidth <= maxWidth) {
+            return;
+        }
+        curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
+        rollE.css('margin-left', curLeft + 'px');
+    };
+
+    /**
+     * get auto complete infos of exfees from server
+     * by Leask
+     */
+    ns.chkComplete = function(strKey) {
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/identity/complete?key=' + strKey,
+            dataType : 'json',
+            success  : function(data) {
+                var strFound = '';
+                for (var item in data) {
+                    var spdItem = odof.util.trim(item).split(' '),
+                        strId   = spdItem.pop(),
+                        strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                    if (!strFound) {
+                        odof.cross.edit.strExfeeCompleteDefault = strId;
+                    }
+                    strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
+                }
+                if (strFound && odof.cross.edit.completeTimer && $('#exfee_input').val().length) {
+                    $('#exfee_complete').html(strFound);
+                    $('#exfee_complete').slideDown(50);
+                } else {
+                    $('#exfee_complete').slideUp(50);
+                }
+                clearTimeout(odof.cross.edit.completeTimer);
+                odof.cross.edit.completeTimer = null;
+            }
+        });
+    };
+
+    /**
+     * check exfee format
+     * by Leask
+     */
+    ns.chkExfeeFormat = function() {
+        ns.arrIdentitySub = [];
+        var strExfees = $('#exfee_input').val().replace(/\r|\n|\t/, '');
+        $('#exfee_input').val(strExfees);
+        var arrIdentityOri = strExfees.split(/,|;/);
+        for (var i in arrIdentityOri) {
+            if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
+                var exfee_item = odof.util.parseId(arrIdentityOri[i]);
+                if (exfee_item.type !== 'email') {
+                    return false;
+                }
+                ns.arrIdentitySub.push(exfee_item);
+            }
+        }
+        return ns.arrIdentitySub.length > 0;
+    };
+
+    /**
+     * auto complete for exfees
+     * by Leask
+     */
+    ns.complete = function() {
+        var strValue = $('#exfee_complete').val();
+        if (strValue === '') {
+            return;
+        }
+        var arrInput = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
+        arrInput.pop();
+        $('#exfee_input').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
+        clearTimeout(odof.cross.edit.completeTimer);
+        odof.cross.edit.completeTimer = null;
+        $('#exfee_complete').slideUp(50);
+        ns.identityExfee();
+        $('#exfee_input').focus();
+    };
+
+    /**
+     * summary exfee
+     * by Leask
+     * */
+    ns.summaryExfee = function() {
+        $('.bignb').html($('.cs > .c1').length);
+        $('.malnb').html($('.samlcommentlist > li').length);
+    };
+
+    /**
+     * identity exfee from server
+     * by Leask
+     * */
+    ns.identityExfee = function() {
+        if (!ns.chkExfeeFormat()) {
+            return;
+        }
+
+        $.ajax({
+            type     : 'GET',
+            url      : site_url + '/identity/get?identities=' + JSON.stringify(ns.arrIdentitySub),
+            dataType : 'json',
+            success  : function(data) {
+                var exfee_pv     = '',
+                    identifiable = {},
+                    id           = '',
+                    identity     = '',
+                    name         = '';
+                for (var i in data.response.identities) {
+                    id           = data.response.identities[i].id;
+                    identity     = data.response.identities[i].external_identity;
+                    name         = data.response.identities[i].name
+                                 ? data.response.identities[i].name
+                                 : data.response.identities[i].external_identity;
+                    var avatar_file_name = data.response.identities[i].avatar_file_name;
+                    if ($('#exfee_' + id).attr('id') == null) {
+                        exfee_pv += '<li id="exfee_'   + id + '" '
+                                  +     'identity="'   + identity + '" '
+                                  +     'identityid="' + id + '" '
+                                  +     'identityname="' + (name === identity ? '' : name) + '" '
+                                  +     'class="exfee_exist exfee_item" '
+                                  +     'invited="false">'
+                                  +     '<button type="button" class="exfee_del"></button>'
+                                  +     '<p class="pic20">'
+                                  +         '<img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="">'
+                                  +     '</p>'
+                                  +     '<div class="smcomment">'
+                                  +         '<div>'
+                                  +             '<span class="ex_name' + (name === identity ? ' external_identity' : '') + '">'
+                                  +                 name
+                                  +             '</span>'
+                                  +             '<span class="ex_identity external_identity">'
+                                  +                 (identity === name ? '' : identity)
+                                  +             '</span>'
+                                  +         '</div>'
+                                  +     '</div>'
+                                  +     '<p class="cs">'
+                                  +         '<em class="c0"></em>'
+                                  +     '</p>'
+                                  + '</li>';
+                    }
+                    identifiable[identity.toLowerCase()] = true;
+                }
+                for (i in ns.arrIdentitySub) {
+                    var idUsed = false;
+                    $('.exfee_new').each(function() {
+                        if ($(this).attr('identity').toLowerCase() === ns.arrIdentitySub[i].id.toLowerCase()) {
+                            idUsed = true;
+                        }
+                    });
+                    if (!identifiable[ns.arrIdentitySub[i].id.toLowerCase()] && !idUsed) {
+                        identity = ns.arrIdentitySub[i].id;
+                        name     = ns.arrIdentitySub[i].name
+                                 ? ns.arrIdentitySub[i].name
+                                 : ns.arrIdentitySub[i].id;
+                        ns.numNewIdentity++;
+                        exfee_pv += '<li id="newexfee_' + ns.numNewIdentity + '" '
+                                  +     'identity="'    + identity + '" '
+                                  +     'identityname="' + (name === identity ? '' : name) + '" '
+                                  +     'class="exfee_new exfee_item" '
+                                  +     'invited="false">'
+                                  +     '<button type="button" class="exfee_del"></button>'
+                                  +     '<p class="pic20">'
+                                  +         '<img src="'+img_url+'/web/80_80_default.png" alt="">'
+                                  +     '</p>'
+                                  +     '<div class="smcomment">'
+                                  +         '<div>'
+                                  +             '<span class="ex_name' + (name === identity ? ' external_identity' : '') + '">'
+                                  +                 name
+                                  +             '</span>'
+                                  +             '<span class="ex_identity external_identity">'
+                                  +                 (identity === name ? '' : identity)
+                                  +             '</span>'
+                                  +         '</div>'
+                                  +     '</div>'
+                                  +     '<p class="cs">'
+                                  +         '<em class="c0"></em>'
+                                  +     '</p>'
+                                  + '</li>';
+                    }
+                }
+                $('#exfee_area > .samlcommentlist').html($('#exfee_area > .samlcommentlist').html() + exfee_pv);
+                switch (ns.exfeeEditStatus) {
+                    case 'edit':
+                        $('.exfee_del').hide();
+                        break;
+                    case 'remove':
+                        $('.exfee_del').show();
+                }
+                ns.summaryExfee();
+                $('.ex_identity').hide();
+                $('#exfee_input').val('');
+            }
+        });
+    };
+
+    /**
+     * change exfee editing mode
+     * by Leask
+     * */
+    ns.exfeeEdit = function(status){
+        ns.exfeeEditStatus = status;
+        switch (status) {
+            case 'edit':
+                if (!$('.editing').length) {
+                    $('#exfee_area').toggleClass('editing');
+                }
+                $('#exfee_edit_box').fadeIn();
+                $('#exfee_remove').fadeIn();
+                $('#exfee_edit').hide();
+                $('#exfee_remove').attr('disabled', false);
+                $('#exfee_area').bind('clickoutside', function(event) {
+                    if ($(event.target).hasClass('exfee_del')) {
+                        return;
+                    }
+                    odof.cross.edit.exfeeEdit();
+                });
+                $('.exfee_del').hide();
+                ns.exfees = $('#exfee_area > .samlcommentlist').html();
+                break;
+            case 'remove':
+                $('#exfee_remove').attr('disabled', true);
+                $('#exfee_area').bind('click', function(event) {
+                    if (event.target.id === 'exfee_remove' || event.target.className === 'exfee_del') {
+                        return;
+                    }
+                    odof.cross.edit.exfeeEdit('edit');
+                });
+                $('.exfee_del').show();
+                break;
+            default:
+                $('#exfee_area').toggleClass('editing', false);
+                $('#exfee_edit_box').fadeOut();
+                $('#exfee_remove').hide();
+                $('#exfee_edit').fadeIn();
+                $('#exfee_edit_box').unbind('clickoutside');
+                $('.exfee_del').hide();
+                $('#exfee_input').val(odof.cross.edit.exfeeInputTips);
+        }
+        if (status !== 'remove') {
+            $('#exfee_area').unbind('click');
+        }
+    };
+
+    /**
+     * revert exfee
+     * by Leask
+     * */
+    ns.revertExfee = function() {
+        $('#exfee_area > .samlcommentlist').html(ns.exfees);
+        $('#exfee_input').val(odof.cross.edit.exfeeInputTips);
+    };
+
+
+
+}
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////

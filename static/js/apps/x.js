@@ -104,7 +104,7 @@ var clickCallBackFunc = function(args){
     {
         var objPlace = $('#x_place_line1');
         objPlace.html(crossData.place.line1 ? crossData.place.line1 : 'Somewhere');
-        $('#x_place_line2').html(crossData.place.line2);
+        $('#x_place_line2').html(crossData.place.line2.replace(/\n/g, '<br>'));
         if (objPlace.hasClass('x_place_line1_double') && objPlace.height() < 70) {
             objPlace.addClass('x_place_line1_normal').removeClass('x_place_line1_double');
         }
