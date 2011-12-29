@@ -172,16 +172,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             document.getElementById('x_datetime_original'),
             'x_time_container',
             function(displayCalString, standardTimeString) {
-                
-                console.log(displayCalString);
-                console.log(standardTimeString);
-                $('#x_time').html(displayCalString);
-                $('#datetime').val(standardTimeString);
-                $('#cross_times_area > h3').html(
-                    odof.util.getRelativeTime(Date.parse(
-                        odof.util.getDateFromString(standardTimeString)
-                    ) / 1000)
-                );
+                crossData.begin_at = standardTimeString;
+                odof.x.render.showTime();
             }
         );
     };
