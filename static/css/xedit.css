@@ -70,15 +70,14 @@
     z-index: 1;
     background: url(/static/images/loading_a.gif) no-repeat 0 0;
 }
+/*******/
 
 #edit_x_bar p.titles {
-    padding-left: 10px;
+    padding-left: 40px;
     font-weight: bold;
-    font-size: 12px;
-}
-
-#edit_x_bar p.titles span {
-    color: #0591AC;
+    font-size: 18px;
+    line-height: 24px;
+    color: #333333;
 }
 
 #edit_x_bar p.error_msg {
@@ -89,7 +88,7 @@
 }
 
 #edit_x_bar p.done_btn {
-    padding-right: 10px;
+    padding-right: 40px;
     float: right;
 }
 
@@ -118,6 +117,11 @@
     float: right;
     padding-top: 12px;
     line-height: 0px;
+}
+
+#edit_x_bar p.revert a {
+    color: #666666;
+    text-decoration: underline;
 }
 
 #x_title_edit {

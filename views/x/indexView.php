@@ -19,11 +19,9 @@
 <?php
     include 'share/nav.php';
 
-
     $cross  = $this->getVar('cross');
  // $user   = $this->getVar('user');
     $myrsvp = intval($this->getVar('myrsvp'));
-
 
     // handle login box
     $myidentity    = $this->getVar('myidentity');
@@ -46,43 +44,17 @@
        . "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n"
        . "</script>\r\n";
 
-
     // ready cross data
     echo '<script>'
        . 'var myIdentity = ' . json_encode($myidentity) . ','
        .     'crossData  = ' . json_encode($cross) . ','
        .     "myrsvp     = {$myrsvp};"
        . '</script>';
-
-
-
-if(0) {
-    $place_line1   = $cross['place']['line1'];
-    $place_line2   = str_replace('\r', "\n", $cross['place']['line2']);
-    $host_exfee    = $cross['host_exfee'];
-    $normal_exfee  = $cross['normal_exfee'];
-    $confirmed     = 0;
-    $allinvitation = count($host_exfee) + count($normal_exfee);
-    foreach ($host_exfee as $exfee) {
-        if ($exfee['state'] == INVITATION_YES) {
-            $confirmed = $confirmed + 1;
-        }
-    }
-    foreach($normal_exfee as $exfee) {
-        if ($exfee["state"] == INVITATION_YES) {
-            $confirmed = $confirmed + 1;
-        }
-    }
-
-    $begin_at_relativetime=RelativeTime(strtotime($cross["begin_at"]));
-    $begin_at_humandatetime=humanDateTime(strtotime($cross["begin_at"]),intval($cross["time_type"]));
-    $token=$_GET["token"];
-}
 ?>
 <div class="content">
     <div id="edit_x_bar" style="display:none;">
         <div id='edit_x_submit_loading' style="display:none;"></div>
-        <p class="titles">Editing <span>X</span></p>
+        <p class="titles">Editing</p>
         <p id="error_msg" class="error_msg"></p>
         <p class="done_btn">
             <a href="javascript:void(0);" id="submit_data">Done</a>
