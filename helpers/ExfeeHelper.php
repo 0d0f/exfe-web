@@ -218,6 +218,7 @@ class ExfeeHelper extends ActionController
                         'title' => $cross["title"],
                         'description' => $cross["description"],
                         'begin_at' => $cross["begin_at"],
+                        'time_type' => $cross["time_type"],
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
                         'cross_id' => $cross_id,
@@ -245,6 +246,7 @@ class ExfeeHelper extends ActionController
                         if($identity["provider"]=="iOSAPN")
                         {
                             $args["identity"]=$identity;
+                            $args["job_type"]="invitation";
                             $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
                         }
 
