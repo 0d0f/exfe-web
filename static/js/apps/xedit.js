@@ -276,14 +276,66 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.editRsvp = function(event)
     {
-        if (event) {
+        if (event.target.id === 'x_rsvp_change') {
             $('#x_rsvp_msg').hide();
             $('#x_rsvp_change').hide();
             $('.x_rsvp_button').show();
         } else {
+            switch (event.target.id) {
+                case 'x_rsvp_yes':
+                case 'x_rsvp_no':
+                case 'x_rsvp_maybe':
+                    var strRsvp = event.target.id.split('_')[2];
+                    $.ajax({
+                        type : 'POST',
+                        data : {cross_id : cross_id, rsvp : strRsvp, token : token},
+                        url  : site_url + '/rsvp/save',
+                        dataType : 'json',
+                        success : function(data) {
+                            if (data != null) {
+                                if (data.response.success === 'true') {
+                                    // by handaoliang {
+                                    odof.x.edit.setreadonly(clickCallBackFunc);
+                                    if (data.response.token_expired == '1' && login_type == 'token') {
+                                        token_expired = true;
+                                    }
+                                    // }
+                                    myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                    odof.x.render.showRsvp();
+                                } else {
+                                    // by handaoliang {
+                                    //var args = {"identity":external_identity};
+                                    //alert("show login dialog.");
+                                    //$('#pwd_hint').html("<span>Error identity </span>");
+                                    //$('#login_hint').show();
+                                    /*
+                                    var callBackFunc = function(args){
+                                        window.location.href=location_uri;
+                                    }
+                                    if(show_idbox == "setpassword"){
+                                        odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                                        jQuery("#show_identity_box").val(external_identity);
+                                    }else{
+                                        odof.user.status.doShowLoginDialog(null, callBackFunc);
+                                    }
+                                    */
+                                    odof.x.edit.setreadonly();
+                                    // }
+                                }
+                            }
+                            // $('#rsvp_loading').hide();
+                            // $('#rsvp_loading').unbind('ajaxStart ajaxStop');
+                        },
+                        error: function(data) {
+                            // $('#rsvp_loading').hide();
+                            // $('#rsvp_loading').unbind('ajaxStart ajaxStop');
+                        }
+                    });
+            }
             $('#x_rsvp_msg').show();
             $('#x_rsvp_change').show();
             $('.x_rsvp_button').hide();
+            event.preventDefault();
         }
     };
 
@@ -302,6 +354,7 @@ $(document).ready(function()
     $('#edit_icon').mousemove(function() { $('#edit_icon_desc').show(); });
     $('#edit_icon').mouseout(function() { $('#edit_icon_desc').hide(); });
     $('#x_rsvp_change').bind('click', odof.x.edit.editRsvp)
+    $('.x_rsvp_button').bind('click', odof.x.edit.editRsvp)
     $('#submit_data').bind('click', odof.x.edit.submitData);
     $('#edit_icon').bind('click', odof.x.edit.startEdit);
     $('#revert_x_btn').bind('click', odof.x.edit.revertX);
@@ -394,17 +447,6 @@ if (0) {
             $("#error_msg").html(JSONData.msg);
         }
 
-    };
-
-    /**
-     * change rsvp status
-     * by Leask
-     * */
-    ns.changeRsvp = function(target) {
-        var intC = parseInt(target.className.substr(1)) + 1;
-        target.className = 'c' + (intC > 2 ? 0 : intC);
-        ns.summaryExfee();
-        ns.updateCheckAll();
     };
 
 }

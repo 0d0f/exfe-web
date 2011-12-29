@@ -96,6 +96,21 @@ var clickCallBackFunc = function(args){
     };
 
 
+    ns.showRsvp = function()
+    {
+        if (myrsvp) {
+            $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
+            $('#x_rsvp_msg').show();
+            $('.x_rsvp_button').hide();
+            $('#x_rsvp_change').show();
+        } else {
+            $('#x_rsvp_msg').hide();
+            $('.x_rsvp_button').show();
+            $('#x_rsvp_change').hide();
+        }
+    };
+
+
     ns.showTime = function()
     {
         var strRelativeTime = '',
@@ -164,21 +179,8 @@ var clickCallBackFunc = function(args){
         $('#x_conversation_my_avatar').attr('src', odof.comm.func.getUserAvatar(
             myIdentity.avatar_file_name, 80, img_url
         ));
-        if (myrsvp) {
-            $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
-            $('#x_rsvp_msg').show();
-            $('#x_rsvp_yes').hide();
-            $('#x_rsvp_no').hide();
-            $('#x_rsvp_maybe').hide();
-            $('#x_rsvp_change').show();
-        } else {
-            $('#x_rsvp_msg').hide();
-            $('#x_rsvp_yes').show();
-            $('#x_rsvp_no').show();
-            $('#x_rsvp_maybe').show();
-            $('#x_rsvp_change').hide();
-        }
         this.showComponents();
+        this.showRsvp();
         this.showConversation();
     };
 
@@ -239,78 +241,6 @@ $(document).ready(function() {
 
     $('#post_submit').click(function() {
         odof.cross.index.postConversation();
-    });
-
-    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
-
-        $("#rsvp_loading").ajaxStart(function() {
-            $(this).show();
-        });
-        $("#rsvp_loading").ajaxStop(function() {
-            $(this).hide();
-        });
-        var poststr = 'cross_id=' + cross_id + '&rsvp=' + $(this).attr('value') + '&token=' + token;
-
-        $.ajax({
-            type: 'POST',
-            data: poststr,
-            url: site_url + '/rsvp/save',
-            dataType: 'json',
-            success: function(data) {
-                if (data != null) {
-                    if (data.response.success === 'true') {
-                        odof.cross.index.setreadonly(clickCallBackFunc);
-                        if (data.response.token_expired == '1' && login_type == 'token') {
-                            token_expired = true;
-                        }
-                        var objChkbox = $('li#exfee_' + data.response.identity_id + ' > .cs > em');
-                        objChkbox.removeClass('c0');
-                        objChkbox.removeClass('c1');
-                        objChkbox.removeClass('c2');
-                        objChkbox.removeClass('c3');
-                        switch (data.response.state) {
-                            case 'yes':
-                                objChkbox.addClass('c1');
-                                break;
-                            case 'no':
-                                objChkbox.addClass('c2');
-                                break;
-                            case 'maybe':
-                                objChkbox.addClass('c3');
-                        }
-                        odof.cross.edit.summaryExfee();
-                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
-                        $('#rsvp_status').html(arrRvsp[myrsvp]);
-                        $('#rsvp_options').hide();
-                        $('#rsvp_submitted').show();
-                    } else {
-                        //var args = {"identity":external_identity};
-                        //alert("show login dialog.");
-                        //$('#pwd_hint').html("<span>Error identity </span>");
-                        //$('#login_hint').show();
-                        /*
-                        var callBackFunc = function(args){
-                            window.location.href=location_uri;
-                        }
-                        if(show_idbox == "setpassword"){
-                            odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                            jQuery("#show_identity_box").val(external_identity);
-                        }else{
-                            odof.user.status.doShowLoginDialog(null, callBackFunc);
-                        }
-                        */
-                        odof.cross.index.setreadonly();
-                    }
-                }
-                $('#rsvp_loading').hide();
-                $('#rsvp_loading').unbind('ajaxStart ajaxStop');
-            },
-            error: function(data) {
-                $('#rsvp_loading').hide();
-                $('#rsvp_loading').unbind('ajaxStart ajaxStop');
-            }
-        });
-        e.preventDefault();
     });
 
     if(token_expired == 'true') {
