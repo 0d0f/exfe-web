@@ -28,7 +28,7 @@ var clickCallBackFunc = function(args){
                  +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
                  +             '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
                  +         '</div>'
-                 +         '<div id="x_rsvp_area">'
+                 +         '<div id="x_rsvp_area" class="cleanup">'
                  +             '<span id="x_rsvp_msg">'
                  +                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
                  +             '</span>'

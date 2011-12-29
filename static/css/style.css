@@ -17,32 +17,6 @@
 .exfel p.text a{background:url(/static/images/btn.png) no-repeat 50px -107px;padding-right:20px;color:#aaaaaa;font-style:italic; font-size:12px;margin-left:10px;
 }
 
-.exfel ul.ynbtn{margin:25px 0;height:30px;
-}
-.exfel ul.ynbtn li{width:150px;float:left;
-}
-.exfel ul.ynbtn li a{width:131px;height:31px;color:#ffffff;text-align:center;display:block;font-size:22px;line-height:26px;text-decoration:none;
-}
-.exfel ul.ynbtn li a.yes{background:url(/static/images/btn.png) no-repeat left top;
-}
-.exfel ul.ynbtn li a.no{background:url(/static/images/btn.png) no-repeat -150px top;
-}
-.exfel ul.ynbtn li a:hover.yes{background:url(/static/images/btn.png) no-repeat -300px top;
-}
-.exfel ul.ynbtn li a:hover.no{background:url(/static/images/btn.png) no-repeat -450px top;
-}
-.exfel ul.ynbtn li a:visited.yes{background:url(/static/images/btn.png) no-repeat -600px top;
-}
-.exfel ul.ynbtn li a:visited.no{background:url(/static/images/btn.png) no-repeat -750px top;
-}
-.exfel ul.ynbtn li a.maybe{background:none;color:#838383;text-decoration: underline;font-size:18px;text-align:left;
-}
-.exfel ul.ynbtn li a.yes_readonly{background:url(/static/images/btn.png) no-repeat -900px top;cursor:default;
-}
-.exfel ul.ynbtn li a.no_readonly{background:url(/static/images/btn.png) no-repeat -1050px top;cursor:default;
-}
-.exfel ul.ynbtn li a.maybe_readonly{background:none;color:#838383;text-decoration: underline;font-size:18px;text-align:left;cursor:default;
-}
 .feetop{height:40px;}
 .exfer .exfee h3{background:url(/static/images/icons.png) no-repeat left -28px;text-indent:35px;font-size:24px;height:40px;line-height:40px;font-weight:normal;float:left;width:100px;color:#696969;margin:0}
 .exfer .exfee p.of{float:right;width:100px;}
