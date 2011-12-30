@@ -1,18 +1,25 @@
 /**
- * @Description:    X edit module
- * @Author:         HanDaoliang <handaoliang@gmail.com>, Leask Huang <leask@exfe.com>
- * @createDate:     Sup 15,2011
- * @CopyRights:     http://www.exfe.com
-**/
+ * @Description: X edit module
+ * @Author:      Leask Huang <leask@exfe.com>
+ * @createDate:  Dec 30, 2011
+ * @CopyRights:  http://www.exfe.com
+ */
 
-var moduleNameSpace = 'odof.x.edit';
-var ns = odof.util.initNameSpace(moduleNameSpace);
+var moduleNameSpace = 'odof.x.edit',
+    ns = odof.util.initNameSpace(moduleNameSpace);
 
-(function(ns){
+// 这个回调函数在后面要被覆盖 by Handaoliang
+var clickCallBackFunc = function(args)
+{
+    window.location.href = odof.x.edit.location_uri;
+};
+
+(function(ns)
+{
 
     ns.cross_id     = 0;
 
-    ns.btn_val      = null;
+    ns.rsvpAction   = null;
 
     ns.token        = null;
 
@@ -221,8 +228,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             );
         } else {
-            $("#x_time_area").removeClass('x_editable');
-            $("#x_time_area").unbind('click');
+            $('#x_time_area').removeClass('x_editable');
+            $('#x_time_area').unbind('click');
             $('#x_time_bubble').hide();
             $('#x_time_bubble').unbind('clickoutside');
         }
@@ -272,6 +279,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             $('#x_place_bubble').unbind('clickoutside');
         }
     };
+ 
+ 
+    ns.conversationKeydown = function(event)
+    {
+        switch (event.keyCode) {
+            case 9:
+                // $('#post_submit').focus();
+                // event.preventDefault();
+                break;
+            case 13:
+                if (!event.shiftKey) {
+                    odof.x.edit.postMessage();
+                    // e.preventDefault();
+                }
+        }
+    };
 
 
     ns.editRsvp = function(event)
@@ -286,6 +309,29 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 case 'x_rsvp_no':
                 case 'x_rsvp_maybe':
                     var strRsvp = event.target.id.split('_')[2];
+
+                    if (token_expired == 'true') {
+                        odof.x.edit.rsvpAction = strRsvp;
+                        odof.x.edit.setreadonly(function()
+                        {
+                            $.ajax({
+                                type : 'POST',
+                                data : {cross_id : odof.x.edit.cross_id,
+                                        rsvp     : odof.x.edit.rsvpAction},
+                                url  : site_url + '/rsvp/save',
+                                dataType : 'json',
+                                success  : function(data)
+                                {
+                                    if (data != null && data.response.success === 'true') {
+                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                        odof.x.render.showRsvp();
+                                    }
+                                }
+                            });                        
+                        });
+                        return;
+                    }
+ 
                     $.ajax({
                         type : 'POST',
                         data : {cross_id : cross_id, rsvp : strRsvp, token : token},
@@ -387,102 +433,25 @@ $(document).ready(function()
     $('#submit_data').bind('click', odof.x.edit.submitData);
     $('#edit_icon').bind('click', odof.x.edit.startEdit);
     $('#revert_x_btn').bind('click', odof.x.edit.revertX);
-});
 
-
-
-
-
-
-
-$(document).ready(function() {
-                  
-    return;
-
-    $('#rsvp_loading').activity({
-                              segments: 8,
-                              steps: 3,
-                              opacity: 0.3,
-                              width: 4,
-                              space: 0,
-                              length: 5,
-                              color: '#0b0b0b',
-                              speed: 1.5
-                              });
-
-    $('#changersvp').click(function(e) {
-                         $('#rsvp_options').show();
-                         $('#rsvp_submitted').hide();
-                         });
-
-    odof.cross.index.formatCross();
-
-    window.submitting = false;
-    window.arrRvsp    = ['', 'Accepted', 'Declined', 'Interested'];
-
-    $('#rsvp_status').html(arrRvsp[myrsvp]);
-
-    $('textarea[name=comment]').focus();
-
-    $('textarea[name=comment]').keydown(function(e) {
-                                      switch (e.keyCode) {
-                                      case 9:
-                                      $('#post_submit').focus();
-                                      e.preventDefault();
-                                      break;
-                                      case 13:
-                                      if (!e.shiftKey) {
-                                      odof.cross.index.postConversation();
-                                      e.preventDefault();
-                                      }
-                                      }
-                                      });
-
-    $('#post_submit').click(function() {
-                          odof.cross.index.postConversation();
-                          });
-
-    if(token_expired == 'true') {
-    //$('textarea[name=comment]').attr("disabled","disabled");
-    //$('textarea[name=comment]').val("pls login");
-    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').unbind("click");
-    $('#rsvp_yes , #rsvp_no , #rsvp_maybe').click(function(e) {
-                                                ns.btn_val = $(this).attr('value');
-                                                var clickCallBackFunc = function(args){
-                                                var poststr = {
-                                                cross_id:odof.cross.index.cross_id,
-                                                rsvp:odof.cross.index.btn_val
-                                                };
-                                                $.ajax({
-                                                       type: 'POST',
-                                                       data: poststr,
-                                                       url: site_url + '/rsvp/save',
-                                                       dataType: 'json',
-                                                       success: function(data) { }
-                                                       });
-                                                window.location.href = odof.cross.index.location_uri;
-                                                //console.log(args);
-                                                }
-                                                
-                                                odof.cross.index.setreadonly(clickCallBackFunc);
-                                                });
-
-    $('textarea[name=comment], #cross_identity_btn').unbind("click");
-    $('textarea[name=comment]').blur();
-    $('textarea[name=comment], #cross_identity_btn').click(function(e) {
-                                                         odof.cross.index.setreadonly(clickCallBackFunc);
-                                                         });
+    if (token_expired == 'true') {
+        $('#x_conversation_input').bind('click', function(e) {
+            odof.x.edit.setreadonly(clickCallBackFunc);
+        })
+    } else {
+        $('#x_conversation_input').focus();
+        $('#x_conversation_input').bind('keydown', odof.x.edit.conversationKeydown);
     }
 
-    if(token_expired == 'false') {
-    $('#cross_identity_btn').unbind("click");
-    $('#cross_identity_btn').click(function(e) {
-                                 var clickCallBackFunc = function(args){
-                                 window.location.href = odof.cross.index.location_uri;
-                                 };
-                                 odof.cross.index.setreadonly(clickCallBackFunc);
-                                 });
+    if (token_expired == 'false') {
+        $('#cross_identity_btn').unbind('click');
+        $('#cross_identity_btn').bind('click', function()
+        {
+            odof.x.edit.setreadonly(function()
+            {
+                window.location.href = odof.x.edit.location_uri;
+            });
+        });
     }
 
 });
-

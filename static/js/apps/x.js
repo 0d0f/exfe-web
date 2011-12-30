@@ -1,16 +1,12 @@
 /**
- * @Description:    Cross index
- * @LastModified:   Nov 1, 2011
- * @CopyRights:     http://www.exfe.com
-**/
+ * @Description: X render module
+ * @Author:      Leask Huang <leask@exfe.com>
+ * @createDate:  Dec 30, 2011
+ * @CopyRights:  http://www.exfe.com
+ */
 
-var moduleNameSpace = 'odof.x.render';
-var ns = odof.util.initNameSpace(moduleNameSpace);
-
-// 这个回调函数在后面要被覆盖 by Handaoliang
-var clickCallBackFunc = function(args){
-    window.location.href = odof.cross.index.location_uri;
-};
+var moduleNameSpace = 'odof.x.render',
+    ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns)
 {
