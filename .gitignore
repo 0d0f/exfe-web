@@ -5,3 +5,4 @@ static/js/c.js
 .*.swp
 eimgs/*
 intl/.fuse_hidden*
+test.php

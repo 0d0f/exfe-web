@@ -1,13 +1,18 @@
 <?php
 require_once dirname(__FILE__)."/config.php";
 
-$locale = $_COOKIE["locale"];
-if($locale == "")
-{
-    $locale=Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+/**
+ * 国际化，取用户浏览器语言
+ * @param NULL
+ * @return $local
+*/
+$locale = "en_US"; // 默认en_US
+if(array_key_exists("locale", $_COOKIE)){
+    $locale = $_COOKIE["locale"];
+}else if(array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER)){
+    $locale = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 }
 $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
-
 
 /*
  * 判断并获取GET数据
