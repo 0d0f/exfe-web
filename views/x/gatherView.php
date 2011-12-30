@@ -33,8 +33,8 @@
                 <div id="calendar_map_container"></div>
                 <div id="gather_date_bg" class="gather_blur">Sometime</div>
                 <label class="date">Date &amp; Time</label>
-                <input type="text" name="datetime_original" id="datetime_original" />
-                <input type="hidden" name="datetime" id="datetime" value="" />
+                <input type="text" name="datetime_original" id="datetime_original">
+                <input type="hidden" name="datetime" id="datetime" value="">
                 <!-- @todo== p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p -->
             </li>
 
@@ -50,48 +50,7 @@
             </li>
 
             <li>
-                <div id="post_submit" title="Invite!"></div>
-                <div id="gather_exfee_bg" class="gather_blur">Enter attendees’ email or id</div>
-                <select id="exfee_complete" size="5"></select>
-                <label class="exfee">Exfee</label>
-                <p class="count">
-                    <a id="confirmed_all" check=false href="javascript:void(0);">Mark all as confirmed</a>
-                    count:
-                    <span id="exfee_count">1</span>
-                </p>
-                <textarea id="exfee"></textarea>
-                <div id="identity_ajax"></div>
-                <div class="creattext">
-                    <div class="selecetafri">
-                        <div class="sover" id="exfee_pv">
-                            <ul class="exfeelist">
-                                <?php if ($external_identity != '') { ?>
-                                <li class="addjn">
-                                    <p class="pic20">
-                                        <img src="<?php echo getUserAvatar($global_avatar_file_name, 80); ?>" alt="" />
-                                    </p>
-                                    <p class="smcomment">
-                                        <span id="exfee_<?php echo $global_identity_id; ?>"
-                                              class="exfee_exist"
-                                              identityid="<?php echo $global_identity_id; ?>"
-                                              value="<?php echo $global_external_identity; ?>"
-                                              avatar="<?php echo $global_avatar_file_name; ?>">
-                                              <?php echo $global_name;?>
-                                        </span>
-                                        <input id="confirmed_exfee_<?php echo $global_identity_id;?>"
-                                               class="confirmed_box" checked=true type="checkbox" />
-                                        <span class="lb">host</span>
-                                    </p>
-                                    <button type="button" class="exfee_del"></button>
-                                </li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div id="exfee_warning">
-                    No more than 12 attendees. Sorry we're still working on it.
-                </div>
+                <!--div id="exfee_warning">No more than 12 attendees. Sorry we're still working on it.</div-->
             </li>
 
             <li>
@@ -113,40 +72,6 @@
     </div>
 
     <div class="albg" id="content_x">
-        <div class="step" id="index">
-            <p class="Preview"></p>
-            <h2 id="pv_title" class="pv_title_normal">
-                <?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?>
-            </h2>
-            <div class="exfel">
-                <p class="text" id="pv_description">Write some words about this X.</p><!--a href="">Expand</a-->
-                <ul class="ynbtn">
-                    <li><a class="yes_readonly" disabled="disabled">Yes</a></li>
-                    <li><a class="no_readonly" disabled="disabled">No</a></li>
-                    <li><a class="maybe_readonly" disabled="disabled">interested</a></li><li>
-                </li>
-                </ul>
-            </div>
-            <div class="exfer">
-                <h3 id="pv_relativetime">Sometime</h3>
-                <p id="pv_origintime"class="tm"></p>
-                <h3 id="pv_place_line1" class="pv_place_line1_normal">Somewhere</h3>
-                <p class="tm" id="pv_place_line2"></p>
-                <div class="exfee">
-                    <div class="feetop">
-                        <h3>Exfee</h3>
-                        <p class="of">
-                            <em id="exfee_confirmed" class="bignb">0</em>
-                            of
-                            <span id="exfee_summary">0</span>
-                            <br>
-                            confirmed
-                        </p>
-                    </div>
-                    <ul id="exfeelist" class="samlcommentlist"></ul>
-                </div>
-            </div>
-        </div>
     </div>
 
 </div>

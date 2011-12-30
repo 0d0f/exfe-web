@@ -1,3 +1,25 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if (0) {
 function hide_exfeedel(e)
 {
     e.addClass('bgrond');
@@ -342,8 +364,7 @@ $(document).ready(function() {
         $('#exfee_complete').slideUp(50);
     });
 
-    $('.addjn').mousemove(function() {
-        hide_exfeedel($(this));
+    $('.addjn').mousemove(function() {hide_exfeedel($(this));
     });
 
     $('.addjn').mouseout(function() {
@@ -826,3 +847,5 @@ function getDraft()
 }
  *
  */
+
+}
