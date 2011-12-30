@@ -153,18 +153,30 @@ var clickCallBackFunc = function(args)
             $('#x_title').hide();
             $('#x_title_edit').val(crossData.title);
             $('#x_title_edit').show();
-            $('#x_title_area').bind('clickoutside', function(event) {
+            $('#x_title_area').bind('clickoutside', function(event)
+            {
                 if (event.target.id === 'revert_x_btn') {
                     return;
                 }
                 odof.x.edit.saveTitle();
             });
+            $('#x_title_edit').bind('keydown', function(event)
+            {
+                switch (event.keyCode) {
+                    case 9:
+                        odof.x.edit.saveTitle();
+                        odof.x.edit.editDesc(true);
+                        event.preventDefault();
+                }
+            });
+            $('#x_title_edit').focus();
         } else {
             $('#x_title').removeClass('x_editable');
             $('#x_title').unbind('click');
             $('#x_title_edit').hide();
             $('#x_title_area').unbind('clickoutside');
             $('#x_title').show();
+            $('#x_title_edit').unbind('keydown');
         }
     };
 
@@ -182,12 +194,23 @@ var clickCallBackFunc = function(args)
                 }
                 odof.x.edit.saveDesc();
             });
+            $('#x_desc_edit').bind('keydown', function(event)
+            {
+                switch (event.keyCode) {
+                    case 9:
+                        odof.x.edit.saveDesc();
+                        odof.x.edit.editTime(true);
+                        event.preventDefault();
+                }
+            });
+            $('#x_desc_edit').focus();
         } else {
             $('#x_desc').removeClass('x_editable');
             $('#x_desc').unbind('click');
             $('#x_desc_edit').hide();
             $('#x_desc_area').unbind('clickoutside');
             $('#x_desc').show();
+            $('#x_desc_edit').unbind('keydown');
         }
     };
 
@@ -197,14 +220,25 @@ var clickCallBackFunc = function(args)
         if (event) {
             // check if had bind a event for #cross_time_bubble
             if (!$('#x_time_bubble').data('events')) {
-                $('#x_time_bubble').bind('clickoutside', function(event) {
+                $('#x_time_bubble').bind('clickoutside', function(event)
+                {
                     if (event.target.id === 'revert_x_btn') {
                         return;
                     }
                     if (event.target.parentNode === $('#x_time_area')[0]) {
                         $('#x_time_bubble').show();
+                        $('#x_datetime_original').focus();
                     } else {
-                        odof.x.render.saveTime();
+                        odof.x.edit.saveTime();
+                    }
+                });
+                $('#x_datetime_original').bind('keydown', function(event)
+                {
+                    switch (event.keyCode) {
+                        case 9:
+                            odof.x.edit.saveTime();
+                            odof.x.edit.editPlace(true);
+                            event.preventDefault();
                     }
                 });
             }
@@ -217,11 +251,16 @@ var clickCallBackFunc = function(args)
                     odof.x.render.showTime();
                 }
             );
-        } else {
+            if (event === true) {
+                $('#x_time_bubble').show();
+                $('#x_datetime_original').focus();
+            }
+         } else {
             $('#x_time_area').removeClass('x_editable');
             $('#x_time_area').unbind('click');
             $('#x_time_bubble').hide();
             $('#x_time_bubble').unbind('clickoutside');
+            $('#x_datetime_original').unbind('keydown');
         }
     };
 
@@ -260,12 +299,26 @@ var clickCallBackFunc = function(args)
                         odof.x.render.savePlace();
                     }
                 });
+                $('#place_content').bind('keydown', function(event)
+                {
+                    switch (event.keyCode) {
+                        case 9:
+                            odof.x.edit.savePlace();
+                            odof.x.edit.editTitle(true);
+                            event.preventDefault();
+                    }
+                });
+            }
+            if (event === true) {
+                $('#x_place_bubble').show();
+                $('#place_content').focus();
             }
         } else {
             $('#x_place_area').removeClass('x_editable');
             $('#x_place_area').unbind('click');
             $('#x_place_bubble').hide();
             $('#x_place_bubble').unbind('clickoutside');
+            $('#place_content').unbind('keydown');
         }
     };
  
@@ -306,8 +359,8 @@ var clickCallBackFunc = function(args)
         $('#x_place_bubble').unbind('clickoutside');
         odof.x.render.showPlace();
     };
-
-
+ 
+ 
     ns.conversationKeydown = function(event)
     {
         switch (event.keyCode) {
