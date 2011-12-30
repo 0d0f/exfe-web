@@ -114,6 +114,7 @@ var clickCallBackFunc = function(args)
         });
     };
 
+ 
     /**
      * by Handaoliang
      */
@@ -156,13 +157,7 @@ var clickCallBackFunc = function(args)
                 if (event.target.id === 'revert_x_btn') {
                     return;
                 }
-                crossData.title = odof.util.trim($('#x_title_edit').val());
-                crossData.title = crossData.title === ''
-                                ? ('Meet ' + id_name) : crossData.title;
-                odof.x.render.showTitle();
-                $('#x_title_edit').hide();
-                $('#x_title_area').unbind('clickoutside');
-                $('#x_title').show();
+                odof.x.edit.saveTitle();
             });
         } else {
             $('#x_title').removeClass('x_editable');
@@ -185,11 +180,7 @@ var clickCallBackFunc = function(args)
                 if (event.target.id === 'revert_x_btn') {
                     return;
                 }
-                crossData.description = odof.util.trim($('#x_desc_edit').val());
-                odof.x.render.showDesc(true);
-                $('#x_desc_edit').hide();
-                $('#x_desc_area').unbind('clickoutside');
-                $('#x_desc').show();
+                odof.x.edit.saveDesc();
             });
         } else {
             $('#x_desc').removeClass('x_editable');
@@ -213,8 +204,7 @@ var clickCallBackFunc = function(args)
                     if (event.target.parentNode === $('#x_time_area')[0]) {
                         $('#x_time_bubble').show();
                     } else {
-                        $('#x_time_bubble').hide();
-                        $('#x_time_bubble').unbind('clickoutside');
+                        odof.x.render.saveTime();
                     }
                 });
             }
@@ -267,8 +257,7 @@ var clickCallBackFunc = function(args)
                         });
                         $('#x_place_bubble').show();
                     } else {
-                        $('#x_place_bubble').hide();
-                        $('#x_place_bubble').unbind('clickoutside');
+                        odof.x.render.savePlace();
                     }
                 });
             }
@@ -280,7 +269,45 @@ var clickCallBackFunc = function(args)
         }
     };
  
+
+    ns.saveTitle = function()
+    {
+        crossData.title = odof.util.trim($('#x_title_edit').val());
+        crossData.title = crossData.title === ''
+                        ? ('Meet ' + id_name) : crossData.title;
+        odof.x.render.showTitle();
+        $('#x_title_edit').hide();
+        $('#x_title_area').unbind('clickoutside');
+        $('#x_title').show();
+    };
  
+ 
+    ns.saveDesc = function()
+    {
+        crossData.description = odof.util.trim($('#x_desc_edit').val());
+        odof.x.render.showDesc(true);
+        $('#x_desc_edit').hide();
+        $('#x_desc_area').unbind('clickoutside');
+        $('#x_desc').show();
+    };
+
+ 
+    ns.saveTime = function()
+    {
+        $('#x_time_bubble').hide();
+        $('#x_time_bubble').unbind('clickoutside');
+        odof.x.render.showTime();
+    };
+
+
+    ns.savePlace = function()
+    {
+        $('#x_place_bubble').hide();
+        $('#x_place_bubble').unbind('clickoutside');
+        odof.x.render.showPlace();
+    };
+
+
     ns.conversationKeydown = function(event)
     {
         switch (event.keyCode) {
@@ -386,7 +413,20 @@ var clickCallBackFunc = function(args)
     };
  
  
-    ns.submitData = function() {
+    ns.submitData = function()
+    {
+        // title
+        odof.x.edit.editTitle(false);
+        odof.x.edit.saveTitle();
+        // desc
+        odof.x.edit.editDesc(false);
+        odof.x.edit.saveDesc();
+        // time
+        odof.x.edit.editTime(false);
+        odof.x.edit.saveTime();
+        // place
+        odof.x.edit.editPlace(false);
+        odof.x.edit.savePlace();
         // exfee = JSON.stringify(ns.getexfee());
         // $('#edit_cross_submit_loading').show();
         $.ajax({
@@ -408,7 +448,7 @@ var clickCallBackFunc = function(args)
                 }
             },
             complete : function() {
-             // $('#edit_x_bar').slideUp(300);
+                $('#edit_x_bar').slideUp(300);
              // $('#edit_cross_submit_loading').hide();
             }
         });
