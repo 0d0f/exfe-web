@@ -47,6 +47,62 @@
     word-break: break-all;
 }
 
+#x_desc a {
+    padding-right: 20px;
+    color: #aaaaaa;
+    font-style: italic;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+#x_desc p {
+    font-size: 14px;
+    margin-top: 10px;
+    line-height: 22px;
+}
+
+#x_desc img {
+    max-width: 480px;
+}
+
+#x_desc h1 {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#x_desc h2 {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+#x_desc h3 {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+#x_desc ul, #x_desc ol {
+    padding-left: 25px;
+}
+
+#x_desc ul li {
+    list-style: disc;
+}
+
+#x_desc ol li {
+    list-style: decimal;
+}
+
+#x_desc li {
+    font-size: 14px;
+    line-height: 20px;
+}
+
 .x_desc {
     color: #333333;
     font-size: 14px;
@@ -106,6 +162,7 @@
     border: 1px #E5E5E5 solid;
     height: 40px;
     float: right;
+    resize: none;
 }
 
 #x_conversation_input_area {
@@ -186,4 +243,87 @@
     font-weight: bold;
     color: #666666;
     word-break: break-all;
+    display: block;
+    max-height: 96px;
+    overflow: hidden;
+}
+
+.x_rsvp_button {
+    width: 131px;
+    height: 31px;
+    text-align: center;
+    display: block;
+    font-size: 22px;
+    line-height: 26px;
+    margin-right: 20px;
+    float: left;
+}
+
+#x_rsvp_yes {
+    background: url(/static/images/btn.png) no-repeat left top;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_yes:hover {
+    background: url(/static/images/btn.png) no-repeat -300px top;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_yes:visited {
+    background: url(/static/images/btn.png) no-repeat -600px top;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_yes.readonly {
+    background: url(/static/images/btn.png) no-repeat -900px top;
+    cursor: default;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_no {
+    background: url(/static/images/btn.png) no-repeat -150px top;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_no:hover {
+    background: url(/static/images/btn.png) no-repeat -450px top;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_no:visited {
+    background: url(/static/images/btn.png) no-repeat -750px top;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_no.readonly {
+    background: url(/static/images/btn.png) no-repeat -1050px top;
+    cursor: default;
+    color: #E6E6E6;
+    text-decoration: none;
+}
+
+#x_rsvp_maybe {
+    background: none;
+    color: #666666;
+    text-decoration: underline;
+    font-size: 18px;
+    text-align: left;
+    line-height: 24px;
+}
+
+#x_rsvp_maybe.readonly{
+    background: none;
+    color: #666666;
+    text-decoration: underline;
+    font-size: 18px;
+    text-align: left;
+    cursor: default;
+    line-height: 24px;
 }

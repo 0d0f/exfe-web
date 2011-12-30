@@ -16,7 +16,7 @@ require_once 'apntext_job.php';
 require_once 'waiting_job.php';
 require_once 'connect.php';
 #require 'php_error_job.php';
+require_once 'gettwitterfriendslist_job.php';
 
 require_once '../resque.php';
-
 ?>
