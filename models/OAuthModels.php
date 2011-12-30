@@ -1,25 +1,25 @@
 <?php
 class OAuthModels extends DataModel{
     public function verifyOAuthUser($oAuthUserInfo){
-
         $oAuthProvider = $oAuthUserInfo["provider"];
         $oAuthUserID = $oAuthProvider."_".$oAuthUserInfo["id"];
         $oAuthUserName = $oAuthUserInfo["name"];
         $oAuthScreenName = $oAuthUserInfo["sname"];
         $oAuthUserDesc = $oAuthUserInfo["desc"];
         $oAuthUserAvatar= $oAuthUserInfo["avatar"];
+        $oAuthAccessToken = $oAuthUserInfo["oauth_token"];
 
         $currentTimeStamp = time();
 
         $sql = "SELECT id FROM identities WHERE external_identity='{$oAuthUserID}'";
         $rows = $this->getRow($sql);
         if(!is_array($rows)){
-            $sql = "INSERT INTO identities (`provider`, `external_identity`, `created_at`, `updated_at`, `name`, `bio`, `avatar_file_name`, `external_username`) VALUES ('{$oAuthProvider}', '{$oAuthUserID}', FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserDesc}', '{$oAuthUserAvatar}', '{$oAuthScreenName}')";
+            $sql = "INSERT INTO identities (`provider`, `external_identity`, `created_at`, `updated_at`, `name`, `bio`, `avatar_file_name`, `external_username`, `oauth_token`) VALUES ('{$oAuthProvider}', '{$oAuthUserID}', FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserDesc}', '{$oAuthUserAvatar}', '{$oAuthScreenName}', '{$oAuthAccessToken}')";
             $result = $this->query($sql);
             $identityID = intval($result["insert_id"]);
 
             //create user for current identity
-            $sql = "INSERT INTO users (`created_at`, `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserAvatar}')";
+            $sql = "INSERT INTO users (`created_at`, `updated_at` , `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserAvatar}')";
             $result = $this->query($sql);
             $userID = intval($result["insert_id"]);
 
@@ -29,10 +29,15 @@ class OAuthModels extends DataModel{
             }
         }else{
             $identityID = intval($rows["id"]);
+            $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', bio='{$oAuthUserDesc}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$oAuthScreenName}', oauth_token='{$oAuthAccessToken}' WHERE id={$identityID}";
+            $this->query($sql);
+
             $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
             $result = $this->getRow($sql);
             if(is_array($result)){
                 $userID = intval($result["userid"]);
+                $sql = "UPDATE users SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', avatar_file_name='{$oAuthUserAvatar}' WHERE id={$userID}";
+                $this->query($sql);
             }else{
                 $sql = "SELECT name, avatar_file_name FROM identities WHERE id={$identityID}";
                 $identityInfo = $this->getRow($sql);
@@ -46,5 +51,23 @@ class OAuthModels extends DataModel{
             }
         }
         return array("identityID" => $identityID, "userID" => $userID);
+    }
+
+    public function buildFriendsIndex($userID, $friendsList){
+
+        $redis = new Redis();
+        $redis->connect('127.0.0.1', 6379);
+        mb_internal_encoding("UTF-8");
+        foreach($friendsList as $value)
+        {
+            $identity = mb_strtolower($value["user_name"]);
+            $identityPart = "";
+            for ($i=0; $i<mb_strlen($identity); $i++)
+            {
+                $identityPart .= mb_substr($identity, $i, 1);
+                $redis->zAdd('u_'.$userID, 0, $identityPart);
+            }
+            $redis->zAdd('u_'.$userID, 0, $identityPart."|".$value["display_name"]."( @".$value["user_name"]." )|".$value["provider"]."*");
+        }
     }
 }

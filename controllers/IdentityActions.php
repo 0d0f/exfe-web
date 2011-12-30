@@ -73,10 +73,13 @@ class IdentityActions extends ActionController
                         if($r[strlen($r)-1]=="*")
                         {
                             $arr_explode=explode("|",$r);
-                            if(sizeof($arr_explode)==2)
-                            {
+                            if(sizeof($arr_explode)==2) {
                                 $str=rtrim($arr_explode[1], "*");
                                 $resultarray[$str]=$arr_explode[0];
+                            }else if(sizeof($arr_explode) == 3){
+                                $provider = $arr_explode[2];
+                                $str = $arr_explode[0]."@".$provider;
+                                $resultarray[$str]=rtrim($arr_explode[1], "*");
                             }
                         }
 

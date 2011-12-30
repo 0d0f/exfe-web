@@ -47,15 +47,18 @@ class OAuthActions extends ActionController {
         }
     }
     public function doLoginWithTwitter() {
-        if (empty($_SESSION['access_token']) ||
-            empty($_SESSION['access_token']['oauth_token']) ||
-            empty($_SESSION['access_token']['oauth_token_secret'])
+        if (empty($_SESSION['access_token'])
+            || empty($_SESSION['access_token']['oauth_token'])
+            || empty($_SESSION['access_token']['oauth_token_secret'])
         ) {
             header('Location: /oAuth/clearTwitterSessions');
         }
 
         $accessToken = $_SESSION['access_token'];
+        $accessTokenStr = packArray($accessToken);
+
         $twitterConn = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $accessToken['oauth_token'], $accessToken['oauth_token_secret']);
+
 
         $twitterUserInfo = $twitterConn->get('account/verify_credentials');
 
@@ -63,12 +66,13 @@ class OAuthActions extends ActionController {
             $twitterUserInfo = (array)$twitterUserInfo;
         }
         $oAuthUserInfo = array(
-            "provider"  =>"twitter",
-            "id"        =>$twitterUserInfo["id"],
-            "name"      =>$twitterUserInfo["name"],
-            "sname"     =>$twitterUserInfo["screen_name"],
-            "desc"      =>$twitterUserInfo["description"],
-            "avatar"    =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"])
+            "provider"      =>"twitter",
+            "id"            =>$twitterUserInfo["id"],
+            "name"          =>$twitterUserInfo["name"],
+            "sname"         =>$twitterUserInfo["screen_name"],
+            "desc"          =>$twitterUserInfo["description"],
+            "avatar"        =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"]),
+            "oauth_token"   =>$accessTokenStr
         );
 
         $OAuthModel = $this->getModelByName("oAuth");
@@ -79,9 +83,17 @@ class OAuthActions extends ActionController {
             die("OAuth error.");
         }
 
+        //扔一个任务到队列里，去取用户的好友列表。
+        $args = array(
+            "screen_name"   =>$twitterUserInfo["screen_name"],
+            "user_id"       =>$userID
+        );
+        $OAuthHelperHandler = $this->getHelperByName("oAuth");
+        $jobToken = $OAuthHelperHandler->getTwitterFriendsList($args);
         $identityModels = $this->getModelByName("identity");
-        $identityModels->loginByIdentityId($identityID, $userID);
+        //===========
 
+        $identityModels->loginByIdentityId($identityID, $userID);
         header("location:/s/login");
     }
 
@@ -118,12 +130,13 @@ class OAuthActions extends ActionController {
                 $facebookUserInfo = (array)$facebookUserInfo;
             }
             $oAuthUserInfo = array(
-                "provider"  =>"facebook",
-                "id"        =>$facebookUserInfo["id"],
-                "name"      =>$facebookUserInfo["name"],
-                "sname"     =>$facebookUserInfo["username"],
-                "desc"      =>array_key_exists("bio", $facebookUserInfo) ? $facebookUserInfo["bio"] : "",
-                "avatar"    =>"https://graph.facebook.com/".$facebookUserInfo["id"]."/picture?type=large"
+                "provider"      =>"facebook",
+                "id"            =>$facebookUserInfo["id"],
+                "name"          =>$facebookUserInfo["name"],
+                "sname"         =>$facebookUserInfo["username"],
+                "desc"          =>array_key_exists("bio", $facebookUserInfo) ? $facebookUserInfo["bio"] : "",
+                "avatar"        =>"https://graph.facebook.com/".$facebookUserInfo["id"]."/picture?type=large",
+                "oauth_token"   =>""
             );
 
             $OAuthModel = $this->getModelByName("oAuth");
@@ -195,12 +208,13 @@ class OAuthActions extends ActionController {
             $googleUserDesc = array_key_exists("description", $googleUserInfo) ? $googleUserInfo["description"] : "";
 
             $oAuthUserInfo = array(
-                "provider"  =>"google",
-                "id"        =>$googleUserInfo["id"],
-                "name"      =>$googleUserInfo["name"],
-                "sname"     =>$googleUserInfo["email"],
-                "desc"      =>$googleUserDesc,
-                "avatar"    =>$googleUserAvatar
+                "provider"      =>"google",
+                "id"            =>$googleUserInfo["id"],
+                "name"          =>$googleUserInfo["name"],
+                "sname"         =>$googleUserInfo["email"],
+                "desc"          =>$googleUserDesc,
+                "avatar"        =>$googleUserAvatar,
+                "oauth_token"   =>""
             );
 
             $OAuthModel = $this->getModelByName("oAuth");
