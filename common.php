@@ -127,11 +127,12 @@ function humanIdentity($identity,$user)
 
 function humanDateTime($timestamp,$time_type=0,$lang='en')
 {
-    $timestr=", ".date("M j, Y ", $timestamp);
     if($timestamp<0)
     {
         $timestamp=0;
         $timestr="";
+    } else {
+        $timestr=", ".date("M j, Y ", $timestamp);
     }
     $datestr="";
     if($lang=='en')

@@ -1,35 +1,41 @@
 /**
- * @Description:    X edit module
- * @Author:         HanDaoliang <handaoliang@gmail.com>, Leask Huang <leask@exfe.com>
- * @createDate:     Sup 15,2011
- * @CopyRights:     http://www.exfe.com
-**/
+ * @Description: X edit module
+ * @Author:      Leask Huang <leask@exfe.com>
+ * @createDate:  Dec 30, 2011
+ * @CopyRights:  http://www.exfe.com
+ */
 
-var moduleNameSpace = 'odof.x.edit';
-var ns = odof.util.initNameSpace(moduleNameSpace);
+var moduleNameSpace = 'odof.x.edit',
+    ns = odof.util.initNameSpace(moduleNameSpace);
 
-(function(ns){
+// 这个回调函数在后面要被覆盖 by Handaoliang
+var clickCallBackFunc = function(args)
+{
+    window.location.href = odof.x.edit.location_uri;
+};
+
+(function(ns)
+{
 
     ns.cross_id     = 0;
 
-    ns.btn_val      = null;
+    ns.rsvpAction   = null;
 
     ns.token        = null;
 
     ns.location_uri = null;
 
-    ns.editURI = window.location.href;
-
     ns.cross_time_bubble_status = 0;
 
     ns.msgSubmitting = false;
 
+    ns.xBackup      = {};
 
-    /**
-     * display edit bar
-     **/
+
     ns.startEdit = function(){
-        // submit
+        // backup current x
+        odof.x.edit.xBackup = odof.util.clone(crossData);
+        // edit bar
         $('#edit_x_bar').slideDown(300);
         // title
         $('#x_title').addClass('x_editable');
@@ -39,11 +45,29 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#x_desc').addClass('x_editable');
         $('#x_desc').bind('click', odof.x.edit.editDesc);
         // time
-        $("#x_time_area").addClass('x_editable');
-        $("#x_time_area").bind('click', odof.x.edit.editTime);
+        $('#x_time_area').addClass('x_editable');
+        $('#x_time_area').bind('click', odof.x.edit.editTime);
         // place
         $('#x_place_area').addClass('x_editable');
-        $('#cross_place_area').bind('click', odof.x.edit.editPlace);
+        $('#x_place_area').bind('click', odof.x.edit.editPlace);
+    };
+
+
+    ns.revertX = function()
+    {
+        // edit bar
+        $('#edit_x_bar').slideUp(300);
+        // title
+        odof.x.edit.editTitle(false);
+        // desc
+        odof.x.edit.editDesc(false);
+        // time
+        odof.x.edit.editTime(false);
+        // place
+        odof.x.edit.editPlace(false);
+        // restore x from backup
+        crossData = odof.util.clone(odof.x.edit.xBackup);
+        odof.x.render.showComponents();
     };
 
 
@@ -76,7 +100,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             // $('#pwd_hint').html("<span>Error identity </span>");
                             // $('#login_hint').show();
                     }
-                    odof.cross.index.setreadonly(clickCallBackFunc);
+                    odof.x.edit.setreadonly(clickCallBackFunc);
                 }
                 objMsg.focus();
                 //$('#post_submit').css('background', 'url("/static/images/enter.png")');
@@ -90,6 +114,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+ 
     /**
      * by Handaoliang
      */
@@ -122,35 +147,310 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.editTitle = function()
+    ns.editTitle = function(event)
     {
-        $('#x_title').hide();
-        $('#x_title_edit').val(crossData.title);
-        $('#x_title_edit').show();
-        $('#x_title_area').bind('clickoutside', function() {
-            crossData.title = odof.util.trim($('#x_title_edit').val());
-            crossData.title = crossData.title === ''
-                            ? ('Meet ' + id_name) : crossData.title;
-            odof.x.render.showTitle();
+        if (event) {
+            $('#x_title').hide();
+            $('#x_title_edit').val(crossData.title);
+            $('#x_title_edit').show();
+            $('#x_title_area').bind('clickoutside', function(event) {
+                if (event.target.id === 'revert_x_btn') {
+                    return;
+                }
+                odof.x.edit.saveTitle();
+            });
+        } else {
+            $('#x_title').removeClass('x_editable');
+            $('#x_title').unbind('click');
             $('#x_title_edit').hide();
-            $('#x_title_edit').unbind('clickoutside');
+            $('#x_title_area').unbind('clickoutside');
             $('#x_title').show();
-        });
+        }
     };
 
 
-    ns.editDesc = function()
+    ns.editDesc = function(event)
     {
-        $('#x_desc').hide();
-        $('#x_desc_edit').val(crossData.description);
-        $('#x_desc_edit').show();
-        $('#x_desc_area').bind('clickoutside', function()
-        {
-            crossData.description = odof.util.trim($('#x_desc_edit').val());
-            odof.x.render.showDesc(true);
+        if (event) {
+            $('#x_desc').hide();
+            $('#x_desc_edit').val(crossData.description);
+            $('#x_desc_edit').show();
+            $('#x_desc_area').bind('clickoutside', function(event)
+            {
+                if (event.target.id === 'revert_x_btn') {
+                    return;
+                }
+                odof.x.edit.saveDesc();
+            });
+        } else {
+            $('#x_desc').removeClass('x_editable');
+            $('#x_desc').unbind('click');
             $('#x_desc_edit').hide();
-            $('#x_desc_edit').unbind("clickoutside");
+            $('#x_desc_area').unbind('clickoutside');
             $('#x_desc').show();
+        }
+    };
+
+
+    ns.editTime = function(event)
+    {
+        if (event) {
+            // check if had bind a event for #cross_time_bubble
+            if (!$('#x_time_bubble').data('events')) {
+                $('#x_time_bubble').bind('clickoutside', function(event) {
+                    if (event.target.id === 'revert_x_btn') {
+                        return;
+                    }
+                    if (event.target.parentNode === $('#x_time_area')[0]) {
+                        $('#x_time_bubble').show();
+                    } else {
+                        odof.x.render.saveTime();
+                    }
+                });
+            }
+            // init calendar
+            exCal.initCalendar(
+                document.getElementById('x_datetime_original'),
+                'x_time_container',
+                function(displayCalString, standardTimeString) {
+                    crossData.begin_at = standardTimeString;
+                    odof.x.render.showTime();
+                }
+            );
+        } else {
+            $('#x_time_area').removeClass('x_editable');
+            $('#x_time_area').unbind('click');
+            $('#x_time_bubble').hide();
+            $('#x_time_bubble').unbind('clickoutside');
+        }
+    };
+
+
+    ns.editPlace = function(event)
+    {
+        if (event) {
+            if (!$('#x_place_bubble').data('events')) {
+                $('#x_place_bubble').bind('clickoutside', function(event)
+                {
+                    if (event.target.id === 'revert_x_btn') {
+                        return;
+                    }
+                    if (event.target.parentNode === $('#x_place_area')[0]) {
+                        $('#place_content').bind('keyup', function()
+                        {
+                            var strPlace = $('#place_content').val(),
+                                arrPlace = strPlace.split(/\r|\n|\r\n/),
+                                prvPlace = [];
+                            arrPlace.forEach(function(item, i) {
+                                if ((item = odof.util.trim(item)) !== '') {
+                                    prvPlace.push(item);
+                                }
+                            });
+                            if (prvPlace.length) {
+                                crossData.place.line1 = prvPlace.shift();
+                                crossData.place.line2 = prvPlace.join("\n");
+                            } else {
+                                crossData.place.line1 = '';
+                                crossData.place.line2 = '';
+                            }
+                            odof.x.render.showPlace();
+                        });
+                        $('#x_place_bubble').show();
+                    } else {
+                        odof.x.render.savePlace();
+                    }
+                });
+            }
+        } else {
+            $('#x_place_area').removeClass('x_editable');
+            $('#x_place_area').unbind('click');
+            $('#x_place_bubble').hide();
+            $('#x_place_bubble').unbind('clickoutside');
+        }
+    };
+ 
+
+    ns.saveTitle = function()
+    {
+        crossData.title = odof.util.trim($('#x_title_edit').val());
+        crossData.title = crossData.title === ''
+                        ? ('Meet ' + id_name) : crossData.title;
+        odof.x.render.showTitle();
+        $('#x_title_edit').hide();
+        $('#x_title_area').unbind('clickoutside');
+        $('#x_title').show();
+    };
+ 
+ 
+    ns.saveDesc = function()
+    {
+        crossData.description = odof.util.trim($('#x_desc_edit').val());
+        odof.x.render.showDesc(true);
+        $('#x_desc_edit').hide();
+        $('#x_desc_area').unbind('clickoutside');
+        $('#x_desc').show();
+    };
+
+ 
+    ns.saveTime = function()
+    {
+        $('#x_time_bubble').hide();
+        $('#x_time_bubble').unbind('clickoutside');
+        odof.x.render.showTime();
+    };
+
+
+    ns.savePlace = function()
+    {
+        $('#x_place_bubble').hide();
+        $('#x_place_bubble').unbind('clickoutside');
+        odof.x.render.showPlace();
+    };
+
+
+    ns.conversationKeydown = function(event)
+    {
+        switch (event.keyCode) {
+            case 9:
+                // $('#post_submit').focus();
+                // event.preventDefault();
+                break;
+            case 13:
+                if (!event.shiftKey) {
+                    odof.x.edit.postMessage();
+                    // e.preventDefault();
+                }
+        }
+    };
+
+
+    ns.editRsvp = function(event)
+    {
+        if (event.target.id === 'x_rsvp_change') {
+            $('#x_rsvp_msg').hide();
+            $('#x_rsvp_change').hide();
+            $('.x_rsvp_button').show();
+        } else {
+            switch (event.target.id) {
+                case 'x_rsvp_yes':
+                case 'x_rsvp_no':
+                case 'x_rsvp_maybe':
+                    var strRsvp = event.target.id.split('_')[2];
+
+                    if (token_expired == 'true') {
+                        odof.x.edit.rsvpAction = strRsvp;
+                        odof.x.edit.setreadonly(function()
+                        {
+                            $.ajax({
+                                type : 'POST',
+                                data : {cross_id : odof.x.edit.cross_id,
+                                        rsvp     : odof.x.edit.rsvpAction},
+                                url  : site_url + '/rsvp/save',
+                                dataType : 'json',
+                                success  : function(data)
+                                {
+                                    if (data != null && data.response.success === 'true') {
+                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                        odof.x.render.showRsvp();
+                                    }
+                                }
+                            });                        
+                        });
+                        return;
+                    }
+ 
+                    $.ajax({
+                        type : 'POST',
+                        data : {cross_id : cross_id, rsvp : strRsvp, token : token},
+                        url  : site_url + '/rsvp/save',
+                        dataType : 'json',
+                        success : function(data) {
+                            if (data != null) {
+                                if (data.response.success === 'true') {
+                                    // by handaoliang {
+                                    odof.x.edit.setreadonly(clickCallBackFunc);
+                                    if (data.response.token_expired == '1' && login_type == 'token') {
+                                        token_expired = true;
+                                    }
+                                    // }
+                                    myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                    odof.x.render.showRsvp();
+                                } else {
+                                    // by handaoliang {
+                                    //var args = {"identity":external_identity};
+                                    //alert("show login dialog.");
+                                    //$('#pwd_hint').html("<span>Error identity </span>");
+                                    //$('#login_hint').show();
+                                    /*
+                                    var callBackFunc = function(args){
+                                        window.location.href=location_uri;
+                                    }
+                                    if(show_idbox == "setpassword"){
+                                        odof.user.status.doShowResetPwdDialog(null, 'setpwd');
+                                        jQuery("#show_identity_box").val(external_identity);
+                                    }else{
+                                        odof.user.status.doShowLoginDialog(null, callBackFunc);
+                                    }
+                                    */
+                                    odof.x.edit.setreadonly();
+                                    // }
+                                }
+                            }
+                            // $('#rsvp_loading').hide();
+                            // $('#rsvp_loading').unbind('ajaxStart ajaxStop');
+                        },
+                        error: function(data) {
+                            // $('#rsvp_loading').hide();
+                            // $('#rsvp_loading').unbind('ajaxStart ajaxStop');
+                        }
+                    });
+            }
+            $('#x_rsvp_msg').show();
+            $('#x_rsvp_change').show();
+            $('.x_rsvp_button').hide();
+            event.preventDefault();
+        }
+    };
+ 
+ 
+    ns.submitData = function()
+    {
+        // title
+        odof.x.edit.editTitle(false);
+        odof.x.edit.saveTitle();
+        // desc
+        odof.x.edit.editDesc(false);
+        odof.x.edit.saveDesc();
+        // time
+        odof.x.edit.editTime(false);
+        odof.x.edit.saveTime();
+        // place
+        odof.x.edit.editPlace(false);
+        odof.x.edit.savePlace();
+        // exfee = JSON.stringify(ns.getexfee());
+        // $('#edit_cross_submit_loading').show();
+        $.ajax({
+            url  : location.href.split('?').shift() + '/crossEdit',
+            type : 'POST',
+            dataType : 'json',
+            data:{
+                jrand       : Math.round(Math.random() * 10000000000),
+                ctitle      : crossData.title,
+                ctime       : crossData.begin_at,
+                cdesc       : crossData.description,
+                cplaceline1 : crossData.place.line1,
+                cplaceline2 : crossData.place.line2 //,
+             // exfee       : exfee
+            },
+            success : function(data) {
+                if(data.error){
+                    $('#error_msg').html(data.msg);
+                }
+            },
+            complete : function() {
+                $('#edit_x_bar').slideUp(300);
+             // $('#edit_cross_submit_loading').hide();
+            }
         });
     };
 
@@ -164,603 +464,34 @@ $(document).ready(function()
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
 
-    $('#private_icon').mousemove(function(){$('#private_hint').show();});
-    $('#private_icon').mouseout(function(){$('#private_hint').hide();});
-    $('#edit_icon').mousemove(function(){$('#edit_icon_desc').show();});
-    $('#edit_icon').mouseout(function(){$('#edit_icon_desc').hide();});
-    $("#submit_data").bind('click', odof.x.edit.submitData);
-    $("#edit_icon").bind('click', odof.x.edit.startEdit);
+    $('#private_icon').mousemove(function() { $('#private_hint').show(); });
+    $('#private_icon').mouseout(function() { $('#private_hint').hide(); });
+    $('#edit_icon').mousemove(function() { $('#edit_icon_desc').show(); });
+    $('#edit_icon').mouseout(function() { $('#edit_icon_desc').hide(); });
+    $('#x_rsvp_change').bind('click', odof.x.edit.editRsvp)
+    $('.x_rsvp_button').bind('click', odof.x.edit.editRsvp)
+    $('#submit_data').bind('click', odof.x.edit.submitData);
+    $('#edit_icon').bind('click', odof.x.edit.startEdit);
+    $('#revert_x_btn').bind('click', odof.x.edit.revertX);
 
-return;
+    if (token_expired == 'true') {
+        $('#x_conversation_input').bind('click', function(e) {
+            odof.x.edit.setreadonly(clickCallBackFunc);
+        })
+    } else {
+        $('#x_conversation_input').focus();
+        $('#x_conversation_input').bind('keydown', odof.x.edit.conversationKeydown);
+    }
 
-
-    jQuery("#revert_cross_btn").bind("click",function() {
-        odof.cross.edit.revertCross();
-    });
-
-    jQuery("#desc_expand_btn").bind("click",function() {
-        odof.cross.edit.expandDesc();
-    });
-
-    $('.exfee_item').live('mouseenter mouseleave', function(event) {
-        odof.cross.edit.showExternalIdentity(event);
-    });
-    odof.cross.edit.rollingExfee = null;
-    odof.cross.edit.exfeeRollingTimer = setInterval(odof.cross.edit.rollExfee, 50);
+    if (token_expired == 'false') {
+        $('#cross_identity_btn').unbind('click');
+        $('#cross_identity_btn').bind('click', function()
+        {
+            odof.x.edit.setreadonly(function()
+            {
+                window.location.href = odof.x.edit.location_uri;
+            });
+        });
+    }
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-if (0) {
-
-
-    /**
-     * user edit time, show edit time area.
-     *
-     * */
-    ns.bindEditTimesEvent = function(){
-        //check if had bind a event for #cross_time_bubble
-        var eventTemp = jQuery("#cross_time_bubble").data("events");
-        //console.log(eventTemp);
-        if(!eventTemp){
-            jQuery('#cross_time_bubble').bind("clickoutside",function(event) {
-                //console.log(event.target.parentNode);
-                if(event.target.parentNode != jQuery("#cross_times_area")[0]){
-                    //console.log("aaaa");
-                    jQuery("#cross_time_bubble").hide();
-                    jQuery("#cross_time_bubble").unbind("clickoutside");
-                }else{
-                    //console.log("bbbb");
-                    jQuery("#cross_time_bubble").show();
-                }
-            });
-        }
-
-        /*
-        jQuery(document).bind('click',function(e){
-            console.log(e.target.parentNode);
-        });
-        */
-        var calCallBack = function(displayCalString, standardTimeString) {
-            $('#cross_times').html(displayCalString);
-            $('#datetime').val(standardTimeString);
-            $('#cross_times_area > h3').html(
-                odof.util.getRelativeTime(
-                    Date.parse(odof.util.getDateFromString(standardTimeString)) / 1000
-                )
-            );
-        };
-
-        var timeDisplayContainer = document.getElementById('cross_datetime_original');
-        exCal.initCalendar(timeDisplayContainer, 'cross_time_container', calCallBack);
-    };
-
-    /**
-     * user edit place, show edit place area.
-     *
-     * */
-    ns.bindEditPlaceEvent = function(){
-        var placeEventTemp = jQuery("#cross_place_bubble").data("events");
-        //console.log(placeEventTemp);
-        if(!placeEventTemp){
-            jQuery('#cross_place_bubble').bind("clickoutside",function(event) {
-                if(event.target.parentNode != jQuery("#cross_place_area")[0]){
-                    jQuery("#cross_place_bubble").hide();
-                    jQuery("#cross_place_bubble").unbind("clickoutside");
-                }else{
-                    jQuery("#place_content").bind("keyup",function(){
-                        var strPlace = $('#place_content').val(),
-                            arrPlace = strPlace.split(/\r|\n|\r\n/),
-                            prvPlace = [],
-                            strLine1 = 'Somewhere',
-                            strLine2 = '';
-                        if (strPlace) {
-                            arrPlace.forEach(function(item, i) {
-                                if ((item = odof.util.trim(item))) {
-                                    prvPlace.push(item);
-                                }
-                            });
-                            strLine1 = prvPlace.shift();
-                            strLine2 = prvPlace.join('<br />');
-                        }
-                        $('#pv_place_line1').html(strLine1);
-                        $('#pv_place_line2').html(strLine2);
-                        odof.cross.index.formatCross();
-                    });
-                    jQuery("#cross_place_bubble").show();
-                }
-            });
-        }
-    };
-
-
-
-
-    /**
-     * while user submit data
-     *
-     * */
-    ns.submitData = function() {
-        var title = jQuery("#cross_titles_textarea").val(),
-            time  = jQuery("#datetime").val(),
-            place = odof.util.trim($('#place_content').val()),
-            placeline1 = place ? $('#pv_place_line1').html() : '',
-            placeline2 = place ? $('#pv_place_line2').html().replace(/<br>/g, '\\r') : '',
-            desc  = jQuery("#cross_desc_textarea").val(),
-            exfee = JSON.stringify(ns.getexfee());
-        jQuery("#edit_cross_submit_loading").show();
-        jQuery.ajax({
-            url:location.href.split('?').shift() + '/crossEdit',
-            type:"POST",
-            dataType:"json",
-            data:{
-                jrand  : Math.round(Math.random()*10000000000),
-                ctitle : title,
-                ctime  : time,
-                cdesc  : desc,
-                cplaceline1 : placeline1,
-                cplaceline2 : placeline2,
-                exfee  : exfee
-            },
-            //回调
-            success:function(JSONData){
-                ns.callbackActions(JSONData);
-            },
-            complete:function(){
-                jQuery("#edit_cross_submit_loading").hide();
-            }
-        });
-        //jQuery("#edit_cross_bar").slideUp(300);
-    };
-
-    /**
-     * submit call back actions
-     *
-     * */
-    ns.callbackActions = function(JSONData){
-        if(!JSONData.error){
-            window.location.href = ns.editURI;
-        }else{
-            jQuery("#error_msg").html(JSONData.msg);
-        }
-
-    };
-
-    /**
-     * revert cross page
-     *
-     * */
-    ns.revertCross = function(){
-        window.location.href=ns.editURI;
-    };
-
-    /**
-     * expand cross description
-     *
-     * */
-    ns.expandDesc = function(){
-        jQuery("#cross_desc").show();
-        jQuery("#cross_desc_short").hide();
-    };
-
-    /**
-     * change exfee editing mode
-     * by Leask
-     * */
-    ns.exfeeEdit = function(status){
-        ns.exfeeEditStatus = status;
-        switch (status) {
-            case 'edit':
-                if (!$('.editing').length) {
-                    $('#exfee_area').toggleClass('editing');
-                }
-                $('#exfee_edit_box').fadeIn();
-                $('#exfee_remove').fadeIn();
-                $('#exfee_edit').hide();
-                $('#exfee_remove').attr('disabled', false);
-                $('#exfee_area').bind('clickoutside', function(event) {
-                    if ($(event.target).hasClass('exfee_del')) {
-                        return;
-                    }
-                    odof.cross.edit.exfeeEdit();
-                });
-                $('.exfee_del').hide();
-                ns.exfees = $('#exfee_area > .samlcommentlist').html();
-                break;
-            case 'remove':
-                $('#exfee_remove').attr('disabled', true);
-                $('#exfee_area').bind('click', function(event) {
-                    if (event.target.id === 'exfee_remove' || event.target.className === 'exfee_del') {
-                        return;
-                    }
-                    odof.cross.edit.exfeeEdit('edit');
-                });
-                $('.exfee_del').show();
-                break;
-            default:
-                $('#exfee_area').toggleClass('editing', false);
-                $('#exfee_edit_box').fadeOut();
-                $('#exfee_remove').hide();
-                $('#exfee_edit').fadeIn();
-                $('#exfee_edit_box').unbind('clickoutside');
-                $('.exfee_del').hide();
-                $('#exfee_input').val(odof.cross.edit.exfeeInputTips);
-        }
-        if (status !== 'remove') {
-            $('#exfee_area').unbind('click');
-        }
-    };
-
-    /**
-     * revert exfee
-     * by Leask
-     * */
-    ns.revertExfee = function() {
-        $('#exfee_area > .samlcommentlist').html(ns.exfees);
-        $('#exfee_input').val(odof.cross.edit.exfeeInputTips);
-    };
-
-    /**
-     * identity exfee from server
-     * by Leask
-     * */
-    ns.identityExfee = function() {
-        if (!ns.chkExfeeFormat()) {
-            return;
-        }
-
-        $.ajax({
-            type     : 'GET',
-            url      : site_url + '/identity/get?identities=' + JSON.stringify(ns.arrIdentitySub),
-            dataType : 'json',
-            success  : function(data) {
-                var exfee_pv     = '',
-                    identifiable = {},
-                    id           = '',
-                    identity     = '',
-                    name         = '';
-                for (var i in data.response.identities) {
-                    id           = data.response.identities[i].id;
-                    identity     = data.response.identities[i].external_identity;
-                    name         = data.response.identities[i].name
-                                 ? data.response.identities[i].name
-                                 : data.response.identities[i].external_identity;
-                    var avatar_file_name = data.response.identities[i].avatar_file_name;
-                    if ($('#exfee_' + id).attr('id') == null) {
-                        exfee_pv += '<li id="exfee_'   + id + '" '
-                                  +     'identity="'   + identity + '" '
-                                  +     'identityid="' + id + '" '
-                                  +     'identityname="' + (name === identity ? '' : name) + '" '
-                                  +     'class="exfee_exist exfee_item" '
-                                  +     'invited="false">'
-                                  +     '<button type="button" class="exfee_del"></button>'
-                                  +     '<p class="pic20">'
-                                  +         '<img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="">'
-                                  +     '</p>'
-                                  +     '<div class="smcomment">'
-                                  +         '<div>'
-                                  +             '<span class="ex_name' + (name === identity ? ' external_identity' : '') + '">'
-                                  +                 name
-                                  +             '</span>'
-                                  +             '<span class="ex_identity external_identity">'
-                                  +                 (identity === name ? '' : identity)
-                                  +             '</span>'
-                                  +         '</div>'
-                                  +     '</div>'
-                                  +     '<p class="cs">'
-                                  +         '<em class="c0"></em>'
-                                  +     '</p>'
-                                  + '</li>';
-                    }
-                    identifiable[identity.toLowerCase()] = true;
-                }
-                for (i in ns.arrIdentitySub) {
-                    var idUsed = false;
-                    $('.exfee_new').each(function() {
-                        if ($(this).attr('identity').toLowerCase() === ns.arrIdentitySub[i].id.toLowerCase()) {
-                            idUsed = true;
-                        }
-                    });
-                    if (!identifiable[ns.arrIdentitySub[i].id.toLowerCase()] && !idUsed) {
-                        identity = ns.arrIdentitySub[i].id;
-                        name     = ns.arrIdentitySub[i].name
-                                 ? ns.arrIdentitySub[i].name
-                                 : ns.arrIdentitySub[i].id;
-                        ns.numNewIdentity++;
-                        exfee_pv += '<li id="newexfee_' + ns.numNewIdentity + '" '
-                                  +     'identity="'    + identity + '" '
-                                  +     'identityname="' + (name === identity ? '' : name) + '" '
-                                  +     'class="exfee_new exfee_item" '
-                                  +     'invited="false">'
-                                  +     '<button type="button" class="exfee_del"></button>'
-                                  +     '<p class="pic20">'
-                                  +         '<img src="'+img_url+'/web/80_80_default.png" alt="">'
-                                  +     '</p>'
-                                  +     '<div class="smcomment">'
-                                  +         '<div>'
-                                  +             '<span class="ex_name' + (name === identity ? ' external_identity' : '') + '">'
-                                  +                 name
-                                  +             '</span>'
-                                  +             '<span class="ex_identity external_identity">'
-                                  +                 (identity === name ? '' : identity)
-                                  +             '</span>'
-                                  +         '</div>'
-                                  +     '</div>'
-                                  +     '<p class="cs">'
-                                  +         '<em class="c0"></em>'
-                                  +     '</p>'
-                                  + '</li>';
-                    }
-                }
-                $('#exfee_area > .samlcommentlist').html($('#exfee_area > .samlcommentlist').html() + exfee_pv);
-                switch (ns.exfeeEditStatus) {
-                    case 'edit':
-                        $('.exfee_del').hide();
-                        break;
-                    case 'remove':
-                        $('.exfee_del').show();
-                }
-                ns.summaryExfee();
-                $('.ex_identity').hide();
-                $('#exfee_input').val('');
-            }
-        });
-    };
-
-    /**
-     * summary exfee
-     * by Leask
-     * */
-    ns.summaryExfee = function() {
-        $('.bignb').html($('.cs > .c1').length);
-        $('.malnb').html($('.samlcommentlist > li').length);
-    };
-
-    /**
-     * change rsvp status
-     * by Leask
-     * */
-    ns.changeRsvp = function(target) {
-        var intC = parseInt(target.className.substr(1)) + 1;
-        target.className = 'c' + (intC > 2 ? 0 : intC);
-        ns.summaryExfee();
-        ns.updateCheckAll();
-    };
-
-    /**
-     * update "check all" status
-     * by Leask
-     * */
-    ns.updateCheckAll = function() {
-        if ($('.cs > .c1').length < $('.samlcommentlist > li').length) {
-            $('#check_all > span').html('Check all');
-            $('#check_all > em').attr('class', 'c1');
-        } else {
-            $('#check_all > span').html('Uncheck all');
-            $('#check_all > em').attr('class', 'c0');
-        }
-        // submit
-        jQuery.ajax({
-            url : location.href.split('?').shift() + '/crossEdit',
-            type : 'POST',
-            dataType : 'json',
-            data : {ctitle     : $('#cross_titles_textarea').val(),
-                    exfee_only : true,
-                    exfee      : JSON.stringify(ns.getexfee())},
-            success:function(data){
-                if (!data) {
-                    return;
-                }
-                if (!data.success) {
-                    switch (data.error) {
-                        case 'token_expired':
-                            odof.cross.index.setreadonly();
-                    }
-                }
-            }
-        });
-    };
-
-    /**
-     * do "check all" or "uncheck all"
-     * by Leask
-     * */
-    ns.checkAll = function() {
-        switch ($('#check_all > em')[0].className) {
-            case 'c0':
-                $('.cs > em').attr('class', 'c0');
-                break;
-            case 'c1':
-                $('.cs > em').attr('class', 'c1');
-        }
-        ns.updateCheckAll();
-    };
-
-    /**
-     * get exfee editing result
-     * by Leask
-     * */
-    ns.getexfee = function() {
-        var result = [];
-        function collect(obj, exist)
-        {
-            var exfee_identity = $(obj).attr('identity'),
-                element_id     = $(obj).attr('id'),
-                item           = {exfee_name     : $(obj).attr('identityname'),
-                                  exfee_identity : exfee_identity,
-                                  confirmed      : parseInt($('#' + element_id + ' > .cs > em')[0].className.substr(1)),
-                                  identity_type  : odof.util.parseId(exfee_identity).type};
-            if (exist) {
-                item.exfee_id  = $(obj).attr('identityid');
-            }
-            result.push(item);
-        }
-        $('.exfee_exist').each(function() {
-            collect(this, true);
-        });
-        $('.exfee_new').each(function() {
-            collect(this);
-        });
-        return result;
-    };
-
-    /**
-     * show external identity
-     * by Leask
-     * */
-    ns.showExternalIdentity = function(event) {
-        var target = $(event.target);
-        while (!target.hasClass('exfee_item')) {
-            target = $(target[0].parentNode);
-        }
-        var id     = target[0].id;
-        if (!id) {
-            return;
-        }
-        switch (event.type) {
-            case 'mouseenter':
-                ns.rollingExfee = id;
-                $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn(100);
-                break;
-            case 'mouseleave':
-                ns.rollingExfee = null;
-                $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut(100);
-                var rollE = $('#' + id + ' > .smcomment > div');
-                rollE.animate({
-                    marginLeft : '+=' + (0 - parseInt(rollE.css('margin-left')))},
-                    700
-                );
-        }
-    };
-
-    /**
-     * roll the exfee that with long name
-     * by Leask
-     * */
-    ns.rollExfee = function() {
-        var maxWidth = 200;
-        if (!ns.rollingExfee) {
-            return;
-        }
-        var rollE    = $('#' + ns.rollingExfee + ' > .smcomment > div'),
-            orlWidth = rollE.width(),
-            curLeft  = parseInt(rollE.css('margin-left')) - 1;
-        if (orlWidth <= maxWidth) {
-            return;
-        }
-        curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
-        rollE.css('margin-left', curLeft + 'px');
-    };
-
-    /**
-     * get auto complete infos of exfees from server
-     * by Leask
-     */
-    ns.chkComplete = function(strKey) {
-        $.ajax({
-            type     : 'GET',
-            url      : site_url + '/identity/complete?key=' + strKey,
-            dataType : 'json',
-            success  : function(data) {
-                var strFound = '';
-                for (var item in data) {
-                    var spdItem = odof.util.trim(item).split(' '),
-                        strId   = spdItem.pop(),
-                        strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
-                    if (!strFound) {
-                        odof.cross.edit.strExfeeCompleteDefault = strId;
-                    }
-                    strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
-                }
-                if (strFound && odof.cross.edit.completeTimer && $('#exfee_input').val().length) {
-                    $('#exfee_complete').html(strFound);
-                    $('#exfee_complete').slideDown(50);
-                } else {
-                    $('#exfee_complete').slideUp(50);
-                }
-                clearTimeout(odof.cross.edit.completeTimer);
-                odof.cross.edit.completeTimer = null;
-            }
-        });
-    };
-
-    /**
-     * check exfee format
-     * by Leask
-     */
-    ns.chkExfeeFormat = function() {
-        ns.arrIdentitySub = [];
-        var strExfees = $('#exfee_input').val().replace(/\r|\n|\t/, '');
-        $('#exfee_input').val(strExfees);
-        var arrIdentityOri = strExfees.split(/,|;/);
-        for (var i in arrIdentityOri) {
-            if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
-                var exfee_item = odof.util.parseId(arrIdentityOri[i]);
-                if (exfee_item.type !== 'email') {
-                    return false;
-                }
-                ns.arrIdentitySub.push(exfee_item);
-            }
-        }
-        return ns.arrIdentitySub.length > 0;
-    };
-
-    /**
-     * auto complete for exfees
-     * by Leask
-     */
-    ns.complete = function() {
-        var strValue = $('#exfee_complete').val();
-        if (strValue === '') {
-            return;
-        }
-        var arrInput = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
-        arrInput.pop();
-        $('#exfee_input').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
-        clearTimeout(odof.cross.edit.completeTimer);
-        odof.cross.edit.completeTimer = null;
-        $('#exfee_complete').slideUp(50);
-        ns.identityExfee();
-        $('#exfee_input').focus();
-    };
-}

@@ -158,6 +158,8 @@ class XActions extends ActionController
         $invitM = $this->getModelByName('invitation');
         $idents = $invitM->getIdentitiesIdsByCrossIds(array($cross_id));
 
+        // @todo: 暂时禁用 exfee 编辑功能，待端木的新 exfee 框方案稳定 #waiting_for_new_exfee_box
+        return;
         $exfees    = json_decode($_POST['exfee'], true);
         $ehelper   = $this->getHelperByName('exfee');
         $exfees_list = $ehelper->addExfeeIdentify($cross_id, $exfees, $identity_id, $idents);

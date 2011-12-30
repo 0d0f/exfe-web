@@ -45,7 +45,6 @@
     padding-top: 10px;
     background: #C4E246;
     margin: 0 auto 10px;
-    /* css3 */
     background: -webkit-gradient(linear, 0 0, 0 100%, from(#F4FCD1), to(#C4E246));
     background: -moz-linear-gradient(#F4FCD1, #C4E246);
     background: -o-linear-gradient(#F4FCD1, #C4E246);
@@ -70,15 +69,14 @@
     z-index: 1;
     background: url(/static/images/loading_a.gif) no-repeat 0 0;
 }
+/*******/
 
 #edit_x_bar p.titles {
-    padding-left: 10px;
+    padding-left: 40px;
     font-weight: bold;
-    font-size: 12px;
-}
-
-#edit_x_bar p.titles span {
-    color: #0591AC;
+    font-size: 18px;
+    line-height: 24px;
+    color: #333333;
 }
 
 #edit_x_bar p.error_msg {
@@ -89,7 +87,7 @@
 }
 
 #edit_x_bar p.done_btn {
-    padding-right: 10px;
+    padding-right: 40px;
     float: right;
 }
 
@@ -120,6 +118,11 @@
     line-height: 0px;
 }
 
+#edit_x_bar p.revert a {
+    color: #666666;
+    text-decoration: underline;
+}
+
 #x_title_edit {
     line-height: 70px;
     font-size: 64px;
@@ -128,6 +131,8 @@
 
 #x_desc_edit {
     border: 1px #ccc dashed;
+    height: 120px;
+    resize: none;
 }
 
 .x_editable {
@@ -136,4 +141,83 @@
 
 .x_editable:hover {
     background-color: #D9E8EB;
+}
+
+#x_desc.x_editable {
+    min-height: 50px;
+}
+
+#x_time_bubble {
+    width: 310px;
+    height: 220px;
+    margin-left: 210px;
+    margin-top: 125px;
+}
+
+#x_time_bubble:before {
+    top: 29px;
+    left: 330px;
+}
+
+#x_time_bubble:after {
+    top:29px; left:330px;
+}
+
+#x_time_bubble .x_dt_input {
+    width: 310px;
+    height: 25px;
+    background: url("/static/images/icons.png") no-repeat scroll right -535px transparent;
+}
+
+#x_time_bubble .x_dt_msg {
+    width: 310px;
+    height: 20px;
+    color: #FF0000;
+}
+
+#x_time_bubble #x_datetime_original {
+    height: 18px;
+    background-color: #FAFAFA;
+    padding: 0;
+    border: 1px solid #999;
+    width: 250px;
+}
+
+#x_place_bubble {
+    width: 210px;
+    height: 120px;
+    margin-left: 310px;
+    margin-top: 195px;
+}
+
+#x_place_bubble:before {
+    top: 29px;
+    left: 230px;
+}
+
+#x_place_bubble:after {
+    top: 29px;
+    left: 230px;
+}
+
+#x_place_bubble .input_box {
+    width: 210px;
+    height: 120px;
+}
+
+#x_place_bubble .input_box textarea {
+    position: relative;
+    float: left;
+    width: 180px;
+    height: 118px;
+    border:1px solid #CCCCCC;
+}
+
+#x_place_bubble .input_box span {
+    position: relative;
+    float: right;
+    display: block;
+    width: 20px;
+    height: 20px;
+    background: url("/static/images/icons.png") no-repeat scroll right -570px transparent;
 }
