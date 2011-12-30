@@ -114,6 +114,7 @@ function dofetchandpost($obj)
             if($str!="")
                 $message=$str;
             $source_str=strip_html_tags($message);
+            mb_internal_encoding("UTF-8");
             if(mb_strlen($source_str)>233)
         	    $message=mb_substr($source_str,0,233)."...";
             else

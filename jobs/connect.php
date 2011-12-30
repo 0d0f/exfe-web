@@ -60,11 +60,34 @@ function apn_connect()
 
 
 }
+
+function json_encode_nounicode($code)
+{
+    $code = json_encode(urlencodeAry($code));
+    return urldecode($code);
+}
+
+function urlencodeAry($data)
+{
+    if(is_array($data))
+    {
+        foreach($data as $key=>$val)
+        {
+            $data[$key] = urlencodeAry($val);
+        }
+        return $data;
+    }
+    else
+    {
+        return urlencode($data);
+    }
+}
+
 function sendapn($deviceToken,$body)
 {
     global $apn_connect;
-    var_dump($apn_connect);
-    $payload = json_encode($body);
+    $payload = json_encode_nounicode($body);
+    echo "r\n======payload size:".strlen($payload)."\r\n";
     $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
     $err=fwrite($apn_connect, $msg);
     return $err;
