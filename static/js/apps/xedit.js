@@ -114,7 +114,7 @@ var clickCallBackFunc = function(args)
         });
     };
 
- 
+
     /**
      * by Handaoliang
      */
@@ -321,7 +321,7 @@ var clickCallBackFunc = function(args)
             $('#place_content').unbind('keydown');
         }
     };
- 
+
 
     ns.saveTitle = function()
     {
@@ -333,8 +333,8 @@ var clickCallBackFunc = function(args)
         $('#x_title_area').unbind('clickoutside');
         $('#x_title').show();
     };
- 
- 
+
+
     ns.saveDesc = function()
     {
         crossData.description = odof.util.trim($('#x_desc_edit').val());
@@ -344,7 +344,7 @@ var clickCallBackFunc = function(args)
         $('#x_desc').show();
     };
 
- 
+
     ns.saveTime = function()
     {
         $('#x_time_bubble').hide();
@@ -359,8 +359,8 @@ var clickCallBackFunc = function(args)
         $('#x_place_bubble').unbind('clickoutside');
         odof.x.render.showPlace();
     };
- 
- 
+
+
     ns.conversationKeydown = function(event)
     {
         switch (event.keyCode) {
@@ -407,11 +407,11 @@ var clickCallBackFunc = function(args)
                                         odof.x.render.showRsvp();
                                     }
                                 }
-                            });                        
+                            });
                         });
                         return;
                     }
- 
+
                     $.ajax({
                         type : 'POST',
                         data : {cross_id : cross_id, rsvp : strRsvp, token : token},
@@ -464,8 +464,8 @@ var clickCallBackFunc = function(args)
             event.preventDefault();
         }
     };
- 
- 
+
+
     ns.submitData = function()
     {
         // title
