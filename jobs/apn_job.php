@@ -6,6 +6,68 @@ define("max_msg_len","112");
 mb_internal_encoding("UTF-8");
 class Apn_Job
 {
+    public function multi_perform($args)
+    {
+        $change_objects=array();
+        foreach($args as $arg)
+        {
+            if($arg["job_type"]=="invitation")
+            {
+                $this->generateInvitationPush($arg);
+            }
+            else if($arg["job_type"]=="conversation")
+            {
+                $this->generateConversationPush($arg);
+            }
+            //build a msg body, throw into iOSpush queue
+            else if ($arg["job_type"]=="crossupdate")
+            {
+                //push obj into array, wait for mergin/process/throw
+                $cross_id=$arg["id"];
+                $timestamp=$arg["timestamp"];
+                $old_obj=$change_objects["id".$arg["id"]];
+                if($old_obj)
+                {
+                    if(intval($old_obj["timestamp"])<intval($arg["timestamp"]))
+                    {
+                        //do mergin
+                        foreach($arg["changed"] as $k=>$v)
+                        {
+                            $change_objects["id".$arg["id"]]["changed"][$k]=$v;
+                        }
+                        $change_objects["id".$arg["id"]]["timestamp"]=$arg["timestamp"];
+                    }
+                }
+                else
+                {
+                        $change_objects["id".$arg["id"]]=$arg;
+                }
+            }
+        }
+        if(sizeof($change_objects)>0)
+        {
+            foreach($change_objects as $change_object)
+            {
+                if(time()-$change_object["timestamp"]>1*60)
+                {
+                    print "process ====\r\n";
+                    print_r($change_object);
+                }
+                else
+                {
+                    print "throw into wait queue:\r\n";
+                    print_r($change_object);
+                   date_default_timezone_set('GMT');
+                   Resque::setBackend(RESQUE_SERVER);
+                   $arg["queue_name"]="iOSAPN";
+                   $arg["jobclass_name"]="apn_job";
+                   $jobId = Resque::enqueue("waitingqueue","waiting_job" , $arg, true);
+                   echo "throw to waiting queue jobid:".$jobId." \r\n";
+                }
+            }
+            //do mergin, then if old than 5min process,if not throw into wait queue
+        }
+    }
     public function perform()
     {
         #global $apn_connect;
@@ -18,15 +80,8 @@ class Apn_Job
 	    #$message=$name." 邀请你参加活动 " .$title;
 
         $args=$this->args;
-        if($args["job_type"]=="invitation")
-        {
-            $this->generateInvitationPush($args);
-        }
-        else if($args["job_type"]=="conversation")
-        {
-            $this->generateConversationPush($args);
-        }
-        //build a msg body, throw into iOSpush queue
+
+
     }
     public function generateConversationPush($args)
     {
