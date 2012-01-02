@@ -140,8 +140,9 @@ class UsersActions extends ActionController {
         }
         $devicetoken=$_POST["devicetoken"];
         $provider=$_POST["provider"];
+        $devicename=$_POST["devicename"];
         $userData=$this->getModelByName("user");
-        $identity_id=$userData->regDeviceToken($devicetoken,$provider,$uid);
+        $identity_id=$userData->regDeviceToken($devicetoken,$devicename,$provider,$uid);
         if(intval($identity_id)>0)
         {
             $responobj["meta"]["code"]=200;
