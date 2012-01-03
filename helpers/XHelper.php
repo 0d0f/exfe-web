@@ -71,13 +71,19 @@ class XHelper extends ActionController
         $mail["cross"]=$new_cross;
         $mail["timestamp"]=time();
 
-        #$apnargs["content"]=$exfee_identity["name"]." changed ".$old_cross["title"];
-        #$apnargs["cross_id"]=$cross_id;
+        $apnargs["id"]=$cross_id;
+        $apnargs["title"]=$old_title;
+        $apnargs["action_identity"]=array(0=>$exfee_identity);
+        $apnargs["changed"]=$changed;
+        $apnargs["mutelink"]=$mutelink;
+        $apnargs["cross"]=$new_cross;
+        $apnargs["timestamp"]=time();
+        $apnargs["job_type"]="crossupdate";
 
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
+        $msghelper->sentApnConversation($apnargs);
     }
-
 
     public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title)
     {

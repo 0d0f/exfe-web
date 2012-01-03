@@ -14,6 +14,7 @@ require_once 'apn_job.php';
 require_once 'apnconversation_job.php';
 require_once 'apntext_job.php';
 require_once 'waiting_job.php';
+require_once 'iospush_job.php';
 require_once 'connect.php';
 #require 'php_error_job.php';
 require_once 'gettwitterfriendslist_job.php';

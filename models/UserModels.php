@@ -270,10 +270,10 @@ class UserModels extends DataModel{
     }
 
     //todo for huoju
-    public function regDeviceToken($devicetoken,$provider,$uid)
+    public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
     {
 
-        $sql="select id,status from identities where external_identity='$devicetoken' and  provider='$provider';";
+        $sql="select id from identities where external_identity='$devicetoken' and  provider='$provider';";
 
         $row=$this->getRow($sql);
         $time=time();
@@ -281,7 +281,7 @@ class UserModels extends DataModel{
         if(intval($row["id"])==0)
         {
             //insert new identity, set status connect
-            $sql="insert into identities (provider,external_identity,created_at,status) values('iOSAPN','$devicetoken',FROM_UNIXTIME($time),3);";
+            $sql="insert into identities (provider,external_identity,external_username,created_at) values('iOSAPN','$devicetoken','$devicename',FROM_UNIXTIME($time));";
             $result=$this->query($sql);
             if(intval($result["insert_id"])>0)
                 $identity_id=$result["insert_id"];
@@ -296,12 +296,12 @@ class UserModels extends DataModel{
 
         if(intval($row["identityid"])==0) // if dose not bind with any user?
         {
-            $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+            $sql="insert into user_identity  (identityid,userid,created_at,status) values ($identity_id,$uid,FROM_UNIXTIME($time),3);";
             $this->query($sql);
         }
         else if(intval($row["identityid"])>0 && intval($row["identityid"])!=$identity_id) // bind with other user?
         {
-            $sql="update user_identity set userid=$uid where identityid=$identity_id";
+            $sql="update user_identity set userid=$uid,status=3 where identityid=$identity_id";
             $this->query($sql);
         }
         //check identity_user relationship
