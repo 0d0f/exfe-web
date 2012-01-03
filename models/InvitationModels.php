@@ -45,7 +45,8 @@ class InvitationModels extends DataModel
 
     public function rsvp($cross_id,$identity_id,$state)
     {
-        $sql="update invitations set state=$state  where identity_id=$identity_id and cross_id=$cross_id;";
+        $time=time();
+        $sql="update invitations set state=$state,updated_at=FROM_UNIXTIME($time) where identity_id=$identity_id and cross_id=$cross_id;";
         $this->query($sql);
 
         //$sql="update invitations set  where cross_id=$cross_id and token='$token';";
@@ -107,7 +108,6 @@ class InvitationModels extends DataModel
             $sql="select a.id invitation_id, a.state, a.by_identity_id, a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
 
         $invitations=$this->getAll($sql);
-
         if (is_array($arrFilter)) {
             foreach ($invitations as $invitationI => $invitationItem) {
                 if (in_array($invitationItem['identity_id'], $filter)) {

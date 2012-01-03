@@ -9,6 +9,7 @@ class Apn_Job
     public function multi_perform($args)
     {
         $change_objects=array();
+        $rsvp_objects=array();
         foreach($args as $arg)
         {
             if($arg["job_type"]=="invitation")
@@ -43,29 +44,97 @@ class Apn_Job
                         $change_objects["id".$arg["id"]]=$arg;
                 }
             }
+            else if($arg["job_type"]=="rsvp")
+            {
+                $timestamp=$arg["timestamp"];
+                $cross_id=$arg["cross_id"];
+                #if($rsvp_objects["id".$cross_id]!="")
+                #{
+                    $old_rsvpobj=$rsvp_objects["id".$cross_id];
+                    if($old_rsvpobj["timestamp"]<$arg["timestamp"])
+                    {
+                        $rsvp_objects["id".$cross_id]["cross_id"]=$arg["cross_id"];
+                        $rsvp_objects["id".$cross_id]["cross_title"]=$arg["cross_title"];
+                        $rsvp_objects["id".$cross_id]["timestamp"]=$arg["timestamp"];
+                        if($arg["invitation"]!="")
+                        {
+                            $invitation_id=$arg["invitation"]["invitation_id"];
+                            $new_rsvpobj["invitation_id"]=$arg["invitation"]["invitation_id"];
+                            $new_rsvpobj["state"]=$arg["invitation"]["state"];
+                            $new_rsvpobj["by_identity_id"]=$arg["invitation"]["by_identity_id"];
+                            $new_rsvpobj["identity_id"]=$arg["invitation"]["identity_id"];
+                            $new_rsvpobj["provider"]=$arg["invitation"]["provider"];
+                            $new_rsvpobj["external_identity"]=$arg["invitation"]["external_identity"];
+                            $new_rsvpobj["name"]=$arg["invitation"]["name"];
+                            //mergin invitation
+                            $rsvp_objects["id".$cross_id]["invitations"]["invitation_$invitation_id"]=$new_rsvpobj;
+                            //mergin to_identities
+                            if($rsvp_objects["id".$cross_id]["to_identities"]=="")
+                                $rsvp_objects["id".$cross_id]["to_identities"]=$arg["to_identities"];
+                        }
+                        else if($arg["invitations"]!="")
+                        {
+                            foreach($arg["invitations"] as $k => $v)
+                                $rsvp_objects["id".$cross_id]["invitations"][$k]=$v;
+                            if($rsvp_objects["id".$cross_id]["to_identities"]=="")
+                                $rsvp_objects["id".$cross_id]["to_identities"]=$arg["to_identities"];
+                        }
+                    }
+                    else
+                    {
+
+                            foreach($arg["invitations"] as $k => $v)
+                            {
+                                if($rsvp_objects["id".$cross_id]["invitations"][$k]=="")
+                                    $rsvp_objects["id".$cross_id]["invitations"][$k]=$v;
+                            }
+                    }
+                #}
+            }
         }
         if(sizeof($change_objects)>0)
         {
             foreach($change_objects as $change_object)
             {
-                if(time()-$change_object["timestamp"]>1*60)
+                if((time()-$change_object["timestamp"])>1*60)
                 {
                     print "process ====\r\n";
-                    print_r($change_object);
+                    $this->generateCrossUpdatePush($change_object);
                 }
                 else
                 {
-                    print "throw into wait queue:\r\n";
-                    print_r($change_object);
+                   print "throw====\r\n";
                    date_default_timezone_set('GMT');
                    Resque::setBackend(RESQUE_SERVER);
-                   $arg["queue_name"]="iOSAPN";
-                   $arg["jobclass_name"]="apn_job";
-                   $jobId = Resque::enqueue("waitingqueue","waiting_job" , $arg, true);
+                   $change_object["queue_name"]="iOSAPN";
+                   $change_object["jobclass_name"]="apn_job";
+                   $jobId = Resque::enqueue("waitingqueue","waiting_job" , $change_object, true);
                    echo "throw to waiting queue jobid:".$jobId." \r\n";
                 }
             }
             //do mergin, then if old than 5min process,if not throw into wait queue
+        }
+        if(sizeof($rsvp_objects)>0)
+        {
+            foreach($rsvp_objects as $rsvp_object)
+            {
+                    if((time()-$rsvp_object["timestamp"])>1*60)
+                    {
+                        print "process invitation====\r\n";
+                        print_r($rsvp_object);
+                        #$this->generateCrossUpdatePush($change_object);
+                    }
+                    else
+                    {
+                       date_default_timezone_set('GMT');
+                       Resque::setBackend(RESQUE_SERVER);
+                       $rsvp_object["queue_name"]="iOSAPN";
+                       $rsvp_object["jobclass_name"]="apn_job";
+                       $rsvp_object["job_type"]="rsvp";
+                       $jobId = Resque::enqueue("waitingqueue","waiting_job" , $rsvp_object, true);
+                       echo "throw to waiting queue jobid:".$jobId." \r\n";
+                    }
+            }
         }
     }
     public function perform()
@@ -80,6 +149,89 @@ class Apn_Job
 	    #$message=$name." 邀请你参加活动 " .$title;
 
         $args=$this->args;
+
+
+    }
+
+    public function generateCrossUpdatePush($args)
+    {
+        #"%X_OLDTITLE" updates: Title is changed to "%X_TITLE". New time: %X_SHORTTIME. New Place: %X_PLACETITLE, %X_PLACEDESCRIPTION
+        $title=$args["title"];
+
+        #if($args["cross"]["identities"]=="")
+        #{
+            $obj["identity_id"] ="24";
+            $obj["status"] ="3";
+            $obj["provider"] = "iOSAPN";
+            $obj["external_identity"] = "96da067d5b5fba84c032b12fa5667b19acd47d8fb383784ae2a4dd4904fb8858";
+            $args["cross"]["identities"][0]=$obj;
+        #}
+//        $change_str="";
+        $changemsgs=array();
+        foreach($args["changed"] as $k=>$v)
+        {
+            if($k=="title")
+            {
+                $change_str.="Title is changed to \\\"$v\\\"";
+                $changemsgs["title"]=$v;
+            }
+            else if($k=="begin_at")
+            {
+                $time_type=$args["changed"]["time_type"];
+                $begin_at=$v;
+                $datetimestr="";
+                if($begin_at=="0000-00-00 00:00:00") // hasn't datetime
+                   $datetimestr="";
+                else
+                {
+                    if(intval($time_type)==2)
+                        $datetimestr=date("M j",strtotime($begin_at));
+                    else
+                        $datetimestr=date("g:iA D,M j",strtotime($begin_at));
+                }
+
+
+                if($datetimestr!="")
+                    $changemsgs["time"]=$datetimestr;
+            }
+            else if($k=="place_line1" )
+                    $changemsgs["place_line1"]=$v;
+            else if($k=="place_line2" )
+                    $changemsgs["place_line2"]=$v;
+
+        }
+        if(sizeof($changemsgs)>0)
+        {
+            $updatestr="$title updates:";
+            if($changemsgs["title"]!="")
+                $updatestr.=" Title is changed to \\\"".$changemsgs["title"]."\\\".";
+            if($changemsgs["time"]!="")
+                $updatestr.=" New time: ".$changemsgs["time"].".";
+            if($changemsgs["place_line1"]!="" || $changemsgs["place_line2"]!="" )
+            {
+                if($changemsgs["place_line1"]!="" && $changemsgs["place_line2"]!="")
+                $updatestr.=" New Place: ".$changemsgs["place_line1"].", ".$changemsgs["place_line2"];
+            }
+            $updatestr=utf8substr($updatestr,0,max_msg_len)."...";
+
+            $msgbodyobj=array();
+            $msgbodyobj["msg"]=$updatestr;
+            $msgbodyobj["cross_id"]=$args["id"];
+    
+            $to_identities=$args["cross"]["identities"];
+            foreach($to_identities as $to_identity)
+            {
+               if( $to_identity["provider"]=="iOSAPN")
+               {
+                   $msgbodyobj["external_identity"]=$to_identity["external_identity"];
+                   print_r($msgbodyobj);
+                   $this->deliver($msgbodyobj);
+               }
+            }
+        }
+
+                #"%X_OLDTITLE" updates: Title is changed to "%X_TITLE". New time: %X_SHORTTIME. New Place: %X_PLACETITLE, %X_PLACEDESCRIPTION
+        
 
 
     }
