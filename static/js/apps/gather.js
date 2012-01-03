@@ -1,4 +1,9 @@
-
+/**
+ * @Description: X gather module
+ * @Author:      Leask Huang <leask@exfe.com>
+ * @createDate:  Jan 2, 2012
+ * @CopyRights:  http://www.exfe.com
+ */
 
 
 
