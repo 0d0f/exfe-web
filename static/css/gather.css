@@ -1,11 +1,157 @@
 @charset "UTF-8";
 /* by Leask */
 
-/*
+
 #gather_form {
-    margin: 40px auto;
+    padding: 0 40px 40px 40px;
 }
-*/
+
+#gather_form ul li {
+    margin-bottom: 15px;
+    overflow: hidden;
+    list-style: none;
+    clear: both;
+}
+
+#gather_form ul li label {
+    width: 170px;
+    height: 25px;
+    margin: 0 10 0 0;
+    line-height: 24px;
+    float: left;
+    text-align: right;
+    background: url(/static/images/icons.png) no-repeat;
+    padding-right: 30px;
+    color: #666666;
+    font-size: 14px;
+}
+
+#gather_form ul li .title {
+    background-position: right -475px;
+}
+
+#gather_form ul li .description {
+    background-position: right -505px;
+}
+
+#gather_form ul li .date {
+    background-position: right -535px;
+}
+
+#gather_form ul li .place {
+    background-position: right -565px;
+}
+
+#gather_form ul li .hostby {
+    background-position: right 0px;
+}
+
+#gather_form ul li .exfee {
+    background-position: right -625px;
+}
+
+#gather_form ul li .privacy {
+    background-position: right -595px;
+}
+
+.gather_input {
+    height: 24px;
+    display: block;
+    position: absolute;
+    margin-left: 210px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 1px;
+    resize: none;
+}
+
+#gather_form ul li div {
+    color: #CCCCCC;
+}
+
+#gather_form ul li input, #gather_form ul li textarea {
+    color: #333333;
+}
+
+#gather_date_x, #datetime_original, #gather_place_x, #gather_place, #gather_hostby {
+    width: 183px;
+}
+
+#gather_place_blank, #gather_place_x, #gather_place {
+    height: 96px;
+}
+
+#gather_title, #gather_desc_x, #gather_desc, #gather_submit_area {
+    width: 480px;
+}
+
+.gather_focus {
+    border: #c5c5c5 1px solid;
+    background: #FAFAFA;
+}
+
+.gather_blur {
+    border: #c5c5c5 1px dashed;
+    background: transparent;
+}
+
+#gather_privacy {
+    color: #333333;
+    font-size: 14px;
+    line-height: 24px;
+}
+
+#gather_privacy_info_desc { 
+    color: #666666;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+#gather_privacy_blank {
+    height: 48px;
+}
+
+#gather_discard {
+    display: block;
+    text-decoration: underline;
+    width: 80px;
+    height: 30px;
+    line-height: 30px;
+    color: #999999;
+    float: right;
+}
+
+#gather_submit {
+    background: url("/static/images/btn.png") no-repeat;
+    color: #ffffff;
+    font-size: 16px;
+    height: 30px;
+    width: 130px;
+    cursor: pointer;
+    float: right;
+}
+
+#gather_submit .mouseover {
+    background: url("/static/images/btn.png") no-repeat -300px 0;
+}
+
+#gather_submit .mousedown {
+    background: url("/static/images/btn.png") no-repeat -600px 0;
+}
+
+#gather_submit .disabled {
+    background: url("/static/images/btn.png") no-repeat -900px 0;
+}
+
+
+
+
+
+
+
+
 
 
 
