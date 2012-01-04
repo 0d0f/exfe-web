@@ -13,7 +13,8 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.x = {title       : '',
             description : '',
-            place_id    : '',
+            placeline1  : '',
+            placeline2  : '',
             datetime    : '',
             draft_id    : 0};
             
@@ -52,25 +53,38 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.updatePlace = function() {
-        odof.util.parseLocation
+        var strPlace = odof.util.parseLocation($('#gather_place').val());
+        this.x.placeline1 = strPlace[0];
+        this.x.placeline2 = strPlace[1];
+        if (this.x.placeline1 + this.x.placeline2 === '') {
+            $('#gather_place_x').html(defaultPlace);
+        } else {
+            $('#gather_place_x').html('');
+        }
+    };
+    
+    
+    ns.summaryX = function()
+    {
+        return this.x;
+        // exfee       : JSON.stringify(getexfee())
     };
 
 
     ns.saveDraft = function() {
-        var strCross = JSON.stringify(summaryX());
-
-        if (curCross !== strCross) {
+        var strCross = JSON.stringify(odof.x.gather.summaryX());
+        if (odof.x.gather.curCross !== strCross) {
             $.ajax({
                 type     : 'POST',
                 url      : site_url + '/x/savedraft',
                 dataType : 'json',
-                data     : {draft_id : draft_id,
-                            cross    : strCross},
+                data     : {draft_id : odof.x.gather.draft_id,
+                            cross    : odof.x.gather.strCross},
                 success  : function (data) {
-                    draft_id = data && data.draft_id ? data.draft_id : draft_id;
+                    odof.x.gather.draft_id = data && data.draft_id ? data.draft_id : odof.x.gather.draft_id;
                 }
             });
-            curCross = strCross;
+            odof.x.gather.curCross = strCross;
         }
     };
 
@@ -296,13 +310,20 @@ $(document).ready(function() {
     odof.x.gather.updateTime();
 
     // place
-    $('#gather_place').focus(function () {
-        $('#gather_place_x').addClass('gather_focus').removeClass('gather_blur');
+    $('#gather_place').bind('focus blur keyup', function (event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_place_x').addClass('gather_focus').removeClass('gather_blur');
+                break;
+            case 'blur':
+                $('#gather_place_x').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updatePlace();
+                break;
+            case 'keyup':
+                odof.x.gather.updatePlace();
+        }
     });
-    $('#gather_place').blur(function () {
-        $('#gather_place_x').addClass('gather_blur').removeClass('gather_focus');
-        // .html($(this).val() ? '' : gPlaceDefaultText);
-    });
+    odof.x.gather.updatePlace();
 
     // host by
     $('#gather_hostby').focus(function () {
@@ -338,7 +359,7 @@ $(document).ready(function() {
     });
 
     // auto save draft
-    //setInterval(odof.x.gather.saveDraft, 10000);
+    setInterval(odof.x.gather.saveDraft, 10000);
 
 
 

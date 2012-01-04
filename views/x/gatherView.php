@@ -18,7 +18,8 @@
     echo '<script>'
        . "var defaultTitle = '{$defaultTitle}',"
        .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',"
-       .     "defaultTime  = 'Sometime';"
+       .     "defaultTime  = 'Sometime',"
+       .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>
 <div class="content">
@@ -45,7 +46,7 @@
 
             <li id="gather_place_blank">
                 <label class="place">Location</label>
-                <div id="gather_place_x" class="gather_blur gather_input">Somewhere</div>
+                <div id="gather_place_x" class="gather_blur gather_input"></div>
                 <textarea id="gather_place" class="gather_input"></textarea>
             </li>
 
