@@ -37,8 +37,30 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.updateDesc = function() {
-        this.x.description = odof.util.trim($('#gather_desc').val());
-        $('#gather_desc_x').html(this.x.description === '' ? defaultDesc : '');
+        var maxChrt = 33,
+            maxLine = 9,
+            extSpce = 10,
+            objDesc = $('#gather_desc');
+        this.x.description = odof.util.trim(objDesc.val());
+        if (this.x.description === '') {
+            $('#gather_desc_x').html(defaultDesc);
+        } else {
+            var arrDesc = this.x.description.split(/\r|\n|\r\n/),
+                intLine = arrDesc.length;
+            for (var i in arrDesc) {
+                intLine += arrDesc[i].length / maxChrt | 0;
+            }
+            var difHeight = parseInt(objDesc.css('line-height'))
+                          * (intLine ? (intLine > maxLine ? maxLine : intLine) : 1)
+                          + extSpce - (objDesc.height());
+            if (difHeight <= 0) {
+                return;
+            }
+            objDesc.animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_x').animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_x').html('');
+        }
     };
 
 
@@ -360,79 +382,5 @@ $(document).ready(function() {
 
     // auto save draft
     setInterval(odof.x.gather.saveDraft, 10000);
-
-
-
-
-return;
-    // desc
-    var gDescDefaultText = $('#gather_desc_bg').html();
-    var converter = new Showdown.converter();
-    $('#g_description').keyup(function() {
-        var maxChrt = 33,
-            maxLine = 9,
-            objDesc = $(this),
-            extSpce = 10,
-            strDesc = objDesc.val();
-        if (strDesc) {
-            $('#gather_desc_bg').html('');
-            $('#pv_description').html(converter.makeHtml(strDesc));
-            var arrDesc = strDesc.split(/\r|\n|\r\n/),
-                intLine = arrDesc.length;
-            for (var i in arrDesc) {
-                intLine += arrDesc[i].length / maxChrt | 0;
-            }
-            var difHeight = parseInt(objDesc.css('line-height'))
-                          * (intLine ? (intLine > maxLine ? maxLine : intLine) : 1)
-                          + extSpce - (objDesc.height());
-            if (difHeight <= 0) {
-                return;
-            }
-            objDesc.animate({'height' : '+=' + difHeight}, 100);
-            $('#gather_desc_bg').animate({'height' : '+=' + difHeight}, 100);
-            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 100);
-        } else {
-            $('#gather_desc_bg').html(gDescDefaultText);
-            $('#pv_description').html(gDescDefaultText);
-        }
-    });
-
-
-    // date
-    var gDateDefaultText = $('#gather_date_bg').html();
-    $('#datetime_original').keyup(function(e) {
-        if ((e.keyCode ? e.keyCode : e.which) === 9) {
-            return;
-        }
-        updateRelativeTime();
-    });
-
-    // place
-    var gPlaceDefaultText = $('#gather_place_bg').html();
-    $('#g_place').keyup(function() {
-        var strPlace = $('#g_place').val(),
-            arrPlace = strPlace.split(/\r|\n|\r\n/),
-            prvPlace = [];
-        arrPlace.forEach(function(item, i) {
-            if ((item = odof.util.trim(item))) {
-                prvPlace.push(item);
-            }
-        });
-        if (prvPlace.length) {
-            $('#gather_place_bg').html('');
-            $('#pv_place_line1').html(prvPlace.shift());
-            $('#pv_place_line2').html(prvPlace.join('<br />'));
-            if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 72) {
-                $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
-            }
-            if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
-                $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
-            }
-        } else {
-            $('#gather_place_bg').html(gPlaceDefaultText);
-            $('#pv_place_line1').html('Somewhere');
-            $('#pv_place_line2').html(''); // @todo: gps city here
-        }
-    });
 
 });
