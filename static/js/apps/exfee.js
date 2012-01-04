@@ -1297,6 +1297,13 @@ function getexfee()
     });
     return result;
 }
+// exfee
+    $('.ex_identity').hide();
+    $('.exfee_item').live('mouseenter mouseleave', function(event) {
+        showExternalIdentity(event);
+    });
+    window.rollingExfee = null;
+    window.exfeeRollingTimer = setInterval(rollExfee, 50);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

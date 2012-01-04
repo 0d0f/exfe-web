@@ -11,8 +11,6 @@ var moduleNameSpace = 'odof.x.gather',
 
 (function(ns) {
 
-    //ns.defaultTitle = 'Edit title here';
-
     ns.x = {title       : '',
             description : '',
             place_id    : '',
@@ -28,23 +26,33 @@ var moduleNameSpace = 'odof.x.gather',
     ns.autoSubmit      = false;
 
     ns.updateTitle = function() {
-        this.x.title   = $('#gather_title').val();
+        this.x.title   = odof.util.trim($('#gather_title').val());
+        if (this.x.title === '') {
+            this.x.title = defaultTitle;
+        }
+        $('#gather_title').val(this.x.title);
         document.title = 'EXFE - ' + this.x.title;
     };
 
 
-    ns.updateDescription = function() {
-
+    ns.updateDesc = function() {
+        this.x.description = odof.util.trim($('#gather_desc').val());
+        $('#gather_desc_x').html(this.x.description === '' ? defaultDesc : '');
     };
 
 
     ns.updateTime = function() {
-
+        if (odof.util.trim($('#datetime_original').val()) === '') {
+            $('#gather_date_x').html(defaultTime);
+        } else {
+            $('#datetime_original').val(odof.util.getHumanDateTime(odof.x.gather.x.datetime));
+            $('#gather_date_x').html('');
+        }
     };
 
 
     ns.updatePlace = function() {
-
+        odof.util.parseLocation
     };
 
 
@@ -154,14 +162,25 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.afterLogin = function(status) {
-        // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
-        confole.log(status);
         if (status.user_status !== 1) {
             return;
         }
-        gTitlesDefaultText = 'Meet ' + status.user_name;
-        document.title = 'EXFE - ' + gTitlesDefaultText;
+        
+        // title
+        var oldDefaultTitle = defaultTitle;
+        defaultTitle = 'Meet ' + status.user_name;
+        if (this.x.title === oldDefaultTitle) {
+            $('#gather_title').val('');
+            odof.x.gather.updateTitle();
+        }
+        
+        // hostby
         $('#gather_hostby').attr('disabled', true);
+    
+        return;
+        // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
+        confole.log(status);
+        
         var exfee_pv = [];
         $.ajax({
             type     : 'GET',
@@ -216,39 +235,65 @@ var moduleNameSpace = 'odof.x.gather',
 
 $(document).ready(function() {
     // title
-    $('#gather_title').focus(function() {
-        $('#gather_title').addClass('gather_focus').removeClass('gather_blur');
+    $('#gather_title').bind('focus blur keyup', function(event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_title').addClass('gather_focus').removeClass('gather_blur');
+                break;
+            case 'blur':
+                $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updateTitle();
+                break;
+            case 'keyup':
+                odof.x.gather.updateTitle();
+        }
     });
-    $('#gather_title').blur(function () {
-        var strTitle = $(this).val();
-        $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
-        // update title
-    });
-    $('#gather_title').val(defaultTitle);
+    odof.x.gather.updateTitle();
     $('#gather_title').select();
     $('#gather_title').focus();
 
     // description
-    $('#gather_desc').focus(function() {
-        $('#gather_desc_x').addClass('gather_focus').removeClass('gather_blur');
+    $('#gather_desc').bind('focus blur keyup', function(event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_desc_x').addClass('gather_focus').removeClass('gather_blur');
+                break;
+            case 'blur':
+                $('#gather_desc_x').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updateDesc();
+                break;
+            case 'keyup':
+                odof.x.gather.updateDesc();
+        }
     });
-    $('#gather_desc').blur(function() {
-        $('#gather_desc_x').addClass('gather_blur').removeClass('gather_focus');
-        // .html($(this).val() ? '' : gDescDefaultText);
-    });
+    odof.x.gather.updateDesc();
 
     // datetime
-    $('#datetime_original').focus(function() {
-        $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur').html('');
-        // @todo: time format tips
-        // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
-        // @todo: disable time input box for version #oC
-        // $('#datetime_original').blur();
+    $('#datetime_original').bind('focus blur keyup', function(event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur');
+                exCal.initCalendar(
+                    $('#datetime_original')[0],
+                    'calendar_map_container',
+                    function(displayTimeString, standardTimeString) {
+                        odof.x.gather.x.datetime = standardTimeString;
+                        odof.x.gather.updateTime();
+                    }
+                );
+                // @todo: time format tips
+                // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
+                // @todo: disable time input box for version #oC
+                // $('#datetime_original').blur();
+                break;
+            case 'blur':
+                $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updateTime();
+            case 'keyup':
+                // @todo: 自然语言时间识别
+        }
     });
-    $('#datetime_original').blur(function () {
-        $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
-        // .html($(this).val() ? '' : gDateDefaultText);
-    });
+    odof.x.gather.updateTime();
 
     // place
     $('#gather_place').focus(function () {
@@ -264,35 +309,41 @@ $(document).ready(function() {
         odof.user.status.doShowLoginDialog(null, odof.x.gather.afterLogin);
     });
 
+    // privacy
+    $('#gather_privacy_blank').click(function() {
+        $('#gather_privacy_info_desc').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
+    });
 
-
-return;
-    $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
-    $('#identity_ajax').hide();
-
-    $('#gather_submit_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
-    $('#gather_submit_ajax').hide();
-
-    // title
-    window.gTitlesDefaultText = $('#g_title').val();
-    $('#g_title').keyup(function() {
-        var objTitle = $(this),
-            strTitle = objTitle.val();
-        if (strTitle) {
-            $('#pv_title').html(strTitle);
-            if ($('#pv_title').hasClass('pv_title_double') && $('#pv_title').height() < 112) {
-                $('#pv_title').addClass('pv_title_normal').removeClass('pv_title_double');
-            }
-            if ($('#pv_title').hasClass('pv_title_normal') && $('#pv_title').height() > 70) {
-                $('#pv_title').addClass('pv_title_double').removeClass('pv_title_normal');
-            }
-            document.title = 'EXFE - ' + strTitle;
-        } else {
-            $('#pv_title').html(gTitlesDefaultText);
-            document.title = 'EXFE - ' + gTitlesDefaultText;
+    // gather
+    $('#gather_submit').bind('mouseenter mouseout mousedown click', function(event) {
+        if (odof.x.gather.xSubmitting) {
+            return;
+        }
+        switch (event.type) {
+            case 'mouseenter':
+                $('#gather_submit').addClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
+                break;
+            case 'mouseout':
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
+                break;
+            case 'mousedown':
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').addClass('mousedown');
+                break;
+            case 'click':
+                odof.x.gather.submitX();
         }
     });
 
+    // auto save draft
+    //setInterval(odof.x.gather.saveDraft, 10000);
+
+
+
+
+return;
     // desc
     var gDescDefaultText = $('#gather_desc_bg').html();
     var converter = new Showdown.converter();
@@ -335,14 +386,6 @@ return;
         updateRelativeTime();
     });
 
-    // exfee
-    $('.ex_identity').hide();
-    $('.exfee_item').live('mouseenter mouseleave', function(event) {
-        showExternalIdentity(event);
-    });
-    window.rollingExfee = null;
-    window.exfeeRollingTimer = setInterval(rollExfee, 50);
-
     // place
     var gPlaceDefaultText = $('#gather_place_bg').html();
     $('#g_place').keyup(function() {
@@ -371,48 +414,4 @@ return;
         }
     });
 
-    $('#gather_x').bind('mouseenter mouseout mousedown', function(event) {
-        if (xSubmitting) {
-            return;
-        }
-        switch (event.type) {
-            case 'mouseenter':
-                $('#gather_x').addClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
-                break;
-            case 'mouseout':
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
-                break;
-            case 'mousedown':
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').addClass('mousedown');
-        }
-    });
-
-    $('#gather_x').click(submitX);
-
-    $('#post_submit').click(function(e) {
-        identity();
-    });
-
-    $('.privacy').click(function() {
-        $('.privacy > .subinform').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
-    });
-
-    
-
-    setInterval(saveDraft, 10000);
-
-    $('.confirmed_box').live('change', updateExfeeList);
-
-    // added by handaoliang
-    jQuery('#datetime_original').bind('focus', function(){
-        var displayTextBox = document.getElementById('datetime_original');
-        var calendarCallBack = function(displayTimeString, standardTimeString){
-            document.getElementById('datetime').value = standardTimeString;
-            updateRelativeTime();
-        };
-        exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
-    })
 });

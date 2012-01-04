@@ -439,12 +439,6 @@ b.r3{margin: 0px}
 .createset .exfend p.sl{width:25px;height:25px;margin:0 auto;margin-top:15px;background:url(/static/images/btn.png) no-repeat right -543px;text-indent:-9999px; }
 .createset .exfend p.tf{line-height:25px;color:#adadad;font-size:14px;margin-top:75px}
 
-.createset #calendar_map_container{
-    display:block; position:absolute;
-    width: 310px; height: 175px; z-index: 10;
-    margin-left: 320px;
-}
-
 
 /*-------------------------------------main */
 

@@ -277,26 +277,14 @@ var clickCallBackFunc = function(args)
                     if (event.target.parentNode === $('#x_place_area')[0]) {
                         $('#place_content').bind('keyup', function()
                         {
-                            var strPlace = $('#place_content').val(),
-                                arrPlace = strPlace.split(/\r|\n|\r\n/),
-                                prvPlace = [];
-                            arrPlace.forEach(function(item, i) {
-                                if ((item = odof.util.trim(item)) !== '') {
-                                    prvPlace.push(item);
-                                }
-                            });
-                            if (prvPlace.length) {
-                                crossData.place.line1 = prvPlace.shift();
-                                crossData.place.line2 = prvPlace.join("\n");
-                            } else {
-                                crossData.place.line1 = '';
-                                crossData.place.line2 = '';
-                            }
+                            var arrPlace = odof.util.parseLocation($('#place_content').val());
+                            crossData.place.line1 = arrPlace[0];
+                            crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
                         });
                         $('#x_place_bubble').show();
                     } else {
-                        odof.x.render.savePlace();
+                        odof.x.edit.savePlace();
                     }
                 });
                 $('#place_content').bind('keydown', function(event)

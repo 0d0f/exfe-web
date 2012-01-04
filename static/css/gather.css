@@ -133,16 +133,23 @@
     float: right;
 }
 
-#gather_submit .mouseover {
+#gather_submit.mouseover {
     background: url("/static/images/btn.png") no-repeat -300px 0;
 }
 
-#gather_submit .mousedown {
+#gather_submit.mousedown {
     background: url("/static/images/btn.png") no-repeat -600px 0;
 }
 
-#gather_submit .disabled {
+#gather_submit.disabled {
     background: url("/static/images/btn.png") no-repeat -900px 0;
+}
+
+#calendar_map_container {
+    width: 310px;
+    height: 175px;
+    margin-left: 410px;
+    z-index: 10;
 }
 
 
