@@ -59,7 +59,17 @@ class RSVPActions extends ActionController {
                 $r=$this->save($cross_id,$identity_id,$state);
 
                 if(intval($r["success"])==1)
+                {
+                    $msghelper=$this->gethelperbyname("exfee");
+                    #$apnargs["to_identities"]=$to_identities_apn;
+                    #$apnargs["job_type"]="rsvp";
+                    #$msghelper->sentApnConversation($apnargs);
+
+                    $ehelper = $this->getHelperByName('exfee');
+                    $ehelper->sendRSVP($cross_id,$identity_id,$state);
+
                     $responobj["response"]["success"]="true";
+                }
                 else
                     $responobj["response"]["success"]="false";
                 $responobj["response"]["token_expired"]=$r["tokenexpired"];
