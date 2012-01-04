@@ -328,33 +328,48 @@ class ExfeeHelper extends ActionController
                     $apnargs["to_identities"]=$to_identities_apn;
                     $apnargs["job_type"]="conversation";
                     $msghelper->sentApnConversation($apnargs);
-
-                    
-                    #foreach($invitation_identities as $invitation_identity)
-                    #{
-                    #}
-
-                    
                 }
     }
-                #                if($identity["provider"]=="email")
-                #                {
-                #                    $mail["external_identity"]=$identity["external_identity"];
-                #                    $mail["provider"]=$identity["provider"];
-                #                    $msghelper->sentConversationEmail($mail);
-                #                }
-                #                if($identity["provider"]=="iOSAPN")
-                #                {
-                #                    $apnargs["external_identity"]=$identity["external_identity"];
-                #                    $msghelper->sentapnconversation($apnargs);
-                #                }
-                #                else
-                #                {
-                #                }
-                #            }
-                #        }
-                #    }
-                #}
-    #}
+    public function sendRSVP($cross_id,$identity_id,$state)
+    {
+        $crossData=$this->getModelByName("X");
+        $cross=$crossData->getCross($cross_id);
+        $invitationdata=$this->getmodelbyname("invitation");
+        $invitation_identities=$invitationdata->getinvitation_identities($cross_id);
 
+        $to_identities_apn=array();
+        $invitation=NULL;
+        foreach($invitation_identities as $invitation_identity)
+        {
+            if(intval($invitation_identity["identity_id"])==intval($identity_id))
+                $invitation=$invitation_identity;
+            $identities=$invitation_identity["identities"];
+            if($identities)
+                foreach($identities as $identity)
+                {
+                    if(intval($identity["status"])==3)
+                    {
+                        $muteData=$this->getmodelbyname("mute");
+                        $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
+                        if($mute===FALSE)
+                        {
+                            $identity=humanidentity($identity,null);
+                            if($identity["provider"]=="iOSAPN" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
+                                array_push($to_identities_apn,$identity);
+                        }
+                    }
+                }
+        }
+        if($invitation!=NULL && sizeof($to_identities_apn)>0)
+        {
+            $apnargs["invitation"]=$invitation;
+            $apnargs["cross_title"]=$cross["title"];
+            $apnargs["cross_id"]=$cross["id"];
+            $apnargs["timestamp"]=time();
+            $apnargs["to_identities"]=$to_identities_apn;
+            $apnargs["job_type"]="rsvp";
+            $msghelper=$this->getHelperByName("msg");
+            $msghelper->sentApnRSVP($apnargs);
+        }
+    }
 }

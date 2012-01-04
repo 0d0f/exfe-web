@@ -86,7 +86,9 @@ class OAuthActions extends ActionController {
         //扔一个任务到队列里，去取用户的好友列表。
         $args = array(
             "screen_name"   =>$twitterUserInfo["screen_name"],
-            "user_id"       =>$userID
+            "user_id"       =>$userID,
+            "user_token"    =>$accessToken['oauth_token'],
+            "user_secret"   =>$accessToken['oauth_token_secret']
         );
         $OAuthHelperHandler = $this->getHelperByName("oAuth");
         $jobToken = $OAuthHelperHandler->getTwitterFriendsList($args);

@@ -864,3 +864,436 @@ if (0) {
 }
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+///////////////// OLD exfee editing code from gather page //////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// exfee
+    var gExfeeDefaultText = $('#gather_exfee_bg').html();
+    $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+    $('#exfee').keyup(function(e) {
+        clearTimeout(completeTimer);
+        completeTimer = null;
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 13:
+                identity();
+                e.preventDefault();
+                break;
+            case 27:
+                $('#exfee_complete').slideUp(50);
+                return;
+        }
+        var strExfee = $(this).val();
+        if (strExfee) {
+            $('#gather_exfee_bg').html('');
+            var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
+            if (strKey) {
+                completeTimer = setTimeout("chkComplete('" + strKey + "')", 500);
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
+        } else {
+            $('#gather_exfee_bg').html(gExfeeDefaultText);
+            $('#exfee_complete').slideUp(50);
+        }
+    });
+    $('#exfee').keydown(function(e) {
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 9:
+            case 40:
+                $('#exfee_complete').focus();
+                e.preventDefault();
+                break;
+            case 13:
+                e.preventDefault();
+                break;
+            default:
+                $('#post_submit').css('background', 'url("/static/images/enter' + (chkExfeeFormat() ? '' : '_gray') + '.png")');
+        }
+    });
+    $('#exfee').focus(function() {
+        $('#gather_exfee_bg').addClass('gather_focus').removeClass('gather_blur');
+    });
+    $('#exfee').blur(function() {
+        $('#gather_exfee_bg').addClass('gather_blur').removeClass('gather_focus')
+                             .html($(this).val() ? '' : gExfeeDefaultText);
+    });
+    $('#exfee_complete').hide();
+    $('#exfee_complete').bind('click keydown', function(e) {
+        var intKey = e.keyCode ? e.keyCode : e.which;
+        switch (e.type) {
+            case 'click':
+                complete();
+                break;
+            case 'keydown':
+                switch (intKey) {
+                    case 9:
+                        if (e.shiftKey) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 13:
+                        complete();
+                        break;
+                    case 27:
+                        clearTimeout(completeTimer);
+                        completeTimer = null;
+                        $('#exfee_complete').slideUp(50);
+                    case 8:
+                        $('#exfee').focus();
+                        e.preventDefault();
+                        break;
+                    case 38:
+                        if ($('#exfee_complete').val() === strExfeeCompleteDefault) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    default:
+                        if ((intKey > 64 && intKey < 91) || (intKey > 47 && intKey < 58)) {
+                            $('#exfee').focus();
+                        }
+                }
+        }
+    });
+    $('#exfee_complete').bind('clickoutside', function() {
+        clearTimeout(completeTimer);
+        completeTimer = null;
+        $('#exfee_complete').slideUp(50);
+    });
+
+    $('.addjn').mousemove(function() {
+        hide_exfeedel($(this));
+    });
+
+    $('.addjn').mouseout(function() {
+        show_exfeedel($(this));
+    });
+    
+function showExternalIdentity(event)
+{
+    var target = $(event.target);
+    while (!target.hasClass('exfee_item')) {
+        target = $(target[0].parentNode);
+    }
+    var id     = target[0].id;
+    if (!id) {
+        return;
+    }
+    switch (event.type) {
+        case 'mouseenter':
+            rollingExfee = id;
+            $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn(100);
+            break;
+        case 'mouseleave':
+            rollingExfee = null;
+            $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut(100);
+            var rollE = $('#' + id + ' > .smcomment > div');
+            rollE.animate({
+                marginLeft : '+=' + (0 - parseInt(rollE.css('margin-left')))},
+                700
+            );
+    }
+}
+
+
+function rollExfee()
+{
+    var maxWidth = 200;
+    if (!rollingExfee) {
+        return;
+    }
+    var rollE    = $('#' + rollingExfee + ' > .smcomment > div'),
+        orlWidth = rollE.width(),
+        curLeft  = parseInt(rollE.css('margin-left')) - 1;
+    if (orlWidth <= maxWidth) {
+        return;
+    }
+    curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
+    rollE.css('margin-left', curLeft + 'px');
+}
+
+
+function chkComplete(strKey)
+{
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/complete?key=' + strKey,
+        dataType : 'json',
+        success  : function(data) {
+            var strFound = '';
+            for (var item in data) {
+                var spdItem = odof.util.trim(item).split(' '),
+                    strId   = spdItem.pop(),
+                    strName = spdItem.length ? (spdItem.join(' ') + ' &lt;' + strId + '&gt;') : strId;
+                if (!strFound) {
+                    window.strExfeeCompleteDefault = strId;
+                }
+                strFound += '<option value="' + strId + '"' + (strFound ? '' : ' selected') + '>' + strName + '</option>';
+            }
+            if (strFound && completeTimer && $('#exfee').val().length) {
+                $('#exfee_complete').html(strFound);
+                $('#exfee_complete').slideDown(50);
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
+            clearTimeout(completeTimer);
+            completeTimer = null;
+        }
+    });
+}
+
+
+function chkExfeeFormat()
+{
+    window.arrIdentitySub = [];
+    var strExfees = $('#exfee').val().replace(/\r|\n|\t/, '');
+    $('#exfee').val(strExfees);
+    var arrIdentityOri = strExfees.split(/,|;/);
+    for (var i in arrIdentityOri) {
+        if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
+            var exfee_item = odof.util.parseId(arrIdentityOri[i]);
+            if (exfee_item.type !== 'email') {
+                return false;
+            }
+            arrIdentitySub.push(exfee_item);
+        }
+    }
+    return arrIdentitySub.length > 0;
+}
+
+
+function complete()
+{
+    var strValue = $('#exfee_complete').val();
+    if (strValue === '') {
+        return;
+    }
+    var arrInput = $('#exfee').val().split(/,|;|\r|\n|\t/);
+    arrInput.pop();
+    $('#exfee').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
+    clearTimeout(completeTimer);
+    completeTimer = null;
+    $('#exfee_complete').slideUp(50);
+    identity();
+    $('#exfee').focus();
+}
+
+
+function identity()
+{
+    if (!chkExfeeFormat()) {
+        return;
+    }
+
+    $('#identity_ajax').show();
+
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/get?identities=' + JSON.stringify(arrIdentitySub),
+        dataType : 'json',
+        success  : function(data) {
+            $('#identity_ajax').hide();
+            var exfee_pv     = [],
+                name         = '',
+                identifiable = {};
+            for (var i in data.response.identities) {
+                var identity         = data.response.identities[i].external_identity,
+                    id               = data.response.identities[i].id,
+                    avatar_file_name = data.response.identities[i].avatar_file_name;
+                    name             = data.response.identities[i].name;
+                if (!$('#exfee_' + id).length) {
+                    name = name ? name : identity.split('@')[0].replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ');
+                    while (odof.comm.func.getUTF8Length(name) > 30) {
+                        name = name.substring(0, name.length - 1);
+                    }
+                    exfee_pv.push(
+                        '<li id="exfee_' + id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
+                      +     '<p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p>'
+                      +     '<p class="smcomment">'
+                      +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
+                      +             name
+                      +         '</span>'
+                      +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" type="checkbox"/>'
+                      +     '</p>'
+                      +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_' + id + '\'))" type="button"></button>'
+                      + '</li>'
+                    );
+                }
+                identifiable[identity.toLowerCase()] = true;
+            }
+            for (i in arrIdentitySub) {
+                var idUsed = false;
+                $('.exfee_new').each(function() {
+                    if ($(this).attr('value').toLowerCase() === arrIdentitySub[i].id.toLowerCase()) {
+                        idUsed = true;
+                    }
+                });
+                if (!identifiable[arrIdentitySub[i].id.toLowerCase()] && !idUsed) {
+                    switch (arrIdentitySub[i].type) {
+                        case 'email':
+                            name =  arrIdentitySub[i].name ? arrIdentitySub[i].name : arrIdentitySub[i].id;
+                            break;
+                        default:
+                            name =  arrIdentitySub[i].id;
+                    }
+                    new_identity_id++;
+                    exfee_pv.push(
+                        '<li id="newexfee_' + new_identity_id + '" class="addjn" onmousemove="javascript:hide_exfeedel($(this))" onmouseout="javascript:show_exfeedel($(this))">'
+                      +     '<p class="pic20"><img src="'+img_url+'/web/80_80_default.png" alt="" /></p>'
+                      +     '<p class="smcomment">'
+                      +         '<span class="exfee_new" id="newexfee_' + new_identity_id + '" value="' + arrIdentitySub[i].id + '">'
+                      +             name
+                      +         '</span>'
+                      +         '<input id="confirmed_newexfee_' + new_identity_id + '" class="confirmed_box" type="checkbox"/>'
+                      +     '</p>'
+                      +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#newexfee_' + new_identity_id + '\'))" type="button"></button>'
+                      + '</li>'
+                    );
+                }
+            }
+
+            while (exfee_pv.length) {
+                var inserted = false;
+                $('#exfee_pv > ul').each(function(intIndex) {
+                    var li = $(this).children('li');
+                    if (li.length < 4) {
+                        // @todo: remove this in next version
+                        if (($('.exfee_exist').length + $('.exfee_new').length) < 12) {
+                            $(this).append(exfee_pv.shift());
+                        } else {
+                            exfee_pv.shift();
+                            $('#exfee_warning').show();
+                        }
+                        inserted = true;
+                    }
+                });
+                if (!inserted) {
+                    // @todo: remove this in next version
+                    if (($('.exfee_exist').length + $('.exfee_new').length) < 12) {
+                        $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
+                    } else {
+                        exfee_pv.shift();
+                        $('#exfee_warning').show();
+                    }
+                }
+            }
+            $('#exfee_pv').css('width', 300 * $('#exfee_pv > ul').length + 'px');
+            updateExfeeList();
+        },
+        error: function() {
+            $('#identity_ajax').hide();
+        }
+    });
+}
+
+function updateExfeeList()
+{
+    var exfees        = getexfee(),
+        htmExfeeList  = '',
+        numConfirmed  = 0,
+        numSummary    = 0;
+    for (var i in exfees) {
+        numConfirmed += exfees[i].confirmed;
+        numSummary++;
+        var avatarFile = exfees[i].avatar ? exfees[i].avatar : 'default.png';
+        htmExfeeList += '<li id="exfee_list_item_' + numSummary + '" class="exfee_item">'
+                      +     '<p class="pic20"><img alt="" src="'+odof.comm.func.getUserAvatar(avatarFile, 80, img_url)+'"></p>'
+                      +     '<div class="smcomment">'
+                      +         '<div>'
+                      +             '<span class="ex_name' + (exfees[i].exfee_name === exfees[i].exfee_identity ? ' external_identity' : '') + '">'
+                      +                 exfees[i].exfee_name
+                      +             '</span>'
+                      +             (exfees[i].isHost ? '<span class="lb">host</span>' : '')
+                      +             '<span class="ex_identity external_identity"> '
+                      +                 (exfees[i].exfee_name === exfees[i].exfee_identity ? '' : exfees[i].exfee_identity)
+                      +             '</span>'
+                      +         '</div>'
+                      +     '</div>'
+                      +     '<p class="cs">'
+                      +         '<em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em>'
+                      +     '</p>'
+                      + '</li>';
+    }
+    $('#exfeelist').html(htmExfeeList);
+    $('#exfee_confirmed').html(numConfirmed);
+    $('#exfee_summary').html(numSummary);
+    $('#exfee_count').html(numSummary);
+    $('#exfee').val('');
+    $('.ex_identity').hide();
+}
+$('#confirmed_all').click(function(e) {
+        var check = false;
+        if ($(this).attr('check') === 'false') {
+            $(this).attr('check', 'true');
+            check=true;
+        } else {
+            $(this).attr('check', 'false');
+        }
+
+        $('.exfee_exist').each(function(e) {
+            var element_id = $(this).attr('id');
+            $('#confirmed_' + element_id).attr('checked',check);
+        });
+        $('.exfee_new').each(function(e) {
+            var element_id = $(this).attr('id');
+            $('#confirmed_' + element_id).attr('checked',check);
+        });
+    });
+function hide_exfeedel(e)
+{
+    e.addClass('bgrond');
+    $('.bgrond .exfee_del').show();
+}
+
+function show_exfeedel(e)
+{
+    e.removeClass('bgrond');
+    $('.exfee_del').hide();
+}
+
+function exfee_del(e)
+{
+    e.remove();
+    updateExfeeList();
+}
+
+function getexfee()
+{
+    var result = [];
+    function collect(obj, exist)
+    {
+        var exfee_identity = $(obj).attr('value'),
+            element_id     = $(obj).attr('id'),
+            spanHost       = $(obj).parent().children('.lb'),
+            item           = {exfee_name     : $(obj).html(),
+                              exfee_identity : exfee_identity,
+                              confirmed      : $('#confirmed_' + element_id)[0].checked  == true ? 1 : 0,
+                              identity_type  : odof.util.parseId(exfee_identity).type,
+                              isHost         : spanHost && spanHost.html() === 'host',
+                              avatar         : $(obj).attr('avatar')};
+        if (exist) {
+            item.exfee_id  = $(obj).attr('identityid');
+        }
+        result.push(item);
+    }
+    $('.exfee_exist').each(function() {
+        collect(this, true);
+    });
+    $('.exfee_new').each(function() {
+        collect(this);
+    });
+    return result;
+}
+// exfee
+    $('.ex_identity').hide();
+    $('.exfee_item').live('mouseenter mouseleave', function(event) {
+        showExternalIdentity(event);
+    });
+    window.rollingExfee = null;
+    window.exfeeRollingTimer = setInterval(rollExfee, 50);
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
