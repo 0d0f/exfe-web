@@ -14,13 +14,17 @@
 <?php
     include 'share/nav.php';
     $external_identity = $this->getVar('external_identity');
+    $defaultTitle      = $global_name != '' ? "Meet {$global_name}" : 'Edit title here';
+    echo '<script>'
+       . "var defaultTitle = '{$defaultTitle}';"
+       . '</script>';
 ?>
 <div class="content">
     <div id="gather_form">
         <ul>
             <li>
                 <label class="title"><?php echo $exfe_res["gather"]["Title"];?></label>
-                <input type="text" id="gather_title" class="gather_blur gather_input" value="<?php if($global_name != ""){ ?>Meet <?php echo $global_name; }else{ ?>Edit title here<?php } ?>" />
+                <input type="text" id="gather_title" class="gather_blur gather_input">
             </li>
 
             <li id="gather_desc_blank">
@@ -46,7 +50,7 @@
 
             <li>
                 <label class="hostby">Host By</label>
-                <input type="text" id="gather_hostby" class="gather_blur gather_input" <?php echo $external_identity ? 'enter="true" disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"/>
+                <input type="text" id="gather_hostby" class="gather_blur gather_input" <?php echo $external_identity ? 'disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"     >
             </li>
             
             <li>
@@ -75,8 +79,7 @@
         </ul>
     </div>
 
-    <div class="albg" id="content_x">
-    </div>
+    <div id="x_view"></div>
 
 </div>
 </body>

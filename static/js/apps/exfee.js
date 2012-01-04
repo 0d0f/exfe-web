@@ -864,3 +864,112 @@ if (0) {
 }
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+///////////////// OLD exfee editing code from gather page //////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// exfee
+    var gExfeeDefaultText = $('#gather_exfee_bg').html();
+    $('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+    $('#exfee').keyup(function(e) {
+        clearTimeout(completeTimer);
+        completeTimer = null;
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 13:
+                identity();
+                e.preventDefault();
+                break;
+            case 27:
+                $('#exfee_complete').slideUp(50);
+                return;
+        }
+        var strExfee = $(this).val();
+        if (strExfee) {
+            $('#gather_exfee_bg').html('');
+            var strKey = odof.util.trim(strExfee.split(/,|;|\r|\n|\t/).pop());
+            if (strKey) {
+                completeTimer = setTimeout("chkComplete('" + strKey + "')", 500);
+            } else {
+                $('#exfee_complete').slideUp(50);
+            }
+        } else {
+            $('#gather_exfee_bg').html(gExfeeDefaultText);
+            $('#exfee_complete').slideUp(50);
+        }
+    });
+    $('#exfee').keydown(function(e) {
+        switch (e.keyCode ? e.keyCode : e.which) {
+            case 9:
+            case 40:
+                $('#exfee_complete').focus();
+                e.preventDefault();
+                break;
+            case 13:
+                e.preventDefault();
+                break;
+            default:
+                $('#post_submit').css('background', 'url("/static/images/enter' + (chkExfeeFormat() ? '' : '_gray') + '.png")');
+        }
+    });
+    $('#exfee').focus(function() {
+        $('#gather_exfee_bg').addClass('gather_focus').removeClass('gather_blur');
+    });
+    $('#exfee').blur(function() {
+        $('#gather_exfee_bg').addClass('gather_blur').removeClass('gather_focus')
+                             .html($(this).val() ? '' : gExfeeDefaultText);
+    });
+    $('#exfee_complete').hide();
+    $('#exfee_complete').bind('click keydown', function(e) {
+        var intKey = e.keyCode ? e.keyCode : e.which;
+        switch (e.type) {
+            case 'click':
+                complete();
+                break;
+            case 'keydown':
+                switch (intKey) {
+                    case 9:
+                        if (e.shiftKey) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 13:
+                        complete();
+                        break;
+                    case 27:
+                        clearTimeout(completeTimer);
+                        completeTimer = null;
+                        $('#exfee_complete').slideUp(50);
+                    case 8:
+                        $('#exfee').focus();
+                        e.preventDefault();
+                        break;
+                    case 38:
+                        if ($('#exfee_complete').val() === strExfeeCompleteDefault) {
+                            $('#exfee').focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    default:
+                        if ((intKey > 64 && intKey < 91) || (intKey > 47 && intKey < 58)) {
+                            $('#exfee').focus();
+                        }
+                }
+        }
+    });
+    $('#exfee_complete').bind('clickoutside', function() {
+        clearTimeout(completeTimer);
+        completeTimer = null;
+        $('#exfee_complete').slideUp(50);
+    });
+
+    $('.addjn').mousemove(function() {
+        hide_exfeedel($(this));
+    });
+
+    $('.addjn').mouseout(function() {
+        show_exfeedel($(this));
+    });
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
