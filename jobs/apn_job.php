@@ -121,7 +121,7 @@ class Apn_Job
                     if((time()-$rsvp_object["timestamp"])>1*60)
                     {
                         print "process invitation====\r\n";
-                        print_r($rsvp_object);
+                        $this->generateRSVPPush($rsvp_object);
                         #$this->generateCrossUpdatePush($change_object);
                     }
                     else
@@ -152,6 +152,122 @@ class Apn_Job
 
 
     }
+    public function generateRSVPPush($args)
+    {
+        $title=$args["cross_title"];
+        if(strlen($title)>10)
+            $title=utf8substr($title,0,10)."...";
+        //“%X_TITLE” updates: %IDENTITY_NAME1, %IDENTITY_NAME2… is/are confirmed, %IDENTITY_NAME3 is declined, %IDENTITY_NAME5 is interested in.
+        $invitations=$args["invitations"];
+        
+        $rsvp_statuslist=array();
+        foreach($invitations as $invitation)
+        {
+            if($rsvp_statuslist[$invitation["state"]]=="")
+                $rsvp_statuslist[$invitation["state"]]=array();
+            $name=$invitation["name"];
+            if($name=="")
+                $name=$invitation["external_identity"];
+
+            array_push($rsvp_statuslist[$invitation["state"]],$name);
+        }
+        $rsvpstr="";
+        if(is_array($rsvp_statuslist[1]))
+        {
+            if(sizeof($rsvp_statuslist[1])==1)
+                $rsvpstr.=" ".$rsvp_statuslist[1][0]." is confirmed,";
+            if(sizeof($rsvp_statuslist[1])>=2)
+            {
+                $rsvpstr.=" ".$rsvp_statuslist[1][0].", ".$rsvp_statuslist[1][1];
+                if(sizeof($rsvp_statuslist[1])>2)
+                    $rsvpstr.="...";
+                $rsvpstr.=" are confirmed,";
+            }
+        }
+        if(is_array($rsvp_statuslist[2]))
+        {
+            if(sizeof($rsvp_statuslist[2])==1)
+                $rsvpstr.=" ".$rsvp_statuslist[2][0]." is declined,";
+            if(sizeof($rsvp_statuslist[2])>=2)
+            {
+                $rsvpstr.=" ".$rsvp_statuslist[2][0].", ".$rsvp_statuslist[2][1];
+                if(sizeof($rsvp_statuslist[2])>2)
+                    $rsvpstr.="...";
+                $rsvpstr.=" are declined,";
+            }
+        }
+        if(is_array($rsvp_statuslist[3]))
+        {
+            if(sizeof($rsvp_statuslist[3])==1)
+                $rsvpstr.=" ".$rsvp_statuslist[3][0]." is interested in.";
+            if(sizeof($rsvp_statuslist[3])>=2)
+            {
+                $rsvpstr.=" ".$rsvp_statuslist[3][0].", ".$rsvp_statuslist[3][1];
+                if(sizeof($rsvp_statuslist[3])>2)
+                    $rsvpstr.="...";
+                $rsvpstr.=" are interested in.";
+            }
+        }
+        if(substr($rsvpstr,-1)==",")
+        {
+            $rsvpstr=rtrim($rsvpstr,",").".";
+        }
+        $rsvpstr="\\\"$title \\\"updates:".$rsvpstr;
+#        $rsvpstr=utf8substr($rsvpstr,0,max_msg_len)."...";
+
+        $msgbodyobj=array();
+        $msgbodyobj["msg"]=$rsvpstr;
+        $msgbodyobj["cross_id"]=$args["id"];
+
+        $to_identities=$args["to_identities"];
+        foreach($to_identities as $to_identity)
+        {
+           if( $to_identity["provider"]=="iOSAPN")
+           {
+               $msgbodyobj["external_identity"]=$to_identity["external_identity"];
+               print_r($msgbodyobj);
+               $this->deliver($msgbodyobj);
+           }
+        }
+    }
+//Array
+//(
+//    [cross_id] => 36
+//    [cross_title] => Meet virushuo这个标题要特别长，这样才能正确测试长度切断哈哈a
+//    [timestamp] => 1325661678
+//    [invitations] => Array
+//        (
+//            [invitation_186] => Array
+//                (
+//                    [invitation_id] => 186
+//                    [state] => 3
+//                    [by_identity_id] => 1
+//                    [identity_id] => 2
+//                    [provider] => email
+//                    [external_identity] => huoju@me.com
+//                    [name] => huoju@me.com
+//                )
+//
+//        )
+//
+//    [to_identities] => Array
+//        (
+//            [0] => Array
+//                (
+//                    [identity_id] => 24
+//                    [status] => 3
+//                    [provider] => iOSAPN
+//                    [external_identity] => 96da067d5b5fba84c032b12fa5667b19acd47d8fb383784ae2a4dd4904fb8858
+//                    [name] => 
+//                    [bio] => 
+//                    [avatar_file_name] => default.png
+//                    [external_username] => 
+//                )
+//
+//        )
+//
+//)
+//
 
     public function generateCrossUpdatePush($args)
     {
