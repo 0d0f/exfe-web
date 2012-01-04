@@ -155,6 +155,8 @@ class Apn_Job
     public function generateRSVPPush($args)
     {
         $title=$args["cross_title"];
+        $cross_id=$args["cross_id"];
+
         if(strlen($title)>10)
             $title=utf8substr($title,0,10)."...";
         //“%X_TITLE” updates: %IDENTITY_NAME1, %IDENTITY_NAME2… is/are confirmed, %IDENTITY_NAME3 is declined, %IDENTITY_NAME5 is interested in.
@@ -217,7 +219,7 @@ class Apn_Job
 
         $msgbodyobj=array();
         $msgbodyobj["msg"]=$rsvpstr;
-        $msgbodyobj["cross_id"]=$args["id"];
+        $msgbodyobj["cid"]=$cross_id;
 
         $to_identities=$args["to_identities"];
         foreach($to_identities as $to_identity)
@@ -332,7 +334,7 @@ class Apn_Job
 
             $msgbodyobj=array();
             $msgbodyobj["msg"]=$updatestr;
-            $msgbodyobj["cross_id"]=$args["id"];
+            $msgbodyobj["cid"]=$args["id"];
     
             $to_identities=$args["cross"]["identities"];
             foreach($to_identities as $to_identity)
@@ -340,7 +342,6 @@ class Apn_Job
                if( $to_identity["provider"]=="iOSAPN")
                {
                    $msgbodyobj["external_identity"]=$to_identity["external_identity"];
-                   print_r($msgbodyobj);
                    $this->deliver($msgbodyobj);
                }
             }
@@ -377,7 +378,7 @@ class Apn_Job
         $msg=$name.": ".$content." (on \\\"".$title."\\\")";
         $msgbodyobj=array();
         $msgbodyobj["msg"]=$msg;
-        $msgbodyobj["cross_id"]=$args["cross_id"];
+        $msgbodyobj["cid"]=$args["cross_id"];
     
         foreach($to_identities as $to_identity)
         {
@@ -449,7 +450,7 @@ class Apn_Job
                     }
 
                     $msgbodyobj["msg"]=$msg;
-                    $msgbodyobj["cross_id"]=$args["cross_id"];
+                    $msgbodyobj["cid"]=$args["cross_id"];
                     
                     $this->deliver($msgbodyobj);
                 }
