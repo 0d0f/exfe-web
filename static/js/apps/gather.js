@@ -11,11 +11,10 @@ var moduleNameSpace = 'odof.x.gather',
 
 (function(ns) {
 
-    //ns.defaultTitle = 'Edit title here';
-
     ns.x = {title       : '',
             description : '',
-            place_id    : '',
+            placeline1  : '',
+            placeline2  : '',
             datetime    : '',
             draft_id    : 0};
             
@@ -28,41 +27,86 @@ var moduleNameSpace = 'odof.x.gather',
     ns.autoSubmit      = false;
 
     ns.updateTitle = function() {
-        this.x.title   = $('#gather_title').val();
+        this.x.title   = odof.util.trim($('#gather_title').val());
+        if (this.x.title === '') {
+            this.x.title = defaultTitle;
+        }
+        $('#gather_title').val(this.x.title);
         document.title = 'EXFE - ' + this.x.title;
     };
 
 
-    ns.updateDescription = function() {
-
+    ns.updateDesc = function() {
+        var maxChrt = 33,
+            maxLine = 9,
+            extSpce = 10,
+            objDesc = $('#gather_desc');
+        this.x.description = odof.util.trim(objDesc.val());
+        if (this.x.description === '') {
+            $('#gather_desc_x').html(defaultDesc);
+        } else {
+            var arrDesc = this.x.description.split(/\r|\n|\r\n/),
+                intLine = arrDesc.length;
+            for (var i in arrDesc) {
+                intLine += arrDesc[i].length / maxChrt | 0;
+            }
+            var difHeight = parseInt(objDesc.css('line-height'))
+                          * (intLine ? (intLine > maxLine ? maxLine : intLine) : 1)
+                          + extSpce - (objDesc.height());
+            if (difHeight <= 0) {
+                return;
+            }
+            objDesc.animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_x').animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 100);
+            $('#gather_desc_x').html('');
+        }
     };
 
 
     ns.updateTime = function() {
-
+        if (odof.util.trim($('#datetime_original').val()) === '') {
+            $('#gather_date_x').html(defaultTime);
+        } else {
+            $('#datetime_original').val(odof.util.getHumanDateTime(odof.x.gather.x.datetime));
+            $('#gather_date_x').html('');
+        }
     };
 
 
     ns.updatePlace = function() {
-
+        var strPlace = odof.util.parseLocation($('#gather_place').val());
+        this.x.placeline1 = strPlace[0];
+        this.x.placeline2 = strPlace[1];
+        if (this.x.placeline1 + this.x.placeline2 === '') {
+            $('#gather_place_x').html(defaultPlace);
+        } else {
+            $('#gather_place_x').html('');
+        }
+    };
+    
+    
+    ns.summaryX = function()
+    {
+        return this.x;
+        // exfee       : JSON.stringify(getexfee())
     };
 
 
     ns.saveDraft = function() {
-        var strCross = JSON.stringify(summaryX());
-
-        if (curCross !== strCross) {
+        var strCross = JSON.stringify(odof.x.gather.summaryX());
+        if (odof.x.gather.curCross !== strCross) {
             $.ajax({
                 type     : 'POST',
                 url      : site_url + '/x/savedraft',
                 dataType : 'json',
-                data     : {draft_id : draft_id,
-                            cross    : strCross},
+                data     : {draft_id : odof.x.gather.draft_id,
+                            cross    : odof.x.gather.strCross},
                 success  : function (data) {
-                    draft_id = data && data.draft_id ? data.draft_id : draft_id;
+                    odof.x.gather.draft_id = data && data.draft_id ? data.draft_id : odof.x.gather.draft_id;
                 }
             });
-            curCross = strCross;
+            odof.x.gather.curCross = strCross;
         }
     };
 
@@ -154,14 +198,25 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.afterLogin = function(status) {
-        // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
-        confole.log(status);
         if (status.user_status !== 1) {
             return;
         }
-        gTitlesDefaultText = 'Meet ' + status.user_name;
-        document.title = 'EXFE - ' + gTitlesDefaultText;
+        
+        // title
+        var oldDefaultTitle = defaultTitle;
+        defaultTitle = 'Meet ' + status.user_name;
+        if (this.x.title === oldDefaultTitle) {
+            $('#gather_title').val('');
+            odof.x.gather.updateTitle();
+        }
+        
+        // hostby
         $('#gather_hostby').attr('disabled', true);
+    
+        return;
+        // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
+        confole.log(status);
+        
         var exfee_pv = [];
         $.ajax({
             type     : 'GET',
@@ -216,203 +271,116 @@ var moduleNameSpace = 'odof.x.gather',
 
 $(document).ready(function() {
     // title
-    $('#gather_title').focus(function() {
-        $('#gather_title').addClass('gather_focus').removeClass('gather_blur');
+    $('#gather_title').bind('focus blur keyup', function(event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_title').addClass('gather_focus').removeClass('gather_blur');
+                break;
+            case 'blur':
+                $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updateTitle();
+                break;
+            case 'keyup':
+                odof.x.gather.updateTitle();
+        }
     });
-    $('#gather_title').blur(function () {
-        var strTitle = $(this).val();
-        $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
-        // update title
-    });
-    $('#gather_title').val(defaultTitle);
+    odof.x.gather.updateTitle();
     $('#gather_title').select();
     $('#gather_title').focus();
 
     // description
-    $('#gather_desc').focus(function() {
-        $('#gather_desc_x').addClass('gather_focus').removeClass('gather_blur');
+    $('#gather_desc').bind('focus blur keyup', function(event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_desc_x').addClass('gather_focus').removeClass('gather_blur');
+                break;
+            case 'blur':
+                $('#gather_desc_x').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updateDesc();
+                break;
+            case 'keyup':
+                odof.x.gather.updateDesc();
+        }
     });
-    $('#gather_desc').blur(function() {
-        $('#gather_desc_x').addClass('gather_blur').removeClass('gather_focus');
-        // .html($(this).val() ? '' : gDescDefaultText);
-    });
+    odof.x.gather.updateDesc();
 
     // datetime
-    $('#datetime_original').focus(function() {
-        $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur').html('');
-        // @todo: time format tips
-        // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
-        // @todo: disable time input box for version #oC
-        // $('#datetime_original').blur();
+    $('#datetime_original').bind('focus blur keyup', function(event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur');
+                exCal.initCalendar(
+                    $('#datetime_original')[0],
+                    'calendar_map_container',
+                    function(displayTimeString, standardTimeString) {
+                        odof.x.gather.x.datetime = standardTimeString;
+                        odof.x.gather.updateTime();
+                    }
+                );
+                // @todo: time format tips
+                // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
+                // @todo: disable time input box for version #oC
+                // $('#datetime_original').blur();
+                break;
+            case 'blur':
+                $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updateTime();
+            case 'keyup':
+                // @todo: 自然语言时间识别
+        }
     });
-    $('#datetime_original').blur(function () {
-        $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
-        // .html($(this).val() ? '' : gDateDefaultText);
-    });
+    odof.x.gather.updateTime();
 
     // place
-    $('#gather_place').focus(function () {
-        $('#gather_place_x').addClass('gather_focus').removeClass('gather_blur');
+    $('#gather_place').bind('focus blur keyup', function (event) {
+        switch (event.type) {
+            case 'focus':
+                $('#gather_place_x').addClass('gather_focus').removeClass('gather_blur');
+                break;
+            case 'blur':
+                $('#gather_place_x').addClass('gather_blur').removeClass('gather_focus');
+                odof.x.gather.updatePlace();
+                break;
+            case 'keyup':
+                odof.x.gather.updatePlace();
+        }
     });
-    $('#gather_place').blur(function () {
-        $('#gather_place_x').addClass('gather_blur').removeClass('gather_focus');
-        // .html($(this).val() ? '' : gPlaceDefaultText);
-    });
+    odof.x.gather.updatePlace();
 
     // host by
     $('#gather_hostby').focus(function () {
         odof.user.status.doShowLoginDialog(null, odof.x.gather.afterLogin);
     });
 
-
-
-return;
-    $('#identity_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
-    $('#identity_ajax').hide();
-
-    $('#gather_submit_ajax').activity({segments: 8, steps: 3, opacity: 0.3, width: 3, space: 0, length: 4, color: '#0b0b0b', speed: 1.5});
-    $('#gather_submit_ajax').hide();
-
-    // title
-    window.gTitlesDefaultText = $('#g_title').val();
-    $('#g_title').keyup(function() {
-        var objTitle = $(this),
-            strTitle = objTitle.val();
-        if (strTitle) {
-            $('#pv_title').html(strTitle);
-            if ($('#pv_title').hasClass('pv_title_double') && $('#pv_title').height() < 112) {
-                $('#pv_title').addClass('pv_title_normal').removeClass('pv_title_double');
-            }
-            if ($('#pv_title').hasClass('pv_title_normal') && $('#pv_title').height() > 70) {
-                $('#pv_title').addClass('pv_title_double').removeClass('pv_title_normal');
-            }
-            document.title = 'EXFE - ' + strTitle;
-        } else {
-            $('#pv_title').html(gTitlesDefaultText);
-            document.title = 'EXFE - ' + gTitlesDefaultText;
-        }
+    // privacy
+    $('#gather_privacy_blank').click(function() {
+        $('#gather_privacy_info_desc').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
     });
 
-    // desc
-    var gDescDefaultText = $('#gather_desc_bg').html();
-    var converter = new Showdown.converter();
-    $('#g_description').keyup(function() {
-        var maxChrt = 33,
-            maxLine = 9,
-            objDesc = $(this),
-            extSpce = 10,
-            strDesc = objDesc.val();
-        if (strDesc) {
-            $('#gather_desc_bg').html('');
-            $('#pv_description').html(converter.makeHtml(strDesc));
-            var arrDesc = strDesc.split(/\r|\n|\r\n/),
-                intLine = arrDesc.length;
-            for (var i in arrDesc) {
-                intLine += arrDesc[i].length / maxChrt | 0;
-            }
-            var difHeight = parseInt(objDesc.css('line-height'))
-                          * (intLine ? (intLine > maxLine ? maxLine : intLine) : 1)
-                          + extSpce - (objDesc.height());
-            if (difHeight <= 0) {
-                return;
-            }
-            objDesc.animate({'height' : '+=' + difHeight}, 100);
-            $('#gather_desc_bg').animate({'height' : '+=' + difHeight}, 100);
-            $('#gather_desc_blank').animate({'height' : '+=' + difHeight}, 100);
-        } else {
-            $('#gather_desc_bg').html(gDescDefaultText);
-            $('#pv_description').html(gDescDefaultText);
-        }
-    });
-
-
-    // date
-    var gDateDefaultText = $('#gather_date_bg').html();
-    $('#datetime_original').keyup(function(e) {
-        if ((e.keyCode ? e.keyCode : e.which) === 9) {
-            return;
-        }
-        updateRelativeTime();
-    });
-
-    // exfee
-    $('.ex_identity').hide();
-    $('.exfee_item').live('mouseenter mouseleave', function(event) {
-        showExternalIdentity(event);
-    });
-    window.rollingExfee = null;
-    window.exfeeRollingTimer = setInterval(rollExfee, 50);
-
-    // place
-    var gPlaceDefaultText = $('#gather_place_bg').html();
-    $('#g_place').keyup(function() {
-        var strPlace = $('#g_place').val(),
-            arrPlace = strPlace.split(/\r|\n|\r\n/),
-            prvPlace = [];
-        arrPlace.forEach(function(item, i) {
-            if ((item = odof.util.trim(item))) {
-                prvPlace.push(item);
-            }
-        });
-        if (prvPlace.length) {
-            $('#gather_place_bg').html('');
-            $('#pv_place_line1').html(prvPlace.shift());
-            $('#pv_place_line2').html(prvPlace.join('<br />'));
-            if ($('#pv_place_line1').hasClass('pv_place_line1_double') && $('#pv_place_line1').height() < 72) {
-                $('#pv_place_line1').addClass('pv_place_line1_normal').removeClass('pv_place_line1_double');
-            }
-            if ($('#pv_place_line1').hasClass('pv_place_line1_normal') && $('#pv_place_line1').height() > 53) {
-                $('#pv_place_line1').addClass('pv_place_line1_double').removeClass('pv_place_line1_normal');
-            }
-        } else {
-            $('#gather_place_bg').html(gPlaceDefaultText);
-            $('#pv_place_line1').html('Somewhere');
-            $('#pv_place_line2').html(''); // @todo: gps city here
-        }
-    });
-
-    $('#gather_x').bind('mouseenter mouseout mousedown', function(event) {
-        if (xSubmitting) {
+    // gather
+    $('#gather_submit').bind('mouseenter mouseout mousedown click', function(event) {
+        if (odof.x.gather.xSubmitting) {
             return;
         }
         switch (event.type) {
             case 'mouseenter':
-                $('#gather_x').addClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
+                $('#gather_submit').addClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
                 break;
             case 'mouseout':
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
                 break;
             case 'mousedown':
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').addClass('mousedown');
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').addClass('mousedown');
+                break;
+            case 'click':
+                odof.x.gather.submitX();
         }
     });
 
-    $('#gather_x').click(submitX);
+    // auto save draft
+    setInterval(odof.x.gather.saveDraft, 10000);
 
-    $('#post_submit').click(function(e) {
-        identity();
-    });
-
-    $('.privacy').click(function() {
-        $('.privacy > .subinform').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
-    });
-
-    
-
-    setInterval(saveDraft, 10000);
-
-    $('.confirmed_box').live('change', updateExfeeList);
-
-    // added by handaoliang
-    jQuery('#datetime_original').bind('focus', function(){
-        var displayTextBox = document.getElementById('datetime_original');
-        var calendarCallBack = function(displayTimeString, standardTimeString){
-            document.getElementById('datetime').value = standardTimeString;
-            updateRelativeTime();
-        };
-        exCal.initCalendar(displayTextBox, 'calendar_map_container', calendarCallBack);
-    })
 });

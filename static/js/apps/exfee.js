@@ -1224,16 +1224,6 @@ function updateExfeeList()
     $('#exfee').val('');
     $('.ex_identity').hide();
 }
-
-function summaryX()
-{
-    return {title       : $('#g_title').val() ? $('#g_title').val() : gTitlesDefaultText,
-            description : $('#g_description').val(),
-            datetime    : $('#datetime').val(),
-            place       : $('#g_place').val(),
-            hostby      : $('#hostby').val(),
-            exfee       : JSON.stringify(getexfee())};
-}
 $('#confirmed_all').click(function(e) {
         var check = false;
         if ($(this).attr('check') === 'false') {
@@ -1297,6 +1287,13 @@ function getexfee()
     });
     return result;
 }
+// exfee
+    $('.ex_identity').hide();
+    $('.exfee_item').live('mouseenter mouseleave', function(event) {
+        showExternalIdentity(event);
+    });
+    window.rollingExfee = null;
+    window.exfeeRollingTimer = setInterval(rollExfee, 50);
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

@@ -16,7 +16,10 @@
     $external_identity = $this->getVar('external_identity');
     $defaultTitle      = $global_name != '' ? "Meet {$global_name}" : 'Edit title here';
     echo '<script>'
-       . "var defaultTitle = '{$defaultTitle}';"
+       . "var defaultTitle = '{$defaultTitle}',"
+       .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',"
+       .     "defaultTime  = 'Sometime',"
+       .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>
 <div class="content">
@@ -29,22 +32,21 @@
 
             <li id="gather_desc_blank">
                 <label class="description"><?php echo $exfe_res["gather"]["Description"];?></label>
-                <div id="gather_desc_x" class="gather_blur gather_input"><?php echo $exfe_res["gather"]["Write_some_words_about_this_X"];?></div>
+                <div id="gather_desc_x" class="gather_blur gather_input"></div>
                 <textarea id="gather_desc" class="gather_input"></textarea>
             </li>
 
             <li>
                 <label class="date">Date &amp; Time</label>
-                <div id="gather_date_x" class="gather_blur gather_input">Sometime</div>
+                <div id="gather_date_x" class="gather_blur gather_input"></div>
                 <input type="text" id="datetime_original" class="gather_input">
-                <input type="hidden" id="datetime">
-                <div id="calendar_map_container"></div>
+                <div id="calendar_map_container" class="gather_input"></div>
                 <!-- @todo== p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p -->
             </li>
 
             <li id="gather_place_blank">
                 <label class="place">Location</label>
-                <div id="gather_place_x" class="gather_blur gather_input">Somewhere</div>
+                <div id="gather_place_x" class="gather_blur gather_input"></div>
                 <textarea id="gather_place" class="gather_input"></textarea>
             </li>
 
@@ -52,7 +54,7 @@
                 <label class="hostby">Host By</label>
                 <input type="text" id="gather_hostby" class="gather_blur gather_input" <?php echo $external_identity ? 'disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"     >
             </li>
-            
+
             <li>
                 <label class="exfee">Exfee</label>
                 <!--div id="exfee_warning">

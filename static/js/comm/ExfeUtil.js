@@ -1033,8 +1033,7 @@ var odof = {
      * trim string
      * by Leask
      */
-    util.trim = function(str)
-    {
+    util.trim = function(str) {
         return str ? str.replace(/^\s+|\s+$/g, '') : '';
     };
 
@@ -1042,8 +1041,7 @@ var odof = {
      * count object items
      * by Leask
      */
-    util.count = function(object)
-    {
+    util.count = function(object) {
         var num = 0;
         for (var i in object) {
             num++;
@@ -1051,8 +1049,7 @@ var odof = {
         return num;
     };
 
-    util.cutLongName = function(strName)
-    {
+    util.cutLongName = function(strName) {
         strName = strName ? strName.replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ') : '';
         while (odof.comm.func.getUTF8Length(strName) > 30) {
             strName = strName.substring(0, strName.length - 1);
@@ -1064,8 +1061,7 @@ var odof = {
      * parse exfee id
      * by Leask
      */
-    util.parseId = function(strId)
-    {
+    util.parseId = function(strId) {
         strId = this.trim(strId);
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
@@ -1088,8 +1084,7 @@ var odof = {
      * input has to be in this format: 1989-06-04 00:00:00
      * by Leask
      */
-    util.getDateFromString = function(strTime)
-    {
+    util.getDateFromString = function(strTime) {
         var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/,
             parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
         return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
@@ -1099,8 +1094,7 @@ var odof = {
      * get relative time
      * by Leask
      */
-    util.getRelativeTime = function(strTime)
-    {
+    util.getRelativeTime = function(strTime) {
         var timestamp = Date.parse(this.getDateFromString(strTime)) / 1000;
         if (timestamp < 0) {
             return '';
@@ -1139,8 +1133,7 @@ var odof = {
      * by Leask
      * @todo apply this function while rendering the X!!!
      */
-    util.getHumanDateTime = function(strTime, lang)
-    {
+    util.getHumanDateTime = function(strTime, lang) {
         var objDate   = this.getDateFromString(strTime),
             timestamp = Date.parse(objDate) / 1000,
             time_type = 0,
@@ -1182,14 +1175,31 @@ var odof = {
         }
         return '';
     };
+    
+    
+    /**
+     * parse location string
+     * by Leask
+     */
+    util.parseLocation = function(strPlace) {
+        var arrPlace = strPlace.split(/\r|\n|\r\n/),
+            prvPlace = [];
+        arrPlace.forEach(function(item, i) {
+            if ((item = odof.util.trim(item)) !== '') {
+                prvPlace.push(item);
+            }
+        });
+        return prvPlace.length
+             ? [prvPlace.shift(), prvPlace.join("\n")]
+             : ['', ''];
+    };
 
 
     /**
      * get browser available size
      * by Leask
      */
-    util.getClientSize = function()
-    {
+    util.getClientSize = function() {
         return {
             width  : window.innerWidth  || document.documentElement.clientWidth,
             height : window.innerHeight || document.documentElement.clientHeight
@@ -1200,8 +1210,7 @@ var odof = {
      * recursive clone a javascript object
      * by Leask
      */
-    util.clone = function(variable)
-    {
+    util.clone = function(variable) {
         switch (Object.prototype.toString.call(variable)) {
             case '[object Object]':       // Object instanceof Object
                 var variableNew = {};
