@@ -12,6 +12,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.userIdentityCache = "";
     ns.userManualVerifyIdentityCache = "";
     ns.specialDomain = ["facebook", "twitter", "google"];
+    ns.inentityInputIntervalHandler = null;
 
     ns.getUrlVars = function() {
         var vars = [], hash;
@@ -421,6 +422,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         var curDomain = userIdentity.split("@")[1];
+        if(ns.inentityInputIntervalHandler != null){
+            clearInterval(ns.inentityInputIntervalHandler);
+        }
 
         //check email address
         if(userIdentity != "" && (userIdentity.match(odof.mailReg) || odof.util.inArray(ns.specialDomain,curDomain))) {
@@ -549,7 +553,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
 
-        window.setInterval(function(){
+        ns.inentityInputIntervalHandler = window.setInterval(function(){
             ns.identityInputBoxActions();
         },1000);
 
