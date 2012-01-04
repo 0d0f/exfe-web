@@ -4,43 +4,50 @@
  * @createDate:  Jan 2, 2012
  * @CopyRights:  http://www.exfe.com
  */
- 
- 
+
+
 var moduleNameSpace = 'odof.x.gather',
     ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns) {
-    
+
     //ns.defaultTitle = 'Edit title here';
-    
+
     ns.x = {title       : '',
             description : '',
             place_id    : '',
             datetime    : '',
-            draft_id    : 0;};
-
+            draft_id    : 0};
+            
+    ns.curCross        = '';
+    
+    ns.new_identity_id = 0; // @todo
+    
+    ns.xSubmitting     = false;
+    
+    ns.autoSubmit      = false;
 
     ns.updateTitle = function() {
-        this.x.title = $('#gather_title').val();
+        this.x.title   = $('#gather_title').val();
         document.title = 'EXFE - ' + this.x.title;
     };
-    
-    
+
+
     ns.updateDescription = function() {
-    
-    };
-    
-    
-    ns.updateTime = function() {
-    
-    };
-    
-    
-    ns.updatePlace = function() {
-    
+
     };
 
-    
+
+    ns.updateTime = function() {
+
+    };
+
+
+    ns.updatePlace = function() {
+
+    };
+
+
     ns.saveDraft = function() {
         var strCross = JSON.stringify(summaryX());
 
@@ -59,7 +66,7 @@ var moduleNameSpace = 'odof.x.gather',
         }
     };
 
-    
+
     ns.getDraft = function() {
         $.ajax({
             type     : 'GET',
@@ -80,7 +87,8 @@ var moduleNameSpace = 'odof.x.gather',
             }
         });
     };
-    
+
+
     ns.submitX = function() {
         if (xSubmitting) {
             return;
@@ -143,14 +151,17 @@ var moduleNameSpace = 'odof.x.gather',
             }
         });
     };
-    
+
+
     ns.afterLogin = function(status) {
+        // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
+        confole.log(status);
         if (status.user_status !== 1) {
             return;
         }
         gTitlesDefaultText = 'Meet ' + status.user_name;
         document.title = 'EXFE - ' + gTitlesDefaultText;
-        $("#hostby").attr('disabled', true);
+        $('#gather_hostby').attr('disabled', true);
         var exfee_pv = [];
         $.ajax({
             type     : 'GET',
@@ -238,7 +249,7 @@ $(document).ready(function() {
         $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
         // .html($(this).val() ? '' : gDateDefaultText);
     });
-    
+
     // place
     $('#gather_place').focus(function () {
         $('#gather_place_x').addClass('gather_focus').removeClass('gather_blur');
@@ -250,8 +261,8 @@ $(document).ready(function() {
 
     // host by
     $('#gather_hostby').focus(function () {
-        // login
-    }
+        odof.user.status.doShowLoginDialog(null, odof.x.gather.afterLogin);
+    });
 
 
 
@@ -313,7 +324,7 @@ return;
             $('#pv_description').html(gDescDefaultText);
         }
     });
-    
+
 
     // date
     var gDateDefaultText = $('#gather_date_bg').html();
@@ -323,7 +334,7 @@ return;
         }
         updateRelativeTime();
     });
-    
+
     // exfee
     $('.ex_identity').hide();
     $('.exfee_item').live('mouseenter mouseleave', function(event) {
@@ -359,16 +370,6 @@ return;
             $('#pv_place_line2').html(''); // @todo: gps city here
         }
     });
-    
-    // host
-    $('#hostby').focus(function() {
-        if ($(this).attr('enter') === 'true') {
-            return;
-        }
-        odof.user.status.doShowLoginDialog(null, afterLogin);
-    });
-
-    
 
     $('#gather_x').bind('mouseenter mouseout mousedown', function(event) {
         if (xSubmitting) {
@@ -399,19 +400,11 @@ return;
         $('.privacy > .subinform').html('Sorry, public <span class="x">X</span> is not supported yet, we\'re still working on it.');
     });
 
-    window.curCross = '';
-    window.new_identity_id = 0;
-    window.completeTimer   = null;
-    window.xSubmitting     = false;
-    window.autoSubmit      = false;
+    
 
     setInterval(saveDraft, 10000);
 
     $('.confirmed_box').live('change', updateExfeeList);
-
-    // getDraft();
-
-    updateExfeeList();
 
     // added by handaoliang
     jQuery('#datetime_original').bind('focus', function(){
