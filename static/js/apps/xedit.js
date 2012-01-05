@@ -28,7 +28,7 @@ var clickCallBackFunc = function(args) {
 
     ns.msgSubmitting = false;
 
-    ns.xBackup      = {};
+    ns.xBackup       = {};
 
 
     ns.startEdit = function() {

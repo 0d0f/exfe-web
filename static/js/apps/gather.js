@@ -12,6 +12,8 @@ var moduleNameSpace = 'odof.x.gather',
 (function(ns) {
 
     ns.curCross        = '';
+    
+    ns.draft_id        = 0;
 
     ns.new_identity_id = 0; // @todo
 
@@ -85,7 +87,9 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.summaryX = function()
     {
-        return this.x;
+        var x   = odof.util.clone(crossData);
+        x.place = x.place.line1 + "\r" + x.place.line2;
+        return x;
         // exfee       : JSON.stringify(getexfee())
     };
 
@@ -131,26 +135,25 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.submitX = function() {
-        if (xSubmitting) {
+        if (this.xSubmitting) {
             return;
         }
-        xSubmitting = true;
-
-        $('#gather_submit_ajax').show();
+        this.xSubmitting = true;
         $('#gather_failed_hint').hide();
-        $('#gather_x').removeClass('mouseover');
-        $('#gather_x').removeClass('mousedown');
-        $('#gather_x').addClass('disabled');
-        $('#gather_x').html('');
+        $('#gather_submit').removeClass('mouseover');
+        $('#gather_submit').removeClass('mousedown');
+        $('#gather_submit').addClass('disabled');
+        // @todo daisy showing here
+        // $('#gather_submit').html('');
 
-        var cross = summaryX();
-        cross['draft_id'] = draft_id;
+        var x = this.summaryX();
+        x.draft_id = this.draft_id;
 
         $.ajax({
             type     : 'POST',
             url      : site_url + '/x/gather',
             dataType : 'json',
-            data     : cross,
+            data     : x,
             success  : function(data) {
                 if (data) {
                     if (data.success) {
@@ -159,7 +162,7 @@ var moduleNameSpace = 'odof.x.gather',
                     } else {
                         switch (data.error) {
                             case 'notlogin':
-                                autoSubmit = true;
+                                odof.x.gather.autoSubmit = true;
                                 odof.user.status.doShowLoginDialog(null, afterLogin);
                                 break;
                             case 'notverified':
@@ -173,22 +176,22 @@ var moduleNameSpace = 'odof.x.gather',
                     'padding-top',
                     (curTop ? curTop : (curTop + 20)) + 'px'
                 );
-                $('#gather_submit_ajax').hide();
+                // @todo daisy showing here
                 $('#gather_failed_hint').show();
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
-                $('#gather_x').removeClass('disabled');
-                $('#gather_x').html('Re-submit');
-                xSubmitting = false;
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
+                $('#gather_submit').removeClass('disabled');
+                $('#gather_submit').html('Re-submit');
+                this.xSubmitting = false;
             },
             failure : function(data) {
-                $('#gather_submit_ajax').hide();
+                // @todo daisy showing here
                 $('#gather_failed_hint').show();
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
-                $('#gather_x').removeClass('disabled');
-                $('#gather_x').html('Re-submit');
-                xSubmitting = false;
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
+                $('#gather_submit').removeClass('disabled');
+                $('#gather_submit').html('Re-submit');
+                this.xSubmitting = false;
             }
         });
     };
@@ -255,9 +258,9 @@ var moduleNameSpace = 'odof.x.gather',
                     }
                 }
                 updateExfeeList();
-                if (autoSubmit) {
-                    autoSubmit = false;
-                    submitX();
+                if (odof.x.gather.autoSubmit) {
+                    odof.x.gather.autoSubmit = false;
+                    this.submitX();
                 }
             }
         });
@@ -271,8 +274,7 @@ $(document).ready(function() {
     window.crossData = {title       : '',
                         description : '',
                         place       : {line1 : '', line2 : ''},
-                        begin_at    : '',
-                        draft_id    : 0};
+                        begin_at    : ''};
 
     // render
     odof.x.render.show(false);
