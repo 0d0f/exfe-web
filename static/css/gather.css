@@ -3,7 +3,8 @@
 
 
 #gather_form {
-    padding: 0 40px 0 40px;
+    padding: 0 40px 15px 40px;
+    overflow: hidden;
 }
 
 #x_view_content {
@@ -12,7 +13,7 @@
 }
 
 #x_view_preview {
-    background: url(/static/images/Preview.png);
+    background: url("/static/images/Preview.png") no-repeat;
     height: 50px;
     width: 166px;
     left: -7px;
@@ -22,7 +23,7 @@
 }
 
 #gather_form ul li {
-    margin-bottom: 15px;
+    padding-bottom: 15px;
     overflow: hidden;
     list-style: none;
     clear: both;
@@ -31,11 +32,11 @@
 #gather_form ul li label {
     width: 170px;
     height: 25px;
-    margin: 0 10 0 0;
+    margin: 0 10px 0 0;
     line-height: 24px;
     float: left;
     text-align: right;
-    background: url(/static/images/icons.png) no-repeat;
+    background: url("/static/images/icons.png") no-repeat;
     padding-right: 30px;
     color: #666666;
     font-size: 14px;
@@ -165,4 +166,16 @@
     height: 175px;
     margin-left: 410px;
     z-index: 10;
+}
+
+#gather_submit_blank {
+   height: 30px; 
+}
+
+#gather_form #gather_failed_hint {
+    display: none;
+    position: relative;
+    float: right;
+    color: red;
+    margin: 45px 113px auto auto;
 }

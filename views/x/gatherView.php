@@ -4,6 +4,9 @@
 ?>
 <script src="/static/js/libs/showdown.js"></script>
 <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<!-- Exfee Widget -->
+<link type="text/css" href="/static/css/exfee.css" rel="stylesheet">
+<script src="/static/js/apps/exfee.js"></script>
 <!-- X Render -->
 <link type="text/css" href="/static/css/x.css" rel="stylesheet">
 <script src="/static/js/apps/x.js"></script>
@@ -64,6 +67,7 @@
                 <!--div id="exfee_warning">
                     No more than 12 attendees. Sorry we're still working on it.
                 </div-->
+                
             </li>
 
             <li id="gather_privacy_blank">
@@ -72,6 +76,7 @@
                     <span id="gather_privacy_info">This is a private <span class="x">X</span>.</span>
                     <br>
                     <span id="gather_privacy_info_desc">Only attendees can access, and change other's status.</span>
+                    <div id="gather_failed_hint">Submission failed.</div>
                 </p>
             </li>
 
@@ -80,13 +85,14 @@
                     <button type="button" id="gather_submit">Submit</button>
                     <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" id="gather_discard">Discard</a>
                 </p>
-                <div id="gather_failed_hint">Submission failed.</div>
+                
             </li>
         </ul>
     </div>
+    <div style="clear: both;"></div>
 
     <div id="x_view">
-        <div id="x_view_preview" class="cleanup"></div>
+        <div id="x_view_preview"></div>
         <div id="x_view_content"></div>
     </div>
 

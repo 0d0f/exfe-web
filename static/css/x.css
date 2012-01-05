@@ -57,7 +57,6 @@
 
 #x_desc p {
     font-size: 14px;
-    margin-top: 10px;
     line-height: 22px;
 }
 
@@ -146,7 +145,7 @@
     line-height: 30px;
     color: #666666;
     font-weight: normal;
-    background: url(/static/images/icons.png) no-repeat;
+    background: url("/static/images/icons.png") no-repeat;
     text-indent: 30px;
 }
 
@@ -260,50 +259,50 @@
 }
 
 #x_rsvp_yes {
-    background: url(/static/images/btn.png) no-repeat left top;
+    background: url("/static/images/btn.png") no-repeat left top;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_yes:hover {
-    background: url(/static/images/btn.png) no-repeat -300px top;
+    background: url("/static/images/btn.png") no-repeat -300px top;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_yes:visited {
-    background: url(/static/images/btn.png) no-repeat -600px top;
+    background: url("/static/images/btn.png") no-repeat -600px top;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_yes.readonly {
-    background: url(/static/images/btn.png) no-repeat -900px top;
+    background: url("/static/images/btn.png") no-repeat -900px top;
     cursor: default;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_no {
-    background: url(/static/images/btn.png) no-repeat -150px top;
+    background: url("/static/images/btn.png") no-repeat -150px top;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_no:hover {
-    background: url(/static/images/btn.png) no-repeat -450px top;
+    background: url("/static/images/btn.png") no-repeat -450px top;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_no:visited {
-    background: url(/static/images/btn.png) no-repeat -750px top;
+    background: url("/static/images/btn.png") no-repeat -750px top;
     color: #E6E6E6;
     text-decoration: none;
 }
 
 #x_rsvp_no.readonly {
-    background: url(/static/images/btn.png) no-repeat -1050px top;
+    background: url("/static/images/btn.png") no-repeat -1050px top;
     cursor: default;
     color: #E6E6E6;
     text-decoration: none;

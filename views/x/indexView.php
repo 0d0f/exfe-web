@@ -4,6 +4,9 @@
 ?>
 <script src="/static/js/libs/showdown.js"></script>
 <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<!-- Exfee Widget -->
+<link type="text/css" href="/static/css/exfee.css" rel="stylesheet">
+<script src="/static/js/apps/exfee.js"></script>
 <!-- X Render -->
 <link type="text/css" href="/static/css/x.css" rel="stylesheet">
 <script src="/static/js/apps/x.js"></script>
