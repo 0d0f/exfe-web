@@ -11,28 +11,24 @@ var moduleNameSpace = 'odof.x.gather',
 
 (function(ns) {
 
-    ns.x = {title       : '',
-            description : '',
-            placeline1  : '',
-            placeline2  : '',
-            datetime    : '',
-            draft_id    : 0};
-            
     ns.curCross        = '';
     
+    ns.draft_id        = 0;
+
     ns.new_identity_id = 0; // @todo
-    
+
     ns.xSubmitting     = false;
-    
+
     ns.autoSubmit      = false;
 
     ns.updateTitle = function() {
-        this.x.title   = odof.util.trim($('#gather_title').val());
-        if (this.x.title === '') {
-            this.x.title = defaultTitle;
+        crossData.title   = odof.util.trim($('#gather_title').val());
+        if (crossData.title === '') {
+            crossData.title = defaultTitle;
         }
-        $('#gather_title').val(this.x.title);
-        document.title = 'EXFE - ' + this.x.title;
+        $('#gather_title').val(crossData.title);
+        document.title = 'EXFE - ' + crossData.title;
+        odof.x.render.showTitle();
     };
 
 
@@ -41,11 +37,12 @@ var moduleNameSpace = 'odof.x.gather',
             maxLine = 9,
             extSpce = 10,
             objDesc = $('#gather_desc');
-        this.x.description = odof.util.trim(objDesc.val());
-        if (this.x.description === '') {
+        crossData.description = odof.util.trim(objDesc.val());
+        odof.x.render.showDesc();
+        if (crossData.description === '') {
             $('#gather_desc_x').html(defaultDesc);
         } else {
-            var arrDesc = this.x.description.split(/\r|\n|\r\n/),
+            var arrDesc = crossData.description.split(/\r|\n|\r\n/),
                 intLine = arrDesc.length;
             for (var i in arrDesc) {
                 intLine += arrDesc[i].length / maxChrt | 0;
@@ -68,27 +65,31 @@ var moduleNameSpace = 'odof.x.gather',
         if (odof.util.trim($('#datetime_original').val()) === '') {
             $('#gather_date_x').html(defaultTime);
         } else {
-            $('#datetime_original').val(odof.util.getHumanDateTime(odof.x.gather.x.datetime));
+            $('#datetime_original').val(odof.util.getHumanDateTime(crossData.begin_at));
             $('#gather_date_x').html('');
         }
+        odof.x.render.showTime();
     };
 
 
     ns.updatePlace = function() {
         var strPlace = odof.util.parseLocation($('#gather_place').val());
-        this.x.placeline1 = strPlace[0];
-        this.x.placeline2 = strPlace[1];
-        if (this.x.placeline1 + this.x.placeline2 === '') {
+        crossData.place.line1 = strPlace[0];
+        crossData.place.line2 = strPlace[1];
+        if (crossData.place.line1 + crossData.place.line2 === '') {
             $('#gather_place_x').html(defaultPlace);
         } else {
             $('#gather_place_x').html('');
         }
+        odof.x.render.showPlace();
     };
-    
-    
+
+
     ns.summaryX = function()
     {
-        return this.x;
+        var x   = odof.util.clone(crossData);
+        x.place = x.place.line1 + "\r" + x.place.line2;
+        return x;
         // exfee       : JSON.stringify(getexfee())
     };
 
@@ -134,26 +135,25 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.submitX = function() {
-        if (xSubmitting) {
+        if (this.xSubmitting) {
             return;
         }
-        xSubmitting = true;
-
-        $('#gather_submit_ajax').show();
+        this.xSubmitting = true;
         $('#gather_failed_hint').hide();
-        $('#gather_x').removeClass('mouseover');
-        $('#gather_x').removeClass('mousedown');
-        $('#gather_x').addClass('disabled');
-        $('#gather_x').html('');
+        $('#gather_submit').removeClass('mouseover');
+        $('#gather_submit').removeClass('mousedown');
+        $('#gather_submit').addClass('disabled');
+        // @todo daisy showing here
+        // $('#gather_submit').html('');
 
-        var cross = summaryX();
-        cross['draft_id'] = draft_id;
+        var x = this.summaryX();
+        x.draft_id = this.draft_id;
 
         $.ajax({
             type     : 'POST',
             url      : site_url + '/x/gather',
             dataType : 'json',
-            data     : cross,
+            data     : x,
             success  : function(data) {
                 if (data) {
                     if (data.success) {
@@ -162,7 +162,7 @@ var moduleNameSpace = 'odof.x.gather',
                     } else {
                         switch (data.error) {
                             case 'notlogin':
-                                autoSubmit = true;
+                                odof.x.gather.autoSubmit = true;
                                 odof.user.status.doShowLoginDialog(null, afterLogin);
                                 break;
                             case 'notverified':
@@ -176,22 +176,22 @@ var moduleNameSpace = 'odof.x.gather',
                     'padding-top',
                     (curTop ? curTop : (curTop + 20)) + 'px'
                 );
-                $('#gather_submit_ajax').hide();
+                // @todo daisy showing here
                 $('#gather_failed_hint').show();
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
-                $('#gather_x').removeClass('disabled');
-                $('#gather_x').html('Re-submit');
-                xSubmitting = false;
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
+                $('#gather_submit').removeClass('disabled');
+                $('#gather_submit').html('Re-submit');
+                this.xSubmitting = false;
             },
             failure : function(data) {
-                $('#gather_submit_ajax').hide();
+                // @todo daisy showing here
                 $('#gather_failed_hint').show();
-                $('#gather_x').removeClass('mouseover');
-                $('#gather_x').removeClass('mousedown');
-                $('#gather_x').removeClass('disabled');
-                $('#gather_x').html('Re-submit');
-                xSubmitting = false;
+                $('#gather_submit').removeClass('mouseover');
+                $('#gather_submit').removeClass('mousedown');
+                $('#gather_submit').removeClass('disabled');
+                $('#gather_submit').html('Re-submit');
+                this.xSubmitting = false;
             }
         });
     };
@@ -201,22 +201,22 @@ var moduleNameSpace = 'odof.x.gather',
         if (status.user_status !== 1) {
             return;
         }
-        
+
         // title
         var oldDefaultTitle = defaultTitle;
         defaultTitle = 'Meet ' + status.user_name;
-        if (this.x.title === oldDefaultTitle) {
+        if (crossData.title === oldDefaultTitle) {
             $('#gather_title').val('');
             odof.x.gather.updateTitle();
         }
-        
+
         // hostby
         $('#gather_hostby').attr('disabled', true);
-    
+
         return;
         // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
         confole.log(status);
-        
+
         var exfee_pv = [];
         $.ajax({
             type     : 'GET',
@@ -258,9 +258,9 @@ var moduleNameSpace = 'odof.x.gather',
                     }
                 }
                 updateExfeeList();
-                if (autoSubmit) {
-                    autoSubmit = false;
-                    submitX();
+                if (odof.x.gather.autoSubmit) {
+                    odof.x.gather.autoSubmit = false;
+                    this.submitX();
                 }
             }
         });
@@ -270,6 +270,15 @@ var moduleNameSpace = 'odof.x.gather',
 
 
 $(document).ready(function() {
+    // X initialization
+    window.crossData = {title       : '',
+                        description : '',
+                        place       : {line1 : '', line2 : ''},
+                        begin_at    : ''};
+
+    // render
+    odof.x.render.show(false);
+
     // title
     $('#gather_title').bind('focus blur keyup', function(event) {
         switch (event.type) {
@@ -313,7 +322,7 @@ $(document).ready(function() {
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
-                        odof.x.gather.x.datetime = standardTimeString;
+                        crossData.begin_at = standardTimeString;
                         odof.x.gather.updateTime();
                     }
                 );

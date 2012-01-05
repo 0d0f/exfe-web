@@ -1,3 +1,13 @@
 @charset "UTF-8";
 /* profile style by Leask */
 
+
+/* @todo removing {
+.Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:15px 0 0 434px; }
+.cs {float:right;width:20px;height:20px;}
+.cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
+.cs em.c0{background-position:left -123px}
+.cs em.c1{background-position:-1px -81px}
+.cs em.c2{background-position:left -165px}
+.cs em.c3{background-position:left -207px}
+} */

@@ -3,7 +3,22 @@
 
 
 #gather_form {
-    padding: 0 40px 40px 40px;
+    padding: 0 40px 0 40px;
+}
+
+#x_view_content {
+    margin-top: 10px;
+    padding-top: 40px;
+}
+
+#x_view_preview {
+    background: url(/static/images/Preview.png);
+    height: 50px;
+    width: 166px;
+    left: -7px;
+    top: 5px;
+    position: relative;
+    float: left;
 }
 
 #gather_form ul li {
@@ -151,14 +166,3 @@
     margin-left: 410px;
     z-index: 10;
 }
-
-
-
-
-
-
-
-
-
-
-

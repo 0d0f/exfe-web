@@ -1190,7 +1190,7 @@ var odof = {
             }
         });
         return prvPlace.length
-             ? [prvPlace.shift(), prvPlace.join("\n")]
+             ? [prvPlace.shift(), prvPlace.join("\r")]
              : ['', ''];
     };
 
