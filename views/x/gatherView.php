@@ -86,6 +86,7 @@
     </div>
 
     <div id="x_view">
+        <div id="x_view_preview" class="cleanup"></div>
         <div id="x_view_content"></div>
     </div>
 
