@@ -45,7 +45,7 @@
                 <div id="gather_date_x" class="gather_blur gather_input"></div>
                 <input type="text" id="datetime_original" class="gather_input">
                 <div id="calendar_map_container" class="gather_input"></div>
-                <!-- @todo== p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p -->
+                <!-- @todo== p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p -->    
             </li>
 
             <li id="gather_place_blank">

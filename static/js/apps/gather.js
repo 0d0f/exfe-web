@@ -10,13 +10,13 @@ var moduleNameSpace = 'odof.x.gather',
     ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns) {
-            
+
     ns.curCross        = '';
-    
+
     ns.new_identity_id = 0; // @todo
-    
+
     ns.xSubmitting     = false;
-    
+
     ns.autoSubmit      = false;
 
     ns.updateTitle = function() {
@@ -26,6 +26,7 @@ var moduleNameSpace = 'odof.x.gather',
         }
         $('#gather_title').val(crossData.title);
         document.title = 'EXFE - ' + crossData.title;
+        odof.x.render.showTitle();
     };
 
 
@@ -35,6 +36,7 @@ var moduleNameSpace = 'odof.x.gather',
             extSpce = 10,
             objDesc = $('#gather_desc');
         crossData.description = odof.util.trim(objDesc.val());
+        odof.x.render.showDesc();
         if (crossData.description === '') {
             $('#gather_desc_x').html(defaultDesc);
         } else {
@@ -61,9 +63,10 @@ var moduleNameSpace = 'odof.x.gather',
         if (odof.util.trim($('#datetime_original').val()) === '') {
             $('#gather_date_x').html(defaultTime);
         } else {
-            $('#datetime_original').val(odof.util.getHumanDateTime(odof.x.gather.x.begin_at));
+            $('#datetime_original').val(odof.util.getHumanDateTime(crossData.begin_at));
             $('#gather_date_x').html('');
         }
+        odof.x.render.showTime();
     };
 
 
@@ -76,9 +79,10 @@ var moduleNameSpace = 'odof.x.gather',
         } else {
             $('#gather_place_x').html('');
         }
+        odof.x.render.showPlace();
     };
-    
-    
+
+
     ns.summaryX = function()
     {
         return this.x;
@@ -194,7 +198,7 @@ var moduleNameSpace = 'odof.x.gather',
         if (status.user_status !== 1) {
             return;
         }
-        
+
         // title
         var oldDefaultTitle = defaultTitle;
         defaultTitle = 'Meet ' + status.user_name;
@@ -202,14 +206,14 @@ var moduleNameSpace = 'odof.x.gather',
             $('#gather_title').val('');
             odof.x.gather.updateTitle();
         }
-        
+
         // hostby
         $('#gather_hostby').attr('disabled', true);
-    
+
         return;
         // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
         confole.log(status);
-        
+
         var exfee_pv = [];
         $.ajax({
             type     : 'GET',
@@ -316,7 +320,7 @@ $(document).ready(function() {
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
-                        odof.x.gather.x.begin_at = standardTimeString;
+                        crossData.begin_at = standardTimeString;
                         odof.x.gather.updateTime();
                     }
                 );

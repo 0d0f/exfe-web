@@ -13,49 +13,6 @@ var moduleNameSpace = 'odof.x.render',
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
-    ns.crossHtml = '<div id="x_title_area">'
-                 +     '<h2 id="x_title" class="x_title x_title_normal"></h2>'
-                 +     '<input id="x_title_edit" class="x_title" style="display:none;">'
-                 + '</div>'
-                 + '<div id="x_content" class="cleanup">'
-                 +     '<div id="x_mainarea">'
-                 +         '<div id="x_desc_area">'
-                 +             '<div id="x_desc" class="x_desc"></div>'
-                 +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
-                 +             '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
-                 +         '</div>'
-                 +         '<div id="x_rsvp_area" class="cleanup">'
-                 +             '<span id="x_rsvp_msg">'
-                 +                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
-                 +             '</span>'
-                 +             '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
-                 +             '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
-                 +             '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
-                 +             '<a id="x_rsvp_change" href="javascript:void(0);">Change?</a>'
-                 +         '</div>'
-                 +         '<div id="x_conversation_area">'
-                 +             '<h3>Conversation</h3>'
-                 +             '<div id="x_conversation_input_area" class="cleanup">'
-                 +                 '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
-                 +                 '<textarea id="x_conversation_input"></textarea>'
-                 +                 '<input id="x_conversation_submit" type="button" title="Say!">'
-                 +             '</div>'
-                 +             '<ol id="x_conversation_list"></ol>'
-                 +         '</div>'
-                 +     '</div>'
-                 +     '<div id="x_sidebar">'
-                 +         '<div id="x_time_area">'
-                 +             '<h3   id="x_time_relative"></h3>'
-                 +             '<span id="x_time_absolute"></span>'
-                 +         '</div>'
-                 +         '<div id="x_place_area">'
-                 +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
-                 +             '<span id="x_place_line2"></span>'
-                 +         '</div>'
-                 +         '<div id="x_exfee_area"></div>'
-                 +     '</div>'
-                 + '</div>';
-
 
     ns.showTitle = function()
     {
@@ -92,16 +49,22 @@ var moduleNameSpace = 'odof.x.render',
     };
 
 
-    ns.showRsvp = function()
+    ns.showRsvp = function(editable)
     {
-        if (myrsvp) {
-            $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
-            $('#x_rsvp_msg').show();
-            $('.x_rsvp_button').hide();
-            $('#x_rsvp_change').show();
+        if (editable) {
+            if (myrsvp) {
+                $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
+                $('#x_rsvp_msg').show();
+                $('.x_rsvp_button').hide();
+                $('#x_rsvp_change').show();
+            } else {
+                $('#x_rsvp_msg').hide();
+                $('.x_rsvp_button').show();
+                $('#x_rsvp_change').hide();
+            }
         } else {
             $('#x_rsvp_msg').hide();
-            $('.x_rsvp_button').show();
+            $('.x_rsvp_button').show().addClass('readonly');
             $('#x_rsvp_change').hide();
         }
     };
@@ -111,7 +74,7 @@ var moduleNameSpace = 'odof.x.render',
     {
         var strRelativeTime = '',
             strAbsoluteTime = '';
-        if (crossData.begin_at === '0000-00-00 00:00:00') {
+        if (!crossData.begin_at || crossData.begin_at === '0000-00-00 00:00:00') {
             strRelativeTime = 'Sometime';
         } else {
             strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
@@ -171,8 +134,55 @@ var moduleNameSpace = 'odof.x.render',
 
     ns.show = function(editable)
     {
-        $('#x_view_content').html(this.crossHtml);
+        var strCnvstn = editable
+                      ? '<div id="x_conversation_area">'
+                      +     '<h3>Conversation</h3>'
+                      +     '<div id="x_conversation_input_area" class="cleanup">'
+                      +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
+                      +         '<textarea id="x_conversation_input"></textarea>'
+                      +         '<input id="x_conversation_submit" type="button" title="Say!">'
+                      +     '</div>'
+                      +     '<ol id="x_conversation_list"></ol>'
+                      + '</div>'
+                      : '',
+            crossHtml = '<div id="x_title_area">'
+                      +     '<h2 id="x_title" class="x_title x_title_normal"></h2>'
+                      +     '<input id="x_title_edit" class="x_title" style="display:none;">'
+                      + '</div>'
+                      + '<div id="x_content" class="cleanup">'
+                      +     '<div id="x_mainarea">'
+                      +         '<div id="x_desc_area">'
+                      +             '<div id="x_desc" class="x_desc"></div>'
+                      +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
+                      +             '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
+                      +         '</div>'
+                      +         '<div id="x_rsvp_area" class="cleanup">'
+                      +             '<span id="x_rsvp_msg">'
+                      +                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
+                      +             '</span>'
+                      +             '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
+                      +             '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
+                      +             '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
+                      +             '<a id="x_rsvp_change" href="javascript:void(0);">Change?</a>'
+                      +         '</div>'
+                      +         strCnvstn
+                      +     '</div>'
+                      +     '<div id="x_sidebar">'
+                      +         '<div id="x_time_area">'
+                      +             '<h3   id="x_time_relative"></h3>'
+                      +             '<span id="x_time_absolute"></span>'
+                      +         '</div>'
+                      +         '<div id="x_place_area">'
+                      +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
+                      +             '<span id="x_place_line2"></span>'
+                      +         '</div>'
+                      +         '<div id="x_exfee_area"></div>'
+                      +     '</div>'
+                      + '</div>';
+
+        $('#x_view_content').html(crossHtml);
         this.showComponents();
+        this.showRsvp(editable);
         if (editable) {
             $('#x_conversation_my_avatar').attr(
                 'src',
@@ -181,7 +191,6 @@ var moduleNameSpace = 'odof.x.render',
                 )
             );
             this.showConversation();
-            this.showRsvp();
         }
     };
 
