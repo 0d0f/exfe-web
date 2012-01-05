@@ -84,7 +84,6 @@ class XHelper extends ActionController
         $msghelper->sentChangeEmail($mail);
         $msghelper->sentApnConversation($apnargs);
     }
-
     public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title)
     {
         $identityData=$this->getModelByName("identity");

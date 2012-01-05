@@ -61,13 +61,8 @@ class RSVPActions extends ActionController {
                 if(intval($r["success"])==1)
                 {
                     $msghelper=$this->gethelperbyname("exfee");
-                    #$apnargs["to_identities"]=$to_identities_apn;
-                    #$apnargs["job_type"]="rsvp";
-                    #$msghelper->sentApnConversation($apnargs);
-
                     $ehelper = $this->getHelperByName('exfee');
                     $ehelper->sendRSVP($cross_id,$identity_id,$state);
-
                     $responobj["response"]["success"]="true";
                 }
                 else

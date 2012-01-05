@@ -315,8 +315,6 @@ class ExfeeHelper extends ActionController
                                             array_push($to_identities,$identity);
                                         if($identity["provider"]=="iOSAPN" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
                                             array_push($to_identities_apn,$identity);
-
-
                                     }
                                 }
                             }
