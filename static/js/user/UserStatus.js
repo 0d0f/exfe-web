@@ -225,11 +225,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
 
-    ns.changeOAuthAccountPWD = function(userIdentity, callBackFunc){
+    ns.changeOAuthAccountPWD = function(userIdentity, externalUserName, callBackFunc){
         var html = odof.user.identification.createDialogDomCode("reset_pwd");
         odof.exlibs.ExDialog.initialize("identification", html);
 
-        jQuery("#show_identity_box").val(userIdentity);
+        jQuery("#show_identity_box").val(externalUserName);
         jQuery("#user_display_name").val(jQuery("#profile_name").html());
 
         jQuery("#identification_pwd_ic").click(function(){
@@ -246,7 +246,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
 
         jQuery("#reset_pwd_form").submit(function(){
-            var userIdentity = jQuery("#show_identity_box").val();
             var userPassword = jQuery("#identification_pwd").val();
             var userDisplayName = jQuery("#user_display_name").val();
             var hideErrorMsg = function(){

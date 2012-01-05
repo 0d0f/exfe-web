@@ -14,8 +14,9 @@ class Iospush_Job
 
         $sound ="default";
         $cross_id=$this->args["cid"];
+        $type=$this->args["t"];
         $content=$this->args["msg"];
-        $args = array('cid' => $cross_id);
+        $args = array('cid' => $cross_id,'t' => $type);
         $deviceToken = $this->args["external_identity"];
         $badge=1;
         if($apn_connect=="")

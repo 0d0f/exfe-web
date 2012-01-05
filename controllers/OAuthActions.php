@@ -91,7 +91,7 @@ class OAuthActions extends ActionController {
             "user_secret"   =>$accessToken['oauth_token_secret']
         );
         $OAuthHelperHandler = $this->getHelperByName("oAuth");
-        $jobToken = $OAuthHelperHandler->getTwitterFriendsList($args);
+        $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
         $identityModels = $this->getModelByName("identity");
         //===========
 

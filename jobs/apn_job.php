@@ -220,6 +220,7 @@ class Apn_Job
         $msgbodyobj=array();
         $msgbodyobj["msg"]=$rsvpstr;
         $msgbodyobj["cid"]=$cross_id;
+        $msgbodyobj["t"]="r";
 
         $to_identities=$args["to_identities"];
         foreach($to_identities as $to_identity)
@@ -227,7 +228,6 @@ class Apn_Job
            if( $to_identity["provider"]=="iOSAPN")
            {
                $msgbodyobj["external_identity"]=$to_identity["external_identity"];
-               print_r($msgbodyobj);
                $this->deliver($msgbodyobj);
            }
         }
@@ -335,6 +335,7 @@ class Apn_Job
             $msgbodyobj=array();
             $msgbodyobj["msg"]=$updatestr;
             $msgbodyobj["cid"]=$args["id"];
+            $msgbodyobj["t"]="u";
     
             $to_identities=$args["cross"]["identities"];
             foreach($to_identities as $to_identity)
@@ -379,6 +380,7 @@ class Apn_Job
         $msgbodyobj=array();
         $msgbodyobj["msg"]=$msg;
         $msgbodyobj["cid"]=$args["cross_id"];
+        $msgbodyobj["t"]="c";
     
         foreach($to_identities as $to_identity)
         {
@@ -451,6 +453,7 @@ class Apn_Job
 
                     $msgbodyobj["msg"]=$msg;
                     $msgbodyobj["cid"]=$args["cross_id"];
+                    $msgbodyobj["t"]="i";
                     
                     $this->deliver($msgbodyobj);
                 }

@@ -6,7 +6,7 @@ require_once dirname(dirname(__FILE__))."/models/OAuthModels.php";
 require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 define('TWITTER_FETCH_PAGESIZE', 100);
 
-class Gettwitterfriendslist_Job
+class Twittergetfriendslist_Job
 {
     public function perform()
     {
