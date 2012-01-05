@@ -9,8 +9,7 @@ var moduleNameSpace = 'odof.x.edit',
     ns = odof.util.initNameSpace(moduleNameSpace);
 
 // 这个回调函数在后面要被覆盖 by Handaoliang
-var clickCallBackFunc = function(args)
-{
+var clickCallBackFunc = function(args) {
     window.location.href = odof.x.edit.location_uri;
 };
 
@@ -32,7 +31,7 @@ var clickCallBackFunc = function(args)
     ns.xBackup      = {};
 
 
-    ns.startEdit = function(){
+    ns.startEdit = function() {
         // backup current x
         odof.x.edit.xBackup = odof.util.clone(crossData);
         // edit bar
@@ -53,8 +52,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.revertX = function()
-    {
+    ns.revertX = function() {
         // edit bar
         $('#edit_x_bar').slideUp(300);
         // title
@@ -71,8 +69,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.postMessage = function()
-    {
+    ns.postMessage = function() {
         var objMsg  = $('#x_conversation_input'),
             message = odof.util.trim(objMsg.val());
         if (this.msgSubmitting || message === '') {
@@ -147,8 +144,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.editTitle = function(event)
-    {
+    ns.editTitle = function(event) {
         if (event) {
             $('#x_title').hide();
             $('#x_title_edit').val(crossData.title);
@@ -181,8 +177,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.editDesc = function(event)
-    {
+    ns.editDesc = function(event) {
         if (event) {
             $('#x_desc').hide();
             $('#x_desc_edit').val(crossData.description);
@@ -215,8 +210,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.editTime = function(event)
-    {
+    ns.editTime = function(event) {
         if (event) {
             // check if had bind a event for #cross_time_bubble
             if (!$('#x_time_bubble').data('events')) {
@@ -265,8 +259,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.editPlace = function(event)
-    {
+    ns.editPlace = function(event) {
         if (event) {
             if (!$('#x_place_bubble').data('events')) {
                 $('#x_place_bubble').bind('clickoutside', function(event)
@@ -311,8 +304,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.saveTitle = function()
-    {
+    ns.saveTitle = function() {
         crossData.title = odof.util.trim($('#x_title_edit').val());
         crossData.title = crossData.title === ''
                         ? ('Meet ' + id_name) : crossData.title;
@@ -323,8 +315,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.saveDesc = function()
-    {
+    ns.saveDesc = function() {
         crossData.description = odof.util.trim($('#x_desc_edit').val());
         odof.x.render.showDesc(true);
         $('#x_desc_edit').hide();
@@ -333,24 +324,21 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.saveTime = function()
-    {
+    ns.saveTime = function() {
         $('#x_time_bubble').hide();
         $('#x_time_bubble').unbind('clickoutside');
         odof.x.render.showTime();
     };
 
 
-    ns.savePlace = function()
-    {
+    ns.savePlace = function() {
         $('#x_place_bubble').hide();
         $('#x_place_bubble').unbind('clickoutside');
         odof.x.render.showPlace();
     };
 
 
-    ns.conversationKeydown = function(event)
-    {
+    ns.conversationKeydown = function(event) {
         switch (event.keyCode) {
             case 9:
                 // $('#post_submit').focus();
@@ -365,8 +353,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.editRsvp = function(event)
-    {
+    ns.editRsvp = function(event) {
         if (event.target.id === 'x_rsvp_change') {
             $('#x_rsvp_msg').hide();
             $('#x_rsvp_change').hide();
@@ -388,8 +375,7 @@ var clickCallBackFunc = function(args)
                                         rsvp     : odof.x.edit.rsvpAction},
                                 url  : site_url + '/rsvp/save',
                                 dataType : 'json',
-                                success  : function(data)
-                                {
+                                success  : function(data) {
                                     if (data != null && data.response.success === 'true') {
                                         myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
                                         odof.x.render.showRsvp();
@@ -454,8 +440,7 @@ var clickCallBackFunc = function(args)
     };
 
 
-    ns.submitData = function()
-    {
+    ns.submitData = function() {
         // title
         odof.x.edit.editTitle(false);
         odof.x.edit.saveTitle();
@@ -474,7 +459,7 @@ var clickCallBackFunc = function(args)
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
-            data:{
+            data : {
                 jrand       : Math.round(Math.random() * 10000000000),
                 ctitle      : crossData.title,
                 ctime       : crossData.begin_at,
@@ -498,9 +483,8 @@ var clickCallBackFunc = function(args)
 })(ns);
 
 
-$(document).ready(function()
-{
-    odof.x.render.show();
+$(document).ready(function() {
+    odof.x.render.show(true);
     odof.x.edit.cross_id     = cross_id;
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
@@ -526,10 +510,8 @@ $(document).ready(function()
 
     if (token_expired == 'false') {
         $('#cross_identity_btn').unbind('click');
-        $('#cross_identity_btn').bind('click', function()
-        {
-            odof.x.edit.setreadonly(function()
-            {
+        $('#cross_identity_btn').bind('click', function() {
+            odof.x.edit.setreadonly(function() {
                 window.location.href = odof.x.edit.location_uri;
             });
         });

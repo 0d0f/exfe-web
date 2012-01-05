@@ -10,13 +10,6 @@ var moduleNameSpace = 'odof.x.gather',
     ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns) {
-
-    ns.x = {title       : '',
-            description : '',
-            placeline1  : '',
-            placeline2  : '',
-            datetime    : '',
-            draft_id    : 0};
             
     ns.curCross        = '';
     
@@ -27,12 +20,12 @@ var moduleNameSpace = 'odof.x.gather',
     ns.autoSubmit      = false;
 
     ns.updateTitle = function() {
-        this.x.title   = odof.util.trim($('#gather_title').val());
-        if (this.x.title === '') {
-            this.x.title = defaultTitle;
+        crossData.title   = odof.util.trim($('#gather_title').val());
+        if (crossData.title === '') {
+            crossData.title = defaultTitle;
         }
-        $('#gather_title').val(this.x.title);
-        document.title = 'EXFE - ' + this.x.title;
+        $('#gather_title').val(crossData.title);
+        document.title = 'EXFE - ' + crossData.title;
     };
 
 
@@ -41,11 +34,11 @@ var moduleNameSpace = 'odof.x.gather',
             maxLine = 9,
             extSpce = 10,
             objDesc = $('#gather_desc');
-        this.x.description = odof.util.trim(objDesc.val());
-        if (this.x.description === '') {
+        crossData.description = odof.util.trim(objDesc.val());
+        if (crossData.description === '') {
             $('#gather_desc_x').html(defaultDesc);
         } else {
-            var arrDesc = this.x.description.split(/\r|\n|\r\n/),
+            var arrDesc = crossData.description.split(/\r|\n|\r\n/),
                 intLine = arrDesc.length;
             for (var i in arrDesc) {
                 intLine += arrDesc[i].length / maxChrt | 0;
@@ -68,7 +61,7 @@ var moduleNameSpace = 'odof.x.gather',
         if (odof.util.trim($('#datetime_original').val()) === '') {
             $('#gather_date_x').html(defaultTime);
         } else {
-            $('#datetime_original').val(odof.util.getHumanDateTime(odof.x.gather.x.datetime));
+            $('#datetime_original').val(odof.util.getHumanDateTime(odof.x.gather.x.begin_at));
             $('#gather_date_x').html('');
         }
     };
@@ -76,9 +69,9 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.updatePlace = function() {
         var strPlace = odof.util.parseLocation($('#gather_place').val());
-        this.x.placeline1 = strPlace[0];
-        this.x.placeline2 = strPlace[1];
-        if (this.x.placeline1 + this.x.placeline2 === '') {
+        crossData.place.line1 = strPlace[0];
+        crossData.place.line2 = strPlace[1];
+        if (crossData.place.line1 + crossData.place.line2 === '') {
             $('#gather_place_x').html(defaultPlace);
         } else {
             $('#gather_place_x').html('');
@@ -205,7 +198,7 @@ var moduleNameSpace = 'odof.x.gather',
         // title
         var oldDefaultTitle = defaultTitle;
         defaultTitle = 'Meet ' + status.user_name;
-        if (this.x.title === oldDefaultTitle) {
+        if (crossData.title === oldDefaultTitle) {
             $('#gather_title').val('');
             odof.x.gather.updateTitle();
         }
@@ -270,6 +263,16 @@ var moduleNameSpace = 'odof.x.gather',
 
 
 $(document).ready(function() {
+    // X initialization
+    window.crossData = {title       : '',
+                        description : '',
+                        place       : {line1 : '', line2 : ''},
+                        begin_at    : '',
+                        draft_id    : 0};
+
+    // render
+    odof.x.render.show(false);
+
     // title
     $('#gather_title').bind('focus blur keyup', function(event) {
         switch (event.type) {
@@ -313,7 +316,7 @@ $(document).ready(function() {
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
-                        odof.x.gather.x.datetime = standardTimeString;
+                        odof.x.gather.x.begin_at = standardTimeString;
                         odof.x.gather.updateTime();
                     }
                 );

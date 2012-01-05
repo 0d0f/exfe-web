@@ -2,13 +2,17 @@
     include 'share/header.php';
     global $exfe_res;
 ?>
+<script src="/static/js/libs/showdown.js"></script>
+<script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<!-- X Render -->
+<link type="text/css" href="/static/css/x.css" rel="stylesheet">
+<script src="/static/js/apps/x.js"></script>
+<!-- X Gather -->
 <link type="text/css" rel="stylesheet" href="/static/css/gather.css">
+<script src="/static/js/apps/gather.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
-<script src="/static/js/libs/showdown.js"></script>
-<script src="/static/js/libs/jquery.ba-outside-events.js"></script>
-<script src="/static/js/apps/gather.js"></script>
 </head>
 <body>
 <?php
@@ -81,7 +85,9 @@
         </ul>
     </div>
 
-    <div id="x_view"></div>
+    <div id="x_view">
+        <div id="x_view_content"></div>
+    </div>
 
 </div>
 </body>

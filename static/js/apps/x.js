@@ -169,15 +169,20 @@ var moduleNameSpace = 'odof.x.render',
     };
 
 
-    ns.show = function()
+    ns.show = function(editable)
     {
         $('#x_view_content').html(this.crossHtml);
-        $('#x_conversation_my_avatar').attr('src', odof.comm.func.getUserAvatar(
-            myIdentity.avatar_file_name, 80, img_url
-        ));
         this.showComponents();
-        this.showRsvp();
-        this.showConversation();
+        if (editable) {
+            $('#x_conversation_my_avatar').attr(
+                'src',
+                odof.comm.func.getUserAvatar(
+                    myIdentity.avatar_file_name, 80, img_url
+                )
+            );
+            this.showConversation();
+            this.showRsvp();
+        }
     };
 
 
