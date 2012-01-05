@@ -43,6 +43,12 @@ ul, li, ol {
 }
 
 
+/* reset focus effect */
+:focus {
+    outline: none;
+}
+
+
 /* reset link element */
 a {
     color: #666666;
