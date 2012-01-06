@@ -113,6 +113,27 @@
     background: transparent;
 }
 
+#gather_exfee_blank {
+    height: 200px;
+}
+
+.exfeegadget_avatararea {
+    width: 400px;
+}
+
+.exfeegadget_inputbox {
+    width: 380px;
+}
+
+.exfeegadget_autocomplete {
+    width: 380px;
+    max-height: 190px;
+}
+
+#gather_form .autocomplete_item {
+    width: 366px;
+}
+
 #gather_form #gather_privacy {
     font-size: 14px;
     line-height: 24px;

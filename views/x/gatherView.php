@@ -62,9 +62,9 @@
                 <input type="text" id="gather_hostby" class="gather_blur gather_input" <?php echo $external_identity ? 'disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>">
             </li>
 
-            <li>
+            <li id="gather_exfee_blank">
                 <label class="exfee">Exfee</label>
-                <div id="gatherExfee"></div>
+                <div id="gatherExfee" class="gather_input"></div>
                 <!--div id="exfee_warning">
                     No more than 12 attendees. Sorry we're still working on it.
                 </div-->
