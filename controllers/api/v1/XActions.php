@@ -73,7 +73,7 @@ class XActions extends ActionController {
             {
                 $postData=$this->getModelByName("conversation");
                 $comment=$_POST["content"];
-                $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$post);
+                $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$comment);
                 if($insert_id>0)
                 {
                     $post=$postData->getConversationById($insert_id);
@@ -101,8 +101,6 @@ class XActions extends ActionController {
         }
         else
         {
-            //echo "get conversation";
-            //echo $params["updated_since"];
             $postData=$this->getModelByName("conversation");
             $result=$postData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
             $responobj["meta"]["code"]=200;
