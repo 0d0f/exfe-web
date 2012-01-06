@@ -276,8 +276,11 @@ $(document).ready(function() {
                         place       : {line1 : '', line2 : ''},
                         begin_at    : ''};
 
-    // render
+    // X render
     odof.x.render.show(false);
+    
+    // Exfee input
+    odof.exfee.gadget.make('gatherExfee', [], true);
 
     // title
     $('#gather_title').bind('focus blur keyup', function(event) {
