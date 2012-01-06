@@ -96,8 +96,6 @@ class ConversationActions extends ActionController
                 if(intval($r)>0)
                     $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$comment,"{\"id\":$r}");
 
-
-
                 $exfeehelper=$this->getHelperByName("exfee");
                 $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
 

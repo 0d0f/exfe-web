@@ -2,6 +2,7 @@
 require_once dirname(dirname(__FILE__))."/lib/OAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/FacebookOAuth.php";
+require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 class OAuthActions extends ActionController {
 
     public function doIndex() {
@@ -94,9 +95,67 @@ class OAuthActions extends ActionController {
         $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
         $identityModels = $this->getModelByName("identity");
         //===========
+        
+        $twitterConn = new tmhOAuth(array(
+          'consumer_key'    => TWITTER_CONSUMER_KEY,
+          'consumer_secret' => TWITTER_CONSUMER_SECRET,
+          'user_token'      => $accessToken['oauth_token'],
+          'user_secret'     => $accessToken['oauth_token_secret']
+        ));
 
+        $responseCode = $twitterConn->request('GET', $twitterConn->url('1/friendships/exists'), array(
+            'screen_name_a'=>$twitterUserInfo["screen_name"], 'screen_name_b'=>TWITTER_OFFICE_ACCOUNT
+        ));
+        
         $identityModels->loginByIdentityId($identityID, $userID);
-        header("location:/s/login");
+        if ($responseCode == 200) {
+            if($twitterConn->response['response'] == 'false'){
+                unset($oAuthUserInfo["oauth_token"]);
+                $token = packArray($oAuthUserInfo);
+                header("location:/oAuth/confirmTwitterFollowing?token=".$token);
+                exit();
+                /*
+                $responseCode = $twitterConn->request('POST', $twitterConn->url('1/friendships/create'), array(
+                    'screen_name'=>TWITTER_OFFICE_ACCOUNT
+                ));
+                 */
+            }
+        }
+        header("location:/s/profile");
+    }
+    public function doConfirmTwitterFollowing(){
+        $userToken = exGet("token");
+        $confirm = trim(exGet("confirm"));
+        if($confirm == ""){
+            if($userToken == ""){
+                header("location:/s/profile");
+                exit;
+            }
+            $userInfo = unpackArray($userToken);
+            if(!is_array($userInfo)){
+                header("location:/s/profile");
+                exit;
+            }
+
+            $this->setVar("user_name", $userInfo["name"]);
+            $this->setVar("user_avatar", $userInfo["avatar"]);
+            $this->setVar("exfe_office_account", TWITTER_OFFICE_ACCOUNT);
+            $this->displayView();
+        }else{
+            if($confirm == "yes"){
+                $accessToken = $_SESSION['access_token'];
+                $twitterConn = new tmhOAuth(array(
+                  'consumer_key'    => TWITTER_CONSUMER_KEY,
+                  'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                  'user_token'      => $accessToken['oauth_token'],
+                  'user_secret'     => $accessToken['oauth_token_secret']
+                ));
+                $responseCode = $twitterConn->request('POST', $twitterConn->url('1/friendships/create'), array(
+                    'screen_name'=>TWITTER_OFFICE_ACCOUNT
+                ));
+            }
+            header("location:/s/profile");
+        }
     }
 
     public function doClearTwitterSessions(){

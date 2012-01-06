@@ -43,53 +43,12 @@ class XActions extends ActionController {
     {
        $this->rsvp("maybe");
     }
-    //public function doIndex()
-    //{
-    //    $Data=$this->getModelByName("X");
-    //    $cross=$Data->getCross(base62_to_int($_GET["id"]));
-    //    if($cross)
-    //    {
-    //        $place_id=$cross["place_id"];
-    //        $cross_id=$cross["id"];
-    //        if(intval($place_id)>0)
-    //        {
-    //            $placeData=$this->getModelByName("place");
-    //            $place=$placeData->getPlace($place_id);
-    //            $cross["place"]=$place;
-    //        }
-    //        $invitationData=$this->getModelByName("invitation");
-    //        $invitations=$invitationData->getInvitation_Identities($cross_id);
-
-
-    //        $host_exfee=array();
-    //        $normal_exfee=array();
-    //        if($invitations)
-    //            foreach ($invitations as $invitation)
-    //            {
-    //                if ($invitation["identity_id"]==$cross["host_id"])
-    //                    array_push($host_exfee,$invitation);
-    //                else
-    //                    array_push($normal_exfee,$invitation);
-    //            }
-
-    //        $cross["host_exfee"]=$host_exfee;
-    //        $cross["normal_exfee"]=$normal_exfee;
-
-    //        $ConversionData=$this->getModelByName("conversation");
-    //        $conversationPosts=$ConversionData->getConversion(base62_to_int($_GET["id"]),'cross');
-    //        $cross["conversation"]=$conversationPosts;
-
-    //        $this->setVar("cross", $cross);
-    //        $this->displayView();
-    //    }
-    //}
     public function doPosts()
     {
         $params=$this->params;
          
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("x_post",$params["token"],array("cross_id"=>$params["id"]));
-//        var_dump($check);
         if($check["check"]==false)
         {
             $responobj["meta"]["code"]=403;
@@ -101,9 +60,6 @@ class XActions extends ActionController {
         if($_POST)
         {
             $external_identity=$_POST["external_identity"];
-
-            //check if this identity belongs user
-            
             $userData=$this->getModelByName("user");
             $identity_id=$userData->ifIdentityBelongsUser($external_identity,$check["user_id"]);
             if($identity_id===FALSE)
@@ -116,12 +72,20 @@ class XActions extends ActionController {
             else if(intval($identity_id)>0)
             {
                 $postData=$this->getModelByName("conversation");
-                $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$_POST["content"]);
+                $comment=$_POST["content"];
+                $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$post);
                 if($insert_id>0)
                 {
                     $post=$postData->getConversationById($insert_id);
                     $responobj["meta"]["code"]=200;
                     $responobj["response"]["conversation"]=$post;
+
+                    $logdata=$this->getModelByName("log");
+                    $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$comment,"{\"id\":$insert_id}");
+
+                    $exfeehelper=$this->getHelperByName("exfee");
+                    $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
+
                     echo json_encode($responobj);
                     exit(0);
                 }
