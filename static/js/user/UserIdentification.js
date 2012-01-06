@@ -523,7 +523,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         });
         */
-        jQuery('#identity').keyup(function() {
+        jQuery('#identity').keyup(function(event) {
             var identity = jQuery('#identity').val();
             var currentIdentity = identity.split("@")[0];
             var curDomain = identity.split("@")[1];
@@ -540,12 +540,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     });
                     jQuery("#facebook_name, #twitter_name, #google_name").html(currentIdentity);
                     jQuery("#facebook, #twitter, #google").unbind("click");
+                    jQuery("#facebook, #twitter, #google").unbind("mouseover");
+                    jQuery("#facebook, #twitter, #google").bind("mouseover",function(){
+                        jQuery(this).addClass("active");
+                    });
+                    jQuery("#facebook, #twitter, #google").unbind("mouseleave");
+                    jQuery("#facebook, #twitter, #google").bind("mouseleave",function(){
+                        jQuery(this).removeClass("active");
+                    });
                     jQuery("#facebook, #twitter, #google").bind("click", function(data){
                         var objID = data.currentTarget.id;
                         jQuery("#identity").val(jQuery("#"+objID+"_name").html()+"@"+objID);
                         jQuery("#account_hint_list").hide();
                         jQuery("#facebook, #twitter, #google").unbind("click");
                     });
+                    if(event.keyCode == 38 || event.keyCode == 40){
+                        //键盘的上下方向键操作。预留接口。
+                    }
                 }else{
                     jQuery("#account_hint_list").unbind("clickoutside");
                     jQuery("#account_hint_list").hide();

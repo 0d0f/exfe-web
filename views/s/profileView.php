@@ -83,7 +83,7 @@
                         <?php if($identity["provider"]=="email"){ ?>
                         <em><a href="javascript:odof.user.status.doShowChangePwdDialog('<?php echo $identity["external_identity"]; ?>');"><?php echo $identity["external_username"]; ?></a></em>
                         <?php }else{ ?>
-                        <em><a href="javascript:odof.user.status.changeOAuthAccountPWD('<?php echo $identity["external_identity"]; ?>','<?php echo $identity["external_username"]; ?>@<?php echo $identity["provider"]; ?>');"><?php echo $identity["external_username"]; ?>@<?php echo $identity["provider"]; ?></a></em>
+                        <em><a href="javascript:odof.user.status.changeOAuthAccountPWD('<?php echo $identity["external_identity"]; ?>','<?php echo $identity["external_username"]; if($identity["provider"] != "google"){ ?>@<?php echo $identity["provider"]; } ?>');"><?php echo $identity["external_username"]; if($identity["provider"] != "google"){ ?>@<?php echo $identity["provider"]; } ?></a></em>
                         <?php } ?>
                          </b>
                     </p>

@@ -133,7 +133,10 @@ b.r3{margin: 0px}
     z-index:205; overflow:hidden; border: 1px solid #C5C5C5; background:#FFF;
 }
 .identity_dialog_main .account_hint_list ul { clear:both; }
-.identity_dialog_main .account_hint_list ul li { clear:both; height:22px; width:208px; padding-top:4px; line-height:15px; }
+.identity_dialog_main .account_hint_list ul li {
+    clear:both; height:22px; width:208px;
+    padding-top:4px; line-height:15px; cursor:pointer;
+}
 .identity_dialog_main .account_hint_list ul li span { padding:0 5px; font-style:italic; }
 .identity_dialog_main .account_hint_list ul li.facebook {
     background:url(/static/images/oauth_account_logo.png) no-repeat right 3px;
@@ -144,7 +147,7 @@ b.r3{margin: 0px}
 .identity_dialog_main .account_hint_list ul li.google {
     background:url(/static/images/oauth_account_logo.png) no-repeat right -68px;
 }
-.account_hint_list ul li.facebook:hover, .account_hint_list ul li.twitter:hover, .account_hint_list ul li.google:hover {
+.identity_dialog_main .account_hint_list ul li.active {
     background-color:#DFF4FC;
 }
 
