@@ -94,10 +94,11 @@ class ConversationActions extends ActionController
                 $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$comment);
                 $logdata=$this->getModelByName("log");
                 if(intval($r)>0)
+                {
                     $logdata->addLog("identity",$identity_id,"conversation","cross",$cross_id,"",$comment,"{\"id\":$r}");
-
-                $exfeehelper=$this->getHelperByName("exfee");
-                $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
+                    $exfeehelper=$this->getHelperByName("exfee");
+                    $exfeehelper->sendConversationMsg($cross_id,$identity_id,$comment);
+                }
 
                 if($r===false)
                 {

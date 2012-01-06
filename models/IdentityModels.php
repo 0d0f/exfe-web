@@ -715,5 +715,14 @@ class IdentityModels extends DataModel{
         }
 
     }
+    public function ifIdentitiesEqualWithIdentity($identities,$identity_id)
+    {
+        foreach($identities as $identity)
+        {
+            if(intval($identity["identity_id"])==intval($identity_id))
+                return TRUE;
+        }
+        return FALSE;
+    }
 }
 
