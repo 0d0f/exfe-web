@@ -11,3 +11,51 @@
 .cs em.c2{background-position:left -165px}
 .cs em.c3{background-position:left -207px}
 } */
+
+.exfee_avatar {
+    width: 50px;
+    height: 50px;
+}
+
+#gather_form .autocomplete_item {
+    width: 300px;
+    padding-bottom: 0px;
+    margin: 3px;
+    padding: 3px;
+    border: 1px transparent dashed;
+}
+
+#gather_form .autocomplete_item.autocomplete_selected {
+    border: 1px gray dashed;
+    background: #E0EDEF;
+}
+
+.autocomplete_item .exfee_avatar {
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+
+.exfee_info {
+    float: left;
+    margin-left: 10px;
+}
+
+.exfee_name, .exfee_identity {
+    width: 250px;
+    overflow: hidden;
+    float: left;
+    clear: both;
+    color: #333333;
+}
+
+.exfee_name {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.exfee_identity {
+    font-size: 14px;
+    line-height: 20px;
+    font-style: italic;
+}
