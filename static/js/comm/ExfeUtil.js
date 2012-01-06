@@ -19,7 +19,7 @@ var odof = {
     })()
 };
 
-(function(base){
+(function(base) {
     /**
      * Create Util
      **/

@@ -10,6 +10,9 @@
 <!-- X Gather -->
 <link type="text/css" rel="stylesheet" href="/static/css/gather.css">
 <script src="/static/js/apps/gather.js"></script>
+<!-- Exfee Widget -->
+<link type="text/css" href="/static/css/exfee.css" rel="stylesheet">
+<script src="/static/js/apps/exfee.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
@@ -45,7 +48,7 @@
                 <div id="gather_date_x" class="gather_blur gather_input"></div>
                 <input type="text" id="datetime_original" class="gather_input">
                 <div id="calendar_map_container" class="gather_input"></div>
-                <!-- @todo== p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p -->    
+                <!-- @todo== p class="redbtn">Incorrect format. e.g:6:30pm, 1/15/2011</p -->
             </li>
 
             <li id="gather_place_blank">
@@ -56,11 +59,12 @@
 
             <li>
                 <label class="hostby">Host By</label>
-                <input type="text" id="gather_hostby" class="gather_blur gather_input" <?php echo $external_identity ? 'disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>"     >
+                <input type="text" id="gather_hostby" class="gather_blur gather_input" <?php echo $external_identity ? 'disabled="disabled" ' : ''; ?> value="<?php echo $external_identity ?: 'Your Identity'; ?>">
             </li>
 
-            <li>
+            <li id="gather_exfee_blank">
                 <label class="exfee">Exfee</label>
+                <div id="gatherExfee" class="gather_input"></div>
                 <!--div id="exfee_warning">
                     No more than 12 attendees. Sorry we're still working on it.
                 </div-->
@@ -68,25 +72,26 @@
 
             <li id="gather_privacy_blank">
                 <label class="privacy">Privacy</label>
-                <p id="gather_privacy" class="gather_input">
+                <div id="gather_privacy" class="gather_input">
                     <span id="gather_privacy_info">This is a private <span class="x">X</span>.</span>
                     <br>
                     <span id="gather_privacy_info_desc">Only attendees can access, and change other's status.</span>
-                </p>
+                    <div id="gather_failed_hint">Submission failed.</div>
+                </div>
             </li>
 
             <li id="gather_submit_blank">
-                <p id="gather_submit_area" class="gather_input">
+                <div id="gather_submit_area" class="gather_input">
                     <button type="button" id="gather_submit">Submit</button>
                     <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" id="gather_discard">Discard</a>
-                </p>
-                <div id="gather_failed_hint">Submission failed.</div>
+                </div>
             </li>
         </ul>
     </div>
+    <div style="clear: both;"></div>
 
     <div id="x_view">
-        <div id="x_view_preview" class="cleanup"></div>
+        <div id="x_view_preview"></div>
         <div id="x_view_content"></div>
     </div>
 

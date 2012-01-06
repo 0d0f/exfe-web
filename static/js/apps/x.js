@@ -12,6 +12,8 @@ var moduleNameSpace = 'odof.x.render',
 {
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
+    
+    ns.editable  = false;
 
 
     ns.showTitle = function()
@@ -30,7 +32,7 @@ var moduleNameSpace = 'odof.x.render',
 
     ns.showDesc = function(editing)
     {
-        var strDesc = crossData.description === '' && editing
+        var strDesc = crossData.description === '' && (editing || !odof.x.render.editable)
                     ? 'Write some words about this X.'
                     : crossData.description;
         var converter = new Showdown.converter();
@@ -49,9 +51,9 @@ var moduleNameSpace = 'odof.x.render',
     };
 
 
-    ns.showRsvp = function(editable)
+    ns.showRsvp = function()
     {
-        if (editable) {
+        if (this.editable) {
             if (myrsvp) {
                 $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
                 $('#x_rsvp_msg').show();
@@ -181,9 +183,7 @@ var moduleNameSpace = 'odof.x.render',
                       + '</div>';
 
         $('#x_view_content').html(crossHtml);
-        this.showComponents();
-        this.showRsvp(editable);
-        if (editable) {
+        if ((this.editable = editable)) {
             $('#x_conversation_my_avatar').attr(
                 'src',
                 odof.comm.func.getUserAvatar(
@@ -192,6 +192,8 @@ var moduleNameSpace = 'odof.x.render',
             );
             this.showConversation();
         }
+        this.showComponents();
+        this.showRsvp();
     };
 
 

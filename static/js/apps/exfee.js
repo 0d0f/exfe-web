@@ -10,8 +10,7 @@ var moduleNameSpace = 'odof.exfee.gadget';
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
-(function(ns)
-{
+(function(ns) {
 
     ns.exfeeAvailableKey = 'exfee_available';
 
@@ -38,26 +37,29 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.completing        = {};
 
 
-    ns.make = function(domId, curExfee, curEditable)
-    {
-        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea">'
+    ns.make = function(domId, curExfee, curEditable) {
+        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" class="exfeegadget_infoarea">'
                     +     '<img id="' + domId + '_exfeegadget_info_label">'
                     +     '<div id="' + domId + '_exfeegadget_info">'
                     +         '<span id="' + domId + '_exfeegadget_num_accepted">'
-                    +         '</span>'
+                    +         '1</span>'
                     +         '<span id="' + domId + '_exfeegadget_num_summary">'
-                    +         '</span>'
+                    +         '2</span>'
                     +     '</div>'
                     + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_inputarea">'
-                    +     '<input  id="' + domId + '_exfeegadget_inputbox" type="text">'
+                    + '<div id="' + domId + '_exfeegadget_avatararea" class="exfeegadget_avatararea">'
+                    +     '<ol></ol>'
+                    +     '<button id="' + domId + '_exfeegadget_expandavatarbtn">'
+                    + '</div>'
+                    + '<div id="' + domId + '_exfeegadget_inputarea" class="exfeegadget_inputarea">'
+                    +     '<input  id="' + domId + '_exfeegadget_inputbox" class="exfeegadget_inputbox" type="text">'
                     +     '<button id="' + domId + '_exfeegadget_addbtn">+</button>'
-                    +     '<div id="' + domId + '_exfeegadget_autocomplete">'
+                    +     '<div id="' + domId + '_exfeegadget_autocomplete" class="exfeegadget_autocomplete">'
                     +         '<ol></ol>'
                     +     '</div>'
                     + '</div>'
                     + '<div id="' + domId + '_exfeegadget_listarea" class="exfeegadget_listarea">'
-                    +     '<ul></ul>'
+                    +     '<ol></ol>'
                     + '</div>';
         this.inputed[domId]       = '';
         this.editable[domId]      = curEditable;
@@ -99,8 +101,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.keydownInputbox = function(event)
-    {
+    ns.keydownInputbox = function(event) {
         var domId = event.target.id.split('_')[0];
         switch (event.which) {
             case 9:  // tab
@@ -119,8 +120,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.eventAddbutton = function(event)
-    {
+    ns.eventAddbutton = function(event) {
         var domId = event.target.id.split('_')[0];
         if (event.type === 'click'
         || (event.type === 'keydown' && event.which === 13)) {
@@ -129,8 +129,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.eventCompleteItem = function(event)
-    {
+    ns.eventCompleteItem = function(event) {
         var objEvent = event.target;
         while (!$(objEvent).hasClass('autocomplete_item')) {
             objEvent = objEvent.parentNode;
@@ -159,8 +158,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.selectCompleteResult = function(domId, identity)
-    {
+    ns.selectCompleteResult = function(domId, identity) {
         var strBaseId = '#' + domId + '_exfeegadget_autocomplete > ol > li',
             className = 'autocomplete_selected';
         $(strBaseId).removeClass(className);
@@ -168,8 +166,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.addExfee = function(domId, exfees)
-    {
+    ns.addExfee = function(domId, exfees) {
         for (var i in exfees) {
             var objExfee    = typeof exfees[i].external_identity === 'undefined'
                             ? {avatar_file_name  : 'default.png',
@@ -188,17 +185,24 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     break;
                 }
             }
-            $('#' + domId + '_exfeegadget_listarea > ul').append(
+            $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + keyIdentity + '">'
               +     '<img src="' + odof.comm.func.getUserAvatar(
                     objExfee.avatar_file_name, 80, img_url)
               +     '" class="exfee_avatar">'
+              + '</li>'
+            );
+            $('#' + domId + '_exfeegadget_listarea > ol').append(
+                '<li identity="' + keyIdentity + '">'
               +     '<span class="exfee_name">'
               +         objExfee.name
               +     '</span>'
               +     '<span class="exfee_identity">'
               +         objExfee.external_identity
               +     '</span>'
+              +     '<img src="' + odof.comm.func.getUserAvatar(
+                    objExfee.avatar_file_name, 80, img_url)
+              +     '" class="exfee_avatar">'
               + '</li>'
             );
             this.exfeeInput[domId][keyIdentity] = objExfee;
@@ -207,22 +211,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.delExfee = function(domId)
-    {
+    ns.delExfee = function(domId) {
         for (var i in this.exfeeSelected[domId]) {
             var keyIdentity = this.exfeeSelected[domId][i].toLowerCase();
             if (typeof this.exfeeInput[domId][keyIdentity] === 'undefined') {
                 continue;
             }
-            $('#' + domId + '_exfeegadget_listarea > ul > li[identity="'
+            $('#' + domId + '_exfeegadget_listarea > ol > li[identity="'
                   + keyIdentity + '"]').remove();
             delete this.exfeeInput[domId][keyIdentity];
         }
     };
 
 
-    ns.chkInput = function(domId, force)
-    {
+    ns.chkInput = function(domId, force) {
         var objInput   = $('#' + domId + '_exfeegadget_inputbox'),
             strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
@@ -257,8 +259,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.chkComplete = function(domId, key)
-    {
+    ns.chkComplete = function(domId, key) {
         var arrCatched = [];
         key = odof.util.trim(key).toLowerCase();
         for (var i in this.exfeeAvailable) {
@@ -272,8 +273,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.showComplete = function(domId, key, exfee)
-    {
+    ns.showComplete = function(domId, key, exfee) {
         var baseId          = '#' + domId + '_exfeegadget_autocomplete > ol',
             objAutoComplete = $(baseId),
             strItems        = '';
@@ -292,12 +292,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 strItems += '<li identity="' + curIdentity + '" '
                           +     'class="autocomplete_item">'
                           +     '<img src="' + odof.comm.func.getUserAvatar(
-                                exfee[i].avatar_file_name, 80, img_url) + '">'
-                          +     '<span class="exfee_name">'
-                          +         exfee[i].name
-                          +     '</span>'
-                          +     '<span class="exfee_identity">'
-                          +         exfee[i].external_identity
+                                exfee[i].avatar_file_name, 80, img_url) + '" class="exfee_avatar">'
+                          +     '<span class="exfee_info">'
+                          +         '<span class="exfee_name">'
+                          +             exfee[i].name
+                          +         '</span>'
+                          +         '<span class="exfee_identity">'
+                          +             exfee[i].external_identity
+                          +         '</span>'
                           +     '</span>'
                           + '</li>';
             }
@@ -312,8 +314,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.ajaxIdentity = function(identities)
-    {
+    ns.ajaxIdentity = function(identities) {
         for (var i in identities) {
             if (typeof identities[i].external_identity !== 'undefined') {
                 identities[i] = {id   : identities[i].external_identity,
@@ -338,7 +339,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     var curId    = data.response.identities[i]
                                        .external_identity.toLowerCase(),
                         objExfee = $(
-                            '.exfeegadget_listarea > ul > li[identity="' + curId + '"]'
+                            '.exfeegadget_listarea > ol > li[identity="' + curId + '"]'
                         );
                     if (objExfee.length) {
                         objExfee.children('.exfee_avatar').attr(
@@ -360,8 +361,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.cacheExfee = function(exfees, noIdentity) // @todo: temp noIdentity
-    {
+    ns.cacheExfee = function(exfees, noIdentity) { // @todo: temp noIdentity
         for (var i in exfees) {
             var curIdentity = exfees[i].external_identity.toLowerCase();
             for (var j in this.exfeeAvailable) {
@@ -383,8 +383,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.ajaxComplete = function(domId, key)
-    {
+    ns.ajaxComplete = function(domId, key) {
         if (!key.length) {
             return;
         }
@@ -431,8 +430,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.displayComplete = function(domId, display)
-    {
+    ns.displayComplete = function(domId, display) {
         this.completing[domId] = display;
         var objCompleteBox = $('#' + domId + '_exfeegadget_autocomplete');
         if (display) {
@@ -443,11 +441,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 })(ns);
-
-
-$(document).ready(function() {
-    odof.exfee.gadget.make('test', [], true);
-});
 
 
 

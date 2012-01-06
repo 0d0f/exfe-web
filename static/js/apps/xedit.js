@@ -13,8 +13,7 @@ var clickCallBackFunc = function(args) {
     window.location.href = odof.x.edit.location_uri;
 };
 
-(function(ns)
-{
+(function(ns) {
 
     ns.cross_id     = 0;
 

@@ -1,22 +1,20 @@
 <?php
-class SActions extends ActionController
-{
+class SActions extends ActionController {
 
     private $specialDomain = array("facebook", "twitter", "google");
 
-    public function doTestUser()
-    {
+
+    public function doTestUser() {
         $identityData = $this->getModelByName("identity");
         $identityData->setRelation($_GET["identity_id"]);
 
     }
 
-    public function doAdd()
-    {
+
+    public function doAdd() {
         $identity= $_GET["identity"];
         $provider= $_GET["provider"];
         $password = $_GET["password"];
-
 
         //package as a  transaction
         if(intval($_SESSION["userid"])>0)
@@ -32,8 +30,9 @@ class SActions extends ActionController
         $identityData->addIdentity($userid,$provider,$identity);
     }
 
+
     //上传头像文件。
-    public function doUploadAvatarFile(){
+    public function doUploadAvatarFile() {
         //list of valid extensions, ex. array("jpeg", "xml", "bmp")
         $allowedExtensions = array("jpeg", "gif", "png", "jpg", "bmp");
         //max file size in bytes
@@ -64,8 +63,9 @@ class SActions extends ActionController
         echo json_encode($result);
     }
 
+
     //截剪头像。
-    public function doUploadAvatarNew(){
+    public function doUploadAvatarNew() {
         require_once "imgcommon.php";
         $img_name = $_POST["iName"];
         $img_height = $_POST["iHeight"];
@@ -160,8 +160,7 @@ class SActions extends ActionController
     */
 
 
-    public function doProfile()
-    {
+    public function doProfile() {
         if (intval($_SESSION['userid']) <= 0) {
             header('Location: /s/login') ;
             exit(0);
@@ -183,8 +182,7 @@ class SActions extends ActionController
     }
 
 
-    public function doGetInvitation()
-    {
+    public function doGetInvitation() {
         if (intval($_SESSION['userid']) <= 0) {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
@@ -224,8 +222,7 @@ class SActions extends ActionController
     }
 
 
-    public function doGetCross()
-    {
+    public function doGetCross() {
         if (intval($_SESSION['userid']) <= 0) {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
@@ -435,8 +432,7 @@ class SActions extends ActionController
     }
 
 
-    public function doGetUpdate()
-    {
+    public function doGetUpdate() {
         if (intval($_SESSION['userid']) <= 0) {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
@@ -449,8 +445,7 @@ class SActions extends ActionController
     }
 
 
-    public function doIfIdentityExist()
-    {
+    public function doIfIdentityExist() {
         //TODO: private API ,must check session
         $identity=$_GET["identity"];
 

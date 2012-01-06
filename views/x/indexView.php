@@ -10,6 +10,9 @@
 <!-- X Exit -->
 <link type="text/css" href="/static/css/xedit.css" rel="stylesheet">
 <script src="/static/js/apps/xedit.js"></script>
+<!-- Exfee Widget -->
+<link type="text/css" href="/static/css/exfee.css" rel="stylesheet">
+<script src="/static/js/apps/exfee.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" href="/static/js/exlibs/excal/skin/default/excal.css" rel="stylesheet">
 <script src="/static/js/exlibs/excal/excal.js"></script>
