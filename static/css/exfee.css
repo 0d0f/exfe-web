@@ -21,16 +21,23 @@
 
 .exfeegadget_avatararea {
     float: left;
-    height: 50px;
+}
+
+#gather_form .exfeegadget_avatararea > ol > li {
+    margin: auto 5px 5px auto;
+    padding-bottom: 0;
+    float: left;
+    clear: none;
 }
 
 .exfeegadget_inputarea {
     clear: both;
-    padding-top: 10px;
+    height: 24px;
 }
 
 .exfeegadget_inputbox {
     border: 1px #CCCCCC solid;
+    height: 24px;
 }
 
 .exfee_avatar {
@@ -49,7 +56,7 @@
 }
 
 #gather_form .autocomplete_item {
-    padding-bottom: 0px;
+    padding-bottom: 0;
     margin: 3px;
     padding: 3px;
     border: 1px transparent dashed;
@@ -72,11 +79,14 @@
     margin-left: 10px;
 }
 
-.exfee_name, .exfee_identity {
+.exfeegadget_autocomplete .exfee_name, .exfeegadget_autocomplete .exfee_identity {
     width: 250px;
     overflow: hidden;
     float: left;
     clear: both;
+}
+
+.exfee_name, .exfee_identity {
     color: #333333;
 }
 
@@ -89,4 +99,58 @@
     font-size: 14px;
     line-height: 20px;
     font-style: italic;
+}
+
+.exfeegadget_listarea {
+    padding-top: 10px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#gather_form .exfeegadget_listarea > ol > li {
+    height: 30px;
+    padding-bottom: 0;
+}
+
+.exfee_rsvpblock {
+    float: left;
+    width: 20px;
+    background: url("/static/images/icons.png");
+}
+
+.exfee_rsvp_noresponse {
+    background-position: left -123px;
+}
+
+.exfee_rsvp_Accepted {    
+    background-position: -1px -81px;
+}
+
+.exfee_rsvp_Declined {
+    background-position: left -165px;
+}
+
+.exfee_rsvp_Interested {
+    background-position: left -207px;
+}
+
+.exfee_baseblock {
+    width: 275px;
+    float: left;
+    overflow: hidden;
+}
+
+.exfee_extrablock {
+    width: 85px;
+    float: right;
+}
+
+#gather_form .exfeegadget_listarea > ol > li .exfee_avatar {
+    float: right;
+    width: 20px;
+    height: 20px;
+}
+
+.exfeegadget_listarea .exfee_name {
+    margin-right: 10px;
 }

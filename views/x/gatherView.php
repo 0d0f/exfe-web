@@ -4,15 +4,15 @@
 ?>
 <script src="/static/js/libs/showdown.js"></script>
 <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<!-- Exfee Widget -->
+<link type="text/css" href="/static/css/exfee.css" rel="stylesheet">
+<script src="/static/js/apps/exfee.js"></script>
 <!-- X Render -->
 <link type="text/css" href="/static/css/x.css" rel="stylesheet">
 <script src="/static/js/apps/x.js"></script>
 <!-- X Gather -->
 <link type="text/css" rel="stylesheet" href="/static/css/gather.css">
 <script src="/static/js/apps/gather.js"></script>
-<!-- Exfee Widget -->
-<link type="text/css" href="/static/css/exfee.css" rel="stylesheet">
-<script src="/static/js/apps/exfee.js"></script>
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
@@ -20,10 +20,12 @@
 <body>
 <?php
     include 'share/nav.php';
-    $external_identity = $this->getVar('external_identity');
+    $myidentity        = $this->getVar('myidentity');
+    $external_identity = $myidentity ? $myidentity['external_identity'] : null;
     $defaultTitle      = $global_name != '' ? "Meet {$global_name}" : 'Edit title here';
     echo '<script>'
-       . "var defaultTitle = '{$defaultTitle}',"
+       . "var myidentity   = " . json_encode($myidentity) . ","
+       .     "defaultTitle = '{$defaultTitle}',"
        .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',"
        .     "defaultTime  = 'Sometime',"
        .     "defaultPlace = 'Somewhere';"
