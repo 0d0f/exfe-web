@@ -24,13 +24,22 @@
 }
 
 #gather_form .exfeegadget_avatararea > ol > li {
-    margin: auto 5px 5px auto;
+    margin: 5px 5px 5px 5px;
+    width: 50px;
+    height: 50px;
     padding-bottom: 0;
     float: left;
     clear: none;
 }
 
+#gather_form .exfeegadget_avatararea > ol > li:hover {
+    margin: 0px 0px 0px 0px;
+    width: 60px;
+    height: 60px;
+}
+
 .exfeegadget_inputarea {
+    padding-top: 5px;
     clear: both;
     height: 24px;
 }
@@ -43,6 +52,11 @@
 .exfee_avatar {
     width: 50px;
     height: 50px;
+}
+
+.exfeegadget_avatararea .exfee_avatar:hover {
+    width: 60px;
+    height: 60px;
 }
 
 .exfeegadget_autocomplete {

@@ -245,9 +245,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.chkFakeHost = function(domId) {
         var fakeHost = $('#' + domId + '_exfeegadget_listarea > ol > li[identity="_fake_host_"]').length;
-        console.log(fakeHost);
         if (odof.util.count(this.exfeeInput[domId]) && fakeHost) {
-            console.log('ok');
             this.rawDelExfee(domId, ['_fake_host_']);
         } else if (!odof.util.count(this.exfeeInput[domId]) && !fakeHost) {
             this.addExfee(domId, [{id : '_fake_host_', name : 'me', type : 'email'}]);
