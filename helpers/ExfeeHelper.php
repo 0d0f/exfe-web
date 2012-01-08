@@ -301,7 +301,7 @@ class ExfeeHelper extends ActionController
                     foreach($invitation_identities as $invitation_identity)
                     {
                         $identities=$invitation_identity["identities"];
-                        if($identities)
+                        if($identities && $identityData->ifIdentitiesEqualWithIdentity($identities,$host_identity_id)==FALSE)  //ifIdentitiesEqualWithIdentity dont's send to host's other identity.
                             foreach($identities as $identity)
                             {
                                 if(intval($identity["status"])==3)

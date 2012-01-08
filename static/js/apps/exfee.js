@@ -194,32 +194,61 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             );
             $('#' + domId + '_exfeegadget_listarea > ol').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<span class="exfee_name">'
-              +         objExfee.name
-              +     '</span>'
-              +     '<span class="exfee_identity">'
-              +         objExfee.external_identity
-              +     '</span>'
-              +     '<img src="' + odof.comm.func.getUserAvatar(
-                    objExfee.avatar_file_name, 80, img_url)
-              +     '" class="exfee_avatar">'
+              +     '<div class="exfee_rsvpblock exfee_rsvp_noresponse">'
+              +         '&nbsp;'
+              +     '</div>'
+              +     '<div class="exfee_baseblock">'
+              +         '<span class="exfee_name">'
+              +             objExfee.name
+              +         '</span>'
+              +        (objExfee.external_identity === '_fake_host_' ? ''
+              :        ('<span class="exfee_identity">'
+              +             objExfee.external_identity
+              +         '</span>'))
+              +     '</div>'
+              +     '<div class="exfee_extrablock">'
+              +         '<img src="' + odof.comm.func.getUserAvatar(
+                        objExfee.avatar_file_name, 80, img_url)
+              +         '" class="exfee_avatar">'
+              +     '</div>'
               + '</li>'
             );
-            this.exfeeInput[domId][keyIdentity] = objExfee;
+            if (keyIdentity !== '_fake_host_') {
+                this.exfeeInput[domId][keyIdentity] = objExfee;
+            }
         }
+        this.chkFakeHost(domId);
         this.ajaxIdentity(exfees);
     };
 
 
     ns.delExfee = function(domId) {
-        for (var i in this.exfeeSelected[domId]) {
-            var keyIdentity = this.exfeeSelected[domId][i].toLowerCase();
-            if (typeof this.exfeeInput[domId][keyIdentity] === 'undefined') {
-                continue;
-            }
+        this.rawDelExfee(domId, this.exfeeSelected[domId]);
+        this.chkFakeHost(domId);
+        this.exfeeSelected = [];
+    };
+    
+    
+    ns.rawDelExfee = function(domId, exfees) {
+        for (var i in exfees) {
+            var keyIdentity = exfees[i].toLowerCase();
+            $('#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
+                  + keyIdentity + '"]').remove();
             $('#' + domId + '_exfeegadget_listarea > ol > li[identity="'
                   + keyIdentity + '"]').remove();
-            delete this.exfeeInput[domId][keyIdentity];
+            if (typeof this.exfeeInput[domId][keyIdentity] !== 'undefined') {
+                delete this.exfeeInput[domId][keyIdentity];
+            }
+        }
+    };
+
+
+    ns.chkFakeHost = function(domId) {
+        var fakeHost = $('#' + domId + '_exfeegadget_listarea > ol > li[identity="_fake_host_"]').length;
+        if (odof.util.count(this.exfeeInput[domId]) && fakeHost) {
+            this.rawDelExfee(domId, ['_fake_host_']);
+        } else if (!odof.util.count(this.exfeeInput[domId]) && !fakeHost) {
+            this.addExfee(domId, [{id : '_fake_host_', name : 'me', type : 'email'}]);
         }
     };
 
@@ -321,8 +350,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  name : identities[i].name,
                                  type : 'email'};
             }
-            if (typeof this.exfeeIdentified[identities[i].id.toLowerCase()]
-            !== 'undefined') {
+            var strId = identities[i].id.toLowerCase();
+            if (strId === '_fake_host_'
+             || typeof this.exfeeIdentified[strId] !== 'undefined') {
                 delete identities[i];
             }
         }
@@ -363,14 +393,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.cacheExfee = function(exfees, noIdentity) { // @todo: temp noIdentity
         for (var i in exfees) {
-            var curIdentity = exfees[i].external_identity.toLowerCase();
+            var objExfee    = typeof exfees[i].external_identity === 'undefined'
+                            ? {avatar_file_name  : 'default.png',
+                               bio               : '',
+                               external_identity : exfees[i].id,
+                               name              : exfees[i].name}
+                            : exfees[i],
+                curIdentity = objExfee.external_identity.toLowerCase();
+            if (curIdentity === '_fake_host_') {
+                continue;
+            }
             for (var j in this.exfeeAvailable) {
                 if (this.exfeeAvailable[j].external_identity.toLowerCase()
                 === curIdentity) {
                     this.exfeeAvailable.splice(i, 1);
                 }
             }
-            this.exfeeAvailable.unshift(odof.util.clone(exfees[i]));
+            this.exfeeAvailable.unshift(odof.util.clone(objExfee));
             if (noIdentity) {
                 continue;
             }

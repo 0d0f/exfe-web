@@ -280,7 +280,8 @@ $(document).ready(function() {
     odof.x.render.show(false);
     
     // Exfee input
-    odof.exfee.gadget.make('gatherExfee', [], true);
+    odof.exfee.gadget.make('gatherExfee', myidentity ? [myidentity] : [], true);
+    odof.exfee.gadget.chkFakeHost('gatherExfee');
 
     // title
     $('#gather_title').bind('focus blur keyup', function(event) {
