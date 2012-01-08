@@ -13,6 +13,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns) {
 
     ns.exfeeAvailableKey = 'exfee_available';
+    
+    ns.arrClassRsvp      = ['noresponse', 'accepted', 'declined', 'interested'];
 
     ns.inputed           = {};
 
@@ -98,6 +100,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + domId + '_exfeegadget_autocomplete > ol > li').live(
             'mousemove click', this.eventCompleteItem
         );
+        $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_rsvpblock').live(
+            'click', this.eventAvatarRsvp
+        );
     };
 
 
@@ -164,10 +169,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $(strBaseId).removeClass(className);
         $(strBaseId + '[identity="' + identity + '"]').addClass(className);
     };
+    
+    
+    ns.getClassRsvp = function(rsvp) {
+        return 'exfee_rsvp_' + this.arrClassRsvp[rsvp];
+    };
 
 
     ns.addExfee = function(domId, exfees, rsvp) {
-        var arrClassRsvp = ['noresponse', 'accepted', 'declined', 'interested'];
         rsvp = rsvp ? rsvp : 0;
         for (var i in exfees) {
             var objExfee    = typeof exfees[i].external_identity === 'undefined'
@@ -189,18 +198,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
             objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? rsvp : exfees[i].rsvp;
             objExfee.rsvp = keyIdentity === '_fake_host_' ? 1 : objExfee.rsvp;
-            var strClassRsvp = 'exfee_rsvp_' + arrClassRsvp[objExfee.rsvp];
+            var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + keyIdentity + '">'
               +     '<img src="' + odof.comm.func.getUserAvatar(
                     objExfee.avatar_file_name, 80, img_url)
               +     '" class="exfee_avatar">'
-              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '">&nbsp;</div>'
+              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
               + '</li>'
             );
             $('#' + domId + '_exfeegadget_listarea > ol').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '">&nbsp;</div>'
+              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
               +     '<div class="exfee_baseblock">'
               +         '<span class="exfee_name">'
               +             objExfee.name
@@ -254,6 +263,46 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if (!odof.util.count(this.exfeeInput[domId]) && !fakeHost) {
             this.addExfee(domId, [{id   : '_fake_host_', name : 'me',
                                    type : 'email',       rsvp : 1}]);
+        }
+    };
+    
+    
+    ns.eventAvatarRsvp = function(event) {
+        var domLi    = event.target.parentNode,
+            identity = $(domLi).attr('identity'),
+            domId    = domLi.parentNode.parentNode.id.split('_')[0];
+        switch (event.type) {
+            case 'click':
+                switch (odof.exfee.gadget.exfeeInput[domId][identity].rsvp) {
+                    case 1:
+                        odof.exfee.gadget.changeRsvp(domId, identity, 0);
+                        break;
+                    case 0:
+                    case 2:
+                    case 3:
+                    default:
+                        odof.exfee.gadget.changeRsvp(domId, identity, 1);
+                }
+        }
+    };
+    
+    
+    ns.changeRsvp = function(domId, identity, rsvp) {
+        if (typeof this.exfeeInput[domId][identity] === 'undefined') {
+            return;
+        }
+        this.exfeeInput[domId][identity].rsvp = rsvp;
+        var strCatchKey   = ' > ol > li[identity="' + identity + '"] > .exfee_rsvpblock';
+        for (var i in this.arrClassRsvp) {
+            var intRsvp = parseInt(i),
+                strRsvp = this.getClassRsvp(intRsvp);
+            if (intRsvp === rsvp) {
+                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).addClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).addClass(strRsvp);
+            } else {
+                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).removeClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).removeClass(strRsvp);
+            }
         }
     };
 
