@@ -166,7 +166,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.addExfee = function(domId, exfees) {
+    ns.addExfee = function(domId, exfees, rsvp) {
+        var arrClassRsvp = ['noresponse', 'accepted', 'declined', 'interested'];
+        rsvp = rsvp ? rsvp : 0;
         for (var i in exfees) {
             var objExfee    = typeof exfees[i].external_identity === 'undefined'
                             ? {avatar_file_name  : 'default.png',
@@ -185,18 +187,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     break;
                 }
             }
+            objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? rsvp : exfees[i].rsvp;
+            objExfee.rsvp = keyIdentity === '_fake_host_' ? 1 : objExfee.rsvp;
+            var strClassRsvp = 'exfee_rsvp_' + arrClassRsvp[objExfee.rsvp];
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + keyIdentity + '">'
               +     '<img src="' + odof.comm.func.getUserAvatar(
                     objExfee.avatar_file_name, 80, img_url)
               +     '" class="exfee_avatar">'
+              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '">&nbsp;</div>'
               + '</li>'
             );
             $('#' + domId + '_exfeegadget_listarea > ol').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<div class="exfee_rsvpblock exfee_rsvp_noresponse">'
-              +         '&nbsp;'
-              +     '</div>'
+              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '">&nbsp;</div>'
               +     '<div class="exfee_baseblock">'
               +         '<span class="exfee_name">'
               +             objExfee.name
@@ -248,7 +252,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (odof.util.count(this.exfeeInput[domId]) && fakeHost) {
             this.rawDelExfee(domId, ['_fake_host_']);
         } else if (!odof.util.count(this.exfeeInput[domId]) && !fakeHost) {
-            this.addExfee(domId, [{id : '_fake_host_', name : 'me', type : 'email'}]);
+            this.addExfee(domId, [{id   : '_fake_host_', name : 'me',
+                                   type : 'email',       rsvp : 1}]);
         }
     };
 
@@ -398,8 +403,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                bio               : '',
                                external_identity : exfees[i].id,
                                name              : exfees[i].name}
-                            : exfees[i],
+                            : odof.util.clone(exfees[i]),
                 curIdentity = objExfee.external_identity.toLowerCase();
+            if (typeof objExfee.rsvp !== 'undefined') {
+                delete objExfee.rsvp;
+            }
             if (curIdentity === '_fake_host_') {
                 continue;
             }

@@ -280,7 +280,13 @@ $(document).ready(function() {
     odof.x.render.show(false);
     
     // Exfee input
-    odof.exfee.gadget.make('gatherExfee', myidentity ? [myidentity] : [], true);
+    var curExfees = [];
+    if (myidentity) {
+        var meExfee = odof.util.clone(myidentity);
+        meExfee.rsvp = 1;
+        curExfees.push(meExfee);
+    }
+    odof.exfee.gadget.make('gatherExfee', curExfees, true);
     odof.exfee.gadget.chkFakeHost('gatherExfee');
 
     // title
