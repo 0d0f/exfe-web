@@ -676,17 +676,6 @@ if (0) {
         ns.updateCheckAll();
     };
 
-    /**
-     * revert exfee
-     * by Leask
-     * */
-    ns.revertExfee = function() {
-        $('#exfee_area > .samlcommentlist').html(ns.exfees);
-        $('#exfee_input').val(odof.cross.edit.exfeeInputTips);
-    };
-
-
-
 }
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
