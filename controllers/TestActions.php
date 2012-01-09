@@ -59,7 +59,10 @@ class TestActions extends ActionController
 
     public function doTest()
     {
-        var_dump(base62_to_int("q0X"));
+        $identitydata=$this->getModelByName("identity");
+        $identitydata->getIdentitiesByIdsFromCache(1);
+
+        #var_dump(base62_to_int("q0X"));
         #$content=cleanText("dadfasdf http://www.dianping.com/shop/2588782 www.google.com ");
         #print_r($content);
         #$a="abcd\r\ne'rf";
