@@ -677,34 +677,6 @@ if (0) {
     };
 
     /**
-     * get exfee editing result
-     * by Leask
-     * */
-    ns.getexfee = function() {
-        var result = [];
-        function collect(obj, exist)
-        {
-            var exfee_identity = $(obj).attr('identity'),
-                element_id     = $(obj).attr('id'),
-                item           = {exfee_name     : $(obj).attr('identityname'),
-                                  exfee_identity : exfee_identity,
-                                  confirmed      : parseInt($('#' + element_id + ' > .cs > em')[0].className.substr(1)),
-                                  identity_type  : odof.util.parseId(exfee_identity).type};
-            if (exist) {
-                item.exfee_id  = $(obj).attr('identityid');
-            }
-            result.push(item);
-        }
-        $('.exfee_exist').each(function() {
-            collect(this, true);
-        });
-        $('.exfee_new').each(function() {
-            collect(this);
-        });
-        return result;
-    };
-
-    /**
      * show external identity
      * by Leask
      * */
