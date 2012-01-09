@@ -21,18 +21,28 @@
 }
 
 #gather_form .exfeegadget_avatararea > ol > li {
-    padding: 5px 5px 5px 5px;
-    width: 50px;
-    height: 50px;
+    padding: 0;
+    width: 60px;
+    height: 60px;
     float: left;
     clear: none;
     position: relative;
 }
 
-#gather_form .exfeegadget_avatararea > ol > li:hover {
-    padding: 0px 0px 0px 0px;
+.exfee_avatarblock {
+    padding: 5px;
+    width: 50px;
+    height: 50px;
+    transition: all 100ms;
+    -webkit-transition: all 100ms;
+    -moz-transition: all 100ms;
+    -o-transition: all 100ms;
+}
+
+.exfee_avatarblock:hover {
+    padding: 0;
     width: 60px;
-    height: 60px;
+    height: 60px;   
 }
 
 .exfeegadget_avatararea .exfee_rsvpblock {

@@ -206,10 +206,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<img src="' + odof.comm.func.getUserAvatar(
-                    objExfee.avatar_file_name, 80, img_url)
-              +     '" class="exfee_avatar">'
-              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+              +     '<div class="exfee_avatarblock">'
+              +         '<img src="' + odof.comm.func.getUserAvatar(
+                        objExfee.avatar_file_name, 80, img_url)
+              +         '" class="exfee_avatar">'
+              +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+              +     '</div>'
               + '</li>'
             );
             $('#' + domId + '_exfeegadget_listarea > ol').append(
@@ -268,8 +270,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (odof.util.count(this.exfeeInput[domId]) && fakeHost) {
             this.rawDelExfee(domId, ['_fake_host_']);
         } else if (!odof.util.count(this.exfeeInput[domId]) && !fakeHost) {
-            this.addExfee(domId, [{id   : '_fake_host_', name : 'me',
-                                   type : 'email',       rsvp : 1}]);
+            this.addExfee(domId, [{id   : '_fake_host_',
+                                   name : 'me',
+                                   type : 'email',
+                                   host : true,
+                                   rsvp : 1}]);
         }
     };
     
@@ -291,7 +296,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     
     
     ns.eventAvatarRsvp = function(event) {
-        var domLi    = event.target.parentNode,
+        var domLi    = event.target.parentNode.parentNode,
             identity = $(domLi).attr('identity'),
             domId    = domLi.parentNode.parentNode.id.split('_')[0];
         switch (event.type) {
@@ -315,7 +320,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             return;
         }
         this.exfeeInput[domId][identity].rsvp = rsvp;
-        var strCatchKey   = ' > ol > li[identity="' + identity + '"] > .exfee_rsvpblock';
+        var strCatchKey   = ' > ol > li[identity="' + identity + '"] .exfee_rsvpblock';
         for (var i in this.arrClassRsvp) {
             var intRsvp = parseInt(i),
                 strRsvp = this.getClassRsvp(intRsvp);
