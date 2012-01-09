@@ -677,54 +677,6 @@ if (0) {
     };
 
     /**
-     * change exfee editing mode
-     * by Leask
-     * */
-    ns.exfeeEdit = function(status){
-        ns.exfeeEditStatus = status;
-        switch (status) {
-            case 'edit':
-                if (!$('.editing').length) {
-                    $('#exfee_area').toggleClass('editing');
-                }
-                $('#exfee_edit_box').fadeIn();
-                $('#exfee_remove').fadeIn();
-                $('#exfee_edit').hide();
-                $('#exfee_remove').attr('disabled', false);
-                $('#exfee_area').bind('clickoutside', function(event) {
-                    if ($(event.target).hasClass('exfee_del')) {
-                        return;
-                    }
-                    odof.cross.edit.exfeeEdit();
-                });
-                $('.exfee_del').hide();
-                ns.exfees = $('#exfee_area > .samlcommentlist').html();
-                break;
-            case 'remove':
-                $('#exfee_remove').attr('disabled', true);
-                $('#exfee_area').bind('click', function(event) {
-                    if (event.target.id === 'exfee_remove' || event.target.className === 'exfee_del') {
-                        return;
-                    }
-                    odof.cross.edit.exfeeEdit('edit');
-                });
-                $('.exfee_del').show();
-                break;
-            default:
-                $('#exfee_area').toggleClass('editing', false);
-                $('#exfee_edit_box').fadeOut();
-                $('#exfee_remove').hide();
-                $('#exfee_edit').fadeIn();
-                $('#exfee_edit_box').unbind('clickoutside');
-                $('.exfee_del').hide();
-                $('#exfee_input').val(odof.cross.edit.exfeeInputTips);
-        }
-        if (status !== 'remove') {
-            $('#exfee_area').unbind('click');
-        }
-    };
-
-    /**
      * revert exfee
      * by Leask
      * */
