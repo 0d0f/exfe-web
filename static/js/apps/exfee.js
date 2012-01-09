@@ -676,56 +676,6 @@ if (0) {
         ns.updateCheckAll();
     };
 
-    
-    /**
-     * check exfee format
-     * by Leask
-     */
-    ns.chkExfeeFormat = function() {
-        ns.arrIdentitySub = [];
-        var strExfees = $('#exfee_input').val().replace(/\r|\n|\t/, '');
-        $('#exfee_input').val(strExfees);
-        var arrIdentityOri = strExfees.split(/,|;/);
-        for (var i in arrIdentityOri) {
-            if ((arrIdentityOri[i] = odof.util.trim(arrIdentityOri[i]))) {
-                var exfee_item = odof.util.parseId(arrIdentityOri[i]);
-                if (exfee_item.type !== 'email') {
-                    return false;
-                }
-                ns.arrIdentitySub.push(exfee_item);
-            }
-        }
-        return ns.arrIdentitySub.length > 0;
-    };
-
-    /**
-     * auto complete for exfees
-     * by Leask
-     */
-    ns.complete = function() {
-        var strValue = $('#exfee_complete').val();
-        if (strValue === '') {
-            return;
-        }
-        var arrInput = $('#exfee_input').val().split(/,|;|\r|\n|\t/);
-        arrInput.pop();
-        $('#exfee_input').val(arrInput.join('; ') + (arrInput.length ? '; ' : '') + strValue);
-        clearTimeout(odof.cross.edit.completeTimer);
-        odof.cross.edit.completeTimer = null;
-        $('#exfee_complete').slideUp(50);
-        ns.identityExfee();
-        $('#exfee_input').focus();
-    };
-
-    /**
-     * summary exfee
-     * by Leask
-     * */
-    ns.summaryExfee = function() {
-        $('.bignb').html($('.cs > .c1').length);
-        $('.malnb').html($('.samlcommentlist > li').length);
-    };
-
     /**
      * identity exfee from server
      * by Leask
