@@ -283,6 +283,7 @@ $(document).ready(function() {
     var curExfees = [];
     if (myidentity) {
         var meExfee = odof.util.clone(myidentity);
+        meExfee.host = true;
         meExfee.rsvp = 1;
         curExfees.push(meExfee);
     }

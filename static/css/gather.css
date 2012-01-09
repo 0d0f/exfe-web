@@ -99,7 +99,7 @@
     height: 96px;
 }
 
-#gather_title, #gather_desc_x, #gather_desc, #gather_submit_area {
+#gather_title, #gather_desc_x, #gather_desc, #gather_submit_area, .exfeegadget_avatararea {
     width: 480px;
 }
 
@@ -113,29 +113,34 @@
     background: transparent;
 }
 
-#gather_exfee_blank {
-    height: 200px;
+#gatherExfee {
+    position: static;
 }
 
 .exfeegadget_avatararea {
-    width: 400px;
+    float: left;
+    padding-top: 30px;
 }
 
 .exfeegadget_inputbox {
-    width: 380px;
+    width: 260px;
 }
 
 .exfeegadget_autocomplete {
-    width: 380px;
+    width: 260px;
     max-height: 190px;
 }
 
 #gather_form .autocomplete_item {
-    width: 366px;
+    width: 246px;
+}
+
+.exfeegadget_info_labelarea {
+    display: none;
 }
 
 .exfeegadget_listarea {
-    width: 380px;
+    width: 260px;
     height: 120px; 
 }
 

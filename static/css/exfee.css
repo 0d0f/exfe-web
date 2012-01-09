@@ -13,14 +13,11 @@
 } */
 
 .exfeegadget_infoarea {
+    display: none;
     float: right;
     height: 50px;
-    width: 80px;
+    width: 130px;
     overflow: hidden;
-}
-
-.exfeegadget_avatararea {
-    float: left;
 }
 
 #gather_form .exfeegadget_avatararea > ol > li {
@@ -45,9 +42,8 @@
 }
 
 .exfeegadget_inputarea {
-    padding-top: 5px;
-    clear: both;
     height: 24px;
+    position: absolute;
 }
 
 .exfeegadget_inputbox {
@@ -95,7 +91,7 @@
 }
 
 .exfeegadget_autocomplete .exfee_name, .exfeegadget_autocomplete .exfee_identity {
-    width: 250px;
+    width: 190px;
     overflow: hidden;
     float: left;
     clear: both;
@@ -169,4 +165,41 @@
 
 .exfeegadget_listarea .exfee_name {
     margin-right: 10px;
+}
+
+#gather_form .exfeegadget_infoarea .exfeegadget_info {
+    width: 130px;
+    height: 42px;
+    font-size: 14px;
+    line-height: 16px;
+    color: #666666;
+    position: relative;
+}
+
+.exfeegadget_num_accepted {
+    font-size: 36px;
+    line-height: 42px;
+    color: #0591AC;
+    display: block;
+    float: left;
+}
+
+.exfeegadget_num_of {
+    display: block;
+    height: 16px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+.exfeegadget_num_confirmed {
+    display: block;
+    height: 16px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+.exfeegadget_listarea {
+    display: none;
 }

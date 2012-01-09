@@ -41,12 +41,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.make = function(domId, curExfee, curEditable) {
         var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" class="exfeegadget_infoarea">'
-                    +     '<img id="' + domId + '_exfeegadget_info_label">'
-                    +     '<div id="' + domId + '_exfeegadget_info">'
-                    +         '<span id="' + domId + '_exfeegadget_num_accepted">'
-                    +         '1</span>'
-                    +         '<span id="' + domId + '_exfeegadget_num_summary">'
-                    +         '2</span>'
+                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" class="exfeegadget_info_labelarea">'
+                    +         '<img id="' + domId + '_exfeegadget_info_label">'
+                    +         'Exfee'
+                    +     '</div>'
+                    +     '<div id="' + domId + '_exfeegadget_info" class="exfeegadget_info">'
+                    +         '<span id="' + domId + '_exfeegadget_num_accepted" class="exfeegadget_num_accepted">'
+                    +         '</span>'
+                    +         '<span class="exfeegadget_num_of"> of '
+                    +             '<span id="' + domId + '_exfeegadget_num_summary" class="exfeegadget_num_summary"></span>'
+                    +         '</span>'
+                    +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
                     +     '</div>'
                     + '</div>'
                     + '<div id="' + domId + '_exfeegadget_avatararea" class="exfeegadget_avatararea">'
@@ -176,8 +181,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.addExfee = function(domId, exfees, rsvp) {
-        rsvp = rsvp ? rsvp : 0;
+    ns.addExfee = function(domId, exfees) {
         for (var i in exfees) {
             var objExfee    = typeof exfees[i].external_identity === 'undefined'
                             ? {avatar_file_name  : 'default.png',
@@ -196,7 +200,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     break;
                 }
             }
-            objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? rsvp : exfees[i].rsvp;
+            objExfee.host = typeof exfees[i].host === 'undefined' ? false : exfees[i].host;
+            objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? 0     : exfees[i].rsvp;
             objExfee.rsvp = keyIdentity === '_fake_host_' ? 1 : objExfee.rsvp;
             var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
@@ -231,6 +236,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.chkFakeHost(domId);
+        this.updateExfeeSummary(domId);
         this.ajaxIdentity(exfees);
     };
 
@@ -253,6 +259,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 delete this.exfeeInput[domId][keyIdentity];
             }
         }
+        this.updateExfeeSummary(domId);
     };
 
 
@@ -264,6 +271,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             this.addExfee(domId, [{id   : '_fake_host_', name : 'me',
                                    type : 'email',       rsvp : 1}]);
         }
+    };
+    
+    
+    ns.updateExfeeSummary = function(domId) {
+        var confirmed = 0;
+            total     = 0;
+        for (var i in odof.exfee.gadget.exfeeInput[domId]) {
+            var curNo = 1
+                      + (typeof odof.exfee.gadget.exfeeInput[domId][i].plus !== 'undefined'
+                       ? typeof odof.exfee.gadget.exfeeInput[domId][i].plus
+                       : 0);
+            total += curNo;
+            confirmed += odof.exfee.gadget.exfeeInput[domId][i].rsvp === 1 ? 1 : 0;
+        }
+        $('#' + domId + '_exfeegadget_num_accepted').html(confirmed);
+        $('#' + domId + '_exfeegadget_num_summary').html(total);
     };
     
     
@@ -304,6 +327,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).removeClass(strRsvp);
             }
         }
+        this.updateExfeeSummary(domId);
     };
 
 
