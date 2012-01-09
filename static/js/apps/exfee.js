@@ -13,6 +13,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns) {
 
     ns.exfeeAvailableKey = 'exfee_available';
+    
+    ns.arrClassRsvp      = ['noresponse', 'accepted', 'declined', 'interested'];
 
     ns.inputed           = {};
 
@@ -39,12 +41,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.make = function(domId, curExfee, curEditable) {
         var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" class="exfeegadget_infoarea">'
-                    +     '<img id="' + domId + '_exfeegadget_info_label">'
-                    +     '<div id="' + domId + '_exfeegadget_info">'
-                    +         '<span id="' + domId + '_exfeegadget_num_accepted">'
-                    +         '1</span>'
-                    +         '<span id="' + domId + '_exfeegadget_num_summary">'
-                    +         '2</span>'
+                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" class="exfeegadget_info_labelarea">'
+                    +         '<img id="' + domId + '_exfeegadget_info_label">'
+                    +         'Exfee'
+                    +     '</div>'
+                    +     '<div id="' + domId + '_exfeegadget_info" class="exfeegadget_info">'
+                    +         '<span id="' + domId + '_exfeegadget_num_accepted" class="exfeegadget_num_accepted">'
+                    +         '</span>'
+                    +         '<span class="exfeegadget_num_of"> of '
+                    +             '<span id="' + domId + '_exfeegadget_num_summary" class="exfeegadget_num_summary"></span>'
+                    +         '</span>'
+                    +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
                     +     '</div>'
                     + '</div>'
                     + '<div id="' + domId + '_exfeegadget_avatararea" class="exfeegadget_avatararea">'
@@ -97,6 +104,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         );
         $('#' + domId + '_exfeegadget_autocomplete > ol > li').live(
             'mousemove click', this.eventCompleteItem
+        );
+        $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_rsvpblock').live(
+            'click', this.eventAvatarRsvp
         );
     };
 
@@ -164,6 +174,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $(strBaseId).removeClass(className);
         $(strBaseId + '[identity="' + identity + '"]').addClass(className);
     };
+    
+    
+    ns.getClassRsvp = function(rsvp) {
+        return 'exfee_rsvp_' + this.arrClassRsvp[rsvp];
+    };
 
 
     ns.addExfee = function(domId, exfees) {
@@ -185,42 +200,139 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     break;
                 }
             }
+            objExfee.host = typeof exfees[i].host === 'undefined' ? false : exfees[i].host;
+            objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? 0     : exfees[i].rsvp;
+            objExfee.rsvp = keyIdentity === '_fake_host_' ? 1 : objExfee.rsvp;
+            var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<img src="' + odof.comm.func.getUserAvatar(
-                    objExfee.avatar_file_name, 80, img_url)
-              +     '" class="exfee_avatar">'
+              +     '<div class="exfee_avatarblock">'
+              +         '<img src="' + odof.comm.func.getUserAvatar(
+                        objExfee.avatar_file_name, 80, img_url)
+              +         '" class="exfee_avatar">'
+              +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+              +     '</div>'
               + '</li>'
             );
             $('#' + domId + '_exfeegadget_listarea > ol').append(
                 '<li identity="' + keyIdentity + '">'
-              +     '<span class="exfee_name">'
-              +         objExfee.name
-              +     '</span>'
-              +     '<span class="exfee_identity">'
-              +         objExfee.external_identity
-              +     '</span>'
-              +     '<img src="' + odof.comm.func.getUserAvatar(
-                    objExfee.avatar_file_name, 80, img_url)
-              +     '" class="exfee_avatar">'
+              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+              +     '<div class="exfee_baseblock">'
+              +         '<span class="exfee_name">'
+              +             objExfee.name
+              +         '</span>'
+              +        (objExfee.external_identity === '_fake_host_' ? ''
+              :        ('<span class="exfee_identity">'
+              +             objExfee.external_identity
+              +         '</span>'))
+              +     '</div>'
+              +     '<div class="exfee_extrablock">'
+              +         '<img src="' + odof.comm.func.getUserAvatar(
+                        objExfee.avatar_file_name, 80, img_url)
+              +         '" class="exfee_avatar">'
+              +     '</div>'
               + '</li>'
             );
-            this.exfeeInput[domId][keyIdentity] = objExfee;
+            if (keyIdentity !== '_fake_host_') {
+                this.exfeeInput[domId][keyIdentity] = objExfee;
+            }
         }
+        this.chkFakeHost(domId);
+        this.updateExfeeSummary(domId);
         this.ajaxIdentity(exfees);
     };
 
 
     ns.delExfee = function(domId) {
-        for (var i in this.exfeeSelected[domId]) {
-            var keyIdentity = this.exfeeSelected[domId][i].toLowerCase();
-            if (typeof this.exfeeInput[domId][keyIdentity] === 'undefined') {
-                continue;
-            }
+        this.rawDelExfee(domId, this.exfeeSelected[domId]);
+        this.chkFakeHost(domId);
+        this.exfeeSelected = [];
+    };
+    
+    
+    ns.rawDelExfee = function(domId, exfees) {
+        for (var i in exfees) {
+            var keyIdentity = exfees[i].toLowerCase();
+            $('#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
+                  + keyIdentity + '"]').remove();
             $('#' + domId + '_exfeegadget_listarea > ol > li[identity="'
                   + keyIdentity + '"]').remove();
-            delete this.exfeeInput[domId][keyIdentity];
+            if (typeof this.exfeeInput[domId][keyIdentity] !== 'undefined') {
+                delete this.exfeeInput[domId][keyIdentity];
+            }
         }
+        this.updateExfeeSummary(domId);
+    };
+
+
+    ns.chkFakeHost = function(domId) {
+        var fakeHost = $('#' + domId + '_exfeegadget_listarea > ol > li[identity="_fake_host_"]').length;
+        if (odof.util.count(this.exfeeInput[domId]) && fakeHost) {
+            this.rawDelExfee(domId, ['_fake_host_']);
+        } else if (!odof.util.count(this.exfeeInput[domId]) && !fakeHost) {
+            this.addExfee(domId, [{id   : '_fake_host_',
+                                   name : 'me',
+                                   type : 'email',
+                                   host : true,
+                                   rsvp : 1}]);
+        }
+    };
+    
+    
+    ns.updateExfeeSummary = function(domId) {
+        var confirmed = 0;
+            total     = 0;
+        for (var i in odof.exfee.gadget.exfeeInput[domId]) {
+            var curNo = 1
+                      + (typeof odof.exfee.gadget.exfeeInput[domId][i].plus !== 'undefined'
+                       ? typeof odof.exfee.gadget.exfeeInput[domId][i].plus
+                       : 0);
+            total += curNo;
+            confirmed += odof.exfee.gadget.exfeeInput[domId][i].rsvp === 1 ? 1 : 0;
+        }
+        $('#' + domId + '_exfeegadget_num_accepted').html(confirmed);
+        $('#' + domId + '_exfeegadget_num_summary').html(total);
+    };
+    
+    
+    ns.eventAvatarRsvp = function(event) {
+        var domLi    = event.target.parentNode.parentNode,
+            identity = $(domLi).attr('identity'),
+            domId    = domLi.parentNode.parentNode.id.split('_')[0];
+        switch (event.type) {
+            case 'click':
+                switch (odof.exfee.gadget.exfeeInput[domId][identity].rsvp) {
+                    case 1:
+                        odof.exfee.gadget.changeRsvp(domId, identity, 0);
+                        break;
+                    case 0:
+                    case 2:
+                    case 3:
+                    default:
+                        odof.exfee.gadget.changeRsvp(domId, identity, 1);
+                }
+        }
+    };
+    
+    
+    ns.changeRsvp = function(domId, identity, rsvp) {
+        if (typeof this.exfeeInput[domId][identity] === 'undefined') {
+            return;
+        }
+        this.exfeeInput[domId][identity].rsvp = rsvp;
+        var strCatchKey   = ' > ol > li[identity="' + identity + '"] .exfee_rsvpblock';
+        for (var i in this.arrClassRsvp) {
+            var intRsvp = parseInt(i),
+                strRsvp = this.getClassRsvp(intRsvp);
+            if (intRsvp === rsvp) {
+                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).addClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).addClass(strRsvp);
+            } else {
+                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).removeClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).removeClass(strRsvp);
+            }
+        }
+        this.updateExfeeSummary(domId);
     };
 
 
@@ -321,8 +433,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                  name : identities[i].name,
                                  type : 'email'};
             }
-            if (typeof this.exfeeIdentified[identities[i].id.toLowerCase()]
-            !== 'undefined') {
+            var strId = identities[i].id.toLowerCase();
+            if (strId === '_fake_host_'
+             || typeof this.exfeeIdentified[strId] !== 'undefined') {
                 delete identities[i];
             }
         }
@@ -363,14 +476,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.cacheExfee = function(exfees, noIdentity) { // @todo: temp noIdentity
         for (var i in exfees) {
-            var curIdentity = exfees[i].external_identity.toLowerCase();
+            var objExfee    = typeof exfees[i].external_identity === 'undefined'
+                            ? {avatar_file_name  : 'default.png',
+                               bio               : '',
+                               external_identity : exfees[i].id,
+                               name              : exfees[i].name}
+                            : odof.util.clone(exfees[i]),
+                curIdentity = objExfee.external_identity.toLowerCase();
+            if (typeof objExfee.rsvp !== 'undefined') {
+                delete objExfee.rsvp;
+            }
+            if (curIdentity === '_fake_host_') {
+                continue;
+            }
             for (var j in this.exfeeAvailable) {
                 if (this.exfeeAvailable[j].external_identity.toLowerCase()
                 === curIdentity) {
                     this.exfeeAvailable.splice(i, 1);
                 }
             }
-            this.exfeeAvailable.unshift(odof.util.clone(exfees[i]));
+            this.exfeeAvailable.unshift(odof.util.clone(objExfee));
             if (noIdentity) {
                 continue;
             }

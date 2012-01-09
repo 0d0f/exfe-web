@@ -280,7 +280,15 @@ $(document).ready(function() {
     odof.x.render.show(false);
     
     // Exfee input
-    odof.exfee.gadget.make('gatherExfee', [], true);
+    var curExfees = [];
+    if (myidentity) {
+        var meExfee = odof.util.clone(myidentity);
+        meExfee.host = true;
+        meExfee.rsvp = 1;
+        curExfees.push(meExfee);
+    }
+    odof.exfee.gadget.make('gatherExfee', curExfees, true);
+    odof.exfee.gadget.chkFakeHost('gatherExfee');
 
     // title
     $('#gather_title').bind('focus blur keyup', function(event) {

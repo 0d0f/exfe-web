@@ -13,29 +13,57 @@
 } */
 
 .exfeegadget_infoarea {
+    display: none;
     float: right;
     height: 50px;
-    width: 80px;
+    width: 130px;
     overflow: hidden;
 }
 
-.exfeegadget_avatararea {
+#gather_form .exfeegadget_avatararea > ol > li {
+    padding: 0;
+    width: 60px;
+    height: 60px;
     float: left;
+    clear: none;
+    position: relative;
+}
+
+.exfee_avatarblock {
+    padding: 5px;
+    width: 50px;
     height: 50px;
+    transition: all 100ms;
+    -webkit-transition: all 100ms;
+    -moz-transition: all 100ms;
+    -o-transition: all 100ms;
+}
+
+.exfee_avatarblock:hover {
+    padding: 0;
+    width: 60px;
+    height: 60px;   
+}
+
+.exfeegadget_avatararea .exfee_rsvpblock {
+    position: absolute;
+    bottom: 0px;
+    right: -3px;
 }
 
 .exfeegadget_inputarea {
-    clear: both;
-    padding-top: 10px;
+    height: 24px;
+    position: absolute;
 }
 
 .exfeegadget_inputbox {
     border: 1px #CCCCCC solid;
+    height: 24px;
 }
 
 .exfee_avatar {
-    width: 50px;
-    height: 50px;
+    width: 100%;
+    height: 100%;
 }
 
 .exfeegadget_autocomplete {
@@ -49,7 +77,7 @@
 }
 
 #gather_form .autocomplete_item {
-    padding-bottom: 0px;
+    padding-bottom: 0;
     margin: 3px;
     padding: 3px;
     border: 1px transparent dashed;
@@ -72,11 +100,14 @@
     margin-left: 10px;
 }
 
-.exfee_name, .exfee_identity {
-    width: 250px;
+.exfeegadget_autocomplete .exfee_name, .exfeegadget_autocomplete .exfee_identity {
+    width: 190px;
     overflow: hidden;
     float: left;
     clear: both;
+}
+
+.exfee_name, .exfee_identity {
     color: #333333;
 }
 
@@ -89,4 +120,96 @@
     font-size: 14px;
     line-height: 20px;
     font-style: italic;
+}
+
+.exfeegadget_listarea {
+    padding-top: 10px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#gather_form .exfeegadget_listarea > ol > li {
+    height: 30px;
+    padding-bottom: 0;
+}
+
+.exfee_rsvpblock {
+    float: left;
+    width: 20px;
+    height: 20px;
+    background: url("/static/images/icons.png");
+}
+
+.exfee_rsvp_noresponse {
+    background-position: left -123px;
+}
+
+.exfee_rsvp_accepted {    
+    background-position: -1px -81px;
+}
+
+.exfee_rsvp_declined {
+    background-position: left -165px;
+}
+
+.exfee_rsvp_interested {
+    background-position: left -207px;
+}
+
+.exfee_baseblock {
+    width: 275px;
+    float: left;
+    overflow: hidden;
+}
+
+.exfee_extrablock {
+    width: 85px;
+    float: right;
+}
+
+#gather_form .exfeegadget_listarea > ol > li .exfee_avatar {
+    float: right;
+    width: 20px;
+    height: 20px;
+}
+
+.exfeegadget_listarea .exfee_name {
+    margin-right: 10px;
+}
+
+#gather_form .exfeegadget_infoarea .exfeegadget_info {
+    width: 130px;
+    height: 42px;
+    font-size: 14px;
+    line-height: 16px;
+    color: #666666;
+    position: relative;
+}
+
+.exfeegadget_num_accepted {
+    font-size: 36px;
+    line-height: 42px;
+    color: #0591AC;
+    display: block;
+    float: left;
+}
+
+.exfeegadget_num_of {
+    display: block;
+    height: 16px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+.exfeegadget_num_confirmed {
+    display: block;
+    height: 16px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+}
+
+.exfeegadget_listarea {
+    display: none;
 }
