@@ -622,47 +622,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//////////////////// OLD exfee editing code from x page ////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-if (0) {
-    /**
-     * update "check all" status
-     * by Leask
-     * */
-    ns.updateCheckAll = function() {
-        if ($('.cs > .c1').length < $('.samlcommentlist > li').length) {
-            $('#check_all > span').html('Check all');
-            $('#check_all > em').attr('class', 'c1');
-        } else {
-            $('#check_all > span').html('Uncheck all');
-            $('#check_all > em').attr('class', 'c0');
-        }
-        // submit
-        $.ajax({
-            url  : location.href.split('?').shift() + '/crossEdit',
-            type : 'POST',
-            dataType : 'json',
-            data : {ctitle     : $('#cross_titles_textarea').val(),
-                    exfee_only : true,
-                    exfee      : JSON.stringify(ns.getexfee())},
-            success:function(data){
-                if (!data) {
-                    return;
-                }
-                if (!data.success) {
-                    switch (data.error) {
-                        case 'token_expired':
-                            odof.cross.index.setreadonly();
-                    }
-                }
-            }
-        });
-    };
-
-}
-////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////// OLD exfee editing code from gather page //////////////////////
 ////////////////////////////////////////////////////////////////////////////////
