@@ -661,21 +661,6 @@ if (0) {
         });
     };
 
-    /**
-     * do "check all" or "uncheck all"
-     * by Leask
-     * */
-    ns.checkAll = function() {
-        switch ($('#check_all > em')[0].className) {
-            case 'c0':
-                $('.cs > em').attr('class', 'c0');
-                break;
-            case 'c1':
-                $('.cs > em').attr('class', 'c1');
-        }
-        ns.updateCheckAll();
-    };
-
 }
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
