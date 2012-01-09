@@ -6,9 +6,12 @@ class XActions extends ActionController
     public function doGather()
     {
         $identity_id = $_SESSION['identity_id'];
-        $this->setVar('myidentity',
-                      $_SESSION['identity']['external_identity'] !== ''
-                    ? $_SESSION['identity'] : null);
+        $myidentity  = null;
+        if ($_SESSION['identity']['external_identity']) {
+            $myidentity = $_SESSION['identity'];
+            $myidentity['identityid'] = $identity_id;
+        }
+        $this->setVar('myidentity', $myidentity);
 
         if ($_POST['title']) {
             if ($identity_id) {

@@ -89,8 +89,8 @@ var moduleNameSpace = 'odof.x.gather',
     {
         var x   = odof.util.clone(crossData);
         x.place = x.place.line1 + "\r" + x.place.line2;
-        return x;
-        // exfee       : JSON.stringify(getexfee())
+        x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));        
+        return x; 
     };
 
 
@@ -283,10 +283,8 @@ $(document).ready(function() {
     var curExfees = [];
     if (myidentity) {
         var meExfee = odof.util.clone(myidentity);
-        meExfee.type = meExfee.provider;
         meExfee.host = true;
         meExfee.rsvp = 1;
-        delete meExfee.provider;
         curExfees.push(meExfee);
     }
     odof.exfee.gadget.make('gatherExfee', curExfees, true);
