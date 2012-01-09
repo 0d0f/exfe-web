@@ -257,7 +257,7 @@ class IdentityModels extends DataModel{
         $_SESSION["identity_id"]=$identity_id;
         $identity=array();
         $identity["external_identity"]=$identityrow["external_identity"];
-        $idnetity["provider"] = $identityrow["provider"];
+        $identity["provider"] = $identityrow["provider"];
         $identity["name"]=$identityrow["name"];
         if(trim($identity["name"]==""))
             $identity["name"]=$userrow["name"];

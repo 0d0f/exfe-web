@@ -283,8 +283,10 @@ $(document).ready(function() {
     var curExfees = [];
     if (myidentity) {
         var meExfee = odof.util.clone(myidentity);
+        meExfee.type = meExfee.provider;
         meExfee.host = true;
         meExfee.rsvp = 1;
+        delete meExfee.provider;
         curExfees.push(meExfee);
     }
     odof.exfee.gadget.make('gatherExfee', curExfees, true);
