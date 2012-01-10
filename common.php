@@ -615,3 +615,27 @@ function createToken(){
     $hashString = md5(base64_encode(pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
     return md5($hashStr.$randString.getMicrotime().uniqid()).time();
 }
+
+function json_encode_nounicode($code)
+{
+    $code = json_encode(urlencodeAry($code));
+    return urldecode($code);
+}
+
+function urlencodeAry($data)
+{
+    if(is_array($data))
+    {
+        foreach($data as $key=>$val)
+        {
+            $data[$key] = urlencodeAry($val);
+        }
+        return $data;
+    }
+    else
+    {
+        return urlencode($data);
+    }
+}
+
+

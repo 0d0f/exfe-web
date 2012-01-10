@@ -61,27 +61,27 @@ function apn_connect()
 
 }
 
-function json_encode_nounicode($code)
-{
-    $code = json_encode(urlencodeAry($code));
-    return urldecode($code);
-}
-
-function urlencodeAry($data)
-{
-    if(is_array($data))
-    {
-        foreach($data as $key=>$val)
-        {
-            $data[$key] = urlencodeAry($val);
-        }
-        return $data;
-    }
-    else
-    {
-        return urlencode($data);
-    }
-}
+#function json_encode_nounicode($code)
+#{
+#    $code = json_encode(urlencodeAry($code));
+#    return urldecode($code);
+#}
+#
+#function urlencodeAry($data)
+#{
+#    if(is_array($data))
+#    {
+#        foreach($data as $key=>$val)
+#        {
+#            $data[$key] = urlencodeAry($val);
+#        }
+#        return $data;
+#    }
+#    else
+#    {
+#        return urlencode($data);
+#    }
+#}
 
 function sendapn($deviceToken,$body)
 {
