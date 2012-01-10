@@ -59,8 +59,24 @@ class TestActions extends ActionController
 
     public function doTest()
     {
-        $identitydata=$this->getModelByName("identity");
-        $identitydata->getIdentitiesByIdsFromCache(1);
+        $identity_id_list=array();
+        array_push($identity_id_list,3);
+        array_push($identity_id_list,2);
+        array_push($identity_id_list,4);
+        array_push($identity_id_list,7);
+        print_r($identity_id_list);
+        $r=in_array($identity_id_list,array(4));
+        var_dump($r);
+        #$identitydata=$this->getModelByName("identity");
+        #$identitydata->getIdentitiesByIdsFromCache(1);
+        #$r=array();
+        #$identity["name"]="virushuo";
+        #$identity["email"]="virushuo@gmail.com";
+        #array_push($r,$identity);
+        #$identity["name"]="huoju";
+        #$identity["email"]="huoju@gmail.com";
+        #array_push($r,$identity);
+        #echo json_encode($r);
 
         #var_dump(base62_to_int("q0X"));
         #$content=cleanText("dadfasdf http://www.dianping.com/shop/2588782 www.google.com ");

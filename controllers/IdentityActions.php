@@ -48,7 +48,7 @@ class IdentityActions extends ActionController
         if(trim($key)!="" && intval($userid)>0)
         {
             $redis = new Redis();
-            $redis->connect('127.0.0.1', 6379);
+            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
             $count=$redis->zCard('u_'.$userid);
             if($count==0)
             {
@@ -98,22 +98,55 @@ class IdentityActions extends ActionController
                 }
             }
         }
-        foreach($resultarray as $k=>$v)
+        $keys=array_keys($resultarray);
+        #$resultidentities=array();
+        $resultstr="[";
+        if(sizeof($keys)>0)
         {
-            if(!is_array($v["identity"]))
+            $identity_id_list=array();
+            foreach($keys as $k)
             {
                 $key_explode=explode(" ",$k);
                 if(intval($key_explode[2])>0)
                 {
                     $identity_id=$key_explode[2];
-                    $identity=$identityData->getIdentitiesByIdsFromCache($identity_id);
-                    $iobj=json_decode($identity,true);
-                    $resultarray[$k]=array("identity"=>$iobj);
+                    array_push($identity_id_list,$identity_id);
                 }
+                
+            }
+            if(sizeof($identity_id_list)>0);
+            {
+                $identities=$identityData->getIdentitiesByIdsFromCache($identity_id_list);
+                foreach($identities as $identity_json)
+                {
+                    $resultstr.=$identity_json.",";
+                    #$iobj=json_decode($identity,true);
+                    #array_push($resultidentities,$iobj);
+                    #$resultarray[$iobj["id"]]=array("identity"=>$iobj);
+                }
+                #print_r($iobj);
             }
 
         }
-        echo json_encode($resultarray, JSON_FORCE_OBJECT);
+        #foreach($resultarray as $k=>$v)
+        #{
+        #    if(!is_array($v["identity"]))
+        #    {
+        #        $key_explode=explode(" ",$k);
+        #        if(intval($key_explode[2])>0)
+        #        {
+        #            $identity_id=$key_explode[2];
+        #            $identity=$identityData->getIdentitiesByIdsFromCache($identity_id);
+        #            $iobj=json_decode($identity,true);
+        #            $resultarray[$k]=array("identity"=>$iobj);
+        #        }
+        #    }
+
+        #}
+        $resultstr=rtrim($resultstr,",");
+        $resultstr.="]";
+        echo $resultstr;
+        #echo json_encode($resultidentities, JSON_FORCE_OBJECT);
     }
 
 }

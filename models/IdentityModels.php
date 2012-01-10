@@ -687,7 +687,7 @@ class IdentityModels extends DataModel{
             $sql="select name,external_identity,r_identityid from user_relations where userid=$userid;";
             $identities =$this->getAll($sql);
             $redis = new Redis();
-            $redis->connect('127.0.0.1', 6379);
+            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
             mb_internal_encoding("UTF-8");
 
             foreach($identities as $identitymeta)
@@ -714,9 +714,33 @@ class IdentityModels extends DataModel{
     public function getIdentitiesByIdsFromCache($identity_id_list)
     {
         $redis = new Redis();
-        $redis->connect('127.0.0.1', 6379);
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $identities=array();
         if(is_array($identity_id_list))
         {
+            foreach($identity_id_list as $identity_id)
+            {
+                $identity=$redis->HGET("identities","id:".$identity_id);
+                if($identity==false)
+                {
+                    $identity=$this->getIdentityById($identity_id);
+                    if($identity!=NULL)
+                    {
+                        $identity=json_encode_nounicode($identity);
+                        $redis->HSET("identities","id:".$identity_id,$identity);
+                    }
+
+                }
+                array_push($identities,$identity);
+            }
+            #$redismulti=$redis->multi();
+            #foreach($identity_id_list as $identity_id)
+            #{
+                #$identity=$redis->HGET("identities","id:".$identity_id);
+            #}
+            #$identities=$redismulti->exec();
+            return $identities;
+
             //multi values
         }
         else if(is_numeric($identity_id_list))
