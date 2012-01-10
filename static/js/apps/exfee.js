@@ -629,23 +629,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // exfee
-function rollExfee()
-{
-    var maxWidth = 200;
-    if (!rollingExfee) {
-        return;
-    }
-    var rollE    = $('#' + rollingExfee + ' > .smcomment > div'),
-        orlWidth = rollE.width(),
-        curLeft  = parseInt(rollE.css('margin-left')) - 1;
-    if (orlWidth <= maxWidth) {
-        return;
-    }
-    curLeft = curLeft <= (0 - orlWidth) ? maxWidth : curLeft;
-    rollE.css('margin-left', curLeft + 'px');
-}
-
-
 function chkComplete(strKey)
 {
     $.ajax({
