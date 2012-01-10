@@ -14,8 +14,7 @@ class XModels extends DataModel
         // $end_at=$cross["end_at"];
         // $duration=$cross["duration"];
         // time type
-        $cross_datetime = $cross['datetime'];
-        $datetime_array = explode(' ', $cross_datetime);
+        $datetime_array = explode(' ', $cross['datetime']);
         $time_type = 0;
         if (sizeof($datetime_array) === 1) {
             $time_type = TIMETYPE_ANYTIME; // allday
