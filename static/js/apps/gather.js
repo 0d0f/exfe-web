@@ -22,12 +22,17 @@ var moduleNameSpace = 'odof.x.gather',
     ns.autoSubmit      = false;
 
 
-    ns.updateTitle = function() {
-        crossData.title   = odof.util.trim($('#gather_title').val());
+    ns.updateTitle = function(force) {
+        var objTitle        = $('#gather_title'),
+            strOriginTitle  = objTitle.val();
+        crossData.title     = odof.util.trim(strOriginTitle);
         if (crossData.title === '') {
             crossData.title = defaultTitle;
         }
-        $('#gather_title').val(crossData.title);
+        if ((strOriginTitle !== '' || force)
+          && strOriginTitle !== crossData.title) {
+            objTitle.val(crossData.title);
+        }
         document.title = 'EXFE - ' + crossData.title;
         odof.x.render.showTitle();
     };
@@ -303,13 +308,13 @@ $(document).ready(function() {
                 break;
             case 'blur':
                 $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
-                odof.x.gather.updateTitle();
+                odof.x.gather.updateTitle(true);
                 break;
             case 'keyup':
                 odof.x.gather.updateTitle();
         }
     });
-    odof.x.gather.updateTitle();
+    odof.x.gather.updateTitle(true);
     $('#gather_title').select();
     $('#gather_title').focus();
 
