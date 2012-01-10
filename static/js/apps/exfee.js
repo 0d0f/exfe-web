@@ -323,6 +323,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var domLi    = event.target.parentNode.parentNode,
             identity = $(domLi).attr('identity'),
             domId    = domLi.parentNode.parentNode.id.split('_')[0];
+            console.log(domId);
         switch (event.type) {
             case 'click':
                 switch (odof.exfee.gadget.exfeeInput[domId][identity].rsvp) {

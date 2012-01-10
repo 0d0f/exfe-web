@@ -90,7 +90,7 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.showExfee = function() {
-        odof.exfee.gadget.make('x_exfee_area', odof.exfee.gadget.exfeeInput['gatherExfee'], false);
+        odof.exfee.gadget.make('xExfeeArea', odof.exfee.gadget.exfeeInput['gatherExfee'], false);
     };
 
 
