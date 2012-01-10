@@ -15,8 +15,6 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.draft_id        = 0;
 
-    ns.new_identity_id = 0; // @todo
-
     ns.xSubmitting     = false;
 
     ns.autoSubmit      = false;
