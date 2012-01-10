@@ -37,35 +37,51 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.exfeeSelected     = {};
 
     ns.completing        = {};
+    
+    ns.diffCallback      = {};
 
 
-    ns.make = function(domId, curExfee, curEditable) {
-        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" class="exfeegadget_infoarea">'
-                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" class="exfeegadget_info_labelarea">'
-                    +         '<img id="' + domId + '_exfeegadget_info_label">'
+    ns.make = function(domId, curExfee, curEditable, curDiffCallback) {
+        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" '
+                    +                 'class="exfeegadget_infoarea">'
+                    +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
+                    +                     'class="exfeegadget_info_totalarea">'
+                    +     '</div>'
+                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" '
+                    +                     'class="exfeegadget_info_labelarea">'
                     +         'Exfee'
                     +     '</div>'
-                    +     '<div id="' + domId + '_exfeegadget_info" class="exfeegadget_info">'
-                    +         '<span id="' + domId + '_exfeegadget_num_accepted" class="exfeegadget_num_accepted">'
+                    +     '<div id="' + domId + '_exfeegadget_info" '
+                    +                     'class="exfeegadget_info">'
+                    +         '<span id="' + domId + '_exfeegadget_num_accepted" '
+                    +                          'class="exfeegadget_num_accepted">'
                     +         '</span>'
                     +         '<span class="exfeegadget_num_of"> of '
-                    +             '<span id="' + domId + '_exfeegadget_num_summary" class="exfeegadget_num_summary"></span>'
+                    +             '<span id="' + domId + '_exfeegadget_num_summary" '
+                    +                              'class="exfeegadget_num_summary">'
+                    +             '</span>'
                     +         '</span>'
                     +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
                     +     '</div>'
                     + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_avatararea" class="exfeegadget_avatararea">'
+                    + '<div id="' + domId + '_exfeegadget_avatararea" '
+                    +                 'class="exfeegadget_avatararea">'
                     +     '<ol></ol>'
                     +     '<button id="' + domId + '_exfeegadget_expandavatarbtn">'
                     + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_inputarea" class="exfeegadget_inputarea">'
-                    +     '<input  id="' + domId + '_exfeegadget_inputbox" class="exfeegadget_inputbox" type="text">'
+                    +(curEditable
+                    ?('<div id="' + domId + '_exfeegadget_inputarea" '
+                    +                 'class="exfeegadget_inputarea">'
+                    +     '<input  id="' + domId + '_exfeegadget_inputbox" '
+                    +                        'class="exfeegadget_inputbox" type="text">'
                     +     '<button id="' + domId + '_exfeegadget_addbtn">+</button>'
-                    +     '<div id="' + domId + '_exfeegadget_autocomplete" class="exfeegadget_autocomplete">'
+                    +     '<div id="' + domId + '_exfeegadget_autocomplete" '
+                    +                     'class="exfeegadget_autocomplete">'
                     +         '<ol></ol>'
                     +     '</div>'
-                    + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_listarea" class="exfeegadget_listarea">'
+                    + '</div>') : '')
+                    + '<div id="' + domId + '_exfeegadget_listarea" '
+                    +                 'class="exfeegadget_listarea">'
                     +     '<ol></ol>'
                     + '</div>';
         this.inputed[domId]       = '';
@@ -75,6 +91,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.curComplete[domId]   = {};
         this.exfeeSelected[domId] = {};
         this.completing[domId]    = false;
+        this.diffCallback[domId]  = curDiffCallback;
         $('#' + domId).html(strHtml);
         if (typeof localStorage !== 'undefined') {
             this.exfeeAvailable = localStorage.getItem(this.exfeeAvailableKey);
@@ -89,7 +106,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.cacheExfee(curExfee);
-        this.addExfee(domId, curExfee);
+        this.addExfee(domId, curExfee, true, true);
+        if (this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
         if (!curEditable) {
             return;
         }
@@ -181,7 +201,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.addExfee = function(domId, exfees, noIdentity) {
+    ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
         for (var i in exfees) {
             var objExfee = odof.util.clone(exfees[i]);
             objExfee.external_identity = objExfee.external_identity.toLowerCase();
@@ -233,9 +253,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if (objExfee.provider) {
                 this.exfeeInput[domId][objExfee.external_identity] = objExfee;
             }
+            
         }
         this.chkFakeHost(domId);
         this.updateExfeeSummary(domId);
+        if (!noCallback && this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
         if (!noIdentity) {
             this.ajaxIdentity(exfees);
         }
@@ -260,6 +284,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.updateExfeeSummary(domId);
+        if (this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
     };
 
 
@@ -383,7 +410,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (newInput !== strInput) {
             objInput.val(newInput);
         }
-        odof.exfee.gadget.addExfee(domId, arrValid);
+        if (arrValid.length) {
+            odof.exfee.gadget.addExfee(domId, arrValid);
+        }
         odof.exfee.gadget.chkComplete(domId, arrInValid.pop());
     };
 

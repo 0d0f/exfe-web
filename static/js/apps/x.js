@@ -109,8 +109,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_conversation_list').html(strMessage);
     };
-
-
+    
+    
     ns.makeMessage = function(objItem)
     {
         return '<li class="cleanup">'

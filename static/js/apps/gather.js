@@ -12,7 +12,7 @@ var moduleNameSpace = 'odof.x.gather',
 (function(ns) {
 
     ns.curCross        = '';
-    
+
     ns.draft_id        = 0;
 
     ns.new_identity_id = 0; // @todo
@@ -85,12 +85,16 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.summaryX = function()
-    {
+    ns.showExfee = function() {
+        odof.exfee.gadget.make('x_exfee_area', odof.exfee.gadget.exfeeInput['gatherExfee'], false);
+    };
+
+
+    ns.summaryX = function() {
         var x   = odof.util.clone(crossData);
         x.place = x.place.line1 + "\r" + x.place.line2;
-        x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));        
-        return x; 
+        x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));
+        return x;
     };
 
 
@@ -278,7 +282,7 @@ $(document).ready(function() {
 
     // X render
     odof.x.render.show(false);
-    
+
     // Exfee input
     var curExfees = [];
     if (myidentity) {
@@ -287,7 +291,7 @@ $(document).ready(function() {
         meExfee.rsvp = 1;
         curExfees.push(meExfee);
     }
-    odof.exfee.gadget.make('gatherExfee', curExfees, true);
+    odof.exfee.gadget.make('gatherExfee', curExfees, true, odof.x.gather.showExfee);
     odof.exfee.gadget.chkFakeHost('gatherExfee');
 
     // title

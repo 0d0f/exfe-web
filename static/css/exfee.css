@@ -12,15 +12,7 @@
 .cs em.c3{background-position:left -207px}
 } */
 
-.exfeegadget_infoarea {
-    display: none;
-    float: right;
-    height: 50px;
-    width: 130px;
-    overflow: hidden;
-}
-
-#gather_form .exfeegadget_avatararea > ol > li {
+#gather_form .exfeegadget_avatararea > ol > li, #x_exfee_area .exfeegadget_avatararea > ol > li {
     padding: 0;
     width: 60px;
     height: 60px;

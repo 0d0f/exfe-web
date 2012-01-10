@@ -117,7 +117,7 @@
     position: static;
 }
 
-.exfeegadget_avatararea {
+#gather_form .exfeegadget_avatararea {
     float: left;
     padding-top: 30px;
 }
@@ -135,11 +135,15 @@
     width: 246px;
 }
 
-.exfeegadget_info_labelarea {
+#gather_form .exfeegadget_info {
     display: none;
 }
 
-.exfeegadget_listarea {
+#gather_form .exfeegadget_info_labelarea {
+    display: none;
+}
+
+#gather_form .exfeegadget_listarea {
     width: 260px;
     height: 120px; 
 }
