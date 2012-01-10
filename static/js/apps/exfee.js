@@ -532,7 +532,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             return;
         }
         for (var i in this.exfeeChecked) {
-            if (key.indexOf(this.exfeeChecked[i]) !== -1) {
+            if (!key.indexOf(this.exfeeChecked[i])) {
                 return;
             }
         }
