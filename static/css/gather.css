@@ -117,6 +117,10 @@
     position: static;
 }
 
+#gather_form .exfeegadget_inputarea {
+    position: absolute;
+}
+
 #gather_form .exfeegadget_avatararea {
     float: left;
     padding-top: 30px;

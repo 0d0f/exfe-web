@@ -48,9 +48,12 @@
        . "</script>\r\n";
 
     // ready cross data
+    $exfees = $cross['exfee'];
+    unset($cross['exfee']);
     echo '<script>'
        . 'var myIdentity = ' . json_encode($myidentity) . ','
-       .     'crossData  = ' . json_encode($cross) . ','
+       .     'crossData  = ' . json_encode($cross)      . ','
+       .     'crossExfee = ' . json_encode($exfees)     . ','
        .     "myrsvp     = {$myrsvp};"
        . '</script>';
 ?>

@@ -355,3 +355,12 @@
     cursor: default;
     line-height: 24px;
 }
+
+#x_exfee_area .exfeegadget_inputarea {
+    padding: 5px;
+    clear: both;
+}
+
+#x_exfee_area .exfeegadget_inputbox {
+    width: 230px;
+}
