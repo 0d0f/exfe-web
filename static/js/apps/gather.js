@@ -21,6 +21,7 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.autoSubmit      = false;
 
+
     ns.updateTitle = function() {
         crossData.title   = odof.util.trim($('#gather_title').val());
         if (crossData.title === '') {
