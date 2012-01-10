@@ -629,33 +629,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // exfee
-function showExternalIdentity(event)
-{
-    var target = $(event.target);
-    while (!target.hasClass('exfee_item')) {
-        target = $(target[0].parentNode);
-    }
-    var id     = target[0].id;
-    if (!id) {
-        return;
-    }
-    switch (event.type) {
-        case 'mouseenter':
-            rollingExfee = id;
-            $('#' + id + ' > .smcomment > div > .ex_identity').fadeIn(100);
-            break;
-        case 'mouseleave':
-            rollingExfee = null;
-            $('#' + id + ' > .smcomment > div > .ex_identity').fadeOut(100);
-            var rollE = $('#' + id + ' > .smcomment > div');
-            rollE.animate({
-                marginLeft : '+=' + (0 - parseInt(rollE.css('margin-left')))},
-                700
-            );
-    }
-}
-
-
 function rollExfee()
 {
     var maxWidth = 200;
