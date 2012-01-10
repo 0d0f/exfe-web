@@ -705,7 +705,7 @@ class IdentityModels extends DataModel{
                             $identity_part.=mb_substr($identity_a, $i, 1);
                             $redis->zAdd('u_'.$userid, 0, $identity_part);
                         }
-                        $redis->zAdd('u_'.$userid, 0, $identity_part."|".$identitymeta["name"]." ".$identitymeta["external_identity"]." ".$identity_id."*");
+                        $redis->zAdd('u_'.$userid, 0, $identity_part."|".$identity_id."*");
                     }
                 }
             }

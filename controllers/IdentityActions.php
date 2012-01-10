@@ -106,10 +106,10 @@ class IdentityActions extends ActionController
             $identity_id_list=array();
             foreach($keys as $k)
             {
-                $key_explode=explode(" ",$k);
-                if(intval($key_explode[2])>0)
+                $key_explode=explode("|",$k);
+                if(intval($key_explode[sizeof($key_explode)-1])>0)
                 {
-                    $identity_id=$key_explode[2];
+                    $identity_id=$key_explode[sizeof($key_explode)-1];
                     array_push($identity_id_list,$identity_id);
                 }
                 
