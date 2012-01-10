@@ -358,6 +358,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.updateExfeeSummary(domId);
+        if (this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
     };
     
     
