@@ -629,41 +629,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // exfee
-function updateExfeeList()
-{
-    var exfees        = getexfee(),
-        htmExfeeList  = '',
-        numConfirmed  = 0,
-        numSummary    = 0;
-    for (var i in exfees) {
-        numConfirmed += exfees[i].confirmed;
-        numSummary++;
-        var avatarFile = exfees[i].avatar ? exfees[i].avatar : 'default.png';
-        htmExfeeList += '<li id="exfee_list_item_' + numSummary + '" class="exfee_item">'
-                      +     '<p class="pic20"><img alt="" src="'+odof.comm.func.getUserAvatar(avatarFile, 80, img_url)+'"></p>'
-                      +     '<div class="smcomment">'
-                      +         '<div>'
-                      +             '<span class="ex_name' + (exfees[i].exfee_name === exfees[i].exfee_identity ? ' external_identity' : '') + '">'
-                      +                 exfees[i].exfee_name
-                      +             '</span>'
-                      +             (exfees[i].isHost ? '<span class="lb">host</span>' : '')
-                      +             '<span class="ex_identity external_identity"> '
-                      +                 (exfees[i].exfee_name === exfees[i].exfee_identity ? '' : exfees[i].exfee_identity)
-                      +             '</span>'
-                      +         '</div>'
-                      +     '</div>'
-                      +     '<p class="cs">'
-                      +         '<em class="c' + (exfees[i].confirmed ? 1 : 2) + '"></em>'
-                      +     '</p>'
-                      + '</li>';
-    }
-    $('#exfeelist').html(htmExfeeList);
-    $('#exfee_confirmed').html(numConfirmed);
-    $('#exfee_summary').html(numSummary);
-    $('#exfee_count').html(numSummary);
-    $('#exfee').val('');
-    $('.ex_identity').hide();
-}
 $('#confirmed_all').click(function(e) {
         var check = false;
         if ($(this).attr('check') === 'false') {
