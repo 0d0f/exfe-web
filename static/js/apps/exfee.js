@@ -576,14 +576,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             success  : function(data) {
                 var gotExfee = [];
                 for (var i in data) {
-                    var item  = odof.util.trim(i).split(' '),
-                        strId = item.pop(),
-                        user  = {avatar_file_name  : 'default.png',
-                                 bio               : '',
-                                 external_identity : strId,
-                                 name              : item.join(' '),
-                                 provider          : 'email'},
-                        curId = user.external_identity.toLowerCase(),
+                    var curIdentity = {
+                            identityid        : data[i].id,
+                            name              : data[i].name,
+                            avatar_file_name  : data[i].avatar_file_name
+                                              ? data[i].avatar_file_name
+                                              : 'default.png',
+                            bio               : data[i].bio,
+                            external_identity : data[i].external_identity,
+                            provider          : 'email',
+                            userid            : data[i].uid
+                        },
+                        curId = curIdentity.external_identity.toLowerCase(),
                         exist = false;
                     for (var j in odof.exfee.gadget.exfeeAvailable) {
                         if (odof.exfee.gadget.exfeeAvailable[j]
@@ -593,11 +597,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                     }
                     if (!exist) {
-                        gotExfee.push(user);
+                        gotExfee.push(curIdentity);
                     }
                 }
                 odof.exfee.gadget.cacheExfee(gotExfee, true);
                 if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
+                    console.log(gotExfee);
                     odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
                 }
             }
