@@ -726,6 +726,12 @@ class IdentityModels extends DataModel{
                     $identity=$this->getIdentityById($identity_id);
                     if($identity!=NULL)
                     {
+                        $sql="select userid from user_identity where identityid=$identity_id";
+                        $result=$this->getRow($sql);
+                        if($result["userid"]>0)
+                        {
+                            $identity["uid"]=$result["userid"];
+                        }
                         $identity=json_encode_nounicode($identity);
                         $redis->HSET("identities","id:".$identity_id,$identity);
                     }
