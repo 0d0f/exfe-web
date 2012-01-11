@@ -1066,16 +1066,16 @@ var odof = {
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
                 iGt = strId.indexOf('>');
-            return {name : this.trim(this.cutLongName(this.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
-                    id   : this.trim(strId.substring(++iLt, iGt)),
-                    type : 'email'};
+            return {name              : this.trim(this.cutLongName(this.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
+                    external_identity : this.trim(strId.substring(++iLt, iGt)),
+                    provider          : 'email'};
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
-            return {name : this.trim(this.cutLongName(strId.split('@')[0])),
-                    id   : strId,
-                    type : 'email'};
+            return {name              : this.trim(this.cutLongName(strId.split('@')[0])),
+                    external_identity : strId,
+                    provider          : 'email'};
         } else {
-            return {id   : strId,
-                    type : 'unknow'};
+            return {external_identity : strId,
+                    provider          : null};
         }
     };
 

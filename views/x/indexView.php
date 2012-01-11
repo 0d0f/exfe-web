@@ -48,9 +48,12 @@
        . "</script>\r\n";
 
     // ready cross data
+    $exfees = $cross['exfee'];
+    unset($cross['exfee']);
     echo '<script>'
        . 'var myIdentity = ' . json_encode($myidentity) . ','
-       .     'crossData  = ' . json_encode($cross) . ','
+       .     'crossData  = ' . json_encode($cross)      . ','
+       .     'crossExfee = ' . json_encode($exfees)     . ','
        .     "myrsvp     = {$myrsvp};"
        . '</script>';
 ?>
@@ -82,13 +85,13 @@
         </div>
         <div id="x_menu_bar">
             <p class="lock_icon" id="private_icon"></p>
-            <p class="lock_icon_desc" id="private_hint" style="display:none" >
+            <p class="lock_icon_desc" id="private_hint" style="display:none;">
                 <span>Private X:</span>
                 <br>
                 Only attendees can access, and change other’s status.
             </p>
             <p class="edit_icon" id="edit_icon"></p>
-            <p class="edit_icon_desc" id="edit_icon_desc" style="display:none" >
+            <p class="edit_icon_desc" id="edit_icon_desc" style="display:none;">
                 Edit this cross.
             </p>
         </div>

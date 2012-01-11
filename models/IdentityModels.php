@@ -257,6 +257,7 @@ class IdentityModels extends DataModel{
         $_SESSION["identity_id"]=$identity_id;
         $identity=array();
         $identity["external_identity"]=$identityrow["external_identity"];
+        $identity["provider"] = $identityrow["provider"];
         $identity["name"]=$identityrow["name"];
         if(trim($identity["name"]==""))
             $identity["name"]=$userrow["name"];
@@ -358,7 +359,7 @@ class IdentityModels extends DataModel{
 
     public function getIdentityById($identity_id)
     {
-        $sql="select id,external_identity,name,bio,avatar_file_name,external_username from identities where id='$identity_id'";
+        $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
         $row=$this->getRow($sql);
         return $row;
     }
@@ -466,7 +467,7 @@ class IdentityModels extends DataModel{
     }
     public function getIdentitiesByUser($userid)
     {
-        $sql="select identityid,status from user_identity where userid=$userid";
+        $sql="select identityid,status,activecode from user_identity where userid=$userid";
         $rows=$this->getAll($sql);
         $userIdentityInfo = array();
         foreach($rows as $row)
@@ -477,6 +478,7 @@ class IdentityModels extends DataModel{
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
                 $identity["status"]=$row["status"];
+                $identity["active_exp_time"]=substr($row["activecode"],32);
                 array_push($userIdentityInfo,$identity);
             }
         }
@@ -682,18 +684,15 @@ class IdentityModels extends DataModel{
 
         if(intval($userid)>0)
         {
-            $sql="select name,external_identity from user_relations where userid=$userid;";
+            $sql="select name,external_identity,r_identityid from user_relations where userid=$userid;";
             $identities =$this->getAll($sql);
-
-            #global $redis;
-
             $redis = new Redis();
-            $redis->connect('127.0.0.1', 6379);
+            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
             mb_internal_encoding("UTF-8");
-
 
             foreach($identities as $identitymeta)
             {
+                $identity_id=$identitymeta["r_identityid"];
                 $identity=mb_strtolower($identitymeta["name"]." ".$identitymeta["external_identity"]);
                 $identity_array=explode(" ",trim($identity));
                 if($identity_array>0)
@@ -706,12 +705,74 @@ class IdentityModels extends DataModel{
                             $identity_part.=mb_substr($identity_a, $i, 1);
                             $redis->zAdd('u_'.$userid, 0, $identity_part);
                         }
-                        $redis->zAdd('u_'.$userid, 0, $identity_part."|".$identitymeta["name"]." ".$identitymeta["external_identity"]."*");
-
+                        $redis->zAdd('u_'.$userid, 0, $identity_part."|".$identity_id."*");
                     }
                 }
             }
         }
+    }
+    public function getIdentitiesByIdsFromCache($identity_id_list)
+    {
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $identities=array();
+        if(is_array($identity_id_list))
+        {
+            foreach($identity_id_list as $identity_id)
+            {
+                $identity=$redis->HGET("identities","id:".$identity_id);
+                if($identity==false)
+                {
+                    $identity=$this->getIdentityById($identity_id);
+                    if($identity!=NULL)
+                    {
+                        $sql="select userid from user_identity where identityid=$identity_id";
+                        $result=$this->getRow($sql);
+                        if($result["userid"]>0)
+                        {
+                            $identity["uid"]=$result["userid"];
+                        }
+                        $identity=json_encode_nounicode($identity);
+                        $redis->HSET("identities","id:".$identity_id,$identity);
+                    }
+
+                }
+                array_push($identities,$identity);
+            }
+            #$redismulti=$redis->multi();
+            #foreach($identity_id_list as $identity_id)
+            #{
+                #$identity=$redis->HGET("identities","id:".$identity_id);
+            #}
+            #$identities=$redismulti->exec();
+            return $identities;
+
+            //multi values
+        }
+        else if(is_numeric($identity_id_list))
+        {
+            $identity=$redis->HGET("identities","id:".$identity_id_list);
+            if($identity==false)
+            {
+                $identity=$this->getIdentityById($identity_id_list);
+                if($identity!=NULL)
+                {
+                    $identity=json_encode_nounicode($identity);
+                    $redis->HSET("identities","id:".$identity_id_list,$identity);
+                }
+
+            }
+            return $identity;
+            //one value
+        }
+
+    //public function getIdentityById($identity_id)
+    //{
+    //    $sql="select id,external_identity,name,bio,avatar_file_name,external_username from identities where id='$identity_id'";
+    //    $row=$this->getRow($sql);
+    //    return $row;
+    //}
+
 
     }
     public function ifIdentitiesEqualWithIdentity($identities,$identity_id)

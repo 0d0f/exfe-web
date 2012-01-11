@@ -423,6 +423,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
+    ns.doShowAddIdentityDialog = function(){
+        var html = odof.user.identification.createDialogDomCode("add_identity");
+        odof.exlibs.ExDialog.initialize("identification", html);
+    };
+
     ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
         var html = odof.user.identification.createDialogDomCode("reg_login");
         if(typeof callBackFunc != "undefined" && callBackFunc != null){
@@ -488,7 +493,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.showLoginStatus = function(userData){
-        if(typeof userData == "undefined" || userData == "" || userData.user_status == 0){
+        if(typeof userData == "undefined"
+                || userData == null
+                || userData == ""
+                || userData.user_status == 0
+        ){
             var loginMenu = '<div class="global_sign_in_btn">'
                             + '<a id="home_user_login_btn" href="javascript:void(0);">Sign in</a>'
                             + '</div>';
@@ -567,5 +576,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 jQuery(document).ready(function(){
     //odof.user.status.doShowLoginDialog();
+    //odof.user.status.doShowAddIdentityDialog();
     odof.user.status.checkUserLogin();
 });

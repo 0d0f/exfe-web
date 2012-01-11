@@ -109,8 +109,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_conversation_list').html(strMessage);
     };
-
-
+    
+    
     ns.makeMessage = function(objItem)
     {
         return '<li class="cleanup">'
@@ -178,7 +178,7 @@ var moduleNameSpace = 'odof.x.render',
                       +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
                       +             '<span id="x_place_line2"></span>'
                       +         '</div>'
-                      +         '<div id="x_exfee_area"></div>'
+                      +         '<div id="xExfeeArea"></div>'
                       +     '</div>'
                       + '</div>';
 

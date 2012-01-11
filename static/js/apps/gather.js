@@ -12,21 +12,25 @@ var moduleNameSpace = 'odof.x.gather',
 (function(ns) {
 
     ns.curCross        = '';
-    
-    ns.draft_id        = 0;
 
-    ns.new_identity_id = 0; // @todo
+    ns.draft_id        = 0;
 
     ns.xSubmitting     = false;
 
     ns.autoSubmit      = false;
 
-    ns.updateTitle = function() {
-        crossData.title   = odof.util.trim($('#gather_title').val());
+
+    ns.updateTitle = function(force) {
+        var objTitle        = $('#gather_title'),
+            strOriginTitle  = objTitle.val();
+        crossData.title     = odof.util.trim(strOriginTitle);
         if (crossData.title === '') {
             crossData.title = defaultTitle;
         }
-        $('#gather_title').val(crossData.title);
+        if ((strOriginTitle !== '' || force)
+          && strOriginTitle !== crossData.title) {
+            objTitle.val(crossData.title);
+        }
         document.title = 'EXFE - ' + crossData.title;
         odof.x.render.showTitle();
     };
@@ -85,12 +89,16 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.summaryX = function()
-    {
+    ns.showExfee = function() {
+        odof.exfee.gadget.make('xExfeeArea', odof.exfee.gadget.exfeeInput['gatherExfee'], false);
+    };
+
+
+    ns.summaryX = function() {
         var x   = odof.util.clone(crossData);
         x.place = x.place.line1 + "\r" + x.place.line2;
+        x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));
         return x;
-        // exfee       : JSON.stringify(getexfee())
     };
 
 
@@ -278,9 +286,16 @@ $(document).ready(function() {
 
     // X render
     odof.x.render.show(false);
-    
+
     // Exfee input
-    odof.exfee.gadget.make('gatherExfee', myidentity ? [myidentity] : [], true);
+    var curExfees = [];
+    if (myidentity) {
+        var meExfee = odof.util.clone(myidentity);
+        meExfee.host = true;
+        meExfee.rsvp = 1;
+        curExfees.push(meExfee);
+    }
+    odof.exfee.gadget.make('gatherExfee', curExfees, true, odof.x.gather.showExfee);
     odof.exfee.gadget.chkFakeHost('gatherExfee');
 
     // title
@@ -291,13 +306,13 @@ $(document).ready(function() {
                 break;
             case 'blur':
                 $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
-                odof.x.gather.updateTitle();
+                odof.x.gather.updateTitle(true);
                 break;
             case 'keyup':
                 odof.x.gather.updateTitle();
         }
     });
-    odof.x.gather.updateTitle();
+    odof.x.gather.updateTitle(true);
     $('#gather_title').select();
     $('#gather_title').focus();
 

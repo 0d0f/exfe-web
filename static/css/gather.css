@@ -4,7 +4,6 @@
 
 #gather_form {
     padding: 0 40px 15px 40px;
-    overflow: hidden;
 }
 
 #x_view_content {
@@ -24,9 +23,16 @@
 
 #gather_form ul li {
     padding-bottom: 15px;
-    overflow: hidden;
     list-style: none;
     clear: both;
+}
+
+#gather_form ul li:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
 }
 
 #gather_form ul li label {
@@ -99,7 +105,7 @@
     height: 96px;
 }
 
-#gather_title, #gather_desc_x, #gather_desc, #gather_submit_area {
+#gather_title, #gather_desc_x, #gather_desc, #gather_submit_area, .exfeegadget_avatararea {
     width: 480px;
 }
 
@@ -113,29 +119,42 @@
     background: transparent;
 }
 
-#gather_exfee_blank {
-    height: 200px;
+#gatherExfee {
+    position: static;
 }
 
-.exfeegadget_avatararea {
-    width: 400px;
+#gather_form .exfeegadget_inputarea {
+    position: absolute;
+}
+
+#gather_form .exfeegadget_avatararea {
+    float: left;
+    padding-top: 30px;
 }
 
 .exfeegadget_inputbox {
-    width: 380px;
+    width: 260px;
 }
 
 .exfeegadget_autocomplete {
-    width: 380px;
+    width: 260px;
     max-height: 190px;
 }
 
 #gather_form .autocomplete_item {
-    width: 366px;
+    width: 246px;
 }
 
-.exfeegadget_listarea {
-    width: 380px;
+#gather_form .exfeegadget_info {
+    display: none;
+}
+
+#gather_form .exfeegadget_info_labelarea {
+    display: none;
+}
+
+#gather_form .exfeegadget_listarea {
+    width: 260px;
     height: 120px; 
 }
 
