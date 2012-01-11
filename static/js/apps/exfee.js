@@ -235,13 +235,35 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +         '" class="exfee_avatar">'
               +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
               +     '</div>'
-              +     '<div class="exfee_baseinfo">'
+              +     '<div class="exfee_baseinfo shadow">'
               +         '<span class="exfee_baseinfo_name">'
               +             objExfee.name
               +         '</span>'
               +         '<span class="exfee_baseinfo_identity">'
               +             objExfee.external_identity
               +         '</span>'
+              +     '</div>'
+              +     '<div class="exfee_extrainfo shadow">'
+              +         '<div class="exfee_extrainfo_avatar_area">'
+              +             '<img src="' + odof.comm.func.getUserAvatar(
+                            objExfee.avatar_file_name, 80, img_url)
+              +             '" class="exfee_avatar">'
+              +             '<img src="/static/images/exfee_extrainfo_avatar_mask.png" class="exfee_avatar_mask">'
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_name_area">'
+              +             objExfee.name
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_rsvp_area">'
+              +             'Accepted'
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_mainid_area">'
+              +             objExfee.external_identity
+              +             '<button class="exfee_main_identity_remove">'
+              +                 'Remove'
+              +             '</button>'
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_extraid_area">'
+              +         '</div>'
               +     '</div>'
               + '</li>'
             );

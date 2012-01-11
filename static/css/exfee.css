@@ -38,6 +38,13 @@
     right: -3px;
 }
 
+.shadow {
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    -o-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+}
+
 .exfee_baseinfo {
     display: none;
     position: absolute;
@@ -45,12 +52,8 @@
     height: auto;
     background: #E0EDEF;
     border: 1px #0591AC solid;
-    z-index: 10;
+    z-index: 2;
     padding: 5px;
-    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-    -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-    -moz-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-    -o-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
 }
 
 .exfee_baseinfo span {
@@ -67,6 +70,89 @@
 .exfee_baseinfo_identity {
     font-size: 14px;
     line-height: 20px;
+}
+
+.exfee_extrainfo {
+    width: 215px;
+    position: absolute;
+    border: 1px #E6E6E6 solid;
+    z-index: 3;
+    background-color: #ebebeb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(235, 235, 235)), to(rgb(250, 250, 250)));
+    background-image: -webkit-linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
+    background-image: -moz-linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
+    background-image: -o-linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
+    background-image: -ms-linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
+    background-image: linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ebebeb', EndColorStr='#fafafa');
+}
+
+.exfee_extrainfo .exfee_avatar {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin: 4px;
+}
+
+.exfee_extrainfo_avatar_area {
+    width: 68px;
+    height: 68px;
+    position: relative;
+    left: -9px;
+    top: -9px;
+    background-color: #929292;
+    background-image: -webkit-gradient(linear, left top, right bottom, from(rgb(146, 146, 146)), to(rgb(235, 235, 235)));
+    background-image: -webkit-linear-gradient(left top, rgb(146, 146, 146), rgb(235, 235, 235));
+    background-image: -moz-linear-gradient(left top, rgb(146, 146, 146), rgb(235, 235, 235));
+    background-image: -o-linear-gradient(left top, rgb(146, 146, 146), rgb(235, 235, 235));
+    background-image: -ms-linear-gradient(left top, rgb(146, 146, 146), rgb(235, 235, 235));
+    background-image: linear-gradient(left top, rgb(146, 146, 146), rgb(235, 235, 235));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1,StartColorStr='#929292', EndColorStr='#ebebeb');
+}
+
+.exfee_avatar_mask {
+    position: relative;
+    top: -30px;
+    left: 43px;
+}
+
+#gather_form .exfee_extrainfo .exfee_extrainfo_name_area, #xExfeeArea .exfee_extrainfo .exfee_extrainfo_name_area {
+    position: absolute;
+    width: 135px;
+    height: 50px;
+    left: 69px;
+    top: 9px;
+    font-size: 18px;
+    color: #333333;
+    line-height: 24px;
+}
+
+#gather_form .exfee_extrainfo .exfee_extrainfo_rsvp_area, #xExfeeArea .exfee_extrainfo .exfee_extrainfo_rsvp_area {
+    clear: both;
+    height: 24px;
+    color: #0591AC;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: bold;
+    margin: 0 60px 0 60px;
+}
+
+.exfee_main_identity_remove {
+    position: absolute;
+    float: right;
+    right: 8px;
+}
+
+#gather_form .exfee_extrainfo .exfee_extrainfo_mainid_area, #xExfeeArea .exfee_extrainfo .exfee_extrainfo_mainid_area {
+    clear: both;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333333;
+    margin: 0 8px 0 8px;
+}
+
+.exfee_extrainfo_extraid_area {
+    padding-bottom: 15px;
 }
 
 .exfeegadget_inputarea {
