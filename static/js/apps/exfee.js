@@ -598,8 +598,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var arrCatched = [];
         key = odof.util.trim(key).toLowerCase();
         for (var i in this.exfeeAvailable) {
-            if (this.exfeeAvailable[i].name.toLowerCase().indexOf(key) !== -1
-             || this.exfeeAvailable[i].external_identity.toLowerCase().indexOf(key) !== -1) {
+            var curIdentity = this.exfeeAvailable[i].external_identity.toLowerCase();
+            if ((this.exfeeAvailable[i].name.toLowerCase().indexOf(key) !== -1
+              || curIdentity.indexOf(key) !== -1)
+              && curIdentity !== myIdentity.external_identity
+              && typeof this.exfeeInput[domId][curIdentity] === 'undefined') {
                 arrCatched.push(odof.util.clone(this.exfeeAvailable[i]));
             }
         }
@@ -770,7 +773,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         exist = false;
                     for (var j in odof.exfee.gadget.exfeeAvailable) {
                         if (odof.exfee.gadget.exfeeAvailable[j]
-                                .external_identity.toLowerCase() === curId) {
+                                .external_identity.toLowerCase() === curId
+                         || curId === myIdentity.external_identity
+                         || typeof odof.exfee.gadget.exfeeInput[domId][curIdentity] !== 'undefined') {
                             exist = true;
                             break;
                         }

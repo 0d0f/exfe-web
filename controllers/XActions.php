@@ -10,6 +10,7 @@ class XActions extends ActionController
         if ($_SESSION['identity']['external_identity']) {
             $myidentity = $_SESSION['identity'];
             $myidentity['identityid'] = $identity_id;
+            $myidentity['external_identity'] = strtolower($myidentity['external_identity']);
         }
         $this->setVar('myidentity', $myidentity);
 
@@ -330,6 +331,7 @@ class XActions extends ActionController
                 $myidentities = array($identity_id);
             }
             $myidentity = $modIdentity->getIdentityById($identity_id);
+            $myidentity['external_identity'] = strtolower($myidentity['external_identity']);
 
             $humanMyIdentity = humanIdentity($myidentity, $user);
             $this->setVar('myidentity', $humanMyIdentity);
