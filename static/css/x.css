@@ -247,6 +247,35 @@
     overflow: hidden;
 }
 
+#xExfeeArea {
+    margin-top: 24px;
+}
+
+.exfeegadget_info_labelarea, .exfeegadget_info {
+    height: 42px;
+}
+
+.exfeegadget_info_labelarea {
+    background: url("/static/images/icons.png") no-repeat left -28px;
+    font-size: 24px;
+    line-height: 42px;
+    color: #666666;
+    text-indent: 30px;
+    float: left;
+}
+
+#xExfeeArea .exfeegadget_avatararea {
+    clear: both;
+    width: 280px;
+}
+
+.exfeegadget_info {
+    position: relative;
+    float: right;
+    width: 130px;
+    color: #666666;
+}
+
 .x_rsvp_button {
     width: 131px;
     height: 31px;
@@ -325,4 +354,13 @@
     text-align: left;
     cursor: default;
     line-height: 24px;
+}
+
+#xExfeeArea .exfeegadget_inputarea {
+    padding: 5px;
+    clear: both;
+}
+
+#xExfeeArea .exfeegadget_inputbox {
+    width: 230px;
 }

@@ -33,7 +33,7 @@ class XActions extends ActionController
                         'title'       => mysql_real_escape_string($_POST['title']),
                         'description' => mysql_real_escape_string($_POST['description']),
                         'place_id'    => $placeid,
-                        'datetime'    => $_POST['datetime']
+                        'datetime'    => $_POST['begin_at']
                     );
 
                     $cross_id = $crossdata->gatherCross(

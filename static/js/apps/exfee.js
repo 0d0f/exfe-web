@@ -13,8 +13,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns) {
 
     ns.exfeeAvailableKey = 'exfee_available';
-    
-    ns.arrClassRsvp      = ['noresponse', 'accepted', 'declined', 'interested'];
+
+    ns.arrStrRsvp        = ['Not responded', 'Accepted', 'Declined', 'Interested'];
 
     ns.inputed           = {};
 
@@ -38,34 +38,52 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.completing        = {};
 
+    ns.diffCallback      = {};
 
-    ns.make = function(domId, curExfee, curEditable) {
-        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" class="exfeegadget_infoarea">'
-                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" class="exfeegadget_info_labelarea">'
-                    +         '<img id="' + domId + '_exfeegadget_info_label">'
+    ns.timerBaseInfo     = {};
+
+
+    ns.make = function(domId, curExfee, curEditable, curDiffCallback) {
+        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" '
+                    +                 'class="exfeegadget_infoarea">'
+                    +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
+                    +                     'class="exfeegadget_info_totalarea">'
+                    +     '</div>'
+                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" '
+                    +                     'class="exfeegadget_info_labelarea">'
                     +         'Exfee'
                     +     '</div>'
-                    +     '<div id="' + domId + '_exfeegadget_info" class="exfeegadget_info">'
-                    +         '<span id="' + domId + '_exfeegadget_num_accepted" class="exfeegadget_num_accepted">'
+                    +     '<div id="' + domId + '_exfeegadget_info" '
+                    +                     'class="exfeegadget_info">'
+                    +         '<span id="' + domId + '_exfeegadget_num_accepted" '
+                    +                          'class="exfeegadget_num_accepted">'
                     +         '</span>'
                     +         '<span class="exfeegadget_num_of"> of '
-                    +             '<span id="' + domId + '_exfeegadget_num_summary" class="exfeegadget_num_summary"></span>'
+                    +             '<span id="' + domId + '_exfeegadget_num_summary" '
+                    +                              'class="exfeegadget_num_summary">'
+                    +             '</span>'
                     +         '</span>'
                     +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
                     +     '</div>'
                     + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_avatararea" class="exfeegadget_avatararea">'
+                    + '<div id="' + domId + '_exfeegadget_avatararea" '
+                    +                 'class="exfeegadget_avatararea">'
                     +     '<ol></ol>'
                     +     '<button id="' + domId + '_exfeegadget_expandavatarbtn">'
                     + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_inputarea" class="exfeegadget_inputarea">'
-                    +     '<input  id="' + domId + '_exfeegadget_inputbox" class="exfeegadget_inputbox" type="text">'
+                    +(curEditable
+                    ?('<div id="' + domId + '_exfeegadget_inputarea" '
+                    +                 'class="exfeegadget_inputarea">'
+                    +     '<input  id="' + domId + '_exfeegadget_inputbox" '
+                    +                        'class="exfeegadget_inputbox" type="text">'
                     +     '<button id="' + domId + '_exfeegadget_addbtn">+</button>'
-                    +     '<div id="' + domId + '_exfeegadget_autocomplete" class="exfeegadget_autocomplete">'
+                    +     '<div id="' + domId + '_exfeegadget_autocomplete" '
+                    +                     'class="exfeegadget_autocomplete">'
                     +         '<ol></ol>'
                     +     '</div>'
-                    + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_listarea" class="exfeegadget_listarea">'
+                    + '</div>') : '')
+                    + '<div id="' + domId + '_exfeegadget_listarea" '
+                    +                 'class="exfeegadget_listarea">'
                     +     '<ol></ol>'
                     + '</div>';
         this.inputed[domId]       = '';
@@ -75,6 +93,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.curComplete[domId]   = {};
         this.exfeeSelected[domId] = {};
         this.completing[domId]    = false;
+        this.diffCallback[domId]  = curDiffCallback;
+        this.timerBaseInfo[domId] = {};
         $('#' + domId).html(strHtml);
         if (typeof localStorage !== 'undefined') {
             this.exfeeAvailable = localStorage.getItem(this.exfeeAvailableKey);
@@ -89,7 +109,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.cacheExfee(curExfee);
-        this.addExfee(domId, curExfee);
+        this.addExfee(domId, curExfee, true, true);
+        if (this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
+        $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock').live(
+            'mouseover mouseout', this.eventAvatar
+        );
+        $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock > .exfee_avatar').live(
+            'click', this.eventAvatar
+        );
+        $('body').bind('click', this.cleanFloating);
         if (!curEditable) {
             return;
         }
@@ -174,14 +204,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $(strBaseId).removeClass(className);
         $(strBaseId + '[identity="' + identity + '"]').addClass(className);
     };
-    
-    
+
+
     ns.getClassRsvp = function(rsvp) {
-        return 'exfee_rsvp_' + this.arrClassRsvp[rsvp];
+        return 'exfee_rsvp_'
+             + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
     };
 
 
-    ns.addExfee = function(domId, exfees, noIdentity) {
+    ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
         for (var i in exfees) {
             var objExfee = odof.util.clone(exfees[i]);
             objExfee.external_identity = objExfee.external_identity.toLowerCase();
@@ -198,8 +229,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             objExfee.avatar_file_name = objExfee.avatar_file_name ? objExfee.avatar_file_name : 'default.png';
-            objExfee.host = typeof exfees[i].host === 'undefined' ? false : exfees[i].host;
-            objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? 0     : exfees[i].rsvp;
+            objExfee.host = typeof  exfees[i].host  === 'undefined'
+                          ? false : exfees[i].host;
+            objExfee.rsvp = typeof  exfees[i].rsvp  === 'undefined'
+                          ? 0     : exfees[i].rsvp;
+            objExfee.rsvp = typeof  exfees[i].state === 'undefined'
+                          ? exfees[i].rsvp : exfees[i].state;
             var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + objExfee.external_identity + '">'
@@ -208,6 +243,37 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         objExfee.avatar_file_name, 80, img_url)
               +         '" class="exfee_avatar">'
               +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+              +     '</div>'
+              +     '<div class="exfee_baseinfo floating">'
+              +         '<span class="exfee_baseinfo_name">'
+              +             objExfee.name
+              +         '</span>'
+              +        (exfees[i].provider
+              ?        ('<span class="exfee_baseinfo_identity">'
+              +             objExfee.external_identity
+              +         '</span>') : '')
+              +     '</div>'
+              +     '<div class="exfee_extrainfo floating">'
+              +         '<div class="exfee_extrainfo_avatar_area">'
+              +             '<img src="' + odof.comm.func.getUserAvatar(
+                            objExfee.avatar_file_name, 80, img_url)
+              +             '" class="exfee_avatar">'
+              +             '<img src="/static/images/exfee_extrainfo_avatar_mask.png" class="exfee_avatar_mask">'
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_name_area">'
+              +             objExfee.name
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_rsvp_area">'
+              +             this.arrStrRsvp[objExfee.rsvp]
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_mainid_area">'
+              +             objExfee.external_identity
+              +             '<button class="exfee_main_identity_remove">'
+              +                 'Remove'
+              +             '</button>'
+              +         '</div>'
+              +         '<div class="exfee_extrainfo_extraid_area">'
+              +         '</div>'
               +     '</div>'
               + '</li>'
             );
@@ -236,6 +302,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         this.chkFakeHost(domId);
         this.updateExfeeSummary(domId);
+        if (!noCallback && this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
         if (!noIdentity) {
             this.ajaxIdentity(exfees);
         }
@@ -247,8 +316,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.chkFakeHost(domId);
         this.exfeeSelected = [];
     };
-    
-    
+
+
     ns.rawDelExfee = function(domId, exfees) {
         for (var i in exfees) {
             $('#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
@@ -260,6 +329,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         this.updateExfeeSummary(domId);
+        if (this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
     };
 
 
@@ -274,8 +346,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             );
         }
     };
-    
-    
+
+
     ns.updateExfeeSummary = function(domId) {
         var confirmed = 0;
             total     = 0;
@@ -290,8 +362,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + domId + '_exfeegadget_num_accepted').html(confirmed);
         $('#' + domId + '_exfeegadget_num_summary').html(total);
     };
-    
-    
+
+
     ns.eventAvatarRsvp = function(event) {
         var domLi    = event.target.parentNode.parentNode,
             identity = $(domLi).attr('identity'),
@@ -300,7 +372,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             case 'click':
                 switch (odof.exfee.gadget.exfeeInput[domId][identity].rsvp) {
                     case 1:
-                        odof.exfee.gadget.changeRsvp(domId, identity, 0);
+                        odof.exfee.gadget.changeRsvp(
+                            domId,
+                            identity,
+                            domId === 'gatherExfee' ? 0 : 2
+                        );
                         break;
                     case 0:
                     case 2:
@@ -312,27 +388,97 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     
     
+    ns.cleanFloating = function(event) {
+        var objTarget = $(event.target);
+        while (!objTarget.hasClass('floating') && objTarget[0].parentNode) {
+            objTarget = $(objTarget[0].parentNode);
+        }
+        if (!objTarget.hasClass('floating')) {
+            $('.floating').hide();
+        }
+    };
+
+
+    ns.eventAvatar = function(event) {
+        var domTarget = $(event.target)[0];
+        do {
+            domTarget = domTarget.parentNode;
+        } while (domTarget.tagName !== 'LI' && domTarget.parentNode)
+        var domItemId = domTarget.parentNode.parentNode.id.split('_')[0],
+            objItem   = $(domTarget),
+            identity  = objItem.attr('identity');
+        switch (event.type) {
+            case 'mouseover':
+                if (typeof odof.exfee.gadget.timerBaseInfo[domItemId][identity]
+                === 'undefined') {
+                    $('.floating').hide();
+                    odof.exfee.gadget.timerBaseInfo[domItemId][identity]
+                  = setTimeout(
+                        "odof.exfee.gadget.showBaseInfo('" + domItemId + "', '" + identity + "', true)",
+                        500
+                    );
+                }
+                break;
+            case 'mouseout':
+                odof.exfee.gadget.showBaseInfo(domItemId, identity, false);
+                break;
+            case 'click':
+                for (var i in odof.exfee.gadget.timerBaseInfo[domItemId]) {
+                    clearTimeout(odof.exfee.gadget.timerBaseInfo[domItemId][i]);
+                }
+                $('.floating').hide();
+                objItem.children('.exfee_extrainfo').fadeIn(300);
+        }
+    };
+
+
+    ns.showBaseInfo = function(domId, identity, display) {
+        var objBsInfo = $(
+                '#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
+                    + identity + '"] > .exfee_baseinfo'
+            );
+        clearTimeout(odof.exfee.gadget.timerBaseInfo[domId][identity]);
+        delete odof.exfee.gadget.timerBaseInfo[domId][identity];
+        if (display) {
+            objBsInfo.fadeIn(300);
+        } else {
+            objBsInfo.hide();
+        }
+    };
+
+
     ns.changeRsvp = function(domId, identity, rsvp) {
         if (typeof this.exfeeInput[domId][identity] === 'undefined') {
             return;
         }
         this.exfeeInput[domId][identity].rsvp = rsvp;
-        var strCatchKey   = ' > ol > li[identity="' + identity + '"] .exfee_rsvpblock';
-        for (var i in this.arrClassRsvp) {
+        var strCatchKey   = ' > ol > li[identity="' + identity + '"] ';
+        for (var i in this.arrStrRsvp) {
             var intRsvp = parseInt(i),
                 strRsvp = this.getClassRsvp(intRsvp);
             if (intRsvp === rsvp) {
-                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).addClass(strRsvp);
-                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).addClass(strRsvp);
+                $('#' + domId + '_exfeegadget_avatararea'
+                      + strCatchKey + '.exfee_rsvpblock').addClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'
+                      + strCatchKey + '.exfee_rsvpblock').addClass(strRsvp);
             } else {
-                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).removeClass(strRsvp);
-                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).removeClass(strRsvp);
+                $('#' + domId + '_exfeegadget_avatararea'
+                      + strCatchKey + '.exfee_rsvpblock').removeClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'
+                      + strCatchKey + '.exfee_rsvpblock').removeClass(strRsvp);
             }
+            $('#' + domId + '_exfeegadget_avatararea'
+                      + strCatchKey + '.exfee_extrainfo_rsvp_area').html(
+                this.arrStrRsvp[rsvp]
+            );
         }
         this.updateExfeeSummary(domId);
+        if (this.diffCallback[domId]) {
+            this.diffCallback[domId]();
+        }
     };
-    
-    
+
+
     ns.getExfees = function(domId) {
         var arrExfees = [];
         for (var i in this.exfeeInput[domId]) {
@@ -383,7 +529,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (newInput !== strInput) {
             objInput.val(newInput);
         }
-        odof.exfee.gadget.addExfee(domId, arrValid);
+        if (arrValid.length) {
+            odof.exfee.gadget.addExfee(domId, arrValid);
+        }
         odof.exfee.gadget.chkComplete(domId, arrInValid.pop());
     };
 
@@ -546,14 +694,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             success  : function(data) {
                 var gotExfee = [];
                 for (var i in data) {
-                    var item  = odof.util.trim(i).split(' '),
-                        strId = item.pop(),
-                        user  = {avatar_file_name  : 'default.png',
-                                 bio               : '',
-                                 external_identity : strId,
-                                 name              : item.join(' '),
-                                 provider          : 'email'},
-                        curId = user.external_identity.toLowerCase(),
+                    var curIdentity = {
+                            identityid        : data[i].id,
+                            name              : data[i].name,
+                            avatar_file_name  : data[i].avatar_file_name
+                                              ? data[i].avatar_file_name
+                                              : 'default.png',
+                            bio               : data[i].bio,
+                            external_identity : data[i].external_identity,
+                            provider          : 'email',
+                            userid            : data[i].uid
+                        },
+                        curId = curIdentity.external_identity.toLowerCase(),
                         exist = false;
                     for (var j in odof.exfee.gadget.exfeeAvailable) {
                         if (odof.exfee.gadget.exfeeAvailable[j]
@@ -563,7 +715,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                     }
                     if (!exist) {
-                        gotExfee.push(user);
+                        gotExfee.push(curIdentity);
                     }
                 }
                 odof.exfee.gadget.cacheExfee(gotExfee, true);

@@ -487,6 +487,8 @@ $(document).ready(function() {
     odof.x.edit.cross_id     = cross_id;
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
+    
+    odof.exfee.gadget.make('xExfeeArea', crossExfee, true);
 
     $('#private_icon').mousemove(function() { $('#private_hint').show(); });
     $('#private_icon').mouseout(function() { $('#private_hint').hide(); });
