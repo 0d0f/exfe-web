@@ -464,8 +464,8 @@ var clickCallBackFunc = function(args) {
                 ctime       : crossData.begin_at,
                 cdesc       : crossData.description,
                 cplaceline1 : crossData.place.line1,
-                cplaceline2 : crossData.place.line2 //,
-             // exfee       : exfee
+                cplaceline2 : crossData.place.line2,
+                exfee       : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))
             },
             success : function(data) {
                 if(data.error){
@@ -475,6 +475,31 @@ var clickCallBackFunc = function(args) {
             complete : function() {
                 $('#edit_x_bar').slideUp(300);
              // $('#edit_cross_submit_loading').hide();
+            }
+        });
+    };
+    
+    
+    ns.submitExfee = function() {
+        jQuery.ajax({
+            url  : location.href.split('?').shift() + '/crossEdit',
+            type : 'POST',
+            dataType : 'json',
+            data : {
+                ctitle     : crossData.title,
+                exfee_only : true,
+                exfee      : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))
+            },
+            success : function(data) {
+                if (!data) {
+                    return;
+                }
+                if (!data.success) {
+                    switch (data.error) {
+                        case 'token_expired':
+                            odof.cross.index.setreadonly();
+                    }
+                }
             }
         });
     };
@@ -488,7 +513,7 @@ $(document).ready(function() {
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
     
-    odof.exfee.gadget.make('xExfeeArea', crossExfee, true);
+    odof.exfee.gadget.make('xExfeeArea', crossExfee, true, odof.x.edit.submitExfee);
 
     $('#private_icon').mousemove(function() { $('#private_hint').show(); });
     $('#private_icon').mouseout(function() { $('#private_hint').hide(); });

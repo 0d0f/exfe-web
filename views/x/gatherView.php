@@ -20,11 +20,11 @@
 <body>
 <?php
     include 'share/nav.php';
-    $myidentity        = $this->getVar('myidentity');
-    $external_identity = $myidentity ? $myidentity['external_identity'] : null;
+    $myIdentity        = $this->getVar('myidentity');
+    $external_identity = $myIdentity ? $myIdentity['external_identity'] : null;
     $defaultTitle      = $global_name != '' ? "Meet {$global_name}" : 'Edit title here';
     echo '<script>'
-       . "var myidentity   = " . json_encode($myidentity) . ","
+       . "var myIdentity   = " . json_encode($myIdentity) . ","
        .     "defaultTitle = '{$defaultTitle}',"
        .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',"
        .     "defaultTime  = 'Sometime',"

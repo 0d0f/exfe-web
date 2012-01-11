@@ -10,6 +10,7 @@ class XActions extends ActionController
         if ($_SESSION['identity']['external_identity']) {
             $myidentity = $_SESSION['identity'];
             $myidentity['identityid'] = $identity_id;
+            $myidentity['external_identity'] = strtolower($myidentity['external_identity']);
         }
         $this->setVar('myidentity', $myidentity);
 
@@ -159,8 +160,6 @@ class XActions extends ActionController
         $invitM = $this->getModelByName('invitation');
         $idents = $invitM->getIdentitiesIdsByCrossIds(array($cross_id));
 
-        // @todo: 暂时禁用 exfee 编辑功能，待端木的新 exfee 框方案稳定 #waiting_for_new_exfee_box
-//        return;
         $exfees    = json_decode($_POST['exfee'], true);
         $ehelper   = $this->getHelperByName('exfee');
         $exfees_list = $ehelper->addExfeeIdentify($cross_id, $exfees, $identity_id, $idents);
@@ -330,6 +329,7 @@ class XActions extends ActionController
                 $myidentities = array($identity_id);
             }
             $myidentity = $modIdentity->getIdentityById($identity_id);
+            $myidentity['external_identity'] = strtolower($myidentity['external_identity']);
 
             $humanMyIdentity = humanIdentity($myidentity, $user);
             $this->setVar('myidentity', $humanMyIdentity);

@@ -90,7 +90,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.editable[domId]      = curEditable;
         this.exfeeInput[domId]    = {};
         this.keyComplete[domId]   = '';
-        this.curComplete[domId]   = {};
+        this.curComplete[domId]   = [];
         this.exfeeSelected[domId] = {};
         this.completing[domId]    = false;
         this.diffCallback[domId]  = curDiffCallback;
@@ -127,35 +127,71 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             "odof.exfee.gadget.chkInput('" + domId + "')", 50
         );
         $('#' + domId + '_exfeegadget_inputbox').bind(
-            'keydown', this.keydownInputbox
+            'keydown blur', this.eventInputbox
         );
         $('#' + domId + '_exfeegadget_addbtn').bind(
             'keydown click', this.eventAddbutton
         );
         $('#' + domId + '_exfeegadget_autocomplete > ol > li').live(
-            'mousemove click', this.eventCompleteItem
+            'mousemove mousedown', this.eventCompleteItem
         );
         $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_rsvpblock').live(
             'click', this.eventAvatarRsvp
         );
+        $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_main_identity_remove').live(
+            'click', this.removeMainIdentity
+        );
     };
 
 
-    ns.keydownInputbox = function(event) {
+    ns.eventInputbox = function(event) {
         var domId = event.target.id.split('_')[0];
-        switch (event.which) {
-            case 9:  // tab
-            case 13: // enter
-                odof.exfee.gadget.chkInput(domId, true);
-                break;
-            case 40: // down!!!
-                if (!odof.exfee.gadget.completing[domId]) {
-                    return;
+        switch (event.type) {
+            case 'keydown':
+                switch (event.which) {
+                    case 9:  // tab
+                    case 13: // enter
+                        odof.exfee.gadget.chkInput(domId, true);
+                        break;
+                    case 38: // up
+                    case 40: // down
+                        if (!odof.exfee.gadget.completing[domId]) {
+                            return;
+                        }
+                        var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
+                            curItem     = null,
+                            idxItem     = null,
+                            tarItem     = null,
+                            maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
+                            if (objSelected.length) {
+                                curItem = objSelected.attr('identity');
+                                for (var i in odof.exfee.gadget.curComplete[domId]) {
+                                    if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
+                                        idxItem = parseInt(i);
+                                        break;
+                                    }
+                                }
+                            }
+                            switch (event.which) {
+                                case 38:
+                                    tarItem = curItem
+                                            ? (idxItem > 0
+                                            ? odof.exfee.gadget.curComplete[domId][idxItem - 1]
+                                            : odof.exfee.gadget.curComplete[domId][maxIdx])
+                                            : odof.exfee.gadget.curComplete[domId][maxIdx];
+                                    break;
+                                case 40:
+                                    tarItem = curItem
+                                            ? (idxItem < maxIdx
+                                            ? odof.exfee.gadget.curComplete[domId][idxItem + 1]
+                                            : odof.exfee.gadget.curComplete[domId][0])
+                                            : odof.exfee.gadget.curComplete[domId][0];
+                            }
+                            odof.exfee.gadget.selectCompleteResult(domId, tarItem);
                 }
-                odof.exfee.gadget.selectCompleteResult(
-                    domId,
-                    $('#' + domId + '_exfeegadget_autocomplete > ol > li:first').attr('identity')
-                );
+                break;
+            case 'blur':
+                odof.exfee.gadget.displayComplete(domId, false);
         }
     };
 
@@ -183,7 +219,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             case 'mousemove':
                 odof.exfee.gadget.selectCompleteResult(domId, identity);
                 break;
-            case 'click':
+            case 'mousedown':
                 for (var i in odof.exfee.gadget.exfeeAvailable) {
                     if (odof.exfee.gadget.exfeeAvailable[i]
                             .external_identity === identity) {
@@ -234,8 +270,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             objExfee.rsvp = typeof  exfees[i].rsvp  === 'undefined'
                           ? 0     : exfees[i].rsvp;
             objExfee.rsvp = typeof  exfees[i].state === 'undefined'
-                          ? exfees[i].rsvp : exfees[i].state;
-            var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
+                          ? objExfee.rsvp : exfees[i].state;
+            var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
+                removable    = this.editable[domId] && !objExfee.host
+                            && objExfee.external_identity
+                           !== myIdentity.external_identity;
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + objExfee.external_identity + '">'
               +     '<div class="exfee_avatarblock">'
@@ -268,9 +307,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +         '</div>'
               +         '<div class="exfee_extrainfo_mainid_area">'
               +             objExfee.external_identity
-              +             '<button class="exfee_main_identity_remove">'
-              +                 'Remove'
-              +             '</button>'
+              +            (removable
+              ?            ('<button class="exfee_main_identity_remove">'
+              +                 ' ⊖ '
+              +             '</button>') : '')
               +         '</div>'
               +         '<div class="exfee_extrainfo_extraid_area">'
               +         '</div>'
@@ -311,10 +351,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.delExfee = function(domId) {
-        this.rawDelExfee(domId, this.exfeeSelected[domId]);
+    ns.delExfee = function(domId, exfees) {
+        if (exfees) {
+            this.rawDelExfee(domId, exfees);
+        } else {
+            this.rawDelExfee(domId, this.exfeeSelected[domId]);
+            this.exfeeSelected = [];
+        }
         this.chkFakeHost(domId);
-        this.exfeeSelected = [];
     };
 
 
@@ -336,6 +380,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.chkFakeHost = function(domId) {
+        if (domId !== 'gatherExfee') {
+            return;
+        }
         var fakeHost = $('#' + domId + '_exfeegadget_listarea > ol > li[identity="_fake_host_"]').length;
         if (odof.util.count(this.exfeeInput[domId]) && fakeHost) {
             this.rawDelExfee(domId, ['_fake_host_']);
@@ -477,6 +524,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             this.diffCallback[domId]();
         }
     };
+    
+    
+    ns.removeMainIdentity = function(event) {
+        var objTarget = $(event.target),
+            domItemLi = objTarget[0].parentNode.parentNode.parentNode,
+            identity  = $(domItemLi).attr('identity'),
+            domId     = domItemLi.parentNode.parentNode.id.split('_')[0];
+        switch (objTarget.html()) {
+            case ' ⊖ ':
+                objTarget.html('Remove');
+                objTarget.addClass('ready');
+                break;
+            case 'Remove':
+                odof.exfee.gadget.delExfee(domId, [identity]);
+        }
+    };
 
 
     ns.getExfees = function(domId) {
@@ -540,8 +603,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var arrCatched = [];
         key = odof.util.trim(key).toLowerCase();
         for (var i in this.exfeeAvailable) {
-            if (this.exfeeAvailable[i].name.toLowerCase().indexOf(key) !== -1
-             || this.exfeeAvailable[i].external_identity.toLowerCase().indexOf(key) !== -1) {
+            var curIdentity = this.exfeeAvailable[i].external_identity.toLowerCase();
+            if ((this.exfeeAvailable[i].name.toLowerCase().indexOf(key) !== -1
+              || curIdentity.indexOf(key) !== -1)
+              && curIdentity !== myIdentity.external_identity
+              && typeof this.exfeeInput[domId][curIdentity] === 'undefined') {
                 arrCatched.push(odof.util.clone(this.exfeeAvailable[i]));
             }
         }
@@ -551,21 +617,27 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.showComplete = function(domId, key, exfee) {
-        var baseId          = '#' + domId + '_exfeegadget_autocomplete > ol',
-            objAutoComplete = $(baseId),
+        var objAutoComplete = $('#' + domId + '_exfeegadget_autocomplete > ol'),
             strItems        = '';
         if (this.keyComplete[domId] !== key) {
-            this.curComplete[domId] = {};
+            this.curComplete[domId] = [];
             objAutoComplete.html('');
         }
         this.keyComplete[domId] = key;
         if (exfee && exfee.length) {
             for (var i in exfee) {
-                var curIdentity = exfee[i].external_identity.toLowerCase();
-                if (typeof this.curComplete[domId][curIdentity] !== 'undefined') {
+                var curIdentity = exfee[i].external_identity.toLowerCase(),
+                    shown       = false;
+                for (var j in this.curComplete[domId]) {
+                    if (this.curComplete[domId][j] === curIdentity) {
+                        shown = true;
+                        break;
+                    }
+                }
+                if (shown) {
                     continue;
                 }
-                this.curComplete[domId][curIdentity] = true;
+                this.curComplete[domId].push(curIdentity);
                 strItems += '<li identity="' + curIdentity + '" '
                           +     'class="autocomplete_item">'
                           +     '<img src="' + odof.comm.func.getUserAvatar(
@@ -585,10 +657,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (strItems) {
             objAutoComplete.append(strItems)
         }
-        if (!$(baseId + ' > .autocomplete_selected').length) {
-            this.selectCompleteResult(domId, $(baseId + ' > li:first').attr('identity'));
-        }
-        this.displayComplete(domId, key && odof.util.count(this.curComplete[domId]));
+        this.displayComplete(domId, key && this.curComplete[domId].length);
     };
 
 
@@ -709,7 +778,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         exist = false;
                     for (var j in odof.exfee.gadget.exfeeAvailable) {
                         if (odof.exfee.gadget.exfeeAvailable[j]
-                                .external_identity.toLowerCase() === curId) {
+                                .external_identity.toLowerCase() === curId
+                         || curId === myIdentity.external_identity
+                         || typeof odof.exfee.gadget.exfeeInput[domId][curIdentity] !== 'undefined') {
                             exist = true;
                             break;
                         }

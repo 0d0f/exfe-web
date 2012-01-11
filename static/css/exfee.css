@@ -16,6 +16,14 @@
     overflow: visible;
 }
 
+.exfeegadget_autocomplete > ol > li:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
 .exfee_avatarblock {
     padding: 5px;
     width: 50px;
@@ -142,9 +150,31 @@
 }
 
 .exfee_main_identity_remove {
+    background: transparent;
     position: absolute;
     float: right;
     right: 8px;
+    color: red;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.exfee_main_identity_remove.ready {
+    width: 75px;
+    height: 20px;
+    color: #333333;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    background-color: #ffeceb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 236, 235)), to(rgb(217, 73, 65)));
+    background-image: -webkit-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -moz-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -o-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -ms-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
 }
 
 #gather_form .exfee_extrainfo .exfee_extrainfo_mainid_area, #xExfeeArea .exfee_extrainfo .exfee_extrainfo_mainid_area {
@@ -174,6 +204,8 @@
 }
 
 .exfeegadget_autocomplete {
+    width: 260px;
+    max-height: 190px;
     position: relative;
     z-index: 10;
     border: 1px #CCCCCC solid;
@@ -183,15 +215,14 @@
     overflow-y: scroll;
 }
 
-#gather_form .autocomplete_item {
-    padding-bottom: 0;
+#gather_form .autocomplete_item, #xExfeeArea .autocomplete_item {
     margin: 3px;
     padding: 3px;
     border: 1px transparent dashed;
     cursor: pointer;
 }
 
-#gather_form .autocomplete_item.autocomplete_selected {
+#gather_form .autocomplete_item.autocomplete_selected, #xExfeeArea .autocomplete_item.autocomplete_selected {
     border: 1px #CCCCCC dashed;
     background: #E0EDEF;
 }
