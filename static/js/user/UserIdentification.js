@@ -187,7 +187,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>"
                  + "</form>"
                  + "</div>";
+        } else if(type == "add_identity") {
+            title="Add Identity";
+            desc = "<div class='dialog_titles' style='height:110px;'>"
+                 + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>" 
+                 + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
+                 + "<p class='oauth_icon'>"
+                 + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
+                 + "<a href='/oAuth/twitterRedirect' class='twitter_oauth' alt='TwitterOAuth'></a>"
+                 + "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
+                 + "</p>"
+                 + "</div>";
+            form = "<div id='add_identity_dialog' class='identity_dialog_main'>"
+                 + desc
+                 + "<div id='identification_title_msg' style='display:none;'>Enter identity information:</div>"
+                 + "<form id='addIdentityForm' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li style='padding-top:20px;'><label class='title'>Identity:</label>"
+                 + "<div class='identity_box'>"
+                 + "<input id='identity' name='identity' type='text' class='inputText' />"
+                 + "</div>"
+                 + "<div id='identity_dbox'>Your email here</div>"
+                 + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
+                 + "<img class='avatar' id='user_avatar' style='display:none;' src='' />"
+                 + "</li>"
+                 + "</ul>"
+                 + "<div class='identification_bottom_btn'>"
+                 + "<input type='submit' value='Add' id='add_identity_btn' class='sign_in_btn' />"
+                 + "</div>"
+                 + "</form>"
+                 + "</div>";
         }
+
 
         //新的找回密码对话框。用户点击Forgot Password进去。
         var forgot_verification = "<div id='forgot_verification_dialog' class='identity_visual_dialog' style='display:none;'>"

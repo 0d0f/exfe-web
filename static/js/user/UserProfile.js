@@ -1,29 +1,8 @@
 var moduleNameSpace = 'odof.user.profile';
 var ns = odof.util.initNameSpace(moduleNameSpace);
 
-
 (function(ns){
-
     ns.strLsKey = 'profile_cross_fetchArgs';
-
-
-    ns.saveUsername = function(name) {
-        var poststr="name="+name;
-        $.ajax({
-        type: "POST",
-        data: poststr,
-        url: site_url+"/s/SaveUserIdentity",
-        dataType:"json",
-        success: function(data){
-            if(data.response.user!=null)
-            {
-                var name=data.response.identity.name;
-                $('#profile_name').html(name);
-            }
-        }
-        });
-    };
-
 
     ns.updateavatar = function(name) {
         $.ajax({
@@ -375,8 +354,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             return;
         }
         var objDoc   = $(document);
-        if (objDoc.scrollTop() + odof.util.getClientSize()['height']
-        === objDoc.height()) {
+        if (objDoc.scrollTop() + odof.util.getClientSize()['height'] === objDoc.height()) {
             if (endlessScrollDoing) {
                 return;
             }
@@ -385,26 +363,88 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
+    ns.editUserProfile = function(e) {
+        var userName = odof.util.trim(jQuery("#user_name").html());
+        jQuery("#user_name").html("<input id='edit_profile_name' value='"+userName+"' />");
+        jQuery("#edit_profile_btn").html("Done");
+
+        var discardEditUserProfile = function(userName){
+            if(typeof userName == "undefined"){
+                userName = jQuery("#edit_profile_name").val();
+            }
+            jQuery('#user_name').html(userName);
+            jQuery("#discard_edit").hide();
+            jQuery("#discard_edit").unbind("click");
+            jQuery("#edit_profile_btn").html("Edit...");
+            jQuery("#edit_profile_btn").unbind("click");
+            jQuery('#edit_profile_btn').bind("click", function(event){
+                odof.user.profile.editUserProfile(event);
+            });
+            jQuery("#user_cross_info").show();
+            jQuery("#set_password_btn").hide();
+            jQuery("#set_password_btn").unbind("click");
+        };
+
+        var editUserProfileCallBack = function(JSONData){
+            var userName = JSONData.response.user.name;
+            discardEditUserProfile(userName);
+        };
+
+        jQuery("#discard_edit").show();
+        jQuery("#discard_edit").bind("click",function(){
+            discardEditUserProfile();
+        });
+
+        //显示修改密码按钮。
+        jQuery("#user_cross_info").hide();
+        jQuery("#set_password_btn").show();
+        jQuery("#set_password_btn").unbind("click");
+        jQuery("#set_password_btn").bind("click",function(){
+            odof.user.status.doShowChangePwdDialog();
+        });
+        
+        jQuery("#edit_profile_btn").unbind("click");
+        jQuery("#edit_profile_btn").bind("click",function(){
+            var userName = jQuery("#edit_profile_name").val();
+            var postData = {user_name:userName};
+            jQuery.ajax({
+                type: "POST",
+                data: postData,
+                url: site_url+"/s/editUserProfile",
+                dataType:"json",
+                success: function(JSONData){
+                    if(JSONData.error){
+                        alert(JSONData.msg);
+                    }else{
+                        editUserProfileCallBack(JSONData);
+                    }
+                }
+            });
+        });
+
+        /*
+        if($('#user_name').attr("status")=='view')
+        {
+            $('#user_name').html("<input id='edit_profile_name' value='"+$('#user_name').html()+"'>");
+            $('#user_name').attr("status","edit");
+            $('#changeavatar').show();
+        } else {
+            var name_val=$("#edit_profile_name").val();
+            $('#user_name').html(name_val);
+            odof.user.profile.editUserProfile(name_val);
+            $('#user_name').attr("status","view");
+            $('#changeavatar').hide();
+        }
+        */
+    };
+
 })(ns);
 
 
 $(document).ready(function() {
-
     // by Handaoliang
-
-    $('#editprofile').click(function(e) {
-        if($('#profile_name').attr("status")=='view')
-        {
-            $('#profile_name').html("<input id='edit_profile_name' value='"+$('#profile_name').html()+"'>");
-            $('#profile_name').attr("status","edit");
-            $('#changeavatar').show();
-        } else {
-            var name_val=$("#edit_profile_name").val();
-            $('#profile_name').html(name_val);
-            odof.user.profile.saveUsername(name_val);
-            $('#profile_name').attr("status","view");
-            $('#changeavatar').hide();
-        }
+    jQuery('#edit_profile_btn').bind("click", function(event){
+        odof.user.profile.editUserProfile(event);
     });
 
     $('.sendactiveemail').click(function(e) {
@@ -419,11 +459,8 @@ $(document).ready(function() {
     });
     */
 
-
     // by Leask Huang
-
-    document.title = 'EXFE - ' + $('#profile_name').html();
-
+    document.title = 'EXFE - ' + $('#user_name').html();
     $('.invitation').live('mousemove mouseout', function(event) {
         var objEvent = event.target;
         while (!$(objEvent).hasClass('invitation')) {
@@ -508,5 +545,4 @@ $(document).ready(function() {
     odof.user.profile.getCross();
     odof.user.profile.getInvitation();
     odof.user.profile.getUpdate();
-
 });
