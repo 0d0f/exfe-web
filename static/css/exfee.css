@@ -142,9 +142,31 @@
 }
 
 .exfee_main_identity_remove {
+    background: transparent;
     position: absolute;
     float: right;
     right: 8px;
+    color: red;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.exfee_main_identity_remove.ready {
+    width: 75px;
+    height: 20px;
+    color: #333333;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    background-color: #ffeceb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 236, 235)), to(rgb(217, 73, 65)));
+    background-image: -webkit-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -moz-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -o-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -ms-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
 }
 
 #gather_form .exfee_extrainfo .exfee_extrainfo_mainid_area, #xExfeeArea .exfee_extrainfo .exfee_extrainfo_mainid_area {

@@ -289,8 +289,8 @@ $(document).ready(function() {
 
     // Exfee input
     var curExfees = [];
-    if (myidentity) {
-        var meExfee = odof.util.clone(myidentity);
+    if (myIdentity) {
+        var meExfee = odof.util.clone(myIdentity);
         meExfee.host = true;
         meExfee.rsvp = 1;
         curExfees.push(meExfee);
