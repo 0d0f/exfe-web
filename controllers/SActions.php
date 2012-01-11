@@ -167,16 +167,20 @@ class SActions extends ActionController {
         }
 
         // init models
+        $modUser = $this->getModelByName('user');
         $modIdentity = $this->getModelByName('identity');
-        $modUser     = $this->getModelByName('user');
-
-        // Get identities
-        $identities  = $modIdentity->getIdentitiesByUser($_SESSION['userid']);
-        $this->setVar('identities', $identities);
 
         // Get user informations
-        $user        = $modUser->getUser($_SESSION['userid']);
+        $user = $modUser->getUser($_SESSION['userid']);
         $this->setVar('user', $user);
+
+        // Get identities
+        $identities = $modIdentity->getIdentitiesByUser($_SESSION['userid']);
+        $this->setVar('identities', $identities);
+
+        $crossData = $this->getModelByName('x');
+        $crossNumber = $crossData->fetchCross($_SESSION['userid'], 0, 'yes', 'begin_at', 1000, 'count');
+        $this->setVar('cross_num', $crossNumber);
 
         $this->displayView();
     }
@@ -585,22 +589,34 @@ class SActions extends ActionController {
         exit();
     }
 
-    public function doSaveUserIdentity()
+    public function doEditUserProfile()
     {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>"",
+            "response" => array()
+        );
+        header("Content-Type:application/json; charset=UTF-8");
+
         //TODO: private API ,must check session
-        $name=$_POST["name"];
-        $userid=intval($_SESSION["userid"]);
-        if ($userid > 0)
-        {
-            $userData = $this->getModelByName("user");
-            $user=$userData->saveUser($name,$userid);
-            $responobj["meta"]["code"]=200;
-            //$responobj["meta"]["errType"]="Bad Request";
-            //$responobj["meta"]["errorDetail"]="invalid_auth";
-            $responobj["response"]["user"]=$user;
-            echo json_encode($responobj);
+        $userName = trim(exPost("user_name"));
+        if($userName == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "user name empty.";
+            echo json_encode($returnData);
             exit();
         }
+
+        $userID = intval($_SESSION["userid"]);
+        if ($userID > 0)
+        {
+            $userDataObj = $this->getModelByName("user");
+            $userInfo = $userDataObj->saveUser($userName,$userID);
+            $returnData["response"]["user"] = $userInfo;
+        }
+
+        echo json_encode($returnData);
+        exit();
     }
 
     public function doGetUserProfile()

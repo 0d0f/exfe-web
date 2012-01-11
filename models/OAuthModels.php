@@ -13,15 +13,20 @@ class OAuthModels extends DataModel{
 
         $sql = "SELECT id FROM identities WHERE external_identity='{$oAuthUserID}'";
         $rows = $this->getRow($sql);
+        //如果当前OAuth用户不存在。
         if(!is_array($rows)){
             $sql = "INSERT INTO identities (`provider`, `external_identity`, `created_at`, `updated_at`, `name`, `bio`, `avatar_file_name`, `external_username`, `oauth_token`) VALUES ('{$oAuthProvider}', '{$oAuthUserID}', FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserDesc}', '{$oAuthUserAvatar}', '{$oAuthScreenName}', '{$oAuthAccessToken}')";
             $result = $this->query($sql);
             $identityID = intval($result["insert_id"]);
 
-            //create user for current identity
-            $sql = "INSERT INTO users (`created_at`, `updated_at` , `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserAvatar}')";
-            $result = $this->query($sql);
-            $userID = intval($result["insert_id"]);
+            $userID = intval($_SESSION['userid']);
+            //如果没有登录。则将当前OAuth用户看成是一个新的用户。
+            if($userID <= 0){
+                //create user for current identity
+                $sql = "INSERT INTO users (`created_at`, `updated_at` , `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserAvatar}')";
+                $result = $this->query($sql);
+                $userID = intval($result["insert_id"]);
+            }
 
             if($identityID && $userID){
                 $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID}, {$userID}, FROM_UNIXTIME($currentTimeStamp), 3)";
@@ -34,6 +39,22 @@ class OAuthModels extends DataModel{
 
             $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
             $result = $this->getRow($sql);
+
+            $userID = intval($result["userid"]);
+            //这一块是多身份合并的代码，现在先不管，暂时先留着。
+            /*
+            //如果已经登录，则合并账户。
+            $userID = intval($_SESSION['userid']);
+            if($userID <= 0){
+                $userID = intval($result["userid"]);
+            }else{
+                $oldUserID = intval($result["userid"]);
+                $sql = "UPDATE user_identity set `userid`={$userID} WHERE `identityid`={$identityID} AND `userid`={$oldUserID}";
+                $this->query($sql);
+            }
+            */
+
+            /*
             if(is_array($result)){
                 $userID = intval($result["userid"]);
                 $sql = "UPDATE users SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', avatar_file_name='{$oAuthUserAvatar}' WHERE id={$userID}";
@@ -49,6 +70,7 @@ class OAuthModels extends DataModel{
                     $this->query($sql);
                 }
             }
+             */
         }
         return array("identityID" => $identityID, "userID" => $userID);
     }

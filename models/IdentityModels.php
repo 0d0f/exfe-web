@@ -467,7 +467,7 @@ class IdentityModels extends DataModel{
     }
     public function getIdentitiesByUser($userid)
     {
-        $sql="select identityid,status from user_identity where userid=$userid";
+        $sql="select identityid,status,activecode from user_identity where userid=$userid";
         $rows=$this->getAll($sql);
         $userIdentityInfo = array();
         foreach($rows as $row)
@@ -479,6 +479,7 @@ class IdentityModels extends DataModel{
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
                 $identity["status"]=$row["status"];
+                $identity["active_exp_time"]=substr($row["activecode"],32);
                 array_push($userIdentityInfo,$identity);
             }
         }
