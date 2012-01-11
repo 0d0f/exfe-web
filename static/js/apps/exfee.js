@@ -127,13 +127,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             "odof.exfee.gadget.chkInput('" + domId + "')", 50
         );
         $('#' + domId + '_exfeegadget_inputbox').bind(
-            'keydown', this.keydownInputbox
+            'keydown blur', this.eventInputbox
         );
         $('#' + domId + '_exfeegadget_addbtn').bind(
             'keydown click', this.eventAddbutton
         );
         $('#' + domId + '_exfeegadget_autocomplete > ol > li').live(
-            'mousemove click', this.eventCompleteItem
+            'mousemove mousedown', this.eventCompleteItem
         );
         $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_rsvpblock').live(
             'click', this.eventAvatarRsvp
@@ -144,49 +144,54 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.keydownInputbox = function(event) {
+    ns.eventInputbox = function(event) {
         var domId = event.target.id.split('_')[0];
-        console.log(event.which);
-        switch (event.which) {
-            case 9:  // tab
-            case 13: // enter
-                odof.exfee.gadget.chkInput(domId, true);
-                break;
-            case 38: // up
-            case 40: // down
-                if (!odof.exfee.gadget.completing[domId]) {
-                    return;
-                }
-                var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
-                    curItem     = null,
-                    idxItem     = null,
-                    tarItem     = null,
-                    maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
-                    if (objSelected.length) {
-                        curItem = objSelected.attr('identity');
-                        for (var i in odof.exfee.gadget.curComplete[domId]) {
-                            if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
-                                idxItem = parseInt(i);
-                                break;
-                            }
+        switch (event.type) {
+            case 'keydown':
+                switch (event.which) {
+                    case 9:  // tab
+                    case 13: // enter
+                        odof.exfee.gadget.chkInput(domId, true);
+                        break;
+                    case 38: // up
+                    case 40: // down
+                        if (!odof.exfee.gadget.completing[domId]) {
+                            return;
                         }
-                    }
-                    switch (event.which) {
-                        case 38:
-                            tarItem = curItem
-                                    ? (idxItem > 0
-                                    ? odof.exfee.gadget.curComplete[domId][idxItem - 1]
-                                    : odof.exfee.gadget.curComplete[domId][maxIdx])
-                                    : odof.exfee.gadget.curComplete[domId][maxIdx];
-                            break;
-                        case 40:
-                            tarItem = curItem
-                                    ? (idxItem < maxIdx
-                                    ? odof.exfee.gadget.curComplete[domId][idxItem + 1]
-                                    : odof.exfee.gadget.curComplete[domId][0])
-                                    : odof.exfee.gadget.curComplete[domId][0];
-                    }
-                    odof.exfee.gadget.selectCompleteResult(domId, tarItem);
+                        var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
+                            curItem     = null,
+                            idxItem     = null,
+                            tarItem     = null,
+                            maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
+                            if (objSelected.length) {
+                                curItem = objSelected.attr('identity');
+                                for (var i in odof.exfee.gadget.curComplete[domId]) {
+                                    if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
+                                        idxItem = parseInt(i);
+                                        break;
+                                    }
+                                }
+                            }
+                            switch (event.which) {
+                                case 38:
+                                    tarItem = curItem
+                                            ? (idxItem > 0
+                                            ? odof.exfee.gadget.curComplete[domId][idxItem - 1]
+                                            : odof.exfee.gadget.curComplete[domId][maxIdx])
+                                            : odof.exfee.gadget.curComplete[domId][maxIdx];
+                                    break;
+                                case 40:
+                                    tarItem = curItem
+                                            ? (idxItem < maxIdx
+                                            ? odof.exfee.gadget.curComplete[domId][idxItem + 1]
+                                            : odof.exfee.gadget.curComplete[domId][0])
+                                            : odof.exfee.gadget.curComplete[domId][0];
+                            }
+                            odof.exfee.gadget.selectCompleteResult(domId, tarItem);
+                }
+                break;
+            case 'blur':
+                odof.exfee.gadget.displayComplete(domId, false);
         }
     };
 
@@ -214,7 +219,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             case 'mousemove':
                 odof.exfee.gadget.selectCompleteResult(domId, identity);
                 break;
-            case 'click':
+            case 'mousedown':
                 for (var i in odof.exfee.gadget.exfeeAvailable) {
                     if (odof.exfee.gadget.exfeeAvailable[i]
                             .external_identity === identity) {
