@@ -39,6 +39,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.completing        = {};
     
     ns.diffCallback      = {};
+    
+    ns.timerBaseInfo     = {};
 
 
     ns.make = function(domId, curExfee, curEditable, curDiffCallback) {
@@ -92,6 +94,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.exfeeSelected[domId] = {};
         this.completing[domId]    = false;
         this.diffCallback[domId]  = curDiffCallback;
+        this.timerBaseInfo[domId] = {};
         $('#' + domId).html(strHtml);
         if (typeof localStorage !== 'undefined') {
             this.exfeeAvailable = localStorage.getItem(this.exfeeAvailableKey);
@@ -110,6 +113,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (this.diffCallback[domId]) {
             this.diffCallback[domId]();
         }
+        $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_avatarblock').live(
+            'mouseover mouseout', this.exentAvatar
+        );
         if (!curEditable) {
             return;
         }
@@ -229,6 +235,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +         '" class="exfee_avatar">'
               +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
               +     '</div>'
+              +     '<div class="exfee_baseinfo">'
+              +         '<span class="exfee_baseinfo_name">'
+              +             objExfee.name
+              +         '</span>'
+              +         '<span class="exfee_baseinfo_identity">'
+              +             objExfee.external_identity
+              +         '</span>'  
+              +     '</div>'
               + '</li>'
             );
             $('#' + domId + '_exfeegadget_listarea > ol').append(
@@ -340,6 +354,45 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     
     
+    ns.exentAvatar = function(event) {
+        var domTarget = $(event.target)[0];
+        do {
+            domTarget = domTarget.parentNode;
+        } while (domTarget.tagName !== 'LI')
+        var domItemId = domTarget.parentNode.parentNode.id.split('_')[0];
+            identity  = $(domTarget).attr('identity');
+        switch (event.type) {
+            case 'mouseover':
+                if (typeof odof.exfee.gadget.timerBaseInfo[domItemId][identity]
+                === 'undefined') {
+                    odof.exfee.gadget.timerBaseInfo[domItemId][identity]
+                  = setTimeout(
+                        "odof.exfee.gadget.showBaseInfo('" + domItemId + "', '" + identity + "', true)",
+                        500
+                    );
+                }
+                break;
+            case 'mouseout':
+                odof.exfee.gadget.showBaseInfo(domItemId, identity, false);
+        }
+    };
+    
+    
+    ns.showBaseInfo = function(domId, identity, display) {
+        var objBsInfo = $(
+                '#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
+                    + identity + '"] > .exfee_baseinfo'
+            );
+        clearTimeout(odof.exfee.gadget.timerBaseInfo[domId][identity]);
+        delete odof.exfee.gadget.timerBaseInfo[domId][identity];
+        if (display) {
+            objBsInfo.fadeIn(100);
+        } else {
+            objBsInfo.fadeOut(100);
+        }
+    };
+
+
     ns.changeRsvp = function(domId, identity, rsvp) {
         if (typeof this.exfeeInput[domId][identity] === 'undefined') {
             return;

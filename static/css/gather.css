@@ -4,7 +4,6 @@
 
 #gather_form {
     padding: 0 40px 15px 40px;
-    overflow: hidden;
 }
 
 #x_view_content {
@@ -24,9 +23,16 @@
 
 #gather_form ul li {
     padding-bottom: 15px;
-    overflow: hidden;
     list-style: none;
     clear: both;
+}
+
+#gather_form ul li:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
 }
 
 #gather_form ul li label {

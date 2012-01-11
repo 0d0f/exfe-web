@@ -4,12 +4,6 @@
 
 /* @todo removing {
 .Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:15px 0 0 434px; }
-.cs {float:right;width:20px;height:20px;}
-.cs em {width:20px;height:20px;background:url(/static/images/icons.png) no-repeat;display:block;}
-.cs em.c0{background-position:left -123px}
-.cs em.c1{background-position:-1px -81px}
-.cs em.c2{background-position:left -165px}
-.cs em.c3{background-position:left -207px}
 } */
 
 #gather_form .exfeegadget_avatararea > ol > li, #xExfeeArea .exfeegadget_avatararea > ol > li {
@@ -19,6 +13,7 @@
     float: left;
     clear: none;
     position: relative;
+    overflow: visible;
 }
 
 .exfee_avatarblock {
@@ -41,6 +36,37 @@
     position: absolute;
     bottom: 0px;
     right: -3px;
+}
+
+.exfee_baseinfo {
+    display: none;
+    position: absolute;
+    width: auto;
+    height: auto;
+    background: #E0EDEF;
+    border: 1px #0591AC solid;
+    z-index: 10;
+    padding: 5px;
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    -o-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+}
+
+.exfee_baseinfo span {
+    white-space: nowrap;
+    display: block;
+    color: #333333;
+}
+
+.exfee_baseinfo_name {
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.exfee_baseinfo_identity {
+    font-size: 14px;
+    line-height: 20px;
 }
 
 .exfeegadget_inputarea {
