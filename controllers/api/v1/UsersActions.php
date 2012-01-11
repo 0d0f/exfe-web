@@ -53,6 +53,9 @@ class UsersActions extends ActionController {
     {
         $params=$this->params;
         $uid=$params["id"];
+        $device_identity_id=$params["ddid"];
+
+
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_getupdate",$params["token"],array("user_id"=>$params["id"]));
         if($check["check"]==false)
@@ -64,6 +67,9 @@ class UsersActions extends ActionController {
         }
         $shelper=$this->getHelperByName("s");
         $cleanLogs=$shelper->GetAllUpdate($uid,urldecode($params["updated_since"]),200,true);
+
+        $identityhelper=$this->getHelperByName("identity");
+        $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);
 
         $responobj["meta"]["code"]=200;
         $responobj["response"]=$cleanLogs;

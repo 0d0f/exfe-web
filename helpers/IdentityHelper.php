@@ -39,6 +39,22 @@ class IdentityHelper extends ActionController
             return $jobId;
     }
 
+    public function cleanIdentityBadgeNumber($device_identity_id,$uid)
+    {
+        //deviceToken
+        $identityData = $this->getModelByName('identity');
+        $belongs=$identityData->ifIdentityIdBelongsUser($device_identity_id,$uid);
+        if(intval($belongs) > 0)
+        {
+            $identity=$identityData->getIdentityById($device_identity_id);
+            $devicetoken=$identity["external_identity"];
+            $redis = new Redis();
+            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+            $redis->HSET("iospush_badgenumber",$devicetoken,0);
+        }
+
+    }
+
 }
 
 
