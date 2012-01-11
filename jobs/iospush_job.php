@@ -18,7 +18,7 @@ class Iospush_Job
         $content=$this->args["msg"];
         $args = array('cid' => $cross_id,'t' => $type);
         $deviceToken = $this->args["external_identity"];
-        $badge=1;
+        $badge=$this->args["badge"];
         if($apn_connect=="")
             apn_connect();
            // $this->connect();
@@ -37,8 +37,8 @@ class Iospush_Job
         if ($sound)
           $body['aps']['sound'] = $sound;
         $body['args']=$args;
-
         print_r($body);
+
         $err=sendapn($deviceToken,$body);
         if($err==0)
         {

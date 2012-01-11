@@ -462,16 +462,27 @@ class Apn_Job
     }
     public function deliver($msgbodyobj)
     {
-               date_default_timezone_set('GMT');
-               Resque::setBackend(RESQUE_SERVER);
-               $jobId = Resque::enqueue("iOSPushMsg","iospush_job" , $msgbodyobj, true);
-               echo "throw to pushmsg queue jobid:".$jobId." \r\n";
+        global $redis_connect;
+        if($redis_connect=="")
+            redis_connect();
+        $deviceToken = $msgbodyobj["external_identity"];
+        $number=$redis_connect->HGET("iospush_badgenumber",$deviceToken);
+        if($number==false)
+            $number=1;
+        else
+            $number=intval($number)+1;
+
+        $redis_connect->HSET("iospush_badgenumber",$deviceToken,$number);
+        $msgbodyobj["badge"]=$number;
+        date_default_timezone_set('GMT');
+        Resque::setBackend(RESQUE_SERVER);
+        $jobId = Resque::enqueue("iOSPushMsg","iospush_job" , $msgbodyobj, true);
+        echo "throw to pushmsg queue jobid:".$jobId." \r\n";
     }
     public function send($deviceToken,$message,$sound,$badge,$args)
     {
         global $apn_connect;
         global $connect_count;
-        //["$apn_connect"]
         $body = array();
         $body['aps'] = array('alert' => $message);
         if ($badge)

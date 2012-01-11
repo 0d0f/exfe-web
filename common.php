@@ -628,7 +628,10 @@ function urlencodeAry($data)
     {
         foreach($data as $key=>$val)
         {
-            $data[$key] = urlencodeAry($val);
+            if(is_numeric($val))
+                $data[$key] = $val;
+            else
+                $data[$key] = urlencodeAry($val);
         }
         return $data;
     }

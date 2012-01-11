@@ -6,6 +6,7 @@ include('sdk/sdk.class.php');
 $connect_count=array("apn_connect"=>0,"email_connect"=>0);
 $apn_connect="";
 $email_connect="";
+$redis_connect="";
 
 function smtp_connect()
 {
@@ -87,10 +88,17 @@ function sendapn($deviceToken,$body)
 {
     global $apn_connect;
     $payload = json_encode_nounicode($body);
-    echo "r\n======payload size:".strlen($payload)."\r\n";
+    #$payload = json_encode($body);
+#    echo "r\n======payload size:".strlen($payload)."\r\n";
     $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
     $err=fwrite($apn_connect, $msg);
     return $err;
 }
 
+function redis_connect()
+{
+    global $redis_connect;
+    $redis_connect= new Redis();
+    $redis_connect->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+}
 
