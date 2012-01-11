@@ -13,7 +13,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 (function(ns) {
 
     ns.exfeeAvailableKey = 'exfee_available';
-    
+
     ns.arrClassRsvp      = ['noresponse', 'accepted', 'declined', 'interested'];
 
     ns.inputed           = {};
@@ -37,9 +37,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.exfeeSelected     = {};
 
     ns.completing        = {};
-    
+
     ns.diffCallback      = {};
-    
+
     ns.timerBaseInfo     = {};
 
 
@@ -200,8 +200,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $(strBaseId).removeClass(className);
         $(strBaseId + '[identity="' + identity + '"]').addClass(className);
     };
-    
-    
+
+
     ns.getClassRsvp = function(rsvp) {
         return 'exfee_rsvp_' + this.arrClassRsvp[rsvp];
     };
@@ -241,7 +241,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +         '</span>'
               +         '<span class="exfee_baseinfo_identity">'
               +             objExfee.external_identity
-              +         '</span>'  
+              +         '</span>'
               +     '</div>'
               + '</li>'
             );
@@ -267,7 +267,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if (objExfee.provider) {
                 this.exfeeInput[domId][objExfee.external_identity] = objExfee;
             }
-            
+
         }
         this.chkFakeHost(domId);
         this.updateExfeeSummary(domId);
@@ -285,8 +285,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.chkFakeHost(domId);
         this.exfeeSelected = [];
     };
-    
-    
+
+
     ns.rawDelExfee = function(domId, exfees) {
         for (var i in exfees) {
             $('#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
@@ -315,8 +315,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             );
         }
     };
-    
-    
+
+
     ns.updateExfeeSummary = function(domId) {
         var confirmed = 0;
             total     = 0;
@@ -331,8 +331,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + domId + '_exfeegadget_num_accepted').html(confirmed);
         $('#' + domId + '_exfeegadget_num_summary').html(total);
     };
-    
-    
+
+
     ns.eventAvatarRsvp = function(event) {
         var domLi    = event.target.parentNode.parentNode,
             identity = $(domLi).attr('identity'),
@@ -352,8 +352,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
         }
     };
-    
-    
+
+
     ns.exentAvatar = function(event) {
         var domTarget = $(event.target)[0];
         do {
@@ -376,8 +376,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 odof.exfee.gadget.showBaseInfo(domItemId, identity, false);
         }
     };
-    
-    
+
+
     ns.showBaseInfo = function(domId, identity, display) {
         var objBsInfo = $(
                 '#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
@@ -415,8 +415,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             this.diffCallback[domId]();
         }
     };
-    
-    
+
+
     ns.getExfees = function(domId) {
         var arrExfees = [];
         for (var i in this.exfeeInput[domId]) {
