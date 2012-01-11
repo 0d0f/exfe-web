@@ -14,7 +14,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.exfeeAvailableKey = 'exfee_available';
 
-    ns.arrClassRsvp      = ['noresponse', 'accepted', 'declined', 'interested'];
+    ns.arrStrRsvp        = ['Not responded', 'Accepted', 'Declined', 'Interested'];
 
     ns.inputed           = {};
 
@@ -207,7 +207,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.getClassRsvp = function(rsvp) {
-        return 'exfee_rsvp_' + this.arrClassRsvp[rsvp];
+        return 'exfee_rsvp_'
+             + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
     };
 
 
@@ -228,8 +229,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             objExfee.avatar_file_name = objExfee.avatar_file_name ? objExfee.avatar_file_name : 'default.png';
-            objExfee.host = typeof exfees[i].host === 'undefined' ? false : exfees[i].host;
-            objExfee.rsvp = typeof exfees[i].rsvp === 'undefined' ? 0     : exfees[i].rsvp;
+            objExfee.host = typeof  exfees[i].host  === 'undefined'
+                          ? false : exfees[i].host;
+            objExfee.rsvp = typeof  exfees[i].rsvp  === 'undefined'
+                          ? 0     : exfees[i].rsvp;
+            objExfee.rsvp = typeof  exfees[i].state === 'undefined'
+                          ? exfees[i].rsvp : exfees[i].state;
             var strClassRsvp = this.getClassRsvp(objExfee.rsvp);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + objExfee.external_identity + '">'
@@ -259,7 +264,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +             objExfee.name
               +         '</div>'
               +         '<div class="exfee_extrainfo_rsvp_area">'
-              +             'Accepted'
+              +             this.arrStrRsvp[objExfee.rsvp]
               +         '</div>'
               +         '<div class="exfee_extrainfo_mainid_area">'
               +             objExfee.external_identity
@@ -367,7 +372,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             case 'click':
                 switch (odof.exfee.gadget.exfeeInput[domId][identity].rsvp) {
                     case 1:
-                        odof.exfee.gadget.changeRsvp(domId, identity, 0);
+                        odof.exfee.gadget.changeRsvp(
+                            domId,
+                            identity,
+                            domId === 'gatherExfee' ? 0 : 2
+                        );
                         break;
                     case 0:
                     case 2:
@@ -443,17 +452,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             return;
         }
         this.exfeeInput[domId][identity].rsvp = rsvp;
-        var strCatchKey   = ' > ol > li[identity="' + identity + '"] .exfee_rsvpblock';
-        for (var i in this.arrClassRsvp) {
+        var strCatchKey   = ' > ol > li[identity="' + identity + '"] ';
+        for (var i in this.arrStrRsvp) {
             var intRsvp = parseInt(i),
                 strRsvp = this.getClassRsvp(intRsvp);
             if (intRsvp === rsvp) {
-                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).addClass(strRsvp);
-                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).addClass(strRsvp);
+                $('#' + domId + '_exfeegadget_avatararea'
+                      + strCatchKey + '.exfee_rsvpblock').addClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'
+                      + strCatchKey + '.exfee_rsvpblock').addClass(strRsvp);
             } else {
-                $('#' + domId + '_exfeegadget_avatararea' + strCatchKey).removeClass(strRsvp);
-                $('#' + domId + '_exfeegadget_listarea'   + strCatchKey).removeClass(strRsvp);
+                $('#' + domId + '_exfeegadget_avatararea'
+                      + strCatchKey + '.exfee_rsvpblock').removeClass(strRsvp);
+                $('#' + domId + '_exfeegadget_listarea'
+                      + strCatchKey + '.exfee_rsvpblock').removeClass(strRsvp);
             }
+            $('#' + domId + '_exfeegadget_avatararea'
+                      + strCatchKey + '.exfee_extrainfo_rsvp_area').html(
+                this.arrStrRsvp[rsvp]
+            );
         }
         this.updateExfeeSummary(domId);
         if (this.diffCallback[domId]) {

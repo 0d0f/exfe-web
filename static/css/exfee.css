@@ -137,7 +137,8 @@
     font-size: 14px;
     line-height: 20px;
     font-weight: bold;
-    margin: 0 60px 0 60px;
+    width: 100%;
+    text-align: center;
 }
 
 .exfee_main_identity_remove {
@@ -246,7 +247,7 @@
     background: url("/static/images/icons.png");
 }
 
-.exfee_rsvp_noresponse {
+.exfee_rsvp_notresponded {
     background-position: left -123px;
 }
 
