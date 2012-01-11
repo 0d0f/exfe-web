@@ -243,9 +243,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +         '<span class="exfee_baseinfo_name">'
               +             objExfee.name
               +         '</span>'
-              +         '<span class="exfee_baseinfo_identity">'
+              +        (exfees[i].provider
+              ?        ('<span class="exfee_baseinfo_identity">'
               +             objExfee.external_identity
-              +         '</span>'
+              +         '</span>') : '')
               +     '</div>'
               +     '<div class="exfee_extrainfo floating">'
               +         '<div class="exfee_extrainfo_avatar_area">'
