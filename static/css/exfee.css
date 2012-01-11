@@ -38,7 +38,7 @@
     right: -3px;
 }
 
-.shadow {
+.floating {
     box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
     -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
     -moz-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
@@ -73,6 +73,9 @@
 }
 
 .exfee_extrainfo {
+    display: none;
+    left: 4px;
+    top: 4px;
     width: 215px;
     position: absolute;
     border: 1px #E6E6E6 solid;
