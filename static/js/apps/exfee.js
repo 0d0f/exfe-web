@@ -90,7 +90,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.editable[domId]      = curEditable;
         this.exfeeInput[domId]    = {};
         this.keyComplete[domId]   = '';
-        this.curComplete[domId]   = {};
+        this.curComplete[domId]   = [];
         this.exfeeSelected[domId] = {};
         this.completing[domId]    = false;
         this.diffCallback[domId]  = curDiffCallback;
@@ -146,19 +146,47 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.keydownInputbox = function(event) {
         var domId = event.target.id.split('_')[0];
+        console.log(event.which);
         switch (event.which) {
             case 9:  // tab
             case 13: // enter
                 odof.exfee.gadget.chkInput(domId, true);
                 break;
-            case 40: // down!!!
+            case 38: // up
+            case 40: // down
                 if (!odof.exfee.gadget.completing[domId]) {
                     return;
                 }
-                odof.exfee.gadget.selectCompleteResult(
-                    domId,
-                    $('#' + domId + '_exfeegadget_autocomplete > ol > li:first').attr('identity')
-                );
+                var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
+                    curItem     = null,
+                    idxItem     = null,
+                    tarItem     = null,
+                    maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
+                    if (objSelected.length) {
+                        curItem = objSelected.attr('identity');
+                        for (var i in odof.exfee.gadget.curComplete[domId]) {
+                            if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
+                                idxItem = parseInt(i);
+                                break;
+                            }
+                        }
+                    }
+                    switch (event.which) {
+                        case 38:
+                            tarItem = curItem
+                                    ? (idxItem > 0
+                                    ? odof.exfee.gadget.curComplete[domId][idxItem - 1]
+                                    : odof.exfee.gadget.curComplete[domId][maxIdx])
+                                    : odof.exfee.gadget.curComplete[domId][maxIdx];
+                            break;
+                        case 40:
+                            tarItem = curItem
+                                    ? (idxItem < maxIdx
+                                    ? odof.exfee.gadget.curComplete[domId][idxItem + 1]
+                                    : odof.exfee.gadget.curComplete[domId][0])
+                                    : odof.exfee.gadget.curComplete[domId][0];
+                    }
+                    odof.exfee.gadget.selectCompleteResult(domId, tarItem);
         }
     };
 
@@ -581,21 +609,27 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.showComplete = function(domId, key, exfee) {
-        var baseId          = '#' + domId + '_exfeegadget_autocomplete > ol',
-            objAutoComplete = $(baseId),
+        var objAutoComplete = $('#' + domId + '_exfeegadget_autocomplete > ol'),
             strItems        = '';
         if (this.keyComplete[domId] !== key) {
-            this.curComplete[domId] = {};
+            this.curComplete[domId] = [];
             objAutoComplete.html('');
         }
         this.keyComplete[domId] = key;
         if (exfee && exfee.length) {
             for (var i in exfee) {
-                var curIdentity = exfee[i].external_identity.toLowerCase();
-                if (typeof this.curComplete[domId][curIdentity] !== 'undefined') {
+                var curIdentity = exfee[i].external_identity.toLowerCase(),
+                    shown       = false;
+                for (var j in this.curComplete[domId]) {
+                    if (this.curComplete[domId][j] === curIdentity) {
+                        shown = true;
+                        break;
+                    }
+                }
+                if (shown) {
                     continue;
                 }
-                this.curComplete[domId][curIdentity] = true;
+                this.curComplete[domId].push(curIdentity);
                 strItems += '<li identity="' + curIdentity + '" '
                           +     'class="autocomplete_item">'
                           +     '<img src="' + odof.comm.func.getUserAvatar(
@@ -615,10 +649,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (strItems) {
             objAutoComplete.append(strItems)
         }
-        if (!$(baseId + ' > .autocomplete_selected').length) {
-            this.selectCompleteResult(domId, $(baseId + ' > li:first').attr('identity'));
-        }
-        this.displayComplete(domId, key && odof.util.count(this.curComplete[domId]));
+        this.displayComplete(domId, key && this.curComplete[domId].length);
     };
 
 
