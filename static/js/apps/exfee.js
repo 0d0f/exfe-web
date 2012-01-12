@@ -507,6 +507,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     clearTimeout(odof.exfee.gadget.timerBaseInfo[domItemId][i]);
                 }
                 $('.floating').hide();
+                var objRemove = $('#' + domItemId + '_exfeegadget_avatararea > ol > li .exfee_main_identity_remove');
+                if (objRemove.length) {
+                    objRemove.html(' ⊖ ');
+                    objRemove.removeClass('ready');
+                }
                 objItem.children('.exfee_extrainfo').fadeIn(300);
         }
     };
