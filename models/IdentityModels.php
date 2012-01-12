@@ -274,32 +274,6 @@ class IdentityModels extends DataModel{
         unset($_SESSION["tokenIdentity"]);
         return $userid;
     }
-    //check user password
-    public function checkUserPassword($userid, $password){
-        //$password = md5($password.$this->salt);
-        $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
-        $row=$this->getRow($sql);
-        $passwordSalt = $row["password_salt"];
-        if($passwordSalt == $this->salt){
-            $password=md5($password.$this->salt);
-        }else{
-            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        }
-
-
-        if($row["encrypted_password"] == $password){
-            return true;
-        }
-        return false;
-    }
-    //update user password
-    public function updateUserPassword($userid, $password){
-        //$password=md5($password.$this->salt);
-        $passwordSalt = md5(createToken());
-        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
-        $this->query($sql);
-    }
 
     public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false)
     {
