@@ -282,99 +282,107 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
-        for (var i in exfees) {
-            var objExfee = odof.util.clone(exfees[i]);
-            objExfee.external_identity = objExfee.external_identity.toLowerCase();
-            if (typeof this.exfeeInput[domId][objExfee.external_identity] !== 'undefined') {
-                continue;
-            }
-            if (!noIdentity) {
-                for (var j in this.exfeeAvailable) {
-                    if (this.exfeeAvailable[j].external_identity.toLowerCase()
-                    === objExfee.external_identity) {
-                        objExfee = odof.util.clone(this.exfeeAvailable[j]);
-                        break;
+        for (var j = 0; j < 4; j++) {
+            for (var i in exfees) {
+                var objExfee = odof.util.clone(exfees[i]);
+                objExfee.external_identity = objExfee.external_identity.toLowerCase();
+                if (typeof this.exfeeInput[domId][objExfee.external_identity] !== 'undefined') {
+                    continue;
+                }
+                if (!noIdentity) {
+                    for (var j in this.exfeeAvailable) {
+                        if (this.exfeeAvailable[j].external_identity.toLowerCase()
+                        === objExfee.external_identity) {
+                            objExfee = odof.util.clone(this.exfeeAvailable[j]);
+                            break;
+                        }
                     }
                 }
-            }
-            objExfee.avatar_file_name = objExfee.avatar_file_name ? objExfee.avatar_file_name : 'default.png';
-            objExfee.host = typeof  exfees[i].host  === 'undefined'
-                          ? false : exfees[i].host;
-            objExfee.rsvp = typeof  exfees[i].rsvp  === 'undefined'
-                          ? 0     : exfees[i].rsvp;
-            objExfee.rsvp = typeof  exfees[i].state === 'undefined'
-                          ? objExfee.rsvp : exfees[i].state;
-            var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
-                removable    = this.editable[domId] && !objExfee.host
-                            && objExfee.external_identity
-                           !== (myIdentity ? myIdentity.external_identity : '');
-            $('#' + domId + '_exfeegadget_avatararea > ol').append(
-                '<li identity="' + objExfee.external_identity + '">'
-              +     '<div class="exfee_avatarblock">'
-              +        (objExfee.host
-              ?         '<div class="exfee_hostmark">H</div>' : '')
-              +         '<img src="' + odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name, 80, img_url)
-              +         '" class="exfee_avatar">'
-              +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
-              +     '</div>'
-              +     '<div class="exfee_baseinfo floating">'
-              +         '<span class="exfee_baseinfo_name">'
-              +             objExfee.name
-              +         '</span>'
-              +        (exfees[i].provider
-              ?        ('<span class="exfee_baseinfo_identity">'
-              +             objExfee.external_identity
-              +         '</span>') : '')
-              +     '</div>'
-              +     '<div class="exfee_extrainfo floating">'
-              +        (objExfee.host
-              ?         '<div class="exfee_hostmark">host</div>' : '')
-              +         '<div class="exfee_extrainfo_avatar_area">'
-              +             '<img src="' + odof.comm.func.getUserAvatar(
+                objExfee.avatar_file_name = objExfee.avatar_file_name ? objExfee.avatar_file_name : 'default.png';
+                objExfee.host = typeof  exfees[i].host  === 'undefined'
+                              ? false : exfees[i].host;
+                objExfee.rsvp = typeof  exfees[i].rsvp  === 'undefined'
+                              ? 0     : exfees[i].rsvp;
+                objExfee.rsvp = typeof  exfees[i].state === 'undefined'
+                              ? objExfee.rsvp : exfees[i].state;
+                if ((j == 0 && objExfee.rsvp !== 1)
+                 || (j == 1 && objExfee.rsvp !== 3)
+                 || (j == 2 && objExfee.rsvp !== 0)
+                 || (j == 3 && objExfee.rsvp !== 2)) {
+                    continue;
+                }
+                var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
+                    removable    = this.editable[domId] && !objExfee.host
+                                && objExfee.external_identity
+                               !== (myIdentity ? myIdentity.external_identity : '');
+                $('#' + domId + '_exfeegadget_avatararea > ol').append(
+                    '<li identity="' + objExfee.external_identity + '">'
+                  +     '<div class="exfee_avatarblock">'
+                  +        (objExfee.host
+                  ?         '<div class="exfee_hostmark">H</div>' : '')
+                  +         '<img src="' + odof.comm.func.getUserAvatar(
                             objExfee.avatar_file_name, 80, img_url)
-              +             '" class="exfee_avatar">'
-              +             '<img src="/static/images/exfee_extrainfo_avatar_mask.png" class="exfee_avatar_mask">'
-              +         '</div>'
-              +         '<div class="exfee_extrainfo_name_area">'
-              +             objExfee.name
-              +         '</div>'
-              +         '<div class="exfee_extrainfo_rsvp_area">'
-              +             this.arrStrRsvp[objExfee.rsvp]
-              +         '</div>'
-              +         '<div class="exfee_extrainfo_mainid_area">'
-              +             objExfee.external_identity
-              +            (removable
-              ?            ('<button class="exfee_main_identity_remove">'
-              +                 ' ⊖ '
-              +             '</button>') : '')
-              +         '</div>'
-              +         '<div class="exfee_extrainfo_extraid_area">'
-              +         '</div>'
-              +     '</div>'
-              + '</li>'
-            );
-            $('#' + domId + '_exfeegadget_listarea > ol').append(
-                '<li identity="' + objExfee.external_identity + '">'
-              +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
-              +     '<div class="exfee_baseblock">'
-              +         '<span class="exfee_name">'
-              +             objExfee.name
-              +         '</span>'
-              +        (objExfee.external_identity === '_fake_host_' ? ''
-              :        ('<span class="exfee_identity">'
-              +             objExfee.external_identity
-              +         '</span>'))
-              +     '</div>'
-              +     '<div class="exfee_extrablock">'
-              +         '<img src="' + odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name, 80, img_url)
-              +         '" class="exfee_avatar">'
-              +     '</div>'
-              + '</li>'
-            );
-            if (objExfee.provider) {
-                this.exfeeInput[domId][objExfee.external_identity] = objExfee;
+                  +         '" class="exfee_avatar">'
+                  +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+                  +     '</div>'
+                  +     '<div class="exfee_baseinfo floating">'
+                  +         '<span class="exfee_baseinfo_name">'
+                  +             objExfee.name
+                  +         '</span>'
+                  +        (exfees[i].provider
+                  ?        ('<span class="exfee_baseinfo_identity">'
+                  +             objExfee.external_identity
+                  +         '</span>') : '')
+                  +     '</div>'
+                  +     '<div class="exfee_extrainfo floating">'
+                  +        (objExfee.host
+                  ?         '<div class="exfee_hostmark">host</div>' : '')
+                  +         '<div class="exfee_extrainfo_avatar_area">'
+                  +             '<img src="' + odof.comm.func.getUserAvatar(
+                                objExfee.avatar_file_name, 80, img_url)
+                  +             '" class="exfee_avatar">'
+                  +             '<img src="/static/images/exfee_extrainfo_avatar_mask.png" class="exfee_avatar_mask">'
+                  +         '</div>'
+                  +         '<div class="exfee_extrainfo_name_area">'
+                  +             objExfee.name
+                  +         '</div>'
+                  +         '<div class="exfee_extrainfo_rsvp_area">'
+                  +             this.arrStrRsvp[objExfee.rsvp]
+                  +         '</div>'
+                  +         '<div class="exfee_extrainfo_mainid_area">'
+                  +             objExfee.external_identity
+                  +            (removable
+                  ?            ('<button class="exfee_main_identity_remove">'
+                  +                 ' ⊖ '
+                  +             '</button>') : '')
+                  +         '</div>'
+                  +         '<div class="exfee_extrainfo_extraid_area">'
+                  +         '</div>'
+                  +     '</div>'
+                  + '</li>'
+                );
+                $('#' + domId + '_exfeegadget_listarea > ol').append(
+                    '<li identity="' + objExfee.external_identity + '">'
+                  +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+                  +     '<div class="exfee_baseblock">'
+                  +         '<span class="exfee_name">'
+                  +             objExfee.name
+                  +         '</span>'
+                  +        (objExfee.external_identity === '_fake_host_' ? ''
+                  :        ('<span class="exfee_identity">'
+                  +             objExfee.external_identity
+                  +         '</span>'))
+                  +     '</div>'
+                  +     '<div class="exfee_extrablock">'
+                  +         '<img src="' + odof.comm.func.getUserAvatar(
+                            objExfee.avatar_file_name, 80, img_url)
+                  +         '" class="exfee_avatar">'
+                  +     '</div>'
+                  + '</li>'
+                );
+                if (objExfee.provider) {
+                    this.exfeeInput[domId][objExfee.external_identity] = objExfee;
+                }
             }
         }
         this.chkFakeHost(domId);
