@@ -150,8 +150,23 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             case 'keydown':
                 switch (event.which) {
                     case 9:  // tab
-                    case 13: // enter
                         odof.exfee.gadget.chkInput(domId, true);
+                        break;
+                    case 13: // enter
+                        var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
+                            curItem     = objSelected.length ? objSelected.attr('identity') : null;
+                        if (odof.exfee.gadget.completing[domId] && curItem) {
+                            odof.exfee.gadget.addExfeeFromCache(domId, curItem);
+                            odof.exfee.gadget.displayComplete(domId, false);
+                            $('#' + domId + '_exfeegadget_inputbox').val('');
+                        } else {
+                            odof.exfee.gadget.chkInput(domId, true);
+                        }
+                        break;
+                    case 27: // esc
+                        if (odof.exfee.gadget.completing[domId]) {
+                            odof.exfee.gadget.displayComplete(domId, false);
+                        }
                         break;
                     case 38: // up
                     case 40: // down
@@ -220,16 +235,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 odof.exfee.gadget.selectCompleteResult(domId, identity);
                 break;
             case 'mousedown':
-                for (var i in odof.exfee.gadget.exfeeAvailable) {
-                    if (odof.exfee.gadget.exfeeAvailable[i]
-                            .external_identity === identity) {
-                        odof.exfee.gadget.addExfee(
-                            domId, [odof.exfee.gadget.exfeeAvailable[i]], true
-                        );
-                        break;
-                    }
-                }
+                odof.exfee.gadget.addExfeeFromCache(domId, identity);
                 odof.exfee.gadget.displayComplete(domId, false);
+                $('#' + domId + '_exfeegadget_inputbox').val('');
         }
     };
 
@@ -245,6 +253,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.getClassRsvp = function(rsvp) {
         return 'exfee_rsvp_'
              + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
+    };
+    
+    
+    ns.addExfeeFromCache = function(domId, identity) {
+        for (var i in odof.exfee.gadget.exfeeAvailable) {
+            if (odof.exfee.gadget.exfeeAvailable[i]
+                    .external_identity === identity) {
+                odof.exfee.gadget.addExfee(
+                    domId, [odof.exfee.gadget.exfeeAvailable[i]], true
+                );
+                break;
+            }
+        }
     };
 
 
