@@ -363,6 +363,68 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
+    ns.showChangePasswordDialog = function(userName, callBackFunc){
+        var html = odof.user.identification.createDialogDomCode("change_pwd");
+        odof.exlibs.ExDialog.initialize("identification", html);
+        console.log(userName);
+        //绑定事件。
+        jQuery("#show_username_box").val(userName);
+        jQuery("#o_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword("o_pwd");
+        });
+        jQuery("#new_pwd_ic").bind("click",function(){
+            odof.comm.func.displayPassword("new_pwd");
+        });
+
+        jQuery("#change_pwd_discard").unbind("click");
+        jQuery("#change_pwd_discard").bind("click", function(){
+            odof.exlibs.ExDialog.removeDialog();
+            odof.exlibs.ExDialog.removeCover();
+        });
+
+        /*
+        jQuery("#forgot_password").bind("click", function(){
+            ns.showForgotPwdDialog(userIdentity);
+        });
+        */
+        jQuery("#change_pwd_form").submit(function(){
+            var userPassword = jQuery("#o_pwd").val();
+            var userNewPassword = jQuery("#new_pwd").val();
+            if(userPassword == ""){
+                jQuery("#change_pwd_error_msg").html("Password cannot be empty.");
+                jQuery("#change_pwd_error_msg").show();
+                return false;
+            }
+            if(userNewPassword == ""){
+                jQuery("#change_pwd_error_msg").html("New password cannot be empty.");
+                jQuery("#change_pwd_error_msg").show();
+                return false;
+            }
+            var postData = {
+                jrand:Math.round(Math.random()*10000000000),
+                u_pwd:userPassword,
+                u_new_pwd:userNewPassword
+            };
+
+            jQuery.ajax({
+                type: "POST",
+                data: postData,
+                url: site_url+"/s/changePassword",
+                dataType:"json",
+                success: function(JSONData){
+                    if(JSONData.error){
+                        jQuery("#change_pwd_error_msg").html(JSONData.msg);
+                        jQuery("#change_pwd_error_msg").show();
+                    }else{
+                        odof.exlibs.ExDialog.removeDialog();
+                        odof.exlibs.ExDialog.removeCover();
+                    }
+                }
+            });
+            return false;
+        });
+    };
+
     ns.editUserProfile = function(e) {
         var userName = odof.util.trim(jQuery("#user_name").html());
         jQuery("#user_name").html("<input id='edit_profile_name' value='"+userName+"' />");
@@ -400,7 +462,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#set_password_btn").show();
         jQuery("#set_password_btn").unbind("click");
         jQuery("#set_password_btn").bind("click",function(){
-            odof.user.status.doShowChangePwdDialog();
+            ns.showChangePasswordDialog(userName);
         });
         
         jQuery("#edit_profile_btn").unbind("click");

@@ -398,6 +398,33 @@ class UserModels extends DataModel{
         return false;
     }
 
+    //check user password
+    public function checkUserPassword($userid, $password){
+        //$password = md5($password.$this->salt);
+        $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
+        $row=$this->getRow($sql);
+        $passwordSalt = $row["password_salt"];
+        if($passwordSalt == $this->salt){
+            $password=md5($password.$this->salt);
+        }else{
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        }
+
+
+        if($row["encrypted_password"] == $password){
+            return true;
+        }
+        return false;
+    }
+    //update user password
+    public function updateUserPassword($userid, $password){
+        //$password=md5($password.$this->salt);
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
+        $this->query($sql);
+    }
+
     public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
         $ts = time();
         $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";

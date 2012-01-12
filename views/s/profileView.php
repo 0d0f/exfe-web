@@ -16,8 +16,12 @@
 <div class="content">
     <div class="edit_user">
         <div id="profile_avatar">
-            <img class="big_header" src="<?php echo getUserAvatar($user['avatar_file_name'], 80); ?>" alt="" />
+        <?php if(trim($user['avatar_file_name']) == 'default.png') { ?>
+            <a href="javascript:odof.user.uploadAvatar.init();"><img src="/static/images/add_avatar.png" alt="add avatar" /></a>
+        <?php } else { ?>
+            <a href="<?php echo getUserAvatar($user['avatar_file_name'], 240); ?>"><img class="big_header" src="<?php echo getUserAvatar($user['avatar_file_name'], 80); ?>" alt="" /></a>
             <button class="change" id="changeavatar">Change...</button>
+        <?php } ?>
         </div>
         <div class="u_con">
             <h1 id="user_name"><?php echo $user["name"];?></h1>

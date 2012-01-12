@@ -1207,7 +1207,6 @@ class SActions extends ActionController {
             "msg"       =>""
         );
         header("Content-Type:application/json; charset=UTF-8");
-        $userIdentity = exPost("u_identity");
         $userPassword = exPost("u_pwd");
         $userNewPassword = exPost("u_new_pwd");
         //去掉Re-type
@@ -1241,26 +1240,16 @@ class SActions extends ActionController {
             echo json_encode($returnData);
             exit();
         }
-        $identityObj = $this->getModelByName("identity");
+        $userObj = $this->getModelByName("user");
 
-        $identityInfo = $identityObj->getIdentity($userIdentity);
-        if(is_array($identityInfo)){
-            if($identityInfo["userid"] != $userID){
-                $returnData["error"] = 1;
-                $returnData["msg"] = "Identity error.";
-                echo json_encode($returnData);
-                exit();
-            }
-        }
-
-        $result = $identityObj->checkUserPassword($userID, $userPassword);
+        $result = $userObj->checkUserPassword($userID, $userPassword);
         if(!$result){
             $returnData["error"] = 1;
             $returnData["msg"] = "Passwords error.";
             echo json_encode($returnData);
             exit();
         }
-        $identityObj->updateUserPassword($userID, $userNewPassword);
+        $userObj->updateUserPassword($userID, $userNewPassword);
         echo json_encode($returnData);
         exit();
     }
