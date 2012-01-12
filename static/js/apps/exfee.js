@@ -170,39 +170,51 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         break;
                     case 38: // up
                     case 40: // down
+                        var baseId     = '#' + domId + '_exfeegadget_autocomplete',
+                            objCmpBox  = $(baseId),
+                            cboxHeight = 207,
+                            cellHeight = 51,
+                            shrMargin  = 3,
+                            curScroll  = objCmpBox.scrollTop();
                         if (!odof.exfee.gadget.completing[domId]) {
                             return;
                         }
-                        var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
+                        var objSelected = $(baseId + ' > ol > .autocomplete_selected'),
                             curItem     = null,
                             idxItem     = null,
-                            tarItem     = null,
+                            tarIdx      = null,
                             maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
-                            if (objSelected.length) {
-                                curItem = objSelected.attr('identity');
-                                for (var i in odof.exfee.gadget.curComplete[domId]) {
-                                    if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
-                                        idxItem = parseInt(i);
-                                        break;
-                                    }
+                        if (objSelected.length) {
+                            curItem = objSelected.attr('identity');
+                            for (var i in odof.exfee.gadget.curComplete[domId]) {
+                                if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
+                                    idxItem = parseInt(i);
+                                    break;
                                 }
                             }
-                            switch (event.which) {
-                                case 38:
-                                    tarItem = curItem
-                                            ? (idxItem > 0
-                                            ? odof.exfee.gadget.curComplete[domId][idxItem - 1]
-                                            : odof.exfee.gadget.curComplete[domId][maxIdx])
-                                            : odof.exfee.gadget.curComplete[domId][maxIdx];
-                                    break;
-                                case 40:
-                                    tarItem = curItem
-                                            ? (idxItem < maxIdx
-                                            ? odof.exfee.gadget.curComplete[domId][idxItem + 1]
-                                            : odof.exfee.gadget.curComplete[domId][0])
-                                            : odof.exfee.gadget.curComplete[domId][0];
-                            }
-                            odof.exfee.gadget.selectCompleteResult(domId, tarItem);
+                        }
+                        switch (event.which) {
+                            case 38:
+                                tarIdx = curItem
+                                       ? (idxItem > 0 ? (idxItem - 1) : maxIdx)
+                                       : maxIdx;
+                                break;
+                            case 40:
+                                tarIdx = curItem
+                                       ? (idxItem < maxIdx ? (idxItem + 1) : 0)
+                                       : 0;
+                        }
+                        odof.exfee.gadget.selectCompleteResult(
+                            domId,
+                            odof.exfee.gadget.curComplete[domId][tarIdx]
+                        );
+                        var curCellTop = tarIdx * cellHeight,
+                            curScrlTop = curCellTop - curScroll;
+                        if (curScrlTop < 0) {
+                            objCmpBox.scrollTop(curCellTop);
+                        } else if (curScrlTop + cellHeight > cboxHeight) {
+                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
+                        }
                 }
                 break;
             case 'blur':
