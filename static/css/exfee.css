@@ -88,6 +88,10 @@
     position: absolute;
     border: 1px #E6E6E6 solid;
     z-index: 3;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
     background-color: #ebebeb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(235, 235, 235)), to(rgb(250, 250, 250)));
     background-image: -webkit-linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
