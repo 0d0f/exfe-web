@@ -307,7 +307,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
                 removable    = this.editable[domId] && !objExfee.host
                             && objExfee.external_identity
-                           !== myIdentity.external_identity;
+                           !== (myIdentity ? myIdentity.external_identity : '');
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + objExfee.external_identity + '">'
               +     '<div class="exfee_avatarblock">'
@@ -644,7 +644,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var curIdentity = this.exfeeAvailable[i].external_identity.toLowerCase();
             if ((this.exfeeAvailable[i].name.toLowerCase().indexOf(key) !== -1
               || curIdentity.indexOf(key) !== -1)
-              && curIdentity !== myIdentity.external_identity
+              && curIdentity !== (myIdentity ? myIdentity.external_identity : '')
               && typeof this.exfeeInput[domId][curIdentity] === 'undefined') {
                 arrCatched.push(odof.util.clone(this.exfeeAvailable[i]));
             }

@@ -12,9 +12,9 @@ var moduleNameSpace = 'odof.x.render',
 {
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
-    
+
     ns.editable  = false;
-    
+
     ns.expended  = false;
 
 
@@ -46,8 +46,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_desc_expand').bind('click', this.expendDesc);
     };
-    
-    
+
+
     ns.expendDesc = function() {
         odof.x.render.expended = true;
         $('#x_desc').addClass('expanded');
@@ -113,8 +113,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_conversation_list').html(strMessage);
     };
-    
-    
+
+
     ns.makeMessage = function(objItem)
     {
         return '<li class="cleanup">'
