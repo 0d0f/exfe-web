@@ -311,6 +311,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             $('#' + domId + '_exfeegadget_avatararea > ol').append(
                 '<li identity="' + objExfee.external_identity + '">'
               +     '<div class="exfee_avatarblock">'
+              +        (objExfee.host
+              ?         '<div class="exfee_hostmark">H</div>' : '')
               +         '<img src="' + odof.comm.func.getUserAvatar(
                         objExfee.avatar_file_name, 80, img_url)
               +         '" class="exfee_avatar">'
@@ -326,6 +328,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
               +         '</span>') : '')
               +     '</div>'
               +     '<div class="exfee_extrainfo floating">'
+              +        (objExfee.host
+              ?         '<div class="exfee_hostmark">host</div>' : '')
               +         '<div class="exfee_extrainfo_avatar_area">'
               +             '<img src="' + odof.comm.func.getUserAvatar(
                             objExfee.avatar_file_name, 80, img_url)
