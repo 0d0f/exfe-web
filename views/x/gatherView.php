@@ -28,6 +28,7 @@
        .     "defaultTitle = '{$defaultTitle}',"
        .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',"
        .     "defaultTime  = 'Sometime',"
+       .     "sampleTime   = '12-20-2012 09:00 AM',"
        .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>

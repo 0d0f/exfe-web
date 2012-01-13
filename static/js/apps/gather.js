@@ -65,11 +65,18 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.updateTime = function() {
+    ns.updateTime = function(displaytime, typing) {
+        if (displaytime) {
+            $('#datetime_original').val(displaytime);
+        }
         if (odof.util.trim($('#datetime_original').val()) === '') {
-            $('#gather_date_x').html(defaultTime);
+            $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
-            $('#datetime_original').val(odof.util.getHumanDateTime(crossData.begin_at));
+            if (crossData.begin_at === null) {
+                $('#datetime_original').addClass('error');
+            } else {
+                $('#datetime_original').removeClass('error');
+            }
             $('#gather_date_x').html('');
         }
         odof.x.render.showTime();
@@ -219,7 +226,7 @@ var moduleNameSpace = 'odof.x.gather',
             $('#gather_title').val('');
             odof.x.gather.updateTitle(true);
         }
-        // update host @todo
+        // update host @todo: set me as host!
         $('#gather_hostby').attr('disabled', true);
         $('#gather_hostby').val(myIdentity.external_identity);
         // add me as exfee
@@ -295,25 +302,31 @@ $(document).ready(function() {
     $('#datetime_original').bind('focus blur keyup', function(event) {
         switch (event.type) {
             case 'focus':
+                $('#gather_date_x').html(sampleTime);
                 $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur');
                 exCal.initCalendar(
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
                         crossData.begin_at = standardTimeString;
-                        odof.x.gather.updateTime();
+                        odof.x.gather.updateTime(displayTimeString);
                     }
                 );
                 // @todo: time format tips
                 // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
                 // @todo: disable time input box for version #oC
                 // $('#datetime_original').blur();
+                odof.x.gather.updateTime(null, true);
                 break;
             case 'blur':
+                $('#gather_date_x').html(defaultTime);
                 $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
                 odof.x.gather.updateTime();
+                break;
             case 'keyup':
-                // @todo: 自然语言时间识别
+                var strTime = odof.util.parseHumanDateTime($(event.target).val());
+                crossData.begin_at = strTime ? strTime : null;
+                odof.x.gather.updateTime(null, true);
         }
     });
     odof.x.gather.updateTime();
