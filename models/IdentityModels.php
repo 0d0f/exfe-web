@@ -152,7 +152,7 @@ class IdentityModels extends DataModel{
     {
             $time=time();
 
-            $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip from users where id=$userid";
+            $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip,avatar_file_name from users where id=$userid";
             $userrow=$this->getRow($sql);
             $encrypted_password=$userrow["encrypted_password"];
             $current_ip=$userrow["current_sign_in_ip"];
@@ -176,7 +176,10 @@ class IdentityModels extends DataModel{
             setcookie('id', $identity_id, time()+31536000, "/", COOKIES_DOMAIN);
             setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/", COOKIES_DOMAIN);
             setcookie('logintoken', $cookie_logintoken, time()+31536000, "/", COOKIES_DOMAIN);
-            setcookie('last_identity', $identity, time()+31536000, "/", COOKIES_DOMAIN);//one year.
+            //最后登录的identity缓存。连同头像一块缓存。
+            $last_identity = array("identity"=>$identity,'identity_avatar'=>$userrow["avatar_file_name"]);
+            $last_identity_str = json_encode($last_identity);
+            setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
     }
 
     public function loginByCookie($source='')
@@ -311,6 +314,7 @@ class IdentityModels extends DataModel{
                     $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
                     
                     $returnData = array_merge($identityRow,$userInfo);
+                    $returnData["user_id"] = $userID;
                     $returnData["identity_name"] = $identityRow["name"];
                     $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
                     $returnData["identity_bio"] = $identityRow["bio"];

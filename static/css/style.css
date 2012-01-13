@@ -233,7 +233,7 @@ b.r3{margin: 0px}
 }
 .identity_dialog_main ul li em.delete{
     position:absolute; display:block; width:15px; height:15px;
-    margin-left:310px; margin-top:8px; z-index:203; cursor:pointer;
+    margin-left:305px; margin-top:8px; z-index:206; cursor:pointer;
     background:url(/static/images/icons.png) no-repeat left -691px;
 }
 .identity_dialog_main ul li img.avatar{
