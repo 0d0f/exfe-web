@@ -258,8 +258,8 @@ class IdentityModels extends DataModel{
         $identity=array();
         $identity["external_identity"]=$identityrow["external_identity"];
         $identity["provider"] = $identityrow["provider"];
-        $identity["name"]=$identityrow["name"];
-        if(trim($identity["name"]==""))
+        $identity["name"] = $identityrow["name"];
+        if(trim($identity["name"] == ""))
             $identity["name"]=$userrow["name"];
 
         if(trim($identity["name"]==""))
@@ -278,11 +278,11 @@ class IdentityModels extends DataModel{
     public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false)
     {
         //$password = md5($password.$this->salt);
-        $sql="SELECT id AS identity_id,provider,external_identity,name AS identity_name, avatar_file_name AS identity_avatar_file_name,external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
+        $sql="SELECT id AS identity_id, provider, bio, external_identity, name, avatar_file_name, external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
         if($oauth_login){
             $provider = $identityInfo["provider"];
             $ex_username = $identityInfo["ex_username"];
-            $sql = "SELECT id AS identity_id,provider,external_identity,name AS identity_name, avatar_file_name AS identity_avatar_file_name,external_username FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}' LIMIT 1";
+            $sql = "SELECT id AS identity_id, provider, bio, external_identity,name, avatar_file_name, external_username FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}' LIMIT 1";
         }
 
         $identityRow = $this->getRow($sql);
@@ -295,7 +295,7 @@ class IdentityModels extends DataModel{
             $userID = intval($userRow["userid"]);
 
             if($userID > 0) {
-                $sql="select encrypted_password,password_salt,name AS user_name, avatar_file_name AS user_avatar_file_name from users where id=$userID";
+                $sql="select encrypted_password,password_salt,name, avatar_file_name from users where id=$userID";
                 $userInfo = $this->getRow($sql);
                 if(!$password_hashed){
                     $passwordSalt = $userInfo["password_salt"];
@@ -309,9 +309,17 @@ class IdentityModels extends DataModel{
                 if($userInfo["encrypted_password"] == $password)
                 {
                     $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
-                    unset($userInfo["encrypted_password"]);
-                    unset($userInfo["password_salt"]);
+                    
                     $returnData = array_merge($identityRow,$userInfo);
+                    $returnData["identity_name"] = $identityRow["name"];
+                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
+                    $returnData["identity_bio"] = $identityRow["bio"];
+                    $returnData["user_name"] = $userInfo["name"];
+                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
+                    unset($returnData["encrypted_password"]);
+                    unset($returnData["password_salt"]);
+                    unset($returnData["name"]);
+                    unset($returnData["avatar_file_name"]);
                     return $returnData;
                 }
 
