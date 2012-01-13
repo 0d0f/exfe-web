@@ -85,6 +85,11 @@ var moduleNameSpace = 'odof.x.render',
         } else {
             strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
             strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
+            if (!strRelativeTime || !strAbsoluteTime) {
+                crossData.begin_at = '';
+                strRelativeTime = 'Sometime';
+                strAbsoluteTime = '';
+            }
         }
         $('#x_time_relative').html(strRelativeTime);
         $('#x_time_absolute').html(strAbsoluteTime);

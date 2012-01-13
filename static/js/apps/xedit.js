@@ -261,6 +261,20 @@ var clickCallBackFunc = function(args) {
                 });
             }
             // init calendar
+            var objStdTime = odof.util.getDateFromString(crossData.begin_at),
+                year       = objStdTime.getFullYear(),
+                month      = objStdTime.getMonth() + 1,
+                date       = objStdTime.getDate(),
+                hour24     = objStdTime.getHours(),
+                hour12     = hour24 > 12 ? (hour24 - 12) : hour24,
+                ampm       = hour24 < 12 ? 'AM'          : 'PM',
+                minute     = objStdTime.getMinutes();
+            month  = month  < 10 ? ('0' + month)  : month;
+            minute = minute < 10 ? ('0' + minute) : minute;
+            var strStdTime = month  + '-' + date   + '-' + year
+                           + (crossData.begin_at.split(' ').length === 2
+                           ? (' ' + hour12 + ':' + minute + ' ' + ampm) : '');
+            $('#x_datetime_original').val(strStdTime);
             exCal.initCalendar(
                 $('#x_datetime_original')[0],
                 'x_time_container',
@@ -528,11 +542,16 @@ var clickCallBackFunc = function(args) {
 
 
 $(document).ready(function() {
+    // fix anytime
+    if (crossData.time_type === '2') {
+        crossData.begin_at = crossData.begin_at.split(' ')[0];
+    }
+
     odof.x.render.show(true);
     odof.x.edit.cross_id     = cross_id;
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
-    
+
     odof.exfee.gadget.make('xExfeeArea', crossExfee, true, odof.x.edit.submitExfee);
 
     $('#private_icon').mousemove(function() { $('#private_hint').show(); });
