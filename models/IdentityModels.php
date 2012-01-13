@@ -295,7 +295,7 @@ class IdentityModels extends DataModel{
             $userID = intval($userRow["userid"]);
 
             if($userID > 0) {
-                $sql="select encrypted_password,password_salt,name, avatar_file_name from users where id=$userID";
+                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name FROM users WHERE id=$userID";
                 $userInfo = $this->getRow($sql);
                 if(!$password_hashed){
                     $passwordSalt = $userInfo["password_salt"];
@@ -316,8 +316,10 @@ class IdentityModels extends DataModel{
                     $returnData["identity_bio"] = $identityRow["bio"];
                     $returnData["user_name"] = $userInfo["name"];
                     $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
+                    $returnData["user_bio"] = $userInfo["bio"];
                     unset($returnData["encrypted_password"]);
                     unset($returnData["password_salt"]);
+                    unset($returnData["bio"]);
                     unset($returnData["name"]);
                     unset($returnData["avatar_file_name"]);
                     return $returnData;
