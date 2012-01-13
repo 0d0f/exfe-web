@@ -40,6 +40,30 @@
     height: 60px;   
 }
 
+.exfee_avatarblock .exfee_hostmark {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    right: 5px;
+    background: #0591AC;
+    font-size: 10px;
+    line-height: 10px;
+    font-weight: bold;
+    color: #E6E6E6;
+}
+
+.exfee_extrainfo .exfee_hostmark {
+    position: absolute;
+    width: 23px;
+    height: 14px;
+    left: 45px;
+    background: #0591AC;
+    font-size: 10px;
+    line-height: 12px;
+    color: #E6E6E6;
+    z-index: 2;
+}
+
 .exfeegadget_avatararea .exfee_rsvpblock {
     position: absolute;
     bottom: 0px;
@@ -88,6 +112,10 @@
     position: absolute;
     border: 1px #E6E6E6 solid;
     z-index: 3;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
     background-color: #ebebeb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(235, 235, 235)), to(rgb(250, 250, 250)));
     background-image: -webkit-linear-gradient(top, rgb(235, 235, 235), rgb(250, 250, 250));
@@ -205,7 +233,7 @@
 
 .exfeegadget_autocomplete {
     width: 260px;
-    max-height: 190px;
+    max-height: 207px;
     position: relative;
     z-index: 10;
     border: 1px #CCCCCC solid;

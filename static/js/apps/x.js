@@ -12,8 +12,10 @@ var moduleNameSpace = 'odof.x.render',
 {
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
-    
+
     ns.editable  = false;
+
+    ns.expended  = false;
 
 
     ns.showTitle = function()
@@ -34,20 +36,22 @@ var moduleNameSpace = 'odof.x.render',
     {
         var strDesc = crossData.description === '' && (editing || !odof.x.render.editable)
                     ? 'Write some words about this X.'
-                    : crossData.description;
-        var converter = new Showdown.converter();
+                    : crossData.description,
+            converter = new Showdown.converter();
         $('#x_desc').html(converter.makeHtml(strDesc));
+        if (!this.expended && $('#x_desc').height() > 200) {
+            $('#x_desc_expand').show();
+        } else {
+            $('#x_desc_expand').hide();
+        }
+        $('#x_desc_expand').bind('click', this.expendDesc);
+    };
 
-        /**
-         * @todo
-        $('#x_expand_btn').bind('click', function() {
-            odof.x.render.expandDesc();
-        });
-        ns.expandDesc = function(){
-            $("#cross_desc").show();
-            #("#cross_desc_short").hide();
-        };
-         */
+
+    ns.expendDesc = function() {
+        odof.x.render.expended = true;
+        $('#x_desc').addClass('expanded');
+        $('#x_desc_expand').hide();
     };
 
 
@@ -109,8 +113,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_conversation_list').html(strMessage);
     };
-    
-    
+
+
     ns.makeMessage = function(objItem)
     {
         return '<li class="cleanup">'

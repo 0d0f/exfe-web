@@ -45,6 +45,12 @@
 
 #x_desc {
     word-break: break-all;
+    max-height: 201px;
+    overflow: hidden;
+}
+
+#x_desc.expanded {
+    max-height: none;
 }
 
 #x_desc a {
@@ -107,6 +113,14 @@
     font-size: 14px;
     line-height: 20px;
     width: 480px;
+}
+
+#x_desc_expand {
+    float: right;
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999;
+    text-decoration: underline;
 }
 
 #x_mainarea {
