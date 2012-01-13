@@ -65,12 +65,26 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.updateTime = function() {
-        if (odof.util.trim($('#datetime_original').val()) === '') {
-            $('#gather_date_x').html(defaultTime);
+    ns.updateTime = function(displaytime, typing) {
+        var objTimeInput = $('#datetime_original');
+        if (displaytime) {
+            objTimeInput.val(displaytime);
+        }
+        var strTimeInput = odof.util.trim(objTimeInput.val());
+        if (strTimeInput === '') {
+            crossData.begin_at = '';
+            $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
-            $('#datetime_original').val(odof.util.getHumanDateTime(crossData.begin_at));
+            var strTime = odof.util.parseHumanDateTime(strTimeInput);
+            crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
+        }
+        if (crossData.begin_at === null) {
+            objTimeInput.addClass('error');
+            $('#gather_submit').addClass('disabled');
+        } else {
+            objTimeInput.removeClass('error');
+            $('#gather_submit').removeClass('disabled');
         }
         odof.x.render.showTime();
     };
@@ -143,7 +157,7 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.submitX = function() {
-        if (this.xSubmitting) {
+        if (this.xSubmitting || crossData.begin_at === null) {
             return;
         }
         this.xSubmitting = true;
@@ -171,7 +185,7 @@ var moduleNameSpace = 'odof.x.gather',
                         switch (data.error) {
                             case 'notlogin':
                                 odof.x.gather.autoSubmit = true;
-                                odof.user.status.doShowLoginDialog(null, afterLogin);
+                                odof.user.status.doShowLoginDialog();
                                 break;
                             case 'notverified':
                                 // @todo: inorder to gather X, user must be verified
@@ -190,7 +204,7 @@ var moduleNameSpace = 'odof.x.gather',
                 $('#gather_submit').removeClass('mousedown');
                 $('#gather_submit').removeClass('disabled');
                 $('#gather_submit').html('Re-submit');
-                this.xSubmitting = false;
+                odof.x.gather.xSubmitting = false;
             },
             failure : function(data) {
                 // @todo daisy showing here
@@ -199,79 +213,46 @@ var moduleNameSpace = 'odof.x.gather',
                 $('#gather_submit').removeClass('mousedown');
                 $('#gather_submit').removeClass('disabled');
                 $('#gather_submit').html('Re-submit');
-                this.xSubmitting = false;
+                odof.x.gather.xSubmitting = false;
             }
         });
     };
 
 
     ns.afterLogin = function(status) {
-        if (status.user_status !== 1) {
+        // check status
+        if (status.response.success !== 'undefined' && status.response.success) {
+            // update my identity
+            myIdentity = {
+                avatar_file_name  : status.response.user_info.user_avatar_file_name,
+                external_identity : status.response.user_info.external_identity,
+                identityid        : status.response.user_info.identity_id,
+                name              : status.response.user_info.identity_name,
+                provider          : status.response.user_info.provider
+            };
+        } else {
             return;
         }
-
-        // title
+        // update title
         var oldDefaultTitle = defaultTitle;
-        defaultTitle = 'Meet ' + status.user_name;
-        if (crossData.title === oldDefaultTitle) {
+        defaultTitle = 'Meet ' + status.response.user_info.user_name;
+        if (crossData.title === oldDefaultTitle || crossData.title === '') {
             $('#gather_title').val('');
-            odof.x.gather.updateTitle();
+            odof.x.gather.updateTitle(true);
         }
-
-        // hostby
+        // update host @todo: set me as host!
         $('#gather_hostby').attr('disabled', true);
-
-        return;
-        // @handaoliang 检查一下登陆后的会掉函数调用是不是有问题？
-        confole.log(status);
-
-        var exfee_pv = [];
-        $.ajax({
-            type     : 'GET',
-            url      : site_url + '/identity/get?identities=' + JSON.stringify([odof.util.parseId($("#hostby").val())]),
-            dataType : 'json',
-            success  : function(data) {
-                for (var i in data.response.identities) {
-                    var identity         = data.response.identities[i].external_identity,
-                        id               = data.response.identities[i].id,
-                        avatar_file_name = data.response.identities[i].avatar_file_name,
-                        name             = data.response.identities[i].name;
-                    if ($('#exfee_' + id).attr('id') == null) {
-                        name = name ? name : identity;
-                        exfee_pv.push(
-                            '<li id="exfee_' + id + '" class="addjn">'
-                          +     '<p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p>'
-                          +     '<p class="smcomment">'
-                          +         '<span class="exfee_exist" id="exfee_' + id + '" identityid="' + id + '" value="' + identity + '" avatar="' + avatar_file_name + '">'
-                          +             name
-                          +         '</span>'
-                          +         '<input id="confirmed_exfee_' + id + '" class="confirmed_box" type="checkbox" checked/>'
-                          +     '</p>'
-                          +     '<button class="exfee_del" onclick="javascript:exfee_del($(\'#exfee_' + id + '\'))" type="button"></button>'
-                          + '</li>'
-                        );
-                    }
-                }
-                while (exfee_pv.length) {
-                    var inserted = false;
-                    $('#exfee_pv > ul').each(function(intIndex) {
-                        var li = $(this).children('li');
-                        if (li.length < 4) {
-                            $(this).append(exfee_pv.shift());
-                            inserted = true;
-                        }
-                    });
-                    if (!inserted) {
-                        $('#exfee_pv').append('<ul class="exfeelist">' + exfee_pv.shift() + '</ul>');
-                    }
-                }
-                updateExfeeList();
-                if (odof.x.gather.autoSubmit) {
-                    odof.x.gather.autoSubmit = false;
-                    this.submitX();
-                }
-            }
-        });
+        $('#gather_hostby').val(myIdentity.external_identity);
+        // add me as exfee
+        var meExfee = odof.util.clone(myIdentity);
+        meExfee.host = true;
+        meExfee.rsvp = 1;
+        odof.exfee.gadget.addExfee('gatherExfee', [meExfee], true);
+        // auto submit
+        if (odof.x.gather.autoSubmit) {
+            odof.x.gather.autoSubmit = false;
+            odof.x.gather.submitX();
+        }
     }
 
 })(ns);
@@ -296,7 +277,6 @@ $(document).ready(function() {
         curExfees.push(meExfee);
     }
     odof.exfee.gadget.make('gatherExfee', curExfees, true, odof.x.gather.showExfee);
-    odof.exfee.gadget.chkFakeHost('gatherExfee');
 
     // title
     $('#gather_title').bind('focus blur keyup', function(event) {
@@ -336,13 +316,14 @@ $(document).ready(function() {
     $('#datetime_original').bind('focus blur keyup', function(event) {
         switch (event.type) {
             case 'focus':
+                $('#gather_date_x').html(sampleTime);
                 $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur');
                 exCal.initCalendar(
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
                         crossData.begin_at = standardTimeString;
-                        odof.x.gather.updateTime();
+                        odof.x.gather.updateTime(displayTimeString);
                     }
                 );
                 // @todo: time format tips
@@ -351,11 +332,10 @@ $(document).ready(function() {
                 // $('#datetime_original').blur();
                 break;
             case 'blur':
+                $('#gather_date_x').html(defaultTime);
                 $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
-                odof.x.gather.updateTime();
-            case 'keyup':
-                // @todo: 自然语言时间识别
         }
+        odof.x.gather.updateTime(null, event.type !== 'blur');
     });
     odof.x.gather.updateTime();
 
@@ -377,7 +357,7 @@ $(document).ready(function() {
 
     // host by
     $('#gather_hostby').focus(function () {
-        odof.user.status.doShowLoginDialog(null, odof.x.gather.afterLogin);
+        odof.user.status.doShowLoginDialog();
     });
 
     // privacy
@@ -410,5 +390,8 @@ $(document).ready(function() {
 
     // auto save draft
     setInterval(odof.x.gather.saveDraft, 10000);
+
+    // after login hook function
+    window.externalAfterLogin = odof.x.gather.afterLogin;
 
 });

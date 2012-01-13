@@ -258,8 +258,8 @@ class IdentityModels extends DataModel{
         $identity=array();
         $identity["external_identity"]=$identityrow["external_identity"];
         $identity["provider"] = $identityrow["provider"];
-        $identity["name"]=$identityrow["name"];
-        if(trim($identity["name"]==""))
+        $identity["name"] = $identityrow["name"];
+        if(trim($identity["name"] == ""))
             $identity["name"]=$userrow["name"];
 
         if(trim($identity["name"]==""))
@@ -278,41 +278,51 @@ class IdentityModels extends DataModel{
     public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false)
     {
         //$password = md5($password.$this->salt);
-        $sql="select * from identities where external_identity='$identityInfo' limit 1";
+        $sql="SELECT id AS identity_id, provider, bio, external_identity, name, avatar_file_name, external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
         if($oauth_login){
             $provider = $identityInfo["provider"];
             $ex_username = $identityInfo["ex_username"];
-            $sql = "SELECT * FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}'";
+            $sql = "SELECT id AS identity_id, provider, bio, external_identity,name, avatar_file_name, external_username FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}' LIMIT 1";
         }
 
-        $identityrow=$this->getRow($sql);
-        if(intval($identityrow["id"])>0)
-        {
-            $identity_id=intval($identityrow["id"]);
-            $identity = $identityrow["external_identity"];
+        $identityRow = $this->getRow($sql);
+        $identityID = intval($identityRow["identity_id"]);
+        if($identityID > 0) {
+            $externalIdentity = $identityRow["external_identity"];
 
-            $userid=0;
-            $sql="select userid from user_identity where identityid=$identity_id";
-            $row=$this->getRow($sql);
-            if(intval($row["userid"])>0)
-            {
-                $userid=intval($row["userid"]);
+            $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
+            $userRow = $this->getRow($sql);
+            $userID = intval($userRow["userid"]);
 
-                $sql="select encrypted_password,password_salt,name,avatar_file_name from users where id=$userid";
-                $row=$this->getRow($sql);
+            if($userID > 0) {
+                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name FROM users WHERE id=$userID";
+                $userInfo = $this->getRow($sql);
                 if(!$password_hashed){
-                    $passwordSalt = $row["password_salt"];
+                    $passwordSalt = $userInfo["password_salt"];
                     if($passwordSalt == $this->salt){
-                        $password=md5($password.$this->salt);
+                        $password = md5($password.$this->salt);
                     }else{
-                        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+                        $password = md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
                     }
                 }
 
-                if($row["encrypted_password"]==$password)
+                if($userInfo["encrypted_password"] == $password)
                 {
-                    $this->loginByIdentityId( $identity_id,$userid,$identity,$row,$identityrow,"password",$setcookie);
-                    return $userid;
+                    $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
+                    
+                    $returnData = array_merge($identityRow,$userInfo);
+                    $returnData["identity_name"] = $identityRow["name"];
+                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
+                    $returnData["identity_bio"] = $identityRow["bio"];
+                    $returnData["user_name"] = $userInfo["name"];
+                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
+                    $returnData["user_bio"] = $userInfo["bio"];
+                    unset($returnData["encrypted_password"]);
+                    unset($returnData["password_salt"]);
+                    unset($returnData["bio"]);
+                    unset($returnData["name"]);
+                    unset($returnData["avatar_file_name"]);
+                    return $returnData;
                 }
 
             }

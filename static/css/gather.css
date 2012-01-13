@@ -101,6 +101,10 @@
     width: 183px;
 }
 
+#gather_date_x, #datetime_original.error {
+    color: red;
+}
+
 #gather_place_blank, #gather_place_x, #gather_place {
     height: 96px;
 }
@@ -176,6 +180,15 @@
     height: 48px;
 }
 
+#exfe_iphone_ad {
+    position: absolute;
+    float: left;
+    left: -80px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #666666;
+}
+
 #gather_discard {
     display: block;
     text-decoration: underline;
@@ -184,6 +197,10 @@
     line-height: 30px;
     color: #999999;
     float: right;
+}
+
+#exfe_iphone_ad .exfe {
+    color: #0591AC;
 }
 
 #gather_submit {

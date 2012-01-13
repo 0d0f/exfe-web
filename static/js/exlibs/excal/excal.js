@@ -17,7 +17,9 @@ var exCalLang = "en";
 var languageFile = exCalLangPath + "/" + exCalLang + ".js";
 
 var exCal = {
-    version:"0.1",
+
+    version : "0.1",
+
     /**
      * Include a javascript file
      *
@@ -28,27 +30,8 @@ var exCal = {
         scriptObj.src = fileName;
         scriptObj.type = 'text/javascript';
         headElementObject.appendChild(scriptObj)
-    },
-
-    /**
-     * switch user selected datetime to standard datetime format
-     *
-     * */
-    switchDateTime:function(orgialDateTimeContainer, curDateTimeContainer){
-        var origialDateTime = jQuery(origialDateTime).val();
-        try {
-            var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
-            var dateTimeRegMatchArr = origialDateTime.match(objRegExpDateTime);
-            if(dateTimeRegMatchArr != null){
-                var dateArr = origialDateTime.split(" ");
-                var curDateTime = dateArr[0];
-                var curDateTimeArr = curDateTime.split("-");
-                var newDateTime = curDateTimeArr[2] + "-" + curDateTimeArr[0] + "-" + curDateTimeArr[1];
-                newDateTime += " " + dateArr[1] + " " + dateArr[2];
-                jQuery(curDateTimeContainer).val(newDateTime);
-            }
-        } catch(e) { /*alert(e);*/ }
     }
+
 };
 
 //exCalendar main class.

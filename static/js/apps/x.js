@@ -12,9 +12,9 @@ var moduleNameSpace = 'odof.x.render',
 {
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
-    
+
     ns.editable  = false;
-    
+
     ns.expended  = false;
 
 
@@ -46,8 +46,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_desc_expand').bind('click', this.expendDesc);
     };
-    
-    
+
+
     ns.expendDesc = function() {
         odof.x.render.expended = true;
         $('#x_desc').addClass('expanded');
@@ -85,6 +85,11 @@ var moduleNameSpace = 'odof.x.render',
         } else {
             strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
             strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
+            if (!strRelativeTime || !strAbsoluteTime) {
+                crossData.begin_at = '';
+                strRelativeTime = 'Sometime';
+                strAbsoluteTime = '';
+            }
         }
         $('#x_time_relative').html(strRelativeTime);
         $('#x_time_absolute').html(strAbsoluteTime);
@@ -113,8 +118,8 @@ var moduleNameSpace = 'odof.x.render',
         }
         $('#x_conversation_list').html(strMessage);
     };
-    
-    
+
+
     ns.makeMessage = function(objItem)
     {
         return '<li class="cleanup">'

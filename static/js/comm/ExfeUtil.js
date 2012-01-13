@@ -1049,6 +1049,11 @@ var odof = {
         return num;
     };
 
+    
+    /**
+     * cut long user name
+     * by Leask
+     */
     util.cutLongName = function(strName) {
         strName = strName ? strName.replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ') : '';
         while (odof.comm.func.getUTF8Length(strName) > 30) {
@@ -1056,6 +1061,7 @@ var odof = {
         }
         return strName;
     };
+
 
     /**
      * parse exfee id
@@ -1079,6 +1085,7 @@ var odof = {
         }
     };
 
+
     /**
      * parses sql datetime string and returns javascript date object
      * input has to be in this format: 1989-06-04 00:00:00
@@ -1089,6 +1096,7 @@ var odof = {
             parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
         return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
     };
+
 
     /**
      * get relative time
@@ -1131,7 +1139,6 @@ var odof = {
     /**
      * get human datetime
      * by Leask
-     * @todo apply this function while rendering the X!!!
      */
     util.getHumanDateTime = function(strTime, lang) {
         var objDate   = this.getDateFromString(strTime),
@@ -1148,11 +1155,10 @@ var odof = {
             date     = objDate.getDate(),
             hour24   = objDate.getHours(),
             hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
-            ampm     = hour24 > 12 ? 'AM'          : 'PM',
-            minute   = objDate.getMinutes() < 10
-                     ? ('0' + objDate.getMinutes())
-                     : objDate.getMinutes(),
-            stdDate  = month + ' ' + date + ', ' + year;
+            ampm     = hour24 < 12 ? 'AM'          : 'PM',
+            minute   = objDate.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var stdDate  = month + ' ' + date + ', ' + year;
         if (timestamp >= 0) {
             timestr  = ', '  + stdDate;
         }
@@ -1174,6 +1180,45 @@ var odof = {
                 }
         }
         return '';
+    };
+    
+    
+    /**
+     * parse human datetime
+     * by Leask
+     */
+    util.parseHumanDateTime = function(strTime) {
+        function db(num) {
+            return num < 10 ? ('0' + num.toString()) : num.toString();
+        }
+        var arrTime  = strTime.split(/-|\ +|:/),
+            month    = 0,
+            day      = 0,
+            year     = 0,
+            hour     = 0,
+            minute   = 0,
+            ampm     = '',
+            time     = '';
+        if (arrTime.length === 5) {
+            arrTime.push('am');
+        }
+        if (arrTime.length > 5) {
+            ampm     = arrTime[5].toLowerCase() === 'pm' ? 12 : 0;
+            hour     = parseInt(arrTime[3], 10) + ampm;
+            minute   = parseInt(arrTime[4], 10);
+            time     = ' ' + [db(hour), db(minute)].join(':');
+        }
+        if (arrTime.length === 3 || arrTime.length === 6) {
+            month    = parseInt(arrTime[2], 10);
+            day      = parseInt(arrTime[0], 10);
+            year     = parseInt(arrTime[1], 10);
+            strTime  = [db(month), db(day), year].join('/') + time;
+            if (new Date(strTime).toString() !== 'Invalid Date') {
+                return [db(month), db(day), year].join('-')
+                     + (arrTime.length === 6 ? (time + ':00') : '');
+            }
+        }
+        return null;
     };
     
     

@@ -517,7 +517,8 @@ class SActions extends ActionController {
             "user_name"         =>"",
             "user_avatar"       =>"",
             "cross_num"         =>0,
-            "crosses"           =>""
+            "crosses"           =>"",
+            'identity'          =>null,
         );
 
         if($_SESSION["tokenIdentity"] != "" && $_GET["token"] != ""){
@@ -553,8 +554,9 @@ class SActions extends ActionController {
             }
 
             $returnData["user_status"] = 1;
-            $returnData["user_name"] = $global_name;
+            $returnData["user_name"]   = $global_name;
             $returnData["user_avatar"] = $global_avatar_file_name;
+            $returnData['identity']    = $_SESSION["identity"];
         }
         //Get user panel data(User Crosses)
         $today     = strtotime(date('Y-m-d'));
@@ -562,10 +564,6 @@ class SActions extends ActionController {
         $tg24hr    = $today + 60 * 60 * 24;
         $upcoming  = $today + 60 * 60 * 24 * 3;
         $crossdata = $this->getModelByName('x');
-        /**
-         * @handaoliang, why 1000 crosses limited here?
-         * by @leask
-         */
         $crosses_number = $crossdata->fetchCross($_SESSION['userid'], 0, 'yes', 'begin_at', 1000, 'count');
         $returnData["cross_num"] = $crosses_number;
 
@@ -797,7 +795,7 @@ class SActions extends ActionController {
         }
         if(isset($identity) && isset($password))
         {
-            $Data=$this->getModelByName("identity");
+            $identityModelObj=$this->getModelByName("identity");
 
             $identityArrayInfo = explode("@", $identity);
             if(count($identityArrayInfo) < 2){
@@ -813,14 +811,14 @@ class SActions extends ActionController {
                     $specialIdentity .= "@gmail.com";
                 }
                 $identityArr = array("provider"=>$currentDomain,"ex_username"=>$specialIdentity);
-                $userid=$Data->login($identityArr,$password,$autosignin,false,true);
+                $userInfo = $identityModelObj->login($identityArr,$password,$autosignin,false,true);
             } else {
-                $userid=$Data->login($identity,$password,$autosignin);
+                $userInfo = $identityModelObj->login($identity,$password,$autosignin);
             }
 
-            if(intval($userid)>0) {
+            if(is_array($userInfo)) {
                 $responobj["response"]["success"]="true";
-                $responobj["response"]["userid"]=$userid;
+                $responobj["response"]["user_info"]=$userInfo;
             } else {
                 $responobj["response"]["success"]="false";
             }

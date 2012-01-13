@@ -453,9 +453,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         var curDomain = userIdentity.split("@")[1];
-        if(ns.inentityInputIntervalHandler != null){
-            clearInterval(ns.inentityInputIntervalHandler);
-        }
 
         //check email address
         if(userIdentity != "" && (userIdentity.match(odof.mailReg) || odof.util.inArray(ns.specialDomain,curDomain))) {
@@ -700,8 +697,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 jQuery('#login_hint').show();
                                 setTimeout(hideErrorMsg, 3000);
                             } else if(data.response.success=="true") {
-                                jQuery("#hostby").val(identity);
-                                jQuery("#hostby").attr("enter","true");
+                                //特定的回调，写在页面上，如果存在，则调用。
+                                if(typeof externalAfterLogin != "undefined" && typeof externalAfterLogin == "function"){
+                                    externalAfterLogin(data);
+                                }
                                 //如果是首页，并且是已经登录，则跳转到Profile页面。
                                 if(typeof pageFlag != "undefined" && pageFlag == "home_page"){
                                     window.location.href="/s/profile";
@@ -730,6 +729,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     });
 
                                     return;
+                                }
+                                //清除循环监测输入框的句柄。
+                                if(ns.inentityInputIntervalHandler != null){
+                                    clearInterval(ns.inentityInputIntervalHandler);
                                 }
                                 odof.exlibs.ExDialog.removeDialog();
                                 odof.exlibs.ExDialog.removeCover();
@@ -787,31 +790,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 return false;
             }
 
-            /*
-            jQuery.ajax({
-                type: "GET",
-                url: site_url+"/identity/get?identity="+identity,
-                dataType:"json",
-                success: function(data){
-                var exfee_pv="";
-                if(data.response.identity!=null)
-                {
-                    var identity=data.response.identity.external_identity;
-                    var id=data.response.identity.id;
-                    var name=data.response.identity.name;
-                    var avatar_file_name=data.response.identity.avatar_file_name;
-                    if(jQuery('#exfee_'+id).attr("id")==null)
-                    {
-                        if(name=="")
-                            name=identity;
-                        exfee_pv = exfee_pv+'<li id="exfee_'+id+'" class="addjn" onmousemove="javascript:hide_exfeedel(jQuery(this))" onmouseout="javascript:show_exfeedel(jQuery(this))"> <p class="pic20"><img src="'+odof.comm.func.getUserAvatar(avatar_file_name, 80, img_url)+'" alt="" /></p> <p class="smcomment"><span class="exfee_exist" id="exfee_'+id+'" identityid="'+id+'"value="'+identity+'">'+name+'</span><input id="confirmed_exfee_'+ id +'" checked=true type="checkbox" /> <span class="lb">host</span></p> <button class="exfee_del" onclick="javascript:exfee_del(jQuery(\'#exfee_'+id+'\'))" type="button"></button> </li>';
-                    }
-                }
-
-                jQuery("ul.samlcommentlist").append(exfee_pv);
-                }
-            });
-            */
             return false;
         });
     };
