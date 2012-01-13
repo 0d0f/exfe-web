@@ -453,9 +453,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         var curDomain = userIdentity.split("@")[1];
-        if(ns.inentityInputIntervalHandler != null){
-            clearInterval(ns.inentityInputIntervalHandler);
-        }
 
         //check email address
         if(userIdentity != "" && (userIdentity.match(odof.mailReg) || odof.util.inArray(ns.specialDomain,curDomain))) {
@@ -732,6 +729,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                     });
 
                                     return;
+                                }
+                                //清除循环监测输入框的句柄。
+                                if(ns.inentityInputIntervalHandler != null){
+                                    clearInterval(ns.inentityInputIntervalHandler);
                                 }
                                 odof.exlibs.ExDialog.removeDialog();
                                 odof.exlibs.ExDialog.removeCover();

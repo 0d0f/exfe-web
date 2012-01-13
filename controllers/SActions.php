@@ -795,7 +795,7 @@ class SActions extends ActionController {
         }
         if(isset($identity) && isset($password))
         {
-            $Data=$this->getModelByName("identity");
+            $identityModelObj=$this->getModelByName("identity");
 
             $identityArrayInfo = explode("@", $identity);
             if(count($identityArrayInfo) < 2){
@@ -811,14 +811,14 @@ class SActions extends ActionController {
                     $specialIdentity .= "@gmail.com";
                 }
                 $identityArr = array("provider"=>$currentDomain,"ex_username"=>$specialIdentity);
-                $userid=$Data->login($identityArr,$password,$autosignin,false,true);
+                $userInfo = $identityModelObj->login($identityArr,$password,$autosignin,false,true);
             } else {
-                $userid=$Data->login($identity,$password,$autosignin);
+                $userInfo = $identityModelObj->login($identity,$password,$autosignin);
             }
 
-            if(intval($userid)>0) {
+            if(is_array($userInfo)) {
                 $responobj["response"]["success"]="true";
-                $responobj["response"]["userid"]=$userid;
+                $responobj["response"]["user_info"]=$userInfo;
             } else {
                 $responobj["response"]["success"]="false";
             }
