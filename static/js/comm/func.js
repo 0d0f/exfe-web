@@ -247,9 +247,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     ns.getUserAvatar = function(fileName, fileSize, rootPath){
         pattern = /^(http[s]?:\/\/)/;
-        if(fileName.match(pattern)){
-            return fileName;
-        }
+        if(fileName.match(pattern)){ return fileName; }
+        if(typeof fileSize == "undefined"){ fileSize = 80; }
         var avatarURL = ns.getHashFilePath(fileName,rootPath) + "/" + fileSize + "_" + fileSize + "_" + fileName;
         return avatarURL;
     };

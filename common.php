@@ -369,7 +369,7 @@ function getHashFilePath($fileName='', $specialFilePath=''){
  * @param $fileName, $avatarSize
  * @return string
  **/
-function getUserAvatar($fileName, $avatarSize){
+function getUserAvatar($fileName, $avatarSize=80){
     $pattern = "/(http[s]?:\/\/)/is";
     if(preg_match($pattern, $fileName)){
         return $fileName;

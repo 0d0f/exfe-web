@@ -499,6 +499,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             ns.actions = "sign_up";
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
+                                jQuery("#user_avatar").hide();
                                 ns.showManualVerificationDialog();
                             }else{
                                 if(data.response.status == "empty_pwd"){

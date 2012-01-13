@@ -387,8 +387,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showLastIdentity = function(){
         var lastIdentity = odof.util.getCookie('last_identity');
+        var lastIdentityObj = jQuery.parseJSON(lastIdentity);
+
         if(lastIdentity){
-            jQuery("#identity").val(lastIdentity)
+            jQuery("#identity").val(lastIdentityObj.identity);
+            jQuery("#user_avatar").show();
+            jQuery("#user_avatar")[0].src = odof.comm.func.getUserAvatar(lastIdentityObj.identity_avatar, 80, img_url);
             jQuery("#identity_dbox").html("");
             jQuery("#identity").bind("mouseover",function(){
                 jQuery("#delete_identity").show();
@@ -413,6 +417,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             jQuery("#delete_identity").click(function(){
                 odof.util.delCookie('last_identity', "/", cookies_domain);
+                jQuery("#user_avatar").hide();
+                jQuery("#user_avatar")[0].src = "";
+
                 jQuery("#identity").val("");
                 jQuery("#identity_dbox").html("Your email here");
                 jQuery("#identity").unbind("mouseover");
@@ -442,7 +449,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
 
         //show last login identity
-        //ns.showLastIdentity();
+        ns.showLastIdentity();
 
         //如果传入了identity，那么要检测是注册还是登录。
         if(typeof userIdentity != "undefined" && userIdentity != null){
@@ -468,6 +475,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.showForgotPwdDialog = function(userIdentity){
+        //隐藏掉头像的显示。
+        jQuery("#user_avatar").hide();
+
         jQuery("#forgot_verification_dialog").show();
         jQuery("#forgot_identity_input").val(userIdentity);
         jQuery("#cancel_forgot_verify_btn").bind("click",function(){
