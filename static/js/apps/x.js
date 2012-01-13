@@ -80,7 +80,6 @@ var moduleNameSpace = 'odof.x.render',
     {
         var strRelativeTime = '',
             strAbsoluteTime = '';
-            console.log(crossData.begin_at);
         if (!crossData.begin_at || crossData.begin_at === '0000-00-00 00:00:00') {
             strRelativeTime = 'Sometime';
         } else {
