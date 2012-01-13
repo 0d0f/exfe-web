@@ -65,12 +65,26 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.updateTime = function() {
-        if (odof.util.trim($('#datetime_original').val()) === '') {
-            $('#gather_date_x').html(defaultTime);
+    ns.updateTime = function(displaytime, typing) {
+        var objTimeInput = $('#datetime_original');
+        if (displaytime) {
+            objTimeInput.val(displaytime);
+        }
+        var strTimeInput = odof.util.trim(objTimeInput.val());
+        if (strTimeInput === '') {
+            crossData.begin_at = '';
+            $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
-            $('#datetime_original').val(odof.util.getHumanDateTime(crossData.begin_at));
+            var strTime = odof.util.parseHumanDateTime(strTimeInput);
+            crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
+        }
+        if (crossData.begin_at === null) {
+            objTimeInput.addClass('error');
+            $('#gather_submit').addClass('disabled');
+        } else {
+            objTimeInput.removeClass('error');
+            $('#gather_submit').removeClass('disabled');
         }
         odof.x.render.showTime();
     };
@@ -143,7 +157,7 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.submitX = function() {
-        if (this.xSubmitting) {
+        if (this.xSubmitting || crossData.begin_at === null) {
             return;
         }
         this.xSubmitting = true;
@@ -206,6 +220,7 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.afterLogin = function(status) {
+        console.log(status);
         // check status
         if (status.user_status !== 1) {
             return;
@@ -219,7 +234,7 @@ var moduleNameSpace = 'odof.x.gather',
             $('#gather_title').val('');
             odof.x.gather.updateTitle(true);
         }
-        // update host @todo
+        // update host @todo: set me as host!
         $('#gather_hostby').attr('disabled', true);
         $('#gather_hostby').val(myIdentity.external_identity);
         // add me as exfee
@@ -295,13 +310,14 @@ $(document).ready(function() {
     $('#datetime_original').bind('focus blur keyup', function(event) {
         switch (event.type) {
             case 'focus':
+                $('#gather_date_x').html(sampleTime);
                 $('#gather_date_x').addClass('gather_focus').removeClass('gather_blur');
                 exCal.initCalendar(
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
                         crossData.begin_at = standardTimeString;
-                        odof.x.gather.updateTime();
+                        odof.x.gather.updateTime(displayTimeString);
                     }
                 );
                 // @todo: time format tips
@@ -310,11 +326,10 @@ $(document).ready(function() {
                 // $('#datetime_original').blur();
                 break;
             case 'blur':
+                $('#gather_date_x').html(defaultTime);
                 $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
-                odof.x.gather.updateTime();
-            case 'keyup':
-                // @todo: 自然语言时间识别
         }
+        odof.x.gather.updateTime(null, event.type !== 'blur');
     });
     odof.x.gather.updateTime();
 
@@ -369,5 +384,8 @@ $(document).ready(function() {
 
     // auto save draft
     setInterval(odof.x.gather.saveDraft, 10000);
+    
+    // after login hook function
+    window.externalAfterLogin = odof.x.gather.afterLogin;
 
 });

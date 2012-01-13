@@ -282,7 +282,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
-        for (var j = 0; j < 4; j++) {
+        for (var k = 0; k < 4; k++) {
             for (var i in exfees) {
                 var objExfee = odof.util.clone(exfees[i]);
                 objExfee.external_identity = objExfee.external_identity.toLowerCase();
@@ -305,10 +305,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                               ? 0     : exfees[i].rsvp;
                 objExfee.rsvp = typeof  exfees[i].state === 'undefined'
                               ? objExfee.rsvp : exfees[i].state;
-                if ((j == 0 && objExfee.rsvp !== 1)
-                 || (j == 1 && objExfee.rsvp !== 3)
-                 || (j == 2 && objExfee.rsvp !== 0)
-                 || (j == 3 && objExfee.rsvp !== 2)) {
+                if ((k == 0 && objExfee.rsvp !== 1)
+                 || (k == 1 && objExfee.rsvp !== 3)
+                 || (k == 2 && objExfee.rsvp !== 0)
+                 || (k == 3 && objExfee.rsvp !== 2)) {
                     continue;
                 }
                 var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
@@ -765,7 +765,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.cacheExfee = function(exfees, noIdentity) { // @todo: temp noIdentity
+    ns.cacheExfee = function(exfees) {
         for (var i in exfees) {
             var objExfee    = odof.util.clone(exfees[i]),
                 curIdentity = objExfee.external_identity.toLowerCase(),
@@ -782,9 +782,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             this.exfeeAvailable.unshift(objExfee);
-            if (noIdentity) {
-                continue;
-            }
             this.exfeeIdentified[curIdentity] = true;
         }
         if (typeof localStorage !== 'undefined') {
@@ -839,7 +836,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         gotExfee.push(curIdentity);
                     }
                 }
-                odof.exfee.gadget.cacheExfee(gotExfee, true);
+                odof.exfee.gadget.cacheExfee(gotExfee);
                 if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
                     odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
                 }

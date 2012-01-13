@@ -1131,7 +1131,6 @@ var odof = {
     /**
      * get human datetime
      * by Leask
-     * @todo apply this function while rendering the X!!!
      */
     util.getHumanDateTime = function(strTime, lang) {
         var objDate   = this.getDateFromString(strTime),
@@ -1148,7 +1147,7 @@ var odof = {
             date     = objDate.getDate(),
             hour24   = objDate.getHours(),
             hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
-            ampm     = hour24 > 12 ? 'AM'          : 'PM',
+            ampm     = hour24 < 12 ? 'AM'          : 'PM',
             minute   = objDate.getMinutes() < 10
                      ? ('0' + objDate.getMinutes())
                      : objDate.getMinutes(),
@@ -1175,6 +1174,45 @@ var odof = {
         }
         return '';
     };
+    
+    
+    /**
+     * parse human datetime
+     * by Leask
+     */
+    util.parseHumanDateTime = function(strTime) {
+        function db(num) {
+            return num < 10 ? ('0' + num.toString()) : num.toString();
+        }
+        var arrTime  = strTime.split(/-|\ +|:/),
+            month    = 0,
+            day      = 0,
+            year     = 0,
+            hour     = 0,
+            minute   = 0,
+            ampm     = '',
+            time     = '';
+        if (arrTime.length === 5) {
+            arrTime.push('am');
+        }
+        if (arrTime.length > 5) {
+            ampm     = arrTime[5].toLowerCase() === 'pm' ? 12 : 0;
+            hour     = parseInt(arrTime[3], 10) + ampm;
+            minute   = parseInt(arrTime[4], 10);
+            time     = ' ' + [db(hour), db(minute)].join(':');
+        }
+        if (arrTime.length === 3 || arrTime.length === 6) {
+            month    = parseInt(arrTime[2], 10);
+            day      = parseInt(arrTime[0], 10);
+            year     = parseInt(arrTime[1], 10);
+            strTime  = [db(month), db(day), year].join('/') + time;
+            if (new Date(strTime).toString() !== 'Invalid Date') {
+                return [db(month), db(day), year].join('-')
+                     + (arrTime.length === 6 ? (time + ':00') : '');
+            }
+        }
+        return null;
+    }
     
     
     /**

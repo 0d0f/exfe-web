@@ -101,6 +101,10 @@
     width: 183px;
 }
 
+#gather_date_x, #datetime_original.error {
+    color: red;
+}
+
 #gather_place_blank, #gather_place_x, #gather_place {
     height: 96px;
 }
