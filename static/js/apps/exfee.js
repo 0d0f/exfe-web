@@ -349,13 +349,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +         '<div class="exfee_extrainfo_rsvp_area">'
                   +             this.arrStrRsvp[objExfee.rsvp]
                   +         '</div>'
-                  +         '<div class="exfee_extrainfo_mainid_area">'
+                  +        (objExfee.external_identity === '_fake_host_' ? '' 
+                  :        ('<div class="exfee_extrainfo_mainid_area">'
                   +             objExfee.external_identity
                   +            (removable
                   ?            ('<button class="exfee_main_identity_remove">'
                   +                 ' ⊖ '
                   +             '</button>') : '')
-                  +         '</div>'
+                  +         '</div>'))
                   +         '<div class="exfee_extrainfo_extraid_area">'
                   +         '</div>'
                   +     '</div>'

@@ -185,7 +185,7 @@ var moduleNameSpace = 'odof.x.gather',
                         switch (data.error) {
                             case 'notlogin':
                                 odof.x.gather.autoSubmit = true;
-                                odof.user.status.doShowLoginDialog(null, odof.x.gather.afterLogin);
+                                odof.user.status.doShowLoginDialog();
                                 break;
                             case 'notverified':
                                 // @todo: inorder to gather X, user must be verified
@@ -220,16 +220,22 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.afterLogin = function(status) {
-        console.log(status);
         // check status
-        if (status.user_status !== 1) {
+        if (status.response.success !== 'undefined' && status.response.success) {
+            // update my identity
+            myIdentity = {
+                avatar_file_name  : status.response.user_info.user_avatar_file_name,
+                external_identity : status.response.user_info.external_identity,
+                identityid        : status.response.user_info.identity_id,
+                name              : status.response.user_info.identity_name,
+                provider          : status.response.user_info.provider
+            };
+        } else {
             return;
         }
-        // update my identity
-        myIdentity = status.identity;
         // update title
         var oldDefaultTitle = defaultTitle;
-        defaultTitle = 'Meet ' + status.user_name;
+        defaultTitle = 'Meet ' + status.response.user_info.user_name;
         if (crossData.title === oldDefaultTitle || crossData.title === '') {
             $('#gather_title').val('');
             odof.x.gather.updateTitle(true);
@@ -351,7 +357,7 @@ $(document).ready(function() {
 
     // host by
     $('#gather_hostby').focus(function () {
-        odof.user.status.doShowLoginDialog(null, odof.x.gather.afterLogin);
+        odof.user.status.doShowLoginDialog();
     });
 
     // privacy
@@ -384,7 +390,7 @@ $(document).ready(function() {
 
     // auto save draft
     setInterval(odof.x.gather.saveDraft, 10000);
-    
+
     // after login hook function
     window.externalAfterLogin = odof.x.gather.afterLogin;
 

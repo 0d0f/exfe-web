@@ -1049,6 +1049,11 @@ var odof = {
         return num;
     };
 
+    
+    /**
+     * cut long user name
+     * by Leask
+     */
     util.cutLongName = function(strName) {
         strName = strName ? strName.replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ') : '';
         while (odof.comm.func.getUTF8Length(strName) > 30) {
@@ -1056,6 +1061,7 @@ var odof = {
         }
         return strName;
     };
+
 
     /**
      * parse exfee id
@@ -1079,6 +1085,7 @@ var odof = {
         }
     };
 
+
     /**
      * parses sql datetime string and returns javascript date object
      * input has to be in this format: 1989-06-04 00:00:00
@@ -1089,6 +1096,7 @@ var odof = {
             parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
         return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
     };
+
 
     /**
      * get relative time
@@ -1148,10 +1156,9 @@ var odof = {
             hour24   = objDate.getHours(),
             hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
             ampm     = hour24 < 12 ? 'AM'          : 'PM',
-            minute   = objDate.getMinutes() < 10
-                     ? ('0' + objDate.getMinutes())
-                     : objDate.getMinutes(),
-            stdDate  = month + ' ' + date + ', ' + year;
+            minute   = objDate.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var stdDate  = month + ' ' + date + ', ' + year;
         if (timestamp >= 0) {
             timestr  = ', '  + stdDate;
         }
@@ -1212,7 +1219,7 @@ var odof = {
             }
         }
         return null;
-    }
+    };
     
     
     /**

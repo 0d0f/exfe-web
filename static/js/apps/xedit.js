@@ -261,6 +261,19 @@ var clickCallBackFunc = function(args) {
                 });
             }
             // init calendar
+            var objStdTime = odof.util.getDateFromString(crossData.begin_at),
+                year       = objStdTime.getFullYear(),
+                month      = objStdTime.getMonth() + 1,
+                date       = objStdTime.getDate(),
+                hour24     = objStdTime.getHours(),
+                hour12     = hour24 > 12 ? (hour24 - 12) : hour24,
+                ampm       = hour24 < 12 ? 'AM'          : 'PM',
+                minute     = objStdTime.getMinutes();
+            month  = month  < 10 ? ('0' + month)  : month;
+            minute = minute < 10 ? ('0' + minute) : minute;
+            var strStdTime = month  + '-' + date   + '-' + year + ' '
+                           + hour12 + ':' + minute + ' ' + ampm;
+            $('#x_datetime_original').val(strStdTime);
             exCal.initCalendar(
                 $('#x_datetime_original')[0],
                 'x_time_container',

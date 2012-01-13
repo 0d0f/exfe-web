@@ -75,11 +75,17 @@ class XModels extends DataModel
             $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
         }
         // update cross
+        $datetime_array = explode(' ', $cross['start_time']);
+        $time_type = 0;
+        if (sizeof($datetime_array) === 1) {
+            $time_type = TIMETYPE_ANYTIME; // allday
+        }
         $sql  = "UPDATE `crosses`
                     SET `updated_at`  = NOW(),
                         `title`       = '{$cross["title"]}',
                         `description` = '{$cross["desc"]}',
                         `begin_at`    = '{$cross["start_time"]}',
+                        `time_type`   =  {$time_type},
                         `place_id`    =  {$place_id}
                   WHERE `id`          =  {$cross["id"]}";
 
