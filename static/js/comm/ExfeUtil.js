@@ -1147,7 +1147,7 @@ var odof = {
             date     = objDate.getDate(),
             hour24   = objDate.getHours(),
             hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
-            ampm     = hour24 > 12 ? 'AM'          : 'PM',
+            ampm     = hour24 < 12 ? 'AM'          : 'PM',
             minute   = objDate.getMinutes() < 10
                      ? ('0' + objDate.getMinutes())
                      : objDate.getMinutes(),

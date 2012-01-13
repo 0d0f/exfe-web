@@ -124,19 +124,19 @@ var clickCallBackFunc = function(args) {
         }
         //======End=====Token已经过期，用户点击之前弹窗口
         */
-        if(token != ""){
-            if(show_idbox == 'setpassword'){//如果要求弹设置密码窗口。
-                if(token_expired == "true"){
-                    var args = {"identity":external_identity};
+        if (token != "") {
+            if (show_idbox == 'setpassword') {//如果要求弹设置密码窗口。
+                if (token_expired == "true") {
+                    var args = {"identity" : external_identity};
                     odof.user.status.doShowCrossPageVerifyDialog(null, args);
-                }else{
+                } else {
                     odof.user.status.doShowResetPwdDialog(null, 'setpwd');
                     jQuery("#show_identity_box").val(external_identity);
                 }
-            }else if(show_idbox == "login"){
+            } else if (show_idbox == "login"){
                 odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
-            }else{
-                args = {"identity":external_identity};
+            } else {
+                args = {"identity" : external_identity};
                 odof.user.status.doShowCrossPageVerifyDialog(null, args);
             }
         }
@@ -148,15 +148,13 @@ var clickCallBackFunc = function(args) {
             $('#x_title').hide();
             $('#x_title_edit').val(crossData.title);
             $('#x_title_edit').show();
-            $('#x_title_area').bind('clickoutside', function(event)
-            {
+            $('#x_title_area').bind('clickoutside', function(event) {
                 if (event.target.id === 'revert_x_btn') {
                     return;
                 }
                 odof.x.edit.saveTitle();
             });
-            $('#x_title_edit').bind('keydown', function(event)
-            {
+            $('#x_title_edit').bind('keydown', function(event) {
                 switch (event.keyCode) {
                     case 9:
                         odof.x.edit.saveTitle();
@@ -181,15 +179,13 @@ var clickCallBackFunc = function(args) {
             $('#x_desc').hide();
             $('#x_desc_edit').val(crossData.description);
             $('#x_desc_edit').show();
-            $('#x_desc_area').bind('clickoutside', function(event)
-            {
+            $('#x_desc_area').bind('clickoutside', function(event) {
                 if (event.target.id === 'revert_x_btn') {
                     return;
                 }
                 odof.x.edit.saveDesc();
             });
-            $('#x_desc_edit').bind('keydown', function(event)
-            {
+            $('#x_desc_edit').bind('keydown', function(event) {
                 switch (event.keyCode) {
                     case 9:
                         odof.x.edit.saveDesc();
@@ -207,14 +203,39 @@ var clickCallBackFunc = function(args) {
             $('#x_desc_edit').unbind('keydown');
         }
     };
+    
+    
+    ns.updateTime = function(displaytime, typing) {
+        var objTimeInput = $('#x_datetime_original');
+        if (displaytime) {
+            objTimeInput.val(displaytime);
+        }
+        var strTimeInput = odof.util.trim(objTimeInput.val());
+        if (strTimeInput === '') {
+            crossData.begin_at = '';
+         // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
+        } else {
+            var strTime = odof.util.parseHumanDateTime(strTimeInput);
+         // crossData.begin_at = strTime ? strTime : null;
+            crossData.begin_at = strTime ? strTime : '';
+         // $('#gather_date_x').html('');
+        }
+        if (crossData.begin_at === null) {
+            objTimeInput.addClass('error');
+         // $('#gather_submit').addClass('disabled');
+        } else {
+            objTimeInput.removeClass('error');
+         // $('#gather_submit').removeClass('disabled');
+        }
+        odof.x.render.showTime();
+    };
 
 
     ns.editTime = function(event) {
         if (event) {
             // check if had bind a event for #cross_time_bubble
             if (!$('#x_time_bubble').data('events')) {
-                $('#x_time_bubble').bind('clickoutside', function(event)
-                {
+                $('#x_time_bubble').bind('clickoutside', function(event) {
                     if (event.target.id === 'revert_x_btn') {
                         return;
                     }
@@ -225,23 +246,27 @@ var clickCallBackFunc = function(args) {
                         odof.x.edit.saveTime();
                     }
                 });
-                $('#x_datetime_original').bind('keydown', function(event)
-                {
-                    switch (event.keyCode) {
-                        case 9:
-                            odof.x.edit.saveTime();
-                            odof.x.edit.editPlace(true);
-                            event.preventDefault();
+                $('#x_datetime_original').bind('focus keydown keyup blur', function(event) {
+                    switch (event.type) {
+                        case 'keydown':
+                            switch (event.keyCode) {
+                                case 9:
+                                    odof.x.edit.saveTime();
+                                    odof.x.edit.editPlace(true);
+                                    event.preventDefault();
+                                    return;
+                            }
                     }
+                    odof.x.edit.updateTime(null, event.type !== 'blur');
                 });
             }
             // init calendar
             exCal.initCalendar(
-                document.getElementById('x_datetime_original'),
+                $('#x_datetime_original')[0],
                 'x_time_container',
                 function(displayCalString, standardTimeString) {
                     crossData.begin_at = standardTimeString;
-                    odof.x.render.showTime();
+                    odof.x.edit.updateTime(displayCalString);
                 }
             );
             if (event === true) {
@@ -261,14 +286,12 @@ var clickCallBackFunc = function(args) {
     ns.editPlace = function(event) {
         if (event) {
             if (!$('#x_place_bubble').data('events')) {
-                $('#x_place_bubble').bind('clickoutside', function(event)
-                {
+                $('#x_place_bubble').bind('clickoutside', function(event) {
                     if (event.target.id === 'revert_x_btn') {
                         return;
                     }
                     if (event.target.parentNode === $('#x_place_area')[0]) {
-                        $('#place_content').bind('keyup', function()
-                        {
+                        $('#place_content').bind('keyup', function() {
                             var arrPlace = odof.util.parseLocation($('#place_content').val());
                             crossData.place.line1 = arrPlace[0];
                             crossData.place.line2 = arrPlace[1];
@@ -279,8 +302,7 @@ var clickCallBackFunc = function(args) {
                         odof.x.edit.savePlace();
                     }
                 });
-                $('#place_content').bind('keydown', function(event)
-                {
+                $('#place_content').bind('keydown', function(event) {
                     switch (event.keyCode) {
                         case 9:
                             odof.x.edit.savePlace();
@@ -363,11 +385,9 @@ var clickCallBackFunc = function(args) {
                 case 'x_rsvp_no':
                 case 'x_rsvp_maybe':
                     var strRsvp = event.target.id.split('_')[2];
-
                     if (token_expired == 'true') {
                         odof.x.edit.rsvpAction = strRsvp;
-                        odof.x.edit.setreadonly(function()
-                        {
+                        odof.x.edit.setreadonly(function() {
                             $.ajax({
                                 type : 'POST',
                                 data : {cross_id : odof.x.edit.cross_id,

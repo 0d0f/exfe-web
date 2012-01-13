@@ -70,7 +70,7 @@ var moduleNameSpace = 'odof.x.gather',
         if (displaytime) {
             objTimeInput.val(displaytime);
         }
-        var strTimeInput = odof.util.trim($('#datetime_original').val());
+        var strTimeInput = odof.util.trim(objTimeInput.val());
         if (strTimeInput === '') {
             crossData.begin_at = '';
             $('#gather_date_x').html(typing ? sampleTime : defaultTime);
@@ -220,6 +220,7 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.afterLogin = function(status) {
+        console.log(status);
         // check status
         if (status.user_status !== 1) {
             return;
@@ -383,5 +384,8 @@ $(document).ready(function() {
 
     // auto save draft
     setInterval(odof.x.gather.saveDraft, 10000);
+    
+    // after login hook function
+    window.externalAfterLogin = odof.x.gather.afterLogin;
 
 });
