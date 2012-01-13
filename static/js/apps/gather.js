@@ -66,18 +66,25 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.updateTime = function(displaytime, typing) {
+        var objTimeInput = $('#datetime_original');
         if (displaytime) {
-            $('#datetime_original').val(displaytime);
+            objTimeInput.val(displaytime);
         }
-        if (odof.util.trim($('#datetime_original').val()) === '') {
+        var strTimeInput = odof.util.trim($('#datetime_original').val());
+        if (strTimeInput === '') {
+            crossData.begin_at = '';
             $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
-            if (crossData.begin_at === null) {
-                $('#datetime_original').addClass('error');
-            } else {
-                $('#datetime_original').removeClass('error');
-            }
+            var strTime = odof.util.parseHumanDateTime(strTimeInput);
+            crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
+        }
+        if (crossData.begin_at === null) {
+            objTimeInput.addClass('error');
+            $('#gather_submit').addClass('disabled');
+        } else {
+            objTimeInput.removeClass('error');
+            $('#gather_submit').removeClass('disabled');
         }
         odof.x.render.showTime();
     };
@@ -150,7 +157,7 @@ var moduleNameSpace = 'odof.x.gather',
 
 
     ns.submitX = function() {
-        if (this.xSubmitting) {
+        if (this.xSubmitting || crossData.begin_at === null) {
             return;
         }
         this.xSubmitting = true;
@@ -316,18 +323,12 @@ $(document).ready(function() {
                 // .html($('#gather_date_bg').html() === gDateDefaultText ? 'e.g. 6PM Today' : '');
                 // @todo: disable time input box for version #oC
                 // $('#datetime_original').blur();
-                odof.x.gather.updateTime(null, true);
                 break;
             case 'blur':
                 $('#gather_date_x').html(defaultTime);
                 $('#gather_date_x').addClass('gather_blur').removeClass('gather_focus');
-                odof.x.gather.updateTime();
-                break;
-            case 'keyup':
-                var strTime = odof.util.parseHumanDateTime($(event.target).val());
-                crossData.begin_at = strTime ? strTime : null;
-                odof.x.gather.updateTime(null, true);
         }
+        odof.x.gather.updateTime(null, event.type !== 'blur');
     });
     odof.x.gather.updateTime();
 
