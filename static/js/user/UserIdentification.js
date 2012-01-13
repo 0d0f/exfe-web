@@ -700,8 +700,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 jQuery('#login_hint').show();
                                 setTimeout(hideErrorMsg, 3000);
                             } else if(data.response.success=="true") {
-                                jQuery("#hostby").val(identity);
-                                jQuery("#hostby").attr("enter","true");
+                                //特定的回调，写在页面上，如果存在，则调用。
+                                if(typeof externalAfterLogin != "undefined" && typeof externalAfterLogin == "function"){
+                                    externalAfterLogin(data);
+                                }
                                 //如果是首页，并且是已经登录，则跳转到Profile页面。
                                 if(typeof pageFlag != "undefined" && pageFlag == "home_page"){
                                     window.location.href="/s/profile";
