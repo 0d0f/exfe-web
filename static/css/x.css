@@ -378,3 +378,7 @@
 #xExfeeArea .exfeegadget_inputbox {
     width: 230px;
 }
+
+#xExfeeArea .exfeegadget_addbtn {
+    top: -3px;
+}
