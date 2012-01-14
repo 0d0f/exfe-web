@@ -14,7 +14,7 @@
     $user['avatar_file_name'] = $user['avatar_file_name'] ?: 'default.png';
 ?>
 <div class="content">
-    <div class="edit_user">
+    <div class="edit_user" id="edit_user_area">
         <div id="profile_avatar">
         <?php if(trim($user['avatar_file_name']) == 'default.png') { ?>
             <a href="javascript:odof.user.uploadAvatar.init();"><img src="/static/images/add_avatar.png" alt="add avatar" /></a>
@@ -65,7 +65,7 @@
             </div>
             <div>
                 <a href="javascript:;" style="display:none;" id='discard_edit'>Discard</a>
-                <button id="edit_profile_btn">Edit...</button>
+                <button id="edit_profile_btn" style="display:none;">Edit...</button>
             </div>
         </div>
     </div>

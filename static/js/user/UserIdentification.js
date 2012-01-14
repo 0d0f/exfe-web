@@ -28,9 +28,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showIdentityInfo = function(){
         if(jQuery("#identity").val()){
-            jQuery("#identity_dbox").html('');
+            jQuery("#identity_dbox").hide();
         }else{
-            jQuery("#identity_dbox").html('Your email here');
+            jQuery("#user_avatar").hide();
+            jQuery("#user_avatar")[0].src = "";
+            jQuery("#delete_identity").hide();
+            jQuery("#identity_dbox").show();
         }
     };
 
@@ -75,7 +78,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<li class='google' id='google'><span id='google_name'></span>@Google</li>"
                  + "</ul>"
                  + "</div>"
-                 + "<div id='identity_dbox'>Your email here</div>"
+                 + "<div id='identity_dbox' style='display:none;'>Your email here</div>"
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<em class='delete' id='delete_identity' style='display:none;'></em>"
                  + "<img class='avatar' id='user_avatar' style='display:none;' src='' />"
@@ -207,7 +210,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "<div class='identity_box'>"
                  + "<input id='identity' name='identity' type='text' class='inputText' />"
                  + "</div>"
-                 + "<div id='identity_dbox'>Your email here</div>"
+                 + "<div id='identity_dbox' style='display:none;'>Your email here</div>"
                  + "<em class='loading' id='identity_verify_loading' style='display:none;'></em>"
                  + "<img class='avatar' id='user_avatar' style='display:none;' src='' />"
                  + "</li>"
