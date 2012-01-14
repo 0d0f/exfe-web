@@ -402,7 +402,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#user_avatar").show();
                 jQuery("#user_avatar")[0].src = odof.comm.func.getUserAvatar(lastIdentityObj.identity_avatar, 80, img_url);
             }
-            jQuery("#identity_dbox").html("");
+            jQuery("#identity_dbox").hide();
             jQuery("#identity").bind("mouseover",function(){
                 jQuery("#delete_identity").show();
                 setTimeout(function(){
@@ -430,7 +430,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#user_avatar")[0].src = "";
 
                 jQuery("#identity").val("");
-                jQuery("#identity_dbox").html("Your email here");
+                jQuery("#identity_dbox").show();
                 jQuery("#identity").unbind("mouseover");
                 //jQuery("#identity").unbind("mouseout");
                 jQuery("#delete_identity").unbind("click");

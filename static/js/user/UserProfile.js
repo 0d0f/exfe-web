@@ -425,10 +425,26 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+    ns.editProfileBtnShow = function(){
+        jQuery("#edit_profile_btn").hide();
+        jQuery("#edit_user_area").bind("mouseover",function(){
+            jQuery("#edit_profile_btn").show();
+        });
+        jQuery("#edit_user_area").bind("mouseout",function(){
+            jQuery("#edit_profile_btn").hide();
+        });
+    };
+    ns.editProfileDoneBtnShow = function(){
+        jQuery("#edit_user_area").unbind("mouseover");
+        jQuery("#edit_user_area").unbind("mouseout");
+        jQuery("#edit_profile_btn").show();
+    };
+
     ns.editUserProfile = function(e) {
         var userName = odof.util.trim(jQuery("#user_name").html());
         jQuery("#user_name").html("<input id='edit_profile_name' value='"+userName+"' />");
         jQuery("#edit_profile_btn").html("Done");
+        ns.editProfileDoneBtnShow();
 
         var discardEditUserProfile = function(userName){
             if(typeof userName == "undefined"){
@@ -442,6 +458,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#edit_profile_btn').bind("click", function(event){
                 odof.user.profile.editUserProfile(event);
             });
+            ns.editProfileBtnShow();
             jQuery("#user_cross_info").show();
             jQuery("#set_password_btn").hide();
             jQuery("#set_password_btn").unbind("click");
@@ -508,6 +525,7 @@ $(document).ready(function() {
     jQuery('#edit_profile_btn').bind("click", function(event){
         odof.user.profile.editUserProfile(event);
     });
+    odof.user.profile.editProfileBtnShow();
 
     $('.sendactiveemail').click(function(e) {
         var external_identity=$(this).attr("external_identity");
