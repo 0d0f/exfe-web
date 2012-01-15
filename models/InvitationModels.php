@@ -33,6 +33,7 @@ class InvitationModels extends DataModel
                 else
                     $invitations[$i]=humanIdentity($invitations[$i],array());
             }
+                $invitations[$i]["user_id"]=intval($userid);
                 $invitations[$i]["state"]=intval($invitations[$i]["state"]);
         }
         return $invitations;
