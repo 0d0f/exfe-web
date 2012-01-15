@@ -185,7 +185,7 @@ class SHelper extends ActionController
                                 $identity = humanIdentity($myidentity, $user);
                             }
 
-                            $userid=$modUser->getUserIdByIdentityId($toExfee);
+                            $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
                             array_push(
                                 $cleanLogs[$xlogsHash[$xId]][$action],
                                 array('time'  => $logItem['time'],
@@ -193,7 +193,7 @@ class SHelper extends ActionController
                                       'meta'  => $logItem['meta'],
                                       'identity'  => $identity,
                                       'to_id' => $toExfee,
-                                      'user_id' => $userid)
+                                      'user_id' => $exfee_userid)
                             );
                             array_push($relatedIdentityIds,$logItem['from_id']);
                             array_push($relatedIdentityIds,$toExfee);
