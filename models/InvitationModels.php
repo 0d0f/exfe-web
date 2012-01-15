@@ -128,21 +128,13 @@ class InvitationModels extends DataModel
                 $userid=$user["userid"];
                 if(intval($userid)>0 && $withAllIdentities==true)
                 {
-                    //$sql="select identityId from user_identity where userid=$userid;";
-                    //$sql="select b.id identity_id,b.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
-                    $sql="select b.id identity_id,a.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
+                    $sql="select b.id identity_id,a.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
                     $identities=$this->getAll($sql);
                     $invitations[$i]["identities"]=$identities;
 
                 }
-                //$sql="select userid from user_identity where identityid=1;";
-                //$user=$this->getRow($sql);
-
-                #if(trim($invitations[$i]["name"])=="" )
-                #    $invitations[$i]["name"]=$user["name"];
-                #if(trim($invitations[$i]["avatar_file_name"])=="")
-                #    $invitations[$i]["avatar_file_name"]=$user["avatar_file_name"];
             }
+            $invitations[$i]["user_id"]=intval($userid);
             $invitations[$i]["state"]=intval($invitations[$i]["state"]);
         }
         return $invitations;
@@ -190,12 +182,13 @@ class InvitationModels extends DataModel
                     if(intval($userid)>0)
                     {
                         //$sql="select b.id identity_id,b.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
-                        $sql="select b.id identity_id,a.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
+                        $sql="select b.id identity_id,a.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
                         $identities=$this->getAll($sql);
                         $invitations[$i]["identities"]=$identities;
 
                     }
                 }
+                $invitations[$i]["user_id"]=intval($userid);
                 $invitations[$i]["state"]=intval($invitations[$i]["state"]);
             }
         }
