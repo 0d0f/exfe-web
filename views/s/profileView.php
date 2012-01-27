@@ -31,7 +31,7 @@
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
                 <p>
-                <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
+                <img class="s_header" src="<?php if($identity["avatar_file_name"] == "default.png" && $identity["provider"] == "email" ){ echo getGravatar($identity["external_identity"], 80); }else{ echo getUserAvatar($identity["avatar_file_name"], 80); } ?>" alt="" />
                 <span class="id_name"><?php echo $identity["name"]; ?></span>
                 <em><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></em>
                 <?php
