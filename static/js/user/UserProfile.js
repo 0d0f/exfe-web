@@ -446,6 +446,45 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#edit_profile_btn").html("Done");
         ns.editProfileDoneBtnShow();
 
+        //edit identity name
+        jQuery(".id_name").css({"cursor":"pointer"});
+        var editUserIdentityName = function(e){
+            var curElementID = e.currentTarget.id;
+            var curIdentityName = e.currentTarget.innerHTML;
+            jQuery("#"+curElementID).unbind("click");
+            jQuery("#"+curElementID).html("<input class='identity_input' id='editid_"+curElementID+"' value='"+curIdentityName+"' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_"+curElementID+"'>");
+            jQuery("#submit_editid_"+curElementID).bind("click",function(){
+                var newIdentityName = jQuery("#editid_"+curElementID).val();
+                var userIdentity = jQuery("#identity_"+curElementID).val();
+                var identityProvider = jQuery("#identity_provider_"+curElementID).val();
+                var postData = {
+                    jrand:Math.round(Math.random()*10000000000),
+                    identity_name:newIdentityName,
+                    identity:userIdentity,
+                    identity_provider:identityProvider
+                };
+                jQuery.ajax({
+                    type: "POST",
+                    data: postData,
+                    url: site_url+"/s/editUserIdentityName",
+                    dataType:"json",
+                    success: function(JSONData){
+                        if(!JSONData.error){
+                            console.log(JSONData.response.identity_name);
+                            jQuery("#"+curElementID).html(JSONData.response.identity_name);
+                            jQuery("#"+curElementID).bind("click",function(e){
+                                editUserIdentityName(e);
+                            });
+                        }
+                    }
+                });
+            });
+        };
+
+        jQuery(".id_name").bind("click",function(e){
+            editUserIdentityName(e);
+        });
+
         var discardEditUserProfile = function(userName){
             if(typeof userName == "undefined"){
                 userName = jQuery("#edit_profile_name").val();
@@ -496,6 +535,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         alert(JSONData.msg);
                     }else{
                         editUserProfileCallBack(JSONData);
+                        odof.user.status.checkUserLogin();
                     }
                 }
             });

@@ -617,6 +617,38 @@ class SActions extends ActionController {
         exit();
     }
 
+    public function doEditUserIdentityName()
+    {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>"",
+            "response" => array()
+        );
+        header("Content-Type:application/json; charset=UTF-8");
+
+        $userIdentityName = trim(exPost("identity_name"));
+        $userIdentity = trim(exPost("identity"));
+        $userIdentityProvider = trim(exPost("identity_provider"));
+
+        if($userIdentityName == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "user name empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $userID = intval($_SESSION["userid"]);
+        if ($userID > 0)
+        {
+            $identityDataObj = $this->getModelByName("identity");
+            $result = $identityDataObj->updateUserIdentityName($userIdentityName,$userIdentity,$userIdentityProvider);
+            $returnData["response"]["identity_name"] = $userIdentityName;
+        }
+
+        echo json_encode($returnData);
+        exit();
+    }
+
     public function doGetUserProfile()
     {
         //TODO: private API ,must check session
