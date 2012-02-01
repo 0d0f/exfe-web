@@ -387,13 +387,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showLastIdentity = function(){
         var lastIdentity = odof.util.getCookie('last_identity');
-        var lastIdentityObj = jQuery.parseJSON(lastIdentity);
+        try{
+            var lastIdentityObj = jQuery.parseJSON(lastIdentity);
+        }catch(e){
+            var lastIdentityObj = lastIdentity;
+            //pass
+        }
 
         if(lastIdentity){
-            jQuery("#identity").val(lastIdentityObj.identity);
-            jQuery("#user_avatar").show();
-            jQuery("#user_avatar")[0].src = odof.comm.func.getUserAvatar(lastIdentityObj.identity_avatar, 80, img_url);
-            jQuery("#identity_dbox").html("");
+            if(typeof lastIdentityObj == "string"){
+                jQuery("#identity").val(lastIdentity);
+            }else{
+                jQuery("#identity").val(lastIdentityObj.identity);
+                jQuery("#user_avatar").show();
+                jQuery("#user_avatar")[0].src = odof.comm.func.getUserAvatar(lastIdentityObj.identity_avatar, 80, img_url);
+            }
+            jQuery("#identity_dbox").hide();
             jQuery("#identity").bind("mouseover",function(){
                 jQuery("#delete_identity").show();
                 setTimeout(function(){
@@ -421,7 +430,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#user_avatar")[0].src = "";
 
                 jQuery("#identity").val("");
-                jQuery("#identity_dbox").html("Your email here");
+                jQuery("#identity_dbox").show();
                 jQuery("#identity").unbind("mouseover");
                 //jQuery("#identity").unbind("mouseout");
                 jQuery("#delete_identity").unbind("click");

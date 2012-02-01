@@ -185,14 +185,21 @@ em {
     color: #020202;
 }
 .edit_user .u_con h1 input {
-    width: 200px;
-    height: 16px;
+    width: 200px; height: 18px;
     font: bold 14px/20px Verdana, Arial, Helvetica, sans-serif;
     border: #c5c5c5 1px solid;
 }
 .edit_user .u_con p {
     margin-top: 6px;
     font: 14px/20px Verdana, Arial, Helvetica, sans-serif;
+}
+.edit_user .u_con p .identity_input {
+    width: 120px; height: 18px;
+    font: bold 14px/20px Verdana, Arial, Helvetica, sans-serif;
+    border: #c5c5c5 1px solid;
+}
+.edit_user .u_con p .identity_submit {
+    background-color:#0081A2;color:#FFF;
 }
 .edit_user .u_con p button.janbtn {
     width: 20px;

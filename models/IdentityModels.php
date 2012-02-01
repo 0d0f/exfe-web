@@ -772,5 +772,15 @@ class IdentityModels extends DataModel{
         }
         return FALSE;
     }
+
+
+    public function updateUserIdentityName($identity_name, $identity, $identity_provider){
+        $identity_name = mysql_real_escape_string($identity_name);
+        $external_identity = mysql_real_escape_string($identity);
+        $identity_provider = mysql_real_escape_string($identity_provider);
+        $sql="UPDATE identities SET name='{$identity_name}' WHERE external_identity='{$external_identity}' AND provider='{$identity_provider}'";
+        $result = $this->query($sql);
+        return $result;
+    }
 }
 

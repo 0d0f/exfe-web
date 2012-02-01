@@ -12,6 +12,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns) {
 
+    ns.exfeeAvailableIdK = 'exfee_available_for_id' 
+
     ns.exfeeAvailableKey = 'exfee_available';
 
     ns.arrStrRsvp        = ['Not responded', 'Accepted', 'Declined', 'Interested'];
@@ -76,7 +78,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     +                 'class="exfeegadget_inputarea">'
                     +     '<input  id="' + domId + '_exfeegadget_inputbox" '
                     +                        'class="exfeegadget_inputbox" type="text">'
-                    +     '<button id="' + domId + '_exfeegadget_addbtn">+</button>'
+                    +     '<button id="' + domId + '_exfeegadget_addbtn" '
+                    +                        'class="exfeegadget_addbtn">'
+                    +     '</button>'
                     +     '<div id="' + domId + '_exfeegadget_autocomplete" '
                     +                     'class="exfeegadget_autocomplete">'
                     +         '<ol></ol>'
@@ -97,8 +101,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.timerBaseInfo[domId] = {};
         $('#' + domId).html(strHtml);
         if (typeof localStorage !== 'undefined') {
+            var curIdentity = myIdentity && typeof myIdentity.external_identity !== 'undefined'
+                            ? myIdentity.external_identity.toLowerCase() : null;
             this.exfeeAvailable = localStorage.getItem(this.exfeeAvailableKey);
-            if (this.exfeeAvailable) {
+            if (localStorage.getItem(this.exfeeAvailableIdK) === curIdentity
+             && this.exfeeAvailable) {
                 try {
                     this.exfeeAvailable = JSON.parse(this.exfeeAvailable);
                 } catch (err) {
@@ -786,6 +793,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             this.exfeeIdentified[curIdentity] = true;
         }
         if (typeof localStorage !== 'undefined') {
+            var curIdentity = myIdentity && typeof myIdentity.external_identity !== 'undefined'
+                            ? myIdentity.external_identity.toLowerCase() : '';
+            localStorage.setItem(this.exfeeAvailableIdK, curIdentity);
             localStorage.setItem(this.exfeeAvailableKey,
                                  JSON.stringify(this.exfeeAvailable));
         }

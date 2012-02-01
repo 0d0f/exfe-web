@@ -425,10 +425,65 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+    ns.editProfileBtnShow = function(){
+        jQuery("#edit_profile_btn").hide();
+        jQuery("#edit_user_area").bind("mouseover",function(){
+            jQuery("#edit_profile_btn").show();
+        });
+        jQuery("#edit_user_area").bind("mouseout",function(){
+            jQuery("#edit_profile_btn").hide();
+        });
+    };
+    ns.editProfileDoneBtnShow = function(){
+        jQuery("#edit_user_area").unbind("mouseover");
+        jQuery("#edit_user_area").unbind("mouseout");
+        jQuery("#edit_profile_btn").show();
+    };
+
     ns.editUserProfile = function(e) {
         var userName = odof.util.trim(jQuery("#user_name").html());
         jQuery("#user_name").html("<input id='edit_profile_name' value='"+userName+"' />");
         jQuery("#edit_profile_btn").html("Done");
+        ns.editProfileDoneBtnShow();
+
+        //edit identity name
+        jQuery(".id_name").css({"cursor":"pointer"});
+        var editUserIdentityName = function(e){
+            var curElementID = e.currentTarget.id;
+            var curIdentityName = e.currentTarget.innerHTML;
+            jQuery("#"+curElementID).unbind("click");
+            jQuery("#"+curElementID).html("<input class='identity_input' id='editid_"+curElementID+"' value='"+curIdentityName+"' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_"+curElementID+"'>");
+            jQuery("#submit_editid_"+curElementID).bind("click",function(){
+                var newIdentityName = jQuery("#editid_"+curElementID).val();
+                var userIdentity = jQuery("#identity_"+curElementID).val();
+                var identityProvider = jQuery("#identity_provider_"+curElementID).val();
+                var postData = {
+                    jrand:Math.round(Math.random()*10000000000),
+                    identity_name:newIdentityName,
+                    identity:userIdentity,
+                    identity_provider:identityProvider
+                };
+                jQuery.ajax({
+                    type: "POST",
+                    data: postData,
+                    url: site_url+"/s/editUserIdentityName",
+                    dataType:"json",
+                    success: function(JSONData){
+                        if(!JSONData.error){
+                            console.log(JSONData.response.identity_name);
+                            jQuery("#"+curElementID).html(JSONData.response.identity_name);
+                            jQuery("#"+curElementID).bind("click",function(e){
+                                editUserIdentityName(e);
+                            });
+                        }
+                    }
+                });
+            });
+        };
+
+        jQuery(".id_name").bind("click",function(e){
+            editUserIdentityName(e);
+        });
 
         var discardEditUserProfile = function(userName){
             if(typeof userName == "undefined"){
@@ -442,6 +497,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery('#edit_profile_btn').bind("click", function(event){
                 odof.user.profile.editUserProfile(event);
             });
+            ns.editProfileBtnShow();
             jQuery("#user_cross_info").show();
             jQuery("#set_password_btn").hide();
             jQuery("#set_password_btn").unbind("click");
@@ -479,6 +535,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         alert(JSONData.msg);
                     }else{
                         editUserProfileCallBack(JSONData);
+                        odof.user.status.checkUserLogin();
                     }
                 }
             });
@@ -508,6 +565,7 @@ $(document).ready(function() {
     jQuery('#edit_profile_btn').bind("click", function(event){
         odof.user.profile.editUserProfile(event);
     });
+    odof.user.profile.editProfileBtnShow();
 
     $('.sendactiveemail').click(function(e) {
         var external_identity=$(this).attr("external_identity");

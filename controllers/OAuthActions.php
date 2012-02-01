@@ -96,6 +96,8 @@ class OAuthActions extends ActionController {
         $identityModels = $this->getModelByName("identity");
         //===========
         
+        //先初始化一个对象。user_token和user_secret可以在数据库中找到，
+        //即identities表中的oauth_token字段的内容，一个加密串，拿出来之后用unpackArray解包可得到一个数组。
         $twitterConn = new tmhOAuth(array(
           'consumer_key'    => TWITTER_CONSUMER_KEY,
           'consumer_secret' => TWITTER_CONSUMER_SECRET,
@@ -103,6 +105,8 @@ class OAuthActions extends ActionController {
           'user_secret'     => $accessToken['oauth_token_secret']
         ));
 
+        //通过friendships/exists去判断当前用户screen_name_a是否Follow screen_name_b。
+        //如果已经Follow，会返回true，否则False。(String)
         $responseCode = $twitterConn->request('GET', $twitterConn->url('1/friendships/exists'), array(
             'screen_name_a'=>$twitterUserInfo["screen_name"], 'screen_name_b'=>TWITTER_OFFICE_ACCOUNT
         ));
@@ -114,11 +118,6 @@ class OAuthActions extends ActionController {
                 $token = packArray($oAuthUserInfo);
                 header("location:/oAuth/confirmTwitterFollowing?token=".$token);
                 exit();
-                /*
-                $responseCode = $twitterConn->request('POST', $twitterConn->url('1/friendships/create'), array(
-                    'screen_name'=>TWITTER_OFFICE_ACCOUNT
-                ));
-                 */
             }
         }
         header("location:/s/profile");

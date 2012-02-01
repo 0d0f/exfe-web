@@ -14,7 +14,7 @@
     $user['avatar_file_name'] = $user['avatar_file_name'] ?: 'default.png';
 ?>
 <div class="content">
-    <div class="edit_user">
+    <div class="edit_user" id="edit_user_area">
         <div id="profile_avatar">
         <?php if(trim($user['avatar_file_name']) == 'default.png') { ?>
             <a href="javascript:odof.user.uploadAvatar.init();"><img src="/static/images/add_avatar.png" alt="add avatar" /></a>
@@ -31,9 +31,10 @@
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
                 <p>
-                <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
-                <span class="id_name"><?php echo $identity["name"]; ?></span>
-                <em><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></em>
+                <img class="s_header" src="<?php if($identity["avatar_file_name"] == "default.png" && $identity["provider"] == "email" ){ echo getGravatar($identity["external_identity"], 80); }else{ echo getUserAvatar($identity["avatar_file_name"], 80); } ?>" alt="" title="<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>" />
+                <span class="id_name" id="<?php echo $identity["name"]; ?>"><?php echo $identity["name"]; ?></span>
+                <input type="hidden" id="identity_<?php echo $identity["name"]; ?>" value="<?php echo $identity["external_identity"]; ?>" />
+                <input type="hidden" id="identity_provider_<?php echo $identity["name"]; ?>" value="<?php echo $identity["provider"]; ?>" />
                 <?php
                     if($identity["status"] != 3 )
                     {
@@ -65,7 +66,7 @@
             </div>
             <div>
                 <a href="javascript:;" style="display:none;" id='discard_edit'>Discard</a>
-                <button id="edit_profile_btn">Edit...</button>
+                <button id="edit_profile_btn" style="display:none;">Edit...</button>
             </div>
         </div>
     </div>

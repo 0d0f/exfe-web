@@ -230,6 +230,7 @@ var moduleNameSpace = 'odof.x.gather',
                 name              : status.response.user_info.identity_name,
                 provider          : status.response.user_info.provider
             };
+            odof.exfee.gadget.exfeeChecked = [];
         } else {
             return;
         }

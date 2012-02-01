@@ -184,13 +184,16 @@ class SHelper extends ActionController
                                 $user = $modUser->getUserByIdentityId($logItem['from_id']);
                                 $identity = humanIdentity($myidentity, $user);
                             }
+
+                            $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
                             array_push(
                                 $cleanLogs[$xlogsHash[$xId]][$action],
                                 array('time'  => $logItem['time'],
                                       'by_id' => $logItem['from_id'],
                                       'meta'  => $logItem['meta'],
                                       'identity'  => $identity,
-                                      'to_id' => $toExfee)
+                                      'to_id' => $toExfee,
+                                      'user_id' => $exfee_userid)
                             );
                             array_push($relatedIdentityIds,$logItem['from_id']);
                             array_push($relatedIdentityIds,$toExfee);
