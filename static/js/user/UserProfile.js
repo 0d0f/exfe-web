@@ -447,7 +447,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.editProfileDoneBtnShow();
 
         //edit identity name
-        jQuery(".id_name").css({"cursor":"pointer"});
         var editUserIdentityName = function(e){
             var curElementID = e.currentTarget.id;
             var curIdentityName = e.currentTarget.innerHTML;
@@ -481,7 +480,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         };
 
-        jQuery(".id_name").bind("click",function(e){
+        jQuery(".id_name.provider_email").css({"cursor":"pointer"});
+        jQuery(".id_name.provider_email").bind("click",function(e){
             editUserIdentityName(e);
         });
 
