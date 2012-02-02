@@ -32,9 +32,13 @@
              ?>
                 <p>
                 <img class="s_header" src="<?php if($identity["avatar_file_name"] == "default.png" && $identity["provider"] == "email" ){ echo getGravatar($identity["external_identity"], 80); }else{ echo getUserAvatar($identity["avatar_file_name"], 80); } ?>" alt="" title="<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>" />
-                <span class="id_name" id="<?php echo $identity["name"]; ?>"><?php echo $identity["name"]; ?></span>
+                <?php if($identity["provider"] == "email"){ ?>
+                <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="<?php echo $identity["name"]; ?>"><?php echo $identity["name"]; ?></span>
                 <input type="hidden" id="identity_<?php echo $identity["name"]; ?>" value="<?php echo $identity["external_identity"]; ?>" />
                 <input type="hidden" id="identity_provider_<?php echo $identity["name"]; ?>" value="<?php echo $identity["provider"]; ?>" />
+                <?php }else{ ?>
+                <span class="id_name"><?php echo $identity["name"]; ?></span>
+                <?php } ?>
                 <?php
                     if($identity["status"] != 3 )
                     {
