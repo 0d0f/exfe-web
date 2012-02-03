@@ -26,6 +26,13 @@ class IdentityModels extends DataModel{
 
         $external_identity=mysql_real_escape_string($external_identity);
 
+        //set identity avatar as Gravatar img
+        if($provider == "email" && $avatar_file_name == ""){
+            $avatar_file_name = "http://www.gravatar.com/avatar/";
+            $avatar_file_name .= md5(strtolower(trim($external_identity)));
+            $avatar_file_name .= "?d=".urlencode(DEFAULT_AVATAR_URL);
+        }
+
         if($external_username == ""){
             $external_username = $external_identity;
         }
@@ -33,16 +40,19 @@ class IdentityModels extends DataModel{
         $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
         $result=$this->query($sql);
         $identityid=intval($result["insert_id"]);
-        if($identityid>0)
+        if($identityid > 0)
         {
             $sql="select name,bio,avatar_file_name from users where id=$user_id;";
             $userrow=$this->getRow($sql);
-            if($userrow["name"]=="")
+            if($userrow["name"]==""){
                 $userrow["name"]=$name;
-            if($userrow["bio"]=="")
+            }
+            if($userrow["bio"]==""){
                 $userrow["bio"]=$bio;
-            if($userrow["avatar_file_name"]=="")
+            }
+            if($userrow["avatar_file_name"]==""){
                 $userrow["avatar_file_name"]=$avatar_file_name;
+            }
 
             $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."' where id=$user_id;";
             $this->query($sql);
