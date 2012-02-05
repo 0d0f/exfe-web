@@ -17,6 +17,7 @@ require_once 'waiting_job.php';
 require_once 'iospush_job.php';
 require_once 'connect.php';
 #require 'php_error_job.php';
+require_once 'twitter_job.php';
 require_once 'twittergetfriendslist_job.php';
 require_once 'twitternewtweet_job.php';
 require_once 'twittersendmessage_job.php';

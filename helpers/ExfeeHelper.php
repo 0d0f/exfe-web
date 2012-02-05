@@ -16,7 +16,6 @@ class ExfeeHelper extends ActionController {
 
         if (is_array($invited)) {
             foreach ($invited as $identItem) {
-                // @todo 这里需要处理，应对多种账号类型
                 $inviteIds[$identItem['identity_id']] = $identItem;
             }
         }
@@ -75,7 +74,7 @@ class ExfeeHelper extends ActionController {
                         continue;
                     }
 
-                    $newExfees[$identity_id]=$confirmed;
+                    $newExfees[$identity_id] = $confirmed;
                     //array_push($newExfees, $identity_id);
                 }
 
@@ -102,15 +101,16 @@ class ExfeeHelper extends ActionController {
                 if (!in_array($identity_id, $curExfees)) {
                     $invitationData->delInvitation($cross_id, $identity_id);
                     $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
-                    $delExfees[$identity_id]=$confirmed;
+                    $delExfees[$identity_id] = $confirmed;
                     //array_push($delExfees, $identity_id);
-
                 }
             }
         }
 
         if (is_array($invited)) {
-            return array("newexfees"=>$newExfees,"allexfees"=>$allExfees,"delexfees"=>$delExfees);
+            return array('newexfees' => $newExfees,
+                         'allexfees' => $allExfees,
+                         'delexfees' => $delExfees);
         }
     }
 
