@@ -281,7 +281,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 return identity.external_identity;
                 break;
             case 'twitter':
-                return '@' + identity.external_username;
+                return '@' + identity.external_username + '@twitter';
                 break;
             default:
                 return '';
@@ -621,6 +621,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if (this.exfeeInput[domId][i].provider) {
                 var itemExfee = {
                     exfee_identity : this.exfeeInput[domId][i].external_identity,
+                    exfee_ext_name : this.exfeeInput[domId][i].external_username,
                     exfee_name     : this.exfeeInput[domId][i].name,
                     confirmed      : this.exfeeInput[domId][i].rsvp,
                     identity_type  : this.exfeeInput[domId][i].provider,

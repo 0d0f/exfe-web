@@ -1,11 +1,10 @@
 <?php
 
-class IdentityModels extends DataModel{
+class IdentityModels extends DataModel {
 
     private $salt="_4f9g18t9VEdi2if";
 
-    public function addIdentity($user_id,$provider,$external_identity,$identityDetail=array())
-    {
+    public function addIdentity($user_id,$provider,$external_identity,$identityDetail=array()) {
         $activecode = createToken();
 
         $name=mysql_real_escape_string($identityDetail["name"]);
@@ -93,37 +92,44 @@ class IdentityModels extends DataModel{
         }
     }
 
-    public function addIdentityWithoutUser($provider,$external_identity,$identityDetail=array())
-    {
+    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
 
-        $name=mysql_real_escape_string($identityDetail["name"]);
-        $bio=mysql_real_escape_string($identityDetail["bio"]);
-        $avatar_file_name=mysql_real_escape_string($identityDetail["avatar_file_name"]);
-        $avatar_content_type=$identityDetail["avatar_content_type"];
-        $avatar_file_size=$identityDetail["avatar_file_size"];
-        $avatar_updated_at=$identityDetail["avatar_updated_at"];
-        $external_username=mysql_real_escape_string($identityDetail["external_username"]);
-        $external_identity=mysql_real_escape_string($external_identity);
-        $time=time();
-        $sql="select id from identities where external_identity='$external_identity' limit 1";
-        $row=$this->getRow($sql);
-        if(intval($row["id"])>0)
-            return  intval($row["id"]);
+        $name                = mysql_real_escape_string($identityDetail["name"]);
+        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
+        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
+        $avatar_content_type = $identityDetail["avatar_content_type"];
+        $avatar_file_size    = $identityDetail["avatar_file_size"];
+        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
+        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
+        $external_identity   = mysql_real_escape_string($external_identity);
+        $time = time();
+        switch ($provider) {
+            case 'email':
+                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
+                break;
+            default:
+                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
+                $external_identity = null;
+        }
+        $row = $this->getRow($sql);
+        if (intval($row['id']) > 0) {
+            return intval($row['id']);
+        }
 
-        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
-        $result=$this->query($sql);
-        $identityid=intval($result["insert_id"]);
+        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
+        $result = $this->query($sql);
+        $identityid = intval($result["insert_id"]);
         return $identityid;
     }
 
-    public function ifIdentityExist($external_identity, $provider="")
-    {
+    public function ifIdentityExist($external_identity, $provider = '') {
         $external_identity = mysql_real_escape_string($external_identity);
         $provider = mysql_real_escape_string($provider);
-        $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
 
-        if($provider != ""){
+        if ($provider) {
             $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}'";
+        } else {
+            $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
         }
 
         $row = $this->getRow($sql);
@@ -158,8 +164,7 @@ class IdentityModels extends DataModel{
         }
     }
 
-    public function setLoginCookie($identity, $userid, $identity_id)
-    {
+    public function setLoginCookie($identity, $userid, $identity_id) {
             $time=time();
 
             $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip,avatar_file_name from users where id=$userid";
@@ -192,15 +197,13 @@ class IdentityModels extends DataModel{
             setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
     }
 
-    public function loginByCookie($source='')
-    {
+    public function loginByCookie($source='') {
         $uid=intval($_COOKIE['uid']);
         $identity_id=intval($_COOKIE['id']);
         $loginsequ=$_COOKIE['loginsequ'];
         $logintoken=$_COOKIE['logintoken'];
         $identity = $_COOKIE["last_identity"];
-        if($uid>0)
-        {
+        if($uid > 0) {
             $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
             $logindata=$this->getRow($sql);
 
@@ -237,8 +240,8 @@ class IdentityModels extends DataModel{
 
         }
     }
-    public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false)
-    {
+
+    public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
         if($userid==0)
         {
             $sql="select userid from user_identity where identityid=$identity_id";
@@ -288,8 +291,7 @@ class IdentityModels extends DataModel{
         return $userid;
     }
 
-    public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false)
-    {
+    public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
         //$password = md5($password.$this->salt);
         $sql="SELECT id AS identity_id, provider, bio, external_identity, name, avatar_file_name, external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
         if($oauth_login){
@@ -344,7 +346,7 @@ class IdentityModels extends DataModel{
         return 0;
     }
 
-    public function getUserNameByIdentityId($identity_id){
+    public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
         $row = $this->getRow($sql);
@@ -355,32 +357,27 @@ class IdentityModels extends DataModel{
         }
     }
 
-    public function getIdentityById($identity_id)
-    {
+    public function getIdentityById($identity_id) {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
         $row=$this->getRow($sql);
         return $row;
     }
 
-    public function getIdentity($identity)
-    {
+    public function getIdentity($identity) {
         $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_identity='$identity'";
         $row=$this->getRow($sql);
         return $row;
     }
 
-    public function loginWithXToken($cross_id,$token)
-    {
+    public function loginWithXToken($cross_id,$token) {
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
         $tokenexpired=intval($row["tokenexpired"]);
 
-        if($identity_id > 0)
-        {
+        if ($identity_id > 0) {
 
-            if($tokenexpired<2)
-            {
+            if($tokenexpired<2) {
                 $tokenexpired=$tokenexpired+1;
                 $sql="update invitations set tokenexpired=$tokenexpired where cross_id=$cross_id and token='$token';";
                 $this->query($sql);
@@ -388,8 +385,7 @@ class IdentityModels extends DataModel{
 
             $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
             $row = $this->getRow($sql);
-            if($row["status"]!=STATUS_CONNECTED)
-            {
+            if($row["status"]!=STATUS_CONNECTED) {
                 $sql="UPDATE user_identity SET status=3 WHERE identityid={$identity_id}";
                 $this->query($sql);
             }
