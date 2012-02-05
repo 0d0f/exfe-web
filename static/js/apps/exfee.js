@@ -275,6 +275,20 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     
     
+    ns.displayIdentity = function(identity) {
+        switch (identity.provider) {
+            case 'email':
+                return identity.external_identity;
+                break;
+            case 'twitter':
+                return '@' + identity.external_username;
+                break;
+            default:
+                return '';
+        }
+    };
+    
+    
     ns.addExfeeFromCache = function(domId, identity) {
         for (var i in odof.exfee.gadget.exfeeAvailable) {
             if (odof.exfee.gadget.exfeeAvailable[i]
@@ -321,7 +335,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
                     removable    = this.editable[domId] && !objExfee.host
                                 && objExfee.external_identity
-                               !== (myIdentity ? myIdentity.external_identity : '');
+                               !== (myIdentity ? myIdentity.external_identity : ''),
+                    disIdentity  = this.displayIdentity(objExfee);
                 $('#' + domId + '_exfeegadget_avatararea > ol').append(
                     '<li identity="' + objExfee.external_identity + '">'
                   +     '<div class="exfee_avatarblock">'
@@ -338,7 +353,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +         '</span>'
                   +        (exfees[i].provider
                   ?        ('<span class="exfee_baseinfo_identity">'
-                  +             objExfee.external_identity
+                  +             disIdentity
                   +         '</span>') : '')
                   +     '</div>'
                   +     '<div class="exfee_extrainfo floating">'
@@ -358,7 +373,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +         '</div>'
                   +        (objExfee.external_identity === '_fake_host_' ? '' 
                   :        ('<div class="exfee_extrainfo_mainid_area">'
-                  +             objExfee.external_identity
+                  +             disIdentity
                   +            (removable
                   ?            ('<button class="exfee_main_identity_remove">'
                   +                 ' ⊖ '
@@ -643,7 +658,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             if (item.provider && (parseInt(i) < arrInput.length - 1 || force)) {
                 arrValid.push(item);
             } else {
-                arrInValid.push(item.external_identity);
+                arrInValid.push(odof.util.trim(arrInput[i]));
             }
         }
         var newInput = arrInValid.join('; ');
