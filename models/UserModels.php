@@ -273,41 +273,39 @@ class UserModels extends DataModel{
     public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
     {
 
-        $sql="select id from identities where external_identity='$devicetoken' and  provider='$provider';";
-
-        $row=$this->getRow($sql);
-        $time=time();
+        
+        $sql="SELECT *,u.userid FROM `identities` i, user_identity u WHERE external_identity='$devicetoken' and provider='$provider' and i.id=u.identityid;";
+        $rows=$this->getAll($sql);
         $identity_id=0;
-        if(intval($row["id"])==0)
+        foreach($rows as $row)
         {
-            //insert new identity, set status connect
+            $t_uid=$row["userid"];
+            $t_identity_id=$row["id"];
+            if(intval($row["userid"])!=$uid)// bind with other users, set status =1 to disconnect
+            {
+
+                    $sql="update user_identity set status=1 where userid=$t_uid and identityid=$t_identity_id";
+                    $this->query($sql);
+            }
+            else if(intval($row["userid"])==intval($uid)) // this user
+            {
+                    $sql="update user_identity set status=3 where userid=$t_uid and identityid=$t_identity_id";
+                    $this->query($sql);
+                    $identity_id=$t_identity_id;
+            }
+        }
+
+        if(intval($identity_id)==0)
+        {
+            $time=time();
             $sql="insert into identities (provider,external_identity,external_username,created_at) values('iOSAPN','$devicetoken','$devicename',FROM_UNIXTIME($time));";
             $result=$this->query($sql);
             if(intval($result["insert_id"])>0)
                 $identity_id=$result["insert_id"];
-        }
-        else if(intval($row["id"])>0)
-        {
-            $identity_id=$row["id"];
-
-        }
-        $sql="select identityid from user_identity where identityid=$identity_id and userid=$uid;";
-        $row=$this->getRow($sql);
-
-        if(intval($row["identityid"])==0) // if dose not bind with any user?
-        {
             $sql="insert into user_identity  (identityid,userid,created_at,status) values ($identity_id,$uid,FROM_UNIXTIME($time),3);";
             $this->query($sql);
         }
-        else if(intval($row["identityid"])>0 && intval($row["identityid"])!=$identity_id) // bind with other user?
-        {
-            $sql="update user_identity set userid=$uid,status=3 where identityid=$identity_id";
-            $this->query($sql);
-        }
-        //check identity_user relationship
-        //update connect status
-        $sql="update identities set status=3 where id=$identity_id";
-        $this->query($sql);
+
         return $identity_id;
     }
 
