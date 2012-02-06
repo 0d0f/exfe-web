@@ -15,15 +15,13 @@ class Twitter_Job {
             'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
         ));
         //print_r($this->args);
-        $external_username = 'syxnx';//$this->args['to_identity']['external_username'];
+        $external_username = $this->args['to_identity']['external_username'];
         $responseCode = $twitterConn->request(
             'GET',
             $twitterConn->url('1/friendships/exists'),
             array('screen_name_a' => $external_username,
                   'screen_name_b' => TWITTER_OFFICE_ACCOUNT)
         );
-        print_r($responseCode);
-        return;
         if ($responseCode != 200) {
             echo "Invalid response\r\n";
             return;
