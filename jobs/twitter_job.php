@@ -3,6 +3,7 @@ require_once dirname(dirname(__FILE__))."/config.php";
 require_once dirname(dirname(__FILE__))."/common.php";
 require_once dirname(dirname(__FILE__))."/DataModel.php";
 require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
+require_once dirname(dirname(__FILE__))."/lib/Resque.php";
 
 class Twitter_Job {
 
@@ -63,7 +64,6 @@ class Twitter_Job {
             $strTwt = "{$strTwt}...{$crossLink}";
         }
         // send
-        $OAuthHelperHandler = $this->getHelperByName("oAuth");
         if ($twitterConn->response['response'] === 'true') {
             $twt = array(
                 "screen_name"  => $external_username,
@@ -72,7 +72,7 @@ class Twitter_Job {
                 "user_secret"  => $accessToken['oauth_token_secret'],
                 "user_message" => $strTwt
             );
-            $jobToken = $OAuthHelperHandler->twitterSendDirectMessage($twt);
+            $jobToken = $this->twitterSendDirectMessage($twt);
         } else if ($twitterConn->response['response'] === 'false') {
             $twt = array(
                 "screen_name"  => $external_username,
@@ -80,13 +80,24 @@ class Twitter_Job {
                 "user_token"   => $accessToken['oauth_token'],
                 "user_secret"  => $accessToken['oauth_token_secret']
             );
-            $jobToken = $OAuthHelperHandler->composeNewTweet($twt);
+            $jobToken = $this->composeNewTweet($twt);
         }
+    }
+    
+    public function composeNewTweet($args) {
+        date_default_timezone_set('GMT');
+        Resque::setBackend(RESQUE_SERVER);
+        $jobId = Resque::enqueue("oauth","twitternewtweet_job" , $args, true);
+        return $jobId;
+    }
+
+    public function twitterSendDirectMessage($args) {
+        date_default_timezone_set('GMT');
+        Resque::setBackend(RESQUE_SERVER);
+        $jobId = Resque::enqueue("oauth","twittersendmessage_job" , $args, true);
+        return $jobId;
     }
 
 }
-
-$aa=new Twitter_Job;
-$aa->perform();
 
 ?>
