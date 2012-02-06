@@ -16,7 +16,7 @@ class Twitter_Job {
             'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
         ));
         //print_r($this->args);
-        $external_username = $this->args['to_identity']['external_username'];
+        $external_username = 'syxnx';//$this->args['to_identity']['external_username'];
         $responseCode = $twitterConn->request(
             'GET',
             $twitterConn->url('1/friendships/exists'),
@@ -24,7 +24,8 @@ class Twitter_Job {
                   'screen_name_b' => TWITTER_OFFICE_ACCOUNT)
         );
         if ($responseCode != 200) {
-            die("Invalid response\r\n");
+            echo "Invalid response\r\n";
+            return;
         }
         // build twt
         // link
@@ -85,5 +86,8 @@ class Twitter_Job {
     }
 
 }
+
+$aa=new Twitter_Job;
+$aa->perform();
 
 ?>
