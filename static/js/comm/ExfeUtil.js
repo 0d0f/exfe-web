@@ -1079,6 +1079,12 @@ var odof = {
             return {name              : this.trim(this.cutLongName(strId.split('@')[0])),
                     external_identity : strId,
                     provider          : 'email'};
+        } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(strId)) {
+            strId = strId.replace(/^@|@twitter$/ig, '');
+            return {name              : strId,
+                    external_identity : '@' + strId + '@twitter',
+                    external_username : strId,
+                    provider          : 'twitter'};
         } else {
             return {external_identity : strId,
                     provider          : null};
@@ -1220,8 +1226,8 @@ var odof = {
         }
         return null;
     };
-    
-    
+
+
     /**
      * parse location string
      * by Leask

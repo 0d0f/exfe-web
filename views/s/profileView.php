@@ -31,11 +31,12 @@
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
                 <p>
-                <img class="s_header" src="<?php if($identity["avatar_file_name"] == "default.png" && $identity["provider"] == "email" ){ echo getGravatar($identity["external_identity"], 80); }else{ echo getUserAvatar($identity["avatar_file_name"], 80); } ?>" alt="" title="<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>" />
+                <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" title="<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>" />
                 <?php if($identity["provider"] == "email"){ ?>
-                <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="<?php echo $identity["name"]; ?>"><?php echo $identity["name"]; ?></span>
-                <input type="hidden" id="identity_<?php echo $identity["name"]; ?>" value="<?php echo $identity["external_identity"]; ?>" />
-                <input type="hidden" id="identity_provider_<?php echo $identity["name"]; ?>" value="<?php echo $identity["provider"]; ?>" />
+                <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><?php echo $identity["name"]; ?></span>
+                <span class="identity_ec" id="identity_edit_container_<?php echo $identity["id"]; ?>" style="display:none"><input class='identity_input' id='cur_identity_name_<?php echo $identity["id"]; ?>' value='' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_<?php echo $identity["id"]; ?>'></span>
+                <input type="hidden" id="identity_<?php echo $identity["id"]; ?>" value="<?php echo $identity["external_identity"]; ?>" />
+                <input type="hidden" id="identity_provider_<?php echo $identity["id"]; ?>" value="<?php echo $identity["provider"]; ?>" />
                 <?php }else{ ?>
                 <span class="id_name"><?php echo $identity["name"]; ?></span>
                 <?php } ?>

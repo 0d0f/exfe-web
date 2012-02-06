@@ -366,7 +366,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.showChangePasswordDialog = function(userName, callBackFunc){
         var html = odof.user.identification.createDialogDomCode("change_pwd");
         odof.exlibs.ExDialog.initialize("identification", html);
-        console.log(userName);
+        //console.log(userName);
         //绑定事件。
         jQuery("#show_username_box").val(userName);
         jQuery("#o_pwd_ic").bind("click",function(){
@@ -449,13 +449,17 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //edit identity name
         var editUserIdentityName = function(e){
             var curElementID = e.currentTarget.id;
+            var curIdentityID = curElementID.split('_')[2];
             var curIdentityName = e.currentTarget.innerHTML;
             jQuery("#"+curElementID).unbind("click");
-            jQuery("#"+curElementID).html("<input class='identity_input' id='editid_"+curElementID+"' value='"+curIdentityName+"' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_"+curElementID+"'>");
-            jQuery("#submit_editid_"+curElementID).bind("click",function(){
-                var newIdentityName = jQuery("#editid_"+curElementID).val();
-                var userIdentity = jQuery("#identity_"+curElementID).val();
-                var identityProvider = jQuery("#identity_provider_"+curElementID).val();
+            jQuery("#"+curElementID).hide();
+            jQuery("#identity_edit_container_"+curIdentityID).show();
+            jQuery("#cur_identity_name_"+curIdentityID).val(curIdentityName);
+
+            jQuery("#submit_editid_"+curIdentityID).bind("click",function(){
+                var newIdentityName = jQuery("#cur_identity_name_"+curIdentityID).val();
+                var userIdentity = jQuery("#identity_"+curIdentityID).val();
+                var identityProvider = jQuery("#identity_provider_"+curIdentityID).val();
                 var postData = {
                     jrand:Math.round(Math.random()*10000000000),
                     identity_name:newIdentityName,
@@ -469,8 +473,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     dataType:"json",
                     success: function(JSONData){
                         if(!JSONData.error){
-                            console.log(JSONData.response.identity_name);
+                            //console.log(JSONData.response.identity_name);
                             jQuery("#"+curElementID).html(JSONData.response.identity_name);
+                            jQuery("#"+curElementID).show();
+                            jQuery("#identity_edit_container_"+curIdentityID).hide();
                             jQuery("#"+curElementID).bind("click",function(e){
                                 editUserIdentityName(e);
                             });
@@ -478,6 +484,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                 });
             });
+        };
+        var unEditUserIdentityName = function(){
+            jQuery(".identity_ec").hide();
+            jQuery(".id_name.provider_email").show();
+            jQuery(".id_name.provider_email").css({"cursor":"default"});
+            jQuery(".id_name.provider_email").unbind("click");
         };
 
         jQuery(".id_name.provider_email").css({"cursor":"pointer"});
@@ -501,6 +513,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery("#user_cross_info").show();
             jQuery("#set_password_btn").hide();
             jQuery("#set_password_btn").unbind("click");
+
+            unEditUserIdentityName();
         };
 
         var editUserProfileCallBack = function(JSONData){
