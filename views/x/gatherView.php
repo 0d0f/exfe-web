@@ -58,6 +58,7 @@
                 <label class="place">Location</label>
                 <div id="gather_place_x" class="gather_blur gather_input"></div>
                 <textarea id="gather_place" class="gather_input"></textarea>
+                <div id="gather_place_selector" style="display:none;"></div>
             </li>
 
             <li>
