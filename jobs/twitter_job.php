@@ -29,7 +29,7 @@ class Twitter_Job {
         }
         // build twt
         // link
-        $crossLink = " {$site_url}/!" . $this->args['cross_id'];
+        $crossLink = " {$site_url}/!" . $this->args['cross_id_base62'];
         // time
         $datetime = explode(' ', $this->args["begin_at"]);
         if ($datetime[0] === '0000-00-00' && $datetime[1] === '00:00:00') {
