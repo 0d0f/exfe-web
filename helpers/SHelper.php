@@ -181,6 +181,8 @@ class SHelper extends ActionController
                                 $action = 'confirmed';
                             } else if ($action === 2) {
                                 $action = 'declined';
+                            } else if ($action === 3) {
+                                $action = 'interested';
                             } else {
                                 break;
                             }
