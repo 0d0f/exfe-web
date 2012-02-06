@@ -133,7 +133,9 @@ class SHelper extends ActionController
             switch ($logItem['action']) {
                 case 'change':
                     $cleanLogs[$xlogsHash[$xId]]['change'][$logItem['to_field']]
-                  = array('time'      => $logItem['time'],
+                  = array(
+                          'log_id'     => $logItem['id'],
+                          'time'      => $logItem['time'],
                           'by_id'     => $logItem['from_id'],
                           'new_value' => $logItem['change_summy'],
                           'old_value' => isset($logItem['oldtitle'])
@@ -150,7 +152,9 @@ class SHelper extends ActionController
                         $cleanLogs[$xlogsHash[$xId]]['conversation'] = array();
                     }
                     array_push($cleanLogs[$xlogsHash[$xId]]['conversation'],
-                               array('time'     => $logItem['time'],
+                               array(
+                                     'log_id'     => $logItem['id'],
+                                     'time'     => $logItem['time'],
                                      'by_id'    => $logItem['from_id'],
                                      'message'  => $logItem['change_summy'],
                                      'meta'     => $logItem['meta'],
@@ -188,7 +192,9 @@ class SHelper extends ActionController
                             $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
                             array_push(
                                 $cleanLogs[$xlogsHash[$xId]][$action],
-                                array('time'  => $logItem['time'],
+                                array(
+                                      'log_id'     => $logItem['id'],
+                                      'time'  => $logItem['time'],
                                       'by_id' => $logItem['from_id'],
                                       'meta'  => $logItem['meta'],
                                       'identity'  => $identity,
@@ -207,7 +213,9 @@ class SHelper extends ActionController
                             }
                             array_push(
                                 $cleanLogs[$xlogsHash[$xId]][$action],
-                                array('time'  => $logItem['time'],
+                                array(
+                                      'log_id'     => $logItem['id'],
+                                      'time'  => $logItem['time'],
                                       'by_id' => $logItem['from_id'],
                                       'to_id' => $logItem['change_summy'])
                             );
