@@ -272,8 +272,6 @@ class UserModels extends DataModel{
     //todo for huoju
     public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
     {
-
-        
         $sql="SELECT *,u.userid FROM `identities` i, user_identity u WHERE external_identity='$devicetoken' and provider='$provider' and i.id=u.identityid;";
         $rows=$this->getAll($sql);
         $identity_id=0;
@@ -283,7 +281,6 @@ class UserModels extends DataModel{
             $t_identity_id=$row["id"];
             if(intval($row["userid"])!=$uid)// bind with other users, set status =1 to disconnect
             {
-
                     $sql="update user_identity set status=1 where userid=$t_uid and identityid=$t_identity_id";
                     $this->query($sql);
             }
