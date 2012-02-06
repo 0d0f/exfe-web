@@ -14,7 +14,8 @@ class Twittersendmessage_Job
         $toUser = $this->args["to_user"];
         $userMessage = $this->args["user_message"];
 
-        if(mb_strlen($userMessage, "UTF-8") > 140){
+        if (!isset($this->args['with_url']) && mb_strlen($userMessage, "UTF-8") > 140){
+            //@todo die 使用可能有问题，die会导致这个job被关闭，应该换成 return，我觉得。 by @leaskh
             die("{$userName}'s direct message is over 140 characters.\r\n");
         }
 

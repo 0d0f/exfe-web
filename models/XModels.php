@@ -1,10 +1,8 @@
 <?php
 
-class XModels extends DataModel
-{
+class XModels extends DataModel {
 
-    public function gatherCross($identityId, $cross, $exfee, $draft_id = 0)
-    {
+    public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
         // state=1 draft
         $time = time();

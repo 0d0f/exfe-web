@@ -1,10 +1,8 @@
 <?php
 
-class ExfeeHelper extends ActionController
-{
+class ExfeeHelper extends ActionController {
 
-    public function addExfeeIdentify($cross_id, $exfee_list, $my_identity_id = 0 , $invited = null)
-    {
+    public function addExfeeIdentify($cross_id, $exfee_list, $my_identity_id = 0 , $invited = null) {
         $identityData   = $this->getModelByName('identity');
         $invitationData = $this->getModelByName('invitation');
         $relationData   = $this->getModelByName('relation');
@@ -22,75 +20,98 @@ class ExfeeHelper extends ActionController
             }
         }
 
-        $addrelation=FALSE;
+        $addrelation = false;
         //TODO: package as a transaction
-        if($exfee_list)
+        if ($exfee_list) {
             foreach ($exfee_list as $exfeeI => $exfeeItem) {
-                $identity_name = isset($exfeeItem['exfee_name'])     ? $exfeeItem['exfee_name']        : null;
-                $identity_id   = isset($exfeeItem['exfee_id'])       ? intval($exfeeItem['exfee_id'])  : null;
-                $confirmed     = isset($exfeeItem['confirmed'])      ? intval($exfeeItem['confirmed']) : 0;
-                $identity      = isset($exfeeItem['exfee_identity']) ? $exfeeItem['exfee_identity']    : null;
-                $identity_type = isset($exfeeItem['identity_type'])  ? $exfeeItem['identity_type']     : 'unknow';
+                if (!isset($exfeeItem['identity_type'])) {
+                    continue;
+                } else if ($exfeeItem['identity_type'] === 'email') {
+                    $identity_ext_name = $identity
+                                       = isset($exfeeItem['exfee_identity'])
+                                       ? $exfeeItem['exfee_identity'] : null;
+                } else if ($exfeeItem['identity_type'] === 'twitter'
+                  && isset($exfeeItem['exfee_ext_name'])) {
+                    $identity_ext_name = $exfeeItem['exfee_ext_name'];
+                    $identity = isset($exfeeItem['exfee_identity'])
+                        && is_numeric($exfeeItem['exfee_identity'])
+                                    ? $exfeeItem['exfee_identity']
+                                    : $identity_ext_name;
+                } else {
+                    continue;
+                }
+
+                $identity_id   = isset($exfeeItem['exfee_id'])   ? intval($exfeeItem['exfee_id'])  : null;
+                $identity_name = isset($exfeeItem['exfee_name']) ? $exfeeItem['exfee_name']        : null;
+                $confirmed     = isset($exfeeItem['confirmed'])  ? intval($exfeeItem['confirmed']) : 0;
+                $identity_type = $exfeeItem['identity_type'];
 
                 if (!$identity_id) {
-                    $identity_id = $identityData->ifIdentityExist($identity);
+                    $identity_id = $identityData->ifIdentityExist($identity, $identity_type);
                     if ($identity_id) {
                         $identity_id = $identity_id['id'];
                     } else {
-                        // TODO: add new Identity, need check this identity provider, now default "email"
                         // add identity
-                        $identity_id = $identityData->addIdentityWithoutUser('email', $identity, array('name' => $identity_name));
+                        $identity_id = $identityData->addIdentityWithoutUser(
+                            $identity_type,
+                            $identity,
+                            array('name'              => $identity_name,
+                                  'external_username' => $identity_ext_name)
+                        );
                     }
                 }
 
                 array_push($curExfees, $identity_id);
-                $allExfees[$identity_id]=$confirmed;
+                $allExfees[$identity_id] = $confirmed;
 
                 // update rsvp status
                 if (is_array($invited)) {
                     if (isset($inviteIds[$identity_id])) {
                         if (intval($inviteIds[$identity_id]['state']) !== $confirmed) {
-                            $invitationData->rsvp($cross_id, $identity_id, $confirmed);
-                            $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                            $result=$invitationData->rsvp($cross_id, $identity_id, $confirmed);
+                            $invitation_id=$result["id"];
+                            $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
                         }
                         continue;
                     }
 
-                    $newExfees[$identity_id]=$confirmed;
+                    $newExfees[$identity_id] = $confirmed;
                     //array_push($newExfees, $identity_id);
                 }
 
                 // add invitation
-                $invitationData->addInvitation($cross_id, $identity_id, $confirmed, $my_identity_id);
+                $invitation_id=$invitationData->addInvitation($cross_id, $identity_id, $confirmed, $my_identity_id);
                 $r=$relationData->saveRelations($_SESSION['userid'], $identity_id);
-                if($r>0) {
-                    $addrelation=TRUE;
+                if ($r > 0) {
+                    $addrelation = true;
                 }
 
                 $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
-                $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
             }
-            if($addrelation==TRUE)
-            {
-                $redis = new Redis();
-                $redis->connect('127.0.0.1', 6379);
-                $redis->zRemrangebyrank("u_".$_SESSION['userid'],0,-1);
-            }
-
-            if (is_array($invited)) {
-                foreach ($inviteIds as $identity_id => $identity_item) {
-                    if (!in_array($identity_id, $curExfees)) {
-                        $invitationData->delInvitation($cross_id, $identity_id);
-                        $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
-                        $delExfees[$identity_id]=$confirmed;
-                        //array_push($delExfees, $identity_id);
-
-                    }
-                }
-            }
+        }
+        
+        if ($addrelation) {
+            $redis = new Redis();
+            $redis->connect('127.0.0.1', 6379);
+            $redis->zRemrangebyrank("u_{$_SESSION['userid']}", 0, -1);
+        }
 
         if (is_array($invited)) {
-            return array("newexfees"=>$newExfees,"allexfees"=>$allExfees,"delexfees"=>$delExfees);
+            foreach ($inviteIds as $identity_id => $identity_item) {
+                if (!in_array($identity_id, $curExfees)) {
+                    $invitationData->delInvitation($cross_id, $identity_id);
+                    $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
+                    $delExfees[$identity_id] = $confirmed;
+                    //array_push($delExfees, $identity_id);
+                }
+            }
+        }
+
+        if (is_array($invited)) {
+            return array('newexfees' => $newExfees,
+                         'allexfees' => $allExfees,
+                         'delexfees' => $delExfees);
         }
     }
 
@@ -213,8 +234,10 @@ class ExfeeHelper extends ActionController
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-               if(intval($invitation["by_identity_id"])>0)
-                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
+               if(intval($invitation["by_identity_id"])>0) {    
+                   $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
+               }
+               $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
@@ -235,6 +258,7 @@ class ExfeeHelper extends ActionController
                         'host_identity' => $host_identity,
                         'rsvp_status' => $invitation["state"],
                         'by_identity' => $by_identity,
+                        'to_identity' => $to_identity,
                         'invitations' => $invitations
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
@@ -277,7 +301,7 @@ class ExfeeHelper extends ActionController
                 $cross=$crossData->getCross($cross_id);
                 $mail["title"]=$cross["title"];
                 $mail["create_at"]=time();
-
+    
                 $identityData=$this->getModelByName("identity");
                 $exfee_identity=$identityData->getIdentityById($host_identity_id);
                 $userData=$this->getModelByName("user");
