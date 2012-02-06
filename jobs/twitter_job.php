@@ -61,15 +61,16 @@ class Twitter_Job {
             while (mb_strlen($strTwt, 'UTF-8') + $lenLink > 137) {
                 $strTwt = mb_substr($strTwt, 0, mb_strlen($strTwt, 'UTF-8') - 1, 'UTF-8');
             }
-            $strTwt = "{$strTwt}...{$crossLink}";
+            $strTwt .= '...';
         }
+        $strTwt .= $crossLink;
         // send
         if ($twitterConn->response['response'] === 'true') {
             $twt = array(
                 "screen_name"  => $external_username,
                 "to_user"      => $external_username,
-                "user_token"   => $accessToken['oauth_token'],
-                "user_secret"  => $accessToken['oauth_token_secret'],
+                "user_token"   => TWITTER_ACCESS_TOKEN,
+                "user_secret"  => TWITTER_ACCESS_TOKEN_SECRET,
                 "user_message" => $strTwt
             );
             $jobToken = $this->twitterSendDirectMessage($twt);
@@ -77,8 +78,8 @@ class Twitter_Job {
             $twt = array(
                 "screen_name"  => $external_username,
                 "user_tweet"   => $strTwt,
-                "user_token"   => $accessToken['oauth_token'],
-                "user_secret"  => $accessToken['oauth_token_secret']
+                "user_token"   => TWITTER_ACCESS_TOKEN,
+                "user_secret"  => TWITTER_ACCESS_TOKEN_SECRET
             );
             $jobToken = $this->composeNewTweet($twt);
         }
