@@ -233,8 +233,10 @@ class ExfeeHelper extends ActionController {
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-               if(intval($invitation["by_identity_id"])>0)
-                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
+               if(intval($invitation["by_identity_id"])>0) {    
+                   $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
+               }
+               $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
@@ -255,6 +257,7 @@ class ExfeeHelper extends ActionController {
                         'host_identity' => $host_identity,
                         'rsvp_status' => $invitation["state"],
                         'by_identity' => $by_identity,
+                        'to_identity' => $to_identity,
                         'invitations' => $invitations
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);

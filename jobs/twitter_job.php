@@ -8,88 +8,80 @@ require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 class Twitter_Job {
 
     public function perform() {
-        
-    
-        
-        //print_r($this->args);
-        
-        
-        
-        
-        
-        
-        
-    
-
-　　1、发新Twitter：
-
-        $args = array(
-            "screen_name"   =>$twitterUserInfo["screen_name"],
-            "user_tweet"       =>"Compose new tweet",
-            "user_token"       =>$accessToken['oauth_token'],
-            "user_secret"      =>$accessToken['oauth_token_secret']
-        );
-        $OAuthHelperHandler = $this->getHelperByName("oAuth");
-        $jobToken = $OAuthHelperHandler->composeNewTweet($args);
-
-
-　　2、发新的DirectMessage：
-
-        $args = array(
-            "screen_name"   =>$twitterUserInfo["screen_name"],
-            "to_user"             =>"handaoliang",
-            "user_token"       =>$accessToken['oauth_token'],
-            "user_secret"      =>$accessToken['oauth_token_secret'],
-            "user_message" =>"Direct message."
-        );
-        $OAuthHelperHandler = $this->getHelperByName("oAuth");
-        $jobToken = $OAuthHelperHandler->twitterSendDirectMessage($args);
-
-　　放到后台之前最好判断是否超过140个字符，否则会发送不成功，我后台进程也会拦截掉。
-　　代码：
-        if(mb_strlen($userMessage, "UTF-8") > 140){
-            die("{$userName}'s direct message is over 140 characters.\r\n");
-        } 
-
-        这些参数中，user_token和user_secret可以在数据库中找到，即identities表中的oauth_token字段的内容，一个加密串，拿出来之后用unpackArray解包可得到一个数组。
-
-
-　　二、判断是否Fo某人：
-
+        global $site_url;
         $twitterConn = new tmhOAuth(array(
-          'consumer_key'    => TWITTER_CONSUMER_KEY,
-          'consumer_secret' => TWITTER_CONSUMER_SECRET,
-          'user_token'      => $accessToken['oauth_token'],
-          'user_secret'     => $accessToken['oauth_token_secret']
+            'consumer_key'    => TWITTER_CONSUMER_KEY,
+            'consumer_secret' => TWITTER_CONSUMER_SECRET,
+            'user_token'      => TWITTER_ACCESS_TOKEN,
+            'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
         ));
-
-        //通过friendships/exists去判断当前用户screen_name_a是否Follow screen_name_b。
-        //如果已经Follow，会返回true，否则False。(String)
-
-        $responseCode = $twitterConn->request('GET', $twitterConn->url('1/friendships/exists'), array(
-            'screen_name_a'=>$twitterUserInfo["screen_name"], 'screen_name_b'=>TWITTER_OFFICE_ACCOUNT
-        ));
-        
-        if ($responseCode == 200) {
-            if($twitterConn->response['response'] == 'false'){
-                unset($oAuthUserInfo["oauth_token"]);
-                $token = packArray($oAuthUserInfo);
-                header("location:/oAuth/confirmTwitterFollowing?token=".$token);
-                exit();
-            }
+        //print_r($this->args);
+        $external_username = $this->args['to_identity']['external_username'];
+        $responseCode = $twitterConn->request(
+            'GET',
+            $twitterConn->url('1/friendships/exists'),
+            array('screen_name_a' => $external_username,
+                  'screen_name_b' => TWITTER_OFFICE_ACCOUNT)
+        );
+        if ($responseCode != 200) {
+            die("Invalid response\r\n");
         }
-
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        // build twt
+        // link
+        $crossLink = " {$site_url}/!" . $this->args['cross_id'];
+        // time
+        $datetime = explode(' ', $this->args["begin_at"]);
+        if ($datetime[0] === '0000-00-00' && $datetime[1] === '00:00:00') {
+            $datetime = '';
+        } else if ($datetime[1] === '00:00:00') {
+            $datetime = " Anytime, {$datetime[0]}";
+        } else {
+            $datetime = " {$datetime[1]}, {$datetime[0]}";
+        }
+        // place
+        if ($this->args["place_line1"] == '') {
+            $place = '';
+        } else {
+            $place = ' at ' . $this->args["place_line1"];
+            if ($this->args["place_line2"] != '') {
+                $place .= ', ' . $this->args["place_line2"];
+            }
+        }        
+        $strTwt = 'EXFE invitation: ' . $this->args['title'] . ".{$datetime}{$place}";
+        // connect string
+        if ($twitterConn->response['response'] === 'true') {
+        } else if ($twitterConn->response['response'] === 'false') {
+            $strTwt = "@{$external_username} {$strTwt}";
+        } else {
+            return;
+        }
+        $lenLink = strlen($crossLink);
+        if (mb_strlen($strTwt, 'UTF-8') + $lenLink > 140) {
+            while (mb_strlen($strTwt, 'UTF-8') + $lenLink > 137) {
+                $strTwt = mb_substr($strTwt, 0, mb_strlen($strTwt, 'UTF-8') - 1, 'UTF-8');
+            }
+            $strTwt = "{$strTwt}...{$crossLink}";
+        }
+        // send
+        $OAuthHelperHandler = $this->getHelperByName("oAuth");
+        if ($twitterConn->response['response'] === 'true') {
+            $twt = array(
+                "screen_name"  => $external_username,
+                "to_user"      => $external_username,
+                "user_token"   => $accessToken['oauth_token'],
+                "user_secret"  => $accessToken['oauth_token_secret'],
+                "user_message" => $strTwt
+            );
+            $jobToken = $OAuthHelperHandler->twitterSendDirectMessage($twt);
+        } else if ($twitterConn->response['response'] === 'false') {
+            $twt = array(
+                "screen_name"  => $external_username,
+                "user_tweet"   => $strTwt,
+                "user_token"   => $accessToken['oauth_token'],
+                "user_secret"  => $accessToken['oauth_token_secret']
+            );
+            $jobToken = $OAuthHelperHandler->composeNewTweet($twt);
+        }
     }
 
 }
