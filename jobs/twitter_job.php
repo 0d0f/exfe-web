@@ -51,12 +51,15 @@ class Twitter_Job {
         $strTwt = 'EXFE invitation: ' . $this->args['title'] . ".{$datetime}{$place}";
         // connect string
         if ($twitterConn->response['response'] === 'true') {
+            $crossLink .= '?token=' . $this->args['token'];
         } else if ($twitterConn->response['response'] === 'false') {
-            $strTwt = "@{$external_username} {$strTwt}";
+            $strTwt     = "@{$external_username} {$strTwt}";
         } else {
             return;
         }
-        $lenLink = strlen($crossLink);
+        // @waiting for our own url shorter
+        // $lenLink = strlen($crossLink);
+        $lenLink = 25;
         if (mb_strlen($strTwt, 'UTF-8') + $lenLink > 140) {
             while (mb_strlen($strTwt, 'UTF-8') + $lenLink > 137) {
                 $strTwt = mb_substr($strTwt, 0, mb_strlen($strTwt, 'UTF-8') - 1, 'UTF-8');
@@ -67,38 +70,38 @@ class Twitter_Job {
         // send
         if ($twitterConn->response['response'] === 'true') {
             $twt = array(
-                "screen_name"  => $external_username,
-                "to_user"      => $external_username,
-                "user_token"   => TWITTER_ACCESS_TOKEN,
-                "user_secret"  => TWITTER_ACCESS_TOKEN_SECRET,
-                "user_message" => $strTwt
+                'screen_name'  => $external_username,
+                'to_user'      => $external_username,
+                'user_token'   => TWITTER_ACCESS_TOKEN,
+                'user_secret'  => TWITTER_ACCESS_TOKEN_SECRET,
+                'user_message' => $strTwt,
+                'with_url'     => true,
             );
             $jobToken = $this->twitterSendDirectMessage($twt);
         } else if ($twitterConn->response['response'] === 'false') {
             $twt = array(
-                "screen_name"  => $external_username,
-                "user_tweet"   => $strTwt,
-                "user_token"   => TWITTER_ACCESS_TOKEN,
-                "user_secret"  => TWITTER_ACCESS_TOKEN_SECRET
+                'screen_name'  => $external_username,
+                'user_tweet'   => $strTwt,
+                'user_token'   => TWITTER_ACCESS_TOKEN,
+                'user_secret'  => TWITTER_ACCESS_TOKEN_SECRET,
+                'with_url'     => true,
             );
             $jobToken = $this->composeNewTweet($twt);
         }
     }
-    
+
     public function composeNewTweet($args) {
         date_default_timezone_set('GMT');
         Resque::setBackend(RESQUE_SERVER);
-        $jobId = Resque::enqueue("oauth","twitternewtweet_job" , $args, true);
+        $jobId = Resque::enqueue('oauth', 'twitternewtweet_job', $args, true);
         return $jobId;
     }
 
     public function twitterSendDirectMessage($args) {
         date_default_timezone_set('GMT');
         Resque::setBackend(RESQUE_SERVER);
-        $jobId = Resque::enqueue("oauth","twittersendmessage_job" , $args, true);
+        $jobId = Resque::enqueue('oauth', 'twittersendmessage_job', $args, true);
         return $jobId;
     }
 
 }
-
-?>
