@@ -100,8 +100,66 @@ var moduleNameSpace = 'odof.x.gather',
             $('#gather_place_x').html('');
         }
         odof.x.render.showPlace();
+
     };
 
+    //added by handaoliang...
+    ns.getLocation = function(){
+        var placeDetail = $('#gather_place').val();
+        var placeArr = odof.util.parseLocation(placeDetail);
+        var strPlace = placeArr[0] + " " + placeArr[1];
+        //只有当输入大于两个字符的时候，才进行查询。
+        if(odof.util.trim(placeDetail).length > 2){
+            var postData = {l:strPlace};
+            jQuery.ajax({
+                type: "POST",
+                data: postData,
+                url: site_url+"/Maps/GetLocation",
+                dataType:"json",
+                success: function(JSONData){
+                    if(!JSONData.error){
+                        ns.drawLocationSelector(JSONData.response);
+                    }
+                }
+            });
+        }
+    };
+
+    ns.drawLocationSelector = function(locationData){
+        var placeList = '';
+        jQuery.each(locationData, function(i,val){
+            placeList += '<ul class="place_detail" id="'+val.place_id
+                      + '"><li class="place_name" id="place_name_'+val.place_id+'">'
+                      + val.place_name
+                      + '</li>'
+                      + '<input type="hidden" id="place_lat_'+val.place_id+'" value="'+val.place_lat+'">'
+                      + '<input type="hidden" id="place_lng_'+val.place_id+'" value="'+val.place_lng+'">'
+                      + '<li class="place_addr" id="place_addr_'+val.place_id+'">'
+                      + val.place_address
+                      + '</li></ul>';
+        });
+
+        jQuery("#gather_place_selector").show();
+        jQuery("#gather_place_selector").html(placeList);
+
+        var userSelectAddress = function(e){
+            var curElementID = e.currentTarget.id;
+            var userPlaceName = jQuery("#place_name_"+curElementID).html();
+            var userPlaceAddr = jQuery("#place_addr_"+curElementID).html();
+            var userPlaceLat = jQuery("#place_lat_"+curElementID).val();
+            var userPlaceLng = jQuery("#place_lng_"+curElementID).val();
+            jQuery("#gather_place").val(userPlaceName+"\r\n"+userPlaceAddr);
+            jQuery("#gather_place_selector").hide();
+
+            var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;q='+userPlaceName+'&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;output=embed"></iframe>';
+            //var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;z=5&amp;output=embed"></iframe>';
+            jQuery("#calendar_map_container").html(googleMapsAddress);
+        };
+        jQuery(".place_detail").unbind("click");
+        jQuery(".place_detail").bind("click",function(e){
+            userSelectAddress(e);
+        });
+    };
 
     ns.showExfee = function() {
         odof.exfee.gadget.make('xExfeeArea', odof.exfee.gadget.exfeeInput['gatherExfee'], false);
@@ -352,6 +410,8 @@ $(document).ready(function() {
                 break;
             case 'keyup':
                 odof.x.gather.updatePlace();
+                //added by handaoliang..设置延时。
+                setTimeout(odof.x.gather.getLocation,100);
         }
     });
     odof.x.gather.updatePlace();
@@ -394,5 +454,4 @@ $(document).ready(function() {
 
     // after login hook function
     window.externalAfterLogin = odof.x.gather.afterLogin;
-
 });
