@@ -13,7 +13,8 @@ class Twitternewtweet_Job
         $userSecret = $this->args["user_secret"];
         $userTweet = $this->args["user_tweet"];
 
-        if(mb_strlen($userTweet, "UTF-8") > 140){
+        if (!isset($this->args['with_url']) && mb_strlen($userTweet, "UTF-8") > 140){
+            //@todo die 使用可能有问题，die会导致这个job被关闭，应该换成 return，我觉得。 by @leaskh
             die("{$userName}'s Tweet is over 140 characters.\r\n");
         }
 
