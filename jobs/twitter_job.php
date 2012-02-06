@@ -1,5 +1,4 @@
 <?php
-
 require_once dirname(dirname(__FILE__))."/config.php";
 require_once dirname(dirname(__FILE__))."/common.php";
 require_once dirname(dirname(__FILE__))."/DataModel.php";
@@ -23,6 +22,8 @@ class Twitter_Job {
             array('screen_name_a' => $external_username,
                   'screen_name_b' => TWITTER_OFFICE_ACCOUNT)
         );
+        print_r($responseCode);
+        return;
         if ($responseCode != 200) {
             echo "Invalid response\r\n";
             return;
