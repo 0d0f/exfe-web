@@ -68,8 +68,9 @@ class ExfeeHelper extends ActionController {
                 if (is_array($invited)) {
                     if (isset($inviteIds[$identity_id])) {
                         if (intval($inviteIds[$identity_id]['state']) !== $confirmed) {
-                            $invitationData->rsvp($cross_id, $identity_id, $confirmed);
-                            $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                            $result=$invitationData->rsvp($cross_id, $identity_id, $confirmed);
+                            $invitation_id=$result["id"];
+                            $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
                         }
                         continue;
                     }
@@ -79,14 +80,14 @@ class ExfeeHelper extends ActionController {
                 }
 
                 // add invitation
-                $invitationData->addInvitation($cross_id, $identity_id, $confirmed, $my_identity_id);
+                $invitation_id=$invitationData->addInvitation($cross_id, $identity_id, $confirmed, $my_identity_id);
                 $r=$relationData->saveRelations($_SESSION['userid'], $identity_id);
                 if ($r > 0) {
                     $addrelation = true;
                 }
 
                 $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
-                $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'rsvp', "{$identity_id}:{$confirmed}");
+                $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
             }
         }
         
