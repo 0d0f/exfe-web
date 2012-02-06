@@ -51,8 +51,9 @@ class Twitter_Job {
         $strTwt = 'EXFE invitation: ' . $this->args['title'] . ".{$datetime}{$place}";
         // connect string
         if ($twitterConn->response['response'] === 'true') {
+            $crossLink .= '?token=' . $this->args['token'];
         } else if ($twitterConn->response['response'] === 'false') {
-            $strTwt = "@{$external_username} {$strTwt}";
+            $strTwt     = "@{$external_username} {$strTwt}";
         } else {
             return;
         }
