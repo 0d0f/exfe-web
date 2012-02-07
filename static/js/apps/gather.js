@@ -103,21 +103,23 @@ var moduleNameSpace = 'odof.x.gather',
 
     };
 
+    ns.userOldLocation = "";
     //added by handaoliang...
     ns.getLocation = function(){
         var placeDetail = $('#gather_place').val();
         var placeArr = odof.util.parseLocation(placeDetail);
-        var strPlace = placeArr[0] + " " + placeArr[1];
+        var strPlace = placeArr[0];
         //只有当输入大于两个字符的时候，才进行查询。
-        if(odof.util.trim(placeDetail).length > 2){
-            var postData = {l:strPlace};
+        if(strPlace != ns.userOldLocation && odof.util.trim(placeDetail).length > 2){
+            var postData = {l:odof.util.toDBC(strPlace)};
             jQuery.ajax({
                 type: "POST",
                 data: postData,
                 url: site_url+"/Maps/GetLocation",
                 dataType:"json",
+                async:false,
                 success: function(JSONData){
-                    if(!JSONData.error){
+                    if(!JSONData.error && JSONData.response.length != 0){
                         ns.drawLocationSelector(JSONData.response);
                     }
                 }
@@ -148,10 +150,13 @@ var moduleNameSpace = 'odof.x.gather',
             var userPlaceAddr = jQuery("#place_addr_"+curElementID).html();
             var userPlaceLat = jQuery("#place_lat_"+curElementID).val();
             var userPlaceLng = jQuery("#place_lng_"+curElementID).val();
+
+            //设置一个全局的变量值，以判断是否改变了内容。
+            ns.userOldLocation = userPlaceName;
             jQuery("#gather_place").val(userPlaceName+"\r\n"+userPlaceAddr);
             jQuery("#gather_place_selector").hide();
 
-            var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;q='+userPlaceName+'&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;output=embed"></iframe>';
+            var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=zh-CN&amp;geocode=&amp;q='+userPlaceLat+','+userPlaceLng+'&amp;aq=&amp;sll='+userPlaceLat+','+userPlaceLng+'&amp;sspn=0.007018,0.016512&amp;ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;spn=0.007018,0.016512&amp;t=m&amp;z=14&amp;output=embed"></iframe>';
             //var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;z=5&amp;output=embed"></iframe>';
             jQuery("#calendar_map_container").html(googleMapsAddress);
         };
@@ -411,7 +416,9 @@ $(document).ready(function() {
             case 'keyup':
                 odof.x.gather.updatePlace();
                 //added by handaoliang..设置延时。
-                setTimeout(odof.x.gather.getLocation,100);
+                setTimeout(function(){
+                    odof.x.gather.getLocation();
+                },1000);
         }
     });
     odof.x.gather.updatePlace();
