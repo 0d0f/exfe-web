@@ -1,6 +1,8 @@
 <?php
-class OAuthModels extends DataModel{
-    public function verifyOAuthUser($oAuthUserInfo){
+
+class OAuthModels extends DataModel {
+
+    public function verifyOAuthUser($oAuthUserInfo) {
         $oAuthProvider = $oAuthUserInfo["provider"];
         $oAuthUserID = $oAuthProvider."_".$oAuthUserInfo["id"];
         $oAuthUserName = $oAuthUserInfo["name"];
@@ -92,4 +94,8 @@ class OAuthModels extends DataModel{
             $redis->zAdd('u_'.$userID, 0, $identityPart."|".$value["display_name"]."( @".$value["user_name"]." )|".$value["provider"]."*");
         }
     }
+    
+    public function updateTwitterIdentity() {
+    }
+    
 }
