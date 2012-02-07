@@ -101,7 +101,7 @@ class OAuthModels extends DataModel {
             return false;
         }
         $currentTimeStamp = time();
-        $oAuthUserAvatar  = preg_replace('/normal\.png$/', 'reasonably_small.png', $userInfo['profile_image_url']);
+        $oAuthUserAvatar  = preg_replace('/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $userInfo['profile_image_url']);
         $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$identityId}";
         return $this->query($sql);
     }
