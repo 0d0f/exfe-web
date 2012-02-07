@@ -24,6 +24,9 @@ class Twitter_Job {
                 $twitterConn->url('1/users/show'),
                 array('screen_name' => $external_username)
             );
+            
+            print_r($twitterConn->response['response']);
+            
             if ($responseCode !== 200) {
                 echo "Invalid response\r\n";
             } else {
