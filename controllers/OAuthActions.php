@@ -4,6 +4,7 @@ require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/FacebookOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
+
 class OAuthActions extends ActionController {
 
     public function doIndex() {
@@ -20,7 +21,7 @@ class OAuthActions extends ActionController {
             case 200:
                 $token = $requestToken['oauth_token'];
                 $twitterOAuthURL = $twitterConn->getAuthorizeURL($token);
-                header('Location:'.$twitterOAuthURL); 
+                header('Location:'.$twitterOAuthURL);
                 break;
             default:
                 echo 'Could not connect to Twitter. Refresh the page or try again later.';
@@ -48,6 +49,7 @@ class OAuthActions extends ActionController {
             header('Location: /oAuth/clearTwitterSessions');
         }
     }
+
     public function doLoginWithTwitter() {
         if (empty($_SESSION['access_token'])
             || empty($_SESSION['access_token']['oauth_token'])
@@ -96,7 +98,7 @@ class OAuthActions extends ActionController {
         $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
         $identityModels = $this->getModelByName("identity");
         //===========
-        
+
         //先初始化一个对象。user_token和user_secret可以在数据库中找到，
         //即identities表中的oauth_token字段的内容，一个加密串，拿出来之后用unpackArray解包可得到一个数组。
         $twitterConn = new tmhOAuth(array(
@@ -111,7 +113,7 @@ class OAuthActions extends ActionController {
         $responseCode = $twitterConn->request('GET', $twitterConn->url('1/friendships/exists'), array(
             'screen_name_a'=>$twitterUserInfo["screen_name"], 'screen_name_b'=>TWITTER_OFFICE_ACCOUNT
         ));
-        
+
         $identityModels->loginByIdentityId($identityID, $userID);
         if ($responseCode == 200) {
             if($twitterConn->response['response'] == 'false'){
@@ -123,6 +125,7 @@ class OAuthActions extends ActionController {
         }
         header("location:/s/profile");
     }
+
     public function doConfirmTwitterFollowing(){
         $userToken = exGet("token");
         $confirm = trim(exGet("confirm"));
@@ -241,7 +244,7 @@ class OAuthActions extends ActionController {
                                'client_secret'  =>GOOGLE_CLIENT_SECRET,
                                'redirect_uri'   =>GOOGLE_REDIRECT_URIS,
                                'grant_type'     =>'authorization_code'
-        ); 
+        );
 
         $curlHandler = curl_init('https://accounts.google.com/o/oauth2/token');
         curl_setopt($curlHandler, CURLOPT_RETURNTRANSFER, true);

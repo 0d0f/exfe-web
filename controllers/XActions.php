@@ -165,11 +165,11 @@ class XActions extends ActionController
         $exfees_list = $ehelper->addExfeeIdentify($cross_id, $exfees, $identity_id, $idents);
 
         /**
-         * @todo: DONT send exfee changes currently
-         */
+         * DONT send exfee changes currently
         if (isset($_POST['exfee_only']) && $_POST['exfee_only']) {
             return;
         }
+        */
 
         $newExfees=$exfees_list["newexfees"];
         $allExfees=$exfees_list["allexfees"];
@@ -333,9 +333,6 @@ class XActions extends ActionController
 
             $humanMyIdentity = humanIdentity($myidentity, $user);
             $this->setVar('myidentity', $humanMyIdentity);
-
-            $host_exfee   = array();
-            $normal_exfee = array();
 
             if ($invitations) {
                 foreach ($invitations as $idx => $invitation) {

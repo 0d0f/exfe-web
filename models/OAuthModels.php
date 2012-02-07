@@ -1,6 +1,8 @@
 <?php
-class OAuthModels extends DataModel{
-    public function verifyOAuthUser($oAuthUserInfo){
+
+class OAuthModels extends DataModel {
+
+    public function verifyOAuthUser($oAuthUserInfo) {
         $oAuthProvider = $oAuthUserInfo["provider"];
         $oAuthUserID = $oAuthProvider."_".$oAuthUserInfo["id"];
         $oAuthUserName = $oAuthUserInfo["name"];
@@ -92,4 +94,16 @@ class OAuthModels extends DataModel{
             $redis->zAdd('u_'.$userID, 0, $identityPart."|".$value["display_name"]."( @".$value["user_name"]." )|".$value["provider"]."*");
         }
     }
+    
+    public function updateTwitterIdentity($identityId, $userInfo) {
+        //@todo 此处如果发现 external_identity 已经存在，需要合并账号 by @leaskh
+        if (!intval($identityId)) {
+            return false;
+        }
+        $currentTimeStamp = time();
+        $oAuthUserAvatar  = preg_replace('/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $userInfo['profile_image_url']);
+        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$identityId}";
+        return $this->query($sql);
+    }
+    
 }

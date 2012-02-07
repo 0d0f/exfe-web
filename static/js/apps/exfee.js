@@ -45,7 +45,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.timerBaseInfo     = {};
 
 
-    ns.make = function(domId, curExfee, curEditable, curDiffCallback) {
+    ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
         var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" '
                     +                 'class="exfeegadget_infoarea">'
                     +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
@@ -117,7 +117,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         this.cacheExfee(curExfee);
         this.addExfee(domId, curExfee, true, true);
-        if (this.diffCallback[domId]) {
+        if (this.diffCallback[domId] && !skipInitCallback) {
             this.diffCallback[domId]();
         }
         $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock').live(
