@@ -17,35 +17,24 @@ class Twitter_Job {
             'user_token'      => TWITTER_ACCESS_TOKEN,
             'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
         ));
-    /////////////////////////////
+        // update twitter account information
         if (!$this->args['external_identity']) {
             $responseCode = $twitterConn->request(
                 'GET',
                 $twitterConn->url('1/users/show'),
                 array('screen_name' => $external_username)
             );
-            print_r($responseCode);
-            print_r("\r\n");
-            print_r($twitterConn->response['response']);
-
             if ($responseCode !== 200) {
                 echo "Invalid response\r\n";
             } else {
-                print_r($twitterConn->response['response']);
                 $OAuthModel = new OAuthModels();
-                //$OAuthModel->updateTwitterIdentity();
+                $OAuthModel->updateTwitterIdentity(
+                    $this->args['identity_id'],
+                    $twitterConn->response['response']
+                );
             }
         }
-    
-    
-    
-    
-    
-    //////////////////////////////
-    
-        
-        //print_r($this->args);
-        
+        // send twt
         $responseCode = $twitterConn->request(
             'GET',
             $twitterConn->url('1/friendships/exists'),
