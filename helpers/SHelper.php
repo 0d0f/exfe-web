@@ -190,8 +190,8 @@ class SHelper extends ActionController
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
                             }
                             if ($complexobject === true) {
-                                $myidentity = $modIdentity->getIdentityById($logItem['from_id']);
-                                $user = $modUser->getUserByIdentityId($logItem['from_id']);
+                                $myidentity = $modIdentity->getIdentityById($logItem['to_id']);
+                                $user = $modUser->getUserByIdentityId($logItem['to_id']);
                                 $identity = humanIdentity($myidentity, $user);
                             }
 
