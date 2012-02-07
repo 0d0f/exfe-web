@@ -25,7 +25,7 @@ class Twitter_Job {
                 array('screen_name' => $external_username)
             );
             if ($responseCode !== 200) {
-                echo "Invalid response\r\n";
+                echo "Invalid response on getting twitter user informations.\r\n";
             } else {
                 $OAuthModel = new OAuthModels();
                 $OAuthModel->updateTwitterIdentity(
@@ -42,7 +42,7 @@ class Twitter_Job {
                   'screen_name_b' => TWITTER_OFFICE_ACCOUNT)
         );
         if ($responseCode !== 200) {
-            echo "Invalid response\r\n";
+            echo "Invalid response on sending twt.\r\n";
             return;
         }
         // build twt
