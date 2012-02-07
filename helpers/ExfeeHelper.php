@@ -90,7 +90,7 @@ class ExfeeHelper extends ActionController {
                 $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
             }
         }
-        
+
         if ($addrelation) {
             $redis = new Redis();
             $redis->connect('127.0.0.1', 6379);

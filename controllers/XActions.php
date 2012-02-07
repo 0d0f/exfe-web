@@ -334,9 +334,6 @@ class XActions extends ActionController
             $humanMyIdentity = humanIdentity($myidentity, $user);
             $this->setVar('myidentity', $humanMyIdentity);
 
-            $host_exfee   = array();
-            $normal_exfee = array();
-
             if ($invitations) {
                 foreach ($invitations as $idx => $invitation) {
                     if (in_array($invitation['identity_id'], $myidentities)) {

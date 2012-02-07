@@ -102,7 +102,7 @@ class InvitationModels extends DataModel
         //    $sql="select distinct cross_id from invitations where  ($str) and created_at>FROM_UNIXTIME($updated_since) order by created_at limit 50";
     }
 
-    public function getInvitation_Identities($cross_id, $without_token=false, $filter=null,$withAllIdentities=true)
+    public function getInvitation_Identities($cross_id, $without_token=false, $filter=null, $withAllIdentities = true)
     {
         $sql="select a.id invitation_id, a.state, a.by_identity_id, a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
         if($without_token==true)
@@ -137,6 +137,13 @@ class InvitationModels extends DataModel
             }
             $invitations[$i]["user_id"]=intval($userid);
             $invitations[$i]["state"]=intval($invitations[$i]["state"]);
+            // fixed empty external_identity
+            if (!$invitations[$i]['external_identity']) {
+                switch ($invitations[$i]['provider']) {
+                    case 'twitter':
+                        $invitations[$i]['external_identity'] = "@{$invitations[$i]['external_username']}@twitter";
+                }
+            }
         }
         return $invitations;
     }
