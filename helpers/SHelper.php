@@ -181,6 +181,8 @@ class SHelper extends ActionController
                                 $action = 'confirmed';
                             } else if ($action === 2) {
                                 $action = 'declined';
+                            } else if ($action === 3) {
+                                $action = 'interested';
                             } else {
                                 break;
                             }
@@ -251,7 +253,7 @@ class SHelper extends ActionController
           = $allCross[$logItem['cross_id']]['title'];
             $cleanLogs[$logI]['begin_at']
           = $allCross[$logItem['cross_id']]['begin_at'];
-            foreach (array('change', 'conversation', 'confirmed', 'declined',
+            foreach (array('change', 'conversation', 'confirmed', 'interested','declined',
                            'addexfee', 'delexfee') as $action) {
                 if (isset($logItem[$action])) {
                     foreach ($logItem[$action] as $actionI => $actionItem) {
