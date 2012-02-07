@@ -117,7 +117,7 @@ var moduleNameSpace = 'odof.x.gather',
                 data: postData,
                 url: site_url+"/Maps/GetLocation",
                 dataType:"json",
-                async:false,
+                //async:false,
                 success: function(JSONData){
                     if(!JSONData.error && JSONData.response.length != 0){
                         ns.drawLocationSelector(JSONData.response);
@@ -154,9 +154,13 @@ var moduleNameSpace = 'odof.x.gather',
             //设置一个全局的变量值，以判断是否改变了内容。
             ns.userOldLocation = userPlaceName;
             jQuery("#gather_place").val(userPlaceName+"\r\n"+userPlaceAddr);
+
+            //更新Preview的显示。
+            odof.x.gather.updatePlace();
+
             jQuery("#gather_place_selector").hide();
 
-            var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=zh-CN&amp;geocode=&amp;q='+userPlaceLat+','+userPlaceLng+'&amp;aq=&amp;sll='+userPlaceLat+','+userPlaceLng+'&amp;sspn=0.007018,0.016512&amp;ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;spn=0.007018,0.016512&amp;t=m&amp;z=14&amp;output=embed"></iframe>';
+            var googleMapsAddress = '<iframe width="282" height="175" style="border:1px solid #CCC" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=zh-CN&amp;geocode=&amp;q='+userPlaceLat+','+userPlaceLng+'&amp;aq=&amp;sll='+userPlaceLat+','+userPlaceLng+'&amp;sspn=0.007018,0.016512&amp;ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;spn=0.007018,0.016512&amp;t=m&amp;z=14&amp;output=embed"></iframe>';
             //var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;z=5&amp;output=embed"></iframe>';
             jQuery("#calendar_map_container").html(googleMapsAddress);
         };
@@ -416,6 +420,7 @@ $(document).ready(function() {
             case 'keyup':
                 odof.x.gather.updatePlace();
                 //added by handaoliang..设置延时。
+                //jQuery("#calendar_map_container").html('<iframe width="282" scrolling="no" height="175" frameborder="0" src="http://maps.google.com/maps?f=q&source=s_q&hl=zh-CN&geocode=&q=31.227269401144,121.47385636098&aq=&sll=31.227269401144,121.47385636098&sspn=0.007018,0.016512&ie=UTF8&ll=31.227269401144,121.47385636098&spn=0.007018,0.016512&t=m&z=14&output=embed" marginwidth="0" marginheight="0" style="border:1px solid #CCC">');
                 setTimeout(function(){
                     odof.x.gather.getLocation();
                 },1000);

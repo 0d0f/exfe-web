@@ -506,15 +506,18 @@ function exCalendar() {
     this.show = show;
     function show(textFieldContainer) {
         can_hide = 0;
-
+        /*
         field = textFieldContainer;
 
-        // If the calendar is visible and associated with, this field do not do anything.
+        // 如果当前日期输入框可见并且已经设置了日期。
+        // 则程序不用任何操作。暂时先却取消这个。
         if (dateField == field) {
             return;
         } else {
             dateField = field;
         }
+        */
+        dateField = textFieldContainer;
 
         //如果当前填充字段不为空，则取过来。
         if(dateField) {
