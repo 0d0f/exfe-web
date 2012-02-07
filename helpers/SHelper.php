@@ -192,7 +192,7 @@ class SHelper extends ActionController
                             $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
                             if ($complexobject === true) {
                                 $myidentity = $modIdentity->getIdentityById($toExfee);
-                                $user = $modUser->getUserByIdentityId($exfee_userid);
+                                $user = $modUser->getUserByIdentityId($toExfee);
                                 $identity = humanIdentity($myidentity, $user);
                             }
 
