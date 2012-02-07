@@ -2,6 +2,7 @@
 require_once dirname(dirname(__FILE__))."/config.php";
 require_once dirname(dirname(__FILE__))."/common.php";
 require_once dirname(dirname(__FILE__))."/DataModel.php";
+require_once dirname(dirname(__FILE__))."/models/OAuthModels.php";
 require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 require_once dirname(dirname(__FILE__))."/lib/Resque.php";
 
@@ -9,21 +10,45 @@ class Twitter_Job {
 
     public function perform() {
         global $site_url;
+        $external_username = $this->args['to_identity']['external_username'];
         $twitterConn = new tmhOAuth(array(
             'consumer_key'    => TWITTER_CONSUMER_KEY,
             'consumer_secret' => TWITTER_CONSUMER_SECRET,
             'user_token'      => TWITTER_ACCESS_TOKEN,
             'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
         ));
+    /////////////////////////////
+        if (!$this->args['external_identity']) {
+            $responseCode = $twitterConn->request(
+                'GET',
+                $twitterConn->url('1/users/show'),
+                array('screen_name' => $external_username)
+            );
+            if ($responseCode !== 200) {
+                echo "Invalid response\r\n";
+            } else {
+                print_r($twitterConn->response['response']);
+                $OAuthModel = new OAuthModels();
+                //$OAuthModel->updateTwitterIdentity();
+            }
+        }
+    
+    
+    
+    
+    
+    //////////////////////////////
+    
+        
         //print_r($this->args);
-        $external_username = $this->args['to_identity']['external_username'];
+        
         $responseCode = $twitterConn->request(
             'GET',
             $twitterConn->url('1/friendships/exists'),
             array('screen_name_a' => $external_username,
                   'screen_name_b' => TWITTER_OFFICE_ACCOUNT)
         );
-        if ($responseCode != 200) {
+        if ($responseCode !== 200) {
             echo "Invalid response\r\n";
             return;
         }

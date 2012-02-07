@@ -63,28 +63,32 @@ class SHelper extends ActionController
                     $doSkip = false;
                     switch ($logItem['to_field']) {
                         case '':
-                            $changeDna = "{$xId}_exfee_{$logItem['from_id']}";
-                            $rawLogs[$logI]['change_summy']
-                          = $logItem['change_summy']
-                          = intval($logItem['change_summy']);
-                            $dnaValue  = array(
-                                'action'    => 'rsvp',
-                                'offset'    => $logI,
-                                'soft_rsvp' => $logItem['change_summy'] === 0
-                                            || $logItem['change_summy'] === 3,
-                            );
-                            break;
                         case 'rsvp':
-                            $rawLogs[$logI]['change_summy'] = explode(
-                                ':',
-                                $logItem['change_summy']
-                            );
-                            $rawLogs[$logI]['change_summy']
-                          = array_map('intval',$rawLogs[$logI]['change_summy']);
-                            $changeDna = "{$xId}_exfee_"
-                                       . "{$rawLogs[$logI]['change_summy'][0]}";
-                            $dnaValue  = array('action' => 'rsvp',
-                                               'offset' => $logI);
+                            if (strpos($rawLogs[$logI]['change_summy'], ':') === false) {
+                                $changeDna = "{$xId}_exfee_{$logItem['from_id']}";
+                                $rawLogs[$logI]['change_summy']
+                              = $logItem['change_summy']
+                              = intval($logItem['change_summy']);
+                                $dnaValue  = array(
+                                    'action'    => 'rsvp',
+                                    'offset'    => $logI,
+                                    'soft_rsvp' => $logItem['change_summy'] === 0
+                                                || $logItem['change_summy'] === 3,
+                                );
+                            } else {
+                                $rawLogs[$logI]['change_summy'] = explode(
+                                    ':',
+                                    $logItem['change_summy']
+                                );
+                                $rawLogs[$logI]['change_summy']
+                              = array_map('intval',$rawLogs[$logI]['change_summy']);
+                                $changeDna = "{$xId}_exfee_"
+                                           . "{$rawLogs[$logI]['change_summy'][0]}";
+                                $dnaValue  = array('action'    => 'rsvp',
+                                                   'offset'    => $logI,
+                                                   'soft_rsvp' => $logItem['change_summy'] === 0
+                                                               || $logItem['change_summy'] === 3);
+                            }
                             break;
                         case 'addexfee':
                         case 'delexfee':
