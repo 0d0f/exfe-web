@@ -96,10 +96,13 @@ class OAuthModels extends DataModel {
     }
     
     public function updateTwitterIdentity($identityId, $userInfo) {
-        //@todo 此处如果发现external_identity已经存在，需要合并账号 by @leaskh
+        //@todo 此处如果发现 external_identity 已经存在，需要合并账号 by @leaskh
+        if (!intval($identityId)) {
+            return false;
+        }
         $currentTimeStamp = time();
         $oAuthUserAvatar  = preg_replace('/normal\.png$/', 'reasonably_small.png', $userInfo['profile_image_url']);
-        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='{$userInfo['id']}' WHERE id={$identityId}";
+        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$identityId}";
         return $this->query($sql);
     }
     

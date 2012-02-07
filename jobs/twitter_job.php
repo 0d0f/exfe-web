@@ -30,7 +30,7 @@ class Twitter_Job {
                 $OAuthModel = new OAuthModels();
                 $OAuthModel->updateTwitterIdentity(
                     $this->args['identity_id'],
-                    $twitterConn->response['response']
+                    (array)json_decode($twitterConn->response['response'], true)
                 );
             }
         }
