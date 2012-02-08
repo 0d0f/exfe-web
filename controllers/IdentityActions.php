@@ -12,7 +12,10 @@ class IdentityActions extends ActionController {
 
         if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
-                $identity = $IdentityData->getIdentity($identityItem['external_identity']);
+                if (!$identityItem['provider']) {
+                    continue;
+                }
+                $identity = $IdentityData->getIdentity($identityItem['external_identity'], $identityItem['provider']);
                 if (intval($identity['id']) > 0) {
                     if (!$identity['avatar_file_name'] || !$identity['name']) {
                         $userData = $this->getModelByName('user');
