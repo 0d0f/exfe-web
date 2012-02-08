@@ -724,7 +724,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                           +             exfee[i].name
                           +         '</span>'
                           +         '<span class="exfee_identity">'
-                          +             this.displayIdentity(exfee)
+                          +             this.displayIdentity(exfee[i])
                           +         '</span>'
                           +     '</span>'
                           + '</li>';
@@ -798,9 +798,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.cacheExfee = function(exfees) {
         for (var i in exfees) {
-            if (!exfees.external_identity) {
-                continue;
-            }
             var objExfee    = odof.util.clone(exfees[i]),
                 curIdentity = objExfee.external_identity.toLowerCase(),
                 arrCleanKey = ['rsvp', 'host', 'plus'];
@@ -855,7 +852,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                               : 'default.png',
                             bio               : data[i].bio,
                             external_identity : data[i].external_identity,
-                            provider          : 'email',
+                            provider          : data[i].provider,
                             userid            : data[i].uid
                         },
                         curId = curIdentity.external_identity.toLowerCase(),
