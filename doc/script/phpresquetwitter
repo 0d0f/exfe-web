@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /www/exfe/current/jobs
+QUEUE=twitter VERBOSE=1 INTERVAL=6 PIDFILE=/var/run/resque/worker_twitter.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php twitter > /var/log/resque/worker_twitter.log
