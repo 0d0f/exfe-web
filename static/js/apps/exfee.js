@@ -115,7 +115,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 this.exfeeAvailable = [];
             }
         }
-        this.cacheExfee(curExfee);
+        // this.cacheExfee(curExfee);
         this.addExfee(domId, curExfee, true, true);
         if (this.diffCallback[domId] && !skipInitCallback) {
             this.diffCallback[domId]();
@@ -769,6 +769,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             continue;
                         }
                         for (var k in arrCatch) {
+                            if (typeof objExfee[arrCatch[k]] === 'undefined') {
+                                continue;
+                            }
+                            console.log(odof.exfee.gadget.exfeeInput);
+                            console.log(objExfee);
                             odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
                           = objExfee[arrCatch[k]];
                         }
