@@ -84,7 +84,7 @@
     height: auto;
     background: #E0EDEF;
     border: 1px #0591AC solid;
-    z-index: 2;
+    z-index: 7;
     padding: 5px;
 }
 
@@ -111,7 +111,7 @@
     width: 215px;
     position: absolute;
     border: 1px #E6E6E6 solid;
-    z-index: 3;
+    z-index: 8;
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
@@ -222,8 +222,21 @@
 }
 
 .exfeegadget_inputbox {
-    border: 1px #CCCCCC solid;
     height: 24px;
+    position: absolute;
+}
+
+.exfeegadget_inputbox_main {
+    border: 1px transparent solid;    
+    z-index: 2;
+    background: transparent;
+}
+
+.exfeegadget_inputbox_desc {
+    border: 1px #CCCCCC solid;
+    z-index: 1;
+    background: white;
+    
 }
 
 .exfeegadget_addbtn {
@@ -231,8 +244,7 @@
     width: 25px;
     height: 25px;
     position: relative;
-    right: 25px;
-    top:-5px;
+    z-index: 3;
 }
 
 .exfee_avatar {

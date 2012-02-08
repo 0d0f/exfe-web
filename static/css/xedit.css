@@ -221,3 +221,7 @@
     height: 20px;
     background: url("/static/images/icons.png") no-repeat scroll right -570px transparent;
 }
+
+#xExfeeArea .exfeegadget_addbtn {
+    left: 207px;
+}
