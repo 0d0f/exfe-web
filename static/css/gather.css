@@ -252,13 +252,6 @@
     background: url("/static/images/btn.png") no-repeat -900px 0;
 }
 
-#calendar_map_container {
-    width: 310px;
-    height: 175px;
-    margin-left: 410px;
-    z-index: 10;
-}
-
 #gather_submit_blank {
    height: 30px; 
 }
@@ -270,3 +263,22 @@
     color: red;
     margin: 45px 113px auto auto;
 }
+
+#calendar_map_container {
+    width: 285px;
+    height: 175px;
+    margin-left: 410px;
+    z-index: 10;
+}
+
+#calendar_map_container .exCalDays { display:block; position:relative; float:left; width:203px; }
+#calendar_map_container .exCalDays table td a { display:block; width:29px; height:16px; padding-top:5px; line-height:9pt; }
+#calendar_map_container .exCalTimes{
+    display:block; position:relative; float:left;
+    width:80px; height:173px;
+    border-right:1px solid #D6D6D5;
+    border-bottom:1px solid #D6D6D5;
+}
+#calendar_map_container ul li{ padding-top:3px; padding-bottom:0px; height:20px; }
+#calendar_map_container ul{ color:#333333; }
+

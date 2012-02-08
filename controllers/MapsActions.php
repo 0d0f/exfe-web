@@ -3,7 +3,7 @@ require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
 
 class MapsActions extends ActionController {
     public function doGetLocation(){
-        $location = ltrim(rtrim(exPost("l")));
+        $location = trim(exPost("l"));
 
         $foursquareHandler = new FoursquareAPI(FOURSQUARE_CLIENT_KEY,FOURSQUARE_CLIENT_SECRET);
 
@@ -60,6 +60,5 @@ class MapsActions extends ActionController {
 
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
-
     }
 }
