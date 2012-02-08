@@ -724,7 +724,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                           +             exfee[i].name
                           +         '</span>'
                           +         '<span class="exfee_identity">'
-                          +             exfee[i].external_identity
+                          +             this.displayIdentity(exfee)
                           +         '</span>'
                           +     '</span>'
                           + '</li>';
