@@ -348,11 +348,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
                   +     '</div>'
                   +     '<div class="exfee_baseinfo floating">'
-                  +         '<span class="exfee_baseinfo_name">'
+                  +         '<span class="exfee_name exfee_baseinfo_name">'
                   +             objExfee.name
                   +         '</span>'
                   +        (exfees[i].provider
-                  ?        ('<span class="exfee_baseinfo_identity">'
+                  ?        ('<span class="exfee_identity exfee_baseinfo_identity">'
                   +             disIdentity
                   +         '</span>') : '')
                   +     '</div>'
@@ -365,7 +365,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +             '" class="exfee_avatar">'
                   +             '<img src="/static/images/exfee_extrainfo_avatar_mask.png" class="exfee_avatar_mask">'
                   +         '</div>'
-                  +         '<div class="exfee_extrainfo_name_area">'
+                  +         '<div class="exfee_name exfee_extrainfo_name_area">'
                   +             objExfee.name
                   +         '</div>'
                   +         '<div class="exfee_extrainfo_rsvp_area">'
@@ -373,7 +373,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +         '</div>'
                   +        (objExfee.external_identity === '_fake_host_' ? '' 
                   :        ('<div class="exfee_extrainfo_mainid_area">'
-                  +             disIdentity
+                  +             '<span class="exfee_identity">'
+                  +                 disIdentity
+                  +             '</span>'
                   +            (removable
                   ?            ('<button class="exfee_main_identity_remove">'
                   +                 ' ⊖ '
@@ -752,6 +754,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             data     : {identities : JSON.stringify(identities)},
             dataType : 'json',
             success  : function(data) {
+                var arrExfee = [];
                 for (var i in data.response.identities) {
                     var arrCatch = ['avatar_file_name', 'external_identity',
                                     'name', 'identityid', 'bio', 'provider'],
@@ -762,7 +765,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     objExfee.identityid = parseInt(objExfee.identityid)
                     var curId    = objExfee.external_identity.toLowerCase(),
                         domExfee = $(
-                            '.exfeegadget_listarea > ol > li[identity="' + curId + '"]'
+                            '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
                         );
                     for (j in odof.exfee.gadget.exfeeInput) {
                         if (odof.exfee.gadget.exfeeInput[j][curId] === 'undefined') {
@@ -772,23 +775,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             if (typeof objExfee[arrCatch[k]] === 'undefined') {
                                 continue;
                             }
-                            console.log(odof.exfee.gadget.exfeeInput);
-                            console.log(objExfee);
                             odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
                           = objExfee[arrCatch[k]];
                         }
                     }
-                    if (objExfee.length) {
-                        objExfee.children('.exfee_avatar').attr(
+                    if (domExfee.length) {
+                        domExfee.find('.exfee_avatar').attr(
                             'src', odof.comm.func.getUserAvatar(
                             objExfee.avatar_file_name,
                             80, img_url)
                         );
-                        objExfee.children('.exfee_name').html(objExfee.name);
-                        objExfee.children('.exfee_identity').html(objExfee.external_identity);
+                        domExfee.find('.exfee_name').html(objExfee.name);
+                        domExfee.find('.exfee_identity').html(objExfee.external_identity);
                     }
+                    arrExfee.push(objExfee);
                 }
-                odof.exfee.gadget.cacheExfee(objExfee);
+                odof.exfee.gadget.cacheExfee(arrExfee);
             }
         });
     };
