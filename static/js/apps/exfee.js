@@ -798,7 +798,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.cacheExfee = function(exfees) {
         for (var i in exfees) {
-            if (!exfees.identityid) {
+            if (!exfees.external_identity) {
                 continue;
             }
             var objExfee    = odof.util.clone(exfees[i]),
