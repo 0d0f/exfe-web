@@ -799,7 +799,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.cacheExfee = function(exfees) {
         for (var i in exfees) {
             var objExfee    = odof.util.clone(exfees[i]),
-                curIdentity = objExfee.external_identity.toLowerCase(),
+                curIdentity = objExfee.external_identity
+                            = objExfee.external_identity.toLowerCase(),
                 arrCleanKey = ['rsvp', 'host', 'plus'];
             for (var j in arrCleanKey) {
                 if (typeof objExfee[arrCleanKey[j]] !== 'undefined') {
