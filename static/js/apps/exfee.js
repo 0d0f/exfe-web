@@ -12,7 +12,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns) {
 
-    ns.exfeeAvailableIdK = 'exfee_available_for_id' 
+    ns.exfeeAvailableIdK = 'exfee_available_for_id'
 
     ns.exfeeAvailableKey = 'exfee_available';
 
@@ -273,10 +273,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return 'exfee_rsvp_'
              + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
     };
-    
-    
+
+
     ns.displayIdentity = function(identity) {
-        console.log(identity);
         switch (identity.provider) {
             case 'email':
                 return identity.external_identity;
@@ -288,8 +287,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 return '';
         }
     };
-    
-    
+
+
     ns.addExfeeFromCache = function(domId, identity) {
         for (var i in odof.exfee.gadget.exfeeAvailable) {
             if (odof.exfee.gadget.exfeeAvailable[i]
@@ -372,7 +371,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +         '<div class="exfee_extrainfo_rsvp_area">'
                   +             this.arrStrRsvp[objExfee.rsvp]
                   +         '</div>'
-                  +        (objExfee.external_identity === '_fake_host_' ? '' 
+                  +        (objExfee.external_identity === '_fake_host_' ? ''
                   :        ('<div class="exfee_extrainfo_mainid_area">'
                   +             '<span class="exfee_identity">'
                   +                 disIdentity
@@ -504,8 +503,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
         }
     };
-    
-    
+
+
     ns.cleanFloating = function(event) {
         var objTarget = $(event.target);
         while (!objTarget.hasClass('floating') && objTarget[0].parentNode) {
@@ -600,8 +599,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             this.diffCallback[domId]();
         }
     };
-    
-    
+
+
     ns.removeMainIdentity = function(event) {
         var objTarget = $(event.target),
             domItemLi = objTarget[0].parentNode.parentNode.parentNode,
@@ -757,8 +756,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             success  : function(data) {
                 var arrExfee = [];
                 for (var i in data.response.identities) {
-                    var arrCatch = ['avatar_file_name', 'external_identity',
-                                    'name', 'identityid', 'bio', 'provider'],
+                    var arrCatch = ['avatar_file_name', 'external_identity', 'name',
+                                    'external_username', 'identityid', 'bio', 'provider'],
                         objExfee = {};
                     for (var j in arrCatch) {
                         objExfee[arrCatch[j]] = data.response.identities[i][arrCatch[j]];
