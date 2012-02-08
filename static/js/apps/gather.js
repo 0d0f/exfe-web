@@ -19,6 +19,9 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.autoSubmit      = false;
 
+    ns.userOldLocation = "";
+    ns.userCurLat = '';
+    ns.userCurLng = '';
 
     ns.updateTitle = function(force) {
         var objTitle        = $('#gather_title'),
@@ -103,7 +106,19 @@ var moduleNameSpace = 'odof.x.gather',
 
     };
 
-    ns.userOldLocation = "";
+    ns.getUserLatLng = function(){
+        var getPositionSuccess = function(position){
+            odof.x.gather.userCurLat= position.coords.latitude;
+            odof.x.gather.userCurLng = position.coords.longitude;
+        };
+        var getPositionError = function(error){
+            //console.log(error.code);
+        };
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
+        }
+    };
+
     //added by handaoliang...
     ns.getLocation = function(){
         var placeDetail = $('#gather_place').val();
@@ -111,7 +126,11 @@ var moduleNameSpace = 'odof.x.gather',
         var strPlace = placeArr[0];
         //只有当输入大于两个字符的时候，才进行查询。
         if(strPlace != ns.userOldLocation && odof.util.trim(placeDetail).length > 2){
-            var postData = {l:odof.util.toDBC(strPlace)};
+            var postData = {
+                l:odof.util.toDBC(strPlace),
+                userLat:odof.x.gather.userCurLat,
+                userLng:odof.x.gather.userCurLng
+            };
             jQuery.ajax({
                 type: "POST",
                 data: postData,
@@ -466,4 +485,7 @@ $(document).ready(function() {
 
     // after login hook function
     window.externalAfterLogin = odof.x.gather.afterLogin;
+
+    //get user location
+    odof.x.gather.getUserLatLng();
 });

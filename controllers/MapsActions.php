@@ -4,21 +4,29 @@ require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
 class MapsActions extends ActionController {
     public function doGetLocation(){
         $location = trim(exPost("l"));
+        $userLat = trim(exPost("userLat"));
+        $userLng = trim(exPost("userLng"));
 
         $foursquareHandler = new FoursquareAPI(FOURSQUARE_CLIENT_KEY,FOURSQUARE_CLIENT_SECRET);
 
         $locationArr = explode(" ",$location);
 
-        $districtLocation = trim($location);
         $searchLocation = trim($location);
 
+        //如果用户输入是以空格分隔的地址。
         if(count($locationArr) > 1){
             $districtLocation = $locationArr[0];
             array_shift($locationArr);
             $searchLocation = implode("", $locationArr);
+            // Generate a latitude/longitude pair using Google Maps API
+            list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
+        }else if($userLat != "" && $userLng != ""){
+            $lat = $userLat;
+            $lng = $userLng;
+        }else{
+            $districtLocation = mb_substr(trim($location), 0, 2);
+            list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
         }
-        // Generate a latitude/longitude pair using Google Maps API
-        list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
         
         // Prepare parameters
         $queryParams = array(

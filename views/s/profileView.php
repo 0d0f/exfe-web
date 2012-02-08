@@ -19,7 +19,7 @@
         <?php if(trim($user['avatar_file_name']) == 'default.png') { ?>
             <a href="javascript:odof.user.uploadAvatar.init();"><img src="/static/images/add_avatar.png" alt="add avatar" /></a>
         <?php } else { ?>
-            <a href="<?php echo getUserAvatar($user['avatar_file_name'], 240); ?>"><img class="big_header" src="<?php echo getUserAvatar($user['avatar_file_name'], 80); ?>" alt="" /></a>
+            <a href="<?php echo getUserAvatar($user['avatar_file_name'], 240); ?>" target="_blank"><img class="big_header" src="<?php echo getUserAvatar($user['avatar_file_name'], 80); ?>" alt="" /></a>
             <button class="change" id="changeavatar">Change...</button>
         <?php } ?>
         </div>
@@ -30,8 +30,8 @@
                     $identity=humanIdentity($identity,NULL);
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
-                <p>
-                <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" title="<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>" />
+                <p class="identity_list">
+                <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
                 <?php if($identity["provider"] == "email"){ ?>
                 <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><?php echo $identity["name"]; ?></span>
                 <span class="identity_ec" id="identity_edit_container_<?php echo $identity["id"]; ?>" style="display:none"><input class='identity_input' id='cur_identity_name_<?php echo $identity["id"]; ?>' value='' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_<?php echo $identity["id"]; ?>'></span>
@@ -40,19 +40,27 @@
                 <?php }else{ ?>
                 <span class="id_name"><?php echo $identity["name"]; ?></span>
                 <?php } ?>
+                <?php if($identity["status"] == 2 && $identity["provider"]=="email"){ ?>
+                <span style="width:130px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
+                <?php }else{ ?>
+                <span style="width:400px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
+                <?php } ?>
                 <?php
-                    if($identity["status"] != 3 )
-                    {
-                        if($identity["status"]==2 && $identity["provider"]=="email"){
-                            $curTime = time();
-                            $expTime = (int)$identity["active_exp_time"]+5*86400;
+                if($identity["status"] != 3 ) {
+                    if($identity["status"]==2 && $identity["provider"]=="email"){
+                        $curTime = time();
+                        $dateExp = 0;
+                        $active_exp_time = (int)$identity["active_exp_time"];
+                        if($active_exp_time != 0){
+                            $expTime = $active_exp_time+5*86400;
                             $dateExp = ceil(intval($expTime-$curTime)/86400);
-                            $status = "Pending verification, {$dateExp} days left.";
-                            $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>Re-verify...</button>";
+                            $dateExp = abs($dateExp)==0 ? 0 : $dateExp;
                         }
-                    ?>
-                    
-                        <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status; ?> <?php echo $button; ?></i>
+                        $status = "Pending verification, {$dateExp} days left.";
+                        $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>Re-verify...</button>";
+                    }
+                ?>
+                <i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status; ?> <?php echo $button; ?></i>
                     <?php
                     }
                 ?>
