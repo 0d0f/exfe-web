@@ -3,7 +3,7 @@
 .exCalendarContainer .exCalDays table { background:#D3D4D4; border-collapse:collapse; border:1px solid #D3D4D4; color:#000000; }
 .exCalendarContainer .exCalDays table tr.header{ height:23px; }
 .exCalendarContainer .exCalDays table a { text-decoration:none; color:#004154; font-weight:bold; }
-.exCalendarContainer .exCalDays table th { font-weight:bold; height:25px; }
+.exCalendarContainer .exCalDays table th { font-weight:normal; height:25px; }
 .exCalendarContainer .exCalDays table th a { font-weight:normal; text-decoration:none; color:#FFF; padding:1px; }
 .exCalendarContainer .exCalDays table td {
     height:20px; width:30px; text-align:center; background-color:#E5E6E9; overflow:hidden;

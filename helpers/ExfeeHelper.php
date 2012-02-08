@@ -27,20 +27,15 @@ class ExfeeHelper extends ActionController {
                 if (!isset($exfeeItem['identity_type'])) {
                     continue;
                 } else if ($exfeeItem['identity_type'] === 'email') {
-                    $identity_ext_name = $identity
-                                       = isset($exfeeItem['exfee_identity'])
+                    $identity_ext_name = isset($exfeeItem['exfee_identity'])
                                        ? $exfeeItem['exfee_identity'] : null;
                 } else if ($exfeeItem['identity_type'] === 'twitter'
                   && isset($exfeeItem['exfee_ext_name'])) {
                     $identity_ext_name = $exfeeItem['exfee_ext_name'];
-                    $identity = isset($exfeeItem['exfee_identity'])
-                        && is_numeric($exfeeItem['exfee_identity'])
-                                    ? $exfeeItem['exfee_identity']
-                                    : $identity_ext_name;
                 } else {
                     continue;
                 }
-
+                $identity      = $identity_ext_name;
                 $identity_id   = isset($exfeeItem['exfee_id'])   ? intval($exfeeItem['exfee_id'])  : null;
                 $identity_name = isset($exfeeItem['exfee_name']) ? $exfeeItem['exfee_name']        : null;
                 $confirmed     = isset($exfeeItem['confirmed'])  ? intval($exfeeItem['confirmed']) : 0;
@@ -90,7 +85,7 @@ class ExfeeHelper extends ActionController {
                 $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
             }
         }
-        
+
         if ($addrelation) {
             $redis = new Redis();
             $redis->connect('127.0.0.1', 6379);

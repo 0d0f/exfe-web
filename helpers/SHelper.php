@@ -181,19 +181,21 @@ class SHelper extends ActionController
                                 $action = 'confirmed';
                             } else if ($action === 2) {
                                 $action = 'declined';
+                            } else if ($action === 3) {
+                                $action = 'interested';
                             } else {
                                 break;
                             }
                             if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
                             }
+                            $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
                             if ($complexobject === true) {
-                                $myidentity = $modIdentity->getIdentityById($logItem['from_id']);
-                                $user = $modUser->getUserByIdentityId($logItem['from_id']);
+                                $myidentity = $modIdentity->getIdentityById($toExfee);
+                                $user = $modUser->getUserByIdentityId($toExfee);
                                 $identity = humanIdentity($myidentity, $user);
                             }
 
-                            $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
                             array_push(
                                 $cleanLogs[$xlogsHash[$xId]][$action],
                                 array(
@@ -251,7 +253,7 @@ class SHelper extends ActionController
           = $allCross[$logItem['cross_id']]['title'];
             $cleanLogs[$logI]['begin_at']
           = $allCross[$logItem['cross_id']]['begin_at'];
-            foreach (array('change', 'conversation', 'confirmed', 'declined',
+            foreach (array('change', 'conversation', 'confirmed', 'interested','declined',
                            'addexfee', 'delexfee') as $action) {
                 if (isset($logItem[$action])) {
                     foreach ($logItem[$action] as $actionI => $actionItem) {

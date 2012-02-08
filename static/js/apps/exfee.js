@@ -45,7 +45,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.timerBaseInfo     = {};
 
 
-    ns.make = function(domId, curExfee, curEditable, curDiffCallback) {
+    ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
         var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" '
                     +                 'class="exfeegadget_infoarea">'
                     +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
@@ -115,9 +115,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 this.exfeeAvailable = [];
             }
         }
-        this.cacheExfee(curExfee);
+        // this.cacheExfee(curExfee);
         this.addExfee(domId, curExfee, true, true);
-        if (this.diffCallback[domId]) {
+        if (this.diffCallback[domId] && !skipInitCallback) {
             this.diffCallback[domId]();
         }
         $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock').live(
@@ -769,6 +769,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             continue;
                         }
                         for (var k in arrCatch) {
+                            if (typeof objExfee[arrCatch[k]] === 'undefined') {
+                                continue;
+                            }
+                            console.log(odof.exfee.gadget.exfeeInput);
+                            console.log(objExfee);
                             odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
                           = objExfee[arrCatch[k]];
                         }
