@@ -1,10 +1,9 @@
 <?php
+require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 
-class IdentityActions extends ActionController
-{
+class IdentityActions extends ActionController {
 
-    public function doGet()
-    {
+    public function doGet() {
         $IdentityData  = $this->getModelByName('identity');
 
         $arrIdentities = json_decode($_GET['identities'], true);
@@ -13,7 +12,10 @@ class IdentityActions extends ActionController
 
         if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
-                $identity = $IdentityData->getIdentity($identityItem['id']);
+                if (!$identityItem['provider']) {
+                    continue;
+                }
+                $identity = $IdentityData->getIdentity($identityItem['external_identity'], $identityItem['provider']);
                 if (intval($identity['id']) > 0) {
                     if (!$identity['avatar_file_name'] || !$identity['name']) {
                         $userData = $this->getModelByName('user');
@@ -24,6 +26,39 @@ class IdentityActions extends ActionController
 
                 if ($identity) {
                     $responobj['response']['identities'][] = $identity;
+                } else {
+                    switch ($identityItem['provider']) {
+                        case 'twitter':
+                            if (isset($identityItem['external_username'])) {
+                                $twitterConn = new tmhOAuth(array(
+                                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                                    'user_token'      => TWITTER_ACCESS_TOKEN,
+                                    'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
+                                ));
+                                $responseCode = $twitterConn->request(
+                                    'GET',
+                                    $twitterConn->url('1/users/show'),
+                                    array('screen_name' => $identityItem['external_username'])
+                                );
+                                if ($responseCode === 200) {
+                                    $twitterUser = (array)json_decode($twitterConn->response['response'], true);
+                                    $twitterUser['profile_image_url'] = preg_replace(
+                                        '/normal(\.[a-z]{1,5})$/i',
+                                        'reasonably_small$1',
+                                        $twitterUser['profile_image_url']
+                                    );
+                                    $responobj['response']['identities'][] = array(
+                                        'provider'          => 'twitter',
+                                        'name'              => $twitterUser['name'],
+                                        'bio'               => $twitterUser['description'],
+                                        'avatar_file_name'  => $twitterUser['profile_image_url'],
+                                        'external_username' => $twitterUser['screen_name'],
+                                        'external_identity' => "@{$twitterUser['screen_name']}@twitter",
+                                    );
+                                }
+                            }
+                    }
                 }
             }
         }
@@ -38,8 +73,7 @@ class IdentityActions extends ActionController
     }
 
 
-    public function doComplete()
-    {
+    public function doComplete() {
         $rangelen=50;
         $key=mb_strtolower($_GET["key"]);
         $userid=$_SESSION["userid"];
@@ -141,7 +175,6 @@ class IdentityActions extends ActionController
         #            $resultarray[$k]=array("identity"=>$iobj);
         #        }
         #    }
-
         #}
         $resultstr=rtrim($resultstr,",");
         $resultstr.="]";
