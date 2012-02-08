@@ -1218,9 +1218,9 @@ var odof = {
             month    = parseInt(arrTime[2], 10);
             day      = parseInt(arrTime[0], 10);
             year     = parseInt(arrTime[1], 10);
-            strTime  = [db(month), db(day), year].join('/') + time;
+            strTime  = [db(month), db(day), db(year)].join('/') + time;
             if (new Date(strTime).toString() !== 'Invalid Date') {
-                return [db(month), db(day), year].join('-')
+                return [db(month), db(day), db(year)].join('-')
                      + (arrTime.length === 6 ? (time + ':00') : '');
             }
         }

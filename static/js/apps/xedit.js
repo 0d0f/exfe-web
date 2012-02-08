@@ -213,19 +213,19 @@ var clickCallBackFunc = function(args) {
         var strTimeInput = odof.util.trim(objTimeInput.val());
         if (strTimeInput === '') {
             crossData.begin_at = '';
-         // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
+        // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
         } else {
             var strTime = odof.util.parseHumanDateTime(strTimeInput);
-         // crossData.begin_at = strTime ? strTime : null;
+        // crossData.begin_at = strTime ? strTime : null;
             crossData.begin_at = strTime ? strTime : '';
-         // $('#gather_date_x').html('');
+        // $('#gather_date_x').html('');
         }
         if (crossData.begin_at === null) {
             objTimeInput.addClass('error');
-         // $('#gather_submit').addClass('disabled');
+        // $('#gather_submit').addClass('disabled');
         } else {
             objTimeInput.removeClass('error');
-         // $('#gather_submit').removeClass('disabled');
+        // $('#gather_submit').removeClass('disabled');
         }
         odof.x.render.showTime();
     };
