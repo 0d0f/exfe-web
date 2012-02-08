@@ -84,7 +84,7 @@
     height: auto;
     background: #E0EDEF;
     border: 1px #0591AC solid;
-    z-index: 2;
+    z-index: 7;
     padding: 5px;
 }
 
@@ -111,7 +111,7 @@
     width: 215px;
     position: absolute;
     border: 1px #E6E6E6 solid;
-    z-index: 3;
+    z-index: 8;
     border-radius: 5px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
