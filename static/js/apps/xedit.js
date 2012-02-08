@@ -311,6 +311,9 @@ var clickCallBackFunc = function(args) {
                             crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
                         });
+                        $('#place_content').html(
+                            crossData.place.line1 + '\r' + crossData.place.line2
+                        );
                         $('#x_place_bubble').show();
                     } else {
                         odof.x.edit.savePlace();
