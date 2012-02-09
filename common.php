@@ -117,8 +117,10 @@ function humanIdentity($identity,$user)
         $identity["avatar_file_name"]=$user["avatar_file_name"];
     if($provider=="email")
     {
-        if($identity["name"]=="")
+        if($identity["name"]=="") {
             $identity["name"]=$identity["external_identity"];
+        }
+        $identity["avatar_file_name"]=getUserAvatar($identity["avatar_file_name"]);
     }
     if($identity["avatar_file_name"]=="")
         $identity["avatar_file_name"]="default.png";
@@ -370,6 +372,9 @@ function getHashFilePath($fileName='', $specialFilePath=''){
  * @return string
  **/
 function getUserAvatar($fileName, $avatarSize=80){
+    if(trim($fileName) == ""){
+        return DEFAULT_AVATAR_URL;
+    }
     $pattern = "/(http[s]?:\/\/)/is";
     if(preg_match($pattern, $fileName)){
         return $fileName;
