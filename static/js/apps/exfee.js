@@ -15,6 +15,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.exfeeAvailableIdK = 'exfee_available_for_id'
 
     ns.exfeeAvailableKey = 'exfee_available';
+    
+    ns.strInputTips      = 'Enter attendees’ information';
 
     ns.arrStrRsvp        = ['Not responded', 'Accepted', 'Declined', 'Interested'];
 
@@ -76,8 +78,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     +(curEditable
                     ?('<div id="' + domId + '_exfeegadget_inputarea" '
                     +                 'class="exfeegadget_inputarea">'
+                    +     '<div    id="' + domId + '_exfeegadget_inputbox_desc" '
+                    +                        'class="exfeegadget_inputbox '
+                    +                               'exfeegadget_inputbox_desc">'
+                    +         this.strInputTips
+                    +     '</div>'
                     +     '<input  id="' + domId + '_exfeegadget_inputbox" '
-                    +                        'class="exfeegadget_inputbox" type="text">'
+                    +                        'class="exfeegadget_inputbox_main '
+                    +                               'exfeegadget_inputbox" type="text">'
                     +     '<button id="' + domId + '_exfeegadget_addbtn" '
                     +                        'class="exfeegadget_addbtn">'
                     +     '</button>'
@@ -668,6 +676,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (newInput !== strInput) {
             objInput.val(newInput);
         }
+        $('#' + domId + '_exfeegadget_inputbox_desc').html(
+            objInput.val() === '' ? odof.exfee.gadget.strInputTips : ''
+        );
         if (arrValid.length) {
             odof.exfee.gadget.addExfee(domId, arrValid);
         }

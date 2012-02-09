@@ -213,19 +213,19 @@ var clickCallBackFunc = function(args) {
         var strTimeInput = odof.util.trim(objTimeInput.val());
         if (strTimeInput === '') {
             crossData.begin_at = '';
-         // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
+        // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
         } else {
             var strTime = odof.util.parseHumanDateTime(strTimeInput);
-         // crossData.begin_at = strTime ? strTime : null;
+        // crossData.begin_at = strTime ? strTime : null;
             crossData.begin_at = strTime ? strTime : '';
-         // $('#gather_date_x').html('');
+        // $('#gather_date_x').html('');
         }
         if (crossData.begin_at === null) {
             objTimeInput.addClass('error');
-         // $('#gather_submit').addClass('disabled');
+        // $('#gather_submit').addClass('disabled');
         } else {
             objTimeInput.removeClass('error');
-         // $('#gather_submit').removeClass('disabled');
+        // $('#gather_submit').removeClass('disabled');
         }
         odof.x.render.showTime();
     };
@@ -261,19 +261,22 @@ var clickCallBackFunc = function(args) {
                 });
             }
             // init calendar
-            var objStdTime = odof.util.getDateFromString(crossData.begin_at),
-                year       = objStdTime.getFullYear(),
-                month      = objStdTime.getMonth() + 1,
-                date       = objStdTime.getDate(),
-                hour24     = objStdTime.getHours(),
-                hour12     = hour24 > 12 ? (hour24 - 12) : hour24,
-                ampm       = hour24 < 12 ? 'AM'          : 'PM',
-                minute     = objStdTime.getMinutes();
-            month  = month  < 10 ? ('0' + month)  : month;
-            minute = minute < 10 ? ('0' + minute) : minute;
-            var strStdTime = month  + '-' + date   + '-' + year
-                           + (crossData.begin_at.split(' ').length === 2
-                           ? (' ' + hour12 + ':' + minute + ' ' + ampm) : '');
+            var strStdTime = '';
+            if (crossData.begin_at) {
+                var objStdTime = odof.util.getDateFromString(crossData.begin_at),
+                    year       = objStdTime.getFullYear(),
+                    month      = objStdTime.getMonth() + 1,
+                    date       = objStdTime.getDate(),
+                    hour24     = objStdTime.getHours(),
+                    hour12     = hour24 > 12 ? (hour24 - 12) : hour24,
+                    ampm       = hour24 < 12 ? 'AM'          : 'PM',
+                    minute     = objStdTime.getMinutes();
+                month  = month  < 10 ? ('0' + month)  : month;
+                minute = minute < 10 ? ('0' + minute) : minute;
+                strStdTime     = month  + '-' + date   + '-' + year
+                               + (crossData.begin_at.split(' ').length === 2
+                               ? (' ' + hour12 + ':' + minute + ' ' + ampm) : '');
+            }
             $('#x_datetime_original').val(strStdTime);
             exCal.initCalendar(
                 $('#x_datetime_original')[0],
@@ -311,6 +314,9 @@ var clickCallBackFunc = function(args) {
                             crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
                         });
+                        $('#place_content').html(
+                            crossData.place.line1 + '\r' + crossData.place.line2
+                        );
                         $('#x_place_bubble').show();
                     } else {
                         odof.x.edit.savePlace();

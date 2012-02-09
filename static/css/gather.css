@@ -76,6 +76,10 @@
     background-position: right -595px;
 }
 
+#gatherExfee .exfeegadget_addbtn {
+    left: 237px;
+}
+
 .gather_input {
     height: 24px;
     display: block;

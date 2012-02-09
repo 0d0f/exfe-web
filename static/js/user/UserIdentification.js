@@ -468,38 +468,40 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if(data!=null) {
                         //如果当前identity不存在。
                         if(data.response.identity_exist=="false"){
-                            jQuery('#identification_title_msg').html('Signing up new identity:');
-                            jQuery('#identification_title_msg').css({color:'#0591AC'});
-                            //jQuery('#retype').show();
-                            jQuery('#displayname').show();
-                            jQuery('#forgot_password').hide();
-                            jQuery('#logincheck').hide();
-                            jQuery('#login_hint').hide();
-                            jQuery("#user_avatar").hide();
-                            //注册对话框中的start over button
-                            jQuery('#startover').show();
-                            jQuery('#startover').bind('click', function(){
-                                ns.showLoginDialog('init');
-                            });
-                            jQuery('#sign_in_btn').val("Sign Up");
-                            jQuery('input[name=displayname]').val('');
-                            jQuery('#identification_pwd').val('');
-                            /*
-                            //取消显示Re-type。
-                            jQuery('#identification_rpwd').val('');
-                            jQuery('#identification_pwd_a').val('');
-                            */
+                            if(userIdentity.match(odof.mailReg)){
+                                jQuery('#identification_title_msg').html('Signing up new identity:');
+                                jQuery('#identification_title_msg').css({color:'#0591AC'});
+                                //jQuery('#retype').show();
+                                jQuery('#displayname').show();
+                                jQuery('#forgot_password').hide();
+                                jQuery('#logincheck').hide();
+                                jQuery('#login_hint').hide();
+                                jQuery("#user_avatar").hide();
+                                //注册对话框中的start over button
+                                jQuery('#startover').show();
+                                jQuery('#startover').bind('click', function(){
+                                    ns.showLoginDialog('init');
+                                });
+                                jQuery('#sign_in_btn').val("Sign Up");
+                                jQuery('input[name=displayname]').val('');
+                                jQuery('#identification_pwd').val('');
+                                /*
+                                //取消显示Re-type。
+                                jQuery('#identification_rpwd').val('');
+                                jQuery('#identification_pwd_a').val('');
+                                */
 
-                            jQuery('input[name=displayname]').keyup(function(){
-                                var displayName = this.value;
-                                ns.showDisplayNameError(displayName);
-                            });
-                            //取消显示Re-type。
-                            //odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
-                            //换成单Password输入框。并且隐藏。
-                            //odof.comm.func.displayPassword("identification_pwd");
-                            jQuery('#identification_pwd').unbind("focus");
-                            ns.actions = "sign_up";
+                                jQuery('input[name=displayname]').keyup(function(){
+                                    var displayName = this.value;
+                                    ns.showDisplayNameError(displayName);
+                                });
+                                //取消显示Re-type。
+                                //odof.comm.func.initRePassword("identification_pwd", "identification_rpwd");
+                                //换成单Password输入框。并且隐藏。
+                                //odof.comm.func.displayPassword("identification_pwd");
+                                jQuery('#identification_pwd').unbind("focus");
+                                ns.actions = "sign_up";
+                            }
                         } else if(data.response.identity_exist=="true") {
                             if(data.response.status == "verifying"){
                                 jQuery("#user_avatar").hide();
