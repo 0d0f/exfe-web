@@ -866,6 +866,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                               : 'default.png',
                             bio               : data[i].bio,
                             external_identity : data[i].external_identity,
+                            external_username : data[i].external_username,
                             provider          : data[i].provider,
                             userid            : data[i].uid
                         },
