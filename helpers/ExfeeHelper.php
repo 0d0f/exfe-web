@@ -35,11 +35,13 @@ class ExfeeHelper extends ActionController {
                 } else {
                     continue;
                 }
-                $identity      = $identity_ext_name;
-                $identity_id   = isset($exfeeItem['exfee_id'])   ? intval($exfeeItem['exfee_id'])  : null;
-                $identity_name = isset($exfeeItem['exfee_name']) ? $exfeeItem['exfee_name']        : null;
-                $confirmed     = isset($exfeeItem['confirmed'])  ? intval($exfeeItem['confirmed']) : 0;
-                $identity_type = $exfeeItem['identity_type'];
+                $identity        = $identity_ext_name;
+                $identity_id     = isset($exfeeItem['exfee_id'])         ? intval($exfeeItem['exfee_id'])  : null;
+                $identity_name   = isset($exfeeItem['exfee_name'])       ? $exfeeItem['exfee_name']        : null;
+                $identity_bio    = isset($exfeeItem['bio'])              ? $exfeeItem['bio']               : null;
+                $identity_avatar = isset($exfeeItem['avatar_file_name']) ? $exfeeItem['avatar_file_name']  : null;
+                $confirmed       = isset($exfeeItem['confirmed'])        ? intval($exfeeItem['confirmed']) : 0;
+                $identity_type   = $exfeeItem['identity_type'];
 
                 if (!$identity_id) {
                     $identity_id = $identityData->ifIdentityExist($identity, $identity_type);
@@ -51,7 +53,9 @@ class ExfeeHelper extends ActionController {
                             $identity_type,
                             $identity,
                             array('name'              => $identity_name,
-                                  'external_username' => $identity_ext_name)
+                                  'external_username' => $identity_ext_name,
+                                  'bio'               => $identity_bio,
+                                  'avatar_file_name'  => $identity_avatar)
                         );
                     }
                 }
