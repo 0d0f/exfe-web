@@ -99,18 +99,12 @@ var moduleNameSpace = 'odof.x.gather',
         var strPlace = odof.util.parseLocation($('#gather_place').val());
         crossData.place.line1 = strPlace[0];
         crossData.place.line2 = strPlace[1];
-        crossData.place.lat = '';
-        crossData.place.lng = '';
-        crossData.place.external_id = '';
-        crossData.place.provider = '';
-
         if (crossData.place.line1 + crossData.place.line2 === '') {
             $('#gather_place_x').html(defaultPlace);
         } else {
             $('#gather_place_x').html('');
         }
         odof.x.render.showPlace();
-
     };
 
     ns.getUserLatLng = function(){
@@ -221,7 +215,7 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.summaryX = function() {
         var x   = odof.util.clone(crossData);
-        x.place = x.place.line1 + "\r" + x.place.line2;
+        x.place = JSON.stringify(x.place);
         x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));
         return x;
     };
@@ -374,7 +368,8 @@ $(document).ready(function() {
     // X initialization
     window.crossData = {title       : '',
                         description : '',
-                        place       : {line1 : '', line2 : ''},
+                        place       : {line1 : '', line2 : '', lat : '', lng : '',
+                                       external_id : '', provider : 'foursquare'},
                         begin_at    : ''};
 
     // X render
