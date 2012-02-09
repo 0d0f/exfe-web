@@ -33,8 +33,8 @@ class IdentityActions extends ActionController {
                                 $twitterConn = new tmhOAuth(array(
                                     'consumer_key'    => TWITTER_CONSUMER_KEY,
                                     'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                                    'user_token'      => TWITTER_ACCESS_TOKEN,
-                                    'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
+                                    'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
+                                    'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
                                 ));
                                 $responseCode = $twitterConn->request(
                                     'GET',
