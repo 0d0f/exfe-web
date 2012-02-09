@@ -630,12 +630,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         for (var i in this.exfeeInput[domId]) {
             if (this.exfeeInput[domId][i].provider) {
                 var itemExfee = {
-                    exfee_identity : this.exfeeInput[domId][i].external_identity,
-                    exfee_ext_name : this.exfeeInput[domId][i].external_username,
-                    exfee_name     : this.exfeeInput[domId][i].name,
-                    confirmed      : this.exfeeInput[domId][i].rsvp,
-                    identity_type  : this.exfeeInput[domId][i].provider,
-                    isHost         : this.exfeeInput[domId][i].host
+                    exfee_identity   : this.exfeeInput[domId][i].external_identity,
+                    exfee_ext_name   : this.exfeeInput[domId][i].external_username,
+                    exfee_name       : this.exfeeInput[domId][i].name,
+                    avatar_file_name : this.exfeeInput[domId][i].avatar_file_name,
+                    bio              : this.exfeeInput[domId][i].bio,
+                    confirmed        : this.exfeeInput[domId][i].rsvp,
+                    identity_type    : this.exfeeInput[domId][i].provider,
+                    isHost           : this.exfeeInput[domId][i].host
                 };
                 if (typeof this.exfeeInput[domId][i].identityid !== 'undefined') {
                     itemExfee.exfee_id = this.exfeeInput[domId][i].identityid;
