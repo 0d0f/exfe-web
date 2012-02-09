@@ -96,17 +96,31 @@ class OAuthModels extends DataModel {
     }
 
     public function updateTwitterIdentity($identityId, $userInfo) {
-        //@todo 此处如果发现 external_identity 已经存在，需要合并账号 by @leaskh
-print_r($identityId);
-print_r($userInfo);
+        // ready
         if (!intval($identityId)) {
             return false;
         }
+        // make parameter
         $currentTimeStamp = time();
         $oAuthUserAvatar  = preg_replace('/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $userInfo['profile_image_url']);
-        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$identityId}";
-print_r($sql);
-        return $this->query($sql);
+        // check old identity
+        $row = $this->getRow(
+            "SELECT id FROM identities WHERE provider='twitter' AND external_identity='twitter_{$userInfo['id']}'"
+        );
+        $wasIdentityId = intval($row["id"]);
+        // update identity
+        $chIdentityId  = $wasIdentityId > 0 ? $wasIdentityId : $identityId;
+        $this->query(
+            "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$chIdentityId}"
+        );
+        // merge identity
+        if ($wasIdentityId > 0) {
+            $this->query(
+                "UPDATE invitations SET identity_id={$wasIdentityId} WHERE identity_id={$identityId}"
+            );
+            $this->query("DELETE FROM identities WHERE id={$identityId}");
+        }
+        return $chIdentityId
     }
-    
+
 }
