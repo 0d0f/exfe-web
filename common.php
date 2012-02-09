@@ -118,7 +118,12 @@ function humanIdentity($identity,$user)
     if($provider=="email")
     {
         if($identity["name"]=="")
+        {
             $identity["name"]=$identity["external_identity"];
+        }
+        if($identity["avatar_file_name"]=="")
+            $identity["avatar_file_name"]="default.png";
+        $identity["avatar_file_name"]=getUserAvatar($identity["avatar_file_name"]);
     }
     if($identity["avatar_file_name"]=="")
         $identity["avatar_file_name"]="default.png";
