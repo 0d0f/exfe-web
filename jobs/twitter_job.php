@@ -18,7 +18,9 @@ class Twitter_Job {
             'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
         ));
         // update twitter account information
-        if (!$this->args['external_identity']) {
+        if (!$this->args['external_identity']
+         || strtolower($this->args['external_identity'])
+        === strtolower("@{$external_username}@twitter")) {
             $responseCode = $twitterConn->request(
                 'GET',
                 $twitterConn->url('1/users/show'),
