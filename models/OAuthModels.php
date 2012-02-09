@@ -133,6 +133,7 @@ class OAuthModels extends DataModel {
             $this->query(
                 "UPDATE invitations SET identity_id={$wasIdentityId} WHERE identity_id={$identityId}"
             );
+            // @todo: 可能需要更新 log by @leaskh
             $this->query("DELETE FROM identities WHERE id={$identityId}");
         }
         return $chIdentityId
