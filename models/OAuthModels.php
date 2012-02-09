@@ -136,7 +136,7 @@ class OAuthModels extends DataModel {
             // @todo: 可能需要更新 log by @leaskh
             $this->query("DELETE FROM identities WHERE id={$identityId}");
         }
-        return $chIdentityId
+        return $chIdentityId;
     }
 
 }
