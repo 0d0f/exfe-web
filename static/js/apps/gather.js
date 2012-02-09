@@ -453,6 +453,9 @@ $(document).ready(function() {
     odof.x.gather.updatePlace();
 
     // host by
+    $('#gather_hostby').val(
+        odof.exfee.gadget.displayIdentity(myIdentity.external_identity)
+    );
     $('#gather_hostby').focus(function () {
         odof.user.status.doShowLoginDialog();
     });
