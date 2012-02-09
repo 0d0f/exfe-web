@@ -702,10 +702,10 @@ class IdentityModels extends DataModel {
                         $identity_part="";
                         for ($i=0;$i<mb_strlen($identity_a);$i++)
                         {
-                            $identity_part.=mb_substr($identity_a, $i, 1);
-                            $redis->zAdd('u_'.$userid, 0, $identity_part);
+                            $identity_part .= mb_substr($identity_a, $i, 1);
+                            $redis->zAdd('u:'.$userid, 0, $identity_part);
                         }
-                        $redis->zAdd('u_'.$userid, 0, $identity_part."|".$identity_id."*");
+                        $redis->zAdd('u:'.$userid, 0, $identity_part."|id:".$identity_id."*");
                     }
                 }
             }
@@ -718,22 +718,28 @@ class IdentityModels extends DataModel {
         $identities=array();
         if(is_array($identity_id_list))
         {
-            foreach($identity_id_list as $identity_id)
+            foreach($identity_id_list as $identity_id_str)
             {
-                $identity=$redis->HGET("identities","id:".$identity_id);
+                $identity=$redis->HGET("identities",$identity_id_str);
+                //如果缓存里面没有，则要去取数据库数据并缓存。
                 if($identity==false)
                 {
-                    $identity=$this->getIdentityById($identity_id);
-                    if($identity!=NULL)
-                    {
-                        $sql="select userid from user_identity where identityid=$identity_id";
-                        $result=$this->getRow($sql);
-                        if($result["userid"]>0)
+                    $identity_info_arr = explode(":",$identity_id_str);
+                    $identity_type = $identity_info_arr[0];
+                    $identity_id = $identity_info_arr[1];
+                    //如果是本地Identity的缓存。
+                    if($identity_type == "id"){
+                        $identity = $this->getIdentityById($identity_id);
+                        if($identity!=NULL)
                         {
-                            $identity["uid"]=$result["userid"];
+                            $sql="select userid from user_identity where identityid=$identity_id";
+                            $result=$this->getRow($sql);
+                            if($result["userid"] > 0) {
+                                $identity["uid"]=$result["userid"];
+                            }
+                            $identity=json_encode_nounicode($identity);
+                            $redis->HSET("identities",$identity_id_str, $identity);
                         }
-                        $identity=json_encode_nounicode($identity);
-                        $redis->HSET("identities","id:".$identity_id,$identity);
                     }
 
                 }

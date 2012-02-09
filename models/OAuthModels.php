@@ -79,8 +79,8 @@ class OAuthModels extends DataModel {
 
     public function buildFriendsIndex($userID, $friendsList) {
 
-        $redis = new Redis();
-        $redis->connect('127.0.0.1', 6379);
+        $redisHandler = new Redis();
+        $redisHandler->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
         mb_internal_encoding("UTF-8");
         foreach($friendsList as $value)
         {
@@ -89,24 +89,54 @@ class OAuthModels extends DataModel {
             for ($i=0; $i<mb_strlen($identity); $i++)
             {
                 $identityPart .= mb_substr($identity, $i, 1);
-                $redis->zAdd('u_'.$userID, 0, $identityPart);
+                $redisHandler->zAdd('u:'.$userID, 0, $identityPart);
             }
-            $redis->zAdd('u_'.$userID, 0, $identityPart."|".$value["display_name"]."( @".$value["user_name"]." )|".$value["provider"]."*");
+            $identityDetailID = $value["provider"].":".$value["customer_id"];
+            $redisHandler->zAdd('u:'.$userID, 0, $identityPart."|".$identityDetailID."*");
+            $identityDetail = $redisHandler->HGET("identities",$identityDetailID);
+            if($identityDetail == false) {
+                $identityDetail = array(
+                    "external_identity" =>$value["provider"]."_".$value["customer_id"],
+                    "name"              =>$value["display_name"],
+                    "bio"               =>$value["bio"],
+                    "avatar_file_name"  =>$value["avatar_img"],
+                    "external_username" =>$value["user_name"],
+                    "provider"          =>$value["provider"]
+                );
+                $identity = json_encode_nounicode($identityDetail);
+                $redisHandler->HSET("identities", $identityDetailID, $identity);
+            }
+
         }
     }
 
     public function updateTwitterIdentity($identityId, $userInfo) {
-        //@todo 此处如果发现 external_identity 已经存在，需要合并账号 by @leaskh
-print_r($identityId);
-print_r($userInfo);
+        // ready
         if (!intval($identityId)) {
             return false;
         }
+        // make parameter
         $currentTimeStamp = time();
         $oAuthUserAvatar  = preg_replace('/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $userInfo['profile_image_url']);
-        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$identityId}";
-print_r($sql);
-        return $this->query($sql);
+        // check old identity
+        $row = $this->getRow(
+            "SELECT id FROM identities WHERE provider='twitter' AND external_identity='twitter_{$userInfo['id']}'"
+        );
+        $wasIdentityId = intval($row["id"]);
+        // update identity
+        $chIdentityId  = $wasIdentityId > 0 ? $wasIdentityId : $identityId;
+        $this->query(
+            "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$chIdentityId}"
+        );
+        // merge identity
+        if ($wasIdentityId > 0) {
+            $this->query(
+                "UPDATE invitations SET identity_id={$wasIdentityId} WHERE identity_id={$identityId}"
+            );
+            // @todo: 可能需要更新 log by @leaskh
+            $this->query("DELETE FROM identities WHERE id={$identityId}");
+        }
+        return $chIdentityId
     }
-    
+
 }

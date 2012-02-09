@@ -63,6 +63,8 @@ class Twittergetfriendslist_Job
                     foreach($responseData as $value){
                         $user = (array)$value;
                         $tmpArr = array(
+                            "customer_id"   =>$user["id"],
+                            "bio"           =>$user["description"],
                             "provider"      =>"twitter",
                             "display_name"  =>$user["name"],
                             "user_name"     =>$user["screen_name"],
