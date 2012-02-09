@@ -332,9 +332,7 @@ var moduleNameSpace = 'odof.x.gather',
         }
         // update host @todo: set me as host!
         $('#gather_hostby').attr('disabled', true);
-        $('#gather_hostby').val(
-            odof.exfee.gadget.displayIdentity(myIdentity.external_identity)
-        );
+        $('#gather_hostby').val(odof.exfee.gadget.displayIdentity(myIdentity));
         // add me as exfee
         var meExfee = odof.util.clone(myIdentity);
         meExfee.host = true;
@@ -453,9 +451,7 @@ $(document).ready(function() {
     odof.x.gather.updatePlace();
 
     // host by
-    $('#gather_hostby').val(
-        odof.exfee.gadget.displayIdentity(myIdentity.external_identity)
-    );
+    $('#gather_hostby').val(odof.exfee.gadget.displayIdentity(myIdentity));
     $('#gather_hostby').focus(function () {
         odof.user.status.doShowLoginDialog();
     });
