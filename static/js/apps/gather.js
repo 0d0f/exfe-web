@@ -33,6 +33,11 @@ var moduleNameSpace = 'odof.x.gather',
         if (crossData.title === '') {
             crossData.title = defaultTitle;
         }
+        console.log(force);
+        if (strOriginTitle  === '' && force
+         && strOriginTitle  !== crossData.title) {
+            objTitle.val(crossData.title);
+        }
         document.title = 'EXFE - ' + crossData.title;
         odof.x.render.showTitle();
     };
