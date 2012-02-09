@@ -83,37 +83,33 @@ class IdentityActions extends ActionController {
         {
             $redis = new Redis();
             $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-            $count=$redis->zCard('u_'.$userid);
+            $count=$redis->zCard('u:'.$userid);
             if($count==0)
             {
                 $identities=$identityData->getIdentitiesByUser($userid);
-                if(sizeof($identities)==0)
+                if(sizeof($identities)==0){
                     return;
-                else
-                {
+                } else {
                     $identityData->buildIndex($userid,$identities);
                 }
             }
 
-            $start=$redis->zRank('u_'.$userid, $key);
+            $start=$redis->zRank('u:'.$userid, $key);
             if(is_numeric($start))
             {
                 $endflag=FALSE;
-                $result=$redis->zRange('u_'.$userid, $start+1, $start+$rangelen);
+                $result=$redis->zRange('u:'.$userid, $start+1, $start+$rangelen);
                 while(sizeof($result)>0)
                 {
                     foreach($result as $r)
                     {
                         if($r[strlen($r)-1]=="*")
                         {
+                            //根据返回的数据拆解Key和匹配的数据。
                             $arr_explode=explode("|",$r);
                             if(sizeof($arr_explode)==2) {
                                 $str=rtrim($arr_explode[1], "*");
                                 $resultarray[$str]=$arr_explode[0];
-                            }else if(sizeof($arr_explode) == 3){
-                                $provider = $arr_explode[2];
-                                $str = $arr_explode[0]."@".$provider;
-                                $resultarray[$str]=rtrim($arr_explode[1], "*");
                             }
                         }
 
@@ -128,7 +124,7 @@ class IdentityActions extends ActionController {
                         break;
                     }
                     $start=$start+$rangelen;
-                    $result=$redis->zRange('u_'.$userid, $start+1, $start+$rangelen);
+                    $result=$redis->zRange('u:'.$userid, $start+1, $start+$rangelen);
                 }
             }
         }
@@ -140,15 +136,19 @@ class IdentityActions extends ActionController {
             $identity_id_list=array();
             foreach($keys as $k)
             {
+                //为了保证取到正确的Key，必须再拆解一次。
                 $key_explode=explode("|",$k);
-                if(intval($key_explode[sizeof($key_explode)-1])>0)
+                //if(intval($key_explode[sizeof($key_explode)-1])>0)
+                //默认Key是在最后一位的。这里需要约定一下。By：handaoliang
+                //由于Key会包括字符，所以不能以intval该值是否大于0来判断是否存在。By：handaoliang
+                if($key_explode[sizeof($key_explode)-1] != NULL)
                 {
                     $identity_id=$key_explode[sizeof($key_explode)-1];
                     array_push($identity_id_list,$identity_id);
                 }
                 
             }
-            if(sizeof($identity_id_list)>0);
+            if(sizeof($identity_id_list) > 0);
             {
                 $identities=$identityData->getIdentitiesByIdsFromCache($identity_id_list);
                 foreach($identities as $identity_json)

@@ -79,8 +79,8 @@ class OAuthModels extends DataModel {
 
     public function buildFriendsIndex($userID, $friendsList) {
 
-        $redis = new Redis();
-        $redis->connect('127.0.0.1', 6379);
+        $redisHandler = new Redis();
+        $redisHandler->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
         mb_internal_encoding("UTF-8");
         foreach($friendsList as $value)
         {
@@ -89,9 +89,24 @@ class OAuthModels extends DataModel {
             for ($i=0; $i<mb_strlen($identity); $i++)
             {
                 $identityPart .= mb_substr($identity, $i, 1);
-                $redis->zAdd('u_'.$userID, 0, $identityPart);
+                $redisHandler->zAdd('u:'.$userID, 0, $identityPart);
             }
-            $redis->zAdd('u_'.$userID, 0, $identityPart."|".$value["display_name"]."( @".$value["user_name"]." )|".$value["provider"]."*");
+            $identityDetailID = $value["provider"].":".$value["customer_id"];
+            $redisHandler->zAdd('u:'.$userID, 0, $identityPart."|".$identityDetailID."*");
+            $identityDetail = $redisHandler->HGET("identities",$identityDetailID);
+            if($identityDetail == false) {
+                $identityDetail = array(
+                    "external_identity" =>$value["provider"]."_".$value["customer_id"],
+                    "name"              =>$value["display_name"],
+                    "bio"               =>$value["bio"],
+                    "avatar_file_name"  =>$value["avatar_img"],
+                    "external_username" =>$value["user_name"],
+                    "provider"          =>$value["provider"]
+                );
+                $identity = json_encode_nounicode($identityDetail);
+                $redisHandler->HSET("identities", $identityDetailID, $identity);
+            }
+
         }
     }
 
