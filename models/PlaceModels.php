@@ -9,7 +9,7 @@ class PlaceModels extends DataModel {
         $external_id = $place['external_id'];
         $lng         = $place['lng'];
         $lat         = $place['lat'];
-        $time = time();
+        $time        = time();
 
         $place_line1 = mysql_real_escape_string($place_line1);
         $place_line2 = mysql_real_escape_string($place_line2);
