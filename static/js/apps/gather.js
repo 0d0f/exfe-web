@@ -25,7 +25,6 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.userCurLng      = '';
 
-
     ns.updateTitle = function(force) {
         var objTitle        = $('#gather_title'),
             strOriginTitle  = objTitle.val();
@@ -100,6 +99,11 @@ var moduleNameSpace = 'odof.x.gather',
         var strPlace = odof.util.parseLocation($('#gather_place').val());
         crossData.place.line1 = strPlace[0];
         crossData.place.line2 = strPlace[1];
+        crossData.place.lat = '';
+        crossData.place.lng = '';
+        crossData.place.external_id = '';
+        crossData.place.provider = '';
+
         if (crossData.place.line1 + crossData.place.line2 === '') {
             $('#gather_place_x').html(defaultPlace);
         } else {
@@ -185,6 +189,11 @@ var moduleNameSpace = 'odof.x.gather',
             var googleMapsAddress = '<iframe width="282" height="175" style="border:1px solid #CCC" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=zh-CN&amp;geocode=&amp;q='+userPlaceLat+','+userPlaceLng+'&amp;aq=&amp;sll='+userPlaceLat+','+userPlaceLng+'&amp;sspn=0.007018,0.016512&amp;ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;spn=0.007018,0.016512&amp;t=m&amp;z=14&amp;output=embed"></iframe>';
             //var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;z=5&amp;output=embed"></iframe>';
             jQuery("#calendar_map_container").html(googleMapsAddress);
+
+            crossData.place.lat = userPlaceLat;
+            crossData.place.lng = userPlaceLng;
+            crossData.place.external_id = e.currentTarget.id;
+            crossData.place.provider = 'foursquare';
         };
         jQuery(".place_detail").unbind("click");
         jQuery(".place_detail").bind("click",function(e){
