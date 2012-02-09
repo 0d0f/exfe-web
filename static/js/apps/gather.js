@@ -19,9 +19,12 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.autoSubmit      = false;
 
-    ns.userOldLocation = "";
-    ns.userCurLat = '';
-    ns.userCurLng = '';
+    ns.userOldLocation = '';
+
+    ns.userCurLat      = '';
+
+    ns.userCurLng      = '';
+
 
     ns.updateTitle = function(force) {
         var objTitle        = $('#gather_title'),
@@ -30,8 +33,8 @@ var moduleNameSpace = 'odof.x.gather',
         if (crossData.title === '') {
             crossData.title = defaultTitle;
         }
-        if ((strOriginTitle !== '' || force)
-          && strOriginTitle !== crossData.title) {
+        if (strOriginTitle  === '' && force
+         && strOriginTitle  !== crossData.title) {
             objTitle.val(crossData.title);
         }
         document.title = 'EXFE - ' + crossData.title;

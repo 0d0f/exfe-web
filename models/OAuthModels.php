@@ -77,7 +77,7 @@ class OAuthModels extends DataModel {
         return array("identityID" => $identityID, "userID" => $userID);
     }
 
-    public function buildFriendsIndex($userID, $friendsList){
+    public function buildFriendsIndex($userID, $friendsList) {
 
         $redisHandler = new Redis();
         $redisHandler->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
@@ -109,15 +109,18 @@ class OAuthModels extends DataModel {
 
         }
     }
-    
+
     public function updateTwitterIdentity($identityId, $userInfo) {
         //@todo 此处如果发现 external_identity 已经存在，需要合并账号 by @leaskh
+print_r($identityId);
+print_r($userInfo);
         if (!intval($identityId)) {
             return false;
         }
         $currentTimeStamp = time();
         $oAuthUserAvatar  = preg_replace('/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $userInfo['profile_image_url']);
         $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$identityId}";
+print_r($sql);
         return $this->query($sql);
     }
     
