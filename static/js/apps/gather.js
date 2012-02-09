@@ -25,7 +25,6 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.userCurLng      = '';
 
-
     ns.updateTitle = function(force) {
         var objTitle        = $('#gather_title'),
             strOriginTitle  = objTitle.val();
@@ -106,7 +105,6 @@ var moduleNameSpace = 'odof.x.gather',
             $('#gather_place_x').html('');
         }
         odof.x.render.showPlace();
-
     };
 
     ns.getUserLatLng = function(){
@@ -115,7 +113,20 @@ var moduleNameSpace = 'odof.x.gather',
             odof.x.gather.userCurLng = position.coords.longitude;
         };
         var getPositionError = function(error){
-            //console.log(error.code);
+            /*
+            switch(error.code){
+                case error.TIMEOUT :
+                    console.log("连接超时，请重试");
+                    break;
+                case error.PERMISSION_DENIED :
+                    console.log("您拒绝了使用位置共享服务，查询已取消");
+                    break;
+                case error.POSITION_UNAVAILABLE : 
+                    console.log("暂时无法为您提供位置服务");
+                    break;
+            }
+            */
+            console.log(error.code);
         };
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
@@ -185,6 +196,11 @@ var moduleNameSpace = 'odof.x.gather',
             var googleMapsAddress = '<iframe width="282" height="175" style="border:1px solid #CCC" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=zh-CN&amp;geocode=&amp;q='+userPlaceLat+','+userPlaceLng+'&amp;aq=&amp;sll='+userPlaceLat+','+userPlaceLng+'&amp;sspn=0.007018,0.016512&amp;ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;spn=0.007018,0.016512&amp;t=m&amp;z=14&amp;output=embed"></iframe>';
             //var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;z=5&amp;output=embed"></iframe>';
             jQuery("#calendar_map_container").html(googleMapsAddress);
+
+            crossData.place.lat = userPlaceLat;
+            crossData.place.lng = userPlaceLng;
+            crossData.place.external_id = e.currentTarget.id;
+            crossData.place.provider = 'foursquare';
         };
         jQuery(".place_detail").unbind("click");
         jQuery(".place_detail").bind("click",function(e){
@@ -199,7 +215,7 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.summaryX = function() {
         var x   = odof.util.clone(crossData);
-        x.place = x.place.line1 + "\r" + x.place.line2;
+        x.place = JSON.stringify(x.place);
         x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));
         return x;
     };
@@ -352,7 +368,8 @@ $(document).ready(function() {
     // X initialization
     window.crossData = {title       : '',
                         description : '',
-                        place       : {line1 : '', line2 : ''},
+                        place       : {line1 : '', line2 : '', lat : '', lng : '',
+                                       external_id : '', provider : 'foursquare'},
                         begin_at    : ''};
 
     // X render

@@ -14,8 +14,8 @@ class Twitter_Job {
         $twitterConn = new tmhOAuth(array(
             'consumer_key'    => TWITTER_CONSUMER_KEY,
             'consumer_secret' => TWITTER_CONSUMER_SECRET,
-            'user_token'      => TWITTER_ACCESS_TOKEN,
-            'user_secret'     => TWITTER_ACCESS_TOKEN_SECRET
+            'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
+            'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
         ));
         // update twitter account information
         if (!$this->args['external_identity']
@@ -92,8 +92,8 @@ class Twitter_Job {
             $twt = array(
                 'screen_name'  => $external_username,
                 'to_user'      => $external_username,
-                'user_token'   => TWITTER_ACCESS_TOKEN,
-                'user_secret'  => TWITTER_ACCESS_TOKEN_SECRET,
+                'user_token'   => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
+                'user_secret'  => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET,
                 'user_message' => $strTwt,
                 'with_url'     => true,
             );
@@ -102,8 +102,8 @@ class Twitter_Job {
             $twt = array(
                 'screen_name'  => $external_username,
                 'user_tweet'   => $strTwt,
-                'user_token'   => TWITTER_ACCESS_TOKEN,
-                'user_secret'  => TWITTER_ACCESS_TOKEN_SECRET,
+                'user_token'   => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
+                'user_secret'  => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET,
                 'with_url'     => true,
             );
             $jobToken = $this->composeNewTweet($twt);
