@@ -119,7 +119,20 @@ var moduleNameSpace = 'odof.x.gather',
             odof.x.gather.userCurLng = position.coords.longitude;
         };
         var getPositionError = function(error){
-            //console.log(error.code);
+            /*
+            switch(error.code){
+                case error.TIMEOUT :
+                    console.log("连接超时，请重试");
+                    break;
+                case error.PERMISSION_DENIED :
+                    console.log("您拒绝了使用位置共享服务，查询已取消");
+                    break;
+                case error.POSITION_UNAVAILABLE : 
+                    console.log("暂时无法为您提供位置服务");
+                    break;
+            }
+            */
+            console.log(error.code);
         };
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
