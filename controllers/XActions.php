@@ -213,7 +213,6 @@ class XActions extends ActionController
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
-            print_r($old_cross);
             $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$old_cross["title"]);
         }
         if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
