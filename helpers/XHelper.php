@@ -48,6 +48,7 @@ class XHelper extends ActionController
 
     public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title)
     {
+        print_r($old_title);
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
         $userData=$this->getModelByName("user");
