@@ -207,14 +207,14 @@ class XActions extends ActionController
         }
 
         $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        
         if($newExfees || $delExfees)
-            $change=true;
+            $changed=true;
         if($changed != false) {
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
-            print_r($old_cross);
-            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$old_cross["title"]);
+            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$new_cross["title"]);
         }
         if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
         {
@@ -234,7 +234,7 @@ class XActions extends ActionController
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
-            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity,$new_cross,$old_cross["title"]);
+            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity,$new_cross,$new_cross["title"]);
             //send identity invitation changes msg
         }
         exit(0);
