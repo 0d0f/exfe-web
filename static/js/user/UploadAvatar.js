@@ -69,7 +69,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#dragdrop_info").hide();
 
 		//var img = "/"+responseJSON.file_path+"/240_240_"+responseJSON.file_name;
-		var img = img_url+responseJSON.web_path+"/240_240_"+responseJSON.file_name;
+		var img = img_url+responseJSON.web_path+"/240_240_original_"+responseJSON.file_name;
 
         jQuery('#preview').html(img);
         jQuery('#img_src').val(responseJSON.file_name);				
