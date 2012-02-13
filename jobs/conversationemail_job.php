@@ -444,7 +444,6 @@ class Conversationemail_Job
 
             }
         }
-        print_r($mails);
 
         return $mails;
     }

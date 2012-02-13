@@ -2,10 +2,10 @@
 require_once("../lib/class.phpmailer.php");
 require_once("../common.php");
 require_once("../config.php");
-class Emailactivecode_Job
-{
-    public function perform()
-    {
+
+class Emailactivecode_Job {
+
+    public function perform() {
         global $email_connect;
         global $site_url;
 
@@ -15,9 +15,9 @@ class Emailactivecode_Job
         $avatar_file_name=$this->args['avatar_file_name'];
         $activecode=$this->args['activecode'];
 
-
         $url=$site_url.'/s/active?id='.$identity_id.'&activecode='.$activecode;
-        $parturl=substr($url,0,45)."...";
+        $parturl = preg_replace('/^http[s]*:\/\//i', '', $url);
+        $parturl = substr($parturl, 0, 31) . '…' . substr($parturl, -8);
         $mail["link"]=$url;
         $mail["partlink"]=$parturl;
         $mail["name"]=$name;
@@ -29,8 +29,8 @@ class Emailactivecode_Job
             smtp_connect();
         $this->send($body["title"],$body["body"],$icsstr,$this->args);
     }
-    public function getMailBody($mail)
-    {
+
+    public function getMailBody($mail) {
         global $site_url;
         $template=file_get_contents("activecode_template.html");
         $templates=split("\r|\n",$template);
@@ -49,8 +49,7 @@ class Emailactivecode_Job
     }
 
 
-    public function send($title,$body,$attachment,$args)
-    {
+    public function send($title,$body,$attachment,$args) {
             global $email_connect;
             global $connect_count;
 
@@ -75,5 +74,6 @@ class Emailactivecode_Job
             }
 
     }
+
 }
 ?>
