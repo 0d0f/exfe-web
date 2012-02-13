@@ -206,7 +206,7 @@ class XActions extends ActionController
             }
         }
 
-        $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        #$changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
         
         if($newExfees || $delExfees)
             $changed=true;
