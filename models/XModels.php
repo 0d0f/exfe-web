@@ -76,7 +76,7 @@ class XModels extends DataModel {
         $datetime_array = explode(' ', $cross['start_time']);
         $time_type = 0;
         if (sizeof($datetime_array) === 1) {
-            $time_type = TIMETYPE_ANYTIME; // allday
+            $time_type = TIMETYPE_ANYTIME; // anytime
         }
         $sql  = "UPDATE `crosses`
                     SET `updated_at`  = NOW(),

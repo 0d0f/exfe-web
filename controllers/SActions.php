@@ -398,7 +398,9 @@ class SActions extends ActionController {
         // get confirmed informations
         $crossIds = array();
         foreach ($crosses as $crossI => $crossItem) {
-            array_push($crossIds, $crossItem['id']);
+            if ($crossItem['id'] !== null) {
+                array_push($crossIds, $crossItem['id']);
+            }
         }
         $cfedInfo = $modIvit->getIdentitiesIdsByCrossIds($crossIds);
 

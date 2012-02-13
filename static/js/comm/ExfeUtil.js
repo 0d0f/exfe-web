@@ -19,7 +19,9 @@ var odof = {
     })()
 };
 
+
 (function(base) {
+
     /**
      * Create Util
      **/
@@ -33,6 +35,7 @@ var odof = {
         window.util = {};
         util = window.util;
     }
+
 
     /**
      * -----------------------------------------------------------------
@@ -62,6 +65,7 @@ var odof = {
         return obj;
     };
 
+
     /**
      * Create a rand element id (string)
      * @None
@@ -71,6 +75,7 @@ var odof = {
         return now + ":" + Math.floor(Math.random() * 100000000);
     };
 
+
     /**
      * Create a time stamp
      * @None
@@ -79,6 +84,7 @@ var odof = {
         var now = new Date().getTime();;
         return (now - now % 1000) / 1000;
     };
+
 
     /**
      * Parse json date
@@ -100,6 +106,7 @@ var odof = {
         return returnJSON;
     };
 
+
     /**
      * Parse json date
      * @Array Object
@@ -112,6 +119,7 @@ var odof = {
             return true;
         }
     };
+
 
     /**
      * Check if item in array
@@ -127,6 +135,7 @@ var odof = {
         }
         return false;
     };
+
 
     /**
      * Remove a item from Array by item value
@@ -144,6 +153,7 @@ var odof = {
         return myArray;
     };
 
+
     /**
      * Remove a item from Array by item ID
      * @Array, items id;
@@ -157,6 +167,7 @@ var odof = {
         return myArray;
     };
 
+
     /**
      * check if string contain special chars
      * @str, string
@@ -167,6 +178,7 @@ var odof = {
         return (specialStringReg.test(str));
     };
 
+
     /**
      * trim
      * @string.trim;
@@ -175,6 +187,7 @@ var odof = {
     util.trim = function(str) {
         return str.replace(/(^\s*)|(\s*$)/g, "");
     };
+
 
     /**
      * test and verify string is chinese chars
@@ -189,6 +202,7 @@ var odof = {
         }
         return true;
     };
+
 
     /**
      * toDBC
@@ -212,6 +226,7 @@ var odof = {
         return DBCStr;
     };
 
+
     /**
      * get Windows size
      * @string.trim;
@@ -233,6 +248,7 @@ var odof = {
         }
         return { "width":window_width, "height":window_height};
     };
+
 
     /**
      * get page size
@@ -271,7 +287,6 @@ var odof = {
     };
 
 
-
     /**
      * -----------------------------------------------------------------
      * - The function blew will be used to:
@@ -298,6 +313,7 @@ var odof = {
         return util.decode(ns);
     };
 
+
     /**
      * Decode a json string
      * @param {String} json '{name: "Lucy", age: 18}'
@@ -305,6 +321,7 @@ var odof = {
     util.decode = function(json) {
         return eval("(" + json + ")");
     };
+
 
     /*
      * Analyze URI
@@ -428,6 +445,7 @@ var odof = {
             .replace(/&quot;/g, "'");
     };
 
+
     /*
      * This function will be used to encode the string with HTML
      * @str, the string to be encoded
@@ -435,6 +453,7 @@ var odof = {
     util.encodeHTML = function(text){
         return text.replace(/&/g, '&amp').replace(/'/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     };
+
 
     /*
      * This function will be used to delete all html tag
@@ -461,6 +480,7 @@ var odof = {
           return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
        });
     };
+
 
     /**
      * -----------------------------------------------------------------
@@ -505,6 +525,7 @@ var odof = {
         document.cookie = cookieValue;
     };
 
+
     /*
      * This function will be used to delete the cookie by given name
      * @name, the name of the cookie
@@ -542,6 +563,7 @@ var odof = {
         }
     };
 
+
     /*
      * This function will be fired when the DOM tree ready for multipulate, different with onload
      * @fn, the function you want to add
@@ -567,7 +589,6 @@ var odof = {
     };
 
 
-
     /*
      * This function will be used to add the function and trigger it after the document ready
      * @func, the function callback
@@ -586,6 +607,7 @@ var odof = {
             util.loadReadyCbQueue.push(func);
         }
     };
+
 
     var _loadComplete = function(){
         util.loadReady = true;
@@ -617,6 +639,7 @@ var odof = {
         }
     };
 
+
     /*
      * This function will be used to get the position of the mouse
      * @e, the event object
@@ -638,6 +661,7 @@ var odof = {
         };
     };
 
+
     /*
      * This function will be used to check whether the mouse is in the given DOM Elememnt
      * @e, the event object
@@ -651,6 +675,7 @@ var odof = {
         }
         return false;
     };
+
 
     util.makeDrag = function(sender, container, fnMousedown, fnMousemove, fnMouseup)
     {
@@ -709,6 +734,7 @@ var odof = {
         });
     };
 
+
     // -----------------------------------------------------------------
     // - The function blew will be used to manage the DOM ELement:
     // -     selector of the Element
@@ -732,6 +758,7 @@ var odof = {
         return false;
     };
 
+
     /*
      * This function will be used to add the class to the element
      * @el, the DOM elemenet
@@ -749,6 +776,7 @@ var odof = {
         el.className = arr.join(" ");
     };
 
+
     /*
      * This function will be used to remove the class from the given element
      * @el, the DOM element
@@ -764,6 +792,7 @@ var odof = {
         }
         el.className = arr.join(" ");
     };
+
 
     /*
      * This function will be used to find the element deeply
@@ -799,6 +828,7 @@ var odof = {
         return els;
     };
 
+
     util.hideFlash = function() {
         if(util.flashHide){
             return;
@@ -830,6 +860,7 @@ var odof = {
         }
         objs = null;
     };
+
 
     util.restoreFlash = function() {
         if(!util.flashHide){
@@ -871,6 +902,7 @@ var odof = {
         objs = null;
     };
 
+
     /*
      * This function will be used to find the element by given tagName and className
      * @tag, the tag name of the elements
@@ -886,6 +918,7 @@ var odof = {
         }
         return ret;
     };
+
 
     /*
      * This function will get the position of the object
@@ -916,6 +949,7 @@ var odof = {
         };
     };
 
+
     /*
      * This function will be used to check whether the parent is descendant of the node
      * @parent, the parent node
@@ -933,6 +967,7 @@ var odof = {
         return false;
     };
 
+
     /*
      * This function will be used to remove all the Child under one element
      * @e, the element whose children will be removed
@@ -942,6 +977,7 @@ var odof = {
             e.removeChild(e.lastChild);
         }
     };
+
 
     /*
      * This function will be used to get the Document Object by ID
@@ -954,6 +990,7 @@ var odof = {
         }
         return id;
     };
+
 
     /*
      * This function will be used to get the value or set the value
@@ -974,12 +1011,14 @@ var odof = {
         return el.style[styleName];
     };
 
+
     /*
      * This function will be used to get the destance of the scoll top to Document top
      */
     util.getScrollTop = function() {
         return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
     };
+
 
     /*
      * This function will be used to get the destance of the scoll left to Document left
@@ -988,12 +1027,14 @@ var odof = {
         return window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft;
     };
 
+
     /*
      * Get the Height of the Window
      */
     util.getClientHeight = function() {
         return (document.compatMode == "CSS1Compat")? document.documentElement.clientHeight : document.body.clientHeight;
     };
+
 
     /*
      * Get the Width of the Window
@@ -1002,13 +1043,16 @@ var odof = {
         return (document.compatMode == "CSS1Compat")? document.documentElement.clientWidth : document.body.clientWidth;
     };
 
+
     util.getScrollWidth = function() {
         return (document.compatMode == "CSS1Compat")? document.documentElement.scrollWidth : document.body.scrollWidth;
     };
 
+
     util.getScrollHeight = function() {
         return (document.compatMode == "CSS1Compat")? document.documentElement.scrollHeight : document.body.scrollHeight;
     };
+
 
     /*
      * Get if the scroll on bottom
@@ -1029,6 +1073,7 @@ var odof = {
         }
     };
 
+
     /**
      * trim string
      * by Leask
@@ -1036,6 +1081,7 @@ var odof = {
     util.trim = function(str) {
         return str ? str.replace(/^\s+|\s+$/g, '') : '';
     };
+
 
     /**
      * count object items
@@ -1147,9 +1193,19 @@ var odof = {
      * by Leask
      */
     util.getHumanDateTime = function(strTime, lang) {
+        var oriDate   = strTime.split(','),
+            time_type = 0;
+        strTime = this.trim(oriDate[0]);
+        if (strTime === '0000-00-00 00:00:00') {
+            return 'Sometime';
+        }
+        if (oriDate.length > 1) {
+            time_type = parseInt(oriDate[1]);
+        } else if (strTime.split(' ').length === 1) {
+            time_type = 2 // TIMETYPE_ANYTIME
+        }
         var objDate   = this.getDateFromString(strTime),
             timestamp = Date.parse(objDate) / 1000,
-            time_type = 0,
             timestr   = '';
         if (timestamp < 0) {
             objDate  = this.getDateFromString('0000-00-00 00:00:00');
@@ -1168,9 +1224,6 @@ var odof = {
         if (timestamp >= 0) {
             timestr  = ', '  + stdDate;
         }
-        if (strTime.split(' ').length === 1) {
-            time_type = 2 // TIMETYPE_ANYTIME
-        }
         switch (lang) {
             case 'en':
             default:
@@ -1187,8 +1240,8 @@ var odof = {
         }
         return '';
     };
-    
-    
+
+
     /**
      * parse human datetime
      * by Leask
@@ -1256,6 +1309,7 @@ var odof = {
             height : window.innerHeight || document.documentElement.clientHeight
         };
     };
+
 
     /**
      * recursive clone a javascript object
