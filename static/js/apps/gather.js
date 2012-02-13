@@ -135,13 +135,13 @@ var moduleNameSpace = 'odof.x.gather',
 
     //added by handaoliang...
     ns.getLocation = function(){
-        var placeDetail = $('#gather_place').val();
+        var placeDetail = jQuery('#gather_place').val();
         var placeArr = odof.util.parseLocation(placeDetail);
-        var strPlace = placeArr[0];
+        var strPlace = odof.util.toDBC(placeArr[0]);
         //只有当输入大于两个字符的时候，才进行查询。
         if(strPlace != ns.userOldLocation && odof.util.trim(placeDetail).length > 2){
             var postData = {
-                l:odof.util.toDBC(strPlace),
+                l:strPlace,
                 userLat:odof.x.gather.userCurLat,
                 userLng:odof.x.gather.userCurLng
             };
@@ -152,7 +152,14 @@ var moduleNameSpace = 'odof.x.gather',
                 dataType:"json",
                 //async:false,
                 success: function(JSONData){
-                    if(!JSONData.error && JSONData.response.length != 0){
+                    var curLocationDetail = jQuery('#gather_place').val();
+                    var curLocation = odof.util.parseLocation(curLocationDetail);
+                    var strLocation = odof.util.toDBC(curLocation[0]);
+
+                    if(!JSONData.error
+                        && JSONData.response.length != 0
+                        && JSONData.s_key == strLocation
+                    ){
                         ns.drawLocationSelector(JSONData.response);
                     }
                 }
@@ -174,6 +181,10 @@ var moduleNameSpace = 'odof.x.gather',
                       + '</li></ul>';
         });
 
+        jQuery("#gather_place_selector").unbind('clickoutside');
+        jQuery('#gather_place_selector').bind('clickoutside', function(event) {
+            jQuery("#gather_place_selector").hide();
+        });
         jQuery("#gather_place_selector").show();
         jQuery("#gather_place_selector").html(placeList);
 
