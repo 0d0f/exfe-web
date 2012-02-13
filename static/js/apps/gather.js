@@ -135,13 +135,13 @@ var moduleNameSpace = 'odof.x.gather',
 
     //added by handaoliang...
     ns.getLocation = function(){
-        var placeDetail = $('#gather_place').val();
+        var placeDetail = jQuery('#gather_place').val();
         var placeArr = odof.util.parseLocation(placeDetail);
-        var strPlace = placeArr[0];
+        var strPlace = odof.util.toDBC(placeArr[0]);
         //只有当输入大于两个字符的时候，才进行查询。
         if(strPlace != ns.userOldLocation && odof.util.trim(placeDetail).length > 2){
             var postData = {
-                l:odof.util.toDBC(strPlace),
+                l:strPlace,
                 userLat:odof.x.gather.userCurLat,
                 userLng:odof.x.gather.userCurLng
             };
@@ -150,9 +150,16 @@ var moduleNameSpace = 'odof.x.gather',
                 data: postData,
                 url: site_url+"/Maps/GetLocation",
                 dataType:"json",
-                async:false,
+                //async:false,
                 success: function(JSONData){
-                    if(!JSONData.error && JSONData.response.length != 0){
+                    var curLocationDetail = jQuery('#gather_place').val();
+                    var curLocation = odof.util.parseLocation(curLocationDetail);
+                    var strLocation = odof.util.toDBC(curLocation[0]);
+
+                    if(!JSONData.error
+                        && JSONData.response.length != 0
+                        && JSONData.s_key == strLocation
+                    ){
                         ns.drawLocationSelector(JSONData.response);
                     }
                 }

@@ -35,7 +35,12 @@ class MapsActions extends ActionController {
             "limit"     =>10
         );
 
-        $returnData = array( "error"=>0, "msg"=>"","response"=>array());
+        $returnData = array(
+            "error"     =>0,
+            "msg"       =>"",
+            "s_key"     =>"",
+            "response"  =>array()
+        );
 
         $responseData = $foursquareHandler->GetPublic("venues/search",$queryParams);
 	    $venuesList = json_decode($responseData);
@@ -65,6 +70,7 @@ class MapsActions extends ActionController {
             }
         }
         $returnData["response"] = $responseResult;
+        $returnData["s_key"] = $location;
 
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
