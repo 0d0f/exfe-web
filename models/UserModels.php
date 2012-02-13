@@ -79,10 +79,29 @@ class UserModels extends DataModel{
         return $this->getUser($userid);
     }
 
-    public function saveUserAvatar($avatar,$userid)
-    {
-        $sql="update users set avatar_file_name='$avatar' where id=$userid";
+    //保存用户头像
+    public function saveUserAvatar($avatar,$userid) {
+        $sql="UPDATE users SET avatar_file_name='$avatar' WHERE id={$userid}";
         $this->query($sql);
+
+        //如果Identity的头像为空，则更新Identity的头像。
+        $sql = "SELECT identityid FROM user_identity WHERE userid={$userid}";
+        $result = $this->getAll($sql);
+        if(count($result) != 0){
+            foreach($result as $v){
+                $sql = "SELECT provider, external_identity, avatar_file_name FROM identities WHERE id=".$v["identityid"];
+                $re = $this->getRow($sql);
+                $avatar_file_name = $re["avatar_file_name"];
+                $pattern = "/(http[s]?:\/\/www\.gravatar\.com)/is";
+                if(preg_match($pattern, $avatar_file_name) && $re["provider"] == "email"){
+                    $gravatar_file = 'http://www.gravatar.com/avatar/';
+                    $gravatar_file .= md5(strtolower(trim($re["external_identity"])));
+                    $gravatar_file .= "?d=".urlencode(getUserAvatar($avatar));
+                    $sql = "UPDATE identities SET avatar_file_name='{$gravatar_file}' WHERE id=".$v["identityid"];
+                    $this->query($sql);
+                }
+            }
+        }
         return $this->getUser($userid);
     }
 
