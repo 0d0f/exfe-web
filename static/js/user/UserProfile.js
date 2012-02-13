@@ -66,7 +66,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var strCross = '<a id="past_cross_' + data[i]['id'] + '" class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
                          +     '<div class="cross">'
                          +         '<h5>' + data[i]['title'] + '</h5>'
-                         +         '<p>' + data[i]['begin_at'] + '</p>'
+                         +         '<p>' + odof.util.getHumanDateTime(data[i]['begin_at']) + '</p>'
                          +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <span>(' + data[i]['place_line2'] + ')</span>') : '') + '</p>'
                          +         '<p>' + confirmed + '</p>'
                          +     '</div>'
@@ -225,7 +225,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="invitation cross">'
                              +     '<button type="button" id="accept_button_' + data[i]['base62id'] + '">Accept</button>'
                              +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
-                             +     '<p>' + data[i]['cross']['begin_at'] + ' by ' + data[i]['sender']['name'] + '</p>'
+                             +     '<p>' + odof.util.getHumanDateTime(data[i]['cross']['begin_at']) + ' by ' + data[i]['sender']['name'] + '</p>'
                              + '</div>';
                 }
                 $('#invitations > .crosses').html(strInvt);
@@ -259,7 +259,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         numChgs = 0;
                     if (data[i]['change']) {
                         if (data[i]['change']['begin_at']) {
-                            strLogX += '<p class="clock"><em>' + data[i]['change']['begin_at']['new_value'] + '</em></p>';
+                            strLogX += '<p class="clock"><em>' + odof.util.getHumanDateTime(data[i]['change']['begin_at']['new_value']) + '</em></p>';
                         }
                         if (data[i]['change']['place']) {
                             strLogX += '<p class="place"><em>' + data[i]['change']['place']['new_value'] + '</em></p>';

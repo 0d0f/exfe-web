@@ -188,7 +188,6 @@ class XActions extends ActionController
 
         $ehelper->sendIdentitiesInvitation($cross_id, $newExfee_ids,$allExfee_ids);
 
-
         $xhelper = $this->getHelperByName('x');
 
         $new_cross=$crossDataObj->getCross($cross_id);
@@ -206,7 +205,9 @@ class XActions extends ActionController
             }
         }
 
-        #$changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
+            $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        }
         
         if($newExfees || $delExfees)
             $changed=true;
