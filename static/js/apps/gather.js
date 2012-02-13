@@ -150,7 +150,7 @@ var moduleNameSpace = 'odof.x.gather',
                 data: postData,
                 url: site_url+"/Maps/GetLocation",
                 dataType:"json",
-                //async:false,
+                async:false,
                 success: function(JSONData){
                     if(!JSONData.error && JSONData.response.length != 0){
                         ns.drawLocationSelector(JSONData.response);
@@ -174,6 +174,10 @@ var moduleNameSpace = 'odof.x.gather',
                       + '</li></ul>';
         });
 
+        jQuery("#gather_place_selector").unbind('clickoutside');
+        jQuery('#gather_place_selector').bind('clickoutside', function(event) {
+            jQuery("#gather_place_selector").hide();
+        });
         jQuery("#gather_place_selector").show();
         jQuery("#gather_place_selector").html(placeList);
 
