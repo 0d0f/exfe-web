@@ -715,8 +715,19 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.keyComplete[domId] = key;
         if (exfee && exfee.length) {
             for (var i in exfee) {
-                var curIdentity = exfee[i].external_identity.toLowerCase(),
+                var curIdentity = '',
                     shown       = false;
+                switch (exfee[i].provider) {
+                    case 'email':
+                        curIdentity = exfee[i].external_identity.toLowerCase();
+                        break;
+                    case 'twitter':
+                        curIdentity = '@' + exfee[i].external_username.toLowerCase() + '@twitter';
+                        break;
+                    default:
+                        continue;
+                }
+                console.log(curIdentity);
                 for (var j in this.curComplete[domId]) {
                     if (this.curComplete[domId][j] === curIdentity) {
                         shown = true;
