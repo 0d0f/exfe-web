@@ -89,7 +89,9 @@ function getWidth($image) {
     return $width;
 }
 function asidoResizeImg($args=array(), $crop=false){
-    include('lib/asido/class.asido.php');
+
+    require_once(dirname(__FILE__).'/lib/asido/class.asido.php');
+
     asido::driver('gd');
 
     $source_image = $args["source_image"];
@@ -99,7 +101,7 @@ function asidoResizeImg($args=array(), $crop=false){
     $width = $args["width"];
     $height = $args["height"];
 
-    // process
+    // process crop images
     $i1 = asido::image($source_image, $target_image);	
     // fit and add white frame										
     if($crop){
