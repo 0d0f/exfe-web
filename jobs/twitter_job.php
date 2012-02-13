@@ -67,9 +67,16 @@ class Twitter_Job {
             if ($this->args["place_line2"] != '') {
                 $place .= ', ' . $this->args["place_line2"];
             }
-        }        
-        $strTwt = 'EXFE invitation: ' . $this->args['title'] . ".{$datetime}{$place}";
+        }
+        // is host
+        if (intval($this->args["host_identity_id"])
+        === intval($this->args["identity_id"])) {
+            $strTwt = "You're successfully gathering this X";
+        } else {
+            $strTwt = 'EXFE invitation';
+        }
         // connect string
+        $strTwt .= ': ' . $this->args['title'] . ".{$datetime}{$place}";
         if ($twitterConn->response['response'] === 'true') {
             $crossLink .= '?token=' . $this->args['token'];
         } else if ($twitterConn->response['response'] === 'false') {

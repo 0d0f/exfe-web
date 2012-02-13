@@ -21,11 +21,7 @@ class XHelper extends ActionController
         {
             $changed["begin_at"]=$crossobj["begin_at"];
             // time type
-            $datetime_array = explode(' ', $changed["begin_at"]);
-            $changed["time_type"] = 0;
-            if (sizeof($datetime_array) === 1) {
-                $changed["time_type"] = TIMETYPE_ANYTIME; // allday
-            }
+            $changed["time_type"] = $crossobj['time_type'];
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"begin_at", "{$crossobj["begin_at"]},{$changed["time_type"]}","");
         }
         if($old_cross["place_line1"]!=$crossobj["place_line1"])

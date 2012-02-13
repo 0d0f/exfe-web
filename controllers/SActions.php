@@ -3,33 +3,27 @@ class SActions extends ActionController {
 
     private $specialDomain = array("facebook", "twitter", "google");
 
-
     public function doTestUser() {
         $identityData = $this->getModelByName("identity");
         $identityData->setRelation($_GET["identity_id"]);
 
     }
 
-
     public function doAdd() {
-        $identity= $_GET["identity"];
-        $provider= $_GET["provider"];
+        $identity = $_GET["identity"];
+        $provider = $_GET["provider"];
         $password = $_GET["password"];
 
-        //package as a  transaction
-        if(intval($_SESSION["userid"])>0)
-        {
+        //package as a transaction
+        if(intval($_SESSION["userid"])>0) {
             $userid=$_SESSION["userid"];
-        }
-        else
-        {
+        } else {
             $Data = $this->getModelByName("user");
             $userid = $Data->addUser($password);
         }
         $identityData = $this->getModelByName("identity");
         $identityData->addIdentity($userid,$provider,$identity);
     }
-
 
     //上传头像文件。
     public function doUploadAvatarFile() {
@@ -47,11 +41,12 @@ class SActions extends ActionController {
             $img_name = $result["file_name"];
             $img_ext = $result["file_ext"];
             $img_path = $result["file_path"];
+
             //图片还要经过处理后再给客户端。
             require_once "imgcommon.php";
             $img_info = array(
                 "source_image"      =>$img_path."/".$img_name,
-                "target_image"      =>$img_path."/"."240_240_".$img_name,
+                "target_image"      =>$img_path."/"."240_240_original_".$img_name,
                 "width"             =>240,
                 "height"            =>240,
             );
@@ -62,7 +57,6 @@ class SActions extends ActionController {
         //echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
         echo json_encode($result);
     }
-
 
     //截剪头像。
     public function doUploadAvatarNew() {
@@ -76,14 +70,22 @@ class SActions extends ActionController {
         $img_path = getHashFilePath($img_name, $img_dir);
 
         $img_info = array(
-            "source_image"      =>$img_path."/"."240_240_".$img_name,
-            "target_image"      =>$img_path."/"."80_80_".$img_name,
+            "source_image"      =>$img_path."/"."240_240_original_".$img_name,
+            "target_image"      =>$img_path."/"."240_240_".$img_name,
             "width"             =>$img_width,
             "height"            =>$img_height,
             "x"                 =>$img_x,
             "y"                 =>$img_y
         );
         asidoResizeImg($img_info, $crop=true);
+
+        $small_img_info = array(
+            "source_image"      =>$img_path."/"."240_240_".$img_name,
+            "target_image"      =>$img_path."/"."80_80_".$img_name,
+            "width"             =>80,
+            "height"            =>80
+        );
+        asidoResizeImg($small_img_info, $crop=false);
 
         $return_data = array(
             "status"    =>0,
@@ -398,7 +400,9 @@ class SActions extends ActionController {
         // get confirmed informations
         $crossIds = array();
         foreach ($crosses as $crossI => $crossItem) {
-            array_push($crossIds, $crossItem['id']);
+            if ($crossItem['id'] !== null) {
+                array_push($crossIds, $crossItem['id']);
+            }
         }
         $cfedInfo = $modIvit->getIdentitiesIdsByCrossIds($crossIds);
 

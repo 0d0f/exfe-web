@@ -369,7 +369,7 @@ $(document).ready(function() {
     window.crossData = {title       : '',
                         description : '',
                         place       : {line1 : '', line2 : '', lat : '', lng : '',
-                                       external_id : '', provider : 'foursquare'},
+                                       external_id : '', provider : ''},
                         begin_at    : ''};
 
     // X render

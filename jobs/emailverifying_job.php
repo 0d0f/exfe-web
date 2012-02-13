@@ -19,8 +19,11 @@ class Emailverifying_Job
         $token=$this->args['token'];
 
         $url=$site_url.'/s/verifyIdentity?token='.$token;
-        $report_spam_url = $site_url.'/s/reportSpam?token='.$token;;
-        $parturl=substr($url,0,45)."...";
+        $report_spam_url = $site_url.'/s/reportSpam?token='.$token;
+        
+        $parturl = preg_replace('/^http[s]*:\/\//i', '', $url);
+        $parturl = substr($parturl, 0, 31) . '…' . substr($parturl, -8);
+        
         $mail["link"]=$url;
         $mail["report_spam_url"] = $report_spam_url;
         $mail["site_url"] = $site_url;

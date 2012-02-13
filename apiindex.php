@@ -15,7 +15,7 @@ require_once "APIFrontController.php";
 
 define ("REQUEST_METHOD",$_SERVER['REQUEST_METHOD']);
 
-define("INVITATION_MAYBE", 0);
+define("INVITATION_MAYBE", 3);
 define("INVITATION_YES", 1);
 define("INVITATION_NO", 2);
 

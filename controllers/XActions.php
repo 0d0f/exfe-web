@@ -25,7 +25,7 @@ class XActions extends ActionController
 
                     // @todo: package as a translaction
                     if (trim($_POST['place']) !== '') {
-                        $placeid=$placedata->savePlace(json_decode($_POST['place']));
+                        $placeid = $placedata->savePlace(json_decode($_POST['place'], true));
                     } else {
                         $placeid = 0;
                     }
@@ -188,7 +188,6 @@ class XActions extends ActionController
 
         $ehelper->sendIdentitiesInvitation($cross_id, $newExfee_ids,$allExfee_ids);
 
-
         $xhelper = $this->getHelperByName('x');
 
         $new_cross=$crossDataObj->getCross($cross_id);
@@ -206,14 +205,17 @@ class XActions extends ActionController
             }
         }
 
-        $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
+            $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
+        }
+        
         if($newExfees || $delExfees)
-            $change=true;
+            $changed=true;
         if($changed != false) {
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
-            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$old_cross["title"]);
+            $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$new_cross["title"]);
         }
         if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
         {
@@ -233,7 +235,7 @@ class XActions extends ActionController
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
-            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity,$new_cross,$old_cross["title"]);
+            $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity,$new_cross,$new_cross["title"]);
             //send identity invitation changes msg
         }
         exit(0);

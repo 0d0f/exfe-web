@@ -7,14 +7,16 @@ class PlaceModels extends DataModel {
         $place_line2 = $place['line2'];
         $provider    = $place['provider'];
         $external_id = $place['external_id'];
-        $lng         = $place['lng'];
-        $lat         = $place['lat'];
-        $time = time();
+        $lngKey      = $place['lng'] === '' ? '' : ',lng';
+        $latKey      = $place['lat'] === '' ? '' : ',lat';
+        $lng         = $place['lng'] === '' ? '' : ",{$place['lng']}";
+        $lat         = $place['lat'] === '' ? '' : ",{$place['lat']}";
+        $time        = time();
 
         $place_line1 = mysql_real_escape_string($place_line1);
         $place_line2 = mysql_real_escape_string($place_line2);
 
-        $sql = "insert into places (place_line1,place_line2,provider,external_id,lng,lat,created_at,updated_at) values('$place_line1','$place_line2','$provider','$external_id',$lng,$lat,FROM_UNIXTIME($time),FROM_UNIXTIME($time));";
+        $sql = "insert into places (place_line1,place_line2,provider,external_id{$lngKey}{$latKey},created_at,updated_at) values('$place_line1','$place_line2','$provider','$external_id'{$lng}{$lat},FROM_UNIXTIME($time),FROM_UNIXTIME($time));";
         $result = $this->query($sql);
         if (intval($result["insert_id"]) > 0) {
             return intval($result["insert_id"]);

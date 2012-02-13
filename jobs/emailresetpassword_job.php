@@ -2,8 +2,10 @@
 require_once("../lib/class.phpmailer.php");
 require_once("../common.php");
 require_once("../config.php");
+
 class Emailresetpassword_Job
 {
+
     public function perform()
     {
         $title = "EXFE forgot password process";
@@ -16,7 +18,9 @@ class Emailresetpassword_Job
         $url = $site_url.'/s/resetPassword?token='.$token;
         $report_spam_url = $site_url.'/s/reportSpam?token='.$token;;
 
-        $parturl=substr($url,0,45)."...";
+        $parturl = preg_replace('/^http[s]*:\/\//i', '', $url);
+        $parturl = substr($parturl, 0, 31) . '…' . substr($parturl, -8);
+
         $mail["site_url"]=$site_url;
         $mail["link"]=$url;
         $mail["report_spam_url"] = $report_spam_url;
@@ -31,6 +35,7 @@ class Emailresetpassword_Job
         }
         $this->send($title, $mail_body, $this->args);
     }
+
     public function getMailBody($mail)
     {
         $template_con = file_get_contents("resetpassword_template.html");
@@ -72,6 +77,7 @@ class Emailresetpassword_Job
             }
 
     }
-}
-?>
 
+}
+
+?>
