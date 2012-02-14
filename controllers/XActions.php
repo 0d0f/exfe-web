@@ -24,8 +24,9 @@ class XActions extends ActionController
                     $placedata=$this->getModelByName('place');
 
                     // @todo: package as a translaction
-                    if (trim($_POST['place']) !== '') {
-                        $placeid = $placedata->savePlace(json_decode($_POST['place'], true));
+                    $place = json_decode($_POST['place'], true);
+                    if (trim($_POST['place']['line1']) !== '') {
+                        $placeid = $placedata->savePlace($place);
                     } else {
                         $placeid = 0;
                     }
