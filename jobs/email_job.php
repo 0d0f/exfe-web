@@ -105,11 +105,11 @@ class Email_Job
 
 
         $body=$this->getMailBody($mail);
-
         if($email_connect=="")
             smtp_connect();
         $this->send($body["title"],$body["body"],$icsstr,$this->args);
     }
+
     public function getMailBody($mail)
     {
         global $site_url;
@@ -120,7 +120,8 @@ class Email_Job
         $template_body=implode($templates);
         $mail_title=str_replace("%exfe_title%",$mail["exfe_title"],$template_title);
 
-        $mail_body=str_replace("%exfe_title%",$mail["exfe_title"],$template_body);
+        $mail_body=str_replace("%cross_url%",$mail["exfe_link"],$template_body);
+        $mail_body=str_replace("%exfe_title%",$mail["exfe_title"],$mail_body);
         $mail_body=str_replace("%exfee_name%",$mail["exfee_name"],$mail_body);
         $mail_body=str_replace("%hint_title%",$mail["hint_title"],$mail_body);
         $mail_body=str_replace("%host_name%",$mail["host_name"],$mail_body);

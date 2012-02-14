@@ -59,7 +59,7 @@
                         $status = "Pending verification, {$dateExp} days left.";
                         $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>Re-verify...</button>";
 
-                        echo '<i><img class="worning" src="/static/images/translation.gif" alt=""/><?php echo $status; ?> <?php echo $button; ?></i>';
+                        echo '<i><img class="worning" src="/static/images/translation.gif" alt=""/>'.$status.$button.'</i>';
                     }
                 }
                 ?>

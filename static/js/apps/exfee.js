@@ -284,7 +284,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.displayIdentity = function(identity) {
-        switch (identity.provider) {
+        switch (identity ? identity.provider : '') {
             case 'email':
                 return identity.external_identity;
                 break;
@@ -299,11 +299,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.addExfeeFromCache = function(domId, identity) {
         for (var i in odof.exfee.gadget.exfeeAvailable) {
-            if (odof.exfee.gadget.exfeeAvailable[i]
-                    .external_identity === identity) {
-                odof.exfee.gadget.addExfee(
-                    domId, [odof.exfee.gadget.exfeeAvailable[i]], true
-                );
+            if (odof.exfee.gadget.exfeeAvailable[i].external_identity === identity) {
+                var objExfee = odof.util.clone(odof.exfee.gadget.exfeeAvailable[i]);
+                odof.exfee.gadget.exfeeAvailable.splice(i, 1);
+                odof.exfee.gadget.cacheExfee([objExfee], true);
+                odof.exfee.gadget.addExfee(domId, [objExfee], true);
                 break;
             }
         }
@@ -820,7 +820,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
 
-    ns.cacheExfee = function(exfees) {
+    ns.cacheExfee = function(exfees, unshift) {
         for (var i in exfees) {
             var objExfee    = odof.util.clone(exfees[i]),
                 curIdentity = objExfee.external_identity
@@ -837,7 +837,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     this.exfeeAvailable.splice(i, 1);
                 }
             }
-            this.exfeeAvailable.unshift(objExfee);
+            if (unshift) {
+                this.exfeeAvailable.unshift(objExfee);
+            } else {
+                this.exfeeAvailable.push(objExfee);
+            }
+            if (this.exfeeAvailable.length > 250) {
+                this.exfeeAvailable.splice(250);
+            }
             this.exfeeIdentified[curIdentity] = true;
         }
         if (typeof localStorage !== 'undefined') {
