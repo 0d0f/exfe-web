@@ -284,7 +284,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.displayIdentity = function(identity) {
-        switch (identity.provider) {
+        switch (typeof identity.provider === 'undefined' ? '' : identity.provider) {
             case 'email':
                 return identity.external_identity;
                 break;
