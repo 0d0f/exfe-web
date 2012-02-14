@@ -727,7 +727,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     default:
                         continue;
                 }
-                console.log(curIdentity);
                 for (var j in this.curComplete[domId]) {
                     if (this.curComplete[domId][j] === curIdentity) {
                         shown = true;
