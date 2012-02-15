@@ -91,7 +91,7 @@ function buildICS($args)
     $e->setProperty( 'description'
                    , $args['description'] );    // describe the event
     $e->setProperty( 'location'
-                   , $args['place_line1']."\r\n".$args['place_line2']  );                     // locate the event
+                   , $args['place']['line1']."\r\n".$args['place']['line2']);                     // locate the event
     $e->setProperty( 'url'
                    , $site_url.'/!'.$args['cross_id_base62']);                     // locate the event
 
