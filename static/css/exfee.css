@@ -32,6 +32,8 @@
     -webkit-transition: all 100ms;
     -moz-transition: all 100ms;
     -o-transition: all 100ms;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 .exfee_avatarblock:hover {

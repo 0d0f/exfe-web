@@ -347,7 +347,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     disIdentity  = this.displayIdentity(objExfee);
                 $('#' + domId + '_exfeegadget_avatararea > ol').append(
                     '<li identity="' + objExfee.external_identity + '">'
-                  +     '<div class="exfee_avatarblock">'
+                  +     '<div class="exfee_avatarblock" '
+                  +         'unselectable="on" onselectstart="return false;">'
                   +        (objExfee.host
                   ?         '<div class="exfee_hostmark">H</div>' : '')
                   +         '<img src="' + odof.comm.func.getUserAvatar(
