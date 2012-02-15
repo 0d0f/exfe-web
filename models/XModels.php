@@ -67,6 +67,7 @@ class XModels extends DataModel {
                            `place_line2` = '{$cross['place_line2']}',
                            `updated_at`  = '{$ts}'
                      WHERE `id`          =  {$place_id}";
+            print_r($sql);
             $result = $this->query($sql);
         } else {
             $placeHelper = $this->getHelperByName('place');

@@ -115,7 +115,7 @@ class XActions extends ActionController
                 }
             }
 
-            if (!array_key_exists('ctitle', $_POST) || trim($_POST['ctitle']) == ''){
+            if (!isset($_POST['ctitle']) || trim($_POST['ctitle']) == ''){
                 $return_data['error'] = 1;
                 $return_data['msg'] = 'The title can not be empty.';
 
