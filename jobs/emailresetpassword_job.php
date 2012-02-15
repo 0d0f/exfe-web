@@ -8,7 +8,7 @@ class Emailresetpassword_Job
 
     public function perform()
     {
-        $title = "EXFE forgot password process";
+        $title = "EXFE reset forgotten password";
         $external_identity = $this->args['external_identity'];
         $token = $this->args['token'];
 

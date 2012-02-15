@@ -374,8 +374,9 @@ class SActions extends ActionController {
         unset($futureXs);
         // sort past cross
         if ($fetchArgs['past_included']) {
-            $xQuantity = !$fetchArgs['past_more'] && $xShowing >= $maxCross
-                       ? $minCross : 0;
+            $xQuantity = $fetchArgs['past_more']
+                       ? $maxCross
+                       : ($xShowing >= $maxCross ? $minCross : 0);
             $iQuantity = 0;
             $enough    = false;
             foreach ($pastXs as $crossItem) {

@@ -25,7 +25,7 @@ class PlaceModels extends DataModel {
 
 
     public function getPlace($place_id) {
-        $sql = "select place_line1 as line1, place_line2 as line2 from places where id=$place_id;";
+        $sql = "select place_line1 as line1, place_line2 as line2, provider, external_id, lng, lat from places where id={$place_id};";
         $place = $this->getRow($sql);
         return $place;
     }

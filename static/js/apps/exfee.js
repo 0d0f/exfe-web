@@ -284,7 +284,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.displayIdentity = function(identity) {
-        switch (identity.provider) {
+        switch (identity ? identity.provider : '') {
             case 'email':
                 return identity.external_identity;
                 break;
@@ -347,7 +347,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     disIdentity  = this.displayIdentity(objExfee);
                 $('#' + domId + '_exfeegadget_avatararea > ol').append(
                     '<li identity="' + objExfee.external_identity + '">'
-                  +     '<div class="exfee_avatarblock">'
+                  +     '<div class="exfee_avatarblock" '
+                  +         'unselectable="on" onselectstart="return false;">'
                   +        (objExfee.host
                   ?         '<div class="exfee_hostmark">H</div>' : '')
                   +         '<img src="' + odof.comm.func.getUserAvatar(
@@ -727,7 +728,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     default:
                         continue;
                 }
-                console.log(curIdentity);
                 for (var j in this.curComplete[domId]) {
                     if (this.curComplete[domId][j] === curIdentity) {
                         shown = true;
