@@ -28,7 +28,7 @@ class XHelper extends ActionController
          || $old_cross['place']['line2'] !== $crossobj['place']['line2']) {
             $logdata->addLog(
                 'identity', $identity_id, 'change', 'cross', $cross_id, 'place',
-                json_encode($changed['place'] = $crossobj['place']), ''
+                '', json_encode($changed['place'] = $crossobj['place'])
             );
         }
         if(sizeof($changed)==0)
