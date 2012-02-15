@@ -10,7 +10,7 @@ class Templatemail_Job
         global $site_url;
         global $email_connect;
         $args=$this->args;
-        
+
 
         if($email_connect=="")
             smtp_connect();

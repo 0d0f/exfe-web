@@ -24,8 +24,9 @@ class XActions extends ActionController
                     $placedata=$this->getModelByName('place');
 
                     // @todo: package as a translaction
-                    if (trim($_POST['place']) !== '') {
-                        $placeid = $placedata->savePlace(json_decode($_POST['place'], true));
+                    $place = json_decode($_POST['place'], true);
+                    if (trim($_POST['place']['line1']) !== '') {
+                        $placeid = $placedata->savePlace($place);
                     } else {
                         $placeid = 0;
                     }
@@ -87,6 +88,7 @@ class XActions extends ActionController
     public function doCrossEdit()
     {
         $crossDataObj = $this->getDataModel('x');
+        $placeData    = $this->getModelByName('place');
 
         $identity_id = $_SESSION['identity_id'];
         $cross_id = base62_to_int($_GET['id']);
@@ -106,17 +108,9 @@ class XActions extends ActionController
         $delExfees=array();
 
         if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
-            $old_cross=$crossDataObj->getCross($cross_id);
-            if($old_cross)
-            {
-                $place_id=$old_cross["place_id"];
-                if(intval($place_id)>0)
-                {
-                    $placeData=$this->getModelByName("place");
-                    $place=$placeData->getPlace($place_id);
-
-                    $old_cross["place_line1"]=$place["line1"];
-                    $old_cross["place_line2"]=$place["line2"];
+            if (($old_cross = $crossDataObj->getCross($cross_id))) {
+                if (intval($old_cross["place_id"]) > 0) {
+                    $old_cross["place"] = $placeData->getPlace($old_cross["place_id"]);
                     unset($old_cross["place_id"]);
                 }
             }
@@ -190,17 +184,9 @@ class XActions extends ActionController
 
         $xhelper = $this->getHelperByName('x');
 
-        $new_cross=$crossDataObj->getCross($cross_id);
-        if($new_cross)
-        {
-            $place_id=$new_cross["place_id"];
-            if(intval($place_id)>0)
-            {
-                $placeData=$this->getModelByName("place");
-                $place=$placeData->getPlace($place_id);
-
-                $new_cross["place_line1"]=$place["line1"];
-                $new_cross["place_line2"]=$place["line2"];
+        if (($new_cross = $crossDataObj->getCross($cross_id))) {
+            if(intval($new_cross["place_id"]) > 0) {
+                $new_cross["place"] = $placeData->getPlace($new_cross["place_id"]);
                 unset($new_cross["place_id"]);
             }
         }
@@ -209,15 +195,16 @@ class XActions extends ActionController
             $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
         }
         
-        if($newExfees || $delExfees)
-            $changed=true;
-        if($changed != false) {
+        if ($newExfees || $delExfees) {
+            $changed = true;
+        }
+        if ($changed != false) {
             $invitationData=$this->getModelByName("invitation");
             $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
             $new_cross["identities"]=$invitations;
             $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$new_cross["title"]);
         }
-        if((is_array($newExfees)==TRUE && sizeof($newExfees) >0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) >0))
+        if ((is_array($newExfees)==TRUE && sizeof($newExfees) > 0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) > 0))
         {
             $identityData = $this->getModelByName('identity');
             $new_identities=$identityData->getIdentitiesByIdentityIds($newExfee_ids);
