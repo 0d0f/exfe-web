@@ -60,12 +60,12 @@ class Twitter_Job {
             $datetime = " {$datetime[1]}, {$datetime[0]}";
         }
         // place
-        if ($this->args["place_line1"] == '') {
+        if ($this->args['place']['line1'] == '') {
             $place = '';
         } else {
-            $place = ' at ' . $this->args["place_line1"];
-            if ($this->args["place_line2"] != '') {
-                $place .= ', ' . $this->args["place_line2"];
+            $place = ' at ' . $this->args['place']['line1'];
+            if ($this->args['place']['line2'] != '') {
+                $place .= ', ' . $this->args['place']['line2'];
             }
         }
         // is host
