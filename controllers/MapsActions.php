@@ -1,5 +1,6 @@
 <?php
 require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
+require_once dirname(dirname(__FILE__))."/lib/class.ip2location.php";
 
 class MapsActions extends ActionController {
     public function doGetLocation(){
@@ -8,9 +9,7 @@ class MapsActions extends ActionController {
         $userLng = trim(exPost("userLng"));
 
         $foursquareHandler = new FoursquareAPI(FOURSQUARE_CLIENT_KEY,FOURSQUARE_CLIENT_SECRET);
-
         $locationArr = explode(" ",$location);
-
         $searchLocation = trim($location);
 
         //如果用户输入是以空格分隔的地址。
@@ -20,14 +19,31 @@ class MapsActions extends ActionController {
             $searchLocation = implode("", $locationArr);
             // Generate a latitude/longitude pair using Google Maps API
             list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
+        //如果浏览器允许经纬度
         }else if($userLat != "" && $userLng != ""){
             $lat = $userLat;
             $lng = $userLng;
+        //否则需要先根据IP取得当前用户的地址。
         }else{
-            $districtLocation = mb_substr(trim($location), 0, 2);
+            $userIPAddress = getRealIpAddr();
+            $locationObj = new Ip2Location();
+            $ipPattern = '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/i';
+
+            if(preg_match($ipPattern, $userIPAddress)){
+                $locationObj->qqwry($userIPAddress, dirname(dirname(__FILE__)).'/static/qqwry.dat');
+                $districtLocation = trim(str_replace('CZ88.NET', '', ($locationObj->Country)));
+                $districtLocation = @iconv("GBK", "UTF-8//IGNORE", $districtLocation);
+            }
+            if($districtLocation == ""
+                || $districtLocation == "未知"
+                || $districtLocation == "本机地址"
+            ){
+                $districtLocation = mb_substr(trim($location), 0, 2);
+            }
+
             list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
         }
-        
+
         // Prepare parameters
         $queryParams = array(
             "ll"        =>$lat.",".$lng,
