@@ -63,14 +63,14 @@ class XModels extends DataModel {
         if($place_id) {
             $ts  = date('Y-m-d H:i:s', time());
             $sql = "UPDATE `places`
-                       SET `place_line1` = '{$cross['place_line1']}',
-                           `place_line2` = '{$cross['place_line2']}',
+                       SET `place_line1` = '{$cross['place']['line1']}',
+                           `place_line2` = '{$cross['place']['line2']}',
                            `updated_at`  = '{$ts}'
                      WHERE `id`          =  {$place_id}";
             $result = $this->query($sql);
         } else {
             $placeHelper = $this->getHelperByName('place');
-            $place_id    = $placeHelper->savePlace("{$cross['place_line1']}\r{$cross['place_line2']}");
+            $place_id    = $placeHelper->savePlace($cross['place']);
         }
         // update cross
         $datetime_array = explode(' ', $cross['start_time']);

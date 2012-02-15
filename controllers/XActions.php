@@ -115,7 +115,7 @@ class XActions extends ActionController
                 }
             }
 
-            if (!array_key_exists('ctitle', $_POST) || trim($_POST['ctitle']) == ''){
+            if (!isset($_POST['ctitle']) || trim($_POST['ctitle']) == ''){
                 $return_data['error'] = 1;
                 $return_data['msg'] = 'The title can not be empty.';
 
@@ -124,16 +124,17 @@ class XActions extends ActionController
                 exit();
             }
 
-            $crossDesc = strip_tags(exPost('cdesc'));
-            $placeLineOne = strip_tags(exPost('cplaceline1'));
-            $placeLineTwo = strip_tags(exPost('cplaceline2'));
             $cross = array(
                 'id'          => $cross_id,
                 'title'       => mysql_real_escape_string(trim($_POST['ctitle'])),
-                'desc'        => mysql_real_escape_string(trim($crossDesc)),
+                'desc'        => mysql_real_escape_string(trim(strip_tags(exPost('cdesc')))),
                 'start_time'  => $_POST['ctime'],
-                'place_line1' => mysql_real_escape_string(trim($placeLineOne)),
-                'place_line2' => mysql_real_escape_string(trim($placeLineTwo)),
+                'place'       => array('line1'       => strip_tags(exPost('cplaceline1')),
+                                       'line2'       => strip_tags(exPost('cplaceline2')),
+                                       'lat'         => 0,
+                                       'lng'         => 0,
+                                       'external_id' => '',
+                                       'provider'    => ''),
                 'identity_id' => $identity_id
             );
 
