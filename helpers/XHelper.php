@@ -24,17 +24,13 @@ class XHelper extends ActionController
             $changed["time_type"] = $crossobj['time_type'];
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"begin_at", "{$crossobj["begin_at"]},{$changed["time_type"]}","");
         }
-        if($old_cross["place_line1"]!=$crossobj["place_line1"])
-        {
-            $changed["place_line1"]=$crossobj["place_line1"];
-            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"place_line1",$crossobj["place_line1"],"");
+        if ($old_cross['place']['line1'] !== $crossobj['place']['line1']
+         || $old_cross['place']['line2'] !== $crossobj['place']['line2']) {
+            $logdata->addLog(
+                'identity', $identity_id, 'change', 'cross', $cross_id, 'place',
+                json_encode($changed['place'] = $crossobj['place']), ''
+            );
         }
-        if($old_cross["place_line2"]!=$crossobj["place_line2"])
-        {
-            $changed["place_line2"]=$crossobj["place_line2"];
-            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"place_line2",$crossobj["place_line2"],"");
-        }
-
         if(sizeof($changed)==0)
             return FALSE;
 

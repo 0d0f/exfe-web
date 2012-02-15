@@ -255,14 +255,13 @@ class Conversationemail_Job
                 else
                     $update_part_body=str_replace("%beginat_hl%","color: #333333;",$update_part_body);
 
-                #$mail["place_line1"]=$this->args["place_line1"];
-                #$mail["place_line2"]=$this->args["place_line2"];
-                if($cross["place_line1"]=="")
-                {
-                    $cross["place_line1"]="Place";
-                    $cross["place_line2"]="To be decided.";
+                #$mail['place']['line1']=$this->args['place']['line1'];
+                #$mail['place']['line2']=$this->args['place']['line2'];
+                if ($cross['place']['line1'] === '') {
+                    $cross['place']['line1'] = "Place";
+                    $cross['place']['line2'] = "To be decided.";
                 }
-                if(trim($changed_fields["place_line1"])!=""||trim($changed_fields["place_line2"])!="")
+                if(trim($changed_fields['place']['line1'])!=""||trim($changed_fields['place']['line2'])!="")
                     $update_part_body=str_replace("%place_hl%","color: #0591ac;",$update_part_body);
                 else
                     $update_part_body=str_replace("%place_hl%","color: #333333;",$update_part_body);
@@ -278,8 +277,8 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%update_title_info%",$update_title_info,$update_part_body);
                 $update_part_body=str_replace("%cross_link%",$site_url . "/!{$cross_id_base62}",$update_part_body);
                 #$update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
-                $update_part_body=str_replace("%place_line1%",$cross["place_line1"],$update_part_body);
-                $update_part_body=str_replace("%place_line2%",$cross["place_line2"],$update_part_body);
+                $update_part_body=str_replace("%place_line1%",$cross['place']['line1'],$update_part_body);
+                $update_part_body=str_replace("%place_line2%",$cross['place']['line2'],$update_part_body);
                 $update_part_body=str_replace("%exfee_avartar%",$exfee_avartar,$update_part_body);
                 $update_part_body=str_replace("%new_exfee_update%",$new_exfee_identities_str,$update_part_body);
                 $update_part_body=str_replace("%exfe_title%",$title,$update_part_body);
