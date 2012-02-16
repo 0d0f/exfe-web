@@ -121,15 +121,15 @@ class UserModels extends DataModel{
         {
             $uid=intval($row["uid"]);
             $sql = "SELECT password_salt FROM users WHERE id={$uid}";
-            $result = $this->getRow($sql);
-            $passwordSalt = $result["password_salt"];
+            $salt_result = $this->getRow($sql);
+            $passwordSalt = $salt_result["password_salt"];
             if($passwordSalt == $this->salt){
                 $password=md5($password.$this->salt);
             }else{
                 $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
             }
 
-            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password'";
+            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
             $row=$this->getRow($sql);
             if(intval($row["id"])==$uid )
             {
