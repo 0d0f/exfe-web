@@ -19,12 +19,6 @@ var moduleNameSpace = 'odof.x.gather',
 
     ns.autoSubmit      = false;
 
-    ns.userOldLocation = '';
-
-    ns.userCurLat      = '';
-
-    ns.userCurLng      = '';
-
     ns.updateTitle = function(force) {
         var objTitle        = $('#gather_title'),
             strOriginTitle  = objTitle.val();
@@ -107,117 +101,6 @@ var moduleNameSpace = 'odof.x.gather',
         odof.x.render.showPlace();
     };
 
-    ns.getUserLatLng = function(){
-        var getPositionSuccess = function(position){
-            odof.x.gather.userCurLat= position.coords.latitude;
-            odof.x.gather.userCurLng = position.coords.longitude;
-        };
-        var getPositionError = function(error){
-            /*
-            switch(error.code){
-                case error.TIMEOUT :
-                    console.log("连接超时，请重试");
-                    break;
-                case error.PERMISSION_DENIED :
-                    console.log("您拒绝了使用位置共享服务，查询已取消");
-                    break;
-                case error.POSITION_UNAVAILABLE : 
-                    console.log("暂时无法为您提供位置服务");
-                    break;
-            }
-            */
-            console.log(error.code);
-        };
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(getPositionSuccess, getPositionError);
-        }
-    };
-
-    //added by handaoliang...
-    ns.getLocation = function(){
-        var placeDetail = jQuery('#gather_place').val();
-        var placeArr = odof.util.parseLocation(placeDetail);
-        var strPlace = odof.util.toDBC(placeArr[0]);
-        //只有当输入大于两个字符的时候，才进行查询。
-        if(strPlace != ns.userOldLocation && odof.util.trim(placeDetail).length > 2){
-            var postData = {
-                l:strPlace,
-                userLat:odof.x.gather.userCurLat,
-                userLng:odof.x.gather.userCurLng
-            };
-            jQuery.ajax({
-                type: "POST",
-                data: postData,
-                url: site_url+"/Maps/GetLocation",
-                dataType:"json",
-                //async:false,
-                success: function(JSONData){
-                    var curLocationDetail = jQuery('#gather_place').val();
-                    var curLocation = odof.util.parseLocation(curLocationDetail);
-                    var strLocation = odof.util.toDBC(curLocation[0]);
-
-                    if(!JSONData.error
-                        && JSONData.response.length != 0
-                        && JSONData.s_key == strLocation
-                    ){
-                        ns.drawLocationSelector(JSONData.response);
-                    }
-                }
-            });
-        }
-    };
-
-    ns.drawLocationSelector = function(locationData){
-        var placeList = '';
-        jQuery.each(locationData, function(i,val){
-            placeList += '<ul class="place_detail" id="'+val.place_id
-                      + '"><li class="place_name" id="place_name_'+val.place_id+'">'
-                      + val.place_name
-                      + '</li>'
-                      + '<input type="hidden" id="place_lat_'+val.place_id+'" value="'+val.place_lat+'">'
-                      + '<input type="hidden" id="place_lng_'+val.place_id+'" value="'+val.place_lng+'">'
-                      + '<li class="place_addr" id="place_addr_'+val.place_id+'">'
-                      + val.place_address
-                      + '</li></ul>';
-        });
-
-        jQuery("#gather_place_selector").unbind('clickoutside');
-        jQuery('#gather_place_selector').bind('clickoutside', function(event) {
-            jQuery("#gather_place_selector").hide();
-        });
-        jQuery("#gather_place_selector").show();
-        jQuery("#gather_place_selector").html(placeList);
-
-        var userSelectAddress = function(e){
-            var curElementID = e.currentTarget.id;
-            var userPlaceName = jQuery("#place_name_"+curElementID).html();
-            var userPlaceAddr = jQuery("#place_addr_"+curElementID).html();
-            var userPlaceLat = jQuery("#place_lat_"+curElementID).val();
-            var userPlaceLng = jQuery("#place_lng_"+curElementID).val();
-
-            //设置一个全局的变量值，以判断是否改变了内容。
-            ns.userOldLocation = userPlaceName;
-            jQuery("#gather_place").val(userPlaceName+"\r\n"+userPlaceAddr);
-
-            //更新Preview的显示。
-            odof.x.gather.updatePlace();
-
-            jQuery("#gather_place_selector").hide();
-
-            var googleMapsAddress = '<iframe width="282" height="175" style="border:1px solid #CCC" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=zh-CN&amp;geocode=&amp;q='+userPlaceLat+','+userPlaceLng+'&amp;aq=&amp;sll='+userPlaceLat+','+userPlaceLng+'&amp;sspn=0.007018,0.016512&amp;ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;spn=0.007018,0.016512&amp;t=m&amp;z=14&amp;output=embed"></iframe>';
-            //var googleMapsAddress = '<iframe width="310" height="175" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;ll='+userPlaceLat+','+userPlaceLng+'&amp;t=m&amp;z=5&amp;output=embed"></iframe>';
-            jQuery("#calendar_map_container").html(googleMapsAddress);
-
-            crossData.place.lat = userPlaceLat;
-            crossData.place.lng = userPlaceLng;
-            crossData.place.external_id = e.currentTarget.id;
-            crossData.place.provider = 'foursquare';
-        };
-        jQuery(".place_detail").unbind("click");
-        jQuery(".place_detail").bind("click",function(e){
-            userSelectAddress(e);
-        });
-    };
 
     ns.showExfee = function() {
         odof.exfee.gadget.make('xExfeeArea', odof.exfee.gadget.exfeeInput['gatherExfee'], false);
@@ -469,11 +352,6 @@ $(document).ready(function() {
                 break;
             case 'keyup':
                 odof.x.gather.updatePlace();
-                //added by handaoliang..设置延时。
-                //jQuery("#calendar_map_container").html('<iframe width="282" scrolling="no" height="175" frameborder="0" src="http://maps.google.com/maps?f=q&source=s_q&hl=zh-CN&geocode=&q=31.227269401144,121.47385636098&aq=&sll=31.227269401144,121.47385636098&sspn=0.007018,0.016512&ie=UTF8&ll=31.227269401144,121.47385636098&spn=0.007018,0.016512&t=m&z=14&output=embed" marginwidth="0" marginheight="0" style="border:1px solid #CCC">');
-                setTimeout(function(){
-                    odof.x.gather.getLocation();
-                },1000);
         }
     });
     odof.x.gather.updatePlace();
@@ -517,7 +395,4 @@ $(document).ready(function() {
 
     // after login hook function
     window.externalAfterLogin = odof.x.gather.afterLogin;
-
-    //get user location
-    odof.x.gather.getUserLatLng();
 });
