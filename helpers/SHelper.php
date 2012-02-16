@@ -9,12 +9,26 @@ class SHelper extends ActionController
         $modIdentity = $this->getModelByName('identity');
         $modUser     = $this->getModelByName('user');
         $modCross    = $this->getModelByName('x');
+        $modPlace    = $this->getModelByName('place');
         $modLog      = $this->getModelByName('log');
 
         // Get all cross
         $rawCross = $modCross->fetchCross($userid, 0, null, null, null);
         $allCross = array();
         foreach ($rawCross as $crossI => $crossItem) {
+            $crossItem['place'] = array('line1'       => $crossItem['place_line1'],
+                                        'line2'       => $crossItem['place_line2'],
+                                        'provider'    => $crossItem['place_provider'],
+                                        'external_id' => $crossItem['place_external_id'],
+                                        'lng'         => $crossItem['place_lng'],
+                                        'lat'         => $crossItem['place_lat']);
+            unset($crossItem['place_id']);
+            unset($crossItem['place_line1']);
+            unset($crossItem['place_line2']);
+            unset($crossItem['place_provider']);
+            unset($crossItem['place_external_id']);
+            unset($crossItem['place_lng']);
+            unset($crossItem['place_lat']);
             $allCross[$crossItem['id']] = $crossItem;
         }
         $allCrossIds = array_keys($allCross);
@@ -57,8 +71,15 @@ class SHelper extends ActionController
                             );
                             unset($rawLogs[$logI]['meta']);
                             break;
+						case 'begin_at':
+							$rawLogs[$logI]['new_value'] = explode(',', $logItem['change_summy']);
+							$rawLogs[$logI]['new_value'][0] = trim($rawLogs[$logI]['new_value'][0]);
+							if (isset($rawLogs[$logI]['new_value'][1])) {
+								$rawLogs[$logI]['new_value'][1] = intval($rawLogs[$logI]['new_value'][1]);
+							} else {
+								$rawLogs[$logI]['new_value'][1] = 0;
+							}
                         case 'description':
-                        case 'begin_at':
                             break;
                         default:
                             $doSkip = true;
@@ -112,9 +133,13 @@ class SHelper extends ActionController
                 unset($rawLogs[$logI]); // 容错处理
                 continue;
             }
-            $rawLogs[$logI]['title']    = $allCross[$rawLogs[$logI]['x_id']]['title'];
-            $rawLogs[$logI]['log_id']   = intval($rawLogs[$logI]['id']);
-            $rawLogs[$logI]['base62id'] = int_to_base62($rawLogs[$logI]['x_id']);
+            $rawLogs[$logI]['x_title']       = $allCross[$rawLogs[$logI]['x_id']]['title'];
+            $rawLogs[$logI]['x_description'] = $allCross[$rawLogs[$logI]['x_id']]['description'];
+			$rawLogs[$logI]['x_begin_at']    = $allCross[$rawLogs[$logI]['x_id']]['begin_at'];
+            $rawLogs[$logI]['x_time_type']   = $allCross[$rawLogs[$logI]['x_id']]['time_type'];
+			$rawLogs[$logI]['x_place']       = $allCross[$rawLogs[$logI]['x_id']]['place'];
+            $rawLogs[$logI]['log_id']        = intval($rawLogs[$logI]['id']);
+            $rawLogs[$logI]['x_base62id']    = int_to_base62($rawLogs[$logI]['x_id']);
             unset($rawLogs[$logI]['id']);
             unset($rawLogs[$logI]['change_summy']);
             unset($rawLogs[$logI]['from_id']);
@@ -122,6 +147,7 @@ class SHelper extends ActionController
             unset($rawLogs[$logI]['to_obj']);
             unset($rawLogs[$logI]['to_id']);
             unset($rawLogs[$logI]['to_field']);
+            array_push($relatedIdentityIds, $rawLogs[$logI]['x_host_id']      = intval($allCross[$rawLogs[$logI]['x_id']]['host_id']));
             array_push($relatedIdentityIds, $rawLogs[$logI]['by_identity_id'] = intval($logItem['from_id']));
         }
         $rawLogs = array_merge($rawLogs);
@@ -138,14 +164,16 @@ class SHelper extends ActionController
             $humanIdentities[$ridItem['id']]['user_id'] = $user['id'];
         }
 
-        // merge logs
+        // render human identities
         foreach ($rawLogs as $logI => $logItem) {
-            $rawLogs[$logI]['by_identity'] = $humanIdentities[$rawLogs[$logI]['by_identity_id']];
+            $rawLogs[$logI]['by_identity']     = $humanIdentities[$rawLogs[$logI]['by_identity_id']];
             unset($rawLogs[$logI]['by_identity_id']);
+			$rawLogs[$logI]['x_host_identity'] = $humanIdentities[$rawLogs[$logI]['x_host_id']];
+			unset($rawLogs[$logI]['x_host_id']);
             if (!isset($rawLogs[$logI]['to_identity_id'])) {
                 continue;
             }
-            $rawLogs[$logI]['to_identity'] = $humanIdentities[$rawLogs[$logI]['to_identity_id']];
+            $rawLogs[$logI]['to_identity'] 	   = $humanIdentities[$rawLogs[$logI]['to_identity_id']];
             unset($rawLogs[$logI]['to_identity_id']);
         }
 

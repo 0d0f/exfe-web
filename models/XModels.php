@@ -177,7 +177,7 @@ class XModels extends DataModel {
         if ($actions === 'simple') {
             $sql  = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         } else {
-            $sql  = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
+            $sql  = "SELECT c.*, p.place_line1, p.place_line2, p.provider as place_provider, p.external_id as place_external_id, p.lng as place_lng, p.lat as place_lat FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         }
         $crosses  = $this->getAll($sql);
 

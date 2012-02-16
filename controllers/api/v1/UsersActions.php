@@ -55,7 +55,6 @@ class UsersActions extends ActionController {
         $uid=$params["id"];
         $device_identity_id=$params["ddid"];
 
-
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_getupdate",$params["token"],array("user_id"=>$params["id"]));
         if($check["check"]==false)
@@ -66,7 +65,42 @@ class UsersActions extends ActionController {
             exit(0);
         }
         $shelper=$this->getHelperByName("s");
-        $cleanLogs=$shelper->GetAllUpdate($uid,urldecode($params["updated_since"]),200,true);
+        $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
+		
+		// merge logs by @Leask {
+        $preItemIdx  = 0;
+        $preItemDna  = '';
+        $preItemTime = 0;
+        foreach ($rawLogs as $logI => $logItem) {
+            $curDna  = ($logItem['by_identity']['user_id'] ?: $logItem['by_identity']['id']) . "_{$logItem['action']}_{$logItem['x_id']}";
+			$curTime = strtotime($logItem['time']);
+			switch ($logItem['action']) {
+				case 'addexfee':
+            	case 'delexfee':
+                case 'confirmed':
+                case 'declined':
+				case 'interested':
+					$expansion = true;
+					break;
+				default:
+					$expansion = false;
+			}
+            if ($curDna === $preItemDna && abs($preItemTime - $curTime) <= 233) {
+				if ($expansion) {
+					array_push($rawLogs[$preItemIdx]['to_identity'], $logItem['to_identity']);
+				}
+            	unset($rawLogs[$logI]);
+			} else {
+				if ($expansion) {
+            		$rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
+					$preItemIdx  = $logI;
+				}
+            }
+			$preItemDna  = $curDna;
+			$preItemTime = $curTime;
+        }
+		$cleanLogs = array_merge($rawLogs);
+		// }
 
         $identityhelper=$this->getHelperByName("identity");
         $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);
