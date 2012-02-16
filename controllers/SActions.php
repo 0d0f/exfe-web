@@ -424,10 +424,11 @@ class SActions extends ActionController {
             //unset($humanIdentities[$ridItem['id']]['activecode']);
         }
 
-        // Add confirmed informations into crosses
+        // Add informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['base62id'] = int_to_base62($crossItem['id']);
-            $crosses[$crossI]['exfee']    = array();
+            $crosses[$crossI]['base62id']  = int_to_base62($crossItem['id']);
+            $crosses[$crossI]['begin_at'] .= ",{$crosses[$crossI]['time_type']}";
+            $crosses[$crossI]['exfee']     = array();
             foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
                 if ($cfedInfoItem['cross_id'] === $crossItem['id']) {
                     $exfe = $humanIdentities[$cfedInfoItem['identity_id']];
@@ -448,7 +449,7 @@ class SActions extends ActionController {
         }
         $shelper = $this->getHelperByName('s');
         $rawLogs = $shelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
-        
+
         // clean logs
         $loged    = array();
         foreach ($rawLogs as $logI => $logItem) {
@@ -464,13 +465,6 @@ class SActions extends ActionController {
                     }
                     break;
                 case 'conversation':
-                    if (isset($loged[$logItem['change_dna']])) {
-                        $rawLogs[$loged[$logItem['change_dna']]]['num_msgs_more']++;
-                        unset($rawLogs[$logI]);
-                    } else {
-                        $rawLogs['$logI']['num_msgs_more'] = 0;
-                        $loged[$logItem['change_dna']]     = $logI;
-                    }
                     break;
                 case 'addexfee':
                 case 'delexfee':
@@ -504,15 +498,14 @@ class SActions extends ActionController {
         // merge logs
         $cleanLogs = array();
         foreach ($rawLogs as $logI => $logItem) {
-            if (!isset($cleanLogs[$logItem['x_id']])) {
+            if (!isset($cleanLogs[$xId = $logItem['x_id']])) {
                 $cleanLogs[$logItem['x_id']] = array(
-                    'id'       => $logItem['x_id'],
+                    'id'       => $xId,
                     'title'    => $logItem['x_title'],
                     'base62id' => $logItem['x_base62id'],
                 );
             }
             $action = $logItem['action'];
-            $xId    = $logItem['x_id'];
             unset($logItem['action']);
             unset($logItem['change_dna']);
             unset($logItem['x_id']);
@@ -536,8 +529,6 @@ class SActions extends ActionController {
                     $cleanLogs[$xId]['change'][$action] = $logItem;
                     break;
                 case 'conversation':
-                    $cleanLogs[$xId][$action] = $logItem;
-                    break;
                 case 'addexfee':
                 case 'delexfee':
                 case 'confirmed':

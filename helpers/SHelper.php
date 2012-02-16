@@ -65,10 +65,11 @@ class SHelper extends ActionController
                         case 'place_line1':
                         case 'place_line2':
                             $rawLogs[$logI]['action'] = 'place';
+                            $objPlace =  json_decode(preg_replace('/\r\n|\r|\n/u', ' ', $logItem['meta']), true);
                             $rawLogs[$logI]['new_value']
-                          = $logItem['change_summy'] !== '' ?: json_decode(
-                                preg_replace('/\r\n|\r|\n/u', ' ', $logItem['meta']), true
-                            );
+                          = $logItem['change_summy'] !== '' || !isset($objPlace['line1'])
+                          ? array('line1' => $logItem['change_summy'], 'line2' => '')
+                          : $objPlace;
                             unset($rawLogs[$logI]['meta']);
                             break;
                         case 'begin_at':
@@ -79,6 +80,7 @@ class SHelper extends ActionController
                             } else {
                                 $rawLogs[$logI]['new_value'][1] = 0;
                             }
+                            $rawLogs[$logI]['new_value'] = implode(',', $rawLogs[$logI]['new_value']);
                         case 'description':
                             break;
                         default:
