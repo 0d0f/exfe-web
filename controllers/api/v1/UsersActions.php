@@ -85,7 +85,7 @@ class UsersActions extends ActionController {
 				default:
 					$expansion = false;
 			}
-            if ($curDna === $preItemDna && abs($preItemTime - $curTime) <= 233) {
+            if ($curDna === $preItemDna && abs($preItemTime - $curTime) <= 153) { // 2:33
 				if ($expansion) {
 					array_push($rawLogs[$preItemIdx]['to_identity'], $logItem['to_identity']);
 				}
