@@ -23,11 +23,11 @@ class SHelper extends ActionController
         $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds, $updated_since, $limit);
 
         // clean logs
-        $loged               = array();
-        $relatedIdentityIds  = array();
+        $loged              = array();
+        $relatedIdentityIds = array();
         foreach ($rawLogs as $logI => $logItem) {
             $rawLogs[$logI]['x_id'] = intval($logItem['to_id']);
-            $doSkip          = false;
+            $doSkip         = false;
             switch ($logItem['action']) {
                 case 'gather':
                     $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_title";
@@ -66,7 +66,7 @@ class SHelper extends ActionController
                     break;
                 case 'conversation':
                     $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_conversation";
-                    $rawLogs[$logI]['message']   = $logItem['change_summy'];
+                    $rawLogs[$logI]['message']    = $logItem['change_summy'];
                     break;
                 case 'rsvp':
                 case 'exfee':
