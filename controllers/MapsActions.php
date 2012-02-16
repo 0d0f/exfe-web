@@ -11,6 +11,8 @@ class MapsActions extends ActionController {
         $locationArr = explode(" ",$location);
         $searchLocation = trim($location);
 
+        $lat = 0;
+        $lng = 0;
         //如果用户输入是以空格分隔的地址。
         if(count($locationArr) > 1){
             $districtLocation = $locationArr[0];
@@ -19,12 +21,10 @@ class MapsActions extends ActionController {
             // Generate a latitude/longitude pair using Google Maps API
             list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
         //如果浏览器允许经纬度
-        /*
         }else if($userLat != "" && $userLng != ""){
             $lat = $userLat;
             $lng = $userLng;
         //否则需要先根据IP取得当前用户的地址。
-        */
         }else{
             $userIPAddress = getRealIpAddr();
             $ipPattern = '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/i';
@@ -59,6 +59,8 @@ class MapsActions extends ActionController {
             "error"     =>0,
             "msg"       =>"",
             "s_key"     =>"",
+            "c_lat"     =>$lat,
+            "c_lng"     =>$lng,
             "response"  =>array()
         );
 

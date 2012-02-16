@@ -16,6 +16,10 @@
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
+<!-- EXFE Maps -->
+<link type="text/css" rel="stylesheet" href="/static/css/maps.css">
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="/static/js/apps/maps.js"></script>
 </head>
 <body>
 <?php
