@@ -500,38 +500,52 @@ class SActions extends ActionController {
                 unset($rawLogs[$logI]);
             }
         }
-        
+
         // merge logs
         $cleanLogs = array();
         foreach ($rawLogs as $logI => $logItem) {
             if (!isset($cleanLogs[$logItem['x_id']])) {
                 $cleanLogs[$logItem['x_id']] = array(
-                    'x_id'     => $logItem['x_id'],
-                    'title'    => $logItem['title'],
-                    'base62id' => $logItem['base62id'],
+                    'id'       => $logItem['x_id'],
+                    'title'    => $logItem['x_title'],
+                    'base62id' => $logItem['x_base62id'],
                 );
             }
-            switch ($logItem['action']) {
+			$action = $logItem['action'];
+			$xId    = $logItem['x_id'];
+			unset($logItem['action']);
+			unset($logItem['change_dna']);
+			unset($logItem['x_id']);
+			unset($logItem['x_title']);
+			unset($logItem['x_base62id']);
+			unset($logItem['x_description']);
+			unset($logItem['x_begin_at']);
+			unset($logItem['x_time_type']);
+			unset($logItem['x_host_identity']);
+			unset($logItem['x_place']);
+			unset($logItem['log_id']);
+			unset($logItem['meta']);
+            switch ($action) {
                 case 'title':
                 case 'description':
                 case 'begin_at':
                 case 'place':
-                    if (!isset($cleanLogs[$logItem['x_id']]['change'])) {
-                        $cleanLogs[$logItem['x_id']]['change'] = array();
+                    if (!isset($cleanLogs[$xId]['change'])) {
+                        $cleanLogs[$xId]['change'] = array();
                     }
-                    $cleanLogs[$logItem['x_id']]['change'][$logItem['action']] = $logItem;
+                    $cleanLogs[$xId]['change'][$action] = $logItem;
                     break;
                 case 'conversation':
-                    $cleanLogs[$logItem['x_id']][$logItem['action']] = $logItem;
+                    $cleanLogs[$xId][$action] = $logItem;
                     break;
                 case 'addexfee':
                 case 'delexfee':
                 case 'confirmed':
                 case 'declined':
-                    if (!isset($cleanLogs[$logItem['x_id']][$logItem['action']])) {
-                        $cleanLogs[$logItem['x_id']][$logItem['action']] = array();
+                    if (!isset($cleanLogs[$xId][$action])) {
+                        $cleanLogs[$xId][$action] = array();
                     }
-                    array_push($cleanLogs[$logItem['x_id']][$logItem['action']], $logItem);
+                    array_push($cleanLogs[$xId][$action], $logItem);
             }
         }
         
