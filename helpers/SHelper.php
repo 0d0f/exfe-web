@@ -217,13 +217,18 @@ class SHelper extends ActionController
                             if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
                                 $cleanLogs[$xlogsHash[$xId]][$action] = array();
                             }
+                            $by_exfee_userid=$modUser->getUserIdByIdentityId($logItem['from_id']);
+                            $to_exfee_userid=$modUser->getUserIdByIdentityId($logItem['change_summy']);
                             array_push(
                                 $cleanLogs[$xlogsHash[$xId]][$action],
                                 array(
                                       'log_id'     => $logItem['id'],
-                                      'time'  => $logItem['time'],
-                                      'by_id' => $logItem['from_id'],
-                                      'to_id' => $logItem['change_summy'])
+                                      'time'  => $logItem['time'], 
+                                      'by_id' => intval($logItem['from_id']), 
+                                      'by_user_id' => $by_exfee_userid,
+                                      'to_id' => intval($logItem['change_summy']),
+                                      'to_user_id' => $to_exfee_userid
+                                      )
                             );
                             array_push($relatedIdentityIds,$logItem['from_id']);
                             array_push($relatedIdentityIds,
