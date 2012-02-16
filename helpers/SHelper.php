@@ -3,7 +3,7 @@
 class SHelper extends ActionController
 {
 
-    public function GetAllUpdate($userid, $updated_since = '', $limit = 200, $complexobject = false)
+    public function GetAllUpdate($userid, $updated_since = '', $limit = 200)
     {
         // init models
         $modIdentity = $this->getModelByName('identity');
@@ -20,7 +20,7 @@ class SHelper extends ActionController
         $allCrossIds = array_keys($allCross);
 
         // Get recently logs
-        $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds,$updated_since,$limit);
+        $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds, $updated_since, $limit);
 
         // clean logs
         $loged               = array();
@@ -107,12 +107,12 @@ class SHelper extends ActionController
                     break;
                 default:
                     $doSkip = true;
-                    
             }
             if ($doSkip) {
                 unset($rawLogs[$logI]); // 容错处理
                 continue;
             }
+            $rawLogs[$logI]['title']    = $allCross[$rawLogs[$logI]['x_id']]['title'];
             $rawLogs[$logI]['log_id']   = intval($rawLogs[$logI]['id']);
             $rawLogs[$logI]['base62id'] = int_to_base62($rawLogs[$logI]['x_id']);
             unset($rawLogs[$logI]['id']);
@@ -148,7 +148,7 @@ class SHelper extends ActionController
             $rawLogs[$logI]['to_identity'] = $humanIdentities[$rawLogs[$logI]['to_identity_id']];
             unset($rawLogs[$logI]['to_identity_id']);
         }
-        
+
         return $rawLogs;
     }
 
