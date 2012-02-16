@@ -66,41 +66,43 @@ class UsersActions extends ActionController {
         }
         $shelper=$this->getHelperByName("s");
         $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
-		
-		// merge logs by @Leask {
+
+        // merge logs by @Leask {
         $preItemIdx  = 0;
         $preItemDna  = '';
         $preItemTime = 0;
         foreach ($rawLogs as $logI => $logItem) {
             $curDna  = ($logItem['by_identity']['user_id'] ?: $logItem['by_identity']['id']) . "_{$logItem['action']}_{$logItem['x_id']}";
-			$curTime = strtotime($logItem['time']);
-			switch ($logItem['action']) {
-				case 'addexfee':
-            	case 'delexfee':
-                case 'confirmed':
-                case 'declined':
-				case 'interested':
-					$expansion = true;
-					break;
-				default:
-					$expansion = false;
-			}
+            $curTime = strtotime($logItem['time']);
             if ($curDna === $preItemDna && abs($preItemTime - $curTime) <= 153) { // 2:33
-				if ($expansion) {
-					array_push($rawLogs[$preItemIdx]['to_identity'], $logItem['to_identity']);
-				}
-            	unset($rawLogs[$logI]);
-			} else {
-				if ($expansion) {
-            		$rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
-					$preItemIdx  = $logI;
-				}
+                switch ($logItem['action']) {
+                    case 'title':
+                        $rawLogs[$preItemIdx]['old_value'] = $logItem['old_value'];
+                        break;
+                    case 'addexfee':
+                    case 'delexfee':
+                    case 'confirmed':
+                    case 'declined':
+                    case 'interested':
+                        array_push($rawLogs[$preItemIdx]['to_identity'], $logItem['to_identity']);
+                }
+                unset($rawLogs[$logI]);
+            } else {
+                switch ($logItem['action']) {
+                    case 'addexfee':
+                    case 'delexfee':
+                    case 'confirmed':
+                    case 'declined':
+                    case 'interested':
+                        $rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
+                }
+                $preItemIdx = $logI;
             }
-			$preItemDna  = $curDna;
-			$preItemTime = $curTime;
+            $preItemDna  = $curDna;
+            $preItemTime = $curTime;
         }
-		$cleanLogs = array_merge($rawLogs);
-		// }
+        $cleanLogs = array_merge($rawLogs);
+        // }
 
         $identityhelper=$this->getHelperByName("identity");
         $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);

@@ -107,10 +107,10 @@ class SActions extends ActionController {
         if(intval($_SESSION["userid"])>0)
         {
             $self_url="/s/uploadAvatarNew";
-            $upload_dir = "eimgs"; 				// The directory for the images to be saved in
-            $upload_path = $upload_dir."/";				// The path to where the image will be saved
+            $upload_dir = "eimgs";                 // The directory for the images to be saved in
+            $upload_path = $upload_dir."/";                // The path to where the image will be saved
 
-            $large_image_name = $_POST['iName']; 		// New name of the large image
+            $large_image_name = $_POST['iName'];         // New name of the large image
             $image_name = md5(randStr(20).$large_image_name.getMicrotime()).".jpg";
 
             $return_data = array(
@@ -511,20 +511,20 @@ class SActions extends ActionController {
                     'base62id' => $logItem['x_base62id'],
                 );
             }
-			$action = $logItem['action'];
-			$xId    = $logItem['x_id'];
-			unset($logItem['action']);
-			unset($logItem['change_dna']);
-			unset($logItem['x_id']);
-			unset($logItem['x_title']);
-			unset($logItem['x_base62id']);
-			unset($logItem['x_description']);
-			unset($logItem['x_begin_at']);
-			unset($logItem['x_time_type']);
-			unset($logItem['x_host_identity']);
-			unset($logItem['x_place']);
-			unset($logItem['log_id']);
-			unset($logItem['meta']);
+            $action = $logItem['action'];
+            $xId    = $logItem['x_id'];
+            unset($logItem['action']);
+            unset($logItem['change_dna']);
+            unset($logItem['x_id']);
+            unset($logItem['x_title']);
+            unset($logItem['x_base62id']);
+            unset($logItem['x_description']);
+            unset($logItem['x_begin_at']);
+            unset($logItem['x_time_type']);
+            unset($logItem['x_host_identity']);
+            unset($logItem['x_place']);
+            unset($logItem['log_id']);
+            unset($logItem['meta']);
             switch ($action) {
                 case 'title':
                 case 'description':
