@@ -21,9 +21,9 @@ class LogModels extends DataModel{
         if ($cross_ids) {
             $cross_ids = implode(' OR `to_id` = ', $cross_ids);
             if($time!="")
-                $sql       = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) AND time > '$time' ORDER BY `time` DESC LIMIT {$limit};";
+                $sql       = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) AND time > '$time' ORDER BY `id` DESC LIMIT {$limit};";
             else
-                $sql       = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) ORDER BY `time` DESC LIMIT {$limit};";
+                $sql       = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) ORDER BY `id` DESC LIMIT {$limit};";
             return $this->getAll($sql);
         } else {
             return array();

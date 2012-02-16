@@ -23,260 +23,133 @@ class SHelper extends ActionController
         $rawLogs = $modLog->getRecentlyLogsByCrossIds($allCrossIds,$updated_since,$limit);
 
         // clean logs
-        $loged   = array();
+        $loged               = array();
+        $relatedIdentityIds  = array();
         foreach ($rawLogs as $logI => $logItem) {
-            $xId = $logItem['to_id'];
-            $rawLogs[$logI]['from_id']
-          = $logItem['from_id'] = intval($logItem['from_id']);
+            $rawLogs[$logI]['x_id'] = intval($logItem['to_id']);
+            $doSkip          = false;
             switch ($logItem['action']) {
                 case 'gather':
-                    $changeDna = "{$xId}_title";
-                    if (isset($loged[$changeDna])
-                    && !isset($rawLogs[$loged[$changeDna]]['oldtitle'])) {
-                        $rawLogs[$loged[$changeDna]]['oldtitle']
-                      = $logItem['change_summy'];
+                    $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_title";
+                    if (isset($loged[$rawLogs[$logI]['change_dna']])) {
+                        $rawLogs[$loged[$rawLogs[$logI]['change_dna']]]['old_value'] = $logItem['change_summy'];
                     }
-                    unset($rawLogs[$logI]);
+                    $doSkip  = true;
                     break;
                 case 'change':
-                    $changeDna = "{$xId}_{$logItem['to_field']}";
-                    if (isset($loged[$changeDna])) {
-                        if ($logItem['to_field'] === 'title') {
-                            if (!isset(
-                                    $rawLogs[$loged[$changeDna]]['oldtitle']
-                                )) {
-                                $rawLogs[$loged[$changeDna]]['oldtitle']
-                              = $logItem['change_summy'];
-                            }
-                        }
-                        unset($rawLogs[$logI]);
-                    } else {
-                        $loged[$changeDna] = $logI;
-                    }
-                    break;
-                case 'conversation':
-                    // $changeDna = "{$xId}_conversation";
-                    // $loged[$changeDna] = $logI;
-                    break;
-                case 'rsvp':
-                case 'exfee':
-                    $doSkip = false;
+                    $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_{$logItem['to_field']}";
+                    $rawLogs[$logI]['action']     = $logItem['to_field'];
+                    $rawLogs[$logI]['new_value']  = $logItem['change_summy'];
                     switch ($logItem['to_field']) {
-                        case '':
-                        case 'rsvp':
-                            if (strpos($rawLogs[$logI]['change_summy'], ':') === false) {
-                                $changeDna = "{$xId}_exfee_{$logItem['from_id']}";
-                                $rawLogs[$logI]['change_summy']
-                              = $logItem['change_summy']
-                              = intval($logItem['change_summy']);
-                                $dnaValue  = array(
-                                    'action'    => 'rsvp',
-                                    'offset'    => $logI,
-                                    'soft_rsvp' => $logItem['change_summy'] === 0
-                                                || $logItem['change_summy'] === 3,
-                                );
-                            } else {
-                                $rawLogs[$logI]['change_summy'] = explode(
-                                    ':',
-                                    $logItem['change_summy']
-                                );
-                                $rawLogs[$logI]['change_summy']
-                              = array_map('intval',$rawLogs[$logI]['change_summy']);
-                                $changeDna = "{$xId}_exfee_"
-                                           . "{$rawLogs[$logI]['change_summy'][0]}";
-                                $dnaValue  = array('action'    => 'rsvp',
-                                                   'offset'    => $logI,
-                                                   'soft_rsvp' => $logItem['change_summy'] === 0
-                                                               || $logItem['change_summy'] === 3);
+                        case 'title':
+                            if (isset($loged[$rawLogs[$logI]['change_dna']])) {
+                                $rawLogs[$loged[$rawLogs[$logI]['change_dna']]]['old_value'] = $logItem['change_summy'];
                             }
+                            $loged[$rawLogs[$logI]['change_dna']] = $logI;
                             break;
-                        case 'addexfee':
-                        case 'delexfee':
-                            $changeDna = "{$xId}_exfee_"
-                                       . "{$logItem['change_summy']}";
-                            $dnaValue  = array('action' => $logItem['to_field'],
-                                               'offset' => $logI);
+                        case 'place':
+                        case 'place_line1':
+                        case 'place_line2':
+                            $rawLogs[$logI]['action'] = 'place';
+                            $rawLogs[$logI]['new_value']
+                          = $logItem['change_summy'] !== '' ?: json_decode(
+                                preg_replace('/\r\n|\r|\n/u', ' ', $logItem['meta']), true
+                            );
+                            unset($rawLogs[$logI]['meta']);
+                            break;
+                        case 'description':
+                        case 'begin_at':
                             break;
                         default:
-                            $doSkip = true; // 容错处理
+                            $doSkip = true;
                     }
-                    if ($doSkip) {
-                        unset($rawLogs[$logI]);
-                        break;
-                    }
-                    if (isset($loged[$changeDna])) {
-                        if ($dnaValue['action'] === 'addexfee'
-                         && $loged[$changeDna]['action'] === 'rsvp'
-                         && $loged[$changeDna]['soft_rsvp']) {
-                            $rawLogs[$loged[$changeDna]['offset']] = $logItem;
-                            $loged[$changeDna] = $dnaValue;
-                        } else if (($loged[$changeDna]['action'] === 'addexfee'
-                          && $dnaValue['action'] === 'delexfee')
-                         || ($loged[$changeDna]['action'] === 'delexfee'
-                          && $dnaValue['action'] === 'addexfee')) {
-                            $loged[$changeDna]['action'] = 'skipped';
-                            unset($rawLogs[$loged[$changeDna]['offset']]);
-                        }
-                        unset($rawLogs[$logI]);
-                    } else {
-                        $loged[$changeDna] = $dnaValue;
-                    }
-            }
-        }
-
-        // merge logs
-        $cleanLogs = array();
-        $xlogsHash = array();
-        $relatedIdentityIds = array();
-        foreach ($rawLogs as $logI => $logItem) {
-            $xId = $logItem['to_id'];
-            if (!isset($xlogsHash[$xId])) {
-                $xlogsHash[$xId]
-              = array_push($cleanLogs, array('cross_id' => $xId)) - 1;
-            }
-            switch ($logItem['action']) {
-                case 'change':
-                    $cleanLogs[$xlogsHash[$xId]]['change'][$logItem['to_field']]
-                  = array(
-                          'log_id'     => $logItem['id'],
-                          'time'      => $logItem['time'],
-                          'by_id'     => $logItem['from_id'],
-                          'new_value' => $logItem['change_summy'],
-                          'old_value' => isset($logItem['oldtitle'])
-                                       ? $logItem['oldtitle'] : null);
-                    array_push($relatedIdentityIds, $logItem['from_id']);
                     break;
                 case 'conversation':
-                    if ($complexobject === true) {
-                        $myidentity = $modIdentity->getIdentityById($logItem['from_id']);
-                        $user = $modUser->getUserByIdentityId($logItem['from_id']);
-                        $identity = humanIdentity($myidentity, $user);
-                    }
-                    if (!isset($cleanLogs[$xlogsHash[$xId]]['conversation'])) {
-                        $cleanLogs[$xlogsHash[$xId]]['conversation'] = array();
-                    }
-                    array_push($cleanLogs[$xlogsHash[$xId]]['conversation'],
-                               array(
-                                     'log_id'     => $logItem['id'],
-                                     'time'     => $logItem['time'],
-                                     'by_id'    => $logItem['from_id'],
-                                     'message'  => $logItem['change_summy'],
-                                     'meta'     => $logItem['meta'],
-                                     'num_msgs' => $logItem['num_conversation'],
-                                     'identity' => $identity));
-                    array_push($relatedIdentityIds, $logItem['from_id']);
+                    $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_conversation";
+                    $rawLogs[$logI]['message']   = $logItem['change_summy'];
                     break;
                 case 'rsvp':
                 case 'exfee':
                     switch ($logItem['to_field']) {
                         case '':
                         case 'rsvp':
-                            if (is_array($logItem['change_summy'])) {
-                                list($toExfee,$action)=$logItem['change_summy'];
-                            } else {
-                                $toExfee = $logItem['from_id'];
-                                $action  = $logItem['change_summy'];
+                            $logItem['change_summy']
+                          = strpos($logItem['change_summy'], ':') === false
+                          ? array($logItem['from_id'], intval($logItem['change_summy']))
+                          : array_map('intval', explode(':',  $logItem['change_summy']));
+                            switch ($logItem['change_summy'][1]) {
+                                case 1:
+                                    $rawLogs[$logI]['action'] = 'confirmed';
+                                    break;
+                                case 2:
+                                    $rawLogs[$logI]['action'] = 'declined';
+                                    break;
+                                case 3:
+                                    $rawLogs[$logI]['action'] = 'interested';
+                                    break;
+                                default:
+                                    $doSkip = true;
                             }
-                            if ($action === 1) {
-                                $action = 'confirmed';
-                            } else if ($action === 2) {
-                                $action = 'declined';
-                            } else if ($action === 3) {
-                                $action = 'interested';
-                            } else {
-                                break;
-                            }
-                            if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
-                                $cleanLogs[$xlogsHash[$xId]][$action] = array();
-                            }
-                            $exfee_userid=$modUser->getUserIdByIdentityId($toExfee);
-                            if ($complexobject === true) {
-                                $myidentity = $modIdentity->getIdentityById($toExfee);
-                                $user = $modUser->getUserByIdentityId($toExfee);
-                                $identity = humanIdentity($myidentity, $user);
-                            }
-
-                            array_push(
-                                $cleanLogs[$xlogsHash[$xId]][$action],
-                                array(
-                                      'log_id'     => $logItem['id'],
-                                      'time'  => $logItem['time'],
-                                      'by_id' => $logItem['from_id'],
-                                      'meta'  => $logItem['meta'],
-                                      'identity'  => $identity,
-                                      'to_id' => $toExfee,
-                                      'user_id' => $exfee_userid)
-                            );
-                            array_push($relatedIdentityIds,$logItem['from_id']);
-                            array_push($relatedIdentityIds,$toExfee);
+                            array_push($relatedIdentityIds, $rawLogs[$logI]['to_identity_id'] = $logItem['change_summy'][0]);
+                            $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_exfee_{$rawLogs[$logI]['to_id']}";
+                            $rawLogs[$logI]['soft_rsvp']  = $logItem['change_summy'][1] === 0
+                                                         || $logItem['change_summy'][1] === 3;
                             break;
                         case 'addexfee':
                         case 'delexfee':
-                         // $action = $logItem['action'];
-                            $action = $logItem['to_field'];
-                            if (!isset($cleanLogs[$xlogsHash[$xId]][$action])) {
-                                $cleanLogs[$xlogsHash[$xId]][$action] = array();
-                            }
-                            $by_exfee_userid=$modUser->getUserIdByIdentityId($logItem['from_id']);
-                            $to_exfee_userid=$modUser->getUserIdByIdentityId($logItem['change_summy']);
-                            array_push(
-                                $cleanLogs[$xlogsHash[$xId]][$action],
-                                array(
-                                      'log_id'     => $logItem['id'],
-                                      'time'  => $logItem['time'], 
-                                      'by_id' => intval($logItem['from_id']), 
-                                      'by_user_id' => $by_exfee_userid,
-                                      'to_id' => intval($logItem['change_summy']),
-                                      'to_user_id' => $to_exfee_userid
-                                      )
-                            );
-                            array_push($relatedIdentityIds,$logItem['from_id']);
-                            array_push($relatedIdentityIds,
-                                       $logItem['change_summy']);
+                            $rawLogs[$logI]['change_dna'] = "{$rawLogs[$logI]['x_id']}_exfee_{$logItem['change_summy']}";
+                            $rawLogs[$logI]['action']     = $logItem['to_field'];
+                            array_push($relatedIdentityIds, $rawLogs[$logI]['to_identity_id'] = intval($logItem['change_summy']));
+                            break;
+                        default:
+                            $doSkip = true;
                     }
+                    break;
+                default:
+                    $doSkip = true;
+                    
             }
-            if (count($cleanLogs[$xlogsHash[$xId]]) === 1) {
-                array_pop($cleanLogs);
-                unset($xlogsHash[$xId]);
+            if ($doSkip) {
+                unset($rawLogs[$logI]); // 容错处理
+                continue;
             }
+            $rawLogs[$logI]['log_id']   = intval($rawLogs[$logI]['id']);
+            $rawLogs[$logI]['base62id'] = int_to_base62($rawLogs[$logI]['x_id']);
+            unset($rawLogs[$logI]['id']);
+            unset($rawLogs[$logI]['change_summy']);
+            unset($rawLogs[$logI]['from_id']);
+            unset($rawLogs[$logI]['from_obj']);
+            unset($rawLogs[$logI]['to_obj']);
+            unset($rawLogs[$logI]['to_id']);
+            unset($rawLogs[$logI]['to_field']);
+            array_push($relatedIdentityIds, $rawLogs[$logI]['by_identity_id'] = intval($logItem['from_id']));
         }
+        $rawLogs = array_merge($rawLogs);
 
         // get human identities
-        $humanIdentities = array();
+        $humanIdentities   = array();
+        $userIds           = array();
         $relatedIdentities = $modIdentity->getIdentitiesByIdentityIds(
             array_flip(array_flip($relatedIdentityIds))
         );
         foreach ($relatedIdentities as $ridI => $ridItem) {
-            $user = $modUser->getUserByIdentityId($ridItem['identity_id']);
+            $user = $modUser->getUserByIdentityId($ridItem['id']);
             $humanIdentities[$ridItem['id']] = humanIdentity($ridItem, $user);
+            $humanIdentities[$ridItem['id']]['user_id'] = $user['id'];
         }
 
-        // merge cross details and humanIdentities
-        foreach ($cleanLogs as $logI => $logItem) {
-            $cleanLogs[$logI]['base62id'] = int_to_base62($logItem['cross_id']);
-            $cleanLogs[$logI]['title']
-          = $allCross[$logItem['cross_id']]['title'];
-            $cleanLogs[$logI]['begin_at']
-          = $allCross[$logItem['cross_id']]['begin_at'];
-            foreach (array('change', 'conversation', 'confirmed', 'interested','declined',
-                           'addexfee', 'delexfee') as $action) {
-                if (isset($logItem[$action])) {
-                    foreach ($logItem[$action] as $actionI => $actionItem) {
-                        $cleanLogs[$logI][$action][$actionI]['by_name']
-                      = $humanIdentities[$actionItem['by_id']]['name'];
-                        if (!isset(
-                                $cleanLogs[$logI][$action][$actionI]['to_id'])
-                            ) {
-                            continue;
-                        }
-                        $cleanLogs[$logI][$action][$actionI]['to_name']
-                      = $humanIdentities[$actionItem['to_id']]['name'];
-                    }
-                }
+        // merge logs
+        foreach ($rawLogs as $logI => $logItem) {
+            $rawLogs[$logI]['by_identity'] = $humanIdentities[$rawLogs[$logI]['by_identity_id']];
+            unset($rawLogs[$logI]['by_identity_id']);
+            if (!isset($rawLogs[$logI]['to_identity_id'])) {
+                continue;
             }
+            $rawLogs[$logI]['to_identity'] = $humanIdentities[$rawLogs[$logI]['to_identity_id']];
+            unset($rawLogs[$logI]['to_identity_id']);
         }
-
-        return $cleanLogs;
+        
+        return $rawLogs;
     }
 
 }
