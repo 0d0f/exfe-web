@@ -666,3 +666,17 @@ function getGravatar($email, $s=80, $d='mm', $r='g'){
 }
 
 
+/**
+ * convert ip to int number
+ *
+ */
+function ipToInt($IPAddress) {
+    $ipArr = explode('.', $IPAddress);
+    if (count($ipArr) != 4) return 0;
+    $intIP = 0;
+    foreach ($ipArr as $k => $v){
+        $intIP += (int)$v*pow(256, intval(3-$k));
+    }
+    return $intIP;
+}
+

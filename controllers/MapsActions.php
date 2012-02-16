@@ -1,6 +1,5 @@
 <?php
 require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
-require_once dirname(dirname(__FILE__))."/lib/class.ip2location.php";
 
 class MapsActions extends ActionController {
     public function doGetLocation(){
@@ -20,21 +19,26 @@ class MapsActions extends ActionController {
             // Generate a latitude/longitude pair using Google Maps API
             list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
         //如果浏览器允许经纬度
+        /*
         }else if($userLat != "" && $userLng != ""){
             $lat = $userLat;
             $lng = $userLng;
         //否则需要先根据IP取得当前用户的地址。
+        */
         }else{
             $userIPAddress = getRealIpAddr();
-            $locationObj = new Ip2Location();
             $ipPattern = '/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/i';
 
+            $districtLocation = null;
             if(preg_match($ipPattern, $userIPAddress)){
-                $locationObj->qqwry($userIPAddress, dirname(dirname(__FILE__)).'/static/qqwry.dat');
-                $districtLocation = trim(str_replace('CZ88.NET', '', ($locationObj->Country)));
-                $districtLocation = @iconv("GBK", "UTF-8//IGNORE", $districtLocation);
+                $ipAddressIntNum = ipToInt($userIPAddress);
+                $mapsObj = $this->getModelByName('maps');
+                $userRegion = $mapsObj->getUserRegion($ipAddressIntNum);
+                if(is_array($userRegion)){
+                    $districtLocation = $userRegion["region"];
+                }
             }
-            if($districtLocation == ""
+            if($districtLocation == null
                 || $districtLocation == "未知"
                 || $districtLocation == "本机地址"
             ){
