@@ -312,11 +312,9 @@ class Apn_Job
                 if($datetimestr!="")
                     $changemsgs["time"]=$datetimestr;
             }
-            else if($k=="place_line1" )
-                    $changemsgs["place_line1"]=$v;
-            else if($k=="place_line2" )
-                    $changemsgs["place_line2"]=$v;
-
+            else if ($k === 'place') {
+                $changemsgs['place'] = $v;
+            }
         }
         if(sizeof($changemsgs)>0)
         {
@@ -325,10 +323,15 @@ class Apn_Job
                 $updatestr.=" Title is changed to \\\"".$changemsgs["title"]."\\\".";
             if($changemsgs["time"]!="")
                 $updatestr.=" New time: ".$changemsgs["time"].".";
-            if($changemsgs["place_line1"]!="" || $changemsgs["place_line2"]!="" )
-            {
-                if($changemsgs["place_line1"]!="" && $changemsgs["place_line2"]!="")
-                $updatestr.=" New Place: ".$changemsgs["place_line1"].", ".$changemsgs["place_line2"];
+            if(isset($changemsgs['place'])
+            && isset($changemsgs['place']['line1'])
+            && isset($changemsgs['place']['line2']) {
+                if ($changemsgs['place']['line1'] !== '') {
+                    $updatestr .= " New Place: {$changemsgs['place']['line1']}";
+                    if ($changemsgs['place']['line2'] !== '') {
+                        $updatestr .= ", $changemsgs['place']['line2']";
+                    }
+                }
             }
             $updatestr=utf8substr($updatestr,0,max_msg_len)."...";
 
