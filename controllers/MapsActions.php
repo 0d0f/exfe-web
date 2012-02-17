@@ -21,9 +21,11 @@ class MapsActions extends ActionController {
             // Generate a latitude/longitude pair using Google Maps API
             list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
         //如果浏览器允许经纬度
+        /*
         }else if($userLat != "" && $userLng != ""){
             $lat = $userLat;
             $lng = $userLng;
+        */
         //否则需要先根据IP取得当前用户的地址。
         }else{
             $userIPAddress = getRealIpAddr();
@@ -58,7 +60,7 @@ class MapsActions extends ActionController {
         $returnData = array(
             "error"     =>0,
             "msg"       =>"",
-            "s_key"     =>"",
+            "s_key"     =>$location,
             "c_lat"     =>$lat,
             "c_lng"     =>$lng,
             "response"  =>array()
@@ -92,7 +94,6 @@ class MapsActions extends ActionController {
             }
         }
         $returnData["response"] = $responseResult;
-        $returnData["s_key"] = $location;
 
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);

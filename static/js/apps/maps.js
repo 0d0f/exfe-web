@@ -186,5 +186,5 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 $(document).ready(function() {
     //get user location
-    odof.apps.maps.getUserLatLng();
+    //odof.apps.maps.getUserLatLng();
 });
