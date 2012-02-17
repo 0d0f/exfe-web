@@ -107,10 +107,10 @@ class SActions extends ActionController {
         if(intval($_SESSION["userid"])>0)
         {
             $self_url="/s/uploadAvatarNew";
-            $upload_dir = "eimgs"; 				// The directory for the images to be saved in
-            $upload_path = $upload_dir."/";				// The path to where the image will be saved
+            $upload_dir = "eimgs";                 // The directory for the images to be saved in
+            $upload_path = $upload_dir."/";                // The path to where the image will be saved
 
-            $large_image_name = $_POST['iName']; 		// New name of the large image
+            $large_image_name = $_POST['iName'];         // New name of the large image
             $image_name = md5(randStr(20).$large_image_name.getMicrotime()).".jpg";
 
             $return_data = array(
@@ -424,10 +424,11 @@ class SActions extends ActionController {
             //unset($humanIdentities[$ridItem['id']]['activecode']);
         }
 
-        // Add confirmed informations into crosses
+        // Add informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['base62id'] = int_to_base62($crossItem['id']);
-            $crosses[$crossI]['exfee']    = array();
+            $crosses[$crossI]['base62id']  = int_to_base62($crossItem['id']);
+            $crosses[$crossI]['begin_at'] .= ",{$crosses[$crossI]['time_type']}";
+            $crosses[$crossI]['exfee']     = array();
             foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
                 if ($cfedInfoItem['cross_id'] === $crossItem['id']) {
                     $exfe = $humanIdentities[$cfedInfoItem['identity_id']];
@@ -446,10 +447,99 @@ class SActions extends ActionController {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
+        $shelper = $this->getHelperByName('s');
+        $rawLogs = $shelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
 
-        $shelper=$this->getHelperByName("s");
-        $cleanLogs=$shelper->GetAllUpdate($_SESSION['userid'],urldecode($_GET["updated_since"]));
+        // clean logs
+        $loged    = array();
+        foreach ($rawLogs as $logI => $logItem) {
+            switch ($logItem['action']) {
+                case 'title':
+                case 'description':
+                case 'begin_at':
+                case 'place':
+                    if (isset($loged[$logItem['change_dna']])) {
+                        unset($rawLogs[$logI]);
+                    } else {
+                        $loged[$logItem['change_dna']] = $logI;
+                    }
+                    break;
+                case 'conversation':
+                    break;
+                case 'addexfee':
+                case 'delexfee':
+                case 'confirmed':
+                case 'declined':
+                    if (isset($loged[$logItem['change_dna']])) {
+                        $rawLogs[$loged[$logItem['change_dna']]]['conflict']
+                    = (($rawLogs[$loged[$logItem['change_dna']]]['action'] === 'addexfee'
+                     && $logItem['action']                                 === 'delexfee')
+                    || ($rawLogs[$loged[$logItem['change_dna']]]['action'] === 'delexfee'
+                     && $logItem['action']                                 === 'addexfee'))
+                   || (($rawLogs[$loged[$logItem['change_dna']]]['action'] === 'confirmed'
+                     && $logItem['action']                                 === 'declined')
+                    || ($rawLogs[$loged[$logItem['change_dna']]]['action'] === 'declined'
+                     && $logItem['action']                                 === 'confirmed'));
+                        unset($rawLogs[$logI]);
+                    } else {
+                        $loged[$logItem['change_dna']] = $logI;
+                    }
+                    break;
+                default:
+                    unset($rawLogs[$logI]);
+            }
+        }
+        foreach ($rawLogs as $logI => $logItem) {
+            if ($logItem['conflict']) {
+                unset($rawLogs[$logI]);
+            }
+        }
 
+        // merge logs
+        $cleanLogs = array();
+        foreach ($rawLogs as $logI => $logItem) {
+            if (!isset($cleanLogs[$xId = $logItem['x_id']])) {
+                $cleanLogs[$logItem['x_id']] = array(
+                    'id'       => $xId,
+                    'title'    => $logItem['x_title'],
+                    'base62id' => $logItem['x_base62id'],
+                );
+            }
+            $action = $logItem['action'];
+            unset($logItem['action']);
+            unset($logItem['change_dna']);
+            unset($logItem['x_id']);
+            unset($logItem['x_title']);
+            unset($logItem['x_base62id']);
+            unset($logItem['x_description']);
+            unset($logItem['x_begin_at']);
+            unset($logItem['x_time_type']);
+            unset($logItem['x_host_identity']);
+            unset($logItem['x_place']);
+            unset($logItem['log_id']);
+            unset($logItem['meta']);
+            switch ($action) {
+                case 'title':
+                case 'description':
+                case 'begin_at':
+                case 'place':
+                    if (!isset($cleanLogs[$xId]['change'])) {
+                        $cleanLogs[$xId]['change'] = array();
+                    }
+                    $cleanLogs[$xId]['change'][$action] = $logItem;
+                    break;
+                case 'conversation':
+                case 'addexfee':
+                case 'delexfee':
+                case 'confirmed':
+                case 'declined':
+                    if (!isset($cleanLogs[$xId][$action])) {
+                        $cleanLogs[$xId][$action] = array();
+                    }
+                    array_push($cleanLogs[$xId][$action], $logItem);
+            }
+        }
+        
         echo json_encode($cleanLogs);
     }
 

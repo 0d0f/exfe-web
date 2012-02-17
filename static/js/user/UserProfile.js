@@ -262,11 +262,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             strLogX += '<p class="clock"><em>' + odof.util.getHumanDateTime(data[i]['change']['begin_at']['new_value']) + '</em></p>';
                         }
                         if (data[i]['change']['place']) {
-                            strLogX += '<p class="place"><em>' + data[i]['change']['place']['new_value'] + '</em></p>';
+                            strLogX += '<p class="place"><em>' + data[i]['change']['place']['new_value']['line1'] + '</em></p>';
                         }
                         if (data[i]['change']['title']
                          && data[i]['change']['title']['old_value']) {
-                            strLogX += '<p class="title">Title changed from: <em>' + data[i]['change']['title']['old_value'] + '</em></p>';
+                            strLogX += '<p class="title">Title changed'
+                                     + (data[i]['change']['title']['old_value'] === '' ? '' : (' from: <em>' + data[i]['change']['title']['old_value'] + '</em>'))
+                                     + '</p>';
                         }
                         numChgs++;
                     }
@@ -274,7 +276,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         arrExfee = [];
                         for (j in data[i]['confirmed']) {
                             if (arrExfee.push(
-                                    data[i]['confirmed'][j]['to_name']
+                                    data[i]['confirmed'][j]['to_identity']['name']
                                 ) === 3) {
                                 break;
                             }
@@ -293,7 +295,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         arrExfee = [];
                         for (j in data[i]['declined']) {
                             if (arrExfee.push(
-                                    data[i]['declined'][j]['to_name']
+                                    data[i]['declined'][j]['to_identity']['name']
                                 ) === 3) {
                                 break;
                             }
@@ -312,7 +314,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         arrExfee = [];
                         for (j in data[i]['addexfee']) {
                             if (arrExfee.push(
-                                    data[i]['addexfee'][j]['to_name']
+                                    data[i]['addexfee'][j]['to_identity']['name']
                                 ) === 3) {
                                 break;
                             }
@@ -329,7 +331,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                     if (data[i]['conversation']) {
                         strLogX += '<p class="conversation"><em>'
-                                 + data[i]['conversation'][0]['by_name']+'</em>: '
+                                 + data[i]['conversation'][0]['by_identity']['name']+'</em>: '
                                  + data[i]['conversation'][0]['message']+'<br><em>'
                                  + data[i]['conversation'].length
                                  + '</em> new post in conversation.</p>';
