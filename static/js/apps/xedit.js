@@ -313,6 +313,11 @@ var clickCallBackFunc = function(args) {
                             crossData.place.line1 = arrPlace[0];
                             crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
+                            //place search
+                            setTimeout(function(){
+                                odof.apps.maps.getLocation('place_content', 'google_maps_cotainer', 'edit_cross');
+                            },1000);
+
                         });
                         $('#place_content').html(
                             crossData.place.line1 + '\r' + crossData.place.line2

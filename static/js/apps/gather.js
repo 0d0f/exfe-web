@@ -352,6 +352,9 @@ $(document).ready(function() {
                 break;
             case 'keyup':
                 odof.x.gather.updatePlace();
+                setTimeout(function(){
+                    odof.apps.maps.getLocation('gather_place','calendar_map_container', 'create_cross');
+                },1000);
         }
     });
     odof.x.gather.updatePlace();

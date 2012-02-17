@@ -382,3 +382,11 @@
 #xExfeeArea .exfeegadget_addbtn {
     top: -3px;
 }
+
+#google_maps_cotainer{
+     display:none; margin-top:24px;
+     height:175px; width:280px;
+     -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}

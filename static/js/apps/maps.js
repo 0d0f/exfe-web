@@ -14,6 +14,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.userCurLng = '';
     ns.cityLat = 0;
     ns.cityLng = 0;
+    ns.locationInputBoxID = '';
+    ns.curActions= '';
+    ns.googleMapsContainerID = '';
 
     ns.getUserLatLng = function(){
 
@@ -43,8 +46,18 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
-    ns.getLocation = function(){
-        var placeDetail = jQuery('#gather_place').val();
+    ns.getLocation = function(locationInputBoxID, googleMapsContainerID, curActions){
+        if(typeof locationInputBoxID != "undefined"){
+            ns.locationInputBoxID = locationInputBoxID;
+        }
+        if(typeof googleMapsContainerID != "undefined"){
+            ns.googleMapsContainerID = googleMapsContainerID;
+        }
+        if(typeof curActions != "undefined"){
+            ns.curActions = curActions;
+        }
+
+        var placeDetail = jQuery('#'+ns.locationInputBoxID).val();
         var placeArr = odof.util.parseLocation(placeDetail);
         var strPlace = odof.util.toDBC(placeArr[0]);
         //只有当输入大于两个字符的时候，才进行查询。
@@ -61,7 +74,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 dataType:"json",
                 //async:false,
                 success: function(JSONData){
-                    var curLocationDetail = jQuery('#gather_place').val();
+                    var curLocationDetail = jQuery('#'+ns.locationInputBoxID).val();
                     var curLocation = odof.util.parseLocation(curLocationDetail);
                     var strLocation = odof.util.toDBC(curLocation[0]);
 
@@ -109,31 +122,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             //设置一个全局的变量值，以判断是否改变了内容。
             ns.userOldLocation = userPlaceName;
-            jQuery("#gather_place").val(userPlaceName+"\r\n"+userPlaceAddr);
+            jQuery("#"+ns.locationInputBoxID).val(userPlaceName+"\r\n"+userPlaceAddr);
 
             //更新Preview的显示。
-            odof.x.gather.updatePlace();
+            if(ns.curActions == "create_cross"){
+                odof.x.gather.updatePlace();
+            }
+            if(ns.curActions == "edit_cross"){
+                var arrPlace = odof.util.parseLocation($('#place_content').val());
+                crossData.place.line1 = arrPlace[0];
+                crossData.place.line2 = arrPlace[1];
+                odof.x.render.showPlace();
+            }
             jQuery("#gather_place_selector").hide();
 
             //画Google地图。
-            var center =  new google.maps.LatLng(odof.apps.maps.cityLat,odof.apps.maps.cityLng);
-            var myOptions = {
-                zoom: 12,
-                center: center,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-            
-            var map = new google.maps.Map(document.getElementById("calendar_map_container"), myOptions);
-            var initialLocation = new google.maps.LatLng(userPlaceLat,userPlaceLng);
-            map.setCenter(initialLocation);
-
-            var position = new google.maps.LatLng(userPlaceLat,userPlaceLng); 
-            var marker = new google.maps.Marker({
-                position: position, 
-                map: map,
-                title:userPlaceName
-            });
-            //结束画Google Maps......
+            ns.drawGoogleMaps(userPlaceLat, userPlaceLng, userPlaceName);
 
             crossData.place.lat = userPlaceLat;
             crossData.place.lng = userPlaceLng;
@@ -146,16 +150,41 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
+    ns.drawGoogleMaps = function(userPlaceLat, userPlaceLng, userPlaceName){
+        var cityLat = userPlaceLat;
+        var cityLng = userPlaceLng;
+
+        if(odof.apps.maps.cityLat != 0){
+            cityLat = odof.apps.maps.cityLat;
+        }
+        if(odof.apps.maps.cityLng != 0){
+            cityLng = odof.apps.maps.cityLng;
+        }
+
+        var center =  new google.maps.LatLng(cityLat,cityLng);
+        var myOptions = {
+            zoom: 12,
+            center: center,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        
+        jQuery("#"+ns.googleMapsContainerID).css({"width":"280px", "height":"175px"});
+        jQuery("#"+ns.googleMapsContainerID).show();
+        var map = new google.maps.Map(document.getElementById(ns.googleMapsContainerID), myOptions);
+        var initialLocation = new google.maps.LatLng(userPlaceLat,userPlaceLng);
+        map.setCenter(initialLocation);
+
+        var position = new google.maps.LatLng(userPlaceLat,userPlaceLng); 
+        var marker = new google.maps.Marker({
+            position: position, 
+            map: map,
+            title:userPlaceName
+        });
+    };
+
 })(ns);
 
-
 $(document).ready(function() {
-    // place
-    $('#gather_place').bind('keyup', function (event) {
-        setTimeout(function(){
-            odof.apps.maps.getLocation();
-        },1000);
-    });
     //get user location
     odof.apps.maps.getUserLatLng();
 });

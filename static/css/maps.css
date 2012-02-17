@@ -4,9 +4,12 @@
 #gather_place_selector {
     display: block; position: absolute;
     border: 1px #CCCCCC solid;
-    background: #EEEEEE;
+    background: #EEEEEE; overflow:hidden;
     margin-left: 210px; margin-top:25px; background-color:#FFF;
     padding:5px 5px 0 5px; font-size: 14px; line-height: 20px; z-index:10;
+}
+#x_place_bubble #gather_place_selector{
+    margin-left:5px;
 }
 
 #gather_place_selector ul {

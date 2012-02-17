@@ -187,6 +187,7 @@ var moduleNameSpace = 'odof.x.render',
                       +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
                       +             '<span id="x_place_line2"></span>'
                       +         '</div>'
+                      +         '<div id="google_maps_cotainer"></div>'
                       +         '<div id="xExfeeArea"></div>'
                       +     '</div>'
                       + '</div>';
