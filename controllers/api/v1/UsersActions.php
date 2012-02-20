@@ -68,23 +68,34 @@ class UsersActions extends ActionController {
         $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
 
         // merge logs by @Leask {
-        $preItemIdx  = 0;
+        $preItemLogs = array();
         $preItemDna  = '';
         $preItemTime = 0;
+        $magicTime   = 153; // 2:33
         foreach ($rawLogs as $logI => $logItem) {
-            $curDna  = ($logItem['by_identity']['user_id'] ?: $logItem['by_identity']['id']) . "_{$logItem['action']}_{$logItem['x_id']}";
-            $curTime = strtotime($logItem['time']);
-            if ($curDna === $preItemDna && abs($preItemTime - $curTime) <= 153) { // 2:33
+            $curDna  = ($logItem['by_identity']['user_id']
+                     ? "u{$logItem['by_identity']['user_id']}"
+                     : "i{$logItem['by_identity']['id']}")
+                     . "_c{$logItem['x_id']}";
+            $difTime = abs($preItemTime - ($curTime = strtotime($logItem['time'])));
+            if ($curDna === $preItemDna && $difTime <= $magicTime && isset($preItemLogs[$logItem['action']])) {
                 switch ($logItem['action']) {
                     case 'title':
-                        $rawLogs[$preItemIdx]['old_value'] = $logItem['old_value'];
+                        if (isset($logItem['old_value'])
+                         && $logItem['old_value'] !== null
+                         && $logItem['old_value'] !== '') {
+                            $rawLogs[$preItemLogs[$logItem['action']]]['old_value'] = $logItem['old_value'];
+                        }
                         break;
                     case 'addexfee':
                     case 'delexfee':
                     case 'confirmed':
                     case 'declined':
                     case 'interested':
-                        array_push($rawLogs[$preItemIdx]['to_identity'], $logItem['to_identity']);
+                        array_push(
+                            $rawLogs[$preItemLogs[$logItem['action']]]['to_identity'],
+                            $logItem['to_identity']
+                        );
                 }
                 unset($rawLogs[$logI]);
             } else {
@@ -96,7 +107,10 @@ class UsersActions extends ActionController {
                     case 'interested':
                         $rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
                 }
-                $preItemIdx = $logI;
+                if ($curDna !== $preItemDna || $difTime > $magicTime) {
+                    $preItemLogs = array();
+                }
+                $preItemLogs[$logItem['action']] = $logI;
             }
             $preItemDna  = $curDna;
             $preItemTime = $curTime;
@@ -109,9 +123,10 @@ class UsersActions extends ActionController {
 
         $responobj["meta"]["code"]=200;
         $responobj["response"]=$cleanLogs;
-        echo json_encode($responobj);
 
+        echo json_encode($responobj);
     }
+
     public function doX()
     {
         //check if this token allow 
