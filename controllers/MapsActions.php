@@ -16,6 +16,7 @@ class MapsActions extends ActionController {
 
         $lat = 0;
         $lng = 0;
+
         //如果用户输入是以空格分隔的地址。
         if(count($locationArr) > 1){
             $districtLocation = $locationArr[0];
@@ -43,11 +44,12 @@ class MapsActions extends ActionController {
                     $districtLocation = $userRegion["region"];
                 }
             }
+
             if($districtLocation == null
                 || $districtLocation == "未知"
                 || $districtLocation == "本机地址"
             ){
-                $districtLocation = mb_substr(trim($location), 0, 2);
+                $districtLocation = mb_substr(trim($location), 0, 2, 'UTF-8');
             }
 
             list($lat,$lng) = $foursquareHandler->GeoLocate($districtLocation);
@@ -71,9 +73,11 @@ class MapsActions extends ActionController {
 
         $responseData = $foursquareHandler->GetPublic("venues/search",$queryParams);
 	    $venuesList = json_decode($responseData);
+
         if($venuesList->meta->code == 400
             || $venuesList->response->groups == NULL
-            || sizeof($venuesList->response) == 0){
+            || sizeof($venuesList->response) == 0
+        ){
             $returnData["error"] = 1;
             $returnData["msg"] = 'empty search..';
             header("Content-Type:application/json; charset=UTF-8");
@@ -81,6 +85,7 @@ class MapsActions extends ActionController {
             exit();
         }
         $responseResult = array();
+
         foreach($venuesList->response->groups as $group){
             foreach($group->items as $venue){
                 $item = array(
