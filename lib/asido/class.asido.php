@@ -28,7 +28,7 @@ if (!defined('OS_UNIX')) {
 	define('OS_UNIX', !OS_WINDOWS);
 	}
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * backward compatibility: the DIR_SEP constant isn't used anymore
@@ -43,18 +43,18 @@ if (!defined('PATH_SEPARATOR')) {
 	define('PATH_SEPARATOR', OS_WINDOWS ? ';' : ':');
         }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
-* Set the ASIDO_DIR constant up with the absolute path to Asido files. If it is 
-* not defined, include_path will be used. Set ASIDO_DIR only if any other module 
+* Set the ASIDO_DIR constant up with the absolute path to Asido files. If it is
+* not defined, include_path will be used. Set ASIDO_DIR only if any other module
 * or application has not already set it up.
 */
 if (!defined('ASIDO_DIR')) {
 	define('ASIDO_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 	}
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Constant for declaring a proportional resize
@@ -74,7 +74,7 @@ define('ASIDO_RESIZE_STRETCH', 1002);
 */
 define('ASIDO_RESIZE_FIT', 1003);
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Constant for declaring overwriting the target file if it exists
@@ -88,7 +88,7 @@ define('ASIDO_OVERWRITE_ENABLED', 2001);
 */
 define('ASIDO_OVERWRITE_DISABLED', 2002);
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Constant for declaring watermark position
@@ -150,7 +150,7 @@ define('ASIDO_WATERMARK_BOTTOM_RIGHT', 3009);
 */
 define('ASIDO_WATERMARK_TILE', 3010);
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Constant for declaring watermark position
@@ -212,7 +212,7 @@ define('ASIDO_WATERMARK_SOUTH', ASIDO_WATERMARK_BOTTOM_CENTER);
 */
 define('ASIDO_WATERMARK_SOUTH_EAST', ASIDO_WATERMARK_BOTTOM_RIGHT);
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Constant for declaring watermark scalable
@@ -232,7 +232,7 @@ define('ASIDO_WATERMARK_SCALABLE_FACTOR', 0.25);
 */
 define('ASIDO_WATERMARK_SCALABLE_DISABLED', 4002);
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Alias for JPEG mime-type
@@ -252,7 +252,7 @@ define('ASIDO_MIME_GIF', 'image/gif');
 */
 define('ASIDO_MIME_PNG', 'image/png');
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 /**
 * Constant for declaring what type of support the current driver offers
@@ -297,7 +297,7 @@ include_once ASIDO_DIR . 'class.image.php';
 */
 Class Asido {
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	/**
 	* Get version of Asido release
@@ -310,8 +310,8 @@ Class Asido {
 		return '0.0.0.1';
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 	/**
 	* Set a driver
 	*
@@ -324,14 +324,14 @@ Class Asido {
 	* @static
 	*/
 	Public Static Function driver($driver_name) {
-		
+
 		// class exists ?
 		//
 		if (class_exists($c = asido::__driver_classname($driver_name))) {
 			asido::_driver(new $c);
 			return true;
 			}
-		
+
 		// file exists ?
 		//
 		if (!$fp = @fopen(
@@ -353,14 +353,14 @@ Class Asido {
 		// include it
 		//
 		require_once($f);
-		
+
 		// file loaded, check again ...
 		//
 		if (class_exists($c)) {
 			asido::_driver(new $c);
 			return true;
 			}
-		
+
 		trigger_error(
 			sprintf(
 				'Asido driver class "%s" (for driver "%s") not found',
@@ -375,7 +375,7 @@ Class Asido {
 	/**
 	* Compose the filename for a driver
 	*
-	* If you want to use a different mechanism for composing driver's 
+	* If you want to use a different mechanism for composing driver's
 	* filename, then override this method in a subclass of {@link Asido}
 	*
 	* @param string $driver_name
@@ -391,7 +391,7 @@ Class Asido {
 	/**
 	* Compose the classname for a driver
 	*
-	* If you want to use a different mechanism for composing driver's 
+	* If you want to use a different mechanism for composing driver's
 	* classname, then override this method in a subclass of {@link Asido}
 	*
 	* @param string $driver_name
@@ -403,9 +403,9 @@ Class Asido {
 	Protected Static Function __driver_classname($driver_name) {
 		return 'asido_driver_' . $driver_name;
 		}
-	
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	
+
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 	/**
 	* Get the supported mime-types by the loaded driver
 	*
@@ -415,7 +415,7 @@ Class Asido {
 	* @static
 	*/
 	Public Static Function get_supported_types($mode=ASIDO_SUPPORT_READ_WRITE) {
-		
+
 		$d =& asido::_driver();
 
 		// no driver ?
@@ -426,7 +426,7 @@ Class Asido {
 				);
 			return false;
 			}
-		
+
 		return $d->get_supported_types($mode);
 		}
 
@@ -440,7 +440,7 @@ Class Asido {
 	* @static
 	*/
 	Public Static Function is_format_supported($mime_type, $mode=ASIDO_SUPPORT_READ_WRITE) {
-		
+
 		$d =& asido::_driver();
 
 		// no driver ?
@@ -451,16 +451,16 @@ Class Asido {
 				);
 			return false;
 			}
-		
+
 		return $d->supported(strToLower($mime_type), $mode);
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 	/**
 	* Get\Set the instance of Asido driver
 	*
-	* @param asido_driver $driver 
+	* @param asido_driver $driver
 	* @return asido_driver
 	*
 	* @internal using static array in order to store a reference in a static variable
@@ -469,11 +469,11 @@ Class Asido {
 	* @static
 	*/
 	Private Static Function &_driver(asido_driver $driver=null) {
-		
+
 		static $_d = array();
-		
+
 		if (isset($driver)) {
-			
+
 			// is it a driver ?
 			//
 			if (!$driver instanceOf asido_driver) {
@@ -503,15 +503,15 @@ Class Asido {
 					);
 				return false;
 				}
-			
+
 			$_d[0] =& $driver;
 			}
 
-		return $_d[0];		
+		return $_d[0];
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 	/**
 	* Get a new image object
 	*
@@ -526,26 +526,26 @@ Class Asido {
 		return new asido_image($source, $target);
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-	
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
 	/**
 	* Resize an image
 	*
-	* Use this method to resize a previously created {@link asido_image} 
-	* object. The resize operation can be performed in three modes. The 
-	* proportional mode set by ASIDO_RESIZE_PROPORTIONAL will attempt to fit 
-	* the image inside the "frame" create by the $width and $height arguments, 
-	* while the stretch mode set by ASIDO_RESIZE_STRETCH will stretch the 
-	* image if necessary to fit into that "frame". The "fitting" mode set by 
-	* ASIDO_RESIZE_FIT will attempt to resize the image proportionally only if 
-	* it does not fit inside the "frame" set by the provided width and height: 
+	* Use this method to resize a previously created {@link asido_image}
+	* object. The resize operation can be performed in three modes. The
+	* proportional mode set by ASIDO_RESIZE_PROPORTIONAL will attempt to fit
+	* the image inside the "frame" create by the $width and $height arguments,
+	* while the stretch mode set by ASIDO_RESIZE_STRETCH will stretch the
+	* image if necessary to fit into that "frame". The "fitting" mode set by
+	* ASIDO_RESIZE_FIT will attempt to resize the image proportionally only if
+	* it does not fit inside the "frame" set by the provided width and height:
 	* if it does fit, the image will not be resized at all.
 	*
 	* @param asido_image $image
 	* @param integer $width
 	* @param integer $height
 	* @param mixed $mode mode for resizing the image:
-	*	either ASIDO_RESIZE_STRETCH or ASIDO_RESIZE_PROPORTIONAL or ASIDO_RESIZE_FIT 
+	*	either ASIDO_RESIZE_STRETCH or ASIDO_RESIZE_PROPORTIONAL or ASIDO_RESIZE_FIT
 	* @return boolean
 	*
 	* @access public
@@ -565,7 +565,7 @@ Class Asido {
 	/**
 	* Resize an image by making it fit a particular width
 	*
-	* Use this method to resize a previously created {@link asido_image} 
+	* Use this method to resize a previously created {@link asido_image}
 	* object by making it fit a particular width while keeping the
 	* proportions ratio.
 	*
@@ -590,7 +590,7 @@ Class Asido {
 	/**
 	* Resize an image by making it fit a particular height
 	*
-	* Use this method to resize a previously created {@link asido_image} 
+	* Use this method to resize a previously created {@link asido_image}
 	* object by making it fit a particular height while keeping the
 	* proportions ratio.
 	*
@@ -615,7 +615,7 @@ Class Asido {
 	/**
 	* Resize an image by stretching it by the provided width and height
 	*
-	* Use this method to resize a previously created {@link asido_image} 
+	* Use this method to resize a previously created {@link asido_image}
 	* object by stretching it to fit a particular height without keeping
 	* the proportions ratio.
 	*
@@ -641,8 +641,8 @@ Class Asido {
 	/**
 	* Resize an image by "fitting" in the provided width and height
 	*
-	* Use this method to resize a previously created {@link asido_image} 
-	* object if it is bigger then the "frame" set by the provided width and 
+	* Use this method to resize a previously created {@link asido_image}
+	* object if it is bigger then the "frame" set by the provided width and
 	* height: if it is smaller it will not be resized
 	*
 	* @param asido_image $image
@@ -668,12 +668,12 @@ Class Asido {
 	/**
 	* Resize an image by "framing" it with the provided width and height
 	*
-	* Use this method to resize a previously created {@link asido_image} 
-	* object by placing it inside the "frame" set by the provided width and 
-	* height. First the image will be resized in the same manner as {@link 
-	* Asido::fit()} does, and then it will be placed in the center of a canvas 
-	* with the proportions of the provided width and height (achieving a 
-	* "Passepartout" framing effect). The background of the "passepartout" 
+	* Use this method to resize a previously created {@link asido_image}
+	* object by placing it inside the "frame" set by the provided width and
+	* height. First the image will be resized in the same manner as {@link
+	* Asido::fit()} does, and then it will be placed in the center of a canvas
+	* with the proportions of the provided width and height (achieving a
+	* "Passepartout" framing effect). The background of the "passepartout"
 	* is set by the $color argument
 	*
 	* @param asido_image $image
@@ -699,7 +699,7 @@ Class Asido {
 	/**
 	* Convert an image from one file-type to another
 	*
-	* Use this method to convert a previously created {@link asido_image} 
+	* Use this method to convert a previously created {@link asido_image}
 	* object from its original file-type to another.
 	*
 	* @param asido_image $image
@@ -717,31 +717,31 @@ Class Asido {
 				)
 			);
 		}
-	
+
 	/**
 	* Watermark an image
 	*
-	* Use this method to watermark a previously create {@link asido_image} 
-	* object. You can set the position of the watermark (the gravity) by using 
-	* each of the nine available "single" positions (single means the 
-	* watermark will appear only once), or the "tile" position, which applied 
-	* the watermark all over the image like a tiled wallpaper. If the 
-	* watermark image is larger than the image that is supposed to be 
-	* watermarked you can shrink the watermark image: the scale of its 
+	* Use this method to watermark a previously create {@link asido_image}
+	* object. You can set the position of the watermark (the gravity) by using
+	* each of the nine available "single" positions (single means the
+	* watermark will appear only once), or the "tile" position, which applied
+	* the watermark all over the image like a tiled wallpaper. If the
+	* watermark image is larger than the image that is supposed to be
+	* watermarked you can shrink the watermark image: the scale of its
 	* shrinking is determined by the $scalable_factor argument.
-	* 
+	*
 	* @param asido_image $image
 	* @param string $watermark_image path to the file which is going to be use as watermark
-	* @param mixed $position position(gravity) of the watermark: the 
-	*	available values are ASIDO_WATERMARK_TOP_LEFT, 
-	*	ASIDO_WATERMARK_TOP_CENTER, ASIDO_WATERMARK_TOP_RIGHT, 
-	*	ASIDO_WATERMARK_MIDDLE_LEFT, ASIDO_WATERMARK_MIDDLE_CENTER, 
-	*	ASIDO_WATERMARK_MIDDLE_RIGHT, ASIDO_WATERMARK_BOTTOM_LEFT, 
-	*	ASIDO_WATERMARK_BOTTOM_CENTER, ASIDO_WATERMARK_BOTTOM_RIGHT and 
+	* @param mixed $position position(gravity) of the watermark: the
+	*	available values are ASIDO_WATERMARK_TOP_LEFT,
+	*	ASIDO_WATERMARK_TOP_CENTER, ASIDO_WATERMARK_TOP_RIGHT,
+	*	ASIDO_WATERMARK_MIDDLE_LEFT, ASIDO_WATERMARK_MIDDLE_CENTER,
+	*	ASIDO_WATERMARK_MIDDLE_RIGHT, ASIDO_WATERMARK_BOTTOM_LEFT,
+	*	ASIDO_WATERMARK_BOTTOM_CENTER, ASIDO_WATERMARK_BOTTOM_RIGHT and
 	*	ASIDO_WATERMARK_TILE
-	* @param mixed $scalable whether to shrink the watermark or not if the 
-	*	watermark image is bigger than the image that is supposed to be 
-	*	watermarked. 
+	* @param mixed $scalable whether to shrink the watermark or not if the
+	*	watermark image is bigger than the image that is supposed to be
+	*	watermarked.
 	* @param float $scalable_factor watermark scaling factor
 	* @return boolean
 	*
@@ -766,7 +766,7 @@ Class Asido {
 
 	/**
 	* Grayscale the provided image
-	* 
+	*
 	* @param asido_image $image
 	* @return boolean
 	*
@@ -782,22 +782,22 @@ Class Asido {
 
 	/**
 	* Grayscale the provided image
-	* 
+	*
 	* @param asido_image $image
 	* @return boolean
 	*
 	* @access public
 	* @static
-	*/	
+	*/
 	Public Static Function greyscale(asido_image $image) {
 		return Asido::grayscale($image);
 		}
 
 	/**
 	* Rotate the provided image (clockwise)
-	* 
+	*
 	* @param asido_image $image
-	* @param float $angle 
+	* @param float $angle
 	* @param asido_color $color	background color for when non-rectangular angles are used
 	* @return boolean
 	*
@@ -878,7 +878,7 @@ Class Asido {
 
 	/**
 	* Creates a vertical mirror (flip) by reflecting the pixels around the central X-axis
-	* 
+	*
 	* @param asido_image $image
 	* @return boolean
 	*
@@ -894,7 +894,7 @@ Class Asido {
 
 	/**
 	* Creates a horizontal mirror (flop) by reflecting the pixels around the central Y-axis
-	* 
+	*
 	* @param asido_image $image
 	* @return boolean
 	*
@@ -908,7 +908,7 @@ Class Asido {
 			);
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	/**
 	* Store an operation to image's queue of operations
@@ -934,7 +934,7 @@ Class Asido {
 			return false;
 			}
 
-		
+
 		// not an image ?
 		//
 		if (!$image instanceOf asido_image) {
@@ -959,7 +959,7 @@ Class Asido {
 				),
 			$params
 			);
-		
+
 		$image->operation(
 			array($d, $operation),
 			$p
@@ -967,9 +967,9 @@ Class Asido {
 		return true;
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-//--end-of-class--	
+//--end-of-class--
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -990,14 +990,14 @@ Class asido_color {
 	* @access private
 	*/
 	Private $_red = 0;
-	
+
 	/**
 	* Green Channel
 	* @var integer
 	* @access private
 	*/
 	Private $_green = 0;
-	
+
 	/**
 	* Blue Channel
 	* @var integer
@@ -1005,7 +1005,7 @@ Class asido_color {
 	*/
 	Private $_blue = 0;
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	/**
 	* Set a new color
@@ -1035,9 +1035,9 @@ Class asido_color {
 			);
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-//--end-of-class--	
+//--end-of-class--
 }
 
 /////////////////////////////////////////////////////////////////////////////

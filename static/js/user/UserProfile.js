@@ -536,7 +536,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#set_password_btn").bind("click",function(){
             ns.showChangePasswordDialog(userName);
         });
-        
+
         jQuery("#edit_profile_btn").unbind("click");
         jQuery("#edit_profile_btn").bind("click",function(){
             var userName = jQuery("#edit_profile_name").val();

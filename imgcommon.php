@@ -3,7 +3,7 @@
 function getExtension($str) {
 
     $i = strrpos($str,".");
-    if (!$i) { return ""; } 
+    if (!$i) { return ""; }
     $l = strlen($str) - $i;
     $ext = substr($str,$i+1,$l);
     return $ext;
@@ -58,7 +58,7 @@ function resizeThumbnailImage($thumb_image_name, $image, $width, $height, $start
     {
         $source = imagecreatefrompng($image);
     }
-    else 
+    else
     {
         $source = imagecreatefromgif($image);
     }
@@ -102,12 +102,12 @@ function asidoResizeImg($args=array(), $crop=false){
     $height = $args["height"];
 
     // process crop images
-    $i1 = asido::image($source_image, $target_image);	
-    // fit and add white frame										
+    $i1 = asido::image($source_image, $target_image);
+    // fit and add white frame
     if($crop){
         Asido::Crop($i1, $x, $y, $width, $height);
     }else{
-        Asido::Frame($i1, $width, $height, Asido::Color(255, 255, 255));			
+        Asido::Frame($i1, $width, $height, Asido::Color(255, 255, 255));
     }
 	$i1->Save(ASIDO_OVERWRITE_ENABLED);
 }

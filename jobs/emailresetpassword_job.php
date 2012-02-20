@@ -29,7 +29,7 @@ class Emailresetpassword_Job
         $mail["external_identity"]=$this->args['external_identity'];
         $mail["title"]=$title;
         $mail_body=$this->getMailBody($mail);
-       
+
         if($email_connect==""){
             smtp_connect();
         }
@@ -61,7 +61,7 @@ class Emailresetpassword_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));

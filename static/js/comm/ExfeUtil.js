@@ -1095,7 +1095,7 @@ var odof = {
         return num;
     };
 
-    
+
     /**
      * cut long user name
      * by Leask

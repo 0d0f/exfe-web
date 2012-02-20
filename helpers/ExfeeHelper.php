@@ -233,7 +233,7 @@ class ExfeeHelper extends ActionController {
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-               if(intval($invitation["by_identity_id"])>0) {    
+               if(intval($invitation["by_identity_id"])>0) {
                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                }
                $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
@@ -300,7 +300,7 @@ class ExfeeHelper extends ActionController {
                 $cross=$crossData->getCross($cross_id);
                 $mail["title"]=$cross["title"];
                 $mail["create_at"]=time();
-    
+
                 $identityData=$this->getModelByName("identity");
                 $exfee_identity=$identityData->getIdentityById($host_identity_id);
                 $userData=$this->getModelByName("user");

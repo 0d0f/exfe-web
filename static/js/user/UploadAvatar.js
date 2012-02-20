@@ -10,7 +10,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
     ns.cropper = null;
-    ns.init = function(){   
+    ns.init = function(){
         var html = '<div id="upload_avatar_titles" class="titles">'
                  + '<p class="l"><a href="#" id="upload_avatar_close_btn"></a></p>'
                  + '<p id="upload_avatar_handler" class="r">Portrait</p>'
@@ -64,7 +64,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if(responseJSON.error){
             window.location.href = site_url + "/s/profile";
         }
-        
+
         jQuery("#upload_btn_container").hide();
         jQuery("#dragdrop_info").hide();
 
@@ -72,9 +72,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 		var img = img_url+responseJSON.web_path+"/240_240_original_"+responseJSON.file_name;
 
         jQuery('#preview').html(img);
-        jQuery('#img_src').val(responseJSON.file_name);				
-        jQuery('#preview').html('<img src="'+img+'" />');	
-		jQuery('#div_upload_big').html('<img id="big" src="'+img+'" />');						
+        jQuery('#img_src').val(responseJSON.file_name);
+        jQuery('#preview').html('<img src="'+img+'" />');
+		jQuery('#div_upload_big').html('<img id="big" src="'+img+'" />');
 
         jQuery('#upload_thumb').show();
         jQuery('#big').imgAreaSelect({
@@ -106,9 +106,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.previewImages = function(img, selection) {
         if (!selection.width || !selection.height){ return; }
-            
+
         //200 is the #preview dimension, change this to your liking
-        var scaleX = 80 / selection.width; 
+        var scaleX = 80 / selection.width;
         var scaleY = 80 / selection.height;
 
         jQuery('#preview img').css({
@@ -117,14 +117,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             marginLeft: -Math.round(scaleX * selection.x1),
             marginTop: -Math.round(scaleY * selection.y1)
         });
-        
-        
+
+
         jQuery('.x1').val(selection.x1);
         jQuery('.y1').val(selection.y1);
         jQuery('.x2').val(selection.x2);
         jQuery('.y2').val(selection.y2);
         jQuery('.width').val(selection.width);
-        jQuery('.height').val(selection.height);    
+        jQuery('.height').val(selection.height);
     };
 
     ns.saveImage = function(){

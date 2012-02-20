@@ -7,7 +7,7 @@ class Waiting_Job
 {
     public function multi_perform($args)
     {
-       
+
        foreach($args as $arg)
        {
                #if($arg["queue_name"]=="apn_job" && $arg["jobclass_name"]=="iOSAPN")
@@ -17,7 +17,7 @@ class Waiting_Job
                # $jobId = Resque::enqueue($arg["queue_name"],$arg["jobclass_name"] , $arg, true);
                # echo "throw back jobid: $jobId\r\n";
                #}
-               #else 
+               #else
                if($arg["queue_name"]!="" && $arg["jobclass_name"]!="")
                {
                 date_default_timezone_set('GMT');

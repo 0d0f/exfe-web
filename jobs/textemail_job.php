@@ -32,7 +32,7 @@ class Textemail_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['to']));

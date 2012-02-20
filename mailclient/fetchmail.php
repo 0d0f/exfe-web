@@ -1,4 +1,4 @@
-<?php 
+<?php
 include("mailconf.php");
 include("receivemail.class.php");
 #$username = 'x@exfe.com';
@@ -21,7 +21,7 @@ else
 fwrite(STDOUT , '*** Starting worker '.$worker."\n");
 
 $obj = new receiveMail($username,$password,$username,"{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX");
-$obj->connect();         
+$obj->connect();
 
 while(true) {
     if($shutdown) {
@@ -72,17 +72,17 @@ function dofetchandpost($obj)
         $obj->connect();
     }
 
-    $tot = $obj->getTotalMails(); 
+    $tot = $obj->getTotalMails();
     thislog("new mail:".$tot);
     if($tot>0)
     {
         for($i = $tot; $i > 0; $i--)
         {
-            $head = $obj->getHeaders($i);  
+            $head = $obj->getHeaders($i);
             $to=$head["to"];
             $from=$head["from"];
             $subject=$head["subject"];
-            
+
             $cross_id="";
             #$cross_id_base62="";
             #$match_result=preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches);
@@ -97,8 +97,8 @@ function dofetchandpost($obj)
                 $cross_id=$matches[1];
             }
 
-            $body=$obj->getBody($i);  
-            
+            $body=$obj->getBody($i);
+
             if($body["charset"]!="" && strtolower($body["charset"])!="utf-8")
             {
                 $body["body"]=mb_convert_encoding($body["body"],"utf-8",$body["charset"]);
@@ -109,7 +109,7 @@ function dofetchandpost($obj)
             $message = str_ireplace("</p>","\n",$message);
             $message = str_ireplace("<br/>","\n",$message);
             $message = str_ireplace("<br />","\n",$message);
-        
+
             $str=strip_gmail($message);
             if($str!="")
                 $message=$str;
@@ -137,8 +137,8 @@ function dofetchandpost($obj)
                }
             }
             print "post comment:".$cross_id." ".$from." ".$result_str."\r\n";
-        
-        
+
+
             if($cross_id!="")
             {
                 print $from;
@@ -147,7 +147,7 @@ function dofetchandpost($obj)
                 print "\r\n";
                 $result_str=html_entity_decode($result_str, ENT_QUOTES, 'UTF-8');
                 print trim($result_str);
-    
+
                 $result=postcomment($cross_id,$from,$result_str);
                 if($result->response->success=="true")
                 {
@@ -155,7 +155,7 @@ function dofetchandpost($obj)
                     echo "\r\npost send\r\n";
                     if($move_r==true)
                         echo "\r\nArchive mail $move_r \r\n";
-    
+
                 }
                 else
                 {
@@ -229,7 +229,7 @@ function dofetchandpost($obj)
     #var_dump($check);
     #if($check->Nmsgs>0)
     #{
-    #    $head = $obj->getHeaders(1);  
+    #    $head = $obj->getHeaders(1);
     #    print_r($head);
     #}
 
@@ -296,21 +296,21 @@ function postcomment($cross_id,$from,$comment)
                 'comment'=> $comment,
                 'postkey'=> POSTKEY
             );
-    
+
     thislog("post comment:".$fields);
     foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
     rtrim($fields_string,'&');
-    
+
     $ch = curl_init();
-    
+
     curl_setopt($ch,CURLOPT_URL,EmailPost_link);
     curl_setopt($ch,CURLOPT_POST,count($fields));
     curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-    
+
     $result = curl_exec($ch);
     curl_close($ch);
-    
+
     $resultobj=json_decode($result);
     return $resultobj;
     //->response->success;

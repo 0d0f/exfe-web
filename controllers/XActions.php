@@ -195,7 +195,7 @@ class XActions extends ActionController
         if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
             $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
         }
-        
+
         if ($newExfees || $delExfees) {
             $changed = true;
         }

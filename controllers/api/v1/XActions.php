@@ -22,7 +22,7 @@ class XActions extends ActionController {
         if($rsvp=="maybe")
             $state=INVITATION_MAYBE;
 
-    
+
         $invitationData=$this->getModelByName("Invitation");
         $result=$invitationData->rsvpIdentities($params["id"],$check["identity_id_list"],$state,$check["user_id"]);
         $responobj["meta"]["code"]=200;
@@ -46,7 +46,7 @@ class XActions extends ActionController {
     public function doPosts()
     {
         $params=$this->params;
-         
+
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("x_post",$params["token"],array("cross_id"=>$params["id"]));
         if($check["check"]==false)

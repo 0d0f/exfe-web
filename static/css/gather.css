@@ -158,7 +158,7 @@
 
 #gather_form .exfeegadget_listarea {
     width: 260px;
-    height: 120px; 
+    height: 120px;
 }
 
 #gather_form #gather_privacy {
@@ -174,7 +174,7 @@
     color: #0591AC;
 }
 
-#gather_privacy_info_desc { 
+#gather_privacy_info_desc {
     color: #666666;
     font-size: 14px;
     line-height: 20px;
@@ -230,7 +230,7 @@
 }
 
 #gather_submit_blank {
-   height: 30px; 
+   height: 30px;
 }
 
 #gather_form #gather_failed_hint {
