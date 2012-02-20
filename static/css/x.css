@@ -246,7 +246,7 @@
 .x_place_line1_double {
     font-size:30px;
     line-height: 36px;
-    max-height: 96px;
+    max-height: 72px;
     overflow: hidden;
 }
 
@@ -257,7 +257,7 @@
     color: #666666;
     word-break: break-all;
     display: block;
-    max-height: 96px;
+    max-height: 72px;
     overflow: hidden;
 }
 
