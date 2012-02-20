@@ -67,7 +67,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 userLat:odof.apps.maps.userCurLat,
                 userLng:odof.apps.maps.userCurLng
             };
-            jQuery.ajax({
+            if (typeof window.mapRequest !== 'undefined') {
+                window.mapRequest.abort();
+            }
+            window.mapRequest = jQuery.ajax({
                 type: "POST",
                 data: postData,
                 url: site_url+"/Maps/GetLocation",

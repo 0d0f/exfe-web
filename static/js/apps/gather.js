@@ -170,6 +170,10 @@ var moduleNameSpace = 'odof.x.gather',
         var x = this.summaryX();
         x.draft_id = this.draft_id;
 
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+
         $.ajax({
             type     : 'POST',
             url      : site_url + '/x/gather',

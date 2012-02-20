@@ -76,6 +76,11 @@ var clickCallBackFunc = function(args) {
         }
         this.msgSubmitting = true;
         //$('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+
         $.ajax({
             type : 'POST',
             data : {cross_id : cross_id,
@@ -499,6 +504,11 @@ var clickCallBackFunc = function(args) {
         odof.x.edit.savePlace();
         // exfee = JSON.stringify(ns.getexfee());
         // $('#edit_cross_submit_loading').show();
+
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+
         $.ajax({
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
@@ -526,7 +536,12 @@ var clickCallBackFunc = function(args) {
 
 
     ns.submitExfee = function() {
-        jQuery.ajax({
+
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+
+        $.ajax({
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',

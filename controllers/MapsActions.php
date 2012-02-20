@@ -1,4 +1,7 @@
 <?php
+
+session_write_close(); // add by @Leask to speedup release the php session while getting location
+
 require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
 
 class MapsActions extends ActionController {
