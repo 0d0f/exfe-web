@@ -129,7 +129,7 @@ class UsersActions extends ActionController {
 
     public function doX()
     {
-        //check if this token allow 
+        //check if this token allow
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_x",$params["token"],array("user_id"=>$params["id"]));
@@ -149,7 +149,7 @@ class UsersActions extends ActionController {
         $crosses=$Data->getCrossByUserId(intval($params["id"]),urldecode($params["updated_since"]));
         if($crosses=="")
             $crosses=array();
-        
+
         $conversationData=$this->getModelByName("conversation");
         $identityData=$this->getModelByName("identity");
         $invitationData=$this->getModelByName("invitation");
@@ -176,14 +176,14 @@ class UsersActions extends ActionController {
         $responobj["meta"]["code"]=200;
         $responobj["response"]["crosses"]=$crosses;
         echo json_encode($responobj);
-        
+
         //get x by id and updated_since
-        
+
     }
-    
+
     public function doRegdevicetoken()
     {
-        //check if this token allow 
+        //check if this token allow
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
         $uid=$params["id"];

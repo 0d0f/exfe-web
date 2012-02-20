@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE); 
+error_reporting(E_ALL ^ E_NOTICE);
 session_start();
 #header('Content-Type: application/json; charset=UTF-8');
 

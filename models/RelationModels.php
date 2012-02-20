@@ -18,7 +18,7 @@ class RelationModels extends DataModel{
                         $name=$identity["name"];
                         $external_identity=$identity["external_identity"];
                         $provider=$identity["provider"];
-                        $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values($userid,$r_identityid,'$name','$external_identity','$provider')"; 
+                        $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values($userid,$r_identityid,'$name','$external_identity','$provider')";
                         $result=$this->query($sql);
                         return intval($result);
                     }
@@ -64,7 +64,7 @@ class RelationModels extends DataModel{
                         $value = $value. "($userid,$r_identityid,'$name','$external_identity','$provider'),";
                     }
                     $value[strlen($value)-1]=";";
-                    $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values $value"; 
+                    $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values $value";
                     $this->query($sql);
                     $redis->zRemrangebyrank("u_".$userid,0,-1);
                 }
@@ -76,7 +76,7 @@ class RelationModels extends DataModel{
             $userids=$this->getColumn($sql);
 
             $useridlist= implode(' OR `userid` = ', $userids);
-            
+
             $sql="select userid from user_relations where r_identityid=$my_identity_id and (userid=$useridlist)";
             $existuserids=$this->getColumn($sql);
             $newuserids=array();
@@ -98,7 +98,7 @@ class RelationModels extends DataModel{
                     $value = $value. "($userid,$my_identity_id,'$name','$external_identity','$provider'),";
                 }
                 $value[strlen($value)-1]=";";
-                $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values $value"; 
+                $sql="insert into user_relations (userid,r_identityid,name,external_identity,provider) values $value";
                 $this->query($sql);
                 foreach($newuserids as $userid)
                 {

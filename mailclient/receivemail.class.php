@@ -10,7 +10,7 @@
  * Email: mitulkoradia@gmail.com
  * Cell : +91 9825273322
  */
- 
+
 /***************** Changes *********************
 *
 * 1) Added feature to retrive embedded attachment - Changes provided by. Antti <anttiantti83@gmail.com>
@@ -23,21 +23,21 @@ class receiveMail
     var $server='';
     var $username='';
     var $password='';
-    
-    var $marubox='';                    
-    
-    var $email='';          
-    
+
+    var $marubox='';
+
+    var $email='';
+
     function receiveMail($username,$password,$EmailAddress,$server_url) //Constructure
     {
         #if($servertype=='imap')
         #{
-        #    if($port=='') $port='143'; 
-        #    $strConnect='{'.$mailserver.':'.$port. '}INBOX'; 
+        #    if($port=='') $port='143';
+        #    $strConnect='{'.$mailserver.':'.$port. '}INBOX';
         #}
         #else
         #{
-        #    $strConnect='{'.$mailserver.':'.$port. '/pop3'.($ssl ? "/ssl" : "").'}INBOX'; 
+        #    $strConnect='{'.$mailserver.':'.$port. '/pop3'.($ssl ? "/ssl" : "").'}INBOX';
         #}
         # $inbox = imap_open ("{imap.gmail.com:993/imap/ssl/novalidate-cert}INBOX", $username, $password)
         $this->server           =   $server_url;//$strConnect;
@@ -48,7 +48,7 @@ class receiveMail
     function connect() //Connect To the Mail Box
     {
         $this->marubox=imap_open($this->server,$this->username,$this->password);
-        
+
         if(!$this->marubox)
         {
             echo "Error: Connecting to mail server";
@@ -87,14 +87,14 @@ class receiveMail
         return $mail_details;
     }
     function get_mime_type(&$structure) //Get Mime type Internal Private Use
-    { 
-        $primary_mime_type = array("TEXT", "MULTIPART", "MESSAGE", "APPLICATION", "AUDIO", "IMAGE", "VIDEO", "OTHER"); 
-        
-        if($structure->subtype) { 
-            return $primary_mime_type[(int) $structure->type] . '/' . $structure->subtype; 
-        } 
-        return "TEXT/PLAIN"; 
-    } 
+    {
+        $primary_mime_type = array("TEXT", "MULTIPART", "MESSAGE", "APPLICATION", "AUDIO", "IMAGE", "VIDEO", "OTHER");
+
+        if($structure->subtype) {
+            return $primary_mime_type[(int) $structure->type] . '/' . $structure->subtype;
+        }
+        return "TEXT/PLAIN";
+    }
 
     function get_charset(&$structure)
     {
@@ -108,55 +108,55 @@ class receiveMail
 
 
     function get_part($stream, $msg_number, $mime_type, $structure = false, $part_number = false) //Get Part Of Message Internal Private Use
-    { 
-        if(!$structure) { 
-            $structure = imap_fetchstructure($stream, $msg_number); 
-        } 
-        if($structure) { 
+    {
+        if(!$structure) {
+            $structure = imap_fetchstructure($stream, $msg_number);
+        }
+        if($structure) {
             if($mime_type == $this->get_mime_type($structure))
-            { 
-                if(!$part_number) 
-                { 
-                    $part_number = "1"; 
-                } 
-                $text = imap_fetchbody($stream, $msg_number, $part_number); 
-                if($structure->encoding == 3) 
-                { 
-                    return array("charset"=>$this->get_charset($structure),"body"=>imap_base64($text)); 
-                } 
-                else if($structure->encoding == 4) 
-                { 
-                    return array("charset"=>$this->get_charset($structure),"body"=>imap_qprint($text)); 
-                } 
+            {
+                if(!$part_number)
+                {
+                    $part_number = "1";
+                }
+                $text = imap_fetchbody($stream, $msg_number, $part_number);
+                if($structure->encoding == 3)
+                {
+                    return array("charset"=>$this->get_charset($structure),"body"=>imap_base64($text));
+                }
+                else if($structure->encoding == 4)
+                {
+                    return array("charset"=>$this->get_charset($structure),"body"=>imap_qprint($text));
+                }
                 else
-                { 
-                    return array("charset"=>$this->get_charset($structure),"body"=>$text); 
-                } 
-            } 
-            if($structure->type == 1) /* multipart */ 
-            { 
+                {
+                    return array("charset"=>$this->get_charset($structure),"body"=>$text);
+                }
+            }
+            if($structure->type == 1) /* multipart */
+            {
                 while(list($index, $sub_structure) = each($structure->parts))
-                { 
+                {
                     if($part_number)
-                    { 
-                        $prefix = $part_number . '.'; 
-                    } 
-                    $data = $this->get_part($stream, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1)); 
+                    {
+                        $prefix = $part_number . '.';
+                    }
+                    $data = $this->get_part($stream, $msg_number, $mime_type, $sub_structure, $prefix . ($index + 1));
                     if($data["body"]!="")
-                    { 
-                       return $data; 
-                        //return array("charset"=>$this->get_charset($structure),"body"=>$data); 
-                    } 
-                } 
-            } 
-        } 
-        return false; 
-    } 
+                    {
+                       return $data;
+                        //return array("charset"=>$this->get_charset($structure),"body"=>$data);
+                    }
+                }
+            }
+        }
+        return false;
+    }
     function getTotalMails() //Get Total Number off Unread Email In Mailbox
     {
         if(!$this->marubox)
             return false;
-    
+
         $result=imap_check($this->marubox);
         return intval($result->Nmsgs);
 
@@ -190,7 +190,7 @@ class receiveMail
                     if ($enc == 2)
                         $message = imap_binary ($message);
                     if ($enc == 3)
-                        $message = imap_base64 ($message); 
+                        $message = imap_base64 ($message);
                     if ($enc == 4)
                         $message = quoted_printable_decode($message);
                     if ($enc == 5)
@@ -229,7 +229,7 @@ class receiveMail
                             $ar=$ar.$name.",";
                         }
                     }
-                }               
+                }
             }
         }
         $ar=substr($ar,0,(strlen($ar)-1));
@@ -243,7 +243,7 @@ class receiveMail
         $body = $this->get_part($this->marubox, $mid, "TEXT/HTML");
         if ($body["body"] == "")
             $body = $this->get_part($this->marubox, $mid, "TEXT/PLAIN");
-        if ($body["body"] == "") { 
+        if ($body["body"] == "") {
             return "";
         }
         return $body;
@@ -252,14 +252,14 @@ class receiveMail
     {
         if(!$this->marubox)
             return false;
-    
+
         return imap_check($this->marubox);
     }
     function moveMails($mid,$label)
     {
         if(!$this->marubox)
             return false;
-    
+
         return imap_mail_move($this->marubox,$mid,$label);
 
     }
@@ -267,7 +267,7 @@ class receiveMail
     {
         if(!$this->marubox)
             return false;
-    
+
         imap_delete($this->marubox,$mid);
     }
     function close_mailbox() //Close Mail Box

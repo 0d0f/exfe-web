@@ -203,8 +203,8 @@ var clickCallBackFunc = function(args) {
             $('#x_desc_edit').unbind('keydown');
         }
     };
-    
-    
+
+
     ns.updateTime = function(displaytime, typing) {
         var objTimeInput = $('#x_datetime_original');
         if (displaytime) {
@@ -523,8 +523,8 @@ var clickCallBackFunc = function(args) {
             }
         });
     };
-    
-    
+
+
     ns.submitExfee = function() {
         jQuery.ajax({
             url  : location.href.split('?').shift() + '/crossEdit',

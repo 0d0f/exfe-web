@@ -15,7 +15,7 @@ class IdentityModels extends DataModel {
         $avatar_file_size=$identityDetail["avatar_file_size"];
         $avatar_updated_at=$identityDetail["avatar_updated_at"];
         $external_username = trim(mysql_real_escape_string($identityDetail["external_username"]));
-        
+
         $time=time();
         $sql="select id from identities where external_identity='$external_identity' limit 1";
         $row=$this->getRow($sql);
@@ -325,7 +325,7 @@ class IdentityModels extends DataModel {
                 if($userInfo["encrypted_password"] == $password)
                 {
                     $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
-                    
+
                     $returnData = array_merge($identityRow,$userInfo);
                     $returnData["user_id"] = $userID;
                     $returnData["identity_name"] = $identityRow["name"];
@@ -566,7 +566,7 @@ class IdentityModels extends DataModel {
 
     public function delVerifyCode($identity_id, $active_code){
         $activecode = mysql_real_escape_string($activecode);
-        $sql = "SELECT identityid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'"; 
+        $sql = "SELECT identityid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'";
         $row = $this->getRow($sql);
         if(is_array($row)){
             $sql = "UPDATE user_identity SET activecode='' WHERE identityid={$identity_id} AND activecode='{$active_code}'";
@@ -603,7 +603,7 @@ class IdentityModels extends DataModel {
             //设置用户的Status为3，并且设置ActiveCode为空。
             $sql = "UPDATE user_identity SET status=3, activecode='' WHERE identityid={$identity_id}";
             $this->query($sql);
-            
+
             //如果用户密码为空，则需要设置reset_password_token，同时告诉客户端需要设置密码。
             if(trim($userInfo["encrypted_password"]) == ""){
                 $returnData["need_set_pwd"] = "yes";
@@ -664,7 +664,7 @@ class IdentityModels extends DataModel {
                 }
 
                 return array(
-                    "provider"=>$row_p["provider"], 
+                    "provider"=>$row_p["provider"],
                     "activecode"=>$activecode
                 );
             }else{

@@ -39,7 +39,7 @@
 .exfee_avatarblock:hover {
     padding: 0;
     width: 60px;
-    height: 60px;   
+    height: 60px;
 }
 
 .exfee_avatarblock .exfee_hostmark {
@@ -229,7 +229,7 @@
 }
 
 .exfeegadget_inputbox_main {
-    border: 1px transparent solid;    
+    border: 1px transparent solid;
     z-index: 2;
     background: transparent;
     color: #333333;
@@ -336,7 +336,7 @@
     background-position: left -123px;
 }
 
-.exfee_rsvp_accepted {    
+.exfee_rsvp_accepted {
     background-position: -1px -81px;
 }
 

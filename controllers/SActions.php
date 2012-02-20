@@ -539,7 +539,7 @@ class SActions extends ActionController {
                     array_push($cleanLogs[$xId][$action], $logItem);
             }
         }
-        
+
         echo json_encode($cleanLogs);
     }
 

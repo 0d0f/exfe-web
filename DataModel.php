@@ -27,7 +27,7 @@ abstract class DataModel{
     }
 
     private function needToConvertToInt($name) {
-        return $this->endswith(strtolower($name), 'id') 
+        return $this->endswith(strtolower($name), 'id')
             || $name == 'createdAt'
             || $name == 'width'
             || $name == 'height';

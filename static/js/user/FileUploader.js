@@ -6,12 +6,12 @@ var exFileUploader = exFileUploader || {};
 
 /**
  * Adds all missing properties from second obj to first obj
- */ 
+ */
 exFileUploader.extend = function(first, second){
     for (var prop in second){
         first[prop] = second[prop];
     }
-};  
+};
 
 /**
  * Searches for a given element in the array, returns -1 if it is not present.
@@ -19,20 +19,20 @@ exFileUploader.extend = function(first, second){
  */
 exFileUploader.indexOf = function(arr, elt, from){
     if (arr.indexOf) return arr.indexOf(elt, from);
-    
-    from = from || 0;
-    var len = arr.length;    
-    
-    if (from < 0) from += len;  
 
-    for (; from < len; from++){  
-        if (from in arr && arr[from] === elt){  
+    from = from || 0;
+    var len = arr.length;
+
+    if (from < 0) from += len;
+
+    for (; from < len; from++){
+        if (from in arr && arr[from] === elt){
             return from;
         }
-    }  
-    return -1;  
-}; 
-    
+    }
+    return -1;
+};
+
 exFileUploader.getUniqueId = (function(){
     var id = 0;
     return function(){ return id++; };
@@ -77,10 +77,10 @@ exFileUploader.remove = function(element){
     element.parentNode.removeChild(element);
 };
 
-exFileUploader.contains = function(parent, descendant){       
+exFileUploader.contains = function(parent, descendant){
     // compareposition returns false in this case
     if (parent == descendant) return true;
-    
+
     if (parent.contains){
         return parent.contains(descendant);
     } else {
@@ -169,7 +169,7 @@ exFileUploader.getByClass = function(element, className){
 /**
  * obj2url() takes a json-object as argument and generates
  * a querystring. pretty much like jQuery.param()
- * 
+ *
  * how to use:
  *
  *    `exFileUploader.obj2url({a:'b',c:'d'},'http://any.url/upload?otherParam=value');`
@@ -186,21 +186,21 @@ exFileUploader.obj2url = function(obj, temp, prefixDone){
     var uristrings = [],
         prefix = '&',
         add = function(nextObj, i){
-            var nextTemp = temp 
+            var nextTemp = temp
                 ? (/\[\]$/.test(temp)) // prevent double-encoding
                    ? temp
                    : temp+'['+i+']'
                 : i;
-            if ((nextTemp != 'undefined') && (i != 'undefined')) {  
+            if ((nextTemp != 'undefined') && (i != 'undefined')) {
                 uristrings.push(
-                    (typeof nextObj === 'object') 
+                    (typeof nextObj === 'object')
                         ? exFileUploader.obj2url(nextObj, nextTemp, true)
                         : (Object.prototype.toString.call(nextObj) === '[object Function]')
                             ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
-                            : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj)                                                          
+                            : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj)
                 );
             }
-        }; 
+        };
 
     if (!prefixDone && temp) {
       prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? '' : '&' : '?';
@@ -222,7 +222,7 @@ exFileUploader.obj2url = function(obj, temp, prefixDone){
 
     return uristrings.join(prefix)
                      .replace(/^&/, '')
-                     .replace(/%20/g, '+'); 
+                     .replace(/%20/g, '+');
 };
 
 //
@@ -232,9 +232,9 @@ exFileUploader.obj2url = function(obj, temp, prefixDone){
 //
 
 var exFileUploader = exFileUploader || {};
-    
+
 /**
- * Creates upload button, validates upload, but doesn't create file list or dd. 
+ * Creates upload button, validates upload, but doesn't create file list or dd.
  */
 exFileUploader.FileUploaderBasic = function(o){
     this._options = {
@@ -245,77 +245,77 @@ exFileUploader.FileUploaderBasic = function(o){
         button: null,
         multiple: true,
         maxConnections: 3,
-        // validation        
-        allowedExtensions: [],               
-        sizeLimit: 0,   
-        minSizeLimit: 0,                             
+        // validation
+        allowedExtensions: [],
+        sizeLimit: 0,
+        minSizeLimit: 0,
         // events
         // return false to cancel submit
         onSubmit: function(id, fileName){},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
-        // messages                
+        // messages
         messages: {
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."            
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
         showMessage: function(message){
             alert(message);
-        }               
+        }
     };
     exFileUploader.extend(this._options, o);
-        
+
     // number of files being uploaded
     this._filesInProgress = 0;
-    this._handler = this._createUploadHandler(); 
-    
-    if (this._options.button){ 
+    this._handler = this._createUploadHandler();
+
+    if (this._options.button){
         this._button = this._createUploadButton(this._options.button);
     }
-                        
-    this._preventLeaveInProgress();         
+
+    this._preventLeaveInProgress();
 };
-   
+
 exFileUploader.FileUploaderBasic.prototype = {
     setParams: function(params){
         this._options.params = params;
     },
     getInProgress: function(){
-        return this._filesInProgress;         
+        return this._filesInProgress;
     },
     _createUploadButton: function(element){
         var self = this;
-        
+
         return new exFileUploader.UploadButton({
             element: element,
             multiple: this._options.multiple && exFileUploader.UploadHandlerXhr.isSupported(),
             onChange: function(input){
                 self._onInputChange(input);
-            }        
-        });           
-    },    
+            }
+        });
+    },
     _createUploadHandler: function(){
         var self = this,
-            handlerClass;        
-        
-        if(exFileUploader.UploadHandlerXhr.isSupported()){           
-            handlerClass = 'UploadHandlerXhr';                        
+            handlerClass;
+
+        if(exFileUploader.UploadHandlerXhr.isSupported()){
+            handlerClass = 'UploadHandlerXhr';
         } else {
             handlerClass = 'UploadHandlerForm';
         }
 
         var handler = new exFileUploader[handlerClass]({
             debug: this._options.debug,
-            action: this._options.action,         
-            maxConnections: this._options.maxConnections,   
-            onProgress: function(id, fileName, loaded, total){                
+            action: this._options.action,
+            maxConnections: this._options.maxConnections,
+            onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
-                self._options.onProgress(id, fileName, loaded, total);                    
-            },            
+                self._options.onProgress(id, fileName, loaded, total);
+            },
             onComplete: function(id, fileName, result){
                 self._onComplete(id, fileName, result);
                 self._options.onComplete(id, fileName, result);
@@ -327,69 +327,69 @@ exFileUploader.FileUploaderBasic.prototype = {
         });
 
         return handler;
-    },    
+    },
     _preventLeaveInProgress: function(){
         var self = this;
-        
+
         exFileUploader.attach(window, 'beforeunload', function(e){
             if (!self._filesInProgress){return;}
-            
+
             var e = e || window.event;
             // for ie, ff
             e.returnValue = self._options.messages.onLeave;
             // for webkit
-            return self._options.messages.onLeave;             
-        });        
-    },    
-    _onSubmit: function(id, fileName){
-        this._filesInProgress++;  
+            return self._options.messages.onLeave;
+        });
     },
-    _onProgress: function(id, fileName, loaded, total){        
+    _onSubmit: function(id, fileName){
+        this._filesInProgress++;
+    },
+    _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result){
-        this._filesInProgress--;                 
+        this._filesInProgress--;
         if (result.error){
             this._options.showMessage(result.msg);
-        }             
+        }
     },
     _onCancel: function(id, fileName){
-        this._filesInProgress--;        
+        this._filesInProgress--;
     },
     _onInputChange: function(input){
-        if (this._handler instanceof exFileUploader.UploadHandlerXhr){                
-            this._uploadFileList(input.files);                   
-        } else {             
-            if (this._validateFile(input)){                
-                this._uploadFile(input);                                    
-            }                      
-        }               
-        this._button.reset();   
-    },  
+        if (this._handler instanceof exFileUploader.UploadHandlerXhr){
+            this._uploadFileList(input.files);
+        } else {
+            if (this._validateFile(input)){
+                this._uploadFile(input);
+            }
+        }
+        this._button.reset();
+    },
     _uploadFileList: function(files){
         for (var i=0; i<files.length; i++){
             if ( !this._validateFile(files[i])){
                 return;
-            }            
+            }
         }
-        
+
         for (var i=0; i<files.length; i++){
-            this._uploadFile(files[i]);        
-        }        
-    },       
-    _uploadFile: function(fileContainer){      
+            this._uploadFile(files[i]);
+        }
+    },
+    _uploadFile: function(fileContainer){
         var id = this._handler.add(fileContainer);
         var fileName = this._handler.getName(id);
-        
+
         if (this._options.onSubmit(id, fileName) !== false){
             this._onSubmit(id, fileName);
             this._handler.upload(id, this._options.params);
         }
-    },      
+    },
     _validateFile: function(file){
         var name, size;
-        
+
         if (file.value){
-            // it is a file input            
+            // it is a file input
             // get input value and remove path to normalize
             name = file.value.replace(/.*(\/|\\)/, "");
         } else {
@@ -397,67 +397,67 @@ exFileUploader.FileUploaderBasic.prototype = {
             name = file.fileName != null ? file.fileName : file.name;
             size = file.fileSize != null ? file.fileSize : file.size;
         }
-                    
-        if (! this._isAllowedExtension(name)){            
+
+        if (! this._isAllowedExtension(name)){
             this._error('typeError', name);
             return false;
-            
-        } else if (size === 0){            
+
+        } else if (size === 0){
             this._error('emptyError', name);
             return false;
-                                                     
-        } else if (size && this._options.sizeLimit && size > this._options.sizeLimit){            
+
+        } else if (size && this._options.sizeLimit && size > this._options.sizeLimit){
             this._error('sizeError', name);
             return false;
-                        
+
         } else if (size && size < this._options.minSizeLimit){
             this._error('minSizeError', name);
-            return false;            
+            return false;
         }
-        
-        return true;                
+
+        return true;
     },
     _error: function(code, fileName){
-        var message = this._options.messages[code];        
+        var message = this._options.messages[code];
         function r(name, replacement){ message = message.replace(name, replacement); }
-        
-        r('{file}', this._formatFileName(fileName));        
+
+        r('{file}', this._formatFileName(fileName));
         r('{extensions}', this._options.allowedExtensions.join(', '));
         r('{sizeLimit}', this._formatSize(this._options.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.minSizeLimit));
-        
-        this._options.showMessage(message);                
+
+        this._options.showMessage(message);
     },
     _formatFileName: function(name){
         if (name.length > 33){
-            name = name.slice(0, 19) + '...' + name.slice(-13);    
+            name = name.slice(0, 19) + '...' + name.slice(-13);
         }
         return name;
     },
     _isAllowedExtension: function(fileName){
         var ext = (-1 !== fileName.indexOf('.')) ? fileName.replace(/.*[.]/, '').toLowerCase() : '';
         var allowed = this._options.allowedExtensions;
-        
-        if (!allowed.length){return true;}        
-        
+
+        if (!allowed.length){return true;}
+
         for (var i=0; i<allowed.length; i++){
-            if (allowed[i].toLowerCase() == ext){ return true;}    
+            if (allowed[i].toLowerCase() == ext){ return true;}
         }
-        
+
         return false;
-    },    
+    },
     _formatSize: function(bytes){
-        var i = -1;                                    
+        var i = -1;
         do {
             bytes = bytes / 1024;
-            i++;  
+            i++;
         } while (bytes > 99);
-        
-        return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];          
+
+        return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];
     }
 };
-    
-       
+
+
 /**
  * Class that creates upload widget with drag-and-drop and file list
  * @inherits exFileUploader.FileUploaderBasic
@@ -465,13 +465,13 @@ exFileUploader.FileUploaderBasic.prototype = {
 exFileUploader.initialize = function(o){
     // call parent constructor
     exFileUploader.FileUploaderBasic.apply(this, arguments);
-    
-    // additional options    
+
+    // additional options
     exFileUploader.extend(this._options, {
         element: null,
         // if set, will be used instead of ex-upload-list in template
         listElement: null,
-                
+
         template: '<div class="ex-upload-drop-area"></div>' +
                 '<div class="ex-upload-button">Upload a file</div>' +
                 '<div class="ex-upload-list" id="upload_files_process_status" style="display:none;"></div>',
@@ -486,7 +486,7 @@ exFileUploader.initialize = function(o){
                 '</div>' +
                 '<a class="ex-upload-cancel" href="#">Cancel</a>' +
             '</div>',
-        
+
         classes: {
             // used to get elements from templates
             button: 'ex-upload-button',
@@ -505,17 +505,17 @@ exFileUploader.initialize = function(o){
             fail: 'ex-upload-fail'
         }
     });
-    // overwrite options with user supplied    
-    exFileUploader.extend(this._options, o);       
+    // overwrite options with user supplied
+    exFileUploader.extend(this._options, o);
 
     this._element = this._options.element;
-    this._element.innerHTML = this._options.template;        
+    this._element.innerHTML = this._options.template;
     this._listElement = this._options.listElement || this._find(this._element, 'list');
-    
+
     this._classes = this._options.classes;
-        
-    this._button = this._createUploadButton(this._find(this._element, 'button'));        
-    
+
+    this._button = this._createUploadButton(this._find(this._element, 'button'));
+
     this._bindCancelEvent();
     this._setupDragDrop();
 };
@@ -527,17 +527,17 @@ exFileUploader.extend(exFileUploader.initialize.prototype, {
     /**
      * Gets one of the elements listed in this._options.classes
      **/
-    _find: function(parent, type){                                
-        var element = exFileUploader.getByClass(parent, this._options.classes[type])[0];        
+    _find: function(parent, type){
+        var element = exFileUploader.getByClass(parent, this._options.classes[type])[0];
         if (!element){
             throw new Error('element not found ' + type);
         }
-        
+
         return element;
     },
     _setupDragDrop: function(){
         var self = this;
-        var dropArea = this._find(this._element, 'drop');                        
+        var dropArea = this._find(this._element, 'drop');
 
         var dz = new exFileUploader.UploadDropZone({
             element: dropArea,
@@ -549,35 +549,35 @@ exFileUploader.extend(exFileUploader.initialize.prototype, {
                 e.stopPropagation();
             },
             onLeaveNotDescendants: function(e){
-                exFileUploader.removeClass(dropArea, self._classes.dropActive);  
+                exFileUploader.removeClass(dropArea, self._classes.dropActive);
             },
             onDrop: function(e){
                 dropArea.style.display = 'none';
                 exFileUploader.removeClass(dropArea, self._classes.dropActive);
-                self._uploadFileList(e.dataTransfer.files);    
+                self._uploadFileList(e.dataTransfer.files);
             }
         });
-                
+
         dropArea.style.display = 'none';
 
-        exFileUploader.attach(document, 'dragenter', function(e){     
-            if (!dz._isValidFileDrag(e)) return; 
-            
-            dropArea.style.display = 'block';            
-        });                 
+        exFileUploader.attach(document, 'dragenter', function(e){
+            if (!dz._isValidFileDrag(e)) return;
+
+            dropArea.style.display = 'block';
+        });
         exFileUploader.attach(document, 'dragleave', function(e){
-            if (!dz._isValidFileDrag(e)) return;            
-            
+            if (!dz._isValidFileDrag(e)) return;
+
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
-            if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
-                dropArea.style.display = 'none';                                            
+            if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){
+                dropArea.style.display = 'none';
             }
-        });                
+        });
     },
     _onSubmit: function(id, fileName){
         exFileUploader.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
-        this._addToList(id, fileName);  
+        this._addToList(id, fileName);
     },
     _onProgress: function(id, fileName, loaded, total){
         exFileUploader.FileUploaderBasic.prototype._onProgress.apply(this, arguments);
@@ -585,87 +585,87 @@ exFileUploader.extend(exFileUploader.initialize.prototype, {
         var item = this._getItemByFileId(id);
         var size = this._find(item, 'size');
         size.style.display = 'inline';
-        
-        var text; 
+
+        var text;
         if (loaded != total){
             text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
-        } else {                                   
+        } else {
             text = this._formatSize(total);
-        }          
-        
-        exFileUploader.setText(size, text);         
+        }
+
+        exFileUploader.setText(size, text);
     },
     _onComplete: function(id, fileName, result){
         exFileUploader.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
 
         // mark completed
-        var item = this._getItemByFileId(id);                
+        var item = this._getItemByFileId(id);
         exFileUploader.remove(this._find(item, 'cancel'));
         exFileUploader.remove(this._find(item, 'spinner'));
 
         if (result.error == 0){
-            exFileUploader.addClass(item, this._classes.success);    
+            exFileUploader.addClass(item, this._classes.success);
         } else {
             exFileUploader.addClass(item, this._classes.fail);
-        }         
+        }
     },
     _addToList: function(id, fileName){
-        var item = exFileUploader.toElement(this._options.fileTemplate);                
+        var item = exFileUploader.toElement(this._options.fileTemplate);
         item.exFileId = id;
 
-        var fileElement = this._find(item, 'file');        
+        var fileElement = this._find(item, 'file');
         exFileUploader.setText(fileElement, this._formatFileName(fileName));
-        this._find(item, 'size').style.display = 'none';        
+        this._find(item, 'size').style.display = 'none';
 
         this._listElement.appendChild(item);
     },
     _getItemByFileId: function(id){
-        var item = this._listElement.firstChild;        
-        
+        var item = this._listElement.firstChild;
+
         // there can't be txt nodes in dynamically created list
         // and we can  use nextSibling
-        while (item){            
-            if (item.exFileId == id) return item;            
+        while (item){
+            if (item.exFileId == id) return item;
             item = item.nextSibling;
-        }          
+        }
     },
     /**
-     * delegate click event for cancel link 
+     * delegate click event for cancel link
      **/
     _bindCancelEvent: function(){
         var self = this,
-            list = this._listElement;            
-        
-        exFileUploader.attach(list, 'click', function(e){            
+            list = this._listElement;
+
+        exFileUploader.attach(list, 'click', function(e){
             e = e || window.event;
             var target = e.target || e.srcElement;
-            
-            if (exFileUploader.hasClass(target, self._classes.cancel)){                
+
+            if (exFileUploader.hasClass(target, self._classes.cancel)){
                 exFileUploader.preventDefault(e);
-               
+
                 var item = target.parentNode;
                 self._handler.cancel(item.exFileId);
                 exFileUploader.remove(item);
             }
         });
-    }    
+    }
 });
-    
+
 exFileUploader.UploadDropZone = function(o){
     this._options = {
-        element: null,  
+        element: null,
         onEnter: function(e){},
-        onLeave: function(e){},  
-        // is not fired when leaving element by hovering descendants   
-        onLeaveNotDescendants: function(e){},   
-        onDrop: function(e){}                       
+        onLeave: function(e){},
+        // is not fired when leaving element by hovering descendants
+        onLeaveNotDescendants: function(e){},
+        onDrop: function(e){}
     };
-    exFileUploader.extend(this._options, o); 
-    
+    exFileUploader.extend(this._options, o);
+
     this._element = this._options.element;
-    
+
     this._disableDropOutside();
-    this._attachEvents();   
+    this._attachEvents();
 };
 
 exFileUploader.UploadDropZone.prototype = {
@@ -676,84 +676,84 @@ exFileUploader.UploadDropZone.prototype = {
             exFileUploader.attach(document, 'dragover', function(e){
                 if (e.dataTransfer){
                     e.dataTransfer.dropEffect = 'none';
-                    e.preventDefault(); 
-                }           
+                    e.preventDefault();
+                }
             });
-            
-            exFileUploader.UploadDropZone.dropOutsideDisabled = true; 
-        }        
+
+            exFileUploader.UploadDropZone.dropOutsideDisabled = true;
+        }
     },
     _attachEvents: function(){
-        var self = this;              
-                  
+        var self = this;
+
         exFileUploader.attach(self._element, 'dragover', function(e){
             if (!self._isValidFileDrag(e)) return;
-            
+
             var effect = e.dataTransfer.effectAllowed;
             if (effect == 'move' || effect == 'linkMove'){
-                e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)    
-            } else {                    
+                e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)
+            } else {
                 e.dataTransfer.dropEffect = 'copy'; // for Chrome
             }
-                                                     
+
             e.stopPropagation();
-            e.preventDefault();                                                                    
+            e.preventDefault();
         });
-        
+
         exFileUploader.attach(self._element, 'dragenter', function(e){
             if (!self._isValidFileDrag(e)) return;
-                        
+
             self._options.onEnter(e);
         });
-        
+
         exFileUploader.attach(self._element, 'dragleave', function(e){
             if (!self._isValidFileDrag(e)) return;
-            
+
             self._options.onLeave(e);
-            
-            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);                      
+
+            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // do not fire when moving a mouse over a descendant
             if (exFileUploader.contains(this, relatedTarget)) return;
-                        
-            self._options.onLeaveNotDescendants(e); 
+
+            self._options.onLeaveNotDescendants(e);
         });
-                
+
         exFileUploader.attach(self._element, 'drop', function(e){
             if (!self._isValidFileDrag(e)) return;
-            
+
             e.preventDefault();
             self._options.onDrop(e);
-        });          
+        });
     },
     _isValidFileDrag: function(e){
         var dt = e.dataTransfer,
-            // do not check dt.types.contains in webkit, because it crashes safari 4            
-            isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;                        
+            // do not check dt.types.contains in webkit, because it crashes safari 4
+            isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;
 
         // dt.effectAllowed is none in Safari 5
-        // dt.types.contains check is for firefox            
-        return dt && dt.effectAllowed != 'none' && 
+        // dt.types.contains check is for firefox
+        return dt && dt.effectAllowed != 'none' &&
             (dt.files || (!isWebkit && dt.types.contains && dt.types.contains('Files')));
-        
-    }        
-}; 
+
+    }
+};
 
 exFileUploader.UploadButton = function(o){
     this._options = {
-        element: null,  
-        // if set to true adds multiple attribute to file input      
+        element: null,
+        // if set to true adds multiple attribute to file input
         multiple: false,
         // name attribute of file input
         name: 'file',
         onChange: function(input){},
         hoverClass: 'ex-upload-button-hover',
-        focusClass: 'ex-upload-button-focus'                       
+        focusClass: 'ex-upload-button-focus'
     };
-    
+
     exFileUploader.extend(this._options, o);
-        
+
     this._element = this._options.element;
-    
+
     // make button suitable container for input
     exFileUploader.css(this._element, {
         position: 'relative',
@@ -761,35 +761,35 @@ exFileUploader.UploadButton = function(o){
         // Make sure browse button is in the right side
         // in Internet Explorer
         direction: 'ltr'
-    });   
-    
+    });
+
     this._input = this._createInput();
 };
 
 exFileUploader.UploadButton.prototype = {
-    /* returns file input element */    
+    /* returns file input element */
     getInput: function(){
         return this._input;
     },
     /* cleans/recreates the file input */
     reset: function(){
         if (this._input.parentNode){
-            exFileUploader.remove(this._input);    
-        }                
-        
+            exFileUploader.remove(this._input);
+        }
+
         exFileUploader.removeClass(this._element, this._options.focusClass);
         this._input = this._createInput();
-    },    
-    _createInput: function(){                
+    },
+    _createInput: function(){
         var input = document.createElement("input");
-        
+
         if (this._options.multiple){
             input.setAttribute("multiple", "multiple");
         }
-                
+
         input.setAttribute("type", "file");
         input.setAttribute("name", this._options.name);
-        
+
         exFileUploader.css(input, {
             position: 'absolute',
             // in Opera only 'browse' button
@@ -805,14 +805,14 @@ exFileUploader.UploadButton.prototype = {
             cursor: 'pointer',
             opacity: 0
         });
-        
+
         this._element.appendChild(input);
 
         var self = this;
         exFileUploader.attach(input, 'change', function(){
             self._options.onChange(input);
         });
-                
+
         exFileUploader.attach(input, 'mouseover', function(){
             exFileUploader.addClass(self._element, self._options.hoverClass);
         });
@@ -833,8 +833,8 @@ exFileUploader.UploadButton.prototype = {
             input.setAttribute('tabIndex', "-1");
         }
 
-        return input;            
-    }        
+        return input;
+    }
 };
 
 /**
@@ -844,14 +844,14 @@ exFileUploader.UploadHandlerAbstract = function(o){
     this._options = {
         debug: false,
         action: '/upload.php',
-        // maximum number of concurrent uploads        
+        // maximum number of concurrent uploads
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response){},
         onCancel: function(id, fileName){}
     };
-    exFileUploader.extend(this._options, o);    
-    
+    exFileUploader.extend(this._options, o);
+
     this._queue = [];
     // params for files in queue
     this._params = [];
@@ -865,7 +865,7 @@ exFileUploader.UploadHandlerAbstract.prototype = {
     /**
      * Adds file or file input to the queue
      * @returns id
-     **/    
+     **/
     add: function(file){},
     /**
      * Sends the file identified by id and additional query params to the server
@@ -873,12 +873,12 @@ exFileUploader.UploadHandlerAbstract.prototype = {
     upload: function(id, params){
         var len = this._queue.push(id);
 
-        var copy = {};        
+        var copy = {};
         exFileUploader.extend(copy, params);
-        this._params[id] = copy;        
-                
+        this._params[id] = copy;
+
         // if too many active uploads, wait...
-        if (len <= this._options.maxConnections){               
+        if (len <= this._options.maxConnections){
             this._upload(id, this._params[id]);
         }
     },
@@ -904,7 +904,7 @@ exFileUploader.UploadHandlerAbstract.prototype = {
     getName: function(id){},
     /**
      * Returns size of the file identified by id
-     */          
+     */
     getSize: function(id){},
     /**
      * Returns id of files being uploaded or
@@ -920,21 +920,21 @@ exFileUploader.UploadHandlerAbstract.prototype = {
     /**
      * Actual cancel method
      */
-    _cancel: function(id){},     
+    _cancel: function(id){},
     /**
      * Removes element from queue, starts upload of next
      */
     _dequeue: function(id){
         var i = exFileUploader.indexOf(this._queue, id);
         this._queue.splice(i, 1);
-                
+
         var max = this._options.maxConnections;
-        
+
         if (this._queue.length >= max && i < max){
             var nextId = this._queue[max-1];
             this._upload(nextId, this._params[nextId]);
         }
-    }        
+    }
 };
 
 /**
@@ -943,7 +943,7 @@ exFileUploader.UploadHandlerAbstract.prototype = {
  */
 exFileUploader.UploadHandlerForm = function(o){
     exFileUploader.UploadHandlerAbstract.apply(this, arguments);
-       
+
     this._inputs = {};
 };
 // @inherits exFileUploader.UploadHandlerAbstract
@@ -952,25 +952,25 @@ exFileUploader.extend(exFileUploader.UploadHandlerForm.prototype, exFileUploader
 exFileUploader.extend(exFileUploader.UploadHandlerForm.prototype, {
     add: function(fileInput){
         fileInput.setAttribute('name', 'exfile');
-        var id = 'ex-upload-handler-iframe' + exFileUploader.getUniqueId();       
-        
+        var id = 'ex-upload-handler-iframe' + exFileUploader.getUniqueId();
+
         this._inputs[id] = fileInput;
-        
+
         // remove file input from DOM
         if (fileInput.parentNode){
             exFileUploader.remove(fileInput);
         }
-                
+
         return id;
     },
     getName: function(id){
         // get input value and remove path to normalize
         return this._inputs[id].value.replace(/.*(\/|\\)/, "");
-    },    
+    },
     _cancel: function(id){
         this._options.onCancel(id, this.getName(id));
-        
-        delete this._inputs[id];        
+
+        delete this._inputs[id];
 
         var iframe = document.getElementById(id);
         if (iframe){
@@ -981,29 +981,29 @@ exFileUploader.extend(exFileUploader.UploadHandlerForm.prototype, {
 
             exFileUploader.remove(iframe);
         }
-    },     
-    _upload: function(id, params){                        
+    },
+    _upload: function(id, params){
         var input = this._inputs[id];
-        
+
         if (!input){
             throw new Error('file with passed id was not added, or already uploaded or cancelled');
-        }                
+        }
 
         var fileName = this.getName(id);
-                
+
         var iframe = this._createIframe(id);
         var form = this._createForm(iframe, params);
         form.appendChild(input);
 
         var self = this;
-        this._attachLoadEvent(iframe, function(){                                 
+        this._attachLoadEvent(iframe, function(){
             self.log('iframe loaded');
-            
+
             var response = self._getIframeContentJSON(iframe);
 
             self._options.onComplete(id, fileName, response);
             self._dequeue(id);
-            
+
             delete self._inputs[id];
             // timeout added to fix busy state in FF3.6
             setTimeout(function(){
@@ -1011,11 +1011,11 @@ exFileUploader.extend(exFileUploader.UploadHandlerForm.prototype, {
             }, 1);
         });
 
-        form.submit();        
-        exFileUploader.remove(form);        
-        
+        form.submit();
+        exFileUploader.remove(form);
+
         return id;
-    }, 
+    },
     _attachLoadEvent: function(iframe, callback){
         exFileUploader.attach(iframe, 'load', function(){
             // when we remove iframe from dom
@@ -1046,15 +1046,15 @@ exFileUploader.extend(exFileUploader.UploadHandlerForm.prototype, {
         // iframe.contentWindow.document - for IE<7
         var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
             response;
-        
+
         this.log("converting iframe's innerHTML to JSON");
         this.log("innerHTML = " + doc.body.innerHTML);
-                        
+
         try {
             response = eval("(" + doc.body.innerHTML + ")");
         } catch(err){
             response = {};
-        }        
+        }
 
         return response;
     },
@@ -1109,20 +1109,20 @@ exFileUploader.UploadHandlerXhr = function(o){
 
     this._files = [];
     this._xhrs = [];
-    
-    // current loaded size in bytes for each file 
+
+    // current loaded size in bytes for each file
     this._loaded = [];
 };
 
 // static method
 exFileUploader.UploadHandlerXhr.isSupported = function(){
     var input = document.createElement('input');
-    input.type = 'file';        
-    
+    input.type = 'file';
+
     return (
         'multiple' in input &&
         typeof File != "undefined" &&
-        typeof (new XMLHttpRequest()).upload != "undefined" );       
+        typeof (new XMLHttpRequest()).upload != "undefined" );
 };
 
 // @inherits exFileUploader.UploadHandlerAbstract
@@ -1132,43 +1132,43 @@ exFileUploader.extend(exFileUploader.UploadHandlerXhr.prototype, {
     /**
      * Adds file to the queue
      * Returns id to use with upload, cancel
-     **/    
+     **/
     add: function(file){
         if (!(file instanceof File)){
             throw new Error('Passed obj in not a File (in exFileUploader.UploadHandlerXhr)');
         }
-                
-        return this._files.push(file) - 1;        
+
+        return this._files.push(file) - 1;
     },
-    getName: function(id){        
+    getName: function(id){
         var file = this._files[id];
         // fix missing name in Safari 4
-        return file.fileName != null ? file.fileName : file.name;       
+        return file.fileName != null ? file.fileName : file.name;
     },
     getSize: function(id){
         var file = this._files[id];
         return file.fileSize != null ? file.fileSize : file.size;
-    },    
+    },
     /**
-     * Returns uploaded bytes for file identified by id 
-     */    
+     * Returns uploaded bytes for file identified by id
+     */
     getLoaded: function(id){
-        return this._loaded[id] || 0; 
+        return this._loaded[id] || 0;
     },
     /**
      * Sends the file identified by id and additional query params to the server
      * @param {Object} params name-value string pairs
-     */    
+     */
     _upload: function(id, params){
         var file = this._files[id],
             name = this.getName(id),
             size = this.getSize(id);
-                
+
         this._loaded[id] = 0;
-                                
+
         var xhr = this._xhrs[id] = new XMLHttpRequest();
         var self = this;
-                                        
+
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
                 self._loaded[id] = e.loaded;
@@ -1176,9 +1176,9 @@ exFileUploader.extend(exFileUploader.UploadHandlerXhr.prototype, {
             }
         };
 
-        xhr.onreadystatechange = function(){            
+        xhr.onreadystatechange = function(){
             if (xhr.readyState == 4){
-                self._onComplete(id, xhr);                    
+                self._onComplete(id, xhr);
             }
         };
 
@@ -1196,42 +1196,42 @@ exFileUploader.extend(exFileUploader.UploadHandlerXhr.prototype, {
     _onComplete: function(id, xhr){
         // the request was aborted/cancelled
         if (!this._files[id]) return;
-        
+
         var name = this.getName(id);
         var size = this.getSize(id);
-        
+
         this._options.onProgress(id, name, size, size);
-                
+
         if (xhr.status == 200){
             this.log("xhr - server response received");
             this.log("responseText = " + xhr.responseText);
-                        
+
             var response;
-                    
+
             try {
                 response = eval("(" + xhr.responseText + ")");
             } catch(err){
                 response = {};
             }
-            
+
             this._options.onComplete(id, name, response);
-                        
-        } else {                   
+
+        } else {
             this._options.onComplete(id, name, {});
         }
-                
+
         this._files[id] = null;
-        this._xhrs[id] = null;    
-        this._dequeue(id);                    
+        this._xhrs[id] = null;
+        this._dequeue(id);
     },
     _cancel: function(id){
         this._options.onCancel(id, this.getName(id));
-        
+
         this._files[id] = null;
-        
+
         if (this._xhrs[id]){
             this._xhrs[id].abort();
-            this._xhrs[id] = null;                                   
+            this._xhrs[id] = null;
         }
     }
 });

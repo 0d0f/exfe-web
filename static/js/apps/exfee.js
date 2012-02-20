@@ -15,7 +15,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.exfeeAvailableIdK = 'exfee_available_for_id'
 
     ns.exfeeAvailableKey = 'exfee_available';
-    
+
     ns.strInputTips      = 'Enter attendees’ information';
 
     ns.arrStrRsvp        = ['Not responded', 'Accepted', 'Declined', 'Interested'];

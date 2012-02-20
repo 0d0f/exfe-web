@@ -52,7 +52,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
-    
+
     ns.doShowCrossPageVerifyDialog = function(dialogContainerID, args){
         ns.doShowLoginDialog(dialogContainerID);
         odof.util.delCookie('last_identity', "/", cookies_domain);
@@ -69,7 +69,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }else{
             actionURI = site_url+"/s/SendVerifyingMail";
         }
-        
+
         if(userIdentity != "" && userIdentity.match(odof.mailReg)){
             var postData = {identity:userIdentity};
             jQuery("#submit_loading_btn").show();
@@ -508,7 +508,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             };
             ns.doSendEmail(userIdentity,"resetPassword", callBackFunc);
         });
-        
+
     };
 
     ns.showLoginStatus = function(userData){

@@ -24,7 +24,7 @@
                 'avatar_file_name' => "default.png"
             )
 	    );
-	    
+
 	    $jobId = Resque::enqueue("conversationemail","conversationemail_job" , $args, true);
 
 	    $args = array(
@@ -46,7 +46,7 @@
                 'avatar_file_name' => "default.png"
             )
 	    );
-	    
+
 	    $jobId = Resque::enqueue("conversationemail","conversationemail_job" , $args, true);
 
 	    $args = array(
@@ -68,7 +68,7 @@
                 'avatar_file_name' => "default.png"
             )
 	    );
-	    
+
 	    $jobId = Resque::enqueue("conversationemail","conversationemail_job" , $args, true);
 
 	    $args = array(
@@ -102,7 +102,7 @@
 #define("INVITATION_NO", 2);
 #if(intval($args['rsvp_status'])==intval(INVITATION_YES))
 #    print "yes\r\n";
-#else 
+#else
 #    print "no\r\n";
 
 #echo intval(INVITATION_YES);

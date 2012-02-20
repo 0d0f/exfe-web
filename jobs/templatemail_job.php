@@ -16,8 +16,8 @@ class Templatemail_Job
             smtp_connect();
         $mail=$this->getMailWithTemplate($args,$args["template_name"]);
         $this->send($mail["title"],$mail["body"],$this->args);
-    
-    
+
+
     }
     public function getMailWithTemplate($mail,$templatename)
     {
@@ -59,7 +59,7 @@ class Templatemail_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));
