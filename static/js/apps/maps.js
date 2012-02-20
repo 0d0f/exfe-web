@@ -34,7 +34,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 case error.PERMISSION_DENIED :
                     console.log("您拒绝了使用位置共享服务，查询已取消");
                     break;
-                case error.POSITION_UNAVAILABLE : 
+                case error.POSITION_UNAVAILABLE :
                     console.log("暂时无法为您提供位置服务");
                     break;
             }
@@ -167,16 +167,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             center: center,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        
+
         jQuery("#"+ns.googleMapsContainerID).css({"width":"280px", "height":"175px"});
         jQuery("#"+ns.googleMapsContainerID).show();
         var map = new google.maps.Map(document.getElementById(ns.googleMapsContainerID), myOptions);
         var initialLocation = new google.maps.LatLng(userPlaceLat,userPlaceLng);
         map.setCenter(initialLocation);
 
-        var position = new google.maps.LatLng(userPlaceLat,userPlaceLng); 
+        var position = new google.maps.LatLng(userPlaceLat,userPlaceLng);
         var marker = new google.maps.Marker({
-            position: position, 
+            position: position,
             map: map,
             title:userPlaceName
         });
