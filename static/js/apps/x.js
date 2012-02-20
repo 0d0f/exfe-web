@@ -107,6 +107,12 @@ var moduleNameSpace = 'odof.x.render',
         if (objPlace.hasClass('x_place_line1_normal') && objPlace.height() > 53) {
             objPlace.addClass('x_place_line1_double').removeClass('x_place_line1_normal');
         }
+
+        //Show google maps. added by handaoliang
+        if(crossData.place.lng != 0 && crossData.place.lat != 0){
+            odof.apps.maps.googleMapsContainerID = "google_maps_cotainer";
+            odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1)
+        }
     };
 
 
