@@ -34,7 +34,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.curComplete       = {};
 
-    ns.exfeeChecked      = [];
+    ns.completeRequest   = null;
+
+    ns.exfeeChecked      = {};
 
     ns.exfeeIdentified   = {_fake_host_ : true};
 
@@ -858,16 +860,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.ajaxComplete = function(domId, key) {
-        if (!key.length) {
+        if (!key.length || typeof this.exfeeChecked[key] !== 'undefined') {
             return;
         }
-        for (var i in this.exfeeChecked) {
-            if (!key.indexOf(this.exfeeChecked[i])) {
-                return;
-            }
+        if (this.completeRequest) {
+            this.completeRequest.abort();
         }
-        this.exfeeChecked.push(key);
-        $.ajax({
+        this.completeRequest = $.ajax({
             type     : 'GET',
             url      : site_url + '/identity/complete',
             data     : {key : key},
@@ -904,6 +903,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     }
                 }
                 odof.exfee.gadget.cacheExfee(gotExfee);
+                odof.exfee.gadget.exfeeChecked[this.info.key] = true;
                 if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
                     odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
                 }

@@ -1,4 +1,7 @@
 <?php
+
+session_write_close();
+
 require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 
 class IdentityActions extends ActionController {
