@@ -15,19 +15,19 @@ var clickCallBackFunc = function(args) {
 
 (function(ns) {
 
-    ns.cross_id     = 0;
+    ns.cross_id      = 0;
 
-    ns.rsvpAction   = null;
+    ns.rsvpAction    = null;
 
-    ns.token        = null;
+    ns.token         = null;
 
-    ns.location_uri = null;
+    ns.location_uri  = null;
 
     ns.cross_time_bubble_status = 0;
 
     ns.msgSubmitting = false;
 
-    ns.xBackup       = {};
+    ns.xBackup       = null;
 
 
     ns.startEdit = function() {
@@ -64,6 +64,11 @@ var clickCallBackFunc = function(args) {
         odof.x.edit.editPlace(false);
         // restore x from backup
         crossData = odof.util.clone(odof.x.edit.xBackup);
+
+        odof.record.reset();
+        odof.x.edit.xBackup = null;
+        odof.x.edit.freeze();
+
         odof.x.render.showComponents();
     };
 
@@ -363,6 +368,7 @@ var clickCallBackFunc = function(args) {
         $('#x_title_edit').hide();
         $('#x_title_area').unbind('clickoutside');
         $('#x_title').show();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -372,6 +378,7 @@ var clickCallBackFunc = function(args) {
         $('#x_desc_edit').hide();
         $('#x_desc_area').unbind('clickoutside');
         $('#x_desc').show();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -379,6 +386,7 @@ var clickCallBackFunc = function(args) {
         $('#x_time_bubble').hide();
         $('#x_time_bubble').unbind('clickoutside');
         odof.x.render.showTime();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -386,6 +394,7 @@ var clickCallBackFunc = function(args) {
         $('#x_place_bubble').hide();
         $('#x_place_bubble').unbind('clickoutside');
         odof.x.render.showPlace();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -505,6 +514,10 @@ var clickCallBackFunc = function(args) {
         // exfee = JSON.stringify(ns.getexfee());
         // $('#edit_cross_submit_loading').show();
 
+        odof.record.reset();
+        odof.x.edit.xBackup = null;
+        odof.x.edit.freeze();
+
         if (typeof window.mapRequest !== 'undefined') {
             window.mapRequest.abort();
         }
@@ -536,11 +549,12 @@ var clickCallBackFunc = function(args) {
 
 
     ns.submitExfee = function() {
-
+        if (!odof.x.edit.skipFreeze) {
+            odof.x.edit.freeze();
+        }
         if (typeof window.mapRequest !== 'undefined') {
             window.mapRequest.abort();
         }
-
         $.ajax({
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
@@ -564,6 +578,39 @@ var clickCallBackFunc = function(args) {
         });
     };
 
+
+    ns.freeze = function(xOnly) {
+        var lastX = odof.record.last(),
+            curX  = {title       : crossData.title,
+                     description : crossData.description,
+                     begin_at    : crossData.begin_at,
+                     place       : crossData.place};
+        if (xOnly && lastX && JSON.stringify(lastX) === JSON.stringify(curX)) {
+            return;
+        }
+        odof.record.push({cross : curX, exfee : odof.exfee.gadget.exfeeInput['xExfeeArea']});
+    };
+
+
+    ns.record = function(item) {
+        if (!item) {
+            return;
+        }
+        if (odof.x.edit.xBackup) {
+            for (var i in item.cross) {
+                crossData[i] = odof.util.clone(item.cross[i]);
+            }
+            odof.x.render.showTitle();
+            odof.x.render.showDesc(true);
+            odof.x.render.showTime();
+            odof.x.render.showPlace();
+        }
+        crossExfee = odof.util.clone(item.exfee);
+        odof.x.edit.skipFreeze = true;
+        odof.exfee.gadget.make('xExfeeArea', crossExfee, true, odof.x.edit.submitExfee);
+        odof.x.edit.skipFreeze = false;
+    };
+
 })(ns);
 
 
@@ -573,12 +620,13 @@ $(document).ready(function() {
         crossData.begin_at = crossData.begin_at.split(' ')[0];
     }
 
+    odof.record.init(odof.x.edit.record);
     odof.x.render.show(true);
     odof.x.edit.cross_id     = cross_id;
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
-
     odof.exfee.gadget.make('xExfeeArea', crossExfee, true, odof.x.edit.submitExfee, true);
+    odof.x.edit.freeze();
 
     $('#private_icon').mousemove(function() { $('#private_hint').show(); });
     $('#private_icon').mouseout(function() { $('#private_hint').hide(); });

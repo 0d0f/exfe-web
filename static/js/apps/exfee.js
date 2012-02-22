@@ -47,6 +47,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.diffCallback      = {};
 
     ns.timerBaseInfo     = {};
+    
+    ns.idsBuilt          = {};
 
 
     ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
@@ -130,6 +132,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (this.diffCallback[domId] && !skipInitCallback) {
             this.diffCallback[domId]();
         }
+        if (typeof this.idsBuilt[domId] !== 'undefined') {
+            return;
+        }
+        this.idsBuilt[domId] = true;
         $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock').live(
             'mouseover mouseout', this.eventAvatar
         );
@@ -143,10 +149,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         this.completimer[domId] = setInterval(
             "odof.exfee.gadget.chkInput('" + domId + "')", 50
         );
-        $('#' + domId + '_exfeegadget_inputbox').bind(
+        $('#' + domId + '_exfeegadget_inputbox').live(
             'keydown blur', this.eventInputbox
         );
-        $('#' + domId + '_exfeegadget_addbtn').bind(
+        $('#' + domId + '_exfeegadget_addbtn').live(
             'keydown click', this.eventAddbutton
         );
         $('#' + domId + '_exfeegadget_autocomplete > ol > li').live(
@@ -329,13 +335,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         }
                     }
                 }
-                objExfee.avatar_file_name = objExfee.avatar_file_name ? objExfee.avatar_file_name : 'default.png';
-                objExfee.host = typeof  exfees[i].host  === 'undefined'
-                              ? false : exfees[i].host;
-                objExfee.rsvp = typeof  exfees[i].rsvp  === 'undefined'
-                              ? 0     : exfees[i].rsvp;
-                objExfee.rsvp = typeof  exfees[i].state === 'undefined'
-                              ? objExfee.rsvp : exfees[i].state;
+                objExfee.avatar_file_name = objExfee.avatar_file_name
+                                          ? objExfee.avatar_file_name : 'default.png';
+                objExfee.host             = typeof  exfees[i].host  === 'undefined'
+                                          ? false : exfees[i].host;
+                objExfee.rsvp             = typeof  exfees[i].rsvp  === 'undefined'
+                                          ?(typeof  exfees[i].state === 'undefined'
+                                          ? 0 : exfees[i].state) : exfees[i].rsvp;
                 if ((k == 0 && objExfee.rsvp !== 1)
                  || (k == 1 && objExfee.rsvp !== 3)
                  || (k == 2 && objExfee.rsvp !== 0)
