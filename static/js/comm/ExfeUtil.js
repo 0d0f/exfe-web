@@ -1374,7 +1374,7 @@ var odof = {
                     variableNew.push(this.clone(variable[i]));
                 }
                 break;
-            default:                      // typeof Object === "function" || etc
+            default:                      // typeof Object === 'function' || etc
                 variableNew = variable;
         }
         return variableNew;

@@ -11,13 +11,13 @@ var moduleNameSpace = 'odof.x.gather',
 
 (function(ns) {
 
-    ns.curCross        = '';
+    ns.curCross    = '';
 
-    ns.draft_id        = 0;
+    ns.draft_id    = 0;
 
-    ns.xSubmitting     = false;
+    ns.xSubmitting = false;
 
-    ns.autoSubmit      = false;
+    ns.autoSubmit  = false;
 
     ns.updateTitle = function(force) {
         var objTitle        = $('#gather_title'),
