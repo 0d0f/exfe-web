@@ -153,7 +153,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         });
     };
 
-    ns.drawGoogleMaps = function(userPlaceLat, userPlaceLng, userPlaceName){
+    ns.drawGoogleMaps = function(userPlaceLat, userPlaceLng, userPlaceName, width, height){
         var cityLat = userPlaceLat;
         var cityLng = userPlaceLng;
 
@@ -164,6 +164,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             cityLng = odof.apps.maps.cityLng;
         }
 
+        if(typeof width == "undefined"){ width = 280; }
+        if(typeof height == "undefined"){ height = 175; }
+
         var center =  new google.maps.LatLng(cityLat,cityLng);
         var myOptions = {
             zoom: 12,
@@ -171,7 +174,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        jQuery("#"+ns.googleMapsContainerID).css({"width":"280px", "height":"175px"});
+        jQuery("#"+ns.googleMapsContainerID).css({"width":width+"px", "height":height+"px"});
         jQuery("#"+ns.googleMapsContainerID).show();
         var map = new google.maps.Map(document.getElementById(ns.googleMapsContainerID), myOptions);
         var initialLocation = new google.maps.LatLng(userPlaceLat,userPlaceLng);

@@ -569,7 +569,7 @@ var clickCallBackFunc = function(args) {
 
 $(document).ready(function() {
     // fix anytime
-    if (crossData.time_type === '2') {
+    if (crossData.time_type === 'Anytime') {
         crossData.begin_at = crossData.begin_at.split(' ')[0];
     }
 
