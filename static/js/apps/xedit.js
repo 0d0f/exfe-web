@@ -435,7 +435,10 @@ var clickCallBackFunc = function(args) {
                                 dataType : 'json',
                                 success  : function(data) {
                                     if (data != null && data.response.success === 'true') {
-                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                        odof.exfee.gadget.changeRsvp(
+                                            'xExfeeArea', myIdentity.external_identity,
+                                            myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state]
+                                        );
                                         odof.x.render.showRsvp();
                                     }
                                 }
@@ -458,7 +461,10 @@ var clickCallBackFunc = function(args) {
                                         token_expired = true;
                                     }
                                     // }
-                                    myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                    odof.exfee.gadget.changeRsvp(
+                                        'xExfeeArea', myIdentity.external_identity,
+                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state]
+                                    );
                                     odof.x.render.showRsvp();
                                 } else {
                                     // by handaoliang {
@@ -552,6 +558,14 @@ var clickCallBackFunc = function(args) {
         if (!odof.x.edit.skipFreeze) {
             odof.x.edit.freeze();
         }
+        for (var i in odof.exfee.gadget.exfeeInput['xExfeeArea']) {
+            if (parseInt(odof.exfee.gadget.exfeeInput['xExfeeArea'][i].identity_id)
+            === parseInt(myIdentity.id)) {
+                myrsvp = odof.exfee.gadget.exfeeInput['xExfeeArea'][i].rsvp;
+                odof.x.render.showRsvp();
+                break;
+            }
+        }
         if (typeof window.mapRequest !== 'undefined') {
             window.mapRequest.abort();
         }
@@ -584,6 +598,8 @@ var clickCallBackFunc = function(args) {
             curX  = {title       : crossData.title,
                      description : crossData.description,
                      begin_at    : crossData.begin_at,
+                     time_type   : crossData.time_type,
+                     state       : crossData.state,
                      place       : crossData.place};
         if (xOnly && lastX && JSON.stringify(lastX) === JSON.stringify(curX)) {
             return;
