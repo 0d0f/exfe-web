@@ -1192,6 +1192,7 @@ var odof = {
      * get human datetime
      * by Leask
      */
+    /*
     util.getHumanDateTime = function(strTime, lang) {
         var oriDate   = strTime.split(','),
             time_type = 0;
@@ -1236,6 +1237,50 @@ var odof = {
                         break;
                     case 2:
                         return 'Anytime' + timestr;
+                }
+        }
+        return '';
+    };
+    */
+
+    util.getHumanDateTime = function(strTime, lang) {
+        var oriDate   = strTime.split(',');
+        var time_type = 0;
+        strTime = this.trim(oriDate[0]);
+        if (strTime === '0000-00-00 00:00:00') {
+            return 'Sometime';
+        }
+        if (oriDate.length > 1) {
+            time_type = oriDate[1];
+        }
+
+        var objDate   = this.getDateFromString(strTime),
+            timestamp = Date.parse(objDate) / 1000,
+            timestr   = '';
+        if (timestamp < 0) {
+            objDate  = this.getDateFromString('0000-00-00 00:00:00');
+        }
+        var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            year     = objDate.getFullYear(),
+            month    = arrMonth[objDate.getMonth()],
+            date     = objDate.getDate(),
+            hour24   = objDate.getHours(),
+            hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
+            ampm     = hour24 < 12 ? 'AM'          : 'PM',
+            minute   = objDate.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var stdDate  = month + ' ' + date + ', ' + year;
+        if (timestamp >= 0) {
+            timestr  = ', '  + stdDate;
+        }
+        switch (lang) {
+            case 'en':
+            default:
+                if(time_type == 0){
+                    return hour12 + ':' + minute + ' ' + ampm + ', ' + stdDate;
+                }else{
+                    return time_type;
                 }
         }
         return '';

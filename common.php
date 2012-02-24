@@ -127,6 +127,29 @@ function humanIdentity($identity,$user)
     return $identity;
 }
 
+//modified by handaoliang 20120222
+function humanDateTime($timestamp,$time_type=0,$lang='en')
+{
+    if($timestamp < 0)
+    {
+        $timestamp = 0;
+        $timestr = "";
+    } else {
+        $timestr = ", ".date("M j, Y ", $timestamp);
+    }
+    $datestr = "";
+    if($lang=='en')
+    {
+        if($time_type == ''){
+            $datestr = date("g:i A, M j, Y ", $timestamp);
+        }else{
+            $datestr = $time_type.$timestr;
+        }
+    }
+
+    return $datestr;
+}
+/*
 function humanDateTime($timestamp,$time_type=0,$lang='en')
 {
     if($timestamp<0)
@@ -149,6 +172,7 @@ function humanDateTime($timestamp,$time_type=0,$lang='en')
 
     return $datestr;
 }
+*/
 
 function RelativeTime($timestamp)
 {

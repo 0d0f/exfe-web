@@ -116,7 +116,7 @@ var moduleNameSpace = 'odof.x.render',
         //Show google maps. added by handaoliang
         if(crossData.place.lng != 0 && crossData.place.lat != 0){
             odof.apps.maps.googleMapsContainerID = "google_maps_cotainer";
-            odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1)
+            odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1, 280, 140)
         }
     };
 

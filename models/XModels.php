@@ -13,14 +13,14 @@ class XModels extends DataModel {
         // $duration=$cross["duration"];
         // time type
         $datetime_array = explode(' ', $cross['datetime']);
-        $time_type = 0;
+        $time_type = '';
         if (sizeof($datetime_array) === 1) {
             $time_type = TIMETYPE_ANYTIME; // allday
         }
 
         $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
                 state, title, description, begin_at, end_at, duration, place_id)
-                values({$identityId}, FROM_UNIXTIME({$time}), {$time_type},
+                values({$identityId}, FROM_UNIXTIME({$time}), '{$time_type}',
                 FROM_UNIXTIME({$time}), '1', '{$cross['title']}',
                 '{$cross['description']}', '{$cross['datetime']}', '{$end_at}',
                 '{$duration}', {$cross['place_id']});";
@@ -68,7 +68,7 @@ class XModels extends DataModel {
         }
         // update cross
         $datetime_array = explode(' ', $cross['start_time']);
-        $time_type = 0;
+        $time_type = '';
         if (sizeof($datetime_array) === 1) {
             $time_type = TIMETYPE_ANYTIME; // anytime
         }
@@ -77,7 +77,7 @@ class XModels extends DataModel {
                         `title`       = '{$cross["title"]}',
                         `description` = '{$cross["desc"]}',
                         `begin_at`    = '{$cross["start_time"]}',
-                        `time_type`   =  {$time_type},
+                        `time_type`   = '{$time_type}',
                         `place_id`    =  {$place_id}
                   WHERE `id`          =  {$cross["id"]}";
 

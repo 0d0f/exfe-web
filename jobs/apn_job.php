@@ -298,14 +298,20 @@ class Apn_Job
                 $time_type=$args["changed"]["time_type"];
                 $begin_at=$v;
                 $datetimestr="";
-                if($begin_at=="0000-00-00 00:00:00") // hasn't datetime
+                if($begin_at=="0000-00-00 00:00:00") { // hasn't datetime
                    $datetimestr="";
-                else
-                {
+                } else {
+                    /*
                     if(intval($time_type)==2)
                         $datetimestr=date("M j",strtotime($begin_at));
                     else
                         $datetimestr=date("g:iA D,M j",strtotime($begin_at));
+                    */
+                    if(trim($time_type) != ""){
+                        $datetimestr = $time_type;
+                    } else {
+                        $datetimestr=date("g:iA D,M j",strtotime($begin_at));
+                    }
                 }
 
 
@@ -425,14 +431,21 @@ class Apn_Job
                     $begin_at=$args["begin_at"];
                     $time_type=$args["time_type"];
                     $datetimestr="";
-                    if($begin_at=="0000-00-00 00:00:00") // hasn't datetime
+                    if($begin_at=="0000-00-00 00:00:00"){ // hasn't datetime
                        $datetimestr="";
-                    else
-                    {
+                    } else {
+                        /*
                         if(intval($time_type)==2)
                             $datetimestr="on ".date("M j",strtotime($begin_at));
                         else
                             $datetimestr="at ".date("g:iA D,M j",strtotime($begin_at));
+                        */
+                       if(trim($time_type) != ""){
+                            $datetimestr = $time_type;
+                        } else {
+                            $datetimestr = date("g:iA D,M j",strtotime($begin_at));
+                        }
+
                     }
                     if($isHost==FALSE)
                     {
