@@ -57,20 +57,14 @@ class XModels extends DataModel {
     public function updateCross($cross)
     {
         // update place
-        $sql  = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
+        $placeHelper  = $this->getHelperByName('place');
+        $sql          = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
         $place_id_arr = $this->getRow($sql);
         $place_id     = $place_id_arr['place_id'];
         if($place_id) {
-            $ts  = date('Y-m-d H:i:s', time());
-            $sql = "UPDATE `places`
-                       SET `place_line1` = '{$cross['place']['line1']}',
-                           `place_line2` = '{$cross['place']['line2']}',
-                           `updated_at`  = '{$ts}'
-                     WHERE `id`          =  {$place_id}";
-            $result = $this->query($sql);
+            $placeHelper->savePlace($cross['place'], $place_id);
         } else {
-            $placeHelper = $this->getHelperByName('place');
-            $place_id    = $placeHelper->savePlace($cross['place']);
+            $place_id = $placeHelper->savePlace($cross['place']);
         }
         // update cross
         $datetime_array = explode(' ', $cross['start_time']);
