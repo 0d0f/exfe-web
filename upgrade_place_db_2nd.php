@@ -13,8 +13,8 @@ class UpgradePlaceDB extends DataModel{
 
     public function run(){
         $sql = 'ALTER TABLE `places`
-                CHANGE `lng` `lng` FLOAT (10, 6) NOT NULL,
-                CHANGE `lat` `lat` FLOAT (10, 6) NOT NULL;';
+                CHANGE `lng` `lng` FLOAT (12, 8) NOT NULL,
+                CHANGE `lat` `lat` FLOAT (12, 8) NOT NULL;';
         $this->query($sql);
         echo "upgrade success....\r\n";
     }
