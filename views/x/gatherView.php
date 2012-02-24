@@ -20,6 +20,9 @@
 <link type="text/css" rel="stylesheet" href="/static/css/maps.css">
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="/static/js/apps/maps.js"></script>
+
+<script type="text/javascript" src="/static/js/libs/detect_timezone.js"></script>
+
 </head>
 <body>
 <?php
@@ -105,7 +108,12 @@
         <div id="x_view_preview"></div>
         <div id="x_view_content"></div>
     </div>
-
 </div>
+<script type="text/javascript">
+    var timezone = jstz.determine_timezone();
+    var userTimeZone = timezone.offset()
+    var userTimeZoneSecond = odof.comm.func.convertTimezoneToSecond(userTimeZone);
+    console.log(userTimeZoneSecond);
+</script>
 </body>
 </html>

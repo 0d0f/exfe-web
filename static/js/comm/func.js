@@ -252,6 +252,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var avatarURL = ns.getHashFilePath(fileName,rootPath) + "/" + fileSize + "_" + fileSize + "_" + fileName;
         return avatarURL;
     };
+
+    ns.convertTimezoneToSecond = function(tz){
+        var offsetSign = tz.substr(0,1);
+        offsetSign = offsetSign==0 ? "+" : offsetSign;
+        var offsetDetail = tz.substr(1).split(":");
+        var offsetSecond = (parseInt(offsetDetail[0]*60)+parseInt(offsetDetail[1]))*60;
+        offsetSecond = parseInt(offsetSign + offsetSecond);
+
+        return offsetSecond;
+    }
     /*
     ns.cancel = function(){
         var oall = document.getElementById("oall");
