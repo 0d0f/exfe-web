@@ -1145,8 +1145,9 @@ var odof = {
      */
     util.getDateFromString = function(strTime) {
         var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/,
-            parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' ');
-        return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
+            parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' '),
+            oDate = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
+        return oDate.toString() === 'Invalid Date' ? null : oDate;
     };
 
 
@@ -1190,100 +1191,54 @@ var odof = {
 
     /**
      * get human datetime
-     * by Leask
+     * by Leask with han
      */
-    /*
     util.getHumanDateTime = function(strTime, lang) {
+        // init
         var oriDate   = strTime.split(','),
-            time_type = 0;
+            time_type = '';
         strTime = this.trim(oriDate[0]);
-        if (strTime === '0000-00-00 00:00:00') {
-            return 'Sometime';
-        }
+        var withTime  = strTime.split(' ').length > 1;
+        // get timetype
         if (oriDate.length > 1) {
-            time_type = parseInt(oriDate[1]);
-        } else if (strTime.split(' ').length === 1) {
-            time_type = 2 // TIMETYPE_ANYTIME
+            time_type = this.trim(oriDate[1]);
+        } else if (!withTime) {
+            time_type = 'Anytime';
         }
-        var objDate   = this.getDateFromString(strTime),
-            timestamp = Date.parse(objDate) / 1000,
-            timestr   = '';
-        if (timestamp < 0) {
-            objDate  = this.getDateFromString('0000-00-00 00:00:00');
+        if (strTime === '' || strTime === '0000-00-00 00:00:00') {
+            return oriDate.length > 1 && time_type ? time_type : 'Sometime';
         }
+        // fix timezone offset
+        var objDate   = this.getDateFromString(strTime);
+        if (objDate === null) {
+            return '';
+        }
+        if (withTime) {
+            objDate = new Date(objDate.getTime() + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset()) * 1000);
+        }
+        // rebuild time
         var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            year     = objDate.getFullYear(),
             month    = arrMonth[objDate.getMonth()],
             date     = objDate.getDate(),
-            hour24   = objDate.getHours(),
-            hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
-            ampm     = hour24 < 12 ? 'AM'          : 'PM',
-            minute   = objDate.getMinutes();
-        minute = minute < 10 ? ('0' + minute) : minute;
-        var stdDate  = month + ' ' + date + ', ' + year;
-        if (timestamp >= 0) {
-            timestr  = ', '  + stdDate;
+            year     = objDate.getFullYear(),
+            stdDate  = '',
+            stdTime  = '';
+        if (withTime) {
+            var hour24 = objDate.getHours(),
+                hour12 = hour24 > 12 ? (hour24 - 12) : hour24,
+                ampm   = hour24 < 12 ? 'AM'          : 'PM',
+                minute = objDate.getMinutes();
+            minute = minute < 10 ? ('0' + minute) : minute;
         }
+        // return
         switch (lang) {
             case 'en':
             default:
-                switch (time_type) {
-                    case 0:
-                        return hour12 + ':' + minute + ' ' + ampm + ', ' + stdDate;
-                        break;
-                    case 1:
-                        return 'All day' + timestr;
-                        break;
-                    case 2:
-                        return 'Anytime' + timestr;
-                }
+                stdDate = [month, date].join(' ') + ', ' + year;
+                stdTime = withTime ? (hour12 + ':' + minute + ' ' + ampm) : '';
+                return (time_type ? time_type : stdTime) + ', ' + stdDate;
         }
-        return '';
-    };
-    */
-
-    util.getHumanDateTime = function(strTime, lang) {
-        var oriDate   = strTime.split(',');
-        var time_type = 0;
-        strTime = this.trim(oriDate[0]);
-        if (strTime === '0000-00-00 00:00:00') {
-            return 'Sometime';
-        }
-        if (oriDate.length > 1) {
-            time_type = oriDate[1];
-        }
-
-        var objDate   = this.getDateFromString(strTime),
-            timestamp = Date.parse(objDate) / 1000,
-            timestr   = '';
-        if (timestamp < 0) {
-            objDate  = this.getDateFromString('0000-00-00 00:00:00');
-        }
-        var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            year     = objDate.getFullYear(),
-            month    = arrMonth[objDate.getMonth()],
-            date     = objDate.getDate(),
-            hour24   = objDate.getHours(),
-            hour12   = hour24 > 12 ? (hour24 - 12) : hour24,
-            ampm     = hour24 < 12 ? 'AM'          : 'PM',
-            minute   = objDate.getMinutes();
-        minute = minute < 10 ? ('0' + minute) : minute;
-        var stdDate  = month + ' ' + date + ', ' + year;
-        if (timestamp >= 0) {
-            timestr  = ', '  + stdDate;
-        }
-        switch (lang) {
-            case 'en':
-            default:
-                if(time_type == 0){
-                    return hour12 + ':' + minute + ' ' + ampm + ', ' + stdDate;
-                }else{
-                    return time_type;
-                }
-        }
-        return '';
     };
 
 
@@ -1291,34 +1246,40 @@ var odof = {
      * parse human datetime
      * by Leask
      */
-    util.parseHumanDateTime = function(strTime) {
+    util.parseHumanDateTime = function(strTime, offset) {
         function db(num) {
             return num < 10 ? ('0' + num.toString()) : num.toString();
         }
-        var arrTime  = strTime.split(/-|\ +|:/),
-            month    = 0,
-            day      = 0,
-            year     = 0,
-            hour     = 0,
-            minute   = 0,
-            ampm     = '',
-            time     = '';
+        var arrTime = strTime.split(/-|\ +|:/);
         if (arrTime.length === 5) {
             arrTime.push('am');
         }
-        if (arrTime.length > 5) {
-            ampm     = arrTime[5].toLowerCase() === 'pm' ? 12 : 0;
-            hour     = parseInt(arrTime[3], 10) + ampm;
-            minute   = parseInt(arrTime[4], 10);
-            time     = ' ' + [db(hour), db(minute)].join(':');
-        }
         if (arrTime.length === 3 || arrTime.length === 6) {
-            month    = parseInt(arrTime[2], 10);
-            day      = parseInt(arrTime[0], 10);
-            year     = parseInt(arrTime[1], 10);
-            strTime  = [db(month), db(day), db(year)].join('/') + time;
+            var month   = parseInt(arrTime[0], 10),
+                day     = parseInt(arrTime[1], 10),
+                year    = parseInt(arrTime[2], 10),
+                hour    = 0,
+                minute  = 0,
+                time    = '',
+                strTime = [year, db(month), db(day)].join('/');
+            if (arrTime.length === 6) {
+                hour    = parseInt(arrTime[3], 10)
+                hour   += (arrTime[5].toLowerCase() === 'pm' && hour !== 12 ? 12 : 0);
+                minute  = parseInt(arrTime[4], 10),
+                time    = ' ' + [db(hour), db(minute)].join(':');
+                if (offset) {
+                    var objTime = new Date(new Date(strTime + time).getTime() - offset * 1000);
+                    month  = objTime.getMonth() + 1;
+                    day    = objTime.getDate();
+                    year   = objTime.getFullYear();
+                    hour   = objTime.getHours();
+                    minute = objTime.getMinutes();
+                    time   = ' ' + [db(hour), db(minute)].join(':');
+                }
+            }
+            strTime = [year, db(month), db(day)].join('/') + time;
             if (new Date(strTime).toString() !== 'Invalid Date') {
-                return [db(month), db(day), db(year)].join('-')
+                return [year, db(month), db(day)].join('-')
                      + (arrTime.length === 6 ? (time + ':00') : '');
             }
         }

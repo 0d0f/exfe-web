@@ -109,11 +109,5 @@
         <div id="x_view_content"></div>
     </div>
 </div>
-<script type="text/javascript">
-    var timezone = jstz.determine_timezone();
-    var userTimeZone = timezone.offset()
-    var userTimeZoneSecond = odof.comm.func.convertTimezoneToSecond(userTimeZone);
-    console.log(userTimeZoneSecond);
-</script>
 </body>
 </html>

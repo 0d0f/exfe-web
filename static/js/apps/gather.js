@@ -74,7 +74,10 @@ var moduleNameSpace = 'odof.x.gather',
             crossData.begin_at = '';
             $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
-            var strTime = odof.util.parseHumanDateTime(strTimeInput);
+            var strTime = odof.util.parseHumanDateTime(
+                strTimeInput,
+                odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
+            );
             crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
         }
