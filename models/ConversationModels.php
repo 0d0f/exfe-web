@@ -44,7 +44,7 @@ class ConversationModels extends DataModel{
 
     public function getConversationByTimeStr($postable_id,$postable_type,$updated_since="",$limit=0)
     {
-        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        $sql="select id,identity_id,title,content as message,postable_id,postable_type,created_at,updated_at from posts where postable_id=$postable_id and postable_type='$postable_type'";
         if($updated_since>0)
             $sql=$sql." and created_at>'$updated_since' ";
 
