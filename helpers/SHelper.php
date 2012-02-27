@@ -163,7 +163,7 @@ class SHelper extends ActionController
         foreach ($relatedIdentities as $ridI => $ridItem) {
             $user = $modUser->getUserByIdentityId($ridItem['id']);
             $humanIdentities[$ridItem['id']] = humanIdentity($ridItem, $user);
-            $humanIdentities[$ridItem['id']]['user_id'] = $user['id'];
+            $humanIdentities[$ridItem['id']]['user_id'] = intval($user['id']);
         }
 
         // render human identities
