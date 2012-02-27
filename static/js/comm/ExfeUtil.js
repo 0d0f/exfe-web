@@ -1156,7 +1156,7 @@ var odof = {
      * by Leask
      */
     util.getRelativeTime = function(strTime) {
-        var timestamp = Date.parse(this.getDateFromString(strTime)) / 1000;
+        var timestamp = Date.parse(this.getDateFromString(strTime)) / 1000 + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
         if (timestamp < 0) {
             return '';
         }
