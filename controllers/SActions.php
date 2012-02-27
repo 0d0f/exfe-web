@@ -212,12 +212,9 @@ class SActions extends ActionController {
         foreach ($newInvt as $newInvtI => $newInvtItem) {
             $newInvt[$newInvtI]['base62id']
           = int_to_base62($newInvtItem['cross_id']);
-            $identity = $modIdentity->getIdentityById(
-                $newInvtItem['identity_id']
-            );
             $newInvt[$newInvtI]['sender'] = humanIdentity(
-                $identity,
-                $modUser->getUserByIdentityId($newInvtItem['identity_id'])
+                $modIdentity->getIdentityById($newInvtItem['by_identity_id']),
+                $modUser->getUserByIdentityId($newInvtItem['by_identity_id'])
             );
             $newInvt[$newInvtI]['cross'] = $modCross->getCross(
                 $newInvtItem['cross_id']

@@ -19,8 +19,11 @@
 <script src="/static/js/exlibs/excal/excal.js"></script>
 <!-- EXFE Maps -->
 <link type="text/css" rel="stylesheet" href="/static/css/maps.css">
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript" src="/static/js/apps/maps.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script src="/static/js/apps/maps.js"></script>
+
+<script src="/static/js/libs/detect_timezone.js"></script>
+
 </head>
 
 <body>
