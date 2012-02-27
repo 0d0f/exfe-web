@@ -7,22 +7,24 @@ class XHelper extends ActionController
     {
         $changed=array();
         $logdata=$this->getModelByName("log");
-        if($old_cross["title"]!=$crossobj["title"])
+        if($old_cross["title"] !== $crossobj["title"])
         {
             $changed["title"]=$crossobj["title"];
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"title",$crossobj["title"],"");
         }
-        if($old_cross["description"]!=$crossobj["description"])
+        if($old_cross["description"] !== $crossobj["description"])
         {
             $changed["description"]=$crossobj["description"];
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"description",$crossobj["description"],"");
         }
-        if($old_cross["begin_at"]!=$crossobj["begin_at"])
-        {
-            $changed["begin_at"]=$crossobj["begin_at"];
-            // time type
-            $changed["time_type"] = $crossobj['time_type'];
-            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"begin_at", "{$crossobj["begin_at"]},{$changed["time_type"]}","");
+        if($old_cross['begin_at']  !== $crossobj['begin_at']
+        || $old_cross['time_type'] !== $crossobj['time_type']) {
+            $changed['begin_at']  = $crossobj['begin_at'];
+            $changed['time_type'] = $crossobj['time_type'];
+            $logdata->addLog(
+                'identity', $identity_id, 'change', 'cross', $cross_id, 'begin_at',
+                "{$crossobj['begin_at']},{$changed['time_type']}", ''
+            );
         }
         if ($old_cross['place']['line1'] !== $crossobj['place']['line1']
          || $old_cross['place']['line2'] !== $crossobj['place']['line2']) {
@@ -31,8 +33,9 @@ class XHelper extends ActionController
                 '', json_encode($changed['place'] = $crossobj['place'])
             );
         }
-        if(sizeof($changed)==0)
+        if (sizeof($changed) === 0) {
             return FALSE;
+        }
 
         return $changed;
     }
@@ -76,6 +79,8 @@ class XHelper extends ActionController
         $msghelper->sentChangeEmail($mail);
         $msghelper->sentApnConversation($apnargs);
     }
+
+
     public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title)
     {
         $identityData=$this->getModelByName("identity");
