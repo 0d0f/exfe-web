@@ -128,14 +128,14 @@ class UpgradeCrossUTCTime extends DataModel{
         echo "update table users suscess...\r\n\r\n";
 
         echo "start update table user_identity...\r\n";
-        $sql = "SELECT id, created_at FROM user_identity";
+        $sql = "SELECT identityid, userid, created_at FROM user_identity";
         $cross_time_arr = $this->getAll($sql);
         foreach($cross_time_arr as $k=>$v){
             $c_utc_time = "0000-00-00 00:00:00";
             if($v["created_at"] != $c_utc_time && trim($v["created_at"]) != ""){
                 $c_utc_time = date("Y-m-d H:i:s",intval(strtotime($v["created_at"])-$time_zone));
             }
-            $sql = "UPDATE user_identity SET created_at='{$c_utc_time}' WHERE id=".$v["id"];
+            $sql = "UPDATE user_identity SET created_at='{$c_utc_time}' WHERE identityid=".$v["identityid"]." AND userid=".$v["userid"];
             $this->query($sql);
         }
         echo "update table user_identity suscess...\r\n\r\n";
