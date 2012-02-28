@@ -127,6 +127,7 @@ function humanIdentity($identity,$user)
     return $identity;
 }
 
+
 // modified by @leaskh 20120228
 function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
     // init
@@ -152,7 +153,7 @@ function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
     if ($timestamp === false) {
         return array('', '', '');
     }
-    if ($timeType) {
+    if ($withTime) {
         switch (strlen($timeoffset)) {
             case 5:
                 $offset = (intval($timeoffset[1]) * 60 
@@ -206,6 +207,7 @@ function RelativeTime($timestamp)
     $text = "$difference $periods[$j] $ending";
     return $text;
 }
+
 
 function base62_to_int($input)
 {
