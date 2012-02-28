@@ -67,7 +67,7 @@ function exCalendar() {
         if(typeof calendarCallBack != "undefined"){
             exCallBack = calendarCallBack;
         }
-        
+
         //设置统一的ClassName以方便样式控制。
         calendarContainerObj = document.getElementById(calendarId);
         calendarContainerObj.className = calendarContainerClassName;
@@ -484,7 +484,7 @@ function exCalendar() {
             return false;
         }else{
             return true;
-        }   
+        }
     };
 
     /**
@@ -494,8 +494,8 @@ function exCalendar() {
     function removeArrayItemById(myArray, itemIDToRemove) {
         if(!isArray(myArray) || isNaN(itemIDToRemove)){
             return false;
-        }   
-        myArray.splice(itemIDToRemove, 1); 
+        }
+        myArray.splice(itemIDToRemove, 1);
         return myArray;
     };
 

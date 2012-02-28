@@ -32,15 +32,15 @@ class XActions extends ActionController
                     }
 
                     $cross = array(
-                        'title'       => mysql_real_escape_string($_POST['title']),
-                        'description' => mysql_real_escape_string($_POST['description']),
+                        'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
+                        'description' => mysql_real_escape_string(htmlspecialchars($_POST['description'])),
                         'place_id'    => intval($placeid),
-                        'datetime'    => $_POST['begin_at']
+                        'datetime'    => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
                     );
 
                     $cross_id = $crossdata->gatherCross(
                         $identity_id, $cross,
-                        json_decode($_POST['exfee'], true), $_POST['draft_id']
+                        json_decode($_POST['exfee'], true), mysql_real_escape_string($_POST['draft_id'])
                     );
 
                     if ($cross_id) {
@@ -115,7 +115,7 @@ class XActions extends ActionController
                 }
             }
 
-            if (!isset($_POST['ctitle']) || trim($_POST['ctitle']) == ''){
+            if (!isset($_POST['title']) || trim($_POST['title']) == ''){
                 $return_data['error'] = 1;
                 $return_data['msg'] = 'The title can not be empty.';
 
@@ -125,17 +125,12 @@ class XActions extends ActionController
             }
 
             $cross = array(
-                'id'          => $cross_id,
-                'title'       => mysql_real_escape_string(trim($_POST['ctitle'])),
-                'desc'        => mysql_real_escape_string(trim(strip_tags(exPost('cdesc')))),
-                'start_time'  => $_POST['ctime'],
-                'place'       => array('line1'       => strip_tags(exPost('cplaceline1')),
-                                       'line2'       => strip_tags(exPost('cplaceline2')),
-                                       'lat'         => 0,
-                                       'lng'         => 0,
-                                       'external_id' => '',
-                                       'provider'    => ''),
-                'identity_id' => $identity_id
+                'id'          => intval($cross_id),
+                'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
+                'desc'        => mysql_real_escape_string(htmlspecialchars($_POST['desc'])),
+                'start_time'  => mysql_real_escape_string($_POST['time']),
+                'place'       => json_decode($_POST['place'], true),
+                'identity_id' => intval($identity_id)
             );
 
             $result = $crossDataObj->updateCross($cross);
@@ -195,7 +190,7 @@ class XActions extends ActionController
         if (!isset($_POST['exfee_only']) || !$_POST['exfee_only']) {
             $changed = $xhelper->addCrossDiffLog($cross_id, $identity_id, $old_cross, $new_cross);
         }
-        
+
         if ($newExfees || $delExfees) {
             $changed = true;
         }

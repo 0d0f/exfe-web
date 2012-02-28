@@ -246,7 +246,7 @@
 .x_place_line1_double {
     font-size:30px;
     line-height: 36px;
-    max-height: 96px;
+    max-height: 72px;
     overflow: hidden;
 }
 
@@ -257,7 +257,7 @@
     color: #666666;
     word-break: break-all;
     display: block;
-    max-height: 96px;
+    max-height: 72px;
     overflow: hidden;
 }
 
@@ -381,4 +381,16 @@
 
 #xExfeeArea .exfeegadget_addbtn {
     top: -3px;
+}
+
+#google_maps_cotainer{
+    display:none; margin-top:24px;
+    height:140px; width:280px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    border: 1px solid #CCC;
+    -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
 }

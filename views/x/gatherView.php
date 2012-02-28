@@ -16,6 +16,13 @@
 <!-- Exfe Calendar -->
 <link type="text/css" rel="stylesheet" href="/static/js/exlibs/excal/skin/default/excal.css">
 <script src="/static/js/exlibs/excal/excal.js"></script>
+<!-- EXFE Maps -->
+<link type="text/css" rel="stylesheet" href="/static/css/maps.css">
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script src="/static/js/apps/maps.js"></script>
+
+<script src="/static/js/libs/detect_timezone.js"></script>
+
 </head>
 <body>
 <?php
@@ -101,7 +108,6 @@
         <div id="x_view_preview"></div>
         <div id="x_view_content"></div>
     </div>
-
 </div>
 </body>
 </html>

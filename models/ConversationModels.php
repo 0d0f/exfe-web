@@ -1,24 +1,22 @@
 <?php
-class ConversationModels extends DataModel{
-    public function addConversation($postable_id,$postable_type,$identity_id,$title,$content)
-    {
-        if(intval($postable_id)>0 & $postable_type=="cross")
-        {
-            //TODO:check if identity_id belongs this cross
 
-            $sql="select id,state from  invitations where identity_id=$identity_id and cross_id=$postable_id;";
-            $row=$this->getRow($sql);
-            if(intval($row["id"])>0)
-            {
-                // @todo: time fixed
-                $time=time() + (60 * 60 * 5);
-                $content=mysql_real_escape_string($content);
-                $title=mysql_real_escape_string($title);
-                $sql="insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',FROM_UNIXTIME($time),FROM_UNIXTIME($time))";
+class ConversationModels extends DataModel {
 
-		        $result=$this->query($sql);
-                if(intval($result["insert_id"])>0)
+    public function addConversation($postable_id, $postable_type, $identity_id, $title, $content) {
+        if (intval($postable_id) > 0 && $postable_type === 'cross') {
+            // @todo: check if identity_id belongs this cross
+
+            $sql = "select id,state from  invitations where identity_id={$identity_id} and cross_id={$postable_id};";
+            $row = $this->getRow($sql);
+            if (intval($row['id']) > 0) {
+                $content = mysql_real_escape_string($content);
+                $title = mysql_real_escape_string($title);
+                $sql = "insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',NOW(),NOW())";
+
+		        $result = $this->query($sql);
+                if (intval($result["insert_id"]) > 0) {
                     return intval($result["insert_id"]);
+                }
             }
 
         }
@@ -44,7 +42,7 @@ class ConversationModels extends DataModel{
 
     public function getConversationByTimeStr($postable_id,$postable_type,$updated_since="",$limit=0)
     {
-        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        $sql="select id,identity_id,title,content as message,postable_id,postable_type,created_at,updated_at from posts where postable_id=$postable_id and postable_type='$postable_type'";
         if($updated_since>0)
             $sql=$sql." and created_at>'$updated_since' ";
 
@@ -71,10 +69,6 @@ class ConversationModels extends DataModel{
                 } else {
                     $post["identity"]=$identity[$identity_id];
                 }
-                // @todo: time fixed
-                $strDate = date('Y-m-d H:i:s', strtotime($post['created_at']) );
-                $post['created_at']=$strDate;
-                $post['updated_at']=$strDate;
                 array_push($posts,$post);
             }
         }
@@ -118,15 +112,10 @@ class ConversationModels extends DataModel{
                 } else {
                     $post["identity"]=$identity[$identity_id];
                 }
-                // @todo: time fixed
-                $strDate = date('Y-m-d H:i:s', strtotime($post['created_at']) + (60 * 60 * 8));
-                $post['created_at']=$strDate;
-                $post['updated_at']=$strDate;
                 array_push($posts,$post);
             }
         }
         return $posts;
-
     }
 
 

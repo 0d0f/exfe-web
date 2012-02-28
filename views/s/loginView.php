@@ -2,12 +2,12 @@
 </head>
 <body style="background-color:#EFEFEF;">
 <?php include "share/nav.php"; ?>
-<?php 
+<?php
 $isNewIdentity=$this->getVar("isNewIdentity");
 if($isNewIdentity===true){
-    include "welcomebox.php"; 
+    include "welcomebox.php";
 }else{
-    include "share/loginbox.php"; 
+    include "share/loginbox.php";
 }
 ?>
 </body>

@@ -55,7 +55,6 @@ class UsersActions extends ActionController {
         $uid=$params["id"];
         $device_identity_id=$params["ddid"];
 
-
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_getupdate",$params["token"],array("user_id"=>$params["id"]));
         if($check["check"]==false)
@@ -66,19 +65,71 @@ class UsersActions extends ActionController {
             exit(0);
         }
         $shelper=$this->getHelperByName("s");
-        $cleanLogs=$shelper->GetAllUpdate($uid,urldecode($params["updated_since"]),200,true);
+        $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
+
+        // merge logs by @Leask {
+        $preItemLogs = array();
+        $preItemDna  = '';
+        $preItemTime = 0;
+        $magicTime   = 153; // 2:33
+        foreach ($rawLogs as $logI => $logItem) {
+            $curDna  = ($logItem['by_identity']['user_id']
+                     ? "u{$logItem['by_identity']['user_id']}"
+                     : "i{$logItem['by_identity']['id']}")
+                     . "_c{$logItem['x_id']}";
+            $difTime = abs($preItemTime - ($curTime = strtotime($logItem['time'])));
+            if ($curDna === $preItemDna && $difTime <= $magicTime && isset($preItemLogs[$logItem['action']])) {
+                switch ($logItem['action']) {
+                    case 'title':
+                        if (isset($logItem['old_value'])
+                         && $logItem['old_value'] !== null
+                         && $logItem['old_value'] !== '') {
+                            $rawLogs[$preItemLogs[$logItem['action']]]['old_value'] = $logItem['old_value'];
+                        }
+                        break;
+                    case 'addexfee':
+                    case 'delexfee':
+                    case 'confirmed':
+                    case 'declined':
+                    case 'interested':
+                        array_push(
+                            $rawLogs[$preItemLogs[$logItem['action']]]['to_identity'],
+                            $logItem['to_identity']
+                        );
+                }
+                unset($rawLogs[$logI]);
+            } else {
+                switch ($logItem['action']) {
+                    case 'addexfee':
+                    case 'delexfee':
+                    case 'confirmed':
+                    case 'declined':
+                    case 'interested':
+                        $rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
+                }
+                if ($curDna !== $preItemDna || $difTime > $magicTime) {
+                    $preItemLogs = array();
+                }
+                $preItemLogs[$logItem['action']] = $logI;
+            }
+            $preItemDna  = $curDna;
+            $preItemTime = $curTime;
+        }
+        $cleanLogs = array_merge($rawLogs);
+        // }
 
         $identityhelper=$this->getHelperByName("identity");
         $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);
 
         $responobj["meta"]["code"]=200;
         $responobj["response"]=$cleanLogs;
-        echo json_encode($responobj);
 
+        echo json_encode($responobj);
     }
+
     public function doX()
     {
-        //check if this token allow 
+        //check if this token allow
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("user_x",$params["token"],array("user_id"=>$params["id"]));
@@ -98,7 +149,7 @@ class UsersActions extends ActionController {
         $crosses=$Data->getCrossByUserId(intval($params["id"]),urldecode($params["updated_since"]));
         if($crosses=="")
             $crosses=array();
-        
+
         $conversationData=$this->getModelByName("conversation");
         $identityData=$this->getModelByName("identity");
         $invitationData=$this->getModelByName("invitation");
@@ -125,14 +176,14 @@ class UsersActions extends ActionController {
         $responobj["meta"]["code"]=200;
         $responobj["response"]["crosses"]=$crosses;
         echo json_encode($responobj);
-        
+
         //get x by id and updated_since
-        
+
     }
-    
+
     public function doRegdevicetoken()
     {
-        //check if this token allow 
+        //check if this token allow
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
         $uid=$params["id"];

@@ -115,7 +115,7 @@ class ConversationActions extends ActionController
                     $userIdentity=humanIdentity($identity,$user);
 
                     $responobj["response"]["content"]=$comment;
-                    $responobj["response"]["created_at"]=date('Y-m-d H:i:s', time() + 3600 * 21); // @todo: 时区修正！
+                    $responobj["response"]["created_at"]=date('Y-m-d H:i:s', time());
                     $responobj["response"]["cross_id"]=$cross_id;
 
                     $responobj["response"]["identity"]=$userIdentity;

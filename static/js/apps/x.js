@@ -21,7 +21,7 @@ var moduleNameSpace = 'odof.x.render',
     ns.showTitle = function()
     {
         var objTitle = $('#x_title');
-        objTitle.html(crossData.title);
+        objTitle.html(odof.util.escapeXml(crossData.title));
         document.title = 'EXFE - ' + crossData.title;
         if (objTitle.hasClass('x_title_double') && objTitle.height() < 112) {
             objTitle.addClass('x_title_normal').removeClass('x_title_double');
@@ -38,7 +38,7 @@ var moduleNameSpace = 'odof.x.render',
                     ? 'Write some words about this X.'
                     : crossData.description,
             converter = new Showdown.converter();
-        $('#x_desc').html(converter.makeHtml(strDesc));
+        $('#x_desc').html(converter.makeHtml(odof.util.escapeXml(strDesc)));
         if (!this.expended && $('#x_desc').height() > 200) {
             $('#x_desc_expand').show();
         } else {
@@ -99,13 +99,24 @@ var moduleNameSpace = 'odof.x.render',
     ns.showPlace = function()
     {
         var objPlace = $('#x_place_line1');
-        objPlace.html(crossData.place.line1 ? crossData.place.line1 : 'Somewhere');
-        $('#x_place_line2').html(crossData.place.line2.replace(/\r/g, '<br>'));
+        objPlace.html(
+            crossData.place.line1
+          ? odof.util.escapeXml(crossData.place.line1) : 'Somewhere'
+        );
+        $('#x_place_line2').html(
+            odof.util.escapeXml(crossData.place.line2).replace(/\r/g, '<br>')
+        );
         if (objPlace.hasClass('x_place_line1_double') && objPlace.height() < 70) {
             objPlace.addClass('x_place_line1_normal').removeClass('x_place_line1_double');
         }
         if (objPlace.hasClass('x_place_line1_normal') && objPlace.height() > 53) {
             objPlace.addClass('x_place_line1_double').removeClass('x_place_line1_normal');
+        }
+
+        //Show google maps. added by handaoliang
+        if(crossData.place.lng != 0 && crossData.place.lat != 0){
+            odof.apps.maps.googleMapsContainerID = "google_maps_cotainer";
+            odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1, 280, 140)
         }
     };
 
@@ -132,7 +143,7 @@ var moduleNameSpace = 'odof.x.render',
              +                 objItem.identity.name + ': '
              +             '</span>'
              +             '<span class="x_conversation_content">'
-             +                 objItem.content
+             +                 odof.util.escapeXml(objItem.content)
              +             '</span>'
              +         '</p>'
              +         '<span class="x_conversation_time">'
@@ -187,6 +198,7 @@ var moduleNameSpace = 'odof.x.render',
                       +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
                       +             '<span id="x_place_line2"></span>'
                       +         '</div>'
+                      +         '<div id="google_maps_cotainer"></div>'
                       +         '<div id="xExfeeArea"></div>'
                       +     '</div>'
                       + '</div>';

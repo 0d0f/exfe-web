@@ -20,10 +20,10 @@ class Emailverifying_Job
 
         $url=$site_url.'/s/verifyIdentity?token='.$token;
         $report_spam_url = $site_url.'/s/reportSpam?token='.$token;
-        
+
         $parturl = preg_replace('/^http[s]*:\/\//i', '', $url);
         $parturl = substr($parturl, 0, 31) . '…' . substr($parturl, -8);
-        
+
         $mail["link"]=$url;
         $mail["report_spam_url"] = $report_spam_url;
         $mail["site_url"] = $site_url;
@@ -63,7 +63,7 @@ class Emailverifying_Job
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));
-            
+
             $message = $headers . "\r\n" . $body;
 
             $r = $email_connect->send_raw_email(array('Data' => base64_encode($message)), array('Destinations' => $args['external_identity']));

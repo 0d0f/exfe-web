@@ -7,7 +7,7 @@ class FrontController {
 #	public static function checkOauthToken() {
 #
 #	if(isset($_GET["magic_token"])) {
-#		
+#
 #		$_SESSION["userid"] = $_GET["magic_token"];
 #
 #		return;
@@ -32,7 +32,7 @@ class FrontController {
 #			exit();
 #
 #		} else {
-#	
+#
 #			$name="user";
 #	    		$class = ucfirst($name) . "Models";
 #	    		$modelfile = MODEL_DIR . "/" . $name. "/" . $class.  ".php";
@@ -80,16 +80,16 @@ class FrontController {
             $params[$p[0]]=$p[1];
             $action=$paths[0];
         }
-        else 
+        else
             $action=$paths[0];
-        
+
         foreach($_GET as $k=>$v)
         {
             if($k!="v" && $k!="class" && $k!=path)
                 $params[$k]=$v;
         }
         require_once $file;
-        
+
         $controller = new $class();
         $controller->setName($classname);
         $actions=explode("/",$action);

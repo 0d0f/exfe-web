@@ -15,19 +15,19 @@ var clickCallBackFunc = function(args) {
 
 (function(ns) {
 
-    ns.cross_id     = 0;
+    ns.cross_id      = 0;
 
-    ns.rsvpAction   = null;
+    ns.rsvpAction    = null;
 
-    ns.token        = null;
+    ns.token         = null;
 
-    ns.location_uri = null;
+    ns.location_uri  = null;
 
     ns.cross_time_bubble_status = 0;
 
     ns.msgSubmitting = false;
 
-    ns.xBackup       = {};
+    ns.xBackup       = null;
 
 
     ns.startEdit = function() {
@@ -38,10 +38,12 @@ var clickCallBackFunc = function(args) {
         // title
         $('#x_title').addClass('x_editable');
         $('#x_title').bind('click', odof.x.edit.editTitle);
+        $('#x_title_edit').val(crossData.title);
         // desc
         odof.x.render.showDesc(true);
         $('#x_desc').addClass('x_editable');
         $('#x_desc').bind('click', odof.x.edit.editDesc);
+        $('#x_desc_edit').val(crossData.description);
         // time
         $('#x_time_area').addClass('x_editable');
         $('#x_time_area').bind('click', odof.x.edit.editTime);
@@ -64,6 +66,11 @@ var clickCallBackFunc = function(args) {
         odof.x.edit.editPlace(false);
         // restore x from backup
         crossData = odof.util.clone(odof.x.edit.xBackup);
+
+        odof.record.reset();
+        odof.x.edit.xBackup = null;
+        odof.x.edit.freeze();
+
         odof.x.render.showComponents();
     };
 
@@ -76,6 +83,11 @@ var clickCallBackFunc = function(args) {
         }
         this.msgSubmitting = true;
         //$('#post_submit').css('background', 'url("/static/images/enter_gray.png")');
+
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+
         $.ajax({
             type : 'POST',
             data : {cross_id : cross_id,
@@ -203,8 +215,8 @@ var clickCallBackFunc = function(args) {
             $('#x_desc_edit').unbind('keydown');
         }
     };
-    
-    
+
+
     ns.updateTime = function(displaytime, typing) {
         var objTimeInput = $('#x_datetime_original');
         if (displaytime) {
@@ -262,7 +274,7 @@ var clickCallBackFunc = function(args) {
             }
             // init calendar
             var strStdTime = '';
-            if (crossData.begin_at) {
+            if (crossData.begin_at && crossData.begin_at !== '0000-00-00 00:00:00') {
                 var objStdTime = odof.util.getDateFromString(crossData.begin_at),
                     year       = objStdTime.getFullYear(),
                     month      = objStdTime.getMonth() + 1,
@@ -313,11 +325,18 @@ var clickCallBackFunc = function(args) {
                             crossData.place.line1 = arrPlace[0];
                             crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
+                            //place search
+                            setTimeout(function(){
+                                odof.apps.maps.getLocation('place_content', 'google_maps_cotainer', 'edit_cross');
+                            },1000);
+
                         });
                         $('#place_content').html(
-                            crossData.place.line1 + '\r' + crossData.place.line2
+                            crossData.place.line1 !== '' || crossData.place.line2 !== ''
+                         ? (crossData.place.line1 + '\r' +  crossData.place.line2) :  ''
                         );
                         $('#x_place_bubble').show();
+                        $('#place_content').focus();
                     } else {
                         odof.x.edit.savePlace();
                     }
@@ -353,6 +372,7 @@ var clickCallBackFunc = function(args) {
         $('#x_title_edit').hide();
         $('#x_title_area').unbind('clickoutside');
         $('#x_title').show();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -362,6 +382,7 @@ var clickCallBackFunc = function(args) {
         $('#x_desc_edit').hide();
         $('#x_desc_area').unbind('clickoutside');
         $('#x_desc').show();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -369,6 +390,7 @@ var clickCallBackFunc = function(args) {
         $('#x_time_bubble').hide();
         $('#x_time_bubble').unbind('clickoutside');
         odof.x.render.showTime();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -376,6 +398,7 @@ var clickCallBackFunc = function(args) {
         $('#x_place_bubble').hide();
         $('#x_place_bubble').unbind('clickoutside');
         odof.x.render.showPlace();
+        odof.x.edit.freeze(true);
     };
 
 
@@ -416,7 +439,10 @@ var clickCallBackFunc = function(args) {
                                 dataType : 'json',
                                 success  : function(data) {
                                     if (data != null && data.response.success === 'true') {
-                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                        odof.exfee.gadget.changeRsvp(
+                                            'xExfeeArea', myIdentity.external_identity,
+                                            myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state]
+                                        );
                                         odof.x.render.showRsvp();
                                     }
                                 }
@@ -439,7 +465,10 @@ var clickCallBackFunc = function(args) {
                                         token_expired = true;
                                     }
                                     // }
-                                    myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                    odof.exfee.gadget.changeRsvp(
+                                        'xExfeeArea', myIdentity.external_identity,
+                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state]
+                                    );
                                     odof.x.render.showRsvp();
                                 } else {
                                     // by handaoliang {
@@ -494,21 +523,27 @@ var clickCallBackFunc = function(args) {
         odof.x.edit.savePlace();
         // exfee = JSON.stringify(ns.getexfee());
         // $('#edit_cross_submit_loading').show();
+
+        odof.record.reset();
+        odof.x.edit.xBackup = null;
+        odof.x.edit.freeze();
+
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+
         $.ajax({
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
-            data : {
-                jrand       : Math.round(Math.random() * 10000000000),
-                ctitle      : crossData.title,
-                ctime       : crossData.begin_at,
-                cdesc       : crossData.description,
-                cplaceline1 : crossData.place.line1,
-                cplaceline2 : crossData.place.line2,
-                exfee       : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))
-            },
+            data : {rand  : Math.round(Math.random() * 10000000000),
+                    title : crossData.title,
+                    time  : crossData.begin_at,
+                    desc  : crossData.description,
+                    place : JSON.stringify(crossData.place),
+                    exfee : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))},
             success : function(data) {
-                if(data.error){
+                if (data.error) {
                     $('#error_msg').html(data.msg);
                 }
             },
@@ -518,10 +553,24 @@ var clickCallBackFunc = function(args) {
             }
         });
     };
-    
-    
+
+
     ns.submitExfee = function() {
-        jQuery.ajax({
+        if (!odof.x.edit.skipFreeze) {
+            odof.x.edit.freeze();
+        }
+        for (var i in odof.exfee.gadget.exfeeInput['xExfeeArea']) {
+            if (parseInt(odof.exfee.gadget.exfeeInput['xExfeeArea'][i].identity_id)
+            === parseInt(myIdentity.id)) {
+                myrsvp = odof.exfee.gadget.exfeeInput['xExfeeArea'][i].rsvp;
+                odof.x.render.showRsvp();
+                break;
+            }
+        }
+        if (typeof window.mapRequest !== 'undefined') {
+            window.mapRequest.abort();
+        }
+        $.ajax({
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
@@ -544,21 +593,57 @@ var clickCallBackFunc = function(args) {
         });
     };
 
+
+    ns.freeze = function(xOnly) {
+        var lastX = odof.record.last(),
+            curX  = {title       : crossData.title,
+                     description : crossData.description,
+                     begin_at    : crossData.begin_at,
+                     time_type   : crossData.time_type,
+                     state       : crossData.state,
+                     place       : crossData.place};
+        if (xOnly && lastX && JSON.stringify(lastX) === JSON.stringify(curX)) {
+            return;
+        }
+        odof.record.push({cross : curX, exfee : odof.exfee.gadget.exfeeInput['xExfeeArea']});
+    };
+
+
+    ns.record = function(item) {
+        if (!item) {
+            return;
+        }
+        if (odof.x.edit.xBackup) {
+            for (var i in item.cross) {
+                crossData[i] = odof.util.clone(item.cross[i]);
+            }
+            odof.x.render.showTitle();
+            odof.x.render.showDesc(true);
+            odof.x.render.showTime();
+            odof.x.render.showPlace();
+        }
+        crossExfee = odof.util.clone(item.exfee);
+        odof.x.edit.skipFreeze = true;
+        odof.exfee.gadget.make('xExfeeArea', crossExfee, true, odof.x.edit.submitExfee);
+        odof.x.edit.skipFreeze = false;
+    };
+
 })(ns);
 
 
 $(document).ready(function() {
     // fix anytime
-    if (crossData.time_type === '2') {
+    if (crossData.time_type === 'Anytime') {
         crossData.begin_at = crossData.begin_at.split(' ')[0];
     }
 
+    odof.record.init(odof.x.edit.record);
     odof.x.render.show(true);
     odof.x.edit.cross_id     = cross_id;
     odof.x.edit.token        = token;
     odof.x.edit.location_uri = location_uri;
-
     odof.exfee.gadget.make('xExfeeArea', crossExfee, true, odof.x.edit.submitExfee, true);
+    odof.x.edit.freeze();
 
     $('#private_icon').mousemove(function() { $('#private_hint').show(); });
     $('#private_icon').mouseout(function() { $('#private_hint').hide(); });

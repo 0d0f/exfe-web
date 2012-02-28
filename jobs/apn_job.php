@@ -140,7 +140,7 @@ class Apn_Job
     public function perform()
     {
         #global $apn_connect;
-        
+
 	    #$title=$this->args['title'];
 	    #$name=$this->args['name'];
 	    #$cross_id=$this->args['cross_id'];
@@ -161,7 +161,7 @@ class Apn_Job
             $title=utf8substr($title,0,10)."...";
         //“%X_TITLE” updates: %IDENTITY_NAME1, %IDENTITY_NAME2… is/are confirmed, %IDENTITY_NAME3 is declined, %IDENTITY_NAME5 is interested in.
         $invitations=$args["invitations"];
-        
+
         $rsvp_statuslist=array();
         foreach($invitations as $invitation)
         {
@@ -260,10 +260,10 @@ class Apn_Job
 //                    [status] => 3
 //                    [provider] => iOSAPN
 //                    [external_identity] => 96da067d5b5fba84c032b12fa5667b19acd47d8fb383784ae2a4dd4904fb8858
-//                    [name] => 
-//                    [bio] => 
+//                    [name] =>
+//                    [bio] =>
 //                    [avatar_file_name] => default.png
-//                    [external_username] => 
+//                    [external_username] =>
 //                )
 //
 //        )
@@ -298,14 +298,20 @@ class Apn_Job
                 $time_type=$args["changed"]["time_type"];
                 $begin_at=$v;
                 $datetimestr="";
-                if($begin_at=="0000-00-00 00:00:00") // hasn't datetime
+                if($begin_at=="0000-00-00 00:00:00") { // hasn't datetime
                    $datetimestr="";
-                else
-                {
+                } else {
+                    /*
                     if(intval($time_type)==2)
                         $datetimestr=date("M j",strtotime($begin_at));
                     else
                         $datetimestr=date("g:iA D,M j",strtotime($begin_at));
+                    */
+                    if(trim($time_type) != ""){
+                        $datetimestr = $time_type;
+                    } else {
+                        $datetimestr=date("g:iA D,M j",strtotime($begin_at));
+                    }
                 }
 
 
@@ -339,7 +345,7 @@ class Apn_Job
             $msgbodyobj["msg"]=$updatestr;
             $msgbodyobj["cid"]=$args["id"];
             $msgbodyobj["t"]="u";
-    
+
             $to_identities=$args["cross"]["identities"];
             foreach($to_identities as $to_identity)
             {
@@ -352,18 +358,18 @@ class Apn_Job
         }
 
                 #"%X_OLDTITLE" updates: Title is changed to "%X_TITLE". New time: %X_SHORTTIME. New Place: %X_PLACETITLE, %X_PLACEDESCRIPTION
-        
+
 
 
     }
     public function generateConversationPush($args)
     {
-    
+
 #%IDENTITY_NAME: %COVN_POST。（on “%X_TITLE”）
         $title=replacemarks($args["title"]);
         $by_identity=$args["by_identity"];
         $name=replacemarks($by_identity["name"]);
-    
+
         $content=replacemarks($args["comment"]);
         $to_identities=$args["to_identities"];
 
@@ -373,7 +379,7 @@ class Apn_Job
         {
             $contentlen=strlen($content);
             $titlelen=strlen($title);
-            if($contentlen > max_msg_len-strlen($name)-$msgdefaultlen-10) //keep 10 byte for title 
+            if($contentlen > max_msg_len-strlen($name)-$msgdefaultlen-10) //keep 10 byte for title
             {
                 $content=utf8substr($content,0,max_msg_len-strlen($name)-$msgdefaultlen-10)."...";
             }
@@ -384,7 +390,7 @@ class Apn_Job
         $msgbodyobj["msg"]=$msg;
         $msgbodyobj["cid"]=$args["cross_id"];
         $msgbodyobj["t"]="c";
-    
+
         foreach($to_identities as $to_identity)
         {
            if( $to_identity["provider"]=="iOSAPN")
@@ -425,14 +431,21 @@ class Apn_Job
                     $begin_at=$args["begin_at"];
                     $time_type=$args["time_type"];
                     $datetimestr="";
-                    if($begin_at=="0000-00-00 00:00:00") // hasn't datetime
+                    if($begin_at=="0000-00-00 00:00:00"){ // hasn't datetime
                        $datetimestr="";
-                    else
-                    {
+                    } else {
+                        /*
                         if(intval($time_type)==2)
                             $datetimestr="on ".date("M j",strtotime($begin_at));
                         else
                             $datetimestr="at ".date("g:iA D,M j",strtotime($begin_at));
+                        */
+                       if(trim($time_type) != ""){
+                            $datetimestr = $time_type;
+                        } else {
+                            $datetimestr = date("g:iA D,M j",strtotime($begin_at));
+                        }
+
                     }
                     if($isHost==FALSE)
                     {
@@ -457,7 +470,7 @@ class Apn_Job
                     $msgbodyobj["msg"]=$msg;
                     $msgbodyobj["cid"]=$args["cross_id"];
                     $msgbodyobj["t"]="i";
-                    
+
                     $this->deliver($msgbodyobj);
                 }
 

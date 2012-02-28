@@ -29,7 +29,7 @@ class UserModels extends DataModel{
         }
 
         $sql="select userid from user_identity where identityid=$identity_id";
-        
+
         $result=$this->getRow($sql);
         if(intval($result["userid"]) > 0)
         {
@@ -378,7 +378,7 @@ class UserModels extends DataModel{
                 "name"  =>$name,
                 "token" =>$resetPasswordToken
             );
-            
+
             return $returnData;
         }
         return "";

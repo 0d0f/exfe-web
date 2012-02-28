@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL ^ E_NOTICE); 
+error_reporting(E_ALL ^ E_NOTICE);
 session_start();
 #header('Content-Type: application/json; charset=UTF-8');
 
@@ -23,8 +23,8 @@ define("STATUS_DISCONNECTED",1);
 define("STATUS_VERYIFING",2);
 define("STATUS_CONNECTED",3);
 
-define("TIMETYPE_ALLDAY",1);
-define("TIMETYPE_ANYTIME",2);
+define("TIMETYPE_ALLDAY","All day");
+define("TIMETYPE_ANYTIME","Anytime");
 
 
 frontController::createInstance()->dispatch();

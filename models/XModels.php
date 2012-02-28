@@ -5,25 +5,22 @@ class XModels extends DataModel {
     public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
         // state=1 draft
-        $time = time();
         // $sql="insert into crosses (host_id,created_at,state) values($identityId,FROM_UNIXTIME($time),'1');";
-
         // $begin_at=$cross["begin_at"];
         // $end_at=$cross["end_at"];
         // $duration=$cross["duration"];
         // time type
         $datetime_array = explode(' ', $cross['datetime']);
-        $time_type = 0;
-        if (sizeof($datetime_array) === 1) {
-            $time_type = TIMETYPE_ANYTIME; // allday
+        $time_type = '';
+        if ($cross['datetime'] && sizeof($datetime_array) === 1) {
+            $time_type = TIMETYPE_ANYTIME; // anytime
         }
 
         $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
                 state, title, description, begin_at, end_at, duration, place_id)
-                values({$identityId}, FROM_UNIXTIME({$time}), {$time_type},
-                FROM_UNIXTIME({$time}), '1', '{$cross['title']}',
-                '{$cross['description']}', '{$cross['datetime']}', '{$end_at}',
-                '{$duration}', {$cross['place_id']});";
+                values({$identityId}, NOW(), '{$time_type}', NOW(), '1',
+                '{$cross['title']}', '{$cross['description']}', '{$cross['datetime']}',
+                '{$end_at}', '{$duration}', {$cross['place_id']});";
 
         $result   = $this->query($sql);
         $cross_id = intval($result['insert_id']);
@@ -57,25 +54,19 @@ class XModels extends DataModel {
     public function updateCross($cross)
     {
         // update place
-        $sql  = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
+        $placeHelper  = $this->getHelperByName('place');
+        $sql          = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
         $place_id_arr = $this->getRow($sql);
         $place_id     = $place_id_arr['place_id'];
         if($place_id) {
-            $ts  = date('Y-m-d H:i:s', time());
-            $sql = "UPDATE `places`
-                       SET `place_line1` = '{$cross['place']['line1']}',
-                           `place_line2` = '{$cross['place']['line2']}',
-                           `updated_at`  = '{$ts}'
-                     WHERE `id`          =  {$place_id}";
-            $result = $this->query($sql);
+            $placeHelper->savePlace($cross['place'], $place_id);
         } else {
-            $placeHelper = $this->getHelperByName('place');
-            $place_id    = $placeHelper->savePlace($cross['place']);
+            $place_id = $placeHelper->savePlace($cross['place']);
         }
         // update cross
         $datetime_array = explode(' ', $cross['start_time']);
-        $time_type = 0;
-        if (sizeof($datetime_array) === 1) {
+        $time_type = '';
+        if ($cross['start_time'] && sizeof($datetime_array) === 1) {
             $time_type = TIMETYPE_ANYTIME; // anytime
         }
         $sql  = "UPDATE `crosses`
@@ -83,7 +74,7 @@ class XModels extends DataModel {
                         `title`       = '{$cross["title"]}',
                         `description` = '{$cross["desc"]}',
                         `begin_at`    = '{$cross["start_time"]}',
-                        `time_type`   =  {$time_type},
+                        `time_type`   = '{$time_type}',
                         `place_id`    =  {$place_id}
                   WHERE `id`          =  {$cross["id"]}";
 
@@ -177,7 +168,7 @@ class XModels extends DataModel {
         if ($actions === 'simple') {
             $sql  = "SELECT c.id, c.title, c.begin_at FROM crosses c WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         } else {
-            $sql  = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
+            $sql  = "SELECT c.*, p.place_line1, p.place_line2, p.provider as place_provider, p.external_id as place_external_id, p.lng as place_lng, p.lat as place_lat FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         }
         $crosses  = $this->getAll($sql);
 

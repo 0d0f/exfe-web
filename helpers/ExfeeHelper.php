@@ -233,7 +233,7 @@ class ExfeeHelper extends ActionController {
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-               if(intval($invitation["by_identity_id"])>0) {    
+               if(intval($invitation["by_identity_id"])>0) {
                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                }
                $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
@@ -282,74 +282,74 @@ class ExfeeHelper extends ActionController {
     }
     public function sendConversationMsg($cross_id,$host_identity_id,$content)
     {
-                $mailargs=array();
-                $apnargs=array();
+        $mailargs=array();
+        $apnargs=array();
 
-                $link=SITE_URL.'/!'.int_to_base62($cross_id);
-                $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
-                $mail["link"]=$link;
-                $mail["cross_id"]=$cross_id;
-                $mail["action"]="conversation";
-                $mail["cross_id_base62"]=int_to_base62($cross_id);
-                $mail["mutelink"]=$mutelink;
-                //$mail["template_name"]="conversation";
-                $mail["action"]="post";
-                $mail["content"]=$content;
+        $link=SITE_URL.'/!'.int_to_base62($cross_id);
+        $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
+        $mail["link"]=$link;
+        $mail["cross_id"]=$cross_id;
+        $mail["action"]="conversation";
+        $mail["cross_id_base62"]=int_to_base62($cross_id);
+        $mail["mutelink"]=$mutelink;
+        //$mail["template_name"]="conversation";
+        $mail["action"]="post";
+        $mail["content"]=$content;
 
-                $crossData=$this->getModelByName("x");
-                $cross=$crossData->getCross($cross_id);
-                $mail["title"]=$cross["title"];
-                $mail["create_at"]=time();
-    
-                $identityData=$this->getModelByName("identity");
-                $exfee_identity=$identityData->getIdentityById($host_identity_id);
-                $userData=$this->getModelByName("user");
-                $user=$userData->getUserProfileByIdentityId($host_identity_id);
+        $crossData=$this->getModelByName("x");
+        $cross=$crossData->getCross($cross_id);
+        $mail["title"]=$cross["title"];
+        $mail["create_at"]=time();
 
-                $exfee_identity=humanIdentity($exfee_identity,$user);
-                //$mail["exfee_name"]=$exfee_identity["name"];
-                $mail["identity"]=$exfee_identity;
+        $identityData=$this->getModelByName("identity");
+        $exfee_identity=$identityData->getIdentityById($host_identity_id);
+        $userData=$this->getModelByName("user");
+        $user=$userData->getUserProfileByIdentityId($host_identity_id);
 
-                $apnargs["by_identity"]=$exfee_identity;
-                $apnargs["title"]=$cross["title"];
-                $apnargs["comment"]=$content;
-                $apnargs["cross_id"]=$cross_id;
+        $exfee_identity=humanIdentity($exfee_identity,$user);
+        //$mail["exfee_name"]=$exfee_identity["name"];
+        $mail["identity"]=$exfee_identity;
 
-                $invitationdata=$this->getmodelbyname("invitation");
-                $invitation_identities=$invitationdata->getinvitation_identities($cross_id);
-                if($invitation_identities)
-                {
-                    $to_identities=array();
-                    $to_identities_apn=array();
-                    foreach($invitation_identities as $invitation_identity)
+        $apnargs["by_identity"]=$exfee_identity;
+        $apnargs["title"]=$cross["title"];
+        $apnargs["comment"]=$content;
+        $apnargs["cross_id"]=$cross_id;
+
+        $invitationdata=$this->getmodelbyname("invitation");
+        $invitation_identities=$invitationdata->getinvitation_identities($cross_id);
+        if($invitation_identities)
+        {
+            $to_identities=array();
+            $to_identities_apn=array();
+            foreach($invitation_identities as $invitation_identity)
+            {
+                $identities=$invitation_identity["identities"];
+                if($identities && $identityData->ifIdentitiesEqualWithIdentity($identities,$host_identity_id)==FALSE)  //ifIdentitiesEqualWithIdentity dont's send to host's other identity.
+                    foreach($identities as $identity)
                     {
-                        $identities=$invitation_identity["identities"];
-                        if($identities && $identityData->ifIdentitiesEqualWithIdentity($identities,$host_identity_id)==FALSE)  //ifIdentitiesEqualWithIdentity dont's send to host's other identity.
-                            foreach($identities as $identity)
+                        if(intval($identity["status"])==3)
+                        {
+                            $muteData=$this->getmodelbyname("mute");
+                            $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
+                            if($mute===FALSE)
                             {
-                                if(intval($identity["status"])==3)
-                                {
-                                    $muteData=$this->getmodelbyname("mute");
-                                    $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
-                                    if($mute===FALSE)
-                                    {
-                                        $identity=humanidentity($identity,null);
-                                        if($identity["provider"]=="email" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
-                                            array_push($to_identities,$identity);
-                                        if($identity["provider"]=="iOSAPN" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
-                                            array_push($to_identities_apn,$identity);
-                                    }
-                                }
+                                $identity=humanidentity($identity,null);
+                                if($identity["provider"]=="email" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
+                                    array_push($to_identities,$identity);
+                                if($identity["provider"]=="iOSAPN" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
+                                    array_push($to_identities_apn,$identity);
                             }
+                        }
                     }
-                    $mail["to_identities"]=$to_identities;
-                    $msghelper=$this->gethelperbyname("msg");
-                    $msghelper->sentConversationEmail($mail);
+            }
+            $mail["to_identities"]=$to_identities;
+            $msghelper=$this->gethelperbyname("msg");
+            $msghelper->sentConversationEmail($mail);
 
-                    $apnargs["to_identities"]=$to_identities_apn;
-                    $apnargs["job_type"]="conversation";
-                    $msghelper->sentApnConversation($apnargs);
-                }
+            $apnargs["to_identities"]=$to_identities_apn;
+            $apnargs["job_type"]="conversation";
+            $msghelper->sentApnConversation($apnargs);
+        }
     }
     public function sendRSVP($cross_id,$identity_id,$state)
     {

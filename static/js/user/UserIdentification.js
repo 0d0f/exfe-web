@@ -54,7 +54,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if(type == "reg_login") {
             title="Identification";
             desc = "<div class='dialog_titles' style='height:110px;'>"
-                + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>" 
+                + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
                 + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
                 + "<p class='oauth_icon'>"
                 + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
@@ -193,7 +193,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if(type == "add_identity") {
             title="Add Identity";
             desc = "<div class='dialog_titles' style='height:110px;'>"
-                 + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>" 
+                 + "<p style='height:35px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
                  + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
                  + "<p class='oauth_icon'>"
                  + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"

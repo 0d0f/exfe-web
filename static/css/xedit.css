@@ -184,32 +184,32 @@
 }
 
 #x_place_bubble {
-    width: 210px;
-    height: 120px;
-    margin-left: 310px;
-    margin-top: 195px;
+    width: 310px;
+    height: 220px;
+    margin-left: 205px;
+    margin-top: 210px;
 }
 
 #x_place_bubble:before {
     top: 29px;
-    left: 230px;
+    left: 330px;
 }
 
 #x_place_bubble:after {
     top: 29px;
-    left: 230px;
+    left: 330px;
 }
 
 #x_place_bubble .input_box {
-    width: 210px;
-    height: 120px;
+    width: 310px;
+    height: 220px;
 }
 
 #x_place_bubble .input_box textarea {
     position: relative;
     float: left;
-    width: 180px;
-    height: 118px;
+    width: 280px;
+    height: 218px;
     border:1px solid #CCCCCC;
 }
 
