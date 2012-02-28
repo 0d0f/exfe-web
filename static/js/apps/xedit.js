@@ -274,7 +274,7 @@ var clickCallBackFunc = function(args) {
             }
             // init calendar
             var strStdTime = '';
-            if (crossData.begin_at) {
+            if (crossData.begin_at && crossData.begin_at !== '0000-00-00 00:00:00') {
                 var objStdTime = odof.util.getDateFromString(crossData.begin_at),
                     year       = objStdTime.getFullYear(),
                     month      = objStdTime.getMonth() + 1,
