@@ -38,10 +38,12 @@ var clickCallBackFunc = function(args) {
         // title
         $('#x_title').addClass('x_editable');
         $('#x_title').bind('click', odof.x.edit.editTitle);
+        $('#x_title_edit').val(crossData.title);
         // desc
         odof.x.render.showDesc(true);
         $('#x_desc').addClass('x_editable');
         $('#x_desc').bind('click', odof.x.edit.editDesc);
+        $('#x_desc_edit').val(crossData.description);
         // time
         $('#x_time_area').addClass('x_editable');
         $('#x_time_area').bind('click', odof.x.edit.editTime);
@@ -272,7 +274,7 @@ var clickCallBackFunc = function(args) {
             }
             // init calendar
             var strStdTime = '';
-            if (crossData.begin_at) {
+            if (crossData.begin_at && crossData.begin_at !== '0000-00-00 00:00:00') {
                 var objStdTime = odof.util.getDateFromString(crossData.begin_at),
                     year       = objStdTime.getFullYear(),
                     month      = objStdTime.getMonth() + 1,
@@ -330,9 +332,11 @@ var clickCallBackFunc = function(args) {
 
                         });
                         $('#place_content').html(
-                            crossData.place.line1 + '\r' + crossData.place.line2
+                            crossData.place.line1 !== '' || crossData.place.line2 !== ''
+                         ? (crossData.place.line1 + '\r' +  crossData.place.line2) :  ''
                         );
                         $('#x_place_bubble').show();
+                        $('#place_content').focus();
                     } else {
                         odof.x.edit.savePlace();
                     }
@@ -539,7 +543,7 @@ var clickCallBackFunc = function(args) {
                     place : JSON.stringify(crossData.place),
                     exfee : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))},
             success : function(data) {
-                if(data.error){
+                if (data.error) {
                     $('#error_msg').html(data.msg);
                 }
             },
