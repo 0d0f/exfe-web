@@ -153,7 +153,7 @@ function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
     if ($timestamp === false) {
         return array('', '', '');
     }
-    if ($withTime) {
+    if ($withTime && !$timeType) {
         switch (strlen($timeoffset)) {
             case 5:
                 $offset = (intval($timeoffset[1]) * 60 
