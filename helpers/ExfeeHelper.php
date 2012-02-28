@@ -154,7 +154,7 @@ class ExfeeHelper extends ActionController {
                     $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
-                        'begin_at' => $cross["begin_at"],
+                        'begin_at' =>  humanDateTime($cross["begin_at"],$userprofile["timezone"]),
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
                         'cross_id' => $cross_id,
@@ -239,7 +239,7 @@ class ExfeeHelper extends ActionController {
                $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
-                        'begin_at' => $cross["begin_at"],
+                        'begin_at' => humanDateTime($cross["begin_at"],$userprofile["timezone"]),
                         'time_type' => $cross["time_type"],
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
@@ -344,11 +344,14 @@ class ExfeeHelper extends ActionController {
             }
             $mail["to_identities"]=$to_identities;
             $mail["to_identity_time_zone"]=$user["timezone"];
+            $datetimeobj=humanDateTime($mail["create_at"],$user["timezone"]);
+            $mail["create_at"]=$datetimeobj;
             $msghelper=$this->gethelperbyname("msg");
             $msghelper->sentConversationEmail($mail);
 
             $apnargs["to_identities"]=$to_identities_apn;
             $apnargs["to_identity_time_zone"]=$user["timezone"];
+            $apnargs["create_at"]=$datetimeobj;
             $apnargs["job_type"]="conversation";
             $msghelper->sentApnConversation($apnargs);
         }

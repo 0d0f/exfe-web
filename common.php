@@ -76,7 +76,7 @@ function buildICS($args)
     $e = & $v->newComponent( 'vevent' );           // initiate a new EVENT
     //$e->setProperty( 'categories'
     //               , 'FAMILY' );                   // catagorize
-    $begin_at=$args['begin_at'];
+    $begin_at=$args['begin_at'][0];
     $year=date("Y",strtotime($begin_at));
     $month=date("m",strtotime($begin_at));
     $day=date("d",strtotime($begin_at));

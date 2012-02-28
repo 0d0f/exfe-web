@@ -44,8 +44,7 @@ class Conversationemail_Job
                             array_push($cross_changed[$arg["id"]]["action_identity"],$identity);
                     }
                  }
-            }
-            else if($arg["action"]=="changed" && $arg["identities"]!="")
+            } else if($arg["action"]=="changed" && $arg["identities"]!="")
             {
                 if($cross_changed[$arg["id"]]=="")
                     $cross_changed[$arg["id"]]=$arg;
@@ -238,19 +237,21 @@ class Conversationemail_Job
                 else
                     $update_part_body=str_replace("%title_hl%","color: #191919;",$update_part_body);
 
-                $datetime=explode(" ",$cross["begin_at"]);
-                $date=$datetime[0];
-                $time=$datetime[1];
+                $begin_at=$cross["begin_at"];
+                #$datetime=explode(" ",$cross["begin_at"]);
+                $time=$begin_at[0];
+                $date=$begin_at[1];
 
-                if($date=="0000-00-00" && $time=="00:00:00")
+                if($date=="" && $time=="Sometime" && $cross["time_type"]=="")
+                //if($date=="0000-00-00" && $time=="00:00:00")
                 {
                     $date="Time";
                     $time="To be decided.";
                 }
-                else if($time=="00:00:00")
+                else if($cross["time_type"]=="Anytime")
                     $time="Anytime";
 
-                if(trim($changed_fields["begin_at"])!="")
+                if($changed_fields["begin_at"]!="")
                     $update_part_body=str_replace("%beginat_hl%","color: #0591ac;",$update_part_body);
                 else
                     $update_part_body=str_replace("%beginat_hl%","color: #333333;",$update_part_body);
@@ -329,7 +330,7 @@ class Conversationemail_Job
                         $content=$post["content"];
                         $mutelink=$post["mutelink"];
                         $link=$post["link"];
-                        $create_at=humanDateTime($post["create_at"]);
+                        $create_at=$post["create_at"][2];//humanDateTime($post["create_at"]);
                         $avartar=getUserAvatar($avatar_file_name, 80);
                         $html .= '<tr>'
                                .     '<td valign="top" width="50" align="left">'

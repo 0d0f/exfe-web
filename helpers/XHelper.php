@@ -43,10 +43,18 @@ class XHelper extends ActionController
 
     public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title)
     {
+
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
         $userData=$this->getModelByName("user");
         $user=$userData->getUserProfileByIdentityId($host_identity_id);
+
+        
+        $datetimeobj=humanDateTime($new_cross["begin_at"],$user["timezone"]);
+        $new_cross["begin_at"]= $datetimeobj;
+
+        $datetimeobj=humanDateTime($changed["begin_at"],$user["timezone"]);
+        $changed["begin_at"]= $datetimeobj;
 
         $exfee_identity=humanIdentity($exfee_identity,$user);
         $cross_id=$new_cross["id"];
@@ -76,6 +84,7 @@ class XHelper extends ActionController
         $apnargs["timestamp"]=time();
         $apnargs["job_type"]="crossupdate";
 
+print_r($mail);
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
         $msghelper->sentApnConversation($apnargs);
