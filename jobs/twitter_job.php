@@ -51,8 +51,7 @@ class Twitter_Job {
         // link
         $crossLink = " {$site_url}/!" . $this->args['cross_id_base62'];
         // time
-        $datetime  = humanDateTime($this->args['begin_at'] . ',' . $this->args['time_type'], $this->args['to_identity_time_zone']);
-        $datetime  = $datetime[2] ? " {$datetime[2]}" : '';
+        $datetime  = $this->args['begin_at'] ? " {$this->args['begin_at']}" : '';
         // place
         if ($this->args['place']['line1'] == '') {
             $place = '';
