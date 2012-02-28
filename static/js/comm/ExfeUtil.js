@@ -1193,6 +1193,7 @@ var odof = {
      * get human datetime
      * by Leask with han
      */
+     //@todo 和php端同函数一样，流域anytime的时间不要+offset
     util.getHumanDateTime = function(strTime, lang) {
         // init
         var oriDate   = strTime.split(','),
