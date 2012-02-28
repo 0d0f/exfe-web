@@ -329,13 +329,11 @@ class Apn_Job
                 $updatestr.=" Title is changed to \\\"".$changemsgs["title"]."\\\".";
             if($changemsgs["time"]!="")
                 $updatestr.=" New time: ".$changemsgs["time"].".";
-            if(isset($changemsgs['place'])
-            && isset($changemsgs['place']['line1'])
-            && isset($changemsgs['place']['line2']) {
+            if(isset($changemsgs['place']) && isset($changemsgs['place']['line1']) && isset($changemsgs['place']['line2'])) {
                 if ($changemsgs['place']['line1'] !== '') {
                     $updatestr .= " New Place: {$changemsgs['place']['line1']}";
                     if ($changemsgs['place']['line2'] !== '') {
-                        $updatestr .= ", $changemsgs['place']['line2']";
+                        $updatestr .= ", ".$changemsgs['place']['line2'];
                     }
                 }
             }

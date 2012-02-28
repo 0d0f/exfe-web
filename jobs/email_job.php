@@ -82,8 +82,13 @@ class Email_Job
             $parser->transform($original_desc_str)
         );
 
+        $to_time_zone=$this->args["to_identity_time_zone"];
+        print_r($to_time_zone);
+
         $begin_at=$this->args["begin_at"];
         $datetime=explode(" ",$begin_at);
+
+        
         $mail["date"]=$datetime[0];
         $mail["time"]=$datetime[1];
         if($mail["date"]=="0000-00-00" && $mail["time"]=="00:00:00")
@@ -104,10 +109,11 @@ class Email_Job
 
 
 
+        print_r($mail);
         $body=$this->getMailBody($mail);
-        if($email_connect=="")
-            smtp_connect();
-        $this->send($body["title"],$body["body"],$icsstr,$this->args);
+        #if($email_connect=="")
+        #    smtp_connect();
+        #$this->send($body["title"],$body["body"],$icsstr,$this->args);
     }
 
     public function getMailBody($mail)
