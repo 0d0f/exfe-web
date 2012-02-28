@@ -75,9 +75,7 @@ class SHelper extends ActionController
                         case 'begin_at':
                             $rawLogs[$logI]['new_value'] = explode(',', $logItem['change_summy']);
                             $rawLogs[$logI]['new_value'][0] = trim($rawLogs[$logI]['new_value'][0]);
-                            if (isset($rawLogs[$logI]['new_value'][1])) {
-                                $rawLogs[$logI]['new_value'][1] = $rawLogs[$logI]['new_value'][1];
-                            } else {
+                            if (!isset($rawLogs[$logI]['new_value'][1]) || $rawLogs[$logI]['new_value'][1] === '0') {
                                 $rawLogs[$logI]['new_value'][1] = '';
                             }
                             $rawLogs[$logI]['new_value'] = implode(',', $rawLogs[$logI]['new_value']);

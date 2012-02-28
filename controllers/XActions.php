@@ -19,7 +19,7 @@ class XActions extends ActionController
                 $idntdata = $this->getModelByName('identity');
                 // @todo: inorder to gather X, user must be verified
                 if (1) {
-             // if ($idntdata->checkIdentityStatus($identity_id) === 3) {
+             // if ($idntdata->checkIdentityStatus($identity_id) === 3) {}
                     $crossdata=$this->getDataModel('x');
                     $placedata=$this->getModelByName('place');
 

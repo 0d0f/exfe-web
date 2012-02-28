@@ -227,7 +227,10 @@ var clickCallBackFunc = function(args) {
             crossData.begin_at = '';
         // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
         } else {
-            var strTime = odof.util.parseHumanDateTime(strTimeInput);
+            var strTime = odof.util.parseHumanDateTime(
+                    strTimeInput,
+                    odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
+                );
         // crossData.begin_at = strTime ? strTime : null;
             crossData.begin_at = strTime ? strTime : '';
         // $('#gather_date_x').html('');
@@ -275,8 +278,17 @@ var clickCallBackFunc = function(args) {
             // init calendar
             var strStdTime = '';
             if (crossData.begin_at && crossData.begin_at !== '0000-00-00 00:00:00') {
-                var objStdTime = odof.util.getDateFromString(crossData.begin_at),
-                    year       = objStdTime.getFullYear(),
+                var objStdTime = odof.util.getDateFromString(crossData.begin_at);
+                if (!crossData.time_type) {
+                    objStdTime = new Date(
+                        objStdTime.getTime()
+                      + odof.comm.func.convertTimezoneToSecond(
+                            jstz.determine_timezone().offset()
+                        )
+                      * 1000
+                    );
+                }
+                var year       = objStdTime.getFullYear(),
                     month      = objStdTime.getMonth() + 1,
                     date       = objStdTime.getDate(),
                     hour24     = objStdTime.getHours(),

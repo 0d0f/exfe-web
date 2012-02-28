@@ -61,6 +61,7 @@ class XHelper extends ActionController
         $mail["title"]=$old_title;//$new_cross["title"];
         #$mail["exfee_name"]=$exfee_identity["name"];
         $mail["action_identity"]=array(0=>$exfee_identity);
+        $mail["to_identity_time_zone"]=$user["timezone"];
         $mail["changed"]=$changed;
         $mail["mutelink"]=$mutelink;
         $mail["cross"]=$new_cross;

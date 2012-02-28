@@ -155,7 +155,7 @@ class UserModels extends DataModel{
         if(intval($result["userid"])>0)
         {
             $userid=$result["userid"];
-            $sql="select name,bio,avatar_file_name from users where id=$userid";
+            $sql="select name,bio,avatar_file_name,timezone from users where id=$userid";
             $user=$this->getRow($sql);
             return $user;
         }

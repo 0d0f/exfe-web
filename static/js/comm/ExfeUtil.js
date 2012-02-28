@@ -1213,7 +1213,7 @@ var odof = {
         if (objDate === null) {
             return '';
         }
-        if (withTime) {
+        if (withTime && !time_type) {
             objDate = new Date(objDate.getTime() + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset()) * 1000);
         }
         // rebuild time
