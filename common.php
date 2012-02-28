@@ -127,52 +127,54 @@ function humanIdentity($identity,$user)
     return $identity;
 }
 
-//modified by handaoliang 20120222
-function humanDateTime($timestamp,$time_type=0,$lang='en')
-{
-    if($timestamp < 0)
-    {
-        $timestamp = 0;
-        $timestr = "";
+// modified by @leaskh 20120228
+function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
+    // init
+    if (is_numeric($strTime)) {
+        $oriDate   = array($strTime = date("Y-m-d H:i:s", $timestamp = intval($strTime)));
     } else {
-        $timestr = ", ".date("M j, Y ", $timestamp);
+        $oriDate   = explode(',', $strTime);
+        $timestamp = strtotime($strTime = trim($oriDate[0]));
     }
-    $datestr = "";
-    if($lang=='en')
-    {
-        if($time_type == ''){
-            $datestr = date("g:i A, M j, Y ", $timestamp);
-        }else{
-            $datestr = $time_type.$timestr;
+    $withTime = strpos($strTime, ' ') !== false;
+    // get timetype
+    $timeType = '';
+    if (count($oriDate) > 1) {
+        $timeType = trim($oriDate[1]);
+    } else if (!$withTime) {
+        $timeType = 'Anytime';
+    }
+    if (!$strTime || $strTime === '0000-00-00 00:00:00') {
+        $result = count($oriDate) > 1 && $timeType ? $timeType : 'Sometime';
+        return array($result, '', $result);
+    }
+    // fix timezone offset
+    if ($timestamp === false) {
+        return array('', '', '');
+    }
+    if ($timeType) {
+        switch (strlen($timeoffset)) {
+            case 5:
+                $offset = (intval($timeoffset[1]) * 60 
+                        +  intval($timeoffset[3]) * 10  + intval($timeoffset[4])) * 60;
+                break;
+            case 6:
+            default:
+                $offset = (intval($timeoffset[1]) * 600 + intval($timeoffset[2])  * 60
+                        +  intval($timeoffset[4]) * 10  + intval($timeoffset[5])) * 60;
         }
+        $timestamp += ($timeoffset[0] === '+' ? 1 : -1) * $offset;
     }
-
-    return $datestr;
+    // return
+    switch ($lang) {
+        case 'en':
+        default:
+            $resultTime = $timeType ? $timeType : ($withTime ? date('g:i A', $timestamp) : '');
+            $resultDate = date('M j, Y', $timestamp);
+            return array($resultTime, $resultDate, "{$resultTime}, {$resultDate}");
+    }
 }
-/*
-function humanDateTime($timestamp,$time_type=0,$lang='en')
-{
-    if($timestamp<0)
-    {
-        $timestamp=0;
-        $timestr="";
-    } else {
-        $timestr=", ".date("M j, Y ", $timestamp);
-    }
-    $datestr="";
-    if($lang=='en')
-    {
-        if($time_type==0)
-            $datestr=date("g:i A, M j, Y ", $timestamp);
-        else if($time_type==1)
-            $datestr="All day".$timestr;
-        else if($time_type==2)
-            $datestr="Anytime".$timestr;
-    }
 
-    return $datestr;
-}
-*/
 
 function RelativeTime($timestamp)
 {
