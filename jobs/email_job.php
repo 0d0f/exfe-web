@@ -89,8 +89,8 @@ class Email_Job
         //$datetimeobj=humanDateTime($begin_at , $to_time_zone);
         #$datetime=explode(" ",$begin_at);
         #
-        $mail["time"]=$begin_at[0];
-        $mail["date"]=$begin_at[1];
+        $mail["time"]=$begin_at["time"];
+        $mail["date"]=$begin_at["date"];
         if($mail["date"]=="" && $mail["time"]=="Sometime" && $mail["time_type"]=="")
         {
             $mail["date"]="Time";

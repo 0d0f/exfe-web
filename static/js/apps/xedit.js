@@ -587,7 +587,7 @@ var clickCallBackFunc = function(args) {
             type : 'POST',
             dataType : 'json',
             data : {
-                ctitle     : crossData.title,
+                title      : crossData.title,
                 exfee_only : true,
                 exfee      : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))
             },
