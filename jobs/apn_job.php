@@ -301,12 +301,6 @@ class Apn_Job
                 if($begin_at=="0000-00-00 00:00:00") { // hasn't datetime
                    $datetimestr="";
                 } else {
-                    /*
-                    if(intval($time_type)==2)
-                        $datetimestr=date("M j",strtotime($begin_at));
-                    else
-                        $datetimestr=date("g:iA D,M j",strtotime($begin_at));
-                    */
                     if(trim($time_type) != ""){
                         $datetimestr = $time_type;
                     } else {

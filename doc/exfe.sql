@@ -1,22 +1,44 @@
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
+-- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (i486)
+--
+-- Host: localhost    Database: exfe
+-- ------------------------------------------------------
+-- Server version	5.1.41-3ubuntu12.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- 数据库: `exfe_com`
+-- Table structure for table `cross_drafts`
 --
 
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `cross_drafts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cross_drafts` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `creator_id` bigint(20) unsigned DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=268 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `crosses`
+-- Table structure for table `crosses`
 --
 
-CREATE TABLE IF NOT EXISTS `crosses` (
+DROP TABLE IF EXISTS `crosses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `crosses` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` text COLLATE utf8_unicode_ci,
@@ -27,33 +49,21 @@ CREATE TABLE IF NOT EXISTS `crosses` (
   `host_id` bigint(20) unsigned DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `state` tinyint(4) DEFAULT NULL COMMENT '1 published 0 hidden',
+  `state` tinyint(4) DEFAULT NULL COMMENT '1 published 0 draft',
   `place_id` int(11) DEFAULT NULL,
-  `time_type` int(11) NOT NULL,
+  `time_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- 表的结构 `cross_drafts`
---
-
-CREATE TABLE IF NOT EXISTS `cross_drafts` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `creator_id` bigint(20) unsigned DEFAULT NULL,
-  `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `json` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=100085 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `identities`
+-- Table structure for table `identities`
 --
 
-CREATE TABLE IF NOT EXISTS `identities` (
+DROP TABLE IF EXISTS `identities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `identities` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `provider` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `external_identity` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -68,15 +78,17 @@ CREATE TABLE IF NOT EXISTS `identities` (
   `external_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oauth_token` text COLLATE utf8_unicode_ci COMMENT 'oauth token',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=164 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `invitations`
+-- Table structure for table `invitations`
 --
 
-CREATE TABLE IF NOT EXISTS `invitations` (
+DROP TABLE IF EXISTS `invitations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `invitations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `identity_id` bigint(20) unsigned DEFAULT NULL,
   `cross_id` bigint(20) unsigned DEFAULT NULL,
@@ -91,15 +103,33 @@ CREATE TABLE IF NOT EXISTS `invitations` (
   `lng` double NOT NULL,
   PRIMARY KEY (`id`),
   KEY `identity_id_idx` (`identity_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=270 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `logs`
+-- Table structure for table `ip_data`
 --
 
-CREATE TABLE IF NOT EXISTS `logs` (
+DROP TABLE IF EXISTS `ip_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ip_data` (
+  `start` int(11) unsigned NOT NULL,
+  `end` int(11) unsigned NOT NULL,
+  `region` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`start`,`end`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `logs`
+--
+
+DROP TABLE IF EXISTS `logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `logs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `from_obj` varchar(20) NOT NULL,
   `from_id` bigint(20) NOT NULL,
@@ -111,48 +141,54 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `meta` text NOT NULL,
   `time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=7055 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `mute`
+-- Table structure for table `mute`
 --
 
-CREATE TABLE IF NOT EXISTS `mute` (
+DROP TABLE IF EXISTS `mute`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mute` (
   `id` bigint(20) NOT NULL,
   `object` varchar(20) NOT NULL,
   `object_id` bigint(20) NOT NULL,
   `sender_id` bigint(20) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `places`
+-- Table structure for table `places`
 --
 
-CREATE TABLE IF NOT EXISTS `places` (
+DROP TABLE IF EXISTS `places`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `places` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `place_line1` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `place_line2` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `provider` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `external_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `lng` float NOT NULL,
-  `lat` float NOT NULL,
+  `lng` float(12,8) NOT NULL,
+  `lat` float(12,8) NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=78 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `posts`
+-- Table structure for table `posts`
 --
 
-CREATE TABLE IF NOT EXISTS `posts` (
+DROP TABLE IF EXISTS `posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `posts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `identity_id` int(11) DEFAULT NULL,
   `title` varchar(50) COLLATE utf8_unicode_ci DEFAULT '',
@@ -164,15 +200,50 @@ CREATE TABLE IF NOT EXISTS `posts` (
   PRIMARY KEY (`id`),
   KEY `index_comments_on_commentable_type` (`postable_type`),
   KEY `index_comments_on_commentable_id` (`postable_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
+) ENGINE=MyISAM AUTO_INCREMENT=662 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- 表的结构 `users`
+-- Table structure for table `user_identity`
 --
 
-CREATE TABLE IF NOT EXISTS `users` (
+DROP TABLE IF EXISTS `user_identity`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_identity` (
+  `identityid` bigint(20) NOT NULL,
+  `userid` bigint(20) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '2' COMMENT '3 connected 1 relatived/disconnected 2 veryifing',
+  `activecode` varchar(255) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_relations`
+--
+
+DROP TABLE IF EXISTS `user_relations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_relations` (
+  `id` bigint(20) NOT NULL,
+  `userid` bigint(20) NOT NULL,
+  `r_identityid` bigint(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `external_identity` varchar(255) NOT NULL,
+  `provider` varchar(255) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `encrypted_password` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password_salt` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'password salt',
@@ -192,39 +263,23 @@ CREATE TABLE IF NOT EXISTS `users` (
   `avatar_file_size` int(11) DEFAULT NULL,
   `avatar_updated_at` datetime DEFAULT NULL,
   `external_username` varchar(255) CHARACTER SET utf8 NOT NULL,
-  `cookie_logintoken` varchar(255) CHARACTER SET utf8 NOT NULL,
-  `cookie_loginsequ` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `cookie_logintoken` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `cookie_loginsequ` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `auth_token` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_users_on_reset_password_token` (`reset_password_token`),
   KEY `auth_token` (`auth_token`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM AUTO_INCREMENT=121 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
--- --------------------------------------------------------
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
---
--- 表的结构 `user_identity`
---
-
-CREATE TABLE IF NOT EXISTS `user_identity` (
-  `identityid` bigint(20) NOT NULL,
-  `userid` bigint(20) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `status` int(11) NOT NULL DEFAULT '2' COMMENT '3 connected 1 relatived/disconnected 2 veryifing',
-  `activecode` varchar(255) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- 表的结构 `user_relations`
---
-
-CREATE TABLE IF NOT EXISTS `user_relations` (
-  `id` bigint(20) NOT NULL,
-  `userid` bigint(20) NOT NULL,
-  `r_identityid` bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `external_identity` varchar(255) NOT NULL,
-  `provider` varchar(255) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- Dump completed on 2012-02-29  4:19:04

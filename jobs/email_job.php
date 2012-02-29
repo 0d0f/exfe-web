@@ -29,6 +29,7 @@ class Email_Job
 
 
         $mail["exfe_title"]=$this->args['title'];
+        $mail["time_type"]=$this->args['time_type'];
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
         $mail["by_identity_name"]=$by_identity_name;
@@ -83,21 +84,20 @@ class Email_Job
         );
 
         $to_time_zone=$this->args["to_identity_time_zone"];
-        print_r($to_time_zone);
 
         $begin_at=$this->args["begin_at"];
-        $datetime=explode(" ",$begin_at);
-
-        
-        $mail["date"]=$datetime[0];
-        $mail["time"]=$datetime[1];
-        if($mail["date"]=="0000-00-00" && $mail["time"]=="00:00:00")
+        //$datetimeobj=humanDateTime($begin_at , $to_time_zone);
+        #$datetime=explode(" ",$begin_at);
+        #
+        $mail["time"]=$begin_at["time"];
+        $mail["date"]=$begin_at["date"];
+        if($mail["date"]=="" && $mail["time"]=="Sometime" && $mail["time_type"]=="")
         {
             $mail["date"]="Time";
             $mail["time"]="To be decided.";
             $icsstr="";
         }
-        else if($mail["time"]=="00:00:00")
+        else if($mail["time_type"]=="Anytime")
             $mail["time"]="Anytime";
         $mail["place_line1"]=$this->args['place']['line1'];
         $mail["place_line2"]=$this->args['place']['line2'];
@@ -109,11 +109,10 @@ class Email_Job
 
 
 
-        print_r($mail);
         $body=$this->getMailBody($mail);
-        #if($email_connect=="")
-        #    smtp_connect();
-        #$this->send($body["title"],$body["body"],$icsstr,$this->args);
+        if($email_connect=="")
+            smtp_connect();
+        $this->send($body["title"],$body["body"],$icsstr,$this->args);
     }
 
     public function getMailBody($mail)
