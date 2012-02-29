@@ -238,12 +238,10 @@ class Conversationemail_Job
                     $update_part_body=str_replace("%title_hl%","color: #191919;",$update_part_body);
 
                 $begin_at=$cross["begin_at"];
-                #$datetime=explode(" ",$cross["begin_at"]);
-                $time=$begin_at[0];
-                $date=$begin_at[1];
+                $time=$begin_at["time"];
+                $date=$begin_at["date"];
 
                 if($date=="" && $time=="Sometime" && $cross["time_type"]=="")
-                //if($date=="0000-00-00" && $time=="00:00:00")
                 {
                     $date="Time";
                     $time="To be decided.";
@@ -256,8 +254,6 @@ class Conversationemail_Job
                 else
                     $update_part_body=str_replace("%beginat_hl%","color: #333333;",$update_part_body);
 
-                #$mail['place']['line1']=$this->args['place']['line1'];
-                #$mail['place']['line2']=$this->args['place']['line2'];
                 if ($cross['place']['line1'] === '') {
                     $cross['place']['line1'] = "Place";
                     $cross['place']['line2'] = "To be decided.";
@@ -330,7 +326,7 @@ class Conversationemail_Job
                         $content=$post["content"];
                         $mutelink=$post["mutelink"];
                         $link=$post["link"];
-                        $create_at=$post["create_at"][2];//humanDateTime($post["create_at"]);
+                        $create_at=$post["create_at"]["datetime"];//humanDateTime($post["create_at"]);
                         $avartar=getUserAvatar($avatar_file_name, 80);
                         $html .= '<tr>'
                                .     '<td valign="top" width="50" align="left">'
