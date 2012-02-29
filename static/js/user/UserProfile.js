@@ -275,11 +275,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['confirmed']) {
                         arrExfee = [];
                         for (j in data[i]['confirmed']) {
-                            if (arrExfee.push(
-                                    data[i]['confirmed'][j]['to_identity']['name']
-                                ) === 3) {
-                                break;
+                            if(data[i]['confirmed'][j]['to_identity'] != null){
+                                if (arrExfee.push( data[i]['confirmed'][j]['to_identity']['name']) === 3) {
+                                    break;
+                                }
                             }
+
                         }
                         strLogX += '<p class="confirmed"><em>'
                                  + data[i]['confirmed'].length
@@ -294,9 +295,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['declined']) {
                         arrExfee = [];
                         for (j in data[i]['declined']) {
-                            if (arrExfee.push(
-                                    data[i]['declined'][j]['to_identity']['name']
-                                ) === 3) {
+                            if (arrExfee.push( data[i]['declined'][j]['to_identity']['name']) === 3) {
                                 break;
                             }
                         }
@@ -313,10 +312,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['addexfee']) {
                         arrExfee = [];
                         for (j in data[i]['addexfee']) {
-                            if (arrExfee.push(
-                                    data[i]['addexfee'][j]['to_identity']['name']
-                                ) === 3) {
-                                break;
+                            if(data[i]['addexfee'][j]['to_identity'] != null){
+                                if (arrExfee.push(data[i]['addexfee'][j]['to_identity']['name']) === 3) {
+                                    break;
+                                }
                             }
                         }
                         strLogX += '<p class="invited"><span>'
