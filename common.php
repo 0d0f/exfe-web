@@ -147,17 +147,17 @@ function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
     }
     if (!$strTime || $strTime === '0000-00-00 00:00:00') {
         $result = count($oriDate) > 1 && $timeType ? $timeType : 'Sometime';
-        return array('time'     => $result,
-                     'date'     => '',
-                     'datetime' => $result,
-                     'timetype' => $timeType ? $timeType : '');
+        return array('time'      => $result,
+                     'date'      => '',
+                     'datetime'  => $result,
+                     'time_type' => $timeType ? $timeType : '');
     }
     // fix timezone offset
     if ($timestamp === false) {
-        return array('time'     => '',
-                     'date'     => '',
-                     'datetime' => '',
-                     'timetype' => '');
+        return array('time'      => '',
+                     'date'      => '',
+                     'datetime'  => '',
+                     'time_type' => '');
     }
     if ($withTime && !$timeType) {
         switch (strlen($timeoffset)) {
@@ -178,10 +178,10 @@ function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
         default:
             $resultTime = $timeType ? $timeType : ($withTime ? date('g:i A', $timestamp) : '');
             $resultDate = date('M j, Y', $timestamp);
-            return array('time'     => $resultTime,
-                         'date'     => $resultDate,
-                         'datetime' => "{$resultTime}, {$resultDate}",
-                         'timetype' => $timeType);
+            return array('time'      => $resultTime,
+                         'date'      => $resultDate,
+                         'datetime'  => "{$resultTime}, {$resultDate}",
+                         'time_type' => $timeType);
     }
 }
 
