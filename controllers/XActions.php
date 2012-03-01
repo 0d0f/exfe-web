@@ -294,7 +294,7 @@ class XActions extends ActionController
         $this->setVar('showlogin', $showlogin);
         $this->setVar('token', $_GET['token']);
 
-        $cross = $modData->getCross(base62_to_int($_GET['id']));
+        $cross = $modData->getCross($cross_id);
         $cross['title'] = htmlspecialchars($cross['title']);
         $cross['description'] = $cross['description'];
 
@@ -340,7 +340,7 @@ class XActions extends ActionController
 
             $cross['exfee'] = $invitations;
 
-            $conversationPosts = $modConversion->getConversation(base62_to_int($_GET['id']), 'cross');
+            $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
             $cross['conversation'] = $conversationPosts;
 
             $this->setVar('cross', $cross);
