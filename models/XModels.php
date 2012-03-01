@@ -81,6 +81,12 @@ class XModels extends DataModel {
         return $this->query($sql);
     }
 
+    public function checkCrossExists($cross_id)
+    {
+        $sql = "SELECT * FROM crosses WHERE id={$cross_id}";
+        $result = $this->getRow($sql);
+        return $result;
+    }
 
     public function getCrossByUserId($userid, $updated_since="")
     {

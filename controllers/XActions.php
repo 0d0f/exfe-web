@@ -245,11 +245,17 @@ class XActions extends ActionController
         $cross_id = base62_to_int($base62_cross_id);
         $token = $_GET['token'];
 
-        $check = $hlpCheck->isAllow(
-            'x',
-            'index',
-            array('cross_id' => $cross_id, 'token' => $token)
-        );
+        if(intval($cross_id) > 0){
+            $result = $modData->checkCrossExists($cross_id);
+            if($result == NULL){
+                header("location:/error/404?e=theMissingCross");
+                exit;
+            }
+        }else{
+            header("location:/error/404?e=theMissingCross");
+        }
+
+        $check = $hlpCheck->isAllow( 'x', 'index', array('cross_id' => $cross_id, 'token' => $token));
         if ($check['allow'] === 'false') {
             $referer_uri = SITE_URL . "/!{$base62_cross_id}";
             header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
