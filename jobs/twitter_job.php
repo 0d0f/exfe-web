@@ -66,7 +66,7 @@ class Twitter_Job {
         === intval($this->args["identity_id"])) {
             $strTwt = "You're successfully gathering this X";
         } else {
-            $strTwt = 'EXFE invitation';
+            $strTwt = 'Invitation';
         }
         // connect string
         $strTwt .= ': ' . $this->args['title'] . ".{$datetime}{$place}";
