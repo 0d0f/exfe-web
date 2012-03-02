@@ -18,9 +18,11 @@ class XHelper extends ActionController
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"description",$crossobj["description"],"");
         }
         if($old_cross['begin_at']  !== $crossobj['begin_at']
-        || $old_cross['time_type'] !== $crossobj['time_type']) {
+        || $old_cross['time_type'] !== $crossobj['time_type']
+        || $old_cross['timezone']  !== $crossobj['timezone']) {
             $changed['begin_at']  = $crossobj['begin_at'];
             $changed['time_type'] = $crossobj['time_type'];
+            $changed['timezone']  = $crossobj['timezone'];
             $logdata->addLog(
                 'identity', $identity_id, 'change', 'cross', $cross_id, 'begin_at',
                 "{$crossobj['begin_at']},{$changed['time_type']}", ''

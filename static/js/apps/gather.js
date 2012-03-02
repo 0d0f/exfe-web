@@ -271,7 +271,8 @@ $(document).ready(function() {
                         description : '',
                         place       : {line1 : '', line2 : '', lat : '', lng : '',
                                        external_id : '', provider : ''},
-                        begin_at    : ''};
+                        begin_at    : '',
+                        timezone    : jstz.determine_timezone().offset()};
 
     // X render
     odof.x.render.show(false);

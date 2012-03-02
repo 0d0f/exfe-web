@@ -17,10 +17,11 @@ class XModels extends DataModel {
         }
 
         $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
-                state, title, description, begin_at, end_at, duration, place_id)
-                values({$identityId}, NOW(), '{$time_type}', NOW(), '1',
-                '{$cross['title']}', '{$cross['description']}', '{$cross['datetime']}',
-                '{$end_at}', '{$duration}', {$cross['place_id']});";
+                state, title, description, begin_at, end_at, duration, place_id,
+                timezone) values({$identityId}, NOW(), '{$time_type}', NOW(),
+                '1', '{$cross['title']}', '{$cross['description']}',
+                '{$cross['datetime']}', '{$end_at}', '{$duration}',
+                {$cross['place_id']}, '{$cross['timezone']}');";
 
         $result   = $this->query($sql);
         $cross_id = intval($result['insert_id']);
@@ -71,12 +72,13 @@ class XModels extends DataModel {
         }
         $sql  = "UPDATE `crosses`
                     SET `updated_at`  = NOW(),
-                        `title`       = '{$cross["title"]}',
-                        `description` = '{$cross["desc"]}',
-                        `begin_at`    = '{$cross["start_time"]}',
+                        `title`       = '{$cross['title']}',
+                        `description` = '{$cross['desc']}',
+                        `begin_at`    = '{$cross['start_time']}',
                         `time_type`   = '{$time_type}',
+                        `timezone`    = '{$cross['timezone']}',
                         `place_id`    =  {$place_id}
-                  WHERE `id`          =  {$cross["id"]}";
+                  WHERE `id`          =  {$cross['id']}";
 
         return $this->query($sql);
     }

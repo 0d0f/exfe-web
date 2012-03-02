@@ -548,12 +548,13 @@ var clickCallBackFunc = function(args) {
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
-            data : {rand  : Math.round(Math.random() * 10000000000),
-                    title : crossData.title,
-                    time  : crossData.begin_at,
-                    desc  : crossData.description,
-                    place : JSON.stringify(crossData.place),
-                    exfee : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))},
+            data : {rand     : Math.round(Math.random() * 10000000000),
+                    title    : crossData.title,
+                    time     : crossData.begin_at,
+                    timezone : crossData.timezone,
+                    desc     : crossData.description,
+                    place    : JSON.stringify(crossData.place),
+                    exfee    : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))},
             success : function(data) {
                 if (data.error) {
                     $('#error_msg').html(data.msg);
@@ -612,6 +613,7 @@ var clickCallBackFunc = function(args) {
                      description : crossData.description,
                      begin_at    : crossData.begin_at,
                      time_type   : crossData.time_type,
+                     timezone    : crossData.timezone,
                      state       : crossData.state,
                      place       : crossData.place};
         if (xOnly && lastX && JSON.stringify(lastX) === JSON.stringify(curX)) {

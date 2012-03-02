@@ -36,6 +36,7 @@ class XActions extends ActionController
                         'description' => mysql_real_escape_string(htmlspecialchars($_POST['description'])),
                         'place_id'    => intval($placeid),
                         'datetime'    => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
+                        'timezone'    => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
                     );
 
                     $cross_id = $crossdata->gatherCross(
@@ -129,6 +130,7 @@ class XActions extends ActionController
                 'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
                 'desc'        => mysql_real_escape_string(htmlspecialchars($_POST['desc'])),
                 'start_time'  => mysql_real_escape_string($_POST['time']),
+                'timezone'    => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
                 'place'       => json_decode($_POST['place'], true),
                 'identity_id' => intval($identity_id)
             );

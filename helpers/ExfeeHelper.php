@@ -239,7 +239,7 @@ class ExfeeHelper extends ActionController {
                $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
-                        'begin_at' => humanDateTime($cross["begin_at"],$userprofile["timezone"]),
+                        'begin_at' => humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
                         'time_type' => $cross["time_type"],
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
