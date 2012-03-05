@@ -112,10 +112,10 @@ body {
 
 
 /* global header by Handaoliang */
-#global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
-#global_header .logo{ position:relative; float:left; width:450px; height:47px; }
+#global_header { width:880px; height:50px; margin:auto; overflow:hidden; }
+#global_header .logo{ position: absolute; width:450px; height:47px; margin-left: -68px;}
 #global_header .user_info{
-    float:right; width:320px; height:47px;
+    float:right; width:320px; height:47px; margin-right: -128px;
 }
 #global_header .user_info a{ color:#FFF; }
 #global_header .user_info .global_sign_in_btn{
