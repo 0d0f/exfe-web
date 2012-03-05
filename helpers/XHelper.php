@@ -10,7 +10,7 @@ class XHelper extends ActionController
         if($old_cross["title"] !== $crossobj["title"])
         {
             $changed["title"]=$crossobj["title"];
-            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"title",$crossobj["title"],"");
+            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"title",$crossobj["title"],$old_cross["title"]);
         }
         if($old_cross["description"] !== $crossobj["description"])
         {

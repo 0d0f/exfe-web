@@ -56,6 +56,7 @@ class SHelper extends ActionController
                     $rawLogs[$logI]['new_value']  = $logItem['change_summy'];
                     switch ($logItem['to_field']) {
                         case 'title':
+                            $rawLogs[$logI]['old_value'] = $logItem['meta'];
                             if (isset($loged[$rawLogs[$logI]['change_dna']])) {
                                 $rawLogs[$loged[$rawLogs[$logI]['change_dna']]]['old_value'] = $logItem['change_summy'];
                             }
