@@ -92,8 +92,15 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.updatePlace = function() {
+    ns.updatePlace = function(keepLocation) {
         var strPlace = odof.util.parseLocation($('#gather_place').val());
+        if (!keepLocation && crossData.place.line1 !== strPlace[0]) {
+            crossData.place.lat         = '';
+            crossData.place.lng         = '';
+            crossData.place.external_id = '';
+            crossData.place.provider    = '';
+            $('#calendar_map_container').hide();
+        }
         crossData.place.line1 = strPlace[0];
         crossData.place.line2 = strPlace[1];
         if (crossData.place.line1 + crossData.place.line2 === '') {
@@ -360,9 +367,7 @@ $(document).ready(function() {
                 break;
             case 'keyup':
                 odof.x.gather.updatePlace();
-                setTimeout(function(){
-                    odof.apps.maps.getLocation('gather_place','calendar_map_container', 'create_cross');
-                },1000);
+                odof.apps.maps.getLocation('gather_place','calendar_map_container', 'create_cross');
         }
     });
     odof.x.gather.updatePlace();

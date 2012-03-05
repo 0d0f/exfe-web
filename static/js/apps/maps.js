@@ -139,7 +139,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             //更新Preview的显示。
             switch (ns.curActions) {
                 case 'create_cross':
-                    odof.x.gather.updatePlace();
+                    odof.x.gather.updatePlace(true);
                     break;
                 case 'edit_cross':
                     var arrPlace = odof.util.parseLocation($('#place_content').val());
