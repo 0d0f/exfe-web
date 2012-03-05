@@ -15,7 +15,7 @@
 body, button, input, select, textarea {
     font-size: 13px;
     line-height: 1.5;
-    font-family: "Verdana", "Lucida Grande", "Sans", "Helvetica", "Arial", "WenQuanYi Micro Hei", "Droid Sans Fallback", "Microsoft YaHei", "SimSun";
+    font-family: "Helvetica", "Verdana", "Lucida Grande", "Sans", "Arial", "WenQuanYi Micro Hei", "Droid Sans Fallback", "Microsoft YaHei", "SimSun";
 }
 h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
