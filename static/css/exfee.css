@@ -1,10 +1,6 @@
 @charset "UTF-8";
-/* profile style by Leask */
+/* by Leask */
 
-
-/* @todo removing {
-.Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:15px 0 0 434px; }
-} */
 
 #gather_form .exfeegadget_avatararea > ol > li, #xExfeeArea .exfeegadget_avatararea > ol > li {
     padding: 0;
