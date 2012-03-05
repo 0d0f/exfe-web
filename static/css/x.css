@@ -151,14 +151,13 @@
 }
 
 #x_desc_expand .triangle-bottomright {
+    cursor: pointer;
     float: right;
     padding-right: 2px;
-    padding-left: 2px;
     padding-bottom: 2px;
 }
 
 #x_desc_expand .triangle-bottomright > em {
-    cursor: pointer;
     width: 0;
     height: 0;
     display: inline-block;
@@ -174,13 +173,14 @@
     float: left;
     display: none;
     padding-left: 5px;
+    padding-right: 2px;
 }
 
 #x_desc_expand a:hover {
     text-decoration: none;
 }
 
-#x_desc_expand a, #x_desc_expand img {
+#x_desc_expand a, #x_desc_expand .triangle-bottomright {
     opacity: 0.88;
     -moz-opacity: 0.88;
     filter:alpha(opacity=88);
