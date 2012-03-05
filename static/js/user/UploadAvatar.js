@@ -6,10 +6,10 @@
  * @CopyRights:		http://www.exfe.com
  **/
 var moduleNameSpace = "odof.user.uploadAvatar";
-var ns = odof.util.initNameSpace(moduleNameSpace);
+var nameSpace = odof.util.initNameSpace(moduleNameSpace);
 
 (function(ns){
-    ns.cropper = null;
+
     ns.init = function(){
         var html = '<div id="upload_avatar_titles" class="titles">'
                  + '<p class="l"><a href="#" id="upload_avatar_close_btn"></a></p>'
@@ -50,16 +50,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //create file uploader object
         var fileUploaderObj = new exFileUploader.initialize({
             element: document.getElementById('upload_btn_container'),
-            action: '/s/uploadAvatarFile',
+            action: '/upload/uploadAvatarFile',
             onProgress: odof.user.uploadAvatar.fileUploadProgressCallBack,
             onComplete: odof.user.uploadAvatar.fileUploadCompleteCallBack
         });
-
-
     };
+
     ns.fileUploadProgressCallBack = function(){
         jQuery("#upload_files_process_status").show();
     };
+
     ns.fileUploadCompleteCallBack = function(id, fileName, responseJSON){
         if(responseJSON.error){
             window.location.href = site_url + "/s/profile";
@@ -118,7 +118,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             marginTop: -Math.round(scaleY * selection.y1)
         });
 
-
         jQuery('.x1').val(selection.x1);
         jQuery('.y1').val(selection.y1);
         jQuery('.x2').val(selection.x2);
@@ -139,7 +138,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             window.alert("Please select a area to cropper as a avatar");
         }else{
             jQuery.ajax({
-                url:site_url+ "/s/uploadAvatarNew",
+                url:site_url+ "/upload/saveAvatarFile",
                 type:"POST",
                 dataType:"json",
                 data:{
@@ -156,6 +155,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
+
     ns.callbackActions = function(JSONData){
         jQuery("#upload_status").html("Upload Picture successful");
         jQuery("#upload_status").show();
@@ -164,7 +164,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             window.location.href=site_url+"/s/profile";
         },1000);
     };
-})(ns);
+})(nameSpace);
 
 jQuery(document).ready(function(){
     var getElement = function(id) { return document.getElementById(id); };
