@@ -146,6 +146,27 @@
     cursor: pointer;
 }
 
+#x_desc_expand.x_desc_expand_hover {
+    background: #ececec;
+}
+
+#x_desc_expand .triangle-bottomright {
+    float: right;
+    padding-right: 2px;
+    padding-left: 2px;
+    padding-bottom: 2px;
+}
+
+#x_desc_expand .triangle-bottomright > em {
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    display: inline-block;
+    border-bottom: 8px solid #B2B2B2;
+    border-left: 8px solid transparent;
+    vertical-align: middle;
+}
+
 #x_desc_expand a {
     height: 20px;
     background: #ececec;

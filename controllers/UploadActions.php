@@ -1,4 +1,6 @@
 <?php
+require_once dirname(dirname(__FILE__))."/imgcommon.php";
+
 class UploadActions extends ActionController {
 
     //上传头像文件。
@@ -19,7 +21,6 @@ class UploadActions extends ActionController {
             $img_path = $result["file_path"];
 
             //图片还要经过处理后再给客户端。
-            require_once "imgcommon.php";
             $img_info = array(
                 "source_image"      =>$img_path."/".$img_name,
                 "target_image"      =>$img_path."/"."240_240_original_".$img_name,
@@ -36,7 +37,6 @@ class UploadActions extends ActionController {
 
     //截剪头像。
     public function doSaveAvatarFile() {
-        require_once "imgcommon.php";
         $img_name = $_POST["iName"];
         $img_height = $_POST["iHeight"];
         $img_width = $_POST["iWidth"];
