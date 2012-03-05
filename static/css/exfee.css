@@ -253,6 +253,7 @@
 .exfee_avatar {
     width: 100%;
     height: 100%;
+    border-radius: 2px;
 }
 
 .exfeegadget_autocomplete {
@@ -381,25 +382,32 @@
 .exfeegadget_num_accepted {
     font-size: 36px;
     line-height: 42px;
-    color: #0591AC;
+    color: #1175A5;
     display: block;
     float: left;
+    position: relative;
+    width: 120px;
 }
 
 .exfeegadget_num_of {
+    color: #7F7F7F;
     display: block;
     height: 16px;
     position: relative;
-    left: 5px;
+    left: 3px;
     top: 5px;
+    text-align: left;
+    visibility: hidden;
 }
 
 .exfeegadget_num_confirmed {
+    color: #7F7F7F;
     display: block;
     height: 16px;
-    position: relative;
-    left: 5px;
-    top: 5px;
+    /*position: relative;*/
+    /*left: 5px;*/
+    /*top: 5px;*/
+    margin-top: 5px;
 }
 
 .exfeegadget_listarea {
