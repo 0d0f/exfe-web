@@ -5,6 +5,7 @@
     position: relative;
     height: 30px;
     padding-top: 10px;
+    /*padding-bottom: 40px;*/ /* 有背景图时空40，反之则没有 */
 }
 
 #x_menu_bar .lock_icon {
