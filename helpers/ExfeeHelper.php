@@ -154,7 +154,7 @@ class ExfeeHelper extends ActionController {
                     $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
-                        'begin_at' =>  humanDateTime($cross["begin_at"],$userprofile["timezone"]),
+                        'begin_at' =>  humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
                         'place_line1' => $cross["place"]["line1"],
                         'place_line2' => $cross["place"]["line2"],
                         'cross_id' => $cross_id,
@@ -169,7 +169,7 @@ class ExfeeHelper extends ActionController {
                         'avatar_file_name' => $invitation["avatar_file_name"],
                         'host_identity' => $host_identity,
                         'rsvp_status' => $invitation["state"],
-                        'to_identity_time_zone' => $userprofile["timezone"],
+                        'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
                         'by_identity' => $by_identity,
                         'invitations' => $allinvitations
 
@@ -234,8 +234,8 @@ class ExfeeHelper extends ActionController {
                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                }
                $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
-
                $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
+                   
                $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
@@ -257,7 +257,7 @@ class ExfeeHelper extends ActionController {
                         'rsvp_status' => $invitation["state"],
                         'by_identity' => $by_identity,
                         'to_identity' => $to_identity,
-                        'to_identity_time_zone' => $userprofile["timezone"],
+                        'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
                         'invitations' => $invitations
                 );
                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
