@@ -335,14 +335,17 @@ var clickCallBackFunc = function(args) {
                     if (event.target.parentNode === $('#x_place_area')[0]) {
                         $('#place_content').bind('keyup', function() {
                             var arrPlace = odof.util.parseLocation($('#place_content').val());
+                            if (crossData.place.line1 !== arrPlace[0]) {
+                                crossData.place.lat         = '';
+                                crossData.place.lng         = '';
+                                crossData.place.external_id = '';
+                                crossData.place.provider    = '';
+                            }
                             crossData.place.line1 = arrPlace[0];
                             crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
                             //place search
-                            setTimeout(function(){
-                                odof.apps.maps.getLocation('place_content', 'google_maps_cotainer', 'edit_cross');
-                            },1000);
-
+                            odof.apps.maps.getLocation('place_content', 'google_maps_cotainer', 'edit_cross');
                         });
                         $('#place_content').html(
                             crossData.place.line1 !== '' || crossData.place.line2 !== ''

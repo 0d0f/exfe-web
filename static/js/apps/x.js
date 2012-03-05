@@ -144,6 +144,8 @@ var moduleNameSpace = 'odof.x.render',
          && parseInt(crossData.place.lng) !== 0) {
             odof.apps.maps.googleMapsContainerID = 'google_maps_cotainer';
             odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1, 280, 140)
+        } else {
+            $('#google_maps_cotainer').html('').hide();
         }
     };
 
