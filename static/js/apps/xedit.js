@@ -205,6 +205,7 @@ var clickCallBackFunc = function(args) {
                         event.preventDefault();
                 }
             });
+            $('#x_desc_expand').hide();
             $('#x_desc_edit').focus();
         } else {
             $('#x_desc').removeClass('x_editable');
@@ -430,11 +431,15 @@ var clickCallBackFunc = function(args) {
 
 
     ns.editRsvp = function(event) {
+        $('#x_rsvp_area').removeClass('x_rsvp_area_status');
         if (event.target.id === 'x_rsvp_change') {
             $('#x_rsvp_msg').hide();
-            $('#x_rsvp_change').hide();
+            //$('#x_rsvp_change').hide();
+            $('#x_rsvp_typeinfo').hide();
             $('.x_rsvp_button').show();
+            $('#x_exfee_by_user').show();
         } else {
+            $('#x_exfee_by_user').hide();
             switch (event.target.id) {
                 case 'x_rsvp_yes':
                 case 'x_rsvp_no':
@@ -451,9 +456,11 @@ var clickCallBackFunc = function(args) {
                                 dataType : 'json',
                                 success  : function(data) {
                                     if (data != null && data.response.success === 'true') {
+                                        var new_myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                        odof.x.render.changeConfirmed(new_myrsvp);
                                         odof.exfee.gadget.changeRsvp(
                                             'xExfeeArea', myIdentity.external_identity,
-                                            myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state]
+                                            myrsvp = new_myrsvp
                                         );
                                         odof.x.render.showRsvp();
                                     }
@@ -477,9 +484,11 @@ var clickCallBackFunc = function(args) {
                                         token_expired = true;
                                     }
                                     // }
+                                    var new_myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state];
+                                    odof.x.render.changeConfirmed(new_myrsvp);
                                     odof.exfee.gadget.changeRsvp(
                                         'xExfeeArea', myIdentity.external_identity,
-                                        myrsvp = {yes : 1, no : 2, maybe : 3}[data.response.state]
+                                        myrsvp = new_myrsvp
                                     );
                                     odof.x.render.showRsvp();
                                 } else {
@@ -513,7 +522,8 @@ var clickCallBackFunc = function(args) {
                     });
             }
             $('#x_rsvp_msg').show();
-            $('#x_rsvp_change').show();
+            //$('#x_rsvp_change').show();
+            $('#x_rsvp_typeinfo').show();
             $('.x_rsvp_button').hide();
             event.preventDefault();
         }
