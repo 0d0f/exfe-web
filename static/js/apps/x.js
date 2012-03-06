@@ -225,7 +225,7 @@ var moduleNameSpace = 'odof.x.render',
                       +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
                       +             '<div id="x_desc_expand">'
                       +                 '<div class="triangle-bottomright"><em></em></div>'
-                      +                 '<a href="javascript:void(0);">More</a>'
+                      +                 '<span>More</span>'
                       +             '</div>'
                       +         '</div>'
                       +         '<div id="x_rsvp_area" class="cleanup">'
