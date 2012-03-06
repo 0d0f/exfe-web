@@ -542,10 +542,11 @@ a#x_hide_history {
 #xExfeeArea .exfeegadget_inputbox {
     width: 230px;
 }
-
+/*
 #xExfeeArea .exfeegadget_addbtn {
     top: -3px;
 }
+*/
 
 #google_maps_cotainer{
     display:none; margin-top: 10px;
