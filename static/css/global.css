@@ -181,17 +181,24 @@ body {
 
 /* Cover effect style control by Handaoliang */
 .cover_element{
-    position:fixed; z-index:200;
-    left:0px; top:0px; background-color:#333;
-    -moz-opacity:0.6; opacity: 0.6;
-    filter: alpha(opacity=60);
+    position: fixed;
+    z-index: 200;
+    /*left: 0px;
+    top: 0px;*/
+    background-color: #333;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)"; /* IE8~9 */
+    filter: alpha(opacity=60); /* IE5~7 */
+    -moz-opacity: 0.6;
     -khtml-opacity: 0.6;
-    -moz-user-select:none;
+    opacity: 0.6;
+    -moz-user-select: none;
 }
 .cover_element_shadow{
-    -moz-opacity:0.01; opacity: 0.01;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=1)"; /* IE8~9 */
     filter: alpha(opacity=0.01);
+    -moz-opacity:0.01;
     -khtml-opacity: 0.01;
+    opacity: 0.01;
 }
 .ex_dialog{ position:absolute; padding:50px; z-index:201; }
 .ex_dialog_shadow {

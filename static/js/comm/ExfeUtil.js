@@ -66,11 +66,7 @@ var odof = {
             obj.setAttribute("id",elementID);
         }
         if(typeof className != "undefined"){
-            if(jQuery.browser.msie){
-                obj.setAttribute("className",className);
-            }else{
-                obj.setAttribute("class",className);
-            }
+            obj.setAttribute("class",className);
         }
         return obj;
     };
