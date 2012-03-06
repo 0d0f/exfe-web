@@ -139,16 +139,22 @@
 
 #x_desc_expand {
     float: right;
+    position: relative;
+    bottom: 20px;
+    display: inline-block;
     font-size: 10px;
     line-height: 20px;
     color: #4C4C4C;
-    margin-top: -20px;
     height: 20px;
     cursor: pointer;
 }
 
 #x_desc_expand.x_desc_expand_hover {
     background: #ececec;
+}
+
+#x_desc_expand.x_desc_expand_hover > span {
+    display: inline-block;
 }
 
 #x_desc_expand .triangle-bottomright {
@@ -167,24 +173,20 @@
     vertical-align: middle;
 }
 
-#x_desc_expand a {
+#x_desc_expand span {
     height: 20px;
     background: #ececec;
-    display: block;
-    float: left;
     display: none;
     padding-left: 5px;
     padding-right: 2px;
 }
 
-#x_desc_expand a:hover {
-    text-decoration: none;
-}
-
-#x_desc_expand a, #x_desc_expand .triangle-bottomright {
-    opacity: 0.88;
+#x_desc_expand span, #x_desc_expand .triangle-bottomright {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=88)"; /* IE8~9 */
+    filter: alpha(opacity=88); /* IE5~7 */
     -moz-opacity: 0.88;
-    filter:alpha(opacity=88);
+    -khtml-opacity: 0.88;
+    opacity: 0.88;
 }
 
 #x_mainarea {
