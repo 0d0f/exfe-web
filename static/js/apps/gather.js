@@ -69,13 +69,13 @@ var moduleNameSpace = 'odof.x.gather',
         if (displaytime) {
             objTimeInput.val(displaytime);
         }
-        var strTimeInput = odof.util.trim(objTimeInput.val());
-        if (strTimeInput === '') {
+        crossData.origin_begin_at = odof.util.trim(objTimeInput.val());
+        if (crossData.origin_begin_at === '') {
             crossData.begin_at = '';
             $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
             var strTime = odof.util.parseHumanDateTime(
-                strTimeInput,
+                crossData.origin_begin_at,
                 odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
             );
             crossData.begin_at = strTime ? strTime : null;
@@ -274,12 +274,13 @@ var moduleNameSpace = 'odof.x.gather',
 
 $(document).ready(function() {
     // X initialization
-    window.crossData = {title       : '',
-                        description : '',
-                        place       : {line1 : '', line2 : '', lat : '', lng : '',
-                                       external_id : '', provider : ''},
-                        begin_at    : '',
-                        timezone    : jstz.determine_timezone().offset()};
+    window.crossData = {title           : '',
+                        description     : '',
+                        place           : {line1 : '', line2 : '', lat : '', lng : '',
+                                           external_id : '', provider : ''},
+                        begin_at        : '',
+                        origin_begin_at : '',
+                        timezone        : jstz.determine_timezone().offset()};
 
     // X render
     odof.x.render.show(false);
@@ -338,7 +339,6 @@ $(document).ready(function() {
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
-                        crossData.begin_at = standardTimeString;
                         odof.x.gather.updateTime(displayTimeString);
                     }
                 );

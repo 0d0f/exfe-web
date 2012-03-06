@@ -4,6 +4,7 @@ class UsersActions extends ActionController {
     public function doIndex()
     {
     }
+
     public function doGetProfile()
     {
         $params=$this->params;
@@ -29,6 +30,7 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
     }
+
     public function doLogin()
     {
         $userData=$this->getModelByName("user");
@@ -49,6 +51,7 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
     }
+
     public function doGetUpdate()
     {
         $params=$this->params;
@@ -92,10 +95,19 @@ class UsersActions extends ActionController {
                     case 'confirmed':
                     case 'declined':
                     case 'interested':
-                        array_push(
-                            $rawLogs[$preItemLogs[$logItem['action']]]['to_identity'],
-                            $logItem['to_identity']
-                        );
+                        $loged = false;
+                        foreach ($rawLogs[$preItemLogs[$logItem['action']]]['to_identity'] as $subItem) {
+                            if ($subItem['id'] === $logItem['to_identity']['id']) {
+                                $loged = true;
+                                break;
+                            }
+                        }
+                        if (!$loged) {
+                            array_push(
+                                $rawLogs[$preItemLogs[$logItem['action']]]['to_identity'],
+                                $logItem['to_identity']
+                            );
+                        }
                 }
                 unset($rawLogs[$logI]);
             } else {
