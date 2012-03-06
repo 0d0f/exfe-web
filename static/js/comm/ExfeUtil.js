@@ -66,11 +66,7 @@ var odof = {
             obj.setAttribute("id",elementID);
         }
         if(typeof className != "undefined"){
-            if(jQuery.browser.msie){
-                obj.setAttribute("className",className);
-            }else{
-                obj.setAttribute("class",className);
-            }
+            obj.setAttribute("class",className);
         }
         return obj;
     };
@@ -1305,7 +1301,7 @@ var odof = {
         var arrPlace = strPlace.split(/\r|\n|\r\n/),
             prvPlace = [],
             i = 0, l = arrPlace.length, item;
-        for (item = arrPlace[i]; i < l; i++) {
+        for (; i < l, item = arrPlace[i]; i++) {
             if (item !== '') {
                 prvPlace.push(item);
             }
