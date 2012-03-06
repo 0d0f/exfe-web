@@ -1305,7 +1305,7 @@ var odof = {
         var arrPlace = strPlace.split(/\r|\n|\r\n/),
             prvPlace = [],
             i = 0, l = arrPlace.length, item;
-        for (item = arrPlace[i]; i < l; i++) {
+        for (; i < l, item = arrPlace[i]; i++) {
             if (item !== '') {
                 prvPlace.push(item);
             }
