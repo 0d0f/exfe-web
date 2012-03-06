@@ -77,7 +77,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     + '<div id="' + domId + '_exfeegadget_avatararea" '
                     +                 'class="exfeegadget_avatararea">'
                     +     '<ol></ol>'
-                    +     '<button id="' + domId + '_exfeegadget_expandavatarbtn">'
+                    +     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
                     + '</div>'
                     +(curEditable
                     ?('<div id="' + domId + '_exfeegadget_inputarea" '
