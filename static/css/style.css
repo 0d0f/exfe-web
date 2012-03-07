@@ -14,8 +14,12 @@ b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 
 .identification_dialog{
-	position:absolute; width:400px; height:380px;
-    padding:0; z-index:201; background:transparent;
+    position: absolute;
+    width: 400px;
+    height: 380px;
+    padding: 0;
+    z-index: 201;
+    background: transparent;
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; }
 .idialog_inpage .titles { display:none; }

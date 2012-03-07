@@ -38,6 +38,16 @@ var odof = {
 
 
     /**
+     * typeof object
+     * @param {number,string,array,object,null,undefined,function} o
+     * */
+    util.typeOf = function (o) {
+        return o === null ? o + '' :
+            Object.prototype.toString.call(o).slice(8, -1).toLowerCase();
+    };
+
+
+    /**
      * -----------------------------------------------------------------
      * - The Base common function:
      * -     create Element
@@ -56,11 +66,7 @@ var odof = {
             obj.setAttribute("id",elementID);
         }
         if(typeof className != "undefined"){
-            if(jQuery.browser.msie){
-                obj.setAttribute("className",className);
-            }else{
-                obj.setAttribute("class",className);
-            }
+            obj.setAttribute("class",className);
         }
         return obj;
     };
@@ -1293,12 +1299,13 @@ var odof = {
      */
     util.parseLocation = function(strPlace) {
         var arrPlace = strPlace.split(/\r|\n|\r\n/),
-            prvPlace = [];
-        arrPlace.forEach(function(item, i) {
-            if ((item = odof.util.trim(item)) !== '') {
+            prvPlace = [],
+            i = 0, l = arrPlace.length, item;
+        for (; i < l, item = arrPlace[i]; i++) {
+            if (item !== '') {
                 prvPlace.push(item);
             }
-        });
+        }
         return prvPlace.length
              ? [prvPlace.shift(), prvPlace.join("\r")]
              : ['', ''];

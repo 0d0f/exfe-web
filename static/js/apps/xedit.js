@@ -223,25 +223,19 @@ var clickCallBackFunc = function(args) {
         if (displaytime) {
             objTimeInput.val(displaytime);
         }
-        var strTimeInput = odof.util.trim(objTimeInput.val());
-        if (strTimeInput === '') {
+        if ((crossData.origin_begin_at = odof.util.trim(objTimeInput.val())) === '') {
             crossData.begin_at = '';
-        // $('#gather_date_x').html(typing ? '12-20-2012 09:00 AM' : 'Sometime');
         } else {
             var strTime = odof.util.parseHumanDateTime(
-                    strTimeInput,
+                    crossData.origin_begin_at,
                     odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
                 );
-        // crossData.begin_at = strTime ? strTime : null;
             crossData.begin_at = strTime ? strTime : '';
-        // $('#gather_date_x').html('');
         }
         if (crossData.begin_at === null) {
             objTimeInput.addClass('error');
-        // $('#gather_submit').addClass('disabled');
         } else {
             objTimeInput.removeClass('error');
-        // $('#gather_submit').removeClass('disabled');
         }
         odof.x.render.showTime();
     };
@@ -307,7 +301,6 @@ var clickCallBackFunc = function(args) {
                 $('#x_datetime_original')[0],
                 'x_time_container',
                 function(displayCalString, standardTimeString) {
-                    crossData.begin_at = standardTimeString;
                     odof.x.edit.updateTime(displayCalString);
                 }
             );
@@ -335,14 +328,17 @@ var clickCallBackFunc = function(args) {
                     if (event.target.parentNode === $('#x_place_area')[0]) {
                         $('#place_content').bind('keyup', function() {
                             var arrPlace = odof.util.parseLocation($('#place_content').val());
+                            if (crossData.place.line1 !== arrPlace[0]) {
+                                crossData.place.lat         = '';
+                                crossData.place.lng         = '';
+                                crossData.place.external_id = '';
+                                crossData.place.provider    = '';
+                            }
                             crossData.place.line1 = arrPlace[0];
                             crossData.place.line2 = arrPlace[1];
                             odof.x.render.showPlace();
                             //place search
-                            setTimeout(function(){
-                                odof.apps.maps.getLocation('place_content', 'google_maps_cotainer', 'edit_cross');
-                            },1000);
-
+                            odof.apps.maps.getLocation('place_content', 'google_maps_cotainer', 'edit_cross');
                         });
                         $('#place_content').html(
                             crossData.place.line1 !== '' || crossData.place.line2 !== ''
@@ -558,13 +554,14 @@ var clickCallBackFunc = function(args) {
             url  : location.href.split('?').shift() + '/crossEdit',
             type : 'POST',
             dataType : 'json',
-            data : {rand     : Math.round(Math.random() * 10000000000),
-                    title    : crossData.title,
-                    time     : crossData.begin_at,
-                    timezone : crossData.timezone,
-                    desc     : crossData.description,
-                    place    : JSON.stringify(crossData.place),
-                    exfee    : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))},
+            data : {rand            : Math.round(Math.random() * 10000000000),
+                    title           : crossData.title,
+                    time            : crossData.begin_at,
+                    timezone        : crossData.timezone,
+                    origin_begin_at : crossData.origin_begin_at,
+                    desc            : crossData.description,
+                    place           : JSON.stringify(crossData.place),
+                    exfee           : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))},
             success : function(data) {
                 if (data.error) {
                     $('#error_msg').html(data.msg);
@@ -619,13 +616,14 @@ var clickCallBackFunc = function(args) {
 
     ns.freeze = function(xOnly) {
         var lastX = odof.record.last(),
-            curX  = {title       : crossData.title,
-                     description : crossData.description,
-                     begin_at    : crossData.begin_at,
-                     time_type   : crossData.time_type,
-                     timezone    : crossData.timezone,
-                     state       : crossData.state,
-                     place       : crossData.place};
+            curX  = {title           : crossData.title,
+                     description     : crossData.description,
+                     begin_at        : crossData.begin_at,
+                     time_type       : crossData.time_type,
+                     timezone        : crossData.timezone,
+                     origin_begin_at : crossData.origin_begin_at,
+                     state           : crossData.state,
+                     place           : crossData.place};
         if (xOnly && lastX && JSON.stringify(lastX) === JSON.stringify(curX)) {
             return;
         }
