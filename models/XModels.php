@@ -84,6 +84,15 @@ class XModels extends DataModel {
 
         return $this->query($sql);
     }
+    
+    
+    public function updateCrossUpdatedAt($crossId)
+    {
+        $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
+
+        return $this->query($sql);
+    }
+    
 
     public function checkCrossExists($cross_id)
     {
