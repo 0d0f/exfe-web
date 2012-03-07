@@ -420,7 +420,7 @@ var clickCallBackFunc = function(args) {
             case 13:
                 if (!event.shiftKey) {
                     odof.x.edit.postMessage();
-                    // e.preventDefault();
+                    event.preventDefault();
                 }
         }
     };
