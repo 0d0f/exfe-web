@@ -359,7 +359,7 @@ class SActions extends ActionController {
         $cleanLogs = array();
         foreach ($rawLogs as $logI => $logItem) {
             if (!isset($cleanLogs[$xId = $logItem['x_id']])) {
-                $cleanLogs[$logItem['x_id']] = array(
+                $cleanLogs[$xId] = array(
                     'id'       => $xId,
                     'title'    => $logItem['x_title'],
                     'base62id' => $logItem['x_base62id'],
@@ -400,7 +400,7 @@ class SActions extends ActionController {
             }
         }
 
-        echo json_encode($cleanLogs);
+        echo json_encode(array_merge($cleanLogs));
     }
 
 
