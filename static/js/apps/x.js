@@ -8,8 +8,7 @@
 var moduleNameSpace = 'odof.x.render',
     ns = odof.util.initNameSpace(moduleNameSpace);
 
-(function(ns)
-{
+(function(ns) {
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
@@ -54,23 +53,24 @@ var moduleNameSpace = 'odof.x.render',
         $('#x_desc_expand').hide();
     };
 
-    function print_rsvp(myrsvp, username) {
+
+    var print_rsvp = function(myrsvp, username) {
         var str = '';
         switch (myrsvp) {
             case 1:
                 str = 'Confirmed by ' + username;
-            break;
+                break;
             case 2:
                 str = 'Declined by ' + username;
-            break;
+                break;
             case 3:
                 break;
             case 0:
                 str = 'Request invitation';
-
         }
         return str;
-    }
+    };
+
 
     ns.showRsvp = function()
     {
@@ -181,6 +181,7 @@ var moduleNameSpace = 'odof.x.render',
              +     '</div>'
              + '</li>';
     };
+
 
     ns.showConfirmed = function (users) {
         var str = '<ul>', i = 0, l = users.length, j = 0;
@@ -295,6 +296,7 @@ var moduleNameSpace = 'odof.x.render',
         this.showPlace();
     };
 
+
     ns.changeConfirmed = function (new_myrsvp) {
         var old_myrsvp = window['myrsvp'];
         var i = 0;
@@ -305,6 +307,7 @@ var moduleNameSpace = 'odof.x.render',
         var c = ~~$span.html();
         $span.html(c+i);
     };
+
 
     $(function () {
         $(document).delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
