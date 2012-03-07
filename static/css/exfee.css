@@ -1,10 +1,6 @@
 @charset "UTF-8";
-/* profile style by Leask */
+/* by Leask */
 
-
-/* @todo removing {
-.Conversation #post_submit{background:url("/static/images/enter.png") no-repeat scroll right bottom; width:25px; height:25px; border:none; float: right; z-index:2; position: absolute; margin:15px 0 0 434px; }
-} */
 
 #gather_form .exfeegadget_avatararea > ol > li, #xExfeeArea .exfeegadget_avatararea > ol > li {
     padding: 0;
@@ -226,20 +222,25 @@
 .exfeegadget_inputbox {
     height: 24px;
     position: absolute;
+    line-height: 24px;
 }
 
 .exfeegadget_inputbox_main {
     border: 1px transparent solid;
     z-index: 2;
-    background: transparent;
-    color: #333333;
+    color: #000;
+    background-color: #FFF;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)"; /* IE8~9 */
+    filter: alpha(opacity=60); /* IE5~7 */
+    -moz-opacity: 0.6;
+    -khtml-opacity: 0.6;
+    opacity: 0.6;
 }
 
 .exfeegadget_inputbox_desc {
-    border: 1px #CCCCCC solid;
     z-index: 1;
-    background: white;
-    color: #CCCCCC;
+    color: #B5B5B5;
+    border: 1px #B5B5B5 solid;
 }
 
 .exfeegadget_addbtn {
