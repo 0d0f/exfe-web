@@ -136,13 +136,16 @@ var moduleNameSpace = 'odof.x.render',
         }
 
         //Show google maps. added by handaoliang
-        if(parseInt(crossData.place.lng) != 0
-                && parseInt(crossData.place.lat) != 0
-                && typeof crossData.place.lat != "undefined"
-                && typeof crossData.place.lng != "undefined"
-                ){
-            odof.apps.maps.googleMapsContainerID = "google_maps_cotainer";
+        if (typeof crossData.place.lat !== 'undefined'
+         && typeof crossData.place.lng !== 'undefined'
+         && crossData.place.lat !== ''
+         && crossData.place.lng !== ''
+         && parseInt(crossData.place.lat) !== 0
+         && parseInt(crossData.place.lng) !== 0) {
+            odof.apps.maps.googleMapsContainerID = 'google_maps_cotainer';
             odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1, 280, 140)
+        } else {
+            $('#google_maps_cotainer').html('').hide();
         }
     };
 
@@ -219,9 +222,9 @@ var moduleNameSpace = 'odof.x.render',
                       +     '<div id="x_mainarea">'
                       +         '<div id="x_desc_area">'
                       +             '<div id="x_desc" class="x_desc"></div>'
-                    +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
+                      +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
                       +             '<div id="x_desc_expand">'
-                      +                 '<img src="/static/images/x_expand_tria.png" width="20px" height="20px" />'
+                      +                 '<div class="triangle-bottomright"><em></em></div>'
                       +                 '<a href="javascript:void(0);">More</a>'
                       +             '</div>'
                       +         '</div>'
@@ -305,7 +308,11 @@ var moduleNameSpace = 'odof.x.render',
 
     $(function () {
         $(document).delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
-            $('#x_desc_expand>a')[e.type === 'mouseenter' ? 'show' : 'hide']();
+            var $x_desc_expand = $('#x_desc_expand');
+            if ($x_desc_expand.is(':hidden')) return;
+            $x_desc_expand
+                .toggleClass('x_desc_expand_hover')
+                .find('>a')[e.type === 'mouseenter' ? 'show' : 'hide']();
         });
 
         $(document).delegate('#x_rsvp_status', 'mouseenter mouseleave', function (e) {

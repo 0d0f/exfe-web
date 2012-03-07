@@ -18,10 +18,11 @@ class XModels extends DataModel {
 
         $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
                 state, title, description, begin_at, end_at, duration, place_id,
-                timezone) values({$identityId}, NOW(), '{$time_type}', NOW(),
-                '1', '{$cross['title']}', '{$cross['description']}',
-                '{$cross['datetime']}', '{$end_at}', '{$duration}',
-                {$cross['place_id']}, '{$cross['timezone']}');";
+                timezone, origin_begin_at) values({$identityId}, NOW(),
+                '{$time_type}', NOW(), '1', '{$cross['title']}',
+                '{$cross['description']}', '{$cross['datetime']}', '{$end_at}',
+                '{$duration}', {$cross['place_id']}, '{$cross['timezone']}',
+                '{$cross['ori_datetime']}');";
 
         $result   = $this->query($sql);
         $cross_id = intval($result['insert_id']);
@@ -71,17 +72,27 @@ class XModels extends DataModel {
             $time_type = TIMETYPE_ANYTIME; // anytime
         }
         $sql  = "UPDATE `crosses`
-                    SET `updated_at`  = NOW(),
-                        `title`       = '{$cross['title']}',
-                        `description` = '{$cross['desc']}',
-                        `begin_at`    = '{$cross['start_time']}',
-                        `time_type`   = '{$time_type}',
-                        `timezone`    = '{$cross['timezone']}',
-                        `place_id`    =  {$place_id}
-                  WHERE `id`          =  {$cross['id']}";
+                    SET `updated_at`      = NOW(),
+                        `title`           = '{$cross['title']}',
+                        `description`     = '{$cross['desc']}',
+                        `begin_at`        = '{$cross['start_time']}',
+                        `time_type`       = '{$time_type}',
+                        `timezone`        = '{$cross['timezone']}',
+                        `origin_begin_at` = '{$cross['origin_begin_at']}',
+                        `place_id`        =  {$place_id}
+                  WHERE `id`              =  {$cross['id']}";
 
         return $this->query($sql);
     }
+    
+    
+    public function updateCrossUpdatedAt($crossId)
+    {
+        $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
+
+        return $this->query($sql);
+    }
+    
 
     public function checkCrossExists($cross_id)
     {

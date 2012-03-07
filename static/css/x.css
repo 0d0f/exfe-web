@@ -1,6 +1,7 @@
 @charset "UTF-8";
 /* by Leask */
 
+
 #x_view {
     font-family: Helvetica;
     background-color: #ffffff;
@@ -146,6 +147,26 @@
     cursor: pointer;
 }
 
+#x_desc_expand.x_desc_expand_hover {
+    background: #ececec;
+}
+
+#x_desc_expand .triangle-bottomright {
+    cursor: pointer;
+    float: right;
+    padding-right: 2px;
+    padding-bottom: 2px;
+}
+
+#x_desc_expand .triangle-bottomright > em {
+    width: 0;
+    height: 0;
+    display: inline-block;
+    border-bottom: 8px solid #B2B2B2;
+    border-left: 8px solid transparent;
+    vertical-align: middle;
+}
+
 #x_desc_expand a {
     height: 20px;
     background: #ececec;
@@ -153,13 +174,14 @@
     float: left;
     display: none;
     padding-left: 5px;
+    padding-right: 2px;
 }
 
 #x_desc_expand a:hover {
     text-decoration: none;
 }
 
-#x_desc_expand a, #x_desc_expand img {
+#x_desc_expand a, #x_desc_expand .triangle-bottomright {
     opacity: 0.88;
     -moz-opacity: 0.88;
     filter:alpha(opacity=88);
@@ -520,10 +542,11 @@ a#x_hide_history {
 #xExfeeArea .exfeegadget_inputbox {
     width: 230px;
 }
-
+/*
 #xExfeeArea .exfeegadget_addbtn {
     top: -3px;
 }
+*/
 
 #google_maps_cotainer{
     display:none; margin-top: 10px;
