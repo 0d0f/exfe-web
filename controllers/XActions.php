@@ -329,6 +329,8 @@ class XActions extends ActionController
             $humanMyIdentity = humanIdentity($myidentity, $user);
             $this->setVar('myidentity', $humanMyIdentity);
 
+            $cross['host'] = '';
+
             if ($invitations) {
                 foreach ($invitations as $idx => $invitation) {
                     if (in_array($invitation['identity_id'], $myidentities)) {
@@ -339,9 +341,12 @@ class XActions extends ActionController
                     }
                     unset($invitations[$idx]['token']);
                     $invitations[$idx]['host'] = $invitation['identity_id'] === $cross['host_id'];
+
+                    if($invitation['identity_id'] === $cross['host_id']){
+                        $cross['host'] = $invitation;
+                    }
                 }
             }
-
             $cross['exfee'] = $invitations;
 
             $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
