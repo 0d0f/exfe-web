@@ -344,7 +344,6 @@ class XActions extends ActionController
                     $invitations[$idx]['host'] = $invitation['identity_id'] === $cross['host_id'];
                 }
             }
-
             $cross['exfee'] = $invitations;
 
             $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
