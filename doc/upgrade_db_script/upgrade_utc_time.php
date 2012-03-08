@@ -69,7 +69,7 @@ class UpgradeCrossUTCTime extends DataModel{
         foreach($cross_time_arr as $k=>$v){
             $t_utc_time = "0000-00-00 00:00:00";
             if($v["time"] != $t_utc_time){
-                $t_utc_time = date("Y-m-d H:i:s",intval(strtotime($v["created_at"])-$time_zone));
+                $t_utc_time = date("Y-m-d H:i:s",intval(strtotime($v["time"])-$time_zone));
             }
             $sql = "UPDATE logs SET time='{$t_utc_time}' WHERE id=".$v["id"];
             $this->query($sql);
