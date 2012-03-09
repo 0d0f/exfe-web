@@ -682,11 +682,8 @@ class IdentityModels extends DataModel {
         }
     }
 
-    public function buildIndex($userid,$identities)
+    public function buildIndex($userid)
     {
-        //$identities=$this->getIdentitiesByUser($userid);
-        //$userid=$_SESSION["userid"];
-
         if(intval($userid)>0)
         {
             $sql="select name,external_identity,r_identityid from user_relations where userid=$userid;";
@@ -716,6 +713,7 @@ class IdentityModels extends DataModel {
             }
         }
     }
+
     public function getIdentitiesByIdsFromCache($identity_id_list)
     {
         $redis = new Redis();
