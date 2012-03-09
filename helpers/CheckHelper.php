@@ -25,6 +25,20 @@ class CheckHelper extends ActionController {
             if(sizeof($identity_list)>0)
                 return array("check"=>true,"identity_id_list"=>$identity_list,"user_id"=>$uid);
         }
+        if($api=="x_list")
+        {
+            //if this uid's identity has invitation for this cross?
+            $ids=explode(",",$args["ids"]);
+            foreach($ids as $id)
+            {
+                if (intval($id)==0)
+                    return array("check"=>false);
+            }
+            $invitationdata=$this->getModelByName("invitation");
+            $identity_list=$invitationdata->getInvitatedIdentityByUseridAndCrossList($uid,$ids);
+            if(sizeof($identity_list)>0)
+                return array("check"=>true,"identity_id_list"=>$identity_list,"user_id"=>$uid);
+        }
         if($api=="x_post")
         {
             $cross_id=$args["cross_id"];
