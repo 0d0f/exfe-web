@@ -31,11 +31,12 @@
     $external_identity = $myIdentity ? $myIdentity['external_identity'] : null;
     $defaultTitle      = $global_name != '' ? "Meet {$global_name}" : 'Edit title here';
     echo '<script>'
-       . "var myIdentity   = " . json_encode($myIdentity) . ","
-       .     "defaultTitle = '{$defaultTitle}',"
-       .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',"
-       .     "defaultTime  = 'Sometime',"
-       .     "sampleTime   = '12-20-2012 09:00 AM',"
+       . "var myIdentity   = " . json_encode($myIdentity) . ",\r\n"
+       .     "defaultTitle = '{$defaultTitle}',\r\n"
+       .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',\r\n"
+       .     "defaultTime  = 'Sometime',\r\n"
+       .     "sampleTime   = '12-20-2012 09:00 AM',\r\n"
+       .     "utc          = " . $this->getVar('utc') . ",\r\n"
        .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>
