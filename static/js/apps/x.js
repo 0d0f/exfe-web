@@ -105,12 +105,25 @@ var moduleNameSpace = 'odof.x.render',
         if (!crossData.begin_at || crossData.begin_at === '0000-00-00 00:00:00') {
             strRelativeTime = 'Sometime';
         } else {
-            strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
-            strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
-            if (!strRelativeTime || !strAbsoluteTime) {
-                crossData.begin_at = '';
-                strRelativeTime = 'Sometime';
-                strAbsoluteTime = '';
+            var crossOffset = odof.comm.func.convertTimezoneToSecond(crossData.timezone);
+            if (crossOffset === myIdentity.timeOffset) {
+                strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
+                strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
+                if (!strRelativeTime || !strAbsoluteTime) {
+                    crossData.begin_at = '';
+                    strRelativeTime = 'Sometime';
+                    strAbsoluteTime = '';
+                }
+            } else {
+                var strTime = odof.util.parseHumanDateTime(crossData.origin_begin_at, crossOffset);
+                strRelativeTime = odof.util.getRelativeTime(strTime);
+                strAbsoluteTime = odof.util.getHumanDateTime(strTime, crossOffset);
+                if (!strRelativeTime || !strAbsoluteTime) {
+                    strRelativeTime = 'Sometime';
+                    strAbsoluteTime = '';
+                } else {
+                    strAbsoluteTime += ' ' + crossData.timezone;
+                }
             }
         }
         $('#x_time_relative').html(strRelativeTime);
@@ -327,6 +340,12 @@ var moduleNameSpace = 'odof.x.render',
                 $('#x_exfee_users').show();
             }
         });
+
+        // check accuracy of the local time
+        var maxDiff   = 30 * 60,
+            localUtc  = Math.round(new Date().getTime() / 1000);
+        odof.x.render.timeValid = Math.abs(odof.x.render.utcDiff = localUtc - utc) < 15 * 60;
+        myIdentity.timeOffset   = odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
     });
 
 })(ns);

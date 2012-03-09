@@ -1161,12 +1161,13 @@ var odof = {
      * get relative time
      * by Leask
      */
-    util.getRelativeTime = function(strTime) {
-        var timestamp = Date.parse(this.getDateFromString(strTime)) / 1000 + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
+    util.getRelativeTime = function(strTime, lang) {
+        var timestamp = Math.round(this.getDateFromString(strTime).getTime() / 1000)
+                      + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
         if (timestamp < 0) {
             return '';
         }
-        var difference = Date.parse(new Date()) / 1000 - timestamp,
+        var difference = Date.parse(new Date()) / 1000 - timestamp - odof.x.render.utcDiff,
             periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
             lengths    = ['60', '60', '24', '7', '4.35', '12', '10'],
             ending     = '';
@@ -1199,7 +1200,7 @@ var odof = {
      * get human datetime
      * by Leask with han
      */
-    util.getHumanDateTime = function(strTime, lang) {
+    util.getHumanDateTime = function(strTime, offset, lang) {
         // init
         var oriDate   = strTime.split(','),
             time_type = '';
@@ -1220,7 +1221,8 @@ var odof = {
             return '';
         }
         if (withTime && !time_type) {
-            objDate = new Date(objDate.getTime() + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset()) * 1000);
+            objDate = new Date(objDate.getTime()
+                    + (typeof offset !== 'undefined' ? offset : odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())) * 1000);
         }
         // rebuild time
         var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -1273,7 +1275,7 @@ var odof = {
                 hour   += (arrTime[5].toLowerCase() === 'pm' && hour !== 12 ? 12 : 0);
                 minute  = parseInt(arrTime[4], 10),
                 time    = ' ' + [db(hour), db(minute)].join(':');
-                if (offset) {
+                if (typeof offset !== 'undefined') {
                     var objTime = new Date(new Date(strTime + time).getTime() - offset * 1000);
                     month  = objTime.getMonth() + 1;
                     day    = objTime.getDate();

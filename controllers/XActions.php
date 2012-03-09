@@ -14,6 +14,9 @@ class XActions extends ActionController
         }
         $this->setVar('myidentity', $myidentity);
 
+        // get utc time
+        $this->setVar('utc', time());
+
         if ($_POST['title']) {
             if ($identity_id) {
                 $idntdata = $this->getModelByName('identity');
