@@ -432,10 +432,10 @@ var clickCallBackFunc = function(args) {
             $('#x_rsvp_msg').hide();
             //$('#x_rsvp_change').hide();
             $('#x_rsvp_typeinfo').hide();
-            $('.x_rsvp_button').show();
-            $('#x_exfee_by_user').show();
+            //$('.x_rsvp_button').show();
+            //$('#x_exfee_by_user').show();
+            $('#x_rsvp_btns').show();
         } else {
-            $('#x_exfee_by_user').hide();
             switch (event.target.id) {
                 case 'x_rsvp_yes':
                 case 'x_rsvp_no':
@@ -520,7 +520,8 @@ var clickCallBackFunc = function(args) {
             $('#x_rsvp_msg').show();
             //$('#x_rsvp_change').show();
             $('#x_rsvp_typeinfo').show();
-            $('.x_rsvp_button').hide();
+            $('#x_rsvp_btns').hide();
+            //$('.x_rsvp_button').hide();
             event.preventDefault();
         }
     };
