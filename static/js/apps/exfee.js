@@ -77,7 +77,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     + '<div id="' + domId + '_exfeegadget_avatararea" '
                     +                 'class="exfeegadget_avatararea">'
                     +     '<ol></ol>'
-                    +     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
+                    //+     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
                     + '</div>'
                     +(curEditable
                     ?('<div id="' + domId + '_exfeegadget_inputarea" '
@@ -129,6 +129,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         // this.cacheExfee(curExfee);
         this.addExfee(domId, curExfee, true, true);
+        // ToDo: 先隐藏此功能
+        //$('#' + domId + '_exfeegadget_avatararea > ol').append('<li class="last"><button class="exfeegadget_expandavatarbtn" /><li>')
+
         if (this.diffCallback[domId] && !skipInitCallback) {
             this.diffCallback[domId]();
         }
@@ -164,6 +167,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_main_identity_remove').live(
             'click', this.removeMainIdentity
         );
+
+        $('#' + domId + '_exfeegadget_avatararea > ol > li.last button').live('click', function () {
+            $('#' + domId + '_exfeegadget_listarea').toggle();
+        });
     };
 
 
@@ -319,8 +326,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
 
     ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
-        for (var k = 0; k < 4; k++) {
-            for (var i in exfees) {
+        //for (var k = 0; k < 4; k++) {
+            for (var i = 0; i < exfees.length; i++) {
                 var objExfee = odof.util.clone(exfees[i]);
                 objExfee.external_identity = objExfee.external_identity.toLowerCase();
                 if (typeof this.exfeeInput[domId][objExfee.external_identity] !== 'undefined') {
@@ -342,12 +349,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 objExfee.rsvp             = typeof  exfees[i].rsvp  === 'undefined'
                                           ?(typeof  exfees[i].state === 'undefined'
                                           ? 0 : exfees[i].state) : exfees[i].rsvp;
+                /*
                 if ((k == 0 && objExfee.rsvp !== 1)
                  || (k == 1 && objExfee.rsvp !== 3)
                  || (k == 2 && objExfee.rsvp !== 0)
                  || (k == 3 && objExfee.rsvp !== 2)) {
                     continue;
                 }
+                */
                 var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
                     removable    = this.editable[domId] && !objExfee.host
                                 && objExfee.external_identity
@@ -405,7 +414,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 );
                 $('#' + domId + '_exfeegadget_listarea > ol').append(
                     '<li identity="' + objExfee.external_identity + '">'
-                  +     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
+                  //+     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
                   +     '<div class="exfee_baseblock">'
                   +         '<span class="exfee_name">'
                   +             objExfee.name
@@ -425,7 +434,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 if (objExfee.provider) {
                     this.exfeeInput[domId][objExfee.external_identity] = objExfee;
                 }
-            }
+            //}
         }
         this.chkFakeHost(domId);
         this.updateExfeeSummary(domId);
@@ -501,7 +510,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.eventAvatarRsvp = function(event) {
         var domLi    = event.target.parentNode.parentNode,
             identity = $(domLi).attr('identity'),
-            domId    = domLi.parentNode.parentNode.id.split('_')[0];
+            domId    = domLi.parentNode.parentNode.id.split('_')[0],
+            $span = $('#x_exfee_users ul li:last > span');
+
         switch (event.type) {
             case 'click':
                 switch (odof.exfee.gadget.exfeeInput[domId][identity].rsvp) {
@@ -511,12 +522,22 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             identity,
                             domId === 'gatherExfee' ? 0 : 2
                         );
+                        // 先兼容，后期必须分拆
+                        if ($span) {
+                            c = ~~$span.html();
+                            $span.html(c - 1);
+                        }
                         break;
                     case 0:
                     case 2:
                     case 3:
                     default:
                         odof.exfee.gadget.changeRsvp(domId, identity, 1);
+                        // 先兼容，后期必须分拆
+                        if ($span) {
+                            c = ~~$span.html();
+                            $span.html(c + 1);
+                        }
                 }
         }
     };
