@@ -110,7 +110,7 @@ var moduleNameSpace = 'odof.x.render',
             strRelativeTime = 'Sometime';
         } else {
             var crossOffset = odof.comm.func.convertTimezoneToSecond(crossData.timezone);
-            if (crossOffset === myIdentity.timeOffset) {
+            if (crossOffset === myIdentity.timeOffset && odof.x.render.timeValid) {
                 strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
                 strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
                 if (!strRelativeTime || !strAbsoluteTime) {
