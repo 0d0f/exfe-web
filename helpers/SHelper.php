@@ -74,13 +74,21 @@ class SHelper extends ActionController
                             unset($rawLogs[$logI]['meta']);
                             break;
                         case 'begin_at':
-                            $rawLogs[$logI]['new_value'] = explode(',', $logItem['change_summy']);
-                            $rawLogs[$logI]['new_value'][0] = trim($rawLogs[$logI]['new_value'][0]);
-                            if (!isset($rawLogs[$logI]['new_value'][1]) || $rawLogs[$logI]['new_value'][1] === '0') {
-                                $rawLogs[$logI]['new_value'][1] = '';
+                            if ($logItem['meta'] && !$logItem['change_summy']) {
+                                $rawLogs[$logI]['new_value'] = json_decode($logItem['meta'], true);
+                            } else {
+                                $logItem['change_summy'] = explode(',', $logItem['change_summy']);
+                                if (!isset($rawLogs[$logI]['new_value'][1])
+                                 || $rawLogs[$logI]['new_value'][1] === '0') {
+                                    $rawLogs[$logI]['new_value'][1] = '';
+                                }
+                                $rawLogs[$logI]['new_value'] = array(
+                                    'begin_at'        => $logItem['change_summy'][0],
+                                    'time_type'       => $logItem['change_summy'][1],
+                                    'timezone'        => $allCross[$rawLogs[$logI]['x_id']]['timezone'],
+                                    'origin_begin_at' => $logItem['meta'] ? $logItem['meta'] : '',
+                                );
                             }
-                         // $rawLogs[$logI]['new_value'][2] = $logItem['meta'] ? $logItem['meta'] : '';
-                            $rawLogs[$logI]['new_value'] = implode(',', $rawLogs[$logI]['new_value']);
                         case 'description':
                             break;
                         default:
