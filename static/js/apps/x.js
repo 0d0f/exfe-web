@@ -119,7 +119,7 @@ var moduleNameSpace = 'odof.x.render',
                     strAbsoluteTime = '';
                 }
             } else {
-                var strTime = odof.util.parseHumanDateTime(crossData.origin_begin_at, crossOffset);
+                var strTime = odof.util.parseHumanDateTime(crossData.origin_begin_at ? crossData.origin_begin_at : '', crossOffset);
                 strRelativeTime = odof.util.getRelativeTime(strTime);
                 strAbsoluteTime = odof.util.getHumanDateTime(strTime, crossOffset);
                 if (!strRelativeTime || !strAbsoluteTime) {
