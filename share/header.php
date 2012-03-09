@@ -23,7 +23,8 @@
     <script>
         var site_url = "<?php echo SITE_URL; ?>";
         var img_url  = "<?php echo IMG_URL; ?>";
-        var cookies_domain = "<?php echo COOKIES_DOMAIN ?>";
+        var cookies_domain = "<?php echo COOKIES_DOMAIN; ?>";
+        var utc      = <?php echo time(); ?>;
     </script>
 
     <?php

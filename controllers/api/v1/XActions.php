@@ -46,7 +46,6 @@ class XActions extends ActionController {
     public function doPosts()
     {
         $params=$this->params;
-
         $checkhelper=$this->getHelperByName("check");
         $check=$checkhelper->isAPIAllow("x_post",$params["token"],array("cross_id"=>$params["id"]));
         if($check["check"]==false)
@@ -107,9 +106,50 @@ class XActions extends ActionController {
             $responobj["response"]["conversations"]=$result;
             echo json_encode($responobj);
             exit(0);
-
         }
+    }
 
+    public function doList()
+    {
+        $params=$this->params;
+        $checkhelper=$this->getHelperByName("check");
+        $check=$checkhelper->isAPIAllow("x_list",$params["token"],array("ids"=>$params["ids"]));
+        if($check["check"]==false)
+        {
+            $responobj["meta"]["code"]=403;
+            $responobj["meta"]["error"]="forbidden";
+            echo json_encode($responobj);
+            exit(0);
+        }
+        $cross_ids=array();
+        foreach($check["identity_id_list"] as $id_cross)
+            array_push($cross_ids,$id_cross["cross_id"]);
+
+        $modelData=$this->getModelByName("x");
+        $crosses=$modelData->getCrossesByIds($cross_ids);
+
+        $conversationData=$this->getModelByName("conversation");
+        $identityData=$this->getModelByName("identity");
+        $invitationData=$this->getModelByName("invitation");
+        $userData=$this->getModelByName("user");
+        for($i=0;$i<sizeof($crosses);$i++)
+        {
+            $cross_id=intval($crosses[$i]["id"]);
+            if($cross_id>0)
+            {
+                $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
+                $user=$userData->getUserByIdentityId(intval($crosses[$i]["host_id"]));
+                $crosses[$i]["host"]=humanIdentity($identity,$user);
+                $invitations=$invitationData->getInvitation_Identities($crosses[$i]["id"],true);
+                $crosses[$i]["invitations"]=$invitations;
+                //invitations
+            }
+        }
+        $responobj["meta"]["code"]=200;
+        $responobj["response"]=$crosses;
+        echo json_encode($responobj);
+        //getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
+        //getCrossesByIds
     }
 
 

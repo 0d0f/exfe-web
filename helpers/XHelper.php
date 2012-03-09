@@ -20,13 +20,13 @@ class XHelper extends ActionController
         if($old_cross['begin_at']  !== $crossobj['begin_at']
         || $old_cross['time_type'] !== $crossobj['time_type']
         || $old_cross['timezone']  !== $crossobj['timezone']) {
-            $changed['begin_at']        = $crossobj['begin_at'];
-            $changed['time_type']       = $crossobj['time_type'];
-            $changed['timezone']        = $crossobj['timezone'];
-            $changed['origin_begin_at'] = $crossobj['origin_begin_at'];
             $logdata->addLog(
-                'identity', $identity_id, 'change', 'cross', $cross_id, 'begin_at',
-                "{$crossobj['begin_at']},{$changed['time_type']}", $changed['origin_begin_at']
+                'identity', $identity_id, 'change', 'cross', $cross_id, 'begin_at', '',
+                json_encode(array(
+                    'begin_at'        => $changed['begin_at']        = $crossobj['begin_at'],
+                    'time_type'       => $changed['time_type']       = $crossobj['time_type'],
+                    'timezone'        => $changed['timezone']        = $crossobj['timezone'],
+                    'origin_begin_at' => $changed['origin_begin_at'] = $crossobj['origin_begin_at']))
             );
         }
         if ($old_cross['place']['line1'] !== $crossobj['place']['line1']
