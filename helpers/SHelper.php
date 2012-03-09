@@ -56,6 +56,7 @@ class SHelper extends ActionController
                     $rawLogs[$logI]['new_value']  = $logItem['change_summy'];
                     switch ($logItem['to_field']) {
                         case 'title':
+                            $rawLogs[$logI]['old_value'] = $logItem['meta'];
                             if (isset($loged[$rawLogs[$logI]['change_dna']])) {
                                 $rawLogs[$loged[$rawLogs[$logI]['change_dna']]]['old_value'] = $logItem['change_summy'];
                             }
@@ -78,6 +79,7 @@ class SHelper extends ActionController
                             if (!isset($rawLogs[$logI]['new_value'][1]) || $rawLogs[$logI]['new_value'][1] === '0') {
                                 $rawLogs[$logI]['new_value'][1] = '';
                             }
+                         // $rawLogs[$logI]['new_value'][2] = $logItem['meta'] ? $logItem['meta'] : '';
                             $rawLogs[$logI]['new_value'] = implode(',', $rawLogs[$logI]['new_value']);
                         case 'description':
                             break;

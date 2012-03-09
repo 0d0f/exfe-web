@@ -7,7 +7,7 @@ class FrontController {
 #	public static function checkOauthToken() {
 #
 #	if(isset($_GET["magic_token"])) {
-#		
+#
 #		$_SESSION["userid"] = $_GET["magic_token"];
 #
 #		return;
@@ -32,7 +32,7 @@ class FrontController {
 #			exit();
 #
 #		} else {
-#	
+#
 #			$name="user";
 #	    		$class = ucfirst($name) . "Models";
 #	    		$modelfile = MODEL_DIR . "/" . $name. "/" . $class.  ".php";
@@ -72,7 +72,9 @@ class FrontController {
 
         $file = CONTROLLER_DIR. "/" . $class . ".php";
         if (!is_file($file)) {
-            exit("Page not found:".$file);
+            header("location:/error/404?e=PageNotFound");
+            exit;
+            //exit("Page not found:".$file);
         }
 
         require_once $file;

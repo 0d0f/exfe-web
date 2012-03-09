@@ -69,15 +69,14 @@ var moduleNameSpace = 'odof.x.gather',
         if (displaytime) {
             objTimeInput.val(displaytime);
         }
-        var strTimeInput = odof.util.trim(objTimeInput.val());
-        if (strTimeInput === '') {
+        if ((crossData.origin_begin_at = odof.util.trim(objTimeInput.val())) === '') {
             crossData.begin_at = '';
             $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
             var strTime = odof.util.parseHumanDateTime(
-                strTimeInput,
-                odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
-            );
+                    crossData.origin_begin_at,
+                    odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
+                );
             crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
         }
@@ -92,8 +91,15 @@ var moduleNameSpace = 'odof.x.gather',
     };
 
 
-    ns.updatePlace = function() {
+    ns.updatePlace = function(keepLocation) {
         var strPlace = odof.util.parseLocation($('#gather_place').val());
+        if (!keepLocation && crossData.place.line1 !== strPlace[0]) {
+            crossData.place.lat         = '';
+            crossData.place.lng         = '';
+            crossData.place.external_id = '';
+            crossData.place.provider    = '';
+            $('#calendar_map_container').hide();
+        }
         crossData.place.line1 = strPlace[0];
         crossData.place.line2 = strPlace[1];
         if (crossData.place.line1 + crossData.place.line2 === '') {
@@ -267,11 +273,13 @@ var moduleNameSpace = 'odof.x.gather',
 
 $(document).ready(function() {
     // X initialization
-    window.crossData = {title       : '',
-                        description : '',
-                        place       : {line1 : '', line2 : '', lat : '', lng : '',
-                                       external_id : '', provider : ''},
-                        begin_at    : ''};
+    window.crossData = {title           : '',
+                        description     : '',
+                        place           : {line1 : '', line2 : '', lat : '', lng : '',
+                                           external_id : '', provider : ''},
+                        begin_at        : '',
+                        origin_begin_at : '',
+                        timezone        : jstz.determine_timezone().offset()};
 
     // X render
     odof.x.render.show(false);
@@ -330,7 +338,6 @@ $(document).ready(function() {
                     $('#datetime_original')[0],
                     'calendar_map_container',
                     function(displayTimeString, standardTimeString) {
-                        crossData.begin_at = standardTimeString;
                         odof.x.gather.updateTime(displayTimeString);
                     }
                 );
@@ -359,9 +366,7 @@ $(document).ready(function() {
                 break;
             case 'keyup':
                 odof.x.gather.updatePlace();
-                setTimeout(function(){
-                    odof.apps.maps.getLocation('gather_place','calendar_map_container', 'create_cross');
-                },1000);
+                odof.apps.maps.getLocation('gather_place','calendar_map_container', 'create_cross');
         }
     });
     odof.x.gather.updatePlace();

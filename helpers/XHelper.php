@@ -10,7 +10,7 @@ class XHelper extends ActionController
         if($old_cross["title"] !== $crossobj["title"])
         {
             $changed["title"]=$crossobj["title"];
-            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"title",$crossobj["title"],"");
+            $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"title",$crossobj["title"],$old_cross["title"]);
         }
         if($old_cross["description"] !== $crossobj["description"])
         {
@@ -18,12 +18,15 @@ class XHelper extends ActionController
             $logdata->addLog("identity",$identity_id,"change","cross",$cross_id,"description",$crossobj["description"],"");
         }
         if($old_cross['begin_at']  !== $crossobj['begin_at']
-        || $old_cross['time_type'] !== $crossobj['time_type']) {
-            $changed['begin_at']  = $crossobj['begin_at'];
-            $changed['time_type'] = $crossobj['time_type'];
+        || $old_cross['time_type'] !== $crossobj['time_type']
+        || $old_cross['timezone']  !== $crossobj['timezone']) {
+            $changed['begin_at']        = $crossobj['begin_at'];
+            $changed['time_type']       = $crossobj['time_type'];
+            $changed['timezone']        = $crossobj['timezone'];
+            $changed['origin_begin_at'] = $crossobj['origin_begin_at'];
             $logdata->addLog(
                 'identity', $identity_id, 'change', 'cross', $cross_id, 'begin_at',
-                "{$crossobj['begin_at']},{$changed['time_type']}", ''
+                "{$crossobj['begin_at']},{$changed['time_type']}", $changed['origin_begin_at']
             );
         }
         if ($old_cross['place']['line1'] !== $crossobj['place']['line1']
@@ -84,7 +87,6 @@ class XHelper extends ActionController
         $apnargs["timestamp"]=time();
         $apnargs["job_type"]="crossupdate";
 
-print_r($mail);
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
         $msghelper->sentApnConversation($apnargs);

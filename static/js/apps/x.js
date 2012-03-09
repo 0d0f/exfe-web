@@ -35,9 +35,9 @@ var moduleNameSpace = 'odof.x.render',
     ns.showDesc = function(editing)
     {
         var strDesc = crossData.description === '' && (editing || !odof.x.render.editable)
-                    ? 'Write some words about this X.'
-                    : crossData.description,
-            converter = new Showdown.converter();
+        ? 'Write some words about this X.'
+        : crossData.description,
+        converter = new Showdown.converter();
         $('#x_desc').html(converter.makeHtml(odof.util.escapeXml(strDesc)));
         if (!this.expended && $('#x_desc').height() > 200) {
             $('#x_desc_expand').show();
@@ -54,25 +54,47 @@ var moduleNameSpace = 'odof.x.render',
         $('#x_desc_expand').hide();
     };
 
+    function print_rsvp(myrsvp, username) {
+        var str = '';
+        switch (myrsvp) {
+            case 1:
+                str = 'Confirmed by ' + username;
+            break;
+            case 2:
+                str = 'Declined by ' + username;
+            break;
+            case 3:
+                break;
+            case 0:
+                str = 'Request invitation';
+
+        }
+        return str;
+    }
 
     ns.showRsvp = function()
     {
+        $('#x_rsvp_typeinfo').hide();
         if (this.editable) {
             if (myrsvp) {
-                $('#x_rsvp_status').html(this.arrRvsp[myrsvp]);
+                $('#x_rsvp_area').addClass('x_rsvp_area_status');
+                $('#x_rsvp_typeinfo>span').html(print_rsvp(myrsvp, window['id_name']));
+                $('#x_rsvp_status #x_rsvp_status_type').html(this.arrRvsp[myrsvp]);
+                $('#x_rsvp_status').data('rsvp_status', myrsvp);
                 $('#x_rsvp_msg').show();
                 $('.x_rsvp_button').hide();
-                $('#x_rsvp_change').show();
+                $('#x_rsvp_typeinfo').hide();
             } else {
                 $('#x_rsvp_msg').hide();
                 $('.x_rsvp_button').show();
-                $('#x_rsvp_change').hide();
+                $('#x_rsvp_typeinfo').hide();
             }
         } else {
             $('#x_rsvp_msg').hide();
             $('.x_rsvp_button').show().addClass('readonly');
-            $('#x_rsvp_change').hide();
+            $('#x_rsvp_typeinfo').hide();
         }
+        //$('#x_exfee_users').html(this.showConfirmed(crossExfee));
     };
 
 
@@ -114,13 +136,16 @@ var moduleNameSpace = 'odof.x.render',
         }
 
         //Show google maps. added by handaoliang
-        if(parseInt(crossData.place.lng) != 0
-                && parseInt(crossData.place.lat) != 0
-                && typeof crossData.place.lat != "undefined"
-                && typeof crossData.place.lng != "undefined"
-                ){
-            odof.apps.maps.googleMapsContainerID = "google_maps_cotainer";
+        if (typeof crossData.place.lat !== 'undefined'
+         && typeof crossData.place.lng !== 'undefined'
+         && crossData.place.lat !== ''
+         && crossData.place.lng !== ''
+         && parseInt(crossData.place.lat) !== 0
+         && parseInt(crossData.place.lng) !== 0) {
+            odof.apps.maps.googleMapsContainerID = 'google_maps_cotainer';
             odof.apps.maps.drawGoogleMaps(crossData.place.lat, crossData.place.lng, crossData.place.line1, 280, 140)
+        } else {
+            $('#google_maps_cotainer').html('').hide();
         }
     };
 
@@ -157,12 +182,30 @@ var moduleNameSpace = 'odof.x.render',
              + '</li>';
     };
 
+    ns.showConfirmed = function (users) {
+        var str = '<ul>', i = 0, l = users.length, j = 0;
+        for (; i < l; i++) {
+            if (users[i].state === 1) {
+                ++j;
+            }
+            if (users[i].state === 1 && users[i].name !== window['id_name']) {
+                str += '<li><img src="' + users[i].avatar_file_name + '" width="20px" height="20px" /></li>'
+            }
+        }
+        if (j) {
+            str += '<li><span>' + j + '</span> confirmed.</li>';
+        }
+        str += '</ul>';
+        return str;
+    };
+
 
     ns.show = function(editable)
     {
+        // state: {0: 未知，1：去，2：不去，3：感兴趣}
         var strCnvstn = editable
                       ? '<div id="x_conversation_area">'
-                      +     '<h3>Conversation</h3>'
+                      +     '<a id="x_hide_history" href="javascript:void(0);">Hide history</a><h3 id="x_conversation">Conversation</h3>'
                       +     '<div id="x_conversation_input_area" class="cleanup">'
                       +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
                       +         '<textarea id="x_conversation_input"></textarea>'
@@ -180,16 +223,26 @@ var moduleNameSpace = 'odof.x.render',
                       +         '<div id="x_desc_area">'
                       +             '<div id="x_desc" class="x_desc"></div>'
                       +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
-                      +             '<a id="x_desc_expand" href="javascript:void(0);">Expand</a>'
+                      +             '<div id="x_desc_expand">'
+                      +                 '<div class="triangle-bottomright"><em></em></div>'
+                      +                 '<a href="javascript:void(0);">More</a>'
+                      +             '</div>'
                       +         '</div>'
                       +         '<div id="x_rsvp_area" class="cleanup">'
-                      +             '<span id="x_rsvp_msg">'
-                      +                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
-                      +             '</span>'
+                      //+             '<span id="x_rsvp_msg">'
+                      //+                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
+                      //+             '</span>'
+                      +             '<div id="x_rsvp_msg">'
+                      +                 '<div id="x_rsvp_status">'
+                      +                     '<span id="x_rsvp_status_type"></span>'
+                      +                     '<span id="x_rsvp_typeinfo"><span></span><a id="x_rsvp_change" href="javascript:void(0);">Change attendance</a></span>'
+                      +                 '</div>'
+                      +                 '<div id="x_exfee_users"></div>'
+                      +             '</div>'
                       +             '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
                       +             '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
                       +             '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
-                      +             '<a id="x_rsvp_change" href="javascript:void(0);">Change?</a>'
+                      +             '<div id="x_exfee_by_user"></div>'
                       +         '</div>'
                       +         strCnvstn
                       +     '</div>'
@@ -208,6 +261,18 @@ var moduleNameSpace = 'odof.x.render',
                       + '</div>';
 
         $('#x_view_content').html(crossHtml);
+
+        if (window['crossExfee']) {
+            $.each(crossExfee, function (i, v) {
+                if (v.host) {
+                    $('#x_view_content')
+                        .find('#x_exfee_by_user')
+                        .html('Invitation from ' + '<img alt="" src="' + v.avatar_file_name + '" width="20px" height="20px" /><span class="x_conversation_identity" style="padding-left: 2px;">' + v.name + '</span>');
+                }
+            });
+            $('#x_exfee_users').html(this.showConfirmed(crossExfee));
+        }
+
         if ((this.editable = editable)) {
             $('#x_conversation_my_avatar').attr(
                 'src',
@@ -229,5 +294,36 @@ var moduleNameSpace = 'odof.x.render',
         this.showTime();
         this.showPlace();
     };
+
+    ns.changeConfirmed = function (new_myrsvp) {
+        var old_myrsvp = window['myrsvp'];
+        var i = 0;
+        if (old_myrsvp === new_myrsvp) return;
+        if (old_myrsvp !== new_myrsvp && new_myrsvp === 1) i=1;
+        if (old_myrsvp !== new_myrsvp && new_myrsvp === 2) i=-1;
+        var $span = $('#x_exfee_users ul li:last > span');
+        var c = ~~$span.html();
+        $span.html(c+i);
+    };
+
+    $(function () {
+        $(document).delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
+            var $x_desc_expand = $('#x_desc_expand');
+            if ($x_desc_expand.is(':hidden')) return;
+            $x_desc_expand
+                .toggleClass('x_desc_expand_hover')
+                .find('>a')[e.type === 'mouseenter' ? 'show' : 'hide']();
+        });
+
+        $(document).delegate('#x_rsvp_status', 'mouseenter mouseleave', function (e) {
+            if (e.type === 'mouseenter') {
+                $('#x_rsvp_typeinfo').show();
+                $('#x_exfee_users').hide();
+            } else {
+                $('#x_rsvp_typeinfo').hide();
+                $('#x_exfee_users').show();
+            }
+        });
+    });
 
 })(ns);
