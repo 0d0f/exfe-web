@@ -244,7 +244,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (!objTime.begin_at || objTime.begin_at === '0000-00-00 00:00:00') {
             result = 'Sometime';
         } else {
-            var crossOffset = odof.comm.func.convertTimezoneToSecond(objTime.timezone);
+            var crossOffset = objTime.timezone ? odof.comm.func.convertTimezoneToSecond(objTime.timezone) : 0;
             if (crossOffset === window.timeOffset && window.timeValid || !objTime.origin_begin_at) {
                 if (!(result = odof.util.getHumanDateTime(objTime.begin_at))) {
                     result  = 'Sometime';
