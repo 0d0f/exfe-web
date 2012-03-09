@@ -49,19 +49,22 @@ var moduleNameSpace = 'odof.x.render',
 
 
     ns.expendDesc = function() {
-        odof.x.render.expended = true;
-        $('#x_desc').addClass('expanded');
-        $('#x_desc_expand').hide();
+        var expanded = !!odof.x.render.expanded,
+            act = (expanded ? 'remove' : 'add') + 'Class';
+        $('#x_desc')[act]('expanded');
+        $(this).find('div.triangle-bottomright')[act]('triangle-topleft');
+        $(this).find('>span').html(expanded ? 'More' : 'Less');
+        odof.x.render.expanded = !expanded;
     };
 
     function print_rsvp(myrsvp, username) {
         var str = '';
         switch (myrsvp) {
             case 1:
-                str = 'Confirmed by ' + username;
+                str = 'Confirmed by <b>' + username + '</b>.';
             break;
             case 2:
-                str = 'Declined by ' + username;
+                str = 'Declined by <b>' + username + '</b>.';
             break;
             case 3:
                 break;
@@ -78,20 +81,21 @@ var moduleNameSpace = 'odof.x.render',
         if (this.editable) {
             if (myrsvp) {
                 $('#x_rsvp_area').addClass('x_rsvp_area_status');
-                $('#x_rsvp_typeinfo>span').html(print_rsvp(myrsvp, window['id_name']));
+                if (myIdentity.id !== crossData.host_id) $('#x_rsvp_typeinfo>span').html(print_rsvp(myrsvp, window['id_name']));
                 $('#x_rsvp_status #x_rsvp_status_type').html(this.arrRvsp[myrsvp]);
                 $('#x_rsvp_status').data('rsvp_status', myrsvp);
                 $('#x_rsvp_msg').show();
-                $('.x_rsvp_button').hide();
+                //$('.x_rsvp_button').hide();
+                $('#x_rsvp_btns').hide();
                 $('#x_rsvp_typeinfo').hide();
             } else {
                 $('#x_rsvp_msg').hide();
-                $('.x_rsvp_button').show();
+                $('#x_rsvp_btns').show();
                 $('#x_rsvp_typeinfo').hide();
             }
         } else {
             $('#x_rsvp_msg').hide();
-            $('.x_rsvp_button').show().addClass('readonly');
+            $('#x_rsvp_btns').show().find('.x_rsvp_button').addClass('readonly');
             $('#x_rsvp_typeinfo').hide();
         }
         //$('#x_exfee_users').html(this.showConfirmed(crossExfee));
@@ -188,13 +192,11 @@ var moduleNameSpace = 'odof.x.render',
             if (users[i].state === 1) {
                 ++j;
             }
-            if (users[i].state === 1 && users[i].name !== window['id_name']) {
-                str += '<li><img src="' + users[i].avatar_file_name + '" width="20px" height="20px" /></li>'
+            if (users[i].state === 1 && users[i].identity_id === crossData.host_id) {
+                str += '<li><img alt="" src="' + users[i].avatar_file_name + '" width="20px" height="20px" /></li>'
             }
         }
-        if (j) {
-            str += '<li><span>' + j + '</span> confirmed.</li>';
-        }
+        str += '<li class="' + (j?'':'hide') + '"><span>' + j + '</span> confirmed.</li>';
         str += '</ul>';
         return str;
     };
@@ -205,11 +207,13 @@ var moduleNameSpace = 'odof.x.render',
         // state: {0: 未知，1：去，2：不去，3：感兴趣}
         var strCnvstn = editable
                       ? '<div id="x_conversation_area">'
-                      +     '<a id="x_hide_history" href="javascript:void(0);">Hide history</a><h3 id="x_conversation">Conversation</h3>'
+                      // ToDo: 先隐藏此功能
+                      //+     '<a id="x_hide_history" href="javascript:void(0);">Hide history</a>'
+                      +     '<h3 id="x_conversation">Conversation</h3>'
                       +     '<div id="x_conversation_input_area" class="cleanup">'
                       +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
                       +         '<textarea id="x_conversation_input"></textarea>'
-                      +         '<input id="x_conversation_submit" type="button" title="Say!">'
+                      //+         '<input id="x_conversation_submit" type="button" title="Say!">'
                       +     '</div>'
                       +     '<ol id="x_conversation_list"></ol>'
                       + '</div>'
@@ -239,10 +243,12 @@ var moduleNameSpace = 'odof.x.render',
                       +                 '</div>'
                       +                 '<div id="x_exfee_users"></div>'
                       +             '</div>'
-                      +             '<a id="x_rsvp_yes"    href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
-                      +             '<a id="x_rsvp_no"     href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
-                      +             '<a id="x_rsvp_maybe"  href="javascript:void(0);" class="x_rsvp_button">interested</a>'
-                      +             '<div id="x_exfee_by_user"></div>'
+                      +             '<div id="x_rsvp_btns">'
+                      +                 '<a id="x_rsvp_yes" href="javascript:void(0);" class="x_rsvp_button">Accept</a>'
+                      +                 '<a id="x_rsvp_no" href="javascript:void(0);" class="x_rsvp_button">Decline</a>'
+                      +                 '<a id="x_rsvp_maybe" href="javascript:void(0);" class="x_rsvp_button">Interested</a>'
+                      +                 '<div id="x_exfee_by_user"></div>'
+                      +             '</div>'
                       +         '</div>'
                       +         strCnvstn
                       +     '</div>'
@@ -263,13 +269,15 @@ var moduleNameSpace = 'odof.x.render',
         $('#x_view_content').html(crossHtml);
 
         if (window['crossExfee']) {
-            $.each(crossExfee, function (i, v) {
-                if (v.host) {
+            var my = this.fetchUserByIdentityId(myIdentity.id);
+            if (my.identity_id !== my.by_identity_id) {
+                var by_identity = this.fetchUserByIdentityId(my.by_identity_id);
+                if (by_identity) {
                     $('#x_view_content')
                         .find('#x_exfee_by_user')
-                        .html('Invitation from ' + '<img alt="" src="' + v.avatar_file_name + '" width="20px" height="20px" /><span class="x_conversation_identity" style="padding-left: 2px;">' + v.name + '</span>');
+                        .html('Invitation from ' + '<img alt="" src="' + by_identity.avatar_file_name + '" width="20px" height="20px" /><span class="x_conversation_identity" style="padding-left: 2px;">' + by_identity.name + '</span>.');
                 }
-            });
+            }
             $('#x_exfee_users').html(this.showConfirmed(crossExfee));
         }
 
@@ -286,6 +294,15 @@ var moduleNameSpace = 'odof.x.render',
         this.showRsvp();
     };
 
+    ns.fetchUserByIdentityId = function (identity_id) {
+        var user = null;
+        $.each(crossExfee, function (i, v) {
+            if (v.identity_id === identity_id) {
+                user = v;
+            }
+        });
+        return user;
+    };
 
     ns.showComponents = function()
     {
@@ -295,12 +312,12 @@ var moduleNameSpace = 'odof.x.render',
         this.showPlace();
     };
 
-    ns.changeConfirmed = function (new_myrsvp) {
+    ns.changeConfirmed = function (new_myrsvp, user_id) {
         var old_myrsvp = window['myrsvp'];
         var i = 0;
         if (old_myrsvp === new_myrsvp) return;
-        if (old_myrsvp !== new_myrsvp && new_myrsvp === 1) i=1;
-        if (old_myrsvp !== new_myrsvp && new_myrsvp === 2) i=-1;
+        if (old_myrsvp !== new_myrsvp && new_myrsvp === 1) i = 1;
+        if (old_myrsvp !== new_myrsvp && new_myrsvp === 2) i = -1;
         var $span = $('#x_exfee_users ul li:last > span');
         var c = ~~$span.html();
         $span.html(c+i);
@@ -308,17 +325,29 @@ var moduleNameSpace = 'odof.x.render',
 
     $(function () {
         $(document).delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
-            var $x_desc_expand = $('#x_desc_expand');
+            var $x_desc_expand = $('#x_desc_expand'),
+                isMouseEnter = e.type === 'mouseenter';
             if ($x_desc_expand.is(':hidden')) return;
             $x_desc_expand
                 .toggleClass('x_desc_expand_hover')
-                .find('>a')[e.type === 'mouseenter' ? 'show' : 'hide']();
+                .find('>a')[isMouseEnter ? 'show' : 'hide']();
         });
 
-        $(document).delegate('#x_rsvp_status', 'mouseenter mouseleave', function (e) {
-            if (e.type === 'mouseenter') {
-                $('#x_rsvp_typeinfo').show();
-                $('#x_exfee_users').hide();
+        $(document).delegate('#x_rsvp_msg', 'mouseenter mouseleave', function (e) {
+            var timer = $(this).data('xtimer'),
+                isMouseEnter = e.type === 'mouseenter';
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+
+            if (isMouseEnter) {
+                timer = setTimeout(function () {
+                    $('#x_exfee_users').hide();
+                    $('#x_rsvp_typeinfo').show();
+                }, 500);
+
+                $(this).data('xtimer', timer);
             } else {
                 $('#x_rsvp_typeinfo').hide();
                 $('#x_exfee_users').show();
