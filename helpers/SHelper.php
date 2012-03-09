@@ -79,6 +79,7 @@ class SHelper extends ActionController
                             if (!isset($rawLogs[$logI]['new_value'][1]) || $rawLogs[$logI]['new_value'][1] === '0') {
                                 $rawLogs[$logI]['new_value'][1] = '';
                             }
+                         // $rawLogs[$logI]['new_value'][2] = $logItem['meta'] ? $logItem['meta'] : '';
                             $rawLogs[$logI]['new_value'] = implode(',', $rawLogs[$logI]['new_value']);
                         case 'description':
                             break;

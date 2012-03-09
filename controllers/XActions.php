@@ -14,6 +14,9 @@ class XActions extends ActionController
         }
         $this->setVar('myidentity', $myidentity);
 
+        // get utc time
+        $this->setVar('utc', time());
+
         if ($_POST['title']) {
             if ($identity_id) {
                 $idntdata = $this->getModelByName('identity');
@@ -32,11 +35,12 @@ class XActions extends ActionController
                     }
 
                     $cross = array(
-                        'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
-                        'description' => mysql_real_escape_string(htmlspecialchars($_POST['description'])),
-                        'place_id'    => intval($placeid),
-                        'datetime'    => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
-                        'timezone'    => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
+                        'title'        => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
+                        'description'  => mysql_real_escape_string(htmlspecialchars($_POST['description'])),
+                        'place_id'     => intval($placeid),
+                        'datetime'     => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
+                        'ori_datetime' => mysql_real_escape_string(htmlspecialchars($_POST['origin_begin_at'])),
+                        'timezone'     => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
                     );
 
                     $cross_id = $crossdata->gatherCross(
@@ -126,13 +130,14 @@ class XActions extends ActionController
             }
 
             $cross = array(
-                'id'          => intval($cross_id),
-                'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
-                'desc'        => mysql_real_escape_string(htmlspecialchars($_POST['desc'])),
-                'start_time'  => mysql_real_escape_string($_POST['time']),
-                'timezone'    => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
-                'place'       => json_decode($_POST['place'], true),
-                'identity_id' => intval($identity_id)
+                'id'              => intval($cross_id),
+                'title'           => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
+                'desc'            => mysql_real_escape_string(htmlspecialchars($_POST['desc'])),
+                'start_time'      => mysql_real_escape_string($_POST['time']),
+                'timezone'        => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
+                'origin_begin_at' => mysql_real_escape_string(htmlspecialchars($_POST['origin_begin_at'])),
+                'place'           => json_decode($_POST['place'], true),
+                'identity_id'     => intval($identity_id)
             );
 
             $result = $crossDataObj->updateCross($cross);
@@ -241,6 +246,9 @@ class XActions extends ActionController
 
         // init helper
         $hlpCheck      = $this->getHelperByName('check');
+        
+        // get utc time
+        $this->setVar('utc', time());
 
         $identity_id = 0;
         $base62_cross_id = $_GET['id'];
@@ -339,7 +347,6 @@ class XActions extends ActionController
                     $invitations[$idx]['host'] = $invitation['identity_id'] === $cross['host_id'];
                 }
             }
-
             $cross['exfee'] = $invitations;
 
             $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
