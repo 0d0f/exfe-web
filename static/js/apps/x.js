@@ -110,7 +110,7 @@ var moduleNameSpace = 'odof.x.render',
             strRelativeTime = 'Sometime';
         } else {
             var crossOffset = odof.comm.func.convertTimezoneToSecond(crossData.timezone);
-            if (crossOffset === myIdentity.timeOffset && odof.x.render.timeValid) {
+            if (crossOffset === window.timeOffset && window.timeValid) {
                 strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
                 strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
                 if (!strRelativeTime || !strAbsoluteTime) {
@@ -368,12 +368,6 @@ var moduleNameSpace = 'odof.x.render',
                 $('#x_exfee_users').show();
             }
         });
-
-        // check accuracy of the local time
-        var maxDiff   = 30 * 60,
-            localUtc  = Math.round(new Date().getTime() / 1000);
-        odof.x.render.timeValid = Math.abs(odof.x.render.utcDiff = localUtc - utc) < 15 * 60;
-        myIdentity.timeOffset   = odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
     });
 
 })(ns);

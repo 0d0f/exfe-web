@@ -14,9 +14,6 @@ class XActions extends ActionController
         }
         $this->setVar('myidentity', $myidentity);
 
-        // get utc time
-        $this->setVar('utc', time());
-
         if ($_POST['title']) {
             if ($identity_id) {
                 $idntdata = $this->getModelByName('identity');
@@ -246,9 +243,6 @@ class XActions extends ActionController
 
         // init helper
         $hlpCheck      = $this->getHelperByName('check');
-        
-        // get utc time
-        $this->setVar('utc', time());
 
         $identity_id = 0;
         $base62_cross_id = $_GET['id'];

@@ -1167,7 +1167,7 @@ var odof = {
         if (timestamp < 0) {
             return '';
         }
-        var difference = Date.parse(new Date()) / 1000 - timestamp - odof.x.render.utcDiff,
+        var difference = Date.parse(new Date()) / 1000 - timestamp - window.utcDiff,
             periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
             lengths    = ['60', '60', '24', '7', '4.35', '12', '10'],
             ending     = '';
@@ -1222,7 +1222,8 @@ var odof = {
         }
         if (withTime && !time_type) {
             objDate = new Date(objDate.getTime()
-                    + (typeof offset !== 'undefined' ? offset : odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())) * 1000);
+                    + (typeof offset !== 'undefined' ? offset
+                    : odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())) * 1000);
         }
         // rebuild time
         var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
