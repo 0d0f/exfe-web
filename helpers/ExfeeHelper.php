@@ -7,12 +7,14 @@ class ExfeeHelper extends ActionController {
         $invitationData = $this->getModelByName('invitation');
         $relationData   = $this->getModelByName('relation');
         $logData        = $this->getModelByName('log');
+        $crossData      = $this->getModelByName('x');
 
         $curExfees = array();
         $newExfees = array();
         $delExfees = array();
         $allExfees = array();
         $inviteIds = array();
+        $nedUpdate = false;
 
         if (is_array($invited)) {
             foreach ($invited as $identItem) {
@@ -70,6 +72,7 @@ class ExfeeHelper extends ActionController {
                             $result=$invitationData->rsvp($cross_id, $identity_id, $confirmed);
                             $invitation_id=$result["id"];
                             $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
+                            $nedUpdate = true;
                         }
                         continue;
                     }
@@ -87,6 +90,7 @@ class ExfeeHelper extends ActionController {
 
                 $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'addexfee', $identity_id);
                 $logData->addLog('identity', $_SESSION['identity_id'], 'rsvp', 'cross', $cross_id, '', "{$identity_id}:{$confirmed}","{\"id\":$invitation_id}");
+                $nedUpdate = true;
             }
         }
 
@@ -101,10 +105,15 @@ class ExfeeHelper extends ActionController {
                 if (!in_array($identity_id, $curExfees)) {
                     $invitationData->delInvitation($cross_id, $identity_id);
                     $logData->addLog('identity', $_SESSION['identity_id'], 'exfee', 'cross', $cross_id, 'delexfee', $identity_id);
+                    $nedUpdate = true;
                     $delExfees[$identity_id] = $confirmed;
                     //array_push($delExfees, $identity_id);
                 }
             }
+        }
+        
+        if ($nedUpdate) {
+            $crossData->updateCrossUpdatedAt($cross_id);
         }
 
         if (is_array($invited)) {
