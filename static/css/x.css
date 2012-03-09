@@ -286,6 +286,10 @@
     color: #424242;
 }
 
+#x_rsvp_typeinfo .bold {
+    font-weight: bold;
+}
+
 #x_rsvp_typeinfo a {
     color: #A9A9A9;
 }
