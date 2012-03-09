@@ -32,12 +32,13 @@
 }
 
 #x_title {
-    font-weight: normal;
     word-break: break-all;
 }
 
 .x_title {
     color: #191919;
+    text-shadow: 0 1px 1px #FEFFFE;
+    font-weight: 300;
     line-height: 50px;
     font-size: 42px;
     width: 714px; /* 原来 800；离中值最近1/7 */
@@ -54,10 +55,6 @@
     max-height: 112px;
     overflow: hidden;
     width: 630px;
-}
-
-#x_content {
-    /*margin-top: 20px;*/
 }
 
 #x_desc {
@@ -173,6 +170,15 @@
     vertical-align: middle;
 }
 
+/*#x_desc_expand .triangle-topleft {}*/
+
+#x_desc_expand .triangle-topleft > em {
+    border-bottom: 0;
+    border-left: 0;
+    border-top: 8px solid #B2B2B2;
+    border-right: 8px solid transparent;
+}
+
 #x_desc_expand span {
     height: 20px;
     background: #ececec;
@@ -200,27 +206,28 @@
 }
 
 #x_rsvp_area {
-    margin-top: 40px;
-    line-height: 24px;
-    height: 60px;
+    margin-top: 20px;
 }
 
 #x_rsvp_area.x_rsvp_area_status {
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 #x_rsvp_msg {
+    height: 32px;
     color: #3F3F3F;
     font-size: 18px;
     display: none;
-    margin-left: 20px;
+    padding: 20px 20px;
 }
 
-#x_rsvp_status {
-    display: inline;
+#x_rsvp_btns {
+    display: none;
+    padding-top: 20px;
 }
 
 #x_rsvp_status_type {
+    color: #4C4C4C;
     display: block;
     height: 28px;
     width: 100px;
@@ -230,6 +237,7 @@
     line-height: 28px;
     width: 96px;
     float: left;
+    font-size: 18px;
 }
 
 #x_exfee_users {
@@ -238,12 +246,13 @@
 
 #x_exfee_users ul {
     display: table-cell;
-    vertical-align:middle;
+    vertical-align: middle;
     height: 30px;
 }
 
 #x_exfee_users img {
     vertical-align: middle;
+    border-radius: 2px;
 }
 
 #x_exfee_users ul li {
@@ -253,8 +262,12 @@
   font-size: 14px;
 }
 
+#x_exfee_users ul li.hide {
+  display: none;
+}
+
 #x_rsvp_change {
-    margin-left: 12px;
+    padding-left: 4px;
     color: #999999;
     font-size: 14px;
     text-decoration: underline;
@@ -267,7 +280,7 @@
     padding: 8px 0px 8px 20px;
 }
 
-#x_rsvp_typeinfo>span {
+#x_rsvp_typeinfo span {
     font-size: 12px;
     line-height: 20px;
     color: #424242;
@@ -285,26 +298,26 @@ a#x_hide_history {
     float: right;
     color: #B2B2B2;
     font-size: 14px;
-    line-height: 30px;
+    line-height: 34px;
     background: url("/static/images/x_hide_history.png") no-repeat 0 10px;
     text-indent: 15px;
     height: 30px;
-    text-align: bottom;
+    vertical-align: middle;
     display: block;
 }
 
 #x_exfee_by_user {
-    height: 28px;
+    height: 32px;
     font-size: 14px;
-    line-height: 28px;
+    line-height: 32px;
     color: #4C4C4C;
     margin-left: 33px;
     clear: both;
-    display: none;
 }
 
 #x_exfee_by_user img {
     vertical-align: middle;
+    border-radius: 2px;
 }
 
 #x_conversation_area {
@@ -312,13 +325,13 @@ a#x_hide_history {
 }
 
 #x_conversation_area h3 {
+    color: #4C4C4C;
     font-size: 24px;
     line-height: 30px;
-    font-weight: normal;
-    background: url("/static/images/icons.png") no-repeat;
+    font-weight: 300;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.33);
     text-indent: 30px;
-    color: #4C4C4C;
-    text-shadow: 0px 1px rgba(0, 0, 0, 0.25);
+    background: url("/static/images/icons.png") no-repeat;
 }
 
 .x_conversation_avatar {
@@ -335,9 +348,12 @@ a#x_hide_history {
     height: 40px;
     float: right;
     resize: none;
+    background: url("/static/images/enter.png") no-repeat right bottom;
+    overflow: hidden;
 }
 
 #x_conversation_input_area {
+    position: relative;
     padding-top: 15px;
     clear: both;
 }
@@ -370,7 +386,7 @@ a#x_hide_history {
 .x_conversation_time {
     font-size: 12px;
     line-height: 20px;
-    color: #919191;
+    color: #7F7F7F;
     float: right;
 }
 
@@ -378,7 +394,7 @@ a#x_hide_history {
     font-size: 34px;
     line-height: 40px;
     color: #1F78A5;
-    font-weight: normal;
+    font-weight: 300;
 }
 
 #x_time_absolute {
@@ -392,21 +408,14 @@ a#x_hide_history {
 }
 
 #x_place_line1 {
-    font-weight: normal;
-    word-break: break-all;
     font-size: 34px;
     line-height: 40px;
     color: #1F78A5;
-}
-
-.x_place_line1_normal {
-    /*font-size: 36px;
-    line-height: 46px;*/
+    font-weight: 300;
+    word-break: break-all;
 }
 
 .x_place_line1_double {
-    /*font-size:30px;
-    line-height: 36px;*/
     max-height: 80px;
     overflow: hidden;
 }
@@ -421,26 +430,27 @@ a#x_hide_history {
     overflow: hidden;
 }
 
-#xExfeeArea {
-    margin-top: 40px;
-}
-
-#xExfeeArea:hover .exfeegadget_num_of {
-    visibility: visible;
-}
-
 .exfeegadget_info_labelarea, .exfeegadget_info {
     height: 42px;
 }
 
 .exfeegadget_info_labelarea {
-    background: url("/static/images/icons.png") no-repeat left -26px;
-    font-size: 24px;
-    line-height: 48px;
+    background: url("/static/images/icons.png") no-repeat left -30px;
     color: #4C4C4C;
-    text-shadow: 0px 1px rgba(0, 0, 0, 0.25);
+    font-size: 24px;
+    line-height: 42px;
+    font-weight: 300;
+    height: 42px;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.33);
     text-indent: 30px;
     float: left;
+}
+
+.exfeegadget_expandavatarbtn {
+    background: url("/static/images/exfee_more.png") no-repeat left 5px;;
+    width: 16px;
+    height: 60px;
+    cursor: pointer;
 }
 
 #xExfeeArea .exfeegadget_avatararea {
@@ -458,11 +468,11 @@ a#x_hide_history {
 
 .x_rsvp_button {
     width: 131px;
-    height: 31px;
+    height: 32px;
     text-align: center;
     display: block;
     font-size: 22px;
-    line-height: 26px;
+    line-height: 32px;
     margin-right: 20px;
     float: left;
 }
@@ -519,21 +529,19 @@ a#x_hide_history {
 
 #x_rsvp_maybe {
     background: none;
-    color: #666666;
+    color: #7F7F7F;
     text-decoration: underline;
-    font-size: 18px;
+    font-size: 16px;
     text-align: left;
-    line-height: 24px;
+    text-weight: 300;
 }
 
 #x_rsvp_maybe.readonly{
     background: none;
     color: #666666;
     text-decoration: underline;
-    font-size: 18px;
     text-align: left;
     cursor: default;
-    line-height: 24px;
 }
 
 #xExfeeArea .exfeegadget_inputarea {
@@ -544,11 +552,6 @@ a#x_hide_history {
 #xExfeeArea .exfeegadget_inputbox {
     width: 230px;
 }
-/*
-#xExfeeArea .exfeegadget_addbtn {
-    top: -3px;
-}
-*/
 
 #google_maps_cotainer{
     display:none; margin-top: 10px;
