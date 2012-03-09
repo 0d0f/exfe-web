@@ -242,26 +242,27 @@ class IdentityModels extends DataModel {
     }
 
     public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
-        if($userid==0)
-        {
+        if($userid==0) {
             $sql="select userid from user_identity where identityid=$identity_id";
             $trow=$this->getRow($sql);
-            if(intval($trow["userid"])>0)
+            if(intval($trow["userid"])>0){
                 $userid=intval($trow["userid"]);
+            }
         }
         if($userrow==NULL) {
             $sql="select name,bio,avatar_file_name from users where id=$userid";
             $userrow=$this->getRow($sql);
         }
-        if($identityrow==NULL)
-        {
+        if($identityrow==NULL) {
             $sql="select * from identities where id='$identity_id' limit 1";
             $identityrow=$this->getRow($sql);
         }
-
-        if($setcookie==true && $type=="password")
+        if($setcookie==true && $type=="password"){
             $this->setLoginCookie($identity, $userid,$identity_id);
+        }
 
+        $sql = "SELECT timezone FROM users WHERE id={$userid}";
+        $tz_result = $this->getRow($sql);
 
         $ipaddress=getRealIpAddr();
         $time=time();
@@ -271,6 +272,8 @@ class IdentityModels extends DataModel {
 
         $_SESSION["userid"]=$userid;
         $_SESSION["identity_id"]=$identity_id;
+        $_SESSION["user_time_zone"] = $tz_result["timezone"];
+
         $identity=array();
         $identity["external_identity"]=$identityrow["external_identity"];
         $identity["external_username"]=$identityrow["external_username"];
