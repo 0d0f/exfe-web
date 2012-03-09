@@ -473,7 +473,7 @@ class SActions extends ActionController {
             "user_avatar"       =>"",
             "cross_num"         =>0,
             "crosses"           =>"",
-            'identity'          =>null,
+            "identity"          =>null,
         );
 
         if($_SESSION["tokenIdentity"] != "" && $_GET["token"] != ""){
@@ -688,7 +688,6 @@ class SActions extends ActionController {
             $this->setVar("displayname", $displayname);
 
         }
-
 
         if($identity!="" && $password!="")
         {
