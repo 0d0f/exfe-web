@@ -42,19 +42,20 @@ class OAuthModels extends DataModel {
             $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
             $result = $this->getRow($sql);
 
-            $userID = intval($result["userid"]);
-            //这一块是多身份合并的代码，现在先不管，暂时先留着。
-            /*
             //如果已经登录，则合并账户。
             $userID = intval($_SESSION['userid']);
+
             if($userID <= 0){
                 $userID = intval($result["userid"]);
             }else{
-                $oldUserID = intval($result["userid"]);
-                $sql = "UPDATE user_identity set `userid`={$userID} WHERE `identityid`={$identityID} AND `userid`={$oldUserID}";
-                $this->query($sql);
+                if((int)$userID != intval($result["userid"])){
+                    $oldUserID = intval($result["userid"]);
+                    $sql = "UPDATE user_identity set `status`=1 WHERE `identityid`={$identityID} AND `userid`={$oldUserID}";
+                    $this->query($sql);
+                    $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID},{$userID}, FROM_UNIXTIME({$currentTimeStamp}), 3)";
+                    $this->query($sql);
+                }
             }
-            */
 
             /*
             if(is_array($result)){
@@ -72,7 +73,7 @@ class OAuthModels extends DataModel {
                     $this->query($sql);
                 }
             }
-             */
+            */
         }
         return array("identityID" => $identityID, "userID" => $userID);
     }

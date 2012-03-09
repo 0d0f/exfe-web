@@ -69,15 +69,14 @@ var moduleNameSpace = 'odof.x.gather',
         if (displaytime) {
             objTimeInput.val(displaytime);
         }
-        crossData.origin_begin_at = odof.util.trim(objTimeInput.val());
-        if (crossData.origin_begin_at === '') {
+        if ((crossData.origin_begin_at = odof.util.trim(objTimeInput.val())) === '') {
             crossData.begin_at = '';
             $('#gather_date_x').html(typing ? sampleTime : defaultTime);
         } else {
             var strTime = odof.util.parseHumanDateTime(
-                crossData.origin_begin_at,
-                odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
-            );
+                    crossData.origin_begin_at,
+                    odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
+                );
             crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
         }
