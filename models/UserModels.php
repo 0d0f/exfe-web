@@ -159,6 +159,7 @@ class UserModels extends DataModel{
             $user=$this->getRow($sql);
             return $user;
         }
+        return "";
     }
     public function getUserIdByIdentityId($identity_id)
     {

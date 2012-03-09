@@ -127,25 +127,28 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.userOldLocation = userPlaceName;
             jQuery("#"+ns.locationInputBoxID).val(userPlaceName+"\r\n"+userPlaceAddr);
 
-            //更新Preview的显示。
-            if(ns.curActions == "create_cross"){
-                odof.x.gather.updatePlace();
-            }
-            if(ns.curActions == "edit_cross"){
-                var arrPlace = odof.util.parseLocation($('#place_content').val());
-                crossData.place.line1 = arrPlace[0];
-                crossData.place.line2 = arrPlace[1];
-                odof.x.render.showPlace();
-            }
-            jQuery("#gather_place_selector").hide();
+            //更新 Cross 地理位置
+            crossData.place.lat         = userPlaceLat;
+            crossData.place.lng         = userPlaceLng;
+            crossData.place.external_id = e.currentTarget.id;
+            crossData.place.provider    = 'foursquare';
 
             //画Google地图。
             ns.drawGoogleMaps(userPlaceLat, userPlaceLng, userPlaceName);
 
-            crossData.place.lat = userPlaceLat;
-            crossData.place.lng = userPlaceLng;
-            crossData.place.external_id = e.currentTarget.id;
-            crossData.place.provider = 'foursquare';
+            //更新Preview的显示。
+            switch (ns.curActions) {
+                case 'create_cross':
+                    odof.x.gather.updatePlace(true);
+                    break;
+                case 'edit_cross':
+                    var arrPlace = odof.util.parseLocation($('#place_content').val());
+                    crossData.place.line1 = arrPlace[0];
+                    crossData.place.line2 = arrPlace[1];
+                    odof.x.render.showPlace();
+            }
+            jQuery("#gather_place_selector").hide();
+
         };
         jQuery(".place_detail").unbind("click");
         jQuery(".place_detail").bind("click",function(e){

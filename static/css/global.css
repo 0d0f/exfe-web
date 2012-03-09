@@ -15,7 +15,7 @@
 body, button, input, select, textarea {
     font-size: 13px;
     line-height: 1.5;
-    font-family: "Verdana", "Lucida Grande", "Sans", "Helvetica", "Arial", "WenQuanYi Micro Hei", "Droid Sans Fallback", "Microsoft YaHei", "SimSun";
+    font-family: "Helvetica", "Verdana", "Lucida Grande", "Sans", "Arial", "WenQuanYi Micro Hei", "Droid Sans Fallback", "Microsoft YaHei", "SimSun";
 }
 h1, h2, h3, h4, h5, h6 {
     font-size: 100%;
@@ -112,10 +112,10 @@ body {
 
 
 /* global header by Handaoliang */
-#global_header { width:1160px; height:50px; margin:auto; overflow:hidden; }
-#global_header .logo{ position:relative; float:left; width:450px; height:47px; }
+#global_header { width:880px; height:50px; margin:auto; overflow:hidden; }
+#global_header .logo{ position: absolute; width:450px; height:47px; margin-left: -68px;}
 #global_header .user_info{
-    float:right; width:320px; height:47px;
+    float:right; width:320px; height:47px; margin-right: -128px;
 }
 #global_header .user_info a{ color:#FFF; }
 #global_header .user_info .global_sign_in_btn{
@@ -181,17 +181,24 @@ body {
 
 /* Cover effect style control by Handaoliang */
 .cover_element{
-    position:fixed; z-index:200;
-    left:0px; top:0px; background-color:#333;
-    -moz-opacity:0.6; opacity: 0.6;
-    filter: alpha(opacity=60);
+    position: fixed;
+    z-index: 200;
+    /*left: 0px;
+    top: 0px;*/
+    background-color: #333;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)"; /* IE8~9 */
+    filter: alpha(opacity=60); /* IE5~7 */
+    -moz-opacity: 0.6;
     -khtml-opacity: 0.6;
-    -moz-user-select:none;
+    opacity: 0.6;
+    -moz-user-select: none;
 }
 .cover_element_shadow{
-    -moz-opacity:0.01; opacity: 0.01;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=1)"; /* IE8~9 */
     filter: alpha(opacity=0.01);
+    -moz-opacity:0.01;
     -khtml-opacity: 0.01;
+    opacity: 0.01;
 }
 .ex_dialog{ position:absolute; padding:50px; z-index:201; }
 .ex_dialog_shadow {
