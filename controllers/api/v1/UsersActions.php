@@ -70,7 +70,7 @@ class UsersActions extends ActionController {
         $shelper=$this->getHelperByName("s");
         $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
 
-        // merge logs by @Leask {
+        // merge logs by @Leaskh {
         $preItemLogs = array();
         $preItemDna  = '';
         $preItemTime = 0;
