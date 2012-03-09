@@ -61,19 +61,11 @@ var moduleNameSpace = 'odof.x.render',
         var str = '';
         switch (myrsvp) {
             case 1:
-<<<<<<< HEAD
-                str = 'Confirmed by ' + username;
-                break;
-            case 2:
-                str = 'Declined by ' + username;
-                break;
-=======
                 str = 'Confirmed by <b>' + username + '</b>.';
-            break;
+                break;
             case 2:
                 str = 'Declined by <b>' + username + '</b>.';
-            break;
->>>>>>> 6f9052a9aed7c79cdd82ce300242ab5cf925a62f
+                break;
             case 3:
                 break;
             case 0:
