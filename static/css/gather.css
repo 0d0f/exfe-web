@@ -39,12 +39,12 @@
     width: 170px;
     height: 25px;
     margin: 0 10px 0 0;
-    line-height: 24px;
+    line-height: 20px;
     float: left;
     text-align: right;
     background: url("/static/images/icons.png") no-repeat;
     padding-right: 30px;
-    color: #666666;
+    color: #797979;
     font-size: 14px;
 }
 
@@ -87,18 +87,20 @@
     margin-left: 210px;
     background-color: transparent;
     border: 1px solid transparent;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 18px;
+    line-height: 22px;
     padding: 1px;
     resize: none;
 }
 
 #gather_form ul li div {
-    color: #CCCCCC;
+    color: #D5D5D5;
+    font-size: 14px;
+    line-height: 20px;
 }
 
 #gather_form ul li input, #gather_form ul li textarea {
-    color: #333333;
+    color: #424242;
 }
 
 #gather_date_x, #datetime_original, #gather_place_x, #gather_place, #gather_hostby {
@@ -140,6 +142,18 @@
     padding-top: 30px;
 }
 
+#gather_form .exfee_avatarblock .exfee_hostmark {
+    font-size: 10px;
+    line-height: 10px;
+    color: #E6E6E6;
+}
+
+#gather_form .exfee_extrainfo .exfee_hostmark {
+    font-size: 10px;
+    line-height: 12px;
+    color: #E6E6E6;
+}
+
 .exfeegadget_inputbox {
     width: 260px;
 }
@@ -167,7 +181,9 @@
 }
 
 #gather_privacy_info {
-    color: #333333;
+    color: #424242;
+    font-size: 14px;
+    line-height: 20px;
 }
 
 #gather_privacy_info .x {

@@ -83,7 +83,7 @@ class Email_Job
             $parser->transform($original_desc_str)
         );
 
-        $to_time_zone=$this->args["to_identity_time_zone"];
+        #$to_time_zone=$this->args["to_identity_time_zone"];
 
         $begin_at=$this->args["begin_at"];
         //$datetimeobj=humanDateTime($begin_at , $to_time_zone);

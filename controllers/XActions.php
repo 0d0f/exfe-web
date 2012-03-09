@@ -32,10 +32,12 @@ class XActions extends ActionController
                     }
 
                     $cross = array(
-                        'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
-                        'description' => mysql_real_escape_string(htmlspecialchars($_POST['description'])),
-                        'place_id'    => intval($placeid),
-                        'datetime'    => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
+                        'title'        => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
+                        'description'  => mysql_real_escape_string(htmlspecialchars($_POST['description'])),
+                        'place_id'     => intval($placeid),
+                        'datetime'     => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
+                        'ori_datetime' => mysql_real_escape_string(htmlspecialchars($_POST['origin_begin_at'])),
+                        'timezone'     => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
                     );
 
                     $cross_id = $crossdata->gatherCross(
@@ -125,12 +127,14 @@ class XActions extends ActionController
             }
 
             $cross = array(
-                'id'          => intval($cross_id),
-                'title'       => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
-                'desc'        => mysql_real_escape_string(htmlspecialchars($_POST['desc'])),
-                'start_time'  => mysql_real_escape_string($_POST['time']),
-                'place'       => json_decode($_POST['place'], true),
-                'identity_id' => intval($identity_id)
+                'id'              => intval($cross_id),
+                'title'           => mysql_real_escape_string(htmlspecialchars($_POST['title'])),
+                'desc'            => mysql_real_escape_string(htmlspecialchars($_POST['desc'])),
+                'start_time'      => mysql_real_escape_string($_POST['time']),
+                'timezone'        => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
+                'origin_begin_at' => mysql_real_escape_string(htmlspecialchars($_POST['origin_begin_at'])),
+                'place'           => json_decode($_POST['place'], true),
+                'identity_id'     => intval($identity_id)
             );
 
             $result = $crossDataObj->updateCross($cross);
@@ -245,11 +249,17 @@ class XActions extends ActionController
         $cross_id = base62_to_int($base62_cross_id);
         $token = $_GET['token'];
 
-        $check = $hlpCheck->isAllow(
-            'x',
-            'index',
-            array('cross_id' => $cross_id, 'token' => $token)
-        );
+        if(intval($cross_id) > 0){
+            $result = $modData->checkCrossExists($cross_id);
+            if($result == NULL){
+                header("location:/error/404?e=theMissingCross");
+                exit;
+            }
+        }else{
+            header("location:/error/404?e=theMissingCross");
+        }
+
+        $check = $hlpCheck->isAllow( 'x', 'index', array('cross_id' => $cross_id, 'token' => $token));
         if ($check['allow'] === 'false') {
             $referer_uri = SITE_URL . "/!{$base62_cross_id}";
             header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
@@ -288,7 +298,7 @@ class XActions extends ActionController
         $this->setVar('showlogin', $showlogin);
         $this->setVar('token', $_GET['token']);
 
-        $cross = $modData->getCross(base62_to_int($_GET['id']));
+        $cross = $modData->getCross($cross_id);
         $cross['title'] = htmlspecialchars($cross['title']);
         $cross['description'] = $cross['description'];
 
@@ -331,10 +341,9 @@ class XActions extends ActionController
                     $invitations[$idx]['host'] = $invitation['identity_id'] === $cross['host_id'];
                 }
             }
-
             $cross['exfee'] = $invitations;
 
-            $conversationPosts = $modConversion->getConversation(base62_to_int($_GET['id']), 'cross');
+            $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
             $cross['conversation'] = $conversationPosts;
 
             $this->setVar('cross', $cross);
