@@ -597,4 +597,10 @@ jQuery(document).ready(function(){
     //odof.user.status.doShowLoginDialog();
     //odof.user.status.doShowAddIdentityDialog();
     odof.user.status.checkUserLogin();
+
+    // check accuracy of the local time
+    var maxDiff   = 30 * 60,
+        localUtc  = Math.round(new Date().getTime() / 1000);
+    window.timeValid  = Math.abs(window.utcDiff = localUtc - utc) < 15 * 60;
+    window.timeOffset = odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
 });

@@ -101,6 +101,21 @@ class XModels extends DataModel {
         return $result;
     }
 
+    public function getCrossesByIds($cross_id_list)
+    {
+        if(sizeof($cross_id_list)>0)
+        {
+            for($i=0;$i<sizeof($cross_id_list);$i++)
+            {
+                $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
+            }
+            $str=implode(" or ",$cross_id_list);
+            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) ORDER BY created_at DESC;";
+            $crosses=$this->getAll($sql);
+            return $crosses;
+        }
+    }
+
     public function getCrossByUserId($userid, $updated_since="")
     {
         //get all identityid
@@ -126,7 +141,6 @@ class XModels extends DataModel {
                 $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
             }
             $str=implode(" or ",$cross_id_list);
-            //$sql="select c.*,places.place_line1,places.place_line2 from crosses c,places where ($str) and c.place_id=places.id order by created_at desc;";
             $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) ORDER BY created_at DESC;";
             $crosses=$this->getAll($sql);
             return $crosses;
@@ -135,7 +149,6 @@ class XModels extends DataModel {
         //get my host cross or cross_id
         //now, if a cross related with you, you must have a invitation.
     }
-
 
     public function fetchCross($userid, $begin_at = 0, $opening = 'yes',
                                $order_by = '`begin_at`', $limit = null,
