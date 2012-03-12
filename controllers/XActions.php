@@ -243,6 +243,7 @@ class XActions extends ActionController
 
         // init helper
         $hlpCheck      = $this->getHelperByName('check');
+        $hlpLog        = $this->getHelperByName('log');
 
         $identity_id = 0;
         $base62_cross_id = $_GET['id'];
@@ -259,7 +260,7 @@ class XActions extends ActionController
             header("location:/error/404?e=theMissingCross");
         }
 
-        $check = $hlpCheck->isAllow( 'x', 'index', array('cross_id' => $cross_id, 'token' => $token));
+        $check = $hlpCheck->isAllow('x', 'index', array('cross_id' => $cross_id, 'token' => $token));
         if ($check['allow'] === 'false') {
             $referer_uri = SITE_URL . "/!{$base62_cross_id}";
             header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
@@ -343,8 +344,8 @@ class XActions extends ActionController
             }
             $cross['exfee'] = $invitations;
 
-            $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
-            $cross['conversation'] = $conversationPosts;
+            $cross['conversation'] = $modConversion->getConversation($cross_id, 'cross');
+            //$cross['history']      = $hlpLog->getXUpdate($_SESSION['userid'], $cross_id);
 
             $this->setVar('cross', $cross);
             $this->displayView();

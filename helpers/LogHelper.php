@@ -3,7 +3,7 @@
 class LogHelper extends ActionController
 {
 
-    public function GetAllUpdate($userid, $updated_since = '', $limit = 200)
+    public function getXUpdate($userid, $crossId = 'all', $updated_since = '', $limit = 1000)
     {
         // init models
         $modIdentity = $this->getModelByName('identity');
@@ -13,7 +13,11 @@ class LogHelper extends ActionController
         $modLog      = $this->getModelByName('log');
 
         // Get all cross
-        $rawCross = $modCross->fetchCross($userid, 0, null, null, null);
+        if ($crossId === 'all') {
+            $rawCross = $modCross->fetchCross($userid, 0, null, null, null);
+        } else {
+            $rawCross = $modCross->getCrossesByIds(array($crossId));
+        }
         $allCross = array();
         foreach ($rawCross as $crossI => $crossItem) {
             $crossItem['place'] = array('line1'       => $crossItem['place_line1'],
