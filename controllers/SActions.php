@@ -286,8 +286,13 @@ class SActions extends ActionController {
 
         // Add informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['base62id']  = int_to_base62($crossItem['id']);
-            $crosses[$crossI]['begin_at'] .= ",{$crosses[$crossI]['time_type']}";
+            $crosses[$crossI]['base62id'] = int_to_base62($crossItem['id']);
+            $crosses[$crossI]['begin_at'] = array(
+                'begin_at'        => $crosses[$crossI]['begin_at'],
+                'time_type'       => $crosses[$crossI]['time_type'],
+                'timezone'        => $crosses[$crossI]['timezone'],
+                'origin_begin_at' => $crosses[$crossI]['origin_begin_at'],
+            );
             $crosses[$crossI]['exfee']     = array();
             foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
                 if ($cfedInfoItem['cross_id'] === $crossItem['id']) {
@@ -307,11 +312,11 @@ class SActions extends ActionController {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
-        $shelper = $this->getHelperByName('s');
-        $rawLogs = $shelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
+        $loghelper = $this->getHelperByName('log');
+        $rawLogs = $loghelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
 
         // clean logs
-        $loged    = array();
+        $loged   = array();
         foreach ($rawLogs as $logI => $logItem) {
             switch ($logItem['action']) {
                 case 'title':
@@ -473,7 +478,7 @@ class SActions extends ActionController {
             "user_avatar"       =>"",
             "cross_num"         =>0,
             "crosses"           =>"",
-            'identity'          =>null,
+            "identity"          =>null,
         );
 
         if($_SESSION["tokenIdentity"] != "" && $_GET["token"] != ""){
@@ -688,7 +693,6 @@ class SActions extends ActionController {
             $this->setVar("displayname", $displayname);
 
         }
-
 
         if($identity!="" && $password!="")
         {

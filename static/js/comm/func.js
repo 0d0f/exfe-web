@@ -254,6 +254,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.convertTimezoneToSecond = function(tz){
+        tz = tz ? tz : '';
         var offsetSign = tz.substr(0,1);
         offsetSign = offsetSign==0 ? "+" : offsetSign;
         var offsetDetail = tz.substr(1).split(":");

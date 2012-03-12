@@ -93,7 +93,7 @@ class IdentityActions extends ActionController {
                 if(sizeof($identities)==0){
                     return;
                 } else {
-                    $identityData->buildIndex($userid,$identities);
+                    $identityData->buildIndex($userid);
                 }
             }
 

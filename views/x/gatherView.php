@@ -36,7 +36,6 @@
        .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',\r\n"
        .     "defaultTime  = 'Sometime',\r\n"
        .     "sampleTime   = '12-20-2012 09:00 AM',\r\n"
-       .     "utc          = " . $this->getVar('utc') . ",\r\n"
        .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>

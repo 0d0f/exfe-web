@@ -67,10 +67,10 @@ class UsersActions extends ActionController {
             echo json_encode($responobj);
             exit(0);
         }
-        $shelper=$this->getHelperByName("s");
-        $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
+        $loghelper=$this->getHelperByName('log');
+        $rawLogs=$loghelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
 
-        // merge logs by @Leask {
+        // merge logs by @Leaskh {
         $preItemLogs = array();
         $preItemDna  = '';
         $preItemTime = 0;
