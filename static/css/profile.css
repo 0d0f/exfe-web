@@ -25,7 +25,7 @@
     padding: 20px 20px 20px 10px;
     font-size: 12px;
     line-height: 18px;
-    color: #333333;
+    color: #424242;
 }
 #invitation_n_update {
     width: 310px;
@@ -50,7 +50,7 @@ h5 {
 }
 .cross {
     margin: 5px auto 5px auto;
-    padding: 5px 0px 2px 10px;
+    padding: 5px 10px 2px 10px;
     margin-bottom: 10px;
     border: transparent dashed 1px;
 }
@@ -61,9 +61,20 @@ h5 {
     display: none;
 }
 .category_title {
-    color: #666666;
+    color: #797979;
     text-align: right;
 }
+
+#recently_updates .crosses {
+    overflow: hidden;
+}
+
+#invitations .crosses .cross h5, #recently_updates .crosses .cross h5, #recently_updates .crosses .cross p.title > em {
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
 #cross_list .category_title {
     width: 300px;
     border-bottom: solid 1px #ccc;
@@ -119,9 +130,19 @@ h5 {
     background: url(/static/images/icons.png) no-repeat -243px -568px;
     padding-left: 20px;
 }
+
+.cross_link {
+    color: #424242;
+}
+
 .cross_link:hover {
     text-decoration: none;
 }
+
+.cross_link .muted {
+    color: #797979;
+}
+
 em {
     color: #0591AC;
 }
@@ -178,7 +199,9 @@ em {
 }
 .edit_user .u_con {
     float: left;
-    width: 580px;
+    width: 556px;
+    height: 110px;
+    padding-left: 24px;
 }
 .edit_user .u_con h1 {
     font: 18px/24px Verdana, Arial, Helvetica, sans-serif;
@@ -223,6 +246,7 @@ em {
     height: 20px;
     vertical-align: middle;
     margin-right: 2px;
+    border-radius: 2px;
 }
 .edit_user .u_con p img.worning {
     width: 14px;
@@ -236,7 +260,8 @@ em {
     color: #a0a0a0
 }
 .edit_user .u_con p span.id_name {
-    font-weight:bold;
+    font-weight: bold;
+    color: #424242;
 }
 .edit_user .u_con p button {
     width: 84px; height:19px; text-align: center;
@@ -245,6 +270,62 @@ em {
     background: url(/static/images/btn.png) no-repeat 0 -79px;
     border: 0; border-right:1px solid #ADB9C2;
 }
+
+.edit_user .u_con p.identity_list {
+    display: block;
+    font: 12px/18px Verdana, Arial, Helvetica, sans-serif;
+    clear: both;
+    margin-top: 4px;
+    height: 20px;
+}
+
+.edit_user .u_con p.identity_list span.identity_email {
+    font-weight: bold;
+    font-style: italic;
+    color: #797979;
+}
+
+.edit_user .u_con p.identity_list span.identity_icon {
+    cursor: pointer;
+    width: 11px;
+    height: 11px;
+    margin-left: -17px;
+    margin-top: 3px;
+    display: none;
+}
+
+.edit_user .u_con p.identity_list span.identity_remove {
+    background: url(/static/images/profile_subs.png) no-repeat;
+}
+
+.edit_user .u_con p.identity_list span.identity_add {
+    background: url(/static/images/profile_plus.png) no-repeat;
+}
+
+.edit_user .u_con:hover p.identity_list span.identity_icon {
+    display: block;
+}
+
+.edit_user .u_con p.identity_list span.identity_button {
+    margin-left: 0px;
+    text-align: center;
+    display: inline-block;
+    background-color: #EAEAEA;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFEFF), to(#EAEAEA));
+    background-image: -webkit-linear-gradient(top, #FFFEFF, #EAEAEA);
+    background-image:    -moz-linear-gradient(top, #FFFEFF, #EAEAEA);
+    background-image:     -ms-linear-gradient(top, #FFFEFF, #EAEAEA);
+    background-image:      -o-linear-gradient(top, #FFFEFF, #EAEAEA);
+    -moz-box-shadow:    1px 1px 2px 0.25px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 1px 1px 2px 0.25px rgba(0,0,0,0.25);
+    box-shadow:         1px 1px 2px 0.25px rgba(0,0,0,0.25);
+    border-radius: 2px;
+}
+
+.edit_user .u_con p.identity_list span.identity_add_txt {
+    width: 112px;
+}
+
 .edit_user .u_con p.identity_list img{ float:left }
 .edit_user .u_con p.identity_list span{ display:block; float:left; margin-left:5px; }
 .edit_user .u_num {
