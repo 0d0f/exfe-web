@@ -1,4 +1,5 @@
 <?php
+
 class UsersActions extends ActionController {
 
     public function doIndex()
@@ -68,73 +69,13 @@ class UsersActions extends ActionController {
             exit(0);
         }
         $loghelper=$this->getHelperByName('log');
-        $rawLogs=$loghelper->getXUpdate($uid, 'all', urldecode($params["updated_since"]), 200);
-
-        // merge logs by @Leaskh {
-        $preItemLogs = array();
-        $preItemDna  = '';
-        $preItemTime = 0;
-        $magicTime   = 153; // 2:33
-        foreach ($rawLogs as $logI => $logItem) {
-            $curDna  = ($logItem['by_identity']['user_id']
-                     ? "u{$logItem['by_identity']['user_id']}"
-                     : "i{$logItem['by_identity']['id']}")
-                     . "_c{$logItem['x_id']}";
-            $difTime = abs($preItemTime - ($curTime = strtotime($logItem['time'])));
-            if ($curDna === $preItemDna && $difTime <= $magicTime && isset($preItemLogs[$logItem['action']])) {
-                switch ($logItem['action']) {
-                    case 'title':
-                        if (isset($logItem['old_value'])
-                         && $logItem['old_value'] !== null
-                         && $logItem['old_value'] !== '') {
-                            $rawLogs[$preItemLogs[$logItem['action']]]['old_value'] = $logItem['old_value'];
-                        }
-                        break;
-                    case 'addexfee':
-                    case 'delexfee':
-                    case 'confirmed':
-                    case 'declined':
-                    case 'interested':
-                        $loged = false;
-                        foreach ($rawLogs[$preItemLogs[$logItem['action']]]['to_identity'] as $subItem) {
-                            if ($subItem['id'] === $logItem['to_identity']['id']) {
-                                $loged = true;
-                                break;
-                            }
-                        }
-                        if (!$loged) {
-                            array_push(
-                                $rawLogs[$preItemLogs[$logItem['action']]]['to_identity'],
-                                $logItem['to_identity']
-                            );
-                        }
-                }
-                unset($rawLogs[$logI]);
-            } else {
-                switch ($logItem['action']) {
-                    case 'addexfee':
-                    case 'delexfee':
-                    case 'confirmed':
-                    case 'declined':
-                    case 'interested':
-                        $rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
-                }
-                if ($curDna !== $preItemDna || $difTime > $magicTime) {
-                    $preItemLogs = array();
-                }
-                $preItemLogs[$logItem['action']] = $logI;
-            }
-            $preItemDna  = $curDna;
-            $preItemTime = $curTime;
-        }
-        $cleanLogs = array_merge($rawLogs);
-        // }
+        $logs=$loghelper->getMergedXUpdate($uid, 'all', urldecode($params["updated_since"]), 200);
 
         $identityhelper=$this->getHelperByName("identity");
         $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);
 
         $responobj["meta"]["code"]=200;
-        $responobj["response"]=$cleanLogs;
+        $responobj["response"]=$logs;
 
         echo json_encode($responobj);
     }

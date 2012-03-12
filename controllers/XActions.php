@@ -250,14 +250,14 @@ class XActions extends ActionController
         $cross_id = base62_to_int($base62_cross_id);
         $token = $_GET['token'];
 
-        if(intval($cross_id) > 0){
+        if (intval($cross_id) > 0) {
             $result = $modData->checkCrossExists($cross_id);
-            if($result == NULL){
-                header("location:/error/404?e=theMissingCross");
+            if ($result == NULL) {
+                header('location:/error/404?e=theMissingCross');
                 exit;
             }
-        }else{
-            header("location:/error/404?e=theMissingCross");
+        } else {
+            header('location:/error/404?e=theMissingCross');
         }
 
         $check = $hlpCheck->isAllow('x', 'index', array('cross_id' => $cross_id, 'token' => $token));
@@ -345,7 +345,25 @@ class XActions extends ActionController
             $cross['exfee'] = $invitations;
 
             $cross['conversation'] = $modConversion->getConversation($cross_id, 'cross');
-            //$cross['history']      = $hlpLog->getXUpdate($_SESSION['userid'], $cross_id);
+            
+            $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id);
+            foreach ($history as $hI => $hItem) {
+                foreach ($hItem as $hItemI => $hItemItem) {
+                    $scrap = false;
+                    switch ($hItemI) {
+                        case 'change_dna':
+                        case 'meta':
+                            $scrap = true;
+                            break;
+                        default:
+                            $scrap = substr($hItemI, 0, 2) === 'x_';
+                    }
+                    if ($scrap) {
+                        unset($history[$hI][$hItemI]);
+                    }
+                }
+            }
+            $cross['history'] = $history;
 
             $this->setVar('cross', $cross);
             $this->displayView();
