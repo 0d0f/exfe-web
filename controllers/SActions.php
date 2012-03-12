@@ -313,7 +313,7 @@ class SActions extends ActionController {
             exit(0);
         }
         $loghelper = $this->getHelperByName('log');
-        $rawLogs = $loghelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
+        $rawLogs = $loghelper->getXUpdate($_SESSION['userid'], 'all', urldecode($_GET['updated_since']));
 
         // clean logs
         $loged   = array();

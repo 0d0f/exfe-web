@@ -68,7 +68,7 @@ class UsersActions extends ActionController {
             exit(0);
         }
         $loghelper=$this->getHelperByName('log');
-        $rawLogs=$loghelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
+        $rawLogs=$loghelper->getXUpdate($uid, 'all', urldecode($params["updated_since"]), 200);
 
         // merge logs by @Leaskh {
         $preItemLogs = array();

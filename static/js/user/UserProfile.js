@@ -66,7 +66,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             var strCross = '<a id="past_cross_' + data[i]['id'] + '" class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
                          +     '<div class="cross">'
                          +         '<h5>' + data[i]['title'] + '</h5>'
-                         +         '<p>' + odof.util.getHumanDateTime(data[i]['begin_at']) + '</p>'
+                         +         '<p>' + this.showXTime(data[i]['begin_at']) + '</p>'
                          +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <em class="muted">(' + data[i]['place_line2'] + ')</em>') : '') + '</p>'
                          +         '<p>' + confirmed + '</p>'
                          +     '</div>'
