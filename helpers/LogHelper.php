@@ -1,6 +1,6 @@
 <?php
 
-class SHelper extends ActionController
+class LogHelper extends ActionController
 {
 
     public function GetAllUpdate($userid, $updated_since = '', $limit = 200)
