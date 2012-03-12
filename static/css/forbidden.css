@@ -6,7 +6,7 @@
     background:url("/static/images/forbidden_bg.jpg") no-repeat 0 40px;
  }
 .special_main_area {
-    background: url("../images/special_page_subtitle_bg.png") no-repeat bottom center;
+    /*background: url("../images/special_page_subtitle_bg.png") no-repeat bottom center;*/
 }
 .special_page_title {
     font-family: Verdana; font-size: 34px;
