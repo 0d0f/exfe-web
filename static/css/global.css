@@ -176,11 +176,12 @@ body {
 }
 #global_header .user_info .uinfo .myexfefoot a.l{ float:left; }
 #global_header .user_info .uinfo .myexfefoot a.r{ float:right; }
-#global_header .user_info .uinfo .message .info {
-    text-overflow: clip;
-    overflow: hidden;
-    margin-top: 20px;
+#global_header .user_info .uinfo .message .info {margin-top: 20px;}
+#global_header .user_info .uinfo .message .info  a {
     white-space: nowrap;
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
