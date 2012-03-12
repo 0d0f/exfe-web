@@ -67,10 +67,10 @@ class UsersActions extends ActionController {
             echo json_encode($responobj);
             exit(0);
         }
-        $shelper=$this->getHelperByName("s");
-        $rawLogs=$shelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
+        $loghelper=$this->getHelperByName('log');
+        $rawLogs=$loghelper->GetAllUpdate($uid, urldecode($params["updated_since"]), 200);
 
-        // merge logs by @Leask {
+        // merge logs by @Leaskh {
         $preItemLogs = array();
         $preItemDna  = '';
         $preItemTime = 0;
@@ -152,11 +152,6 @@ class UsersActions extends ActionController {
             echo json_encode($responobj);
             exit(0);
         }
-        //print "user/x";
-        //print $params["id"];
-        //print "<br/>";
-        //print $params["updated_since"];
-
         $Data=$this->getModelByName("X");
         $crosses=$Data->getCrossByUserId(intval($params["id"]),urldecode($params["updated_since"]));
         if($crosses=="")
@@ -171,7 +166,6 @@ class UsersActions extends ActionController {
             $cross_id=intval($crosses[$i]["id"]);
             if($cross_id>0)
             {
-                #$conversations=$conversationData->getConversation($cross_id,'cross',10);
                 $conversations = $conversationData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
                 $crosses[$i]["conversations"]=$conversations;
                 $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
@@ -182,13 +176,9 @@ class UsersActions extends ActionController {
                 //invitations
             }
         }
-
-
-
         $responobj["meta"]["code"]=200;
         $responobj["response"]["crosses"]=$crosses;
         echo json_encode($responobj);
-
         //get x by id and updated_since
 
     }
