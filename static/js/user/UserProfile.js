@@ -58,16 +58,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             }
             if (confirmed.length) {
-                confirmed = confirmed.length + ' of ' + data[i].exfee.length
-                          + ' confirmed: '   + confirmed.join(', ');
+                confirmed = confirmed.length + ' <em class="muted">of</em> ' + data[i].exfee.length
+                          + ' <em class="muted">confirmed:</em> '   + confirmed.join(', ');
             } else {
-                confirmed = '0 of ' + data[i].exfee.length + ' confirmed';
+                confirmed = '0 <em class="muted">of</em> ' + data[i].exfee.length + ' <em class="muted">confirmed</em>';
             }
             var strCross = '<a id="past_cross_' + data[i]['id'] + '" class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
                          +     '<div class="cross">'
                          +         '<h5>' + data[i]['title'] + '</h5>'
                          +         '<p>' + odof.util.getHumanDateTime(data[i]['begin_at']) + '</p>'
-                         +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <span>(' + data[i]['place_line2'] + ')</span>') : '') + '</p>'
+                         +         '<p>' + data[i]['place_line1'] + (data[i]['place_line2'] ? (' <em class="muted">(' + data[i]['place_line2'] + ')</em>') : '') + '</p>'
                          +         '<p>' + confirmed + '</p>'
                          +     '</div>'
                          + '</a>';
@@ -570,6 +570,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             $('#changeavatar').hide();
         }
         */
+    };
+
+    ns.editInput = function () {
+
     };
 
 })(ns);

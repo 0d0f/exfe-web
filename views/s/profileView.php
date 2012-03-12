@@ -32,6 +32,7 @@
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
                 <p class="identity_list">
+                <span class="identity_remove identity_icon"></span>
                 <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
                 <?php if($identity["provider"] == "email"){ ?>
                 <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><?php echo $identity["name"]; ?></span>
@@ -44,7 +45,7 @@
                 <?php if($identity["status"] == 2 && $identity["provider"]=="email"){ ?>
                 <span style="width:130px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
                 <?php }else{ ?>
-                <span style="width:400px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
+                <span style="width:400px; overflow:hidden; text-overflow:ellipsis" class="identity_email" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
                 <?php } ?>
                 <?php
                 if($identity["status"] != 3 ) {
@@ -70,6 +71,10 @@
             }
             ?>
             <!-- p><a href="javascript:odof.user.status.doShowAddIdentityDialog();">Add Identity...</a></p -->
+            <p class="identity_list">
+                <span class="identity_add identity_icon"></span>
+                <span class="identity_button identity_add_txt">Add identity…</span>
+            </p>
         </div>
         <div class="u_num">
             <button id="set_password_btn" class="ch_pwd" style="display:none;">Change Password</button>

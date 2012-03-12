@@ -129,8 +129,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         // this.cacheExfee(curExfee);
         this.addExfee(domId, curExfee, true, true);
-        // ToDo: 先隐藏此功能
-        //$('#' + domId + '_exfeegadget_avatararea > ol').append('<li class="last"><button class="exfeegadget_expandavatarbtn" /><li>')
+        // TODO: 先隐藏此功能
+        // $('#' + domId + '_exfeegadget_avatararea > ol').append('<li class="last"><button class="exfeegadget_expandavatarbtn" /><li>')
 
         if (this.diffCallback[domId] && !skipInitCallback) {
             this.diffCallback[domId]();

@@ -49,12 +49,15 @@
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
     margin-bottom: 30px;
     margin-top: 10px;
+    text-overflow: clip;
+    overflow: hidden;
 }
 
 .x_title_double {
     max-height: 112px;
     overflow: hidden;
     width: 630px;
+    height: 100px;
 }
 
 #x_desc {
