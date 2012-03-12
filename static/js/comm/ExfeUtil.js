@@ -1150,6 +1150,7 @@ var odof = {
      * by Leask
      */
     util.getDateFromString = function(strTime) {
+        strTime = strTime ? strTime : '';
         var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/,
             parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' '),
             oDate = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
@@ -1162,12 +1163,15 @@ var odof = {
      * by Leask
      */
     util.getRelativeTime = function(strTime, lang) {
-        var timestamp = Math.round(this.getDateFromString(strTime).getTime() / 1000)
-                      + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset());
+        var objTime   = this.getDateFromString(strTime),
+            timestamp = objTime
+                      ? (Math.round(objTime.getTime() / 1000)
+                      + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset()))
+                      : -1;
         if (timestamp < 0) {
             return '';
         }
-        var difference = Date.parse(new Date()) / 1000 - timestamp - odof.x.render.utcDiff,
+        var difference = Date.parse(new Date()) / 1000 - timestamp - window.utcDiff,
             periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
             lengths    = ['60', '60', '24', '7', '4.35', '12', '10'],
             ending     = '';
@@ -1202,6 +1206,7 @@ var odof = {
      */
     util.getHumanDateTime = function(strTime, offset, lang) {
         // init
+        strTime = strTime ? strTime : '';
         var oriDate   = strTime.split(','),
             time_type = '';
         strTime = this.trim(oriDate[0]);
@@ -1222,7 +1227,8 @@ var odof = {
         }
         if (withTime && !time_type) {
             objDate = new Date(objDate.getTime()
-                    + (typeof offset !== 'undefined' ? offset : odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())) * 1000);
+                    + (typeof offset !== 'undefined' ? offset
+                    : odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())) * 1000);
         }
         // rebuild time
         var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
