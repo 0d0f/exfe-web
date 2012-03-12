@@ -69,6 +69,8 @@ h5 {
     overflow: hidden;
 }
 
+#invitations .crosses .cross h5 {color: #0591AC;}
+
 #invitations .crosses .cross h5, #recently_updates .crosses .cross h5, #recently_updates .crosses .cross p.title > em {
     overflow: hidden;
     text-overflow: ellipsis;
