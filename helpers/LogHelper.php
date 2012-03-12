@@ -191,7 +191,7 @@ class LogHelper extends ActionController {
 
         return $rawLogs;
     }
-    
+
     public function getMergedXUpdate($userid, $crossId = 'all', $updated_since = '', $limit = 1000) {
         $rawLogs = $this->getXUpdate($userid, $crossId, $updated_since, $limit);
 
