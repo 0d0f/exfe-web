@@ -312,8 +312,8 @@ class SActions extends ActionController {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
-        $shelper = $this->getHelperByName('s');
-        $rawLogs = $shelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
+        $loghelper = $this->getHelperByName('log');
+        $rawLogs = $loghelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
 
         // clean logs
         $loged   = array();

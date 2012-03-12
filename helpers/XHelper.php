@@ -1,10 +1,8 @@
 <?php
 
-class XHelper extends ActionController
-{
+class XHelper extends ActionController {
 
-    public function addCrossDiffLog($cross_id, $identity_id, $old_cross, $crossobj)
-    {
+    public function addCrossDiffLog($cross_id, $identity_id, $old_cross, $crossobj) {
         $changed=array();
         $logdata=$this->getModelByName("log");
         if($old_cross["title"] !== $crossobj["title"])
@@ -44,8 +42,7 @@ class XHelper extends ActionController
     }
 
 
-    public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title)
-    {
+    public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title) {
 
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
@@ -93,8 +90,7 @@ class XHelper extends ActionController
     }
 
 
-    public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title)
-    {
+    public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title) {
         $identityData=$this->getModelByName("identity");
         $exfee_identity=$identityData->getIdentityById($action_identity_id);
         $exfee_identity=humanIdentity($exfee_identity,NULL);
@@ -120,16 +116,19 @@ class XHelper extends ActionController
     }
 
 
-    public function logX($identity_id, $cross_id, $cross_title)
-    {
+    public function logX($identity_id, $cross_id, $cross_title) {
         $modLog = $this->getModelByName('log');
         $modLog->addLog('identity', $identity_id, 'gather', 'cross',
                         $cross_id, '', $cross_title, '');
     }
+    
+    
+    public function getHistory($cross_id) {
+        
+    }
 
 
-    public function delDraft($draft_id)
-    {
+    public function delDraft($draft_id) {
         $modXDraft = $this->getModelByName('XDraft');
         $modXDraft->delDraft($draft_id);
     }
