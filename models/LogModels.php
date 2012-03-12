@@ -1,8 +1,7 @@
 <?php
-class LogModels extends DataModel{
+class LogModels extends DataModel {
 
-    public function addLog($from_obj, $from_id, $action, $to_obj, $to_id, $to_field, $change_summy, $meta = '')
-    {
+    public function addLog($from_obj, $from_id, $action, $to_obj, $to_id, $to_field, $change_summy, $meta = '') {
         $from_obj=mysql_real_escape_string($from_obj);
         $from_id=intval($from_id);
         $action=mysql_real_escape_string($action);
@@ -16,8 +15,7 @@ class LogModels extends DataModel{
         $this->query($sql);
     }
 
-    public function getRecentlyLogsByCrossIds($cross_ids, $time = '', $limit = 1000)
-    {
+    public function getRecentlyLogsByCrossIds($cross_ids, $time = '', $limit = 1000) {
         if ($cross_ids) {
             $cross_ids = implode(' OR `to_id` = ', $cross_ids);
             if($time)

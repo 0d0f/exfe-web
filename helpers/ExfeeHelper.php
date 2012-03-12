@@ -97,7 +97,7 @@ class ExfeeHelper extends ActionController {
         if ($addrelation) {
             $redis = new Redis();
             $redis->connect('127.0.0.1', 6379);
-            $redis->zRemrangebyrank("u_{$_SESSION['userid']}", 0, -1);
+            $redis->zRemrangebyrank("u:{$_SESSION['userid']}", 0, -1);
         }
 
         if (is_array($invited)) {

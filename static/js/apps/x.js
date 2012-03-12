@@ -8,8 +8,7 @@
 var moduleNameSpace = 'odof.x.render',
     ns = odof.util.initNameSpace(moduleNameSpace);
 
-(function(ns)
-{
+(function(ns) {
 
     ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
@@ -57,7 +56,8 @@ var moduleNameSpace = 'odof.x.render',
         odof.x.render.expanded = !expanded;
     };
 
-    function print_rsvp(myrsvp, username) {
+
+    var print_rsvp = function(myrsvp, username) {
         var str = '';
         switch (myrsvp) {
             case 1:
@@ -72,7 +72,8 @@ var moduleNameSpace = 'odof.x.render',
                 str = 'Request invitation';
         }
         return str;
-    }
+    };
+
 
     ns.showRsvp = function()
     {
@@ -108,12 +109,25 @@ var moduleNameSpace = 'odof.x.render',
         if (!crossData.begin_at || crossData.begin_at === '0000-00-00 00:00:00') {
             strRelativeTime = 'Sometime';
         } else {
-            strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
-            strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
-            if (!strRelativeTime || !strAbsoluteTime) {
-                crossData.begin_at = '';
-                strRelativeTime = 'Sometime';
-                strAbsoluteTime = '';
+            var crossOffset = crossData.timezone ? odof.comm.func.convertTimezoneToSecond(crossData.timezone) : 0;
+            if (crossOffset === window.timeOffset && window.timeValid) {
+                strRelativeTime = odof.util.getRelativeTime(crossData.begin_at);
+                strAbsoluteTime = odof.util.getHumanDateTime(crossData.begin_at);
+                if (!strRelativeTime || !strAbsoluteTime) {
+                    crossData.begin_at = '';
+                    strRelativeTime = 'Sometime';
+                    strAbsoluteTime = '';
+                }
+            } else {
+                var strTime = odof.util.parseHumanDateTime(crossData.origin_begin_at ? crossData.origin_begin_at : '', crossOffset);
+                strRelativeTime = odof.util.getRelativeTime(strTime);
+                strAbsoluteTime = odof.util.getHumanDateTime(strTime, crossOffset);
+                if (!strRelativeTime || !strAbsoluteTime) {
+                    strRelativeTime = 'Sometime';
+                    strAbsoluteTime = '';
+                } else {
+                    strAbsoluteTime += ' ' + crossData.timezone;
+                }
             }
         }
         $('#x_time_relative').html(strRelativeTime);
@@ -184,6 +198,7 @@ var moduleNameSpace = 'odof.x.render',
              +     '</div>'
              + '</li>';
     };
+
 
     ns.showConfirmed = function (users) {
         var str = '<ul>', i = 0, l = users.length, j = 0;
@@ -320,6 +335,7 @@ var moduleNameSpace = 'odof.x.render',
         var c = ~~$span.html();
         $span.html(c+i);
     };
+
 
     $(function () {
         $(document).delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
