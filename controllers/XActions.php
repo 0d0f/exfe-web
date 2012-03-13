@@ -243,23 +243,24 @@ class XActions extends ActionController
 
         // init helper
         $hlpCheck      = $this->getHelperByName('check');
+        $hlpLog        = $this->getHelperByName('log');
 
         $identity_id = 0;
         $base62_cross_id = $_GET['id'];
         $cross_id = base62_to_int($base62_cross_id);
         $token = $_GET['token'];
 
-        if(intval($cross_id) > 0){
+        if (intval($cross_id) > 0) {
             $result = $modData->checkCrossExists($cross_id);
-            if($result == NULL){
-                header("location:/error/404?e=theMissingCross");
+            if ($result == NULL) {
+                header('location:/error/404?e=theMissingCross');
                 exit;
             }
-        }else{
-            header("location:/error/404?e=theMissingCross");
+        } else {
+            header('location:/error/404?e=theMissingCross');
         }
 
-        $check = $hlpCheck->isAllow( 'x', 'index', array('cross_id' => $cross_id, 'token' => $token));
+        $check = $hlpCheck->isAllow('x', 'index', array('cross_id' => $cross_id, 'token' => $token));
         if ($check['allow'] === 'false') {
             $referer_uri = SITE_URL . "/!{$base62_cross_id}";
             header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
@@ -343,8 +344,26 @@ class XActions extends ActionController
             }
             $cross['exfee'] = $invitations;
 
-            $conversationPosts = $modConversion->getConversation($cross_id, 'cross');
-            $cross['conversation'] = $conversationPosts;
+            $cross['conversation'] = $modConversion->getConversation($cross_id, 'cross');
+            
+            $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id);
+            foreach ($history as $hI => $hItem) {
+                foreach ($hItem as $hItemI => $hItemItem) {
+                    $scrap = false;
+                    switch ($hItemI) {
+                        case 'change_dna':
+                        case 'meta':
+                            $scrap = true;
+                            break;
+                        default:
+                            $scrap = substr($hItemI, 0, 2) === 'x_';
+                    }
+                    if ($scrap) {
+                        unset($history[$hI][$hItemI]);
+                    }
+                }
+            }
+            $cross['history'] = $history;
 
             $this->setVar('cross', $cross);
             $this->displayView();
