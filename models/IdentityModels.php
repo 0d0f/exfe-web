@@ -478,7 +478,6 @@ class IdentityModels extends DataModel {
         {
             if(intval($row["identityid"])>0)
             {
-
                 $identity_id=$row["identityid"];
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
