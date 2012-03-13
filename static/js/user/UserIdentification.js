@@ -682,8 +682,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 */
             }
             if(ns.actions == "sign_in"){
-                if(password == "" || identity == ""){
-                    jQuery('#login_hint').html("<span>Identity or password empty</span>");
+                if(identity == ""){
+                    jQuery('#login_hint').html("<span>Identity empty!</span>");
+                    jQuery('#login_hint').show();
+                    setTimeout(hideErrorMsg, 3000);
+                    return false;
+                }
+                if(password == ""){
+                    jQuery('#login_hint').html("<span>Password empty!</span>");
                     jQuery('#login_hint').show();
                     setTimeout(hideErrorMsg, 3000);
                     return false;
