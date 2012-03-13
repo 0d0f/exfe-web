@@ -1243,6 +1243,39 @@ class SActions extends ActionController {
         exit();
     }
 
+    public function doDeleteIdentity(){
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+
+        //check user login
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityID = exPost("identity_id");
+        //check user identity relation
+        $identityObj = $this->getModelByName("identity");
+        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
+
+        if(!$checkResult){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityObj->deleteIdentity($userID, $identityID);
+
+        echo json_encode($returnData);
+    }
+
     public function doReportSpam() {
         $token = exGet("token");
         if($token == ""){
