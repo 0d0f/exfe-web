@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__)."/config.php";
 
+date_default_timezone_set('UTC');
+
 /**
  * 国际化，取用户浏览器语言
  * @param NULL
