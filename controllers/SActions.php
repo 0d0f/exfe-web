@@ -312,8 +312,8 @@ class SActions extends ActionController {
             echo json_encode(array('error' => 'forbidden'));
             exit(0);
         }
-        $shelper = $this->getHelperByName('s');
-        $rawLogs = $shelper->GetAllUpdate($_SESSION['userid'], urldecode($_GET['updated_since']));
+        $loghelper = $this->getHelperByName('log');
+        $rawLogs = $loghelper->getXUpdate($_SESSION['userid'], 'all', urldecode($_GET['updated_since']));
 
         // clean logs
         $loged   = array();
@@ -1241,6 +1241,39 @@ class SActions extends ActionController {
         $userObj->updateUserPassword($userID, $userNewPassword);
         echo json_encode($returnData);
         exit();
+    }
+
+    public function doDeleteIdentity(){
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+
+        //check user login
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityID = exPost("identity_id");
+        //check user identity relation
+        $identityObj = $this->getModelByName("identity");
+        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
+
+        if(!$checkResult){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityObj->deleteIdentity($userID, $identityID);
+
+        echo json_encode($returnData);
     }
 
     public function doReportSpam() {

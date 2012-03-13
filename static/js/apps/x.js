@@ -61,10 +61,10 @@ var moduleNameSpace = 'odof.x.render',
         var str = '';
         switch (myrsvp) {
             case 1:
-                str = 'Confirmed by <b>' + username + '</b>.';
+                str = 'Confirmed by <span class="bold">' + username + '</span>.';
                 break;
             case 2:
-                str = 'Declined by <b>' + username + '</b>.';
+                str = 'Declined by <span class="bold">' + username + '</span>.';
                 break;
             case 3:
                 break;
@@ -227,7 +227,6 @@ var moduleNameSpace = 'odof.x.render',
                       +     '<div id="x_conversation_input_area" class="cleanup">'
                       +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
                       +         '<textarea id="x_conversation_input"></textarea>'
-                      //+         '<input id="x_conversation_submit" type="button" title="Say!">'
                       +     '</div>'
                       +     '<ol id="x_conversation_list"></ol>'
                       + '</div>'

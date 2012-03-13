@@ -490,6 +490,19 @@ class IdentityModels extends DataModel {
 
     }
 
+    public function checkUserIdentityRelation($user_id, $identity_id){
+        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(is_array($result)){
+            return true;
+        }
+        return false;
+    }
+
+    public function deleteIdentity($user_id, $identity_id){
+        $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
+        $this->query($sql);
+    }
 
     public function checkIdentityStatus($identity_id)
     {
