@@ -816,5 +816,11 @@ class IdentityModels extends DataModel {
         $result = $this->query($sql);
         return $result;
     }
+
+
+    public function saveIdentityAvatar($avatar, $identityID){
+        $sql = "UPDATE identities SET avatar_file_name='{$avatar}' WHERE id={$identityID}";
+        $this->query($sql);
+    }
 }
 
