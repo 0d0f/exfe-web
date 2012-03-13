@@ -93,7 +93,7 @@ var odof = {
 
 
     /**
-     * Parse json date
+     * Parse json data
      * @JSONData, string
      * @Return JSON Object.
      **/

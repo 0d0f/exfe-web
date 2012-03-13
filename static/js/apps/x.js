@@ -169,11 +169,96 @@ var moduleNameSpace = 'odof.x.render',
 
     ns.showConversation = function()
     {
-        var strMessage = '';
-        for (var i in crossData.conversation) {
-            strMessage += this.makeMessage(crossData.conversation[i]);
-        }
+        var tmpData = this.sortConversationAndHistory(),
+            strMessage = '',
+            self = this,
+            g = tmpData.length - 1,
+            gather = '<li class="cleanup xhistory">'
+                + 'Gathered by <span class="bold">'
+                + tmpData[g].by_identity.name + '</span>.'
+                + '<img alt="" width="20px" height="20px" src="'
+                + tmpData[g].by_identity.avatar_file_name + '" />';
+        $.each(tmpData, function (i, v) {
+            strMessage += g === i ? gather :(v.time ? self.makeHistory(v) : self.makeMessage(v));
+        });
         $('#x_conversation_list').html(strMessage);
+    };
+
+    //concat conversation history and sort
+    ns.sortConversationAndHistory = function () {
+        var tmpData = [].concat(crossData.history),
+            i = 0, ccl = crossData.conversation.length,
+            j = 0, cco = null, cho = null, ccot, chot;
+        for (; i < ccl; i++) {
+            cco = crossData.conversation[i];
+            ccot = (+odof.util.getDateFromString(cco.created_at))/1000;
+
+            while ((cho = tmpData[j])) {
+                chot = (+odof.util.getDateFromString(cho.time || cho.created_at))/1000;
+                if (ccot >= chot) {
+                    tmpData.splice(j++, 0, cco);
+                    break;
+                }
+                if (++j === tmpData.length) {
+                    tmpData.splice(j, 0, cco);
+                    break;
+                }
+            }
+        }
+        return tmpData;
+    };
+
+    ns.makeHistory = function (o) {
+        var str = '', info = '';
+        switch (o.action) {
+            case 'description':
+                info = 'Description changed to <span class="bold">'
+                    + o.new_value.substr(0, 10)
+                    + '</span> by <span class="bold">'
+                    + o.by_identity.name
+                    + '</span>';
+                break;
+            case 'interested':
+            case 'confirmed':
+            case 'declined':
+                info = '<span class="bold">'
+                    + o.by_identity.name
+                    + '</span> '
+                    + o.action;
+                break;
+            case 'place':
+                info = 'Place changed to <span class="bold">'
+                    + o.new_value.line1.substr(0, 10)
+                    + '</span> by <span class="bold">'
+                    + o.by_identity.name
+                    + '</span>';
+                break;
+            case 'begin_at':
+                info = 'Time changed to <span class="bold">'
+                    + odof.util.getRelativeTime(o.new_value.begin_at)
+                    + '</span> by <span class="bold">'
+                    + o.by_identity.name
+                    + '<span>';
+                break;
+            case 'title':
+                info = 'Title changed to <span class="bold">'
+                    + o.new_value.substr(0, 10)
+                    + '</span> by <span class="bold">'
+                    + o.by_identity.name
+                    + '</span>';
+                break;
+            case 'addexfee':
+                info = '<span class="oblique">'
+                    + o.to_identity[0].external_identity
+                    + '</span> is invited by '
+                    + '<span class="bold">'
+                    + o.by_identity.name
+                    + '</span>.';
+        }
+
+        str += info;
+        str += '<img alt="" width="20px" height="20px" src="' + o.by_identity.avatar_file_name + '" />';
+        return '<li class="cleanup xhistory">' + str + '</li>';
     };
 
 
@@ -199,7 +284,6 @@ var moduleNameSpace = 'odof.x.render',
              + '</li>';
     };
 
-
     ns.showConfirmed = function (users) {
         var str = '<ul>', i = 0, l = users.length, j = 0;
         for (; i < l; i++) {
@@ -221,8 +305,8 @@ var moduleNameSpace = 'odof.x.render',
         // state: {0: 未知，1：去，2：不去，3：感兴趣}
         var strCnvstn = editable
                       ? '<div id="x_conversation_area">'
-                      // ToDo: 先隐藏此功能
-                      //+     '<a id="x_hide_history" href="javascript:void(0);">Hide history</a>'
+                      // TODO: 先隐藏此功能
+                      +     '<a id="x_hide_history" href="javascript:void(0);"><span>Show</span> history</a>'
                       +     '<h3 id="x_conversation">Conversation</h3>'
                       +     '<div id="x_conversation_input_area" class="cleanup">'
                       +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
@@ -330,7 +414,7 @@ var moduleNameSpace = 'odof.x.render',
         var i = 0;
         if (old_myrsvp === new_myrsvp) return;
         if (old_myrsvp !== new_myrsvp && new_myrsvp === 1) i = 1;
-        if (old_myrsvp !== new_myrsvp && new_myrsvp === 2) i = -1;
+        if (old_myrsvp === 1 && (new_myrsvp === 2 || new_myrsvp === 3)) i = -1;
         var $span = $('#x_exfee_users ul li:last > span');
         var c = ~~$span.html();
         $span.html(c+i);
@@ -338,7 +422,8 @@ var moduleNameSpace = 'odof.x.render',
 
 
     $(function () {
-        $(document).delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
+        var DOC = $(document);
+        DOC.delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
             var $x_desc_expand = $('#x_desc_expand'),
                 isMouseEnter = e.type === 'mouseenter';
             if ($x_desc_expand.is(':hidden')) return;
@@ -347,7 +432,7 @@ var moduleNameSpace = 'odof.x.render',
                 .find('>a')[isMouseEnter ? 'show' : 'hide']();
         });
 
-        $(document).delegate('#x_rsvp_msg', 'mouseenter mouseleave', function (e) {
+        DOC.delegate('#x_rsvp_msg', 'mouseenter mouseleave', function (e) {
             var timer = $(this).data('xtimer'),
                 isMouseEnter = e.type === 'mouseenter';
             if (timer) {
@@ -366,6 +451,14 @@ var moduleNameSpace = 'odof.x.render',
                 $('#x_rsvp_typeinfo').hide();
                 $('#x_exfee_users').show();
             }
+        });
+
+        // History
+        DOC.delegate('a#x_hide_history', 'click', function (e) {
+            e.preventDefault();
+            var $span = $(this).find('span'), str = $span.html();
+            $span.html(str === 'Show' ? 'Hide' : 'Show');
+            $('#x_conversation_list').toggleClass('show_history');
         });
     });
 
