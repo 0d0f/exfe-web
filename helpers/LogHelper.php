@@ -1,10 +1,8 @@
 <?php
 
-class SHelper extends ActionController
-{
+class LogHelper extends ActionController {
 
-    public function GetAllUpdate($userid, $updated_since = '', $limit = 200)
-    {
+    public function getXUpdate($userid, $crossId = 'all', $updated_since = '', $limit = 1000) {
         // init models
         $modIdentity = $this->getModelByName('identity');
         $modUser     = $this->getModelByName('user');
@@ -13,7 +11,11 @@ class SHelper extends ActionController
         $modLog      = $this->getModelByName('log');
 
         // Get all cross
-        $rawCross = $modCross->fetchCross($userid, 0, null, null, null);
+        if ($crossId === 'all') {
+            $rawCross = $modCross->fetchCross($userid, 0, null, null, null);
+        } else {
+            $rawCross = $modCross->getCrossesByIds(array($crossId));
+        }
         $allCross = array();
         foreach ($rawCross as $crossI => $crossItem) {
             $crossItem['place'] = array('line1'       => $crossItem['place_line1'],
@@ -188,6 +190,68 @@ class SHelper extends ActionController
         }
 
         return $rawLogs;
+    }
+
+    public function getMergedXUpdate($userid, $crossId = 'all', $updated_since = '', $limit = 1000) {
+        $rawLogs = $this->getXUpdate($userid, $crossId, $updated_since, $limit);
+
+        $preItemLogs = array();
+        $preItemDna  = '';
+        $preItemTime = 0;
+        $magicTime   = 153; // 2:33
+        foreach ($rawLogs as $logI => $logItem) {
+            $curDna  = ($logItem['by_identity']['user_id']
+                     ? "u{$logItem['by_identity']['user_id']}"
+                     : "i{$logItem['by_identity']['id']}")
+                     . "_c{$logItem['x_id']}";
+            $difTime = abs($preItemTime - ($curTime = strtotime($logItem['time'])));
+            if ($curDna === $preItemDna && $difTime <= $magicTime && isset($preItemLogs[$logItem['action']])) {
+                switch ($logItem['action']) {
+                    case 'title':
+                        if (isset($logItem['old_value'])
+                         && $logItem['old_value'] !== null
+                         && $logItem['old_value'] !== '') {
+                            $rawLogs[$preItemLogs[$logItem['action']]]['old_value'] = $logItem['old_value'];
+                        }
+                        break;
+                    case 'addexfee':
+                    case 'delexfee':
+                    case 'confirmed':
+                    case 'declined':
+                    case 'interested':
+                        $loged = false;
+                        foreach ($rawLogs[$preItemLogs[$logItem['action']]]['to_identity'] as $subItem) {
+                            if ($subItem['id'] === $logItem['to_identity']['id']) {
+                                $loged = true;
+                                break;
+                            }
+                        }
+                        if (!$loged) {
+                            array_push(
+                                $rawLogs[$preItemLogs[$logItem['action']]]['to_identity'],
+                                $logItem['to_identity']
+                            );
+                        }
+                }
+                unset($rawLogs[$logI]);
+            } else {
+                switch ($logItem['action']) {
+                    case 'addexfee':
+                    case 'delexfee':
+                    case 'confirmed':
+                    case 'declined':
+                    case 'interested':
+                        $rawLogs[$logI]['to_identity'] = array($logItem['to_identity']);
+                }
+                if ($curDna !== $preItemDna || $difTime > $magicTime) {
+                    $preItemLogs = array();
+                }
+                $preItemLogs[$logItem['action']] = $logI;
+            }
+            $preItemDna  = $curDna;
+            $preItemTime = $curTime;
+        }
+        return array_merge($rawLogs);
     }
 
 }
