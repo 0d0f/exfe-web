@@ -16,6 +16,7 @@
 ?>
 <div class="content">
     <div class="edit_user" id="edit_user_area">
+        <input type="hidden" name="avatar_identity_id" id="avatar_identity_id" value="" />
         <div id="profile_avatar">
         <?php if(trim($user['avatar_file_name']) == 'default.png') { ?>
             <a href="javascript:odof.user.uploadAvatar.init();"><img src="/static/images/add_avatar.png" alt="add avatar" /></a>
@@ -33,7 +34,7 @@
              ?>
                 <p class="identity_list">
                 <span class="identity_remove identity_icon"></span>
-                <img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" />
+                <a href="javascript:odof.user.uploadAvatar.uploadIdentityAvatar(<?php echo $identity["id"]; ?>);"><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" /></a>
                 <?php if($identity["provider"] == "email"){ ?>
                 <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><?php echo $identity["name"]; ?></span>
                 <span class="identity_ec" id="identity_edit_container_<?php echo $identity["id"]; ?>" style="display:none"><input class='identity_input' id='cur_identity_name_<?php echo $identity["id"]; ?>' value='' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_<?php echo $identity["id"]; ?>'></span>
