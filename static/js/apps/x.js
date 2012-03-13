@@ -171,9 +171,15 @@ var moduleNameSpace = 'odof.x.render',
     {
         var tmpData = this.sortConversationAndHistory(),
             strMessage = '',
-            self = this;
+            self = this,
+            g = tmpData.length - 1,
+            gather = '<li class="cleanup xhistory">'
+                + 'Gathered by <span class="bold">'
+                + tmpData[g].by_identity.name + '</span>.'
+                + '<img alt="" width="20px" height="20px" src="'
+                + tmpData[g].by_identity.avatar_file_name + '" />';
         $.each(tmpData, function (i, v) {
-            strMessage += v.time ? self.makeHistory(v) : self.makeMessage(v);
+            strMessage += g === i ? gather :(v.time ? self.makeHistory(v) : self.makeMessage(v));
         });
         $('#x_conversation_list').html(strMessage);
     };
@@ -452,7 +458,7 @@ var moduleNameSpace = 'odof.x.render',
             e.preventDefault();
             var $span = $(this).find('span'), str = $span.html();
             $span.html(str === 'Show' ? 'Hide' : 'Show');
-            $('li.xhistory').toggle();
+            $('#x_conversation_list').toggleClass('show_history');
         });
     });
 

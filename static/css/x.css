@@ -373,6 +373,10 @@ a#x_hide_history {
     margin-top: 10px;
 }
 
+#x_conversation_list.show_history li.xhistory {
+    display: block;
+}
+
 #x_conversation_list li.xhistory {
     display: none;
     text-align: right;
