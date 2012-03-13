@@ -373,6 +373,27 @@ a#x_hide_history {
     margin-top: 10px;
 }
 
+#x_conversation_list li.xhistory {
+    display: none;
+    text-align: right;
+    color: #7F7F7F;
+}
+
+#x_conversation_list li.xhistory span.bold {
+    color: #4C4C4C;
+}
+
+#x_conversation_list li.xhistory span.oblique {
+    color: #4C4C4C;
+    font-style: oblique;
+}
+
+#x_conversation_list li.xhistory img {
+    margin-left: 10px;
+    vertical-align: middle;
+    border-radius: 2px;
+}
+
 .x_conversation_message {
     font-size: 14px;
     line-height: 20px;
