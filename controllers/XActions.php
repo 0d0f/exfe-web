@@ -58,6 +58,9 @@ class XActions extends ActionController
             }
             echo json_encode($result);
             exit(0);
+        } else {
+            $modBackground = $this->getModelByName('background');
+            $this->setVar('backgrounds', $modBackground->getAllBackground());
         }
         $this->displayView();
     }

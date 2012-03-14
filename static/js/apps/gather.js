@@ -279,7 +279,8 @@ $(document).ready(function() {
                                            external_id : '', provider : ''},
                         begin_at        : '',
                         origin_begin_at : '',
-                        timezone        : jstz.determine_timezone().offset()};
+                        timezone        : jstz.determine_timezone().offset(),
+                        background      : backgrounds[parseInt(Math.random() * backgrounds.length)]};
 
     // X render
     odof.x.render.show(false);
