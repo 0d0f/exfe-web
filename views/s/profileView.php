@@ -70,8 +70,8 @@
                 }
             }
             ?>
-            <p><a href="javascript:odof.user.status.doShowAddIdentityDialog();">Add Identity...</a></p>
-            <p class="identity_list">
+            <!-- <p><a href="javascript:odof.user.status.doShowAddIdentityDialog();">Add Identity...</a></p> -->
+            <p class="identity_list" id="identity_add">
                 <span class="identity_add identity_icon"></span>
                 <span class="identity_button identity_add_txt">Add identity…</span>
             </p>
