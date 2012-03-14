@@ -17,11 +17,11 @@ class XModels extends DataModel {
         }
         $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
                 state, title, description, begin_at, end_at, duration, place_id,
-                timezone, origin_begin_at) values({$identityId}, NOW(),
+                timezone, origin_begin_at, background) values({$identityId}, NOW(),
                 '{$time_type}', NOW(), '1', '{$cross['title']}',
                 '{$cross['description']}', '{$cross['datetime']}', '{$end_at}',
                 '{$duration}', {$cross['place_id']}, '{$cross['timezone']}',
-                '{$cross['ori_datetime']}');";
+                '{$cross['ori_datetime']}', '{$cross['background']}');";
 
         $result   = $this->query($sql);
         $cross_id = intval($result['insert_id']);
