@@ -639,24 +639,9 @@ class SActions extends ActionController {
 
     public function doLogout()
     {
-        unset($_SESSION["userid"]);
-        unset($_SESSION["identity_id"]);
-        unset($_SESSION["identity"]);
-        unset($_SESSION["tokenIdentity"]);
-        session_destroy();
-
-        unset($_COOKIE["uid"]);
-        unset($_COOKIE["id"]);
-        unset($_COOKIE["loginsequ"]);
-        unset($_COOKIE["logintoken"]);
-
-        setcookie('uid', NULL, -1,"/",COOKIES_DOMAIN);
-        setcookie('id', NULL, -1,"/",COOKIES_DOMAIN);
-        setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
-        setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
-
+        $userData = $this->getModelByName("user");
+        $userData->doDestroySessionAndCookies();
         header('location:/');
-
     }
 
     public function doLogin()
