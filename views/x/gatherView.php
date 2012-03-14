@@ -30,12 +30,14 @@
     $myIdentity        = $this->getVar('myidentity');
     $external_identity = $myIdentity ? $myIdentity['external_identity'] : null;
     $defaultTitle      = $global_name != '' ? "Meet {$global_name}" : 'Edit title here';
+    $backgrounds       = $this->getVar('backgrounds');
     echo '<script>'
        . "var myIdentity   = " . json_encode($myIdentity) . ",\r\n"
        .     "defaultTitle = '{$defaultTitle}',\r\n"
        .     "defaultDesc  = '{$exfe_res['gather']['Write_some_words_about_this_X']}',\r\n"
        .     "defaultTime  = 'Sometime',\r\n"
        .     "sampleTime   = '12-20-2012 09:00 AM',\r\n"
+       .     'backgrounds  = ' . json_encode($backgrounds) . ",\r\n"
        .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>
