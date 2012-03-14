@@ -16,13 +16,13 @@ class SActions extends ActionController {
 
         //package as a transaction
         if(intval($_SESSION["userid"])>0) {
-            $userid=$_SESSION["userid"];
+            $userID=$_SESSION["userid"];
         } else {
-            $Data = $this->getModelByName("user");
-            $userid = $Data->addUser($password);
+            $userData = $this->getModelByName("user");
+            $userID = $userData->addUser($password);
         }
         $identityData = $this->getModelByName("identity");
-        $identityData->addIdentity($userid,$provider,$identity);
+        $identityData->addIdentity($userID,$provider,$identity);
     }
 
     public function doProfile() {
@@ -1251,12 +1251,51 @@ class SActions extends ActionController {
 
         if(!$checkResult){
             $returnData["error"] = 1;
+            $returnData["msg"] = "identity not belong current users.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $result = $identityObj->deleteIdentity($userID, $identityID);
+        if(!$result){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Delete identity fail.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        echo json_encode($returnData);
+    }
+
+    public function doChangeDefaultIdentity() {
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+
+        //check user login
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
             $returnData["msg"] = "Please login first.";
             echo json_encode($returnData);
             exit();
         }
 
-        $identityObj->deleteIdentity($userID, $identityID);
+        $identityID = exPost("identity_id");
+
+        $identityObj = $this->getModelByName("identity");
+        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
+
+        if(!$checkResult){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "identity not belong current users.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityObj->changeDefaultIdentity($userID, $identityID);
 
         echo json_encode($returnData);
     }
