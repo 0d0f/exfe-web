@@ -38,6 +38,7 @@ class XActions extends ActionController
                         'datetime'     => mysql_real_escape_string(htmlspecialchars($_POST['begin_at'])),
                         'ori_datetime' => mysql_real_escape_string(htmlspecialchars($_POST['origin_begin_at'])),
                         'timezone'     => mysql_real_escape_string(htmlspecialchars($_POST['timezone'])),
+                        'background'   => mysql_real_escape_string(htmlspecialchars($_POST['background'])),
                     );
 
                     $cross_id = $crossdata->gatherCross(
