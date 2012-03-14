@@ -263,7 +263,7 @@ class XActions extends ActionController
         $check = $hlpCheck->isAllow('x', 'index', array('cross_id' => $cross_id, 'token' => $token));
         if ($check['allow'] === 'false') {
             $referer_uri = SITE_URL . "/!{$base62_cross_id}";
-            header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
+            header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$base62_cross_id}");
             exit(0);
         }
         if ($check['type'] === 'token') {
@@ -345,7 +345,7 @@ class XActions extends ActionController
             $cross['exfee'] = $invitations;
 
             $cross['conversation'] = $modConversion->getConversation($cross_id, 'cross');
-            
+
             $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id);
             foreach ($history as $hI => $hItem) {
                 foreach ($hItem as $hItemI => $hItemItem) {
@@ -374,11 +374,13 @@ class XActions extends ActionController
     public function doForbidden()
     {
         $referer = exGet("s");
-        if($referer != "")
+        if($referer != ""){
             $referer = urldecode($referer);
-        $cross_id = exGet("x");
-        if($cross_id != "" && intval($_SESSION["userid"]) > 0){
-            $cross_id = intval($cross_id);
+        }
+        $cross_base62_id = exGet("x");
+        /*
+        if($cross_base62_id != "" && intval($_SESSION["userid"]) > 0){
+            $cross_id = base62_to_int($cross_base62_id);
             $checkhelper=$this->getHelperByName("check");
             $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>""));
             if($check["allow"] != "false"){
@@ -387,6 +389,7 @@ class XActions extends ActionController
                 header("location:/s/profile");
             }
         }
+         */
         $this->setVar('referer', $referer);
         $this->setVar('cross_id', $cross_id);
         $this->displayView();
