@@ -478,7 +478,6 @@ class IdentityModels extends DataModel {
         {
             if(intval($row["identityid"])>0)
             {
-
                 $identity_id=$row["identityid"];
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
@@ -491,6 +490,19 @@ class IdentityModels extends DataModel {
 
     }
 
+    public function checkUserIdentityRelation($user_id, $identity_id){
+        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(is_array($result)){
+            return true;
+        }
+        return false;
+    }
+
+    public function deleteIdentity($user_id, $identity_id){
+        $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
+        $this->query($sql);
+    }
 
     public function checkIdentityStatus($identity_id)
     {
@@ -802,6 +814,12 @@ class IdentityModels extends DataModel {
         $sql="UPDATE identities SET name='{$identity_name}' WHERE external_identity='{$external_identity}' AND provider='{$identity_provider}'";
         $result = $this->query($sql);
         return $result;
+    }
+
+
+    public function saveIdentityAvatar($avatar, $identityID){
+        $sql = "UPDATE identities SET avatar_file_name='{$avatar}' WHERE id={$identityID}";
+        $this->query($sql);
     }
 }
 
