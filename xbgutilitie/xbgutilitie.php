@@ -7,7 +7,7 @@ require_once "{$curDir}/../DataModel.php";
 require_once "{$curDir}/libfilesystem.php";
 require_once "{$curDir}/libimage.php";
 
-class xbgUtilitie {
+class xbgUtilitie extends DataModel {
 
     protected $objLibFileSystem = null;
 
@@ -45,8 +45,9 @@ class xbgUtilitie {
     
         // del old images
         echo "Del old images...\r\n";
+        $sql = "DELETE FROM `background`;";
+        $this->query($sql);
         $this->objLibFileSystem->emptyFolder($this->toImagePath);
-        
         echo "\r\n";
 
         // processing images
@@ -71,11 +72,13 @@ class xbgUtilitie {
                         // write
                         $toFullpath = "{$this->toImagePath}/{$toFileName}_{$sI}.jpg";
                         ImageJpeg($dfImage, $toFullpath, $sItem['quality']);
-                        // registration
-                        
-                        // return
+                        // output
                         echo " [$sI]";
                     }
+                    // registration
+                    $sql = "INSERT INTO `background` SET `image` = '{$toFileName}';";
+                    $this->query($sql);
+                    // output
                     echo "\r\n";
                 }
             }
