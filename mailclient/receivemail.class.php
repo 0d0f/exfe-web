@@ -52,7 +52,6 @@ class receiveMail
         if(!$this->marubox)
         {
             echo "Error: Connecting to mail server";
-            print_r(imap_last_error());
             exit;
         }
     }
@@ -71,6 +70,7 @@ class receiveMail
             return false;
 
         $mail_header=imap_header($this->marubox,$mid);
+        print_r($mail_header);
         $sender=$mail_header->from[0];
         $sender_replyto=$mail_header->reply_to[0];
         if(strtolower($sender->mailbox)!='mailer-daemon' && strtolower($sender->mailbox)!='postmaster')
@@ -81,7 +81,8 @@ class receiveMail
                     'toOth'=>$sender_replyto->mailbox.'@'.$sender_replyto->host,
                     'toNameOth'=>$sender_replyto->personal,
                     'subject'=>$mail_header->subject,
-                    'to'=>$mail_header->toaddress
+                    'to'=>$mail_header->toaddress,
+                    'date'=>$mail_header->date
                 );
         }
         return $mail_details;

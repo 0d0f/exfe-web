@@ -37,6 +37,7 @@ class UploadActions extends ActionController {
 
     //截剪头像。
     public function doSaveAvatarFile() {
+        $identity_id = $_POST["identityID"];
         $img_name = $_POST["iName"];
         $img_height = $_POST["iHeight"];
         $img_width = $_POST["iWidth"];
@@ -68,9 +69,13 @@ class UploadActions extends ActionController {
             "msg"       =>""
         );
 
-
-        $userData = $this->getModelByName("user");
-        $userData->saveUserAvatar($img_name,$_SESSION["userid"]);
+        if($identity_id == ""){
+            $userData = $this->getModelByName("user");
+            $userData->saveUserAvatar($img_name,$_SESSION["userid"]);
+        }else{
+            $identityData = $this->getModelByName("identity");
+            $identityData->saveIdentityAvatar($img_name, $identity_id);
+        }
 
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($return_data);

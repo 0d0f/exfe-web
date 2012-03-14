@@ -127,6 +127,7 @@ var nameSpace = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.saveImage = function(){
+        var identityID = jQuery("#avatar_identity_id").val();
         var imageName = jQuery("#img_src").val();
         var imageHeight = jQuery("#height").val();
         var imageWidth = jQuery("#width").val();
@@ -144,6 +145,7 @@ var nameSpace = odof.util.initNameSpace(moduleNameSpace);
                 data:{
                     jrand: Math.round(Math.random()*10000000000),
                     iName: imageName,
+                    identityID: identityID,
                     iHeight: imageHeight,
                     iWidth: imageWidth,
                     iX: imageX,
@@ -164,11 +166,18 @@ var nameSpace = odof.util.initNameSpace(moduleNameSpace);
             window.location.href=site_url+"/s/profile";
         },1000);
     };
+
+    ns.uploadIdentityAvatar = function(identityID){
+        jQuery("#avatar_identity_id").val(identityID);
+        odof.user.uploadAvatar.init();
+    };
+
 })(nameSpace);
 
 jQuery(document).ready(function(){
     var getElement = function(id) { return document.getElementById(id); };
     jQuery('#changeavatar').click(function(e) {
+        jQuery("#avatar_identity_id").val('');
         odof.user.uploadAvatar.init();
     });
 });
