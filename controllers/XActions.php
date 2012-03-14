@@ -248,7 +248,13 @@ class XActions extends ActionController
         $identity_id = 0;
         $base62_cross_id = $_GET['id'];
         $cross_id = base62_to_int($base62_cross_id);
-        $token = $_GET['token'];
+        $token = exGet('token');
+
+        //如果是通过Token进来，且已经登录，则Session要过期。
+        if($token != "" && intval($_SESSION['userid'])>0){
+            $userData = $this->getModelByName("user");
+            $userData->doDestroySessionAndCookies();
+        }
 
         if (intval($cross_id) > 0) {
             $result = $modData->checkCrossExists($cross_id);
