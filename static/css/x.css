@@ -383,6 +383,22 @@ a#x_hide_history {
     color: #7F7F7F;
 }
 
+#x_conversation_list li.xhistory.clock {
+    background: url("/static/images/icons.png") no-repeat -243px -538px;
+}
+
+#x_conversation_list li.xhistory.place {
+    background: url("/static/images/icons.png") no-repeat -243px -568px;
+}
+
+#x_conversation_list li.xhistory.user {
+    background: url("/static/images/icons.png") no-repeat -243px -628px;
+}
+
+#x_conversation_list li.xhistory.gather {
+    background: url("/static/images/icons.png") no-repeat -243px -508px;
+}
+
 #x_conversation_list li.xhistory span.bold {
     color: #4C4C4C;
 }

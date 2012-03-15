@@ -173,7 +173,7 @@ var moduleNameSpace = 'odof.x.render',
             strMessage = '',
             self = this,
             g = tmpData.length - 1,
-            gather = '<li class="cleanup xhistory">'
+            gather = '<li class="cleanup xhistory gather">'
                 + 'Gathered by <span class="bold">'
                 + tmpData[g].by_identity.name + '</span>.'
                 + '<img alt="" width="20px" height="20px" src="'
@@ -181,6 +181,7 @@ var moduleNameSpace = 'odof.x.render',
         $.each(tmpData, function (i, v) {
             strMessage += g === i ? gather :(v.time ? self.makeHistory(v) : self.makeMessage(v));
         });
+        tmpData = null;     
         $('#x_conversation_list').html(strMessage);
     };
 
@@ -209,7 +210,7 @@ var moduleNameSpace = 'odof.x.render',
     };
 
     ns.makeHistory = function (o) {
-        var str = '', info = '';
+        var str = '', info = '', c = '';
         switch (o.action) {
             case 'description':
                 info = 'Description changed to <span class="bold">'
@@ -225,6 +226,7 @@ var moduleNameSpace = 'odof.x.render',
                     + o.by_identity.name
                     + '</span> '
                     + o.action;
+                c = 'user';
                 break;
             case 'place':
                 info = 'Place changed to <span class="bold">'
@@ -232,6 +234,7 @@ var moduleNameSpace = 'odof.x.render',
                     + '</span> by <span class="bold">'
                     + o.by_identity.name
                     + '</span>';
+                c = 'place';
                 break;
             case 'begin_at':
                 info = 'Time changed to <span class="bold">'
@@ -239,6 +242,7 @@ var moduleNameSpace = 'odof.x.render',
                     + '</span> by <span class="bold">'
                     + o.by_identity.name
                     + '<span>';
+                c = 'clock';
                 break;
             case 'title':
                 info = 'Title changed to <span class="bold">'
@@ -254,11 +258,12 @@ var moduleNameSpace = 'odof.x.render',
                     + '<span class="bold">'
                     + o.by_identity.name
                     + '</span>.';
+                c = 'user';
         }
 
         str += info;
         str += '<img alt="" width="20px" height="20px" src="' + o.by_identity.avatar_file_name + '" />';
-        return '<li class="cleanup xhistory">' + str + '</li>';
+        return '<li class="cleanup xhistory' + (c ? (' ' + c) : '') +'">' + str + '</li>';
     };
 
 

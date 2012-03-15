@@ -117,7 +117,9 @@ body {
 #global_header .user_info{
     float:right; width:320px; height:47px; margin-right: -128px;
 }
-#global_header .user_info a{ color:#FFF; }
+#global_header .user_info a {
+  color: #FFF;
+}
 #global_header .user_info .global_sign_in_btn{
     width:240px; height:20px; text-align:center; margin-top:15px; cursor:pointer;
 }
@@ -137,52 +139,144 @@ body {
     height:40px; width:120px; display:block;line-height:40px; overflow:hidden;
 }
 #global_header .user_info .uinfo .name #goldLink a.nameh{
-    position:absolute;color:#000000;background:url(/static/images/user.png) no-repeat;
-    text-decoration:none;z-index:300;
+  position: absolute;
+  z-index: 300;
+  background: #FFFEFF;
+  border-radius: 3px 3px 0 0;
+  border-width: 1px 1px 0 1px;
+  border-style: solid;
+  border-color: #D5D5D5;
+  box-shadow: 3px 0 0px 0px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: #000;
+    /*position:absolute;color:#000000;background:url(/static/images/user.png) no-repeat;*/
+    /*text-decoration:none;z-index:300;*/
 }
-#global_header .user_info .uinfo .myexfe{
-    display:none;position:absolute;
-    width:228px;padding:5px 0px 0;
-    background:url(/static/images/user.png) no-repeat 0 -40px;
-    font-size:13px;right:0px;top:5px;
+#global_header .user_info .uinfo .myexfe {
+    display: none;
+    position: absolute;
+    width: 200px;
+    /*padding: 26px 10px 0;*/
+    /*padding: 5px 0px 0;*/
+    /*background: url(/static/images/user.png) no-repeat 0 -40px;*/
+    font-size: 14px;
+    right: 6px;
+    background-color: #FFFEFF;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFEFF), to(#EAEAEA));
+    background-image: -webkit-linear-gradient(top, #FFFEFF, #EAEAEA);
+    background-image:    -moz-linear-gradient(top, #FFFEFF, #EAEAEA);
+    background-image:     -ms-linear-gradient(top, #FFFEFF, #EAEAEA);
+    background-image:      -o-linear-gradient(top, #FFFEFF, #EAEAEA);
+    -moz-box-shadow:    3px 3px 3px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 3px 3px 3px rgba(0,0,0,0.25);
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
+    border-radius: 3px 0px 3px 3px;
+    border: 1px solid #D5D5D5;
+    top: 45px;
 }
-#global_header .user_info .uinfo .message { width:190px; padding:50px 19px 10px; text-overflow: clip; overflow: hidden; }
-#global_header .user_info .uinfo .message .na { height:40px; }
-#global_header .user_info .uinfo .message .na p { float:left;color:#333333; }
-#global_header .user_info .uinfo .message .na p .num_of_x { font-size:24px; color:#058fad; display:block; font-weight:bold; }
-#global_header .user_info .uinfo .message .na p .x_attended { color:#0591ac; }
-#global_header .user_info .uinfo .message .info a {
-    display:block; color: #191919; margin-left:30px; margin-top:-20px;
+#global_header .user_info .uinfo .message {
+  /*width: 190px;*/
+  padding: 25px 18px 10px;
+  /*text-overflow: clip;*/
+  /*overflow: hidden;*/
 }
-#global_header .user_info .uinfo .message .na img{width:40px;height:40px;float:right; }
-#global_header .user_info .uinfo .message .info{line-height:20px;color:#202020;text-align:left;font-size:14px;margin-top:10px; }
-#global_header .user_info .uinfo .message .info span{color:#696969;font-weight:normal; }
-#global_header .user_info .uinfo .message .info em{
-    background: url(/static/images/btn.png) no-repeat left -282px;
-    color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;
+#global_header .user_info .uinfo .message .na {
+  height: 40px;
 }
-#global_header .user_info .uinfo .message .info .hide{
-    background:none;
-    color:#ffffff;font-size:11px;width:34px;height:20px;padding:1px 1px 1px;
+#global_header .user_info .uinfo .message .na .h {
+  line-height: 20px;
+  width: 124px;
+  float: left;
+  color: #333333;
 }
-#global_header .user_info .uinfo .message .creatbtn{
-    width:180px;height:32px;background:url(/static/images/btn.png) no-repeat 2px -234px;margin-top:20px;line-height:32px;
+#global_header .user_info .uinfo .message .na .l {
+  float: right;
+  display: block;
 }
-#global_header .user_info .uinfo .message .creatbtn a{
-    color:#ffffff;font-size:18px;font-family:Verdana;text-decoration:none; padding-left:20px
+#global_header .user_info .uinfo .message .na .l img {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
 }
-#global_header .user_info .uinfo .myexfefoot{
-    width:190px;height:30px;padding:0 19px;background:url(/static/images/user.png) no-repeat left bottom;line-height:30px;
+#global_header .user_info .uinfo .message .na .h > span {
+  height: 20px;
+  display: block;
+}
+#global_header .user_info .uinfo .message .na .h .num_of_x {
+  font-size: 18px;
+  color: #0591AC;
+  display: block;
+  font-weight: bold;
+}
+#global_header .user_info .uinfo .message .na .h .x_attended {
+  font-size: 14px;
+  color: #0591ac;
+}
+#global_header .user_info .uinfo .info {
+  color: #212121;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  padding: 0 10px 0;
+}
+#global_header .user_info .uinfo .info span {
+  color: #424242;
+  font-weight: normal;
+}
+#global_header .user_info .uinfo .info a {
+  color: #212121;
+  display: block;
+  /*margin-left: 30px;*/
+}
+#global_header .user_info .uinfo .info .upcoming {
+  color: #424242;
+}
+#global_header .user_info .uinfo .info .crosseslist span {
+  display: block;
+  width: 22px;
+  height: 11px;
+  line-height: 14.5px;
+  background: #D5D5D5;
+  font-size: 9px;
+  color: #424242;
+  text-align: center;
+  float: left;
+  margin-top: 3.5px;
+}
+#global_header .user_info .uinfo .info .crosseslist ol li a {
+  font-size: 14px;
+  line-height: 20px;
+  margin-left: 28px;
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#global_header .user_info .uinfo .creatbtn {
+  margin-top: 14px;
+  margin-bottom: 12px;
+}
+#global_header .user_info .uinfo .creatbtn a {
+  text-indent: -9999px;
+  display: block;
+  width: 120px;
+  height: 32px;
+  background: url(/static/images/add_gather_btn.png) no-repeat;
+  margin: 0 auto;
+}
+#global_header .user_info .uinfo .myexfefoot {
+  width: 162px;
+  height: 30px;
+  border-top: 1px solid #D5D5D5;
+  margin: 0 auto;
+}
+#global_header .user_info .uinfo .myexfefoot a {
+  color: #424242;
+  font-size: 12px;
+  line-height: 30px;
 }
 #global_header .user_info .uinfo .myexfefoot a.l{ float:left; }
 #global_header .user_info .uinfo .myexfefoot a.r{ float:right; }
-#global_header .user_info .uinfo .message .info {margin-top: 20px;}
-#global_header .user_info .uinfo .message .info  a {
-    white-space: nowrap;
-    width: 80%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
 
 /* Cover effect style control by Handaoliang */
