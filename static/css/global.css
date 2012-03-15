@@ -85,7 +85,7 @@ input, textarea {
 
 /* global body style */
 body {
-    background: #f2f2f2 url(../images/global_header_bg.jpg) repeat-x 0 0;
+    background: #F2F2F2 url(../images/global_header_bg.jpg) repeat-x 0 0;
 }
 
 
@@ -188,8 +188,10 @@ body {
   width: 124px;
   float: left;
   color: #333333;
+  text-decoration: none;
 }
 #global_header .user_info .uinfo .message .na .l {
+  height: 40px;
   float: right;
   display: block;
 }
