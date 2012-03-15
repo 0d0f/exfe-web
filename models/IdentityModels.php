@@ -53,7 +53,7 @@ class IdentityModels extends DataModel {
                 $userrow["avatar_file_name"]=$avatar_file_name;
             }
 
-            $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."' where id=$user_id;";
+            $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."', default_identity=".$identityid." where id=$user_id;";
             $this->query($sql);
 
             //TOdO: commit as a transaction
@@ -478,7 +478,6 @@ class IdentityModels extends DataModel {
         {
             if(intval($row["identityid"])>0)
             {
-
                 $identity_id=$row["identityid"];
                 $sql="select * from identities where id=$identity_id";
                 $identity=$this->getRow($sql);
@@ -501,7 +500,30 @@ class IdentityModels extends DataModel {
     }
 
     public function deleteIdentity($user_id, $identity_id){
-        $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
+        $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(count($result) > 1){
+            $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
+            $this->query($sql);
+
+            $userIdentityArr = array();
+            foreach($result as $v){
+                if($v["identityid"] != $identity_id){
+                    array_push($userIdentityArr, $v);
+                }
+            }
+            $curDefaultIdentityID = $userIdentityArr[0]["identityid"];
+            $sql = "UPDATE users SET default_identity={$curDefaultIdentityID} WHERE id={$user_id}";
+            $this->query($sql);
+
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function changeDefaultIdentity($user_id, $identity_id) {
+        $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
         $this->query($sql);
     }
 
@@ -815,6 +837,12 @@ class IdentityModels extends DataModel {
         $sql="UPDATE identities SET name='{$identity_name}' WHERE external_identity='{$external_identity}' AND provider='{$identity_provider}'";
         $result = $this->query($sql);
         return $result;
+    }
+
+
+    public function saveIdentityAvatar($avatar, $identityID){
+        $sql = "UPDATE identities SET avatar_file_name='{$avatar}' WHERE id={$identityID}";
+        $this->query($sql);
     }
 }
 
