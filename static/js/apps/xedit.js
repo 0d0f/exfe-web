@@ -696,4 +696,6 @@ $(document).ready(function() {
         });
     }
 
+    odof.comm.func.setXTitleBackground();
+
 });

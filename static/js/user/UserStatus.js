@@ -444,14 +444,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.exlibs.ExDialog.initialize("identification", html);
     };
 
+    // delete identity
     ns.doShowRmIdentityDialog = function () {        
         var html = "<div id='identification_titles' class='titles'>"
                     + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
                     + "<div id='identification_handler' class='tl'>Remove Identity</div>"
                 + "</div>"
-                + "<div id='identification_dialog_con' class='identification_dialog_con'>"
+                + "<div id='identification_dialog_con' class='identification_dialog_con' style='height: 200px;'>"
                     + '<div id="rm_identity_dialog" class="identity_dialog_main">'
-                        + '<div id="rm_identity_title">Delete Identity</div>'
+                        + '<div id="rm_identity_title" class="dialog_titles">Delete Identity</div>'
                         + '<div style="text-align:right;" class="identification_bottom_btn">'
                             + '<a href="javascript:void(0);" id="rm_identity_discard">Discard</a>&nbsp;&nbsp;'
                             + '<input type="submit" style="cursor:pointer;" id="submit_rm_identity" class="btn_85" value="Done">'
@@ -568,10 +569,10 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 + '<div class="name" >'
                                 + '<div id="goldLink"><a href="/s/profile" >'+userData.user_name+'</a></div>';
             userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
-            userPanelHTML += '<div class="h">';
+            userPanelHTML += '<a href="/s/profile" class="h">';
             userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
             userPanelHTML += '<span><em class="x_attended">X</em> attended</span>';
-            userPanelHTML += '</div>';
+            userPanelHTML += '</a>';
             userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getUserAvatar(userData.user_avatar, 80, img_url)+'"></a>';
             userPanelHTML += '</div>';
             userPanelHTML += '</div>';
