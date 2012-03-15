@@ -4,6 +4,7 @@ include("receivemail.class.php");
 #$username = 'x@exfe.com';
 #$password = 'V:%wGHsuOXI}x)il';
 #$interval=10;
+date_default_timezone_set('UTC');
 
 $shutdown=false;
 
@@ -82,6 +83,7 @@ function dofetchandpost($obj)
             $to=$head["to"];
             $from=$head["from"];
             $subject=$head["subject"];
+            $date=$head["date"];
 
             $cross_id="";
             #$cross_id_base62="";
@@ -148,7 +150,7 @@ function dofetchandpost($obj)
                 $result_str=html_entity_decode($result_str, ENT_QUOTES, 'UTF-8');
                 print trim($result_str);
 
-                $result=postcomment($cross_id,$from,$result_str);
+                $result=postcomment($cross_id,$from,$result_str,$date);
                 if($result->response->success=="true")
                 {
                     $move_r=$obj->moveMails($i,"posted");
@@ -166,7 +168,7 @@ function dofetchandpost($obj)
                         $mail["body"]="Sorry for the inconvenience, but email you just sent to EXFE was not sent from an attendee identity to the X (cross). Please try again from the correct email address.\n -- ";
                         $mail["body"].="\n".$body;
                         require_once '../lib/Resque.php';
-                        date_default_timezone_set('GMT');
+                        date_default_timezone_set('UTC');
                         Resque::setBackend(RESQUE_SERVER);
                         $jobId = Resque::enqueue("textemail","textemail_job" , $mail, true);
                         if($jobId!="")
@@ -288,12 +290,13 @@ function strip_html_tags($text)
     return trim($string);
 }
 
-function postcomment($cross_id,$from,$comment)
+function postcomment($cross_id,$from,$comment,$date)
 {
     $fields = array(
                 'cross_id'=>$cross_id,
                 'from'=>$from,
                 'comment'=> $comment,
+                'date'=> strtotime($date),
                 'postkey'=> POSTKEY
             );
 

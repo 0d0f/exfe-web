@@ -298,19 +298,22 @@ class Apn_Job
                 $time_type=$args["changed"]["time_type"];
                 $begin_at=$v;
                 $datetimestr="";
-                if($begin_at=="0000-00-00 00:00:00") { // hasn't datetime
-                   $datetimestr="";
-                } else {
-                    if(trim($time_type) != ""){
-                        $datetimestr = $time_type;
-                    } else {
-                        $datetimestr=date("g:iA D,M j",strtotime($begin_at));
-                    }
-                }
+                #if($begin_at=="0000-00-00 00:00:00") { // hasn't datetime
+                #   $datetimestr="";
+                #} else {
+                #    if(trim($time_type) != ""){
+                #        $datetimestr = $time_type;
+                #    } else {
+                #        $datetimestr=date("g:iA D,M j",strtotime($begin_at));
+                #    }
+                #}
 
 
-                if($datetimestr!="")
-                    $changemsgs["time"]=$datetimestr;
+//
+                #if($datetimestr!="")
+                #    $changemsgs["time"]=$datetimestr;
+                $changemsgs["time"]=humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']);
+
             }
             else if ($k === 'place') {
                 $changemsgs['place'] = $v;
