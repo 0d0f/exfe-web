@@ -230,7 +230,7 @@ class IdentityActions extends ActionController {
         // check old identity
         $row   = $this->getRow("SELECT `id` FROM `identities`
                                 WHERE  `provider` = '{$provider}'
-                                AND    `external_identity` = '{$external_identity}'");
+                                AND    `external_identity` = '{$external_identity}';");
         $wasId = intval($row['id']);
 
         // update identity
@@ -243,17 +243,17 @@ class IdentityActions extends ActionController {
                           `external_username` = '{$external_username}',
                           `updated_at`        = NOW(),
                           `avatar_updated_at` = NOW()
-                      WHERE `id` = {$id}"
+                      WHERE `id` = {$id};"
         );
 
         // merge identity
         if ($wasId > 0) {
             $this->query("UPDATE `invitations`
                           SET    `identity_id` = {$wasId}
-                          WHERE  `identity_id` = {$id}"
+                          WHERE  `identity_id` = {$id};"
             );
             // @todo: 可能需要更新 log by @leaskh
-            $this->query("DELETE FROM `identities` WHERE `id` = {$id}");
+            $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
         }
 
         // return
