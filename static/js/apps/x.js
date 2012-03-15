@@ -425,7 +425,6 @@ var moduleNameSpace = 'odof.x.render',
         $span.html(c+i);
     };
 
-
     $(function () {
         var DOC = $(document);
         DOC.delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {

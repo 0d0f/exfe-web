@@ -14,6 +14,7 @@
     <script src="/static/js/libs/activity-indicator.js"></script>
     <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
     <script src="/static/js/libs/jquery.ba-dotimeout.js"></script>
+    <script src="/static/js/libs/detect_timezone.js"></script>
     <script src="/static/js/comm/ExfeUtil.js"></script>
     <script src="/static/js/comm/func.js"></script>
     <script src="/static/js/user/UserIdentification.js"></script>
