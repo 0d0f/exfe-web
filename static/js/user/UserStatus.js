@@ -444,6 +444,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.exlibs.ExDialog.initialize("identification", html);
     };
 
+    ns.doShowRmIdentityDialog = function () {        
+        var html = "<div id='identification_titles' class='titles'>"
+                    + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
+                    + "<div id='identification_handler' class='tl'>Remove Identity</div>"
+                + "</div>"
+                + "<div id='identification_dialog_con' class='identification_dialog_con'>"
+                    + '<div id="rm_identity_dialog" class="identity_dialog_main">'
+                        + '<div id="rm_identity_title">Delete Identity</div>'
+                        + '<div style="text-align:right;" class="identification_bottom_btn">'
+                            + '<a href="javascript:void(0);" id="rm_identity_discard">Discard</a>&nbsp;&nbsp;'
+                            + '<input type="submit" style="cursor:pointer;" id="submit_rm_identity" class="btn_85" value="Done">'
+                        + '</div>'
+                    + '</div>'
+                + "</div>"
+                + "<div class='identification_dialog_bottom'></div>";
+
+        odof.exlibs.ExDialog.initialize("identification", html);
+    };
+
     ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
         var html = odof.user.identification.createDialogDomCode("reg_login");
         if(typeof callBackFunc != "undefined" && callBackFunc != null){
@@ -549,30 +568,36 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 + '<div class="name" >'
                                 + '<div id="goldLink"><a href="/s/profile" >'+userData.user_name+'</a></div>';
             userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
-            userPanelHTML += '<p class="h">';
+            userPanelHTML += '<div class="h">';
             userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
-            userPanelHTML += '<span class="x_attended">X</span> attended';
-            userPanelHTML += '</p>';
+            userPanelHTML += '<span><em class="x_attended">X</em> attended</span>';
+            userPanelHTML += '</div>';
             userPanelHTML += '<a href="/s/profile" class="l"><img src="'+odof.comm.func.getUserAvatar(userData.user_avatar, 80, img_url)+'"></a>';
             userPanelHTML += '</div>';
-            if(userData.crosses != ""){
-                userPanelHTML += '<p class="info">';
-                userPanelHTML += '<span>Upcoming:</span><br />';
-                jQuery.each(userData.crosses, function(k,v){
-                    var strSort = '<em class="hide"></em>';
+            userPanelHTML += '</div>';
+
+            if (userData.crosses && userData.crosses.length) {
+                userPanelHTML += '<div class="info"><div class="upcoming">Upcoming:</div>';
+                var snow = '<div class="crosseslist"><span>NOW</span><ol>';
+                var enow = '</ol></div>';
+                var now_status = 0;
+                var s24hr = '<div class="crosseslist"><span>24hr</span><ol>';
+                var e24hr = '</ol></div>';
+                $.each(userData.crosses, function (k, v) {
+                    var s = '<li><a href="/!' + v.id + '">' + v.title + '</a>';
                     switch (v.sort) {
                         case 'now':
-                            strSort = '<em>Now</em>';
+                            snow += s;
+                            now_status = 1;
                             break;
                         case '24hr':
-                            strSort = '<em>24hr</em>';
+                            s24hr += s;
                     }
-                    userPanelHTML += strSort + ' <a href="/!'+v.id+'">'+ v.title +'</a>';
                 });
-                userPanelHTML += '</p>';
+                userPanelHTML += (now_status ? snow + enow : '') + s24hr + e24hr + '</div>';
             }
-            userPanelHTML += '<p class="creatbtn"><a href="/x/gather">Gather X</a></p>';
-            userPanelHTML += '</div>';
+
+            userPanelHTML += '<div class="creatbtn"><a href="/x/gather">⊕ Gather</a></div>';
             userPanelHTML += '<div class="myexfefoot">';
             userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
             userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
