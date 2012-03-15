@@ -185,4 +185,80 @@ class IdentityActions extends ActionController {
         #echo json_encode($resultidentities, JSON_FORCE_OBJECT);
     }
 
+
+    public function doUpdate() {
+        /*--------------------+--------------+------+-----+---------+----------------+
+        | Field               | Type         | Null | Key | Default | Extra          |
+        +---------------------+--------------+------+-----+---------+----------------+
+        | id                  | bigint(11)   | NO   | PRI | NULL    | auto_increment |
+        | provider            | varchar(255) | YES  |     | NULL    |                |
+        | external_identity   | varchar(255) | YES  |     | NULL    |                |
+        | name                | varchar(255) | YES  |     | NULL    |                |
+        | bio                 | text         | YES  |     | NULL    |                |
+        | avatar_url          | varchar(255) | YES  |     | NULL    |                |
+        | external_username   | varchar(255) | YES  |     | NULL    |                |
+        +---------------------+--------------+------+-----+---------+---------------*/
+
+        // get raw data
+        $id                = !isset($_POST['id']) ? null
+                           : mysql_real_escape_string(htmlspecialchars($_POST['id']));
+        $provider          = !isset($_POST['provider']) ? null
+                           : mysql_real_escape_string(htmlspecialchars($_POST['provider']));
+        $external_identity = !isset($_POST['external_identity']) ? null
+                           : mysql_real_escape_string(htmlspecialchars($_POST['external_identity']));
+        $name              = !isset($_POST['name']) ? ''
+                           : mysql_real_escape_string(htmlspecialchars($_POST['name']));
+        $bio               = !isset($_POST['bio']) ? ''
+                           : mysql_real_escape_string(htmlspecialchars($_POST['bio']));
+        $avatar_file_name  = !isset($_POST['avatar_url']) ? ''
+                           : mysql_real_escape_string(htmlspecialchars($_POST['avatar_url']));
+        $external_username = !isset($_POST['external_username']) ? ''
+                           : mysql_real_escape_string(htmlspecialchars($_POST['external_username']));
+
+        // chech data
+        if (!intval($id) || $provider === null || $external_identity === null) {
+            echo json_encode(array('success' => false));
+            return;
+        }
+
+        // improve data
+        $external_identity = "{$provider}_{$external_identity}";
+        $avatar_file_name  = preg_replace('/normal(\.[a-z]{1,5})$/i',
+                                          'reasonably_small$1',
+                                          $userInfo['profile_image_url']);
+
+        // check old identity
+        $row   = $this->getRow("SELECT `id` FROM `identities`
+                                WHERE  `provider` = '{$provider}'
+                                AND    `external_identity` = '{$external_identity}'");
+        $wasId = intval($row['id']);
+
+        // update identity
+        $chId  = $wasId > 0 ? $wasId : $id;
+        $this->query("UPDATE `identities`
+                      SET `external_identity` = '{$external_identity}',
+                          `name`              = '{$name}',
+                          `bio`               = '{$bio}',
+                          `avatar_file_name`  = '{$avatar_file_name}',
+                          `external_username` = '{$external_username}',
+                          `updated_at`        = NOW(),
+                          `avatar_updated_at` = NOW()
+                      WHERE `id` = {$id}"
+        );
+
+        // merge identity
+        if ($wasId > 0) {
+            $this->query("UPDATE `invitations`
+                          SET    `identity_id` = {$wasId}
+                          WHERE  `identity_id` = {$id}"
+            );
+            // @todo: 可能需要更新 log by @leaskh
+            $this->query("DELETE FROM `identities` WHERE `id` = {$id}");
+        }
+
+        // return
+        echo json_encode(array('success' => true));
+        return $id;
+    }
+
 }

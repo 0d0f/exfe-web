@@ -74,6 +74,7 @@ class OAuthModels extends DataModel {
         return array("identityID" => $identityID, "userID" => $userID);
     }
 
+
     public function buildFriendsIndex($userID, $friendsList) {
 
         $redisHandler = new Redis();
@@ -105,35 +106,6 @@ class OAuthModels extends DataModel {
             }
 
         }
-    }
-
-    public function updateTwitterIdentity($identityId, $userInfo) {
-        // ready
-        if (!intval($identityId)) {
-            return false;
-        }
-        // make parameter
-        $currentTimeStamp = time();
-        $oAuthUserAvatar  = preg_replace('/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $userInfo['profile_image_url']);
-        // check old identity
-        $row = $this->getRow(
-            "SELECT id FROM identities WHERE provider='twitter' AND external_identity='twitter_{$userInfo['id']}'"
-        );
-        $wasIdentityId = intval($row["id"]);
-        // update identity
-        $chIdentityId  = $wasIdentityId > 0 ? $wasIdentityId : $identityId;
-        $this->query(
-            "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$userInfo['name']}', bio='{$userInfo['description']}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$userInfo['screen_name']}', external_identity='twitter_{$userInfo['id']}' WHERE id={$chIdentityId}"
-        );
-        // merge identity
-        if ($wasIdentityId > 0) {
-            $this->query(
-                "UPDATE invitations SET identity_id={$wasIdentityId} WHERE identity_id={$identityId}"
-            );
-            // @todo: 可能需要更新 log by @leaskh
-            $this->query("DELETE FROM identities WHERE id={$identityId}");
-        }
-        return $chIdentityId;
     }
 
 }
