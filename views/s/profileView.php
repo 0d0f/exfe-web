@@ -33,7 +33,7 @@
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
                 <p class="identity_list">
-                <span class="identity_remove identity_icon"></span>
+                <span class="identity_remove identity_icon" data-id="<?php echo $identity['id']; ?>"></span>
                 <a href="javascript:odof.user.uploadAvatar.uploadIdentityAvatar(<?php echo $identity["id"]; ?>);"><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" /></a>
                 <?php if($identity["provider"] == "email"){ ?>
                 <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><?php echo $identity["name"]; ?></span>
@@ -78,7 +78,7 @@
             </p>
         </div>
         <div class="u_num">
-            <button id="set_password_btn" class="ch_pwd" style="display:none;">Change Password</button>
+            <button id="set_password_btn" class="ch_pwd">Change Password</button>
             <div id="user_cross_info">
                 <p class="num"><?php echo $cross_num; ?></p>
                 <p class="num_info"><span style="color:#0591af">X</span> attended</p>
