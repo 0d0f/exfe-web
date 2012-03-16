@@ -140,7 +140,7 @@ class XModels extends DataModel {
                 $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
             }
             $str=implode(" or ",$cross_id_list);
-            $sql = "SELECT c.*, p.place_line1, p.place_line2 FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) ORDER BY created_at DESC;";
+            $sql = "SELECT c.*, p.place_line1, p.place_line2,p.provider as place_provider,p.external_id as place_external_id,p.lng as place_lng,p.lat as place_lat FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) ORDER BY created_at DESC;";
             $crosses=$this->getAll($sql);
             return $crosses;
         }

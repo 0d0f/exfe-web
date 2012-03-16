@@ -107,6 +107,20 @@ class UsersActions extends ActionController {
             $cross_id=intval($crosses[$i]["id"]);
             if($cross_id>0)
             {
+                $place["line1"]=$crosses[$i]["place_line1"];
+                $place["line2"]=$crosses[$i]["place_line2"];
+                $place["provider"]=$crosses[$i]["place_provider"];
+                $place["external_id"]=$crosses[$i]["place_external_id"];
+                $place["lng"]=$crosses[$i]["place_lng"];
+                $place["lat"]=$crosses[$i]["place_lat"];
+                $crosses[$i]["place"]=$place;
+                unset($crosses[$i]["place_line1"]);
+                unset($crosses[$i]["place_line2"]);
+                unset($crosses[$i]["place_provider"]);
+                unset($crosses[$i]["place_external_id"]);
+                unset($crosses[$i]["place_lng"]);
+                unset($crosses[$i]["place_lat"]);
+
                 $conversations = $conversationData->getConversationByTimeStr($cross_id,"cross",urldecode($params["updated_since"]));
                 $crosses[$i]["conversations"]=$conversations;
                 $identity=$identityData->getIdentityById(intval($crosses[$i]["host_id"]));
