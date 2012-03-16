@@ -1,8 +1,8 @@
 <?php
-class MsgHelper extends ActionController
-{
-    public function sentConversationEmail($mail)
-    {
+
+class MsgHelper extends ActionController {
+
+    public function sentConversationEmail($mail) {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
             Resque::setBackend(RESQUE_SERVER);
@@ -10,8 +10,7 @@ class MsgHelper extends ActionController
             return $jobId;
     }
 
-    public function sentChangeEmail($mail)
-    {
+    public function sentChangeEmail($mail) {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
             Resque::setBackend(RESQUE_SERVER);
@@ -20,38 +19,38 @@ class MsgHelper extends ActionController
             return $jobId;
     }
 
-    public function sentApnConversation($args)
-    {
+    public function sentApnConversation($args) {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
             Resque::setBackend(RESQUE_SERVER);
             $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
             return $jobId;
     }
-    public function sentApnchangecross($args)
-    {
+    
+    public function sentApnchangecross($args) {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
             Resque::setBackend(RESQUE_SERVER);
             $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
             return $jobId;
     }
-    public function sentApnRSVP($args)
-    {
+
+    public function sentApnRSVP($args) {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
             Resque::setBackend(RESQUE_SERVER);
             $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
             return $jobId;
     }
-    public function sentWelcomeEmail($args)
-    {
+
+    public function sentWelcomeEmail($args) {
             require_once 'lib/Resque.php';
             date_default_timezone_set('GMT');
             Resque::setBackend(RESQUE_SERVER);
             $jobId = Resque::enqueue("email","welcomeemail_job" , $args, true);
             return $jobId;
     }
+
 }
 
 
