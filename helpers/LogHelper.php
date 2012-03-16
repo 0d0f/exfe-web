@@ -234,7 +234,9 @@ class LogHelper extends ActionController {
                             );
                         }
                 }
-                unset($rawLogs[$logI]);
+                if ($logItem['action'] !== 'conversation') {
+                    unset($rawLogs[$logI]);
+                }
             } else {
                 switch ($logItem['action']) {
                     case 'addexfee':
