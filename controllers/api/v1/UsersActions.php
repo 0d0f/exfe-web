@@ -55,21 +55,21 @@ class UsersActions extends ActionController {
 
     public function doGetUpdate()
     {
-        $params=$this->params;
-        $uid=$params["id"];
-        $device_identity_id=$params["ddid"];
-
-        $checkhelper=$this->getHelperByName("check");
-        $check=$checkhelper->isAPIAllow("user_getupdate",$params["token"],array("user_id"=>$params["id"]));
-        if($check["check"]==false)
-        {
-            $responobj["meta"]["code"]=403;
-            $responobj["meta"]["error"]="forbidden";
-            echo json_encode($responobj);
-            exit(0);
-        }
+//        $params=$this->params;
+//        $uid=$params["id"];
+//        $device_identity_id=$params["ddid"];
+//
+//        $checkhelper=$this->getHelperByName("check");
+//        $check=$checkhelper->isAPIAllow("user_getupdate",$params["token"],array("user_id"=>$params["id"]));
+//        if($check["check"]==false)
+//        {
+//            $responobj["meta"]["code"]=403;
+//            $responobj["meta"]["error"]="forbidden";
+//            echo json_encode($responobj);
+//            exit(0);
+//        }
         $loghelper=$this->getHelperByName('log');
-        $logs=$loghelper->getMergedXUpdate($uid, 'all', urldecode($params["updated_since"]), 200);
+        $logs=$loghelper->getMergedXUpdate(1, 'all', urldecode($params["updated_since"]), 200);
 
         $identityhelper=$this->getHelperByName("identity");
         $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);
