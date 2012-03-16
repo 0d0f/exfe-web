@@ -445,15 +445,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     // delete identity
-    ns.doShowRmIdentityDialog = function () {        
+    ns.doShowRmIdentityDialog = function (id) {
         var html = "<div id='identification_titles' class='titles'>"
                     + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
                     + "<div id='identification_handler' class='tl'>Remove Identity</div>"
                 + "</div>"
                 + "<div id='identification_dialog_con' class='identification_dialog_con' style='height: 200px;'>"
-                    + '<div id="rm_identity_dialog" class="identity_dialog_main">'
+                    + '<div id="rm_identity_dialog" class="identity_dialog_main" style="height: auto;">'
                         + '<div id="rm_identity_title" class="dialog_titles">Delete Identity</div>'
-                        + '<div style="text-align:right;" class="identification_bottom_btn">'
+                        + '<div style="text-align:right;top: 155px;" class="identification_bottom_btn">'
                             + '<a href="javascript:void(0);" id="rm_identity_discard">Discard</a>&nbsp;&nbsp;'
                             + '<input type="submit" style="cursor:pointer;" id="submit_rm_identity" class="btn_85" value="Done">'
                         + '</div>'
@@ -462,7 +462,25 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 + "<div class='identification_dialog_bottom'></div>";
 
         odof.exlibs.ExDialog.initialize("identification", html);
+        if (ns.doShowRmIdentityDialog.status) {
+            ns.doShowRmIdentityDialog.status = 0;
+            var DOC = $(document);
+            DOC.delegate('#rm_identity_discard', 'click', function (e) {
+                $('#identification_cover').remove();
+                $('#identification_dialog').remove();
+            });
+            DOC.delegate('#submit_rm_identity', 'click', function (e) {
+                //console.log(id);
+
+                /*TODO: 先放着
+                $.get(site_url + '/s/deleteIdentity', {identity_id: id}, function (data) {
+
+                });
+                */
+            });
+        }
     };
+    ns.doShowRmIdentityDialog.status = 1;
 
     ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
         var html = odof.user.identification.createDialogDomCode("reg_login");
@@ -578,24 +596,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '</div>';
 
             if (userData.crosses && userData.crosses.length) {
-                userPanelHTML += '<div class="info"><div class="upcoming">Upcoming:</div>';
+                userPanelHTML += '<div class="info">';
+                var supcoming = '<div class="upcoming">Upcoming:<div>';
+                supcoming += '<div class="crosseslist"><ol>';
+                var eupcoming = '</ol></div>';
+                var upcoming_status = 0;
                 var snow = '<div class="crosseslist"><span>NOW</span><ol>';
                 var enow = '</ol></div>';
                 var now_status = 0;
                 var s24hr = '<div class="crosseslist"><span>24hr</span><ol>';
                 var e24hr = '</ol></div>';
+                var hr_status = 0;
                 $.each(userData.crosses, function (k, v) {
                     var s = '<li><a href="/!' + v.id + '">' + v.title + '</a>';
                     switch (v.sort) {
+                        case 'upcoming':
+                            supcoming += s;
+                            upcoming_status = 1;
+                            break;
                         case 'now':
                             snow += s;
                             now_status = 1;
                             break;
                         case '24hr':
                             s24hr += s;
+                            hr_status = 1;
+                            break;
                     }
                 });
-                userPanelHTML += (now_status ? snow + enow : '') + s24hr + e24hr + '</div>';
+                userPanelHTML += (upcoming_status ? supcoming + eupcoming : '')
+                    + (now_status ? snow + enow : '')
+                    + (hr_status ? s24hr + e24hr : '')
+                    + '</div>';
             }
 
             userPanelHTML += '<div class="creatbtn"><a href="/x/gather">⊕ Gather</a></div>';
@@ -607,11 +639,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             jQuery("#global_user_info").html(userPanelHTML);
 
             jQuery('.name').mousemove(function() {
-                jQuery('#goldLink a').addClass('nameh');
+                jQuery('#goldLink').addClass('nameh');
                 jQuery('#myexfe').show();
             });
             jQuery('.name').mouseout(function() {
-                jQuery('#goldLink a').removeClass('nameh');
+                jQuery('#goldLink').removeClass('nameh');
                 jQuery('#myexfe').hide();
             });
         }
