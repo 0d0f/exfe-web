@@ -21,7 +21,10 @@
 }
 #gather_place_selector ul:hover {
     color:#FFFFFF; background:#177096; cursor:pointer;
+}
 
+#gather_place_selector .ulhover {
+    color:#FFFFFF; background:#CCC;;
 }
 #gather_place_selector ul li {
     padding-bottom:0px;
