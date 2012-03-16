@@ -184,9 +184,9 @@ class InvitationModels extends DataModel
             $identities_sql.=implode(" or ",$id_list);
             $identities_sql.=")";
             //(identity_id=1 or identity_id=13);
-            $sql="select a.id invitation_id, a.state ,a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id and $identities_sql";
+            $sql="select a.id invitation_id, a.state ,a.token,a.updated_at, a.by_identity_id,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id and $identities_sql";
             if($without_token==true)
-                $sql="select a.id invitation_id, a.state ,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
+                $sql="select a.id invitation_id, a.state ,a.updated_at, a.by_identity_id, b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
 
             $invitations=$this->getAll($sql);
 

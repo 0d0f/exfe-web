@@ -155,10 +155,10 @@ class ExfeeHelper extends ActionController {
         require_once 'lib/Resque.php';
         date_default_timezone_set('GMT');
         Resque::setBackend(RESQUE_SERVER);
-        $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
         if($invitations)
             foreach ($invitations as $invitation) {
                if(intval($invitation["by_identity_id"])>0)
+                    $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
                     $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                     $args = array(
                         'title' => $cross["title"],
@@ -239,54 +239,54 @@ class ExfeeHelper extends ActionController {
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-               if(intval($invitation["by_identity_id"])>0) {
-                   $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
-               }
-               $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
-               $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
-                   
-               $args = array(
-                        'title' => $cross["title"],
-                        'description' => $cross["description"],
-                        'begin_at' => humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
-                        'time_type' => $cross["time_type"],
-                        'place_line1' => $cross["place"]["line1"],
-                        'place_line2' => $cross["place"]["line2"],
-                        'cross_id' => $cross_id,
-                        'cross_id_base62' => int_to_base62($cross_id),
-                        'invitation_id' => $invitation["invitation_id"],
-                        'token' => $invitation["token"],
-                        'identity_id' => $invitation["identity_id"],
-                        'host_identity_id' => $identity_id,
-                        'provider' => $invitation["provider"],
-                        'external_identity' => $invitation["external_identity"],
-                        'name' => $invitation["name"],
-                        'avatar_file_name' => $invitation["avatar_file_name"],
-                        'host_identity' => $host_identity,
-                        'rsvp_status' => $invitation["state"],
-                        'by_identity' => $by_identity,
-                        'to_identity' => $to_identity,
-                        'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
-                        'invitations' => $invitations
-                );
-                $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
-
-                $identities=$invitation["identities"];
-                if($identities)
-                {
-                    foreach ($identities as $identity)
-                    {
-                        if($identity["provider"]=="iOSAPN")
-                        {
-                            $args["identity"]=$identity;
-                            $args["job_type"]="invitation";
-                            $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
-                        }
-
-                    }
+                if(intval($invitation["by_identity_id"])>0) {
+                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                 }
+                $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
+                $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
+                   
+                $args = array(
+                    'title' => $cross["title"],
+                    'description' => $cross["description"],
+                    'begin_at' => humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
+                    'time_type' => $cross["time_type"],
+                    'place_line1' => $cross["place"]["line1"],
+                    'place_line2' => $cross["place"]["line2"],
+                    'cross_id' => $cross_id,
+                    'cross_id_base62' => int_to_base62($cross_id),
+                    'invitation_id' => $invitation["invitation_id"],
+                    'token' => $invitation["token"],
+                    'identity_id' => $invitation["identity_id"],
+                    'host_identity_id' => $identity_id,
+                    'provider' => $invitation["provider"],
+                    'external_identity' => $invitation["external_identity"],
+                    'name' => $invitation["name"],
+                    'avatar_file_name' => $invitation["avatar_file_name"],
+                    'host_identity' => $host_identity,
+                    'rsvp_status' => $invitation["state"],
+                    'by_identity' => $by_identity,
+                    'to_identity' => $to_identity,
+                    'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
+                    'invitations' => $invitations
+                 );
+                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
 
-                //echo "Queued job ".$jobId."\n\n";
+                 $identities=$invitation["identities"];
+                 if($identities)
+                 {
+                     foreach ($identities as $identity)
+                     {
+                         if($identity["provider"]=="iOSAPN")
+                         {
+                             $args["identity"]=$identity;
+                             $args["job_type"]="invitation";
+                             $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
+                         }
+
+                     }
+                 }
+
+                 //echo "Queued job ".$jobId."\n\n";
             }
     }
     public function sendConversationMsg($cross_id,$host_identity_id,$content)
