@@ -267,7 +267,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.setXTitleBackground = function () {
         // 设置标题背景图片
         var bkgIMG = new Image();
-        bkgIMG.src = site_url + '/eimgs/xbgimage/' + crossData.background + '_web.jpg';
+        bkgIMG.src = img_url + '/xbgimage/' + crossData.background + '_web.jpg';
         bkgIMG.onload = function () {
             $('#x_view').css('background', 'url(' + bkgIMG.src + ') no-repeat');
         }
