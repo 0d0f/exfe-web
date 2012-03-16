@@ -160,6 +160,7 @@ class ExfeeHelper extends ActionController {
                if(intval($invitation["by_identity_id"])>0)
                     $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
                     $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
+                    $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                     $args = array(
                         'title' => $cross["title"],
                         'description' => $cross["description"],
@@ -180,6 +181,7 @@ class ExfeeHelper extends ActionController {
                         'rsvp_status' => $invitation["state"],
                         'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
                         'by_identity' => $by_identity,
+                        'to_identity' => $to_identity,
                         'invitations' => $allinvitations
 
                 );
