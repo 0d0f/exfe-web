@@ -12,16 +12,16 @@ class xbgUtilitie extends DataModel {
     protected $objLibFileSystem = null;
 
     protected $objLibImage      = null;
-    
+
     protected $fmImagePath      = '';
-    
+
     protected $toImagePath      = '';
-    
+
     protected $toSpecification  = array(
         'web' => array('type' => 'jpg', 'width' => 880, 'height' => 300, 'quality' => 90),
         'ios' => array('type' => 'jpg', 'width' => 640, 'height' => 200, 'quality' => 90),
-    ); 
-    
+    );
+
 
     public function __construct() {
         // init
@@ -42,7 +42,7 @@ class xbgUtilitie extends DataModel {
         global $curDir;
         echo "Source folder: {$this->fmImagePath}\r\n"
            . "Destination folder: {$this->toImagePath}\r\n\r\n";
-    
+
         // del old images
         echo "Del old images...\r\n";
         $sql = "DELETE FROM `background`;";
@@ -84,7 +84,7 @@ class xbgUtilitie extends DataModel {
             }
         }
         echo "Total {$num} item(s) processed.\r\n\r\n";
-        
+
         // return
         echo "All done.\r\n";
         return true;
