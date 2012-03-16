@@ -116,6 +116,34 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#gather_place_selector").show();
         jQuery("#gather_place_selector").html(placeList);
 
+        // 快捷键
+        var listLength = locationListData.length, li = 0,
+            $uls = $('#gather_place_selector').find('ul.place_detail');
+        $uls.eq(li).addClass('ulhover');
+        $('#gather_place_selector')
+            .attr('tabindex', -1).focus()
+            .unbind('keydown')
+            .bind('keydown', function (e) {
+                $uls.eq(li).removeClass('ulhover');
+                var keyCode = e.keyCode;
+                switch (keyCode) {
+                    case 37:
+                    case 38:
+                        li = li ? --li : listLength - 1;
+                        break;
+                    case 39:
+                    case 40:
+                        li++;
+                        if (li === listLength) li = 0;
+                        break;
+                    case 13:
+                        $uls.eq(li).trigger('click');
+                        $(this).attr('tabindex', "");
+                }
+                $uls.eq(li).addClass('ulhover');
+                e.preventDefault();
+            });
+
         var userSelectAddress = function(e){
             var curElementID = e.currentTarget.id;
             var userPlaceName = jQuery("#place_name_"+curElementID).html();
