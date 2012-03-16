@@ -22,8 +22,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="/static/js/apps/maps.js"></script>
 
-<script src="/static/js/libs/detect_timezone.js"></script>
-
 </head>
 
 <body>

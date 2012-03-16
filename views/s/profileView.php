@@ -4,7 +4,6 @@
 <script src="/static/js/user/UploadAvatar.js"></script>
 <script src="/static/js/user/FileUploader.js"></script>
 <script src="/static/js/libs/jquery.imgareaselect.js"></script>
-<script src="/static/js/libs/detect_timezone.js"></script>
 </head>
 <body>
 <?php include 'share/nav.php'; ?>

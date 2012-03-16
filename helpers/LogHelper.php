@@ -147,6 +147,7 @@ class LogHelper extends ActionController {
             }
             $rawLogs[$logI]['x_title']       = $allCross[$rawLogs[$logI]['x_id']]['title'];
             $rawLogs[$logI]['x_description'] = $allCross[$rawLogs[$logI]['x_id']]['description'];
+            $rawLogs[$logI]['x_background']  = $allCross[$rawLogs[$logI]['x_id']]['background'];
             $rawLogs[$logI]['x_begin_at']    = $allCross[$rawLogs[$logI]['x_id']]['begin_at'];
             $rawLogs[$logI]['x_time_type']   = $allCross[$rawLogs[$logI]['x_id']]['time_type'];
             $rawLogs[$logI]['x_place']       = $allCross[$rawLogs[$logI]['x_id']]['place'];
