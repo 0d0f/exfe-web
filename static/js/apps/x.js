@@ -181,7 +181,7 @@ var moduleNameSpace = 'odof.x.render',
         $.each(tmpData, function (i, v) {
             strMessage += g === i ? gather :(v.time ? self.makeHistory(v) : self.makeMessage(v));
         });
-        tmpData = null;     
+        tmpData = null;
         $('#x_conversation_list').html(strMessage);
     };
 
@@ -372,7 +372,7 @@ var moduleNameSpace = 'odof.x.render',
 
         if (window['crossExfee']) {
             var my = this.fetchUserByIdentityId(myIdentity.id);
-            if (my.identity_id !== my.by_identity_id) {
+            if (my != null && my.identity_id !== my.by_identity_id) {
                 var by_identity = this.fetchUserByIdentityId(my.by_identity_id);
                 if (by_identity) {
                     $('#x_view_content')
