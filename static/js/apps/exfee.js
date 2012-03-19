@@ -47,7 +47,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.diffCallback      = {};
 
     ns.timerBaseInfo     = {};
-    
+
     ns.idsBuilt          = {};
 
 
@@ -697,7 +697,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }
         for (i in arrInput) {
-            var item = odof.util.parseId(arrInput[i]);
+            var item = odof.comm.func.parseId(arrInput[i]);
             if (item.provider && (parseInt(i) < arrInput.length - 1 || force)) {
                 arrValid.push(item);
             } else {

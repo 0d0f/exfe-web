@@ -8,18 +8,12 @@
     <meta name="Keywords" content="EXFE, Gather">
     <meta name="Description" content="EXFE.COM website">
     <title>EXFE.COM</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/global.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-    <script src="/static/js/libs/jquery.js"></script>
-    <script src="/static/js/libs/activity-indicator.js"></script>
-    <script src="/static/js/libs/jquery.ba-outside-events.js"></script>
-    <script src="/static/js/libs/jquery.ba-dotimeout.js"></script>
-    <script src="/static/js/libs/detect_timezone.js"></script>
-    <script src="/static/js/comm/ExfeUtil.js"></script>
-    <script src="/static/js/comm/func.js"></script>
-    <script src="/static/js/user/UserIdentification.js"></script>
-    <script src="/static/js/exlibs/ExDialog.js"></script>
-    <script src="/static/js/user/UserStatus.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/?g=css_global" />
+
+    <script type="text/javascript" src="/static/?g=js_libs"></script>
+    <script type="text/javascript" src="/static/?g=js_util"></script>
+    <script type="text/javascript" src="/static/js/comm/func.js"></script>
+    <script type="text/javascript" src="/static/?g=js_user"></script>
 
     <script>
         var site_url = "<?php echo SITE_URL; ?>";
