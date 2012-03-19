@@ -55,7 +55,7 @@ class CheckHelper extends ActionController {
     function isAllow($class,$action,$args="")
     {
         $type="session";
-        if($_SESSION["identity_id"]=="")
+        if($_SESSION["userid"]=="")
         {
             $indentityData=$this->getModelByName("identity");
             $indentityData->loginByCookie();
@@ -76,9 +76,10 @@ class CheckHelper extends ActionController {
                         return array("allow"=>"true","type"=>"token","tokenexpired"=>$result["tokenexpired"]);
                     }
                 }
-                if(intval($_SESSION["identity_id"])>0)
+                if(intval($_SESSION["userid"])>0)
                 {
-                    $result=$invitationdata->ifIdentityHasInvitation($_SESSION["identity_id"],$cross_id);
+                    //$result=$invitationdata->ifIdentityHasInvitation($_SESSION["identity_id"],$cross_id);
+                    $result=$invitationdata->ifUserHasInvitation($_SESSION["userid"],$cross_id);
                     if ($result===true) {
                         return array("allow"=>"true","type"=>$type);
                     }
