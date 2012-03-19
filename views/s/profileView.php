@@ -1,9 +1,6 @@
 <?php include 'share/header.php'; ?>
 <link rel="stylesheet" type="text/css" href="/static/css/profile.css">
-<script src="/static/js/user/UserProfile.js"></script>
-<script src="/static/js/user/UploadAvatar.js"></script>
-<script src="/static/js/user/FileUploader.js"></script>
-<script src="/static/js/libs/jquery.imgareaselect.js"></script>
+<script type="text/javascript" src="/static/?g=js_uploader"></script>
 </head>
 <body>
 <?php include 'share/nav.php'; ?>

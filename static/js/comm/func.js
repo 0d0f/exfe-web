@@ -73,6 +73,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         return true;
 
     };
+
     ns.initRePassword = function(pwdBoxID, rePwdBoxID, type){
         var displayType = "visible";
         if(typeof type != "undefined"){
@@ -283,4 +284,33 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
     */
+
+    /**
+     * parse exfee id
+     * by Leask
+     */
+    ns.parseId = function(strId) {
+        strId = this.trim(strId);
+        if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
+            var iLt = strId.indexOf('<'),
+                iGt = strId.indexOf('>');
+            return {name              : this.trim(this.cutLongName(this.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
+                    external_identity : this.trim(strId.substring(++iLt, iGt)),
+                    provider          : 'email'};
+        } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
+            return {name              : this.trim(this.cutLongName(strId.split('@')[0])),
+                    external_identity : strId,
+                    provider          : 'email'};
+        } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(strId)) {
+            strId = strId.replace(/^@|@twitter$/ig, '');
+            return {name              : strId,
+                    external_identity : '@' + strId + '@twitter',
+                    external_username : strId,
+                    provider          : 'twitter'};
+        } else {
+            return {external_identity : strId,
+                    provider          : null};
+        }
+    };
+
 })(ns);

@@ -337,7 +337,8 @@ var odof = {
      */
     util.analyzeURI = function(uri)
     {
-        var match = uri.match(/^(([^:\/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/i);
+        //var match = uri.match(/^(([^:\/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/i);
+        var match = uri.match(/^(([^:\/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/i);
         // Example of "https://www.autodesk.com:90/labs/domain.aspx?test=1&value=2#mm=1"
         // 0 : https://www.autodesk.com:90/labs/domain.aspx?test=1&value=2#mm=1
         // 1 : https:
@@ -1112,35 +1113,6 @@ var odof = {
             strName = strName.substring(0, strName.length - 1);
         }
         return strName;
-    };
-
-
-    /**
-     * parse exfee id
-     * by Leask
-     */
-    util.parseId = function(strId) {
-        strId = this.trim(strId);
-        if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
-            var iLt = strId.indexOf('<'),
-                iGt = strId.indexOf('>');
-            return {name              : this.trim(this.cutLongName(this.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
-                    external_identity : this.trim(strId.substring(++iLt, iGt)),
-                    provider          : 'email'};
-        } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
-            return {name              : this.trim(this.cutLongName(strId.split('@')[0])),
-                    external_identity : strId,
-                    provider          : 'email'};
-        } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(strId)) {
-            strId = strId.replace(/^@|@twitter$/ig, '');
-            return {name              : strId,
-                    external_identity : '@' + strId + '@twitter',
-                    external_username : strId,
-                    provider          : 'twitter'};
-        } else {
-            return {external_identity : strId,
-                    provider          : null};
-        }
     };
 
 
