@@ -476,7 +476,7 @@ class IdentityModels extends DataModel {
         $userIdentityInfo = array();
         foreach($rows as $row)
         {
-            if(intval($row["identityid"])>0)
+            if(intval($row["identityid"])>0 && $row["status"] != 1)
             {
                 $identity_id=$row["identityid"];
                 $sql="select * from identities where id=$identity_id";
