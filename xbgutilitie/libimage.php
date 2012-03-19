@@ -27,7 +27,7 @@ class libImage {
 
         $ratioX = $ratioWidth < $ratioHeight ? $ratioHeight : $ratioWidth;
 
-        $draftWidth  = $curWidth * $ratioX;
+        $draftWidth  = $curWidth  * $ratioX;
         $draftHeight = $curHeight * $ratioX;
         $draftImage  = imagecreatetruecolor($draftWidth, $draftHeight);
         imagecopyresampled($draftImage, $curImage, 0, 0, 0, 0, $draftWidth,
