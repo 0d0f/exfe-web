@@ -233,10 +233,28 @@ class InvitationModels extends DataModel
     {
         $sql="select id from invitations where identity_id=$identity_id and cross_id=$cross_id;";
         $row=$this->getRow($sql);
-        if(intval($row["id"])>0)
+        if(intval($row["id"])>0){
             return true;
-
+        }
         return false;
+    }
+
+    public function ifUserHasInvitation($user_id, $cross_id)
+    {
+        $returnResult = false;
+        $sql = "SELECT identityid FROM user_identity WHERE userid={$user_id}";
+        $identityArr = $this->getAll($sql);
+        $sql = "SELECT identity_id FROM invitations WHERE cross_id={$cross_id}";
+        $crossIdentity = $this->getAll($sql);
+
+        foreach($identityArr as $v){
+            foreach($crossIdentity as $vv){
+                if($v["identityid"] == $vv["identity_id"]){
+                    $returnResult = true;
+                }
+            }
+        }
+        return $returnResult;
     }
 
     public function ifIdentityHasInvitationByToken($token,$cross_id)
