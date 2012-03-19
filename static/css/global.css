@@ -85,13 +85,13 @@ input, textarea {
 
 /* global body style */
 body {
-    background: #F2F2F2 url(../images/global_header_bg.jpg) repeat-x 0 0;
+    background: #FAFAFA url(../images/global_header_bg.jpg) repeat-x 0 0;
 }
 
 
 /* global content area */
 .content {
-    width: 880px;
+    width: 882px;
     margin: 30px auto 40px auto;
 }
 
