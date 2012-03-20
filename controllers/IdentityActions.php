@@ -215,7 +215,7 @@ class IdentityActions extends ActionController {
         $external_username = !isset($_POST['external_username']) ? ''
                            : mysql_real_escape_string(htmlspecialchars($_POST['external_username']));
 
-        // chech data
+        // check data
         if (!intval($id) || $provider === null || $external_identity === null) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
