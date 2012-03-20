@@ -873,7 +873,7 @@ class IdentityModels extends DataModel {
         );
 
         // merge identity
-        if ($wasId > 0) {
+        if ($wasId > 0 && $wasId !== intval($id)) {
             $this->query("UPDATE `invitations`
                           SET    `identity_id` = {$wasId}
                           WHERE  `identity_id` = {$id};");
