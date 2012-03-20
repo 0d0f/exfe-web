@@ -1,6 +1,10 @@
 @charset "UTF-8";
 /* profile style by Leask */
 
+/* 修改背景颜色 */
+body {
+    background-color: #F2F2F2;
+}
 .shadow_840 {
     background: url(/static/images/shadow.png) no-repeat;
     height: 20px;
