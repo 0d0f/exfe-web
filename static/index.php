@@ -50,6 +50,39 @@ if (isset($_GET['g'])) {
     $min_serveOptions['minApp']['groups'] = (require MINIFY_MIN_DIR . '/groupsConfig.php');
 }
 
+//如果为测试环境，则输出JS和CSS原文件。
+if($dev_environment){
+    if (isset($_GET['f'])) {
+        $file = $_GET["f"];
+        $file_type_arr = array("js","css");
+        $ext = strtolower(substr($file,strrpos($file,'.')+1));
+        if(!in_array($ext, $file_type_arr)){
+            echo "<h1>Error file-type...</h1>";
+            exit;
+        }
+        $file = STATIC_FILE_ROOT."/".$file;
+        header("Content-Type:text/html; charset=UTF-8");
+        echo file_get_contents($file);
+        exit;
+    }
+    if (isset($_GET['g'])) {
+        $group_name = $_GET['g'];
+        if(!array_key_exists($group_name, $min_serveOptions['minApp']['groups'])){
+            echo "<h1>Group error...</h1>";
+            exit;
+        }
+        $file_array = $min_serveOptions['minApp']['groups'][$group_name];
+        $file_contents = "";
+        foreach($file_array as $f){
+            $file_name = STATIC_FILE_ROOT."/".$f;
+            $file_contents .= file_get_contents($file_name)."\r\n";
+        }
+        header("Content-Type:text/html; charset=UTF-8");
+        echo $file_contents;
+        exit;
+    }
+}
+
 if (isset($_GET['f']) || isset($_GET['g'])) {
     // serve!
     if (! isset($min_serveController)) {

@@ -3,18 +3,18 @@
     global $exfe_res;
 ?>
 <!-- Exfee Widget -->
-<link type="text/css" href="/static/?f=static/css/exfee.css" rel="stylesheet">
-<script src="/static/?f=static/js/apps/exfee.js"></script>
+<link type="text/css" href="/static/?f=css/exfee.css" rel="stylesheet">
+<script src="/static/?f=js/apps/exfee.js"></script>
 <!-- X Render -->
-<link type="text/css" href="/static/?f=static/css/x.css" rel="stylesheet">
-<script src="/static/?f=static/js/apps/x.js"></script>
+<link type="text/css" href="/static/?f=css/x.css" rel="stylesheet">
+<script src="/static/?f=js/apps/x.js"></script>
 <!-- X Gather -->
-<link type="text/css" rel="stylesheet" href="/static/?f=static/css/gather.css">
-<script src="/static/?f=static/js/apps/gather.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/?f=css/gather.css">
+<script src="/static/?f=js/apps/gather.js"></script>
 <!-- EXFE Maps -->
-<link type="text/css" rel="stylesheet" href="/static/?f=static/css/maps.css">
+<link type="text/css" rel="stylesheet" href="/static/?f=css/maps.css">
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-<script src="/static/?f=static/js/apps/maps.js"></script>
+<script src="/static/?f=js/apps/maps.js"></script>
 
 </head>
 <body>
