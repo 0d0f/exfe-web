@@ -22,17 +22,18 @@
         <?php } ?>
         </div>
         <div class="u_con">
-            <h1 id="user_name"><?php echo $user["name"];?></h1>
+            <h1 id="user_name"><span class="edit-area"><?php echo $user["name"];?></span></h1>
             <?php foreach($identities as $identity) {
                 if( $identity["provider"]!="iOSAPN") {
                     $identity=humanIdentity($identity,NULL);
                     if($identity["name"]==$identity["external_identity"]){ $identity["name"]=""; }
              ?>
-                <p class="identity_list">
-                <span class="identity_remove identity_icon" data-id="<?php echo $identity['id']; ?>"></span>
-                <a href="javascript:odof.user.uploadAvatar.uploadIdentityAvatar(<?php echo $identity["id"]; ?>);"><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" /></a>
+                <p class="identity_list" data-id="<?php echo $identity['id']; ?>">
+                <span class="identity_icon identity_remove"></span>
+                <span class="identity_remove_submit">Remove</span>
+                <a href="javascript:<?php if($identity["provider"] == "email"){ ?>odof.user.uploadAvatar.uploadIdentityAvatar(<?php echo $identity["id"]; ?>);<?php }else{ ?>;<?php } ?>"><img class="s_header" src="<?php echo getUserAvatar($identity["avatar_file_name"], 80); ?>" alt="" /></a>
                 <?php if($identity["provider"] == "email"){ ?>
-                <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><?php echo $identity["name"]; ?></span>
+                <span class="id_name provider_<?php echo $identity["provider"]; ?>" id="identity_name_<?php echo $identity["id"]; ?>"><span class="edit-area"><?php echo $identity["name"]; ?></span></span>
                 <span class="identity_ec" id="identity_edit_container_<?php echo $identity["id"]; ?>" style="display:none"><input class='identity_input' id='cur_identity_name_<?php echo $identity["id"]; ?>' value='' />&nbsp;<input type='button' style='cursor:pointer' value='Done' class='identity_submit' id='submit_editid_<?php echo $identity["id"]; ?>'></span>
                 <input type="hidden" id="identity_<?php echo $identity["id"]; ?>" value="<?php echo $identity["external_identity"]; ?>" />
                 <input type="hidden" id="identity_provider_<?php echo $identity["id"]; ?>" value="<?php echo $identity["provider"]; ?>" />
@@ -42,7 +43,7 @@
                 <?php if($identity["status"] == 2 && $identity["provider"]=="email"){ ?>
                 <span style="width:130px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
                 <?php }else{ ?>
-                <span style="width:400px; overflow:hidden; text-overflow:ellipsis" class="identity_email" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
+                <span style="/*width:400px;*/ overflow:hidden; text-overflow:ellipsis" class="identity_email" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
                 <?php } ?>
                 <?php
                 if($identity["status"] != 3 ) {
