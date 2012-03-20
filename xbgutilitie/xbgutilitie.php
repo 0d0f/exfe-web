@@ -18,16 +18,18 @@ class xbgUtilitie extends DataModel {
     protected $toImagePath      = '';
 
     protected $toSpecification  = array(
-        'web' => array('type'      => 'jpg',
-                       'quality'   => 90,
-                       'width'     => 882,
-                       'height'    => 481,
-                       'img-width' => 880),
-        'ios' => array('type'      => 'jpg',
-                       'quality'   => 90,
-                       'width'     => 640,
-                       'height'    => 350,
-                       'img-width' => 640),
+        'web' => array('type'       => 'jpg',
+                       'quality'    => 90,
+                       'width'      => 882,
+                       'height'     => 922,
+                       'img-width'  => 880,
+                       'img-height' => 481),
+        'ios' => array('type'       => 'jpg',
+                       'quality'    => 90,
+                       'width'      => 640,
+                       'height'     => 671,
+                       'img-width'  => 640,
+                       'img-height' => 350),
     );
 
 
@@ -72,13 +74,13 @@ class xbgUtilitie extends DataModel {
                         $dtImage = imagecreatetruecolor($sItem['width'], $sItem['height']);
                         // resize
                         $dfImage = $this->objLibImage->resizeImage(
-                            $fmFullpath, $sItem['img-width'], $sItem['height']
+                            $fmFullpath, $sItem['img-width'], $sItem['img-height']
                         );
                         // copy
                         imagecopyresampled(
                             $dtImage, $dfImage, 0, 0, 0, 0,
-                            $sItem['img-width'], $sItem['height'],
-                            $sItem['img-width'], $sItem['height']
+                            $sItem['img-width'], $sItem['img-height'],
+                            $sItem['img-width'], $sItem['img-height']
                         );
                         // mask
                         $mask    = "{$curDir}/res/{$sI}_mask.png";
