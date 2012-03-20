@@ -2,6 +2,10 @@
 /* by Leask */
 
 
+#x_view {
+    min-height: 440px;
+}
+
 #gather_form {
     padding: 0 40px 15px 40px;
 }
