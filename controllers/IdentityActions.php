@@ -217,7 +217,7 @@ class IdentityActions extends ActionController {
 
         // chech data
         if (!intval($id) || $provider === null || $external_identity === null) {
-            echo json_encode(array('success' => false));
+            header('HTTP/1.1 500 Internal Server Error');
             return;
         }
 
