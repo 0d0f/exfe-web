@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Minify_Controller_MinApp  
+ * Class Minify_Controller_MinApp
  * @package Minify
  */
 
@@ -8,15 +8,15 @@ require_once 'Minify/Controller/Base.php';
 
 /**
  * Controller class for requests to /min/index.php
- * 
+ *
  * @package Minify
  * @author Stephen Clay <steve@mrclay.org>
  */
 class Minify_Controller_MinApp extends Minify_Controller_Base {
-    
+
     /**
      * Set up groups of files as sources
-     * 
+     *
      * @param array $options controller and Minify options
      *
      * @return array Minify options
@@ -36,7 +36,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
         $sources = array();
         $this->selectionId = '';
         $firstMissingResource = null;
-        
+
         if (isset($_GET['g'])) {
             // add group(s)
             $this->selectionId .= 'g=' . $_GET['g'];
@@ -64,7 +64,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                         continue;
                     }
                     if (0 === strpos($file, '//')) {
-                        $file = $_SERVER['DOCUMENT_ROOT'] . substr($file, 1);
+                        $file = STATIC_FILE_ROOT."/".substr($file, 1);
                     }
                     $realpath = realpath($file);
                     if ($realpath && is_file($realpath)) {
@@ -95,7 +95,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             // try user files
             // The following restrictions are to limit the URLs that minify will
             // respond to.
-            if (// verify at least one file, files are single comma separated, 
+            if (// verify at least one file, files are single comma separated,
                 // and are all same extension
                 ! preg_match('/^[^,]+\\.(css|js)(?:,[^,]+\\.\\1)*$/', $_GET['f'], $m)
                 // no "//"
@@ -124,7 +124,7 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
                     && false === strpos($_GET['b'], '..')
                     && $_GET['b'] !== '.') {
                     // valid base
-                    $base = "/{$_GET['b']}/";       
+                    $base = "/{$_GET['b']}/";
                 } else {
                     $this->log("GET param 'b' was invalid");
                     return $options;
@@ -134,12 +134,12 @@ class Minify_Controller_MinApp extends Minify_Controller_Base {
             }
             $allowDirs = array();
             foreach ((array)$cOptions['allowDirs'] as $allowDir) {
-                $allowDirs[] = realpath(str_replace('//', $_SERVER['DOCUMENT_ROOT'] . '/', $allowDir));
+                $allowDirs[] = realpath(str_replace('//', STATIC_FILE_ROOT . '/', $allowDir));
             }
             $basenames = array(); // just for cache id
             foreach ($files as $file) {
                 $uri = $base . $file;
-                $path = $_SERVER['DOCUMENT_ROOT'] . $uri;
+                $path = STATIC_FILE_ROOT . $uri;
                 $realpath = realpath($path);
                 if (false === $realpath || ! is_file($realpath)) {
                     $this->log("The path \"{$path}\" (realpath \"{$realpath}\") could not be found (or was not a file)");

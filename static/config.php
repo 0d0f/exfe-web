@@ -6,6 +6,11 @@
  * @package Minify
  */
 
+define("STATIC_FILE_ROOT", dirname(__FILE__));
+/*
+ * 如果为True，则为测试环境，会原样输出JS。
+ */
+$dev_environment = false;
 
 /**
  * Allow use of the Minify URI Builder app. Only set this to true while you need it.
@@ -21,8 +26,7 @@ $min_enableBuilder = true;
  * If you want to use a custom error logger, set this to your logger
  * instance. Your object should have a method log(string $message).
  */
-//$min_errorLogger = false;
-$min_errorLogger = true;
+$min_errorLogger = false;
 
 
 /**
