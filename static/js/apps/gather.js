@@ -406,7 +406,7 @@ $(document).ready(function() {
         }
     });
 
-    odof.comm.func.setXTitleBackground();
+    odof.x.render.setXTitleBackground();
 
     // auto save draft
     setInterval(odof.x.gather.saveDraft, 10000);
