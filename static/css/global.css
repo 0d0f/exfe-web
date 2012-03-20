@@ -92,7 +92,7 @@ body {
 /* global content area */
 .content {
     width: 882px;
-    margin: 30px auto 40px auto;
+    margin: 30px auto auto auto;
 }
 
 /* clean up */
