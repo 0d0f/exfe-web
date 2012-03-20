@@ -607,7 +607,7 @@ $(document).ready(function() {
     jQuery('#edit_profile_btn').bind("click", function(event){
         odof.user.profile.editUserProfile(event);
     });
-    odof.user.profile.editProfileBtnShow();
+    ////odof.user.profile.editProfileBtnShow();
 
     $('.sendactiveemail').click(function(e) {
         var external_identity=$(this).attr("external_identity");
@@ -622,7 +622,7 @@ $(document).ready(function() {
     */
 
     // by Leask Huang
-    document.title = 'EXFE - ' + $('#user_name').html();
+    document.title = 'EXFE - ' + $('#user_name > span.edit-area').html();
     $('.invitation').live('mousemove mouseout', function(event) {
         var objEvent = event.target;
         while (!$(objEvent).hasClass('invitation')) {
@@ -707,4 +707,101 @@ $(document).ready(function() {
     odof.user.profile.getCross();
     odof.user.profile.getInvitation();
     odof.user.profile.getUpdate();
+
+    var DOC = $(document);
+    // edit_user_area hover
+    DOC.delegate('div#edit_user_area', 'mouseenter', function (e) {
+        var $icons = $('span.identity_icon');
+        if ($icons.filter('span.identity_remove').size() === 1) {
+            $icons = $icons.filter(':not(.identity_remove)');
+        }
+        $icons.show();
+        $('#user_cross_info').hide().prev().show();
+    });
+    DOC.delegate('div#edit_user_area', 'mouseleave', function (e) {
+        $('span.identity_icon').hide();
+        $('span.identity_remove_submit:not(hide)').hide();
+        $('#set_password_btn').hide().next().show();
+    });
+
+    // change pwd
+    DOC.delegate('#set_password_btn', "click", function(event){
+        var userName = odof.util.trim(jQuery("#user_name > span.edit-area").html());
+        ns.showChangePasswordDialog(userName);
+    });
+
+    // add identity
+    DOC.delegate('p#identity_add > span', 'click', function (e) {
+        odof.user.status.doShowAddIdentityDialog();
+    });
+    // delete identity
+    DOC.delegate('p.identity_list > span.identity_remove', 'click', function (e) {
+        $(this).hide().next().show();
+    });
+
+    DOC.delegate('p.identity_list > span.identity_remove_submit', 'click', function (e) {
+        var $that = $(this),
+            clicked = $(this).data('clicked');
+        if (!clicked) {
+            $that.data('clicked', 1);
+           var identity_id = $that.data('id');
+            $.post(site_url + '/s/deleteIdentity', {identity_id: identity_id}, function (data) {
+                if (!data.error) {
+                    $that.parent().hide().remove();
+                    $('span.identity_remove:not(hide)').hide();
+                }
+            }); 
+        }
+    });
+
+    // edit
+    //https://gist.github.com/1539457
+    DOC.delegate('div.u_con .edit-area', 'dblclick', function (e) {
+        var value = $.trim($(this).html());
+        var $input = $('<input type="text" value="' + value + '" />');
+        $(this).after($input).hide();
+        $input.focus();
+    });
+
+    DOC.delegate('h1#user_name > input', 'focusout keydown', function (e) {
+        var t = e.type, kc = e.keyCode;
+        if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+            var value = $.trim($(this).val());
+            $(this).hide().prev().html(value).show();
+            $(this).remove();
+            $.post(site_url + '/s/editUserProfile', {user_name: value}, function (data) {
+                if (!data.error) {
+                    odof.user.status.checkUserLogin();
+                }
+            });
+        }
+    });
+
+    DOC.delegate('span.id_name > input', 'focusout keydown', function (e) {
+        var t = e.type, kc = e.keyCode;
+        if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+            var identityName = $.trim($(this).val()),
+                identityId = $(this).parents('p.identity_list').data('id'),
+                userIdentity = $("#identity_" + identityId).val(),
+                identityProvider = $("#identity_provider_" + identityId).val();
+            $(this).hide().prev().html(identityName).show();
+            $(this).remove();
+            $.post(site_url + '/s/editUserIdentityName', {
+                jrand: Math.round(Math.random()*10000000000),
+                identity_name: identityName,
+                identity: userIdentity,
+                identity_provider: identityProvider
+            }, function (data) {
+                if (!data.error) {
+                }
+            });
+        }
+    });
+
+    // DOC.delegate('span[title] > span.edit-area + input', 'focusout keydown', function (e) {
+    //     var t = e.type, kc = e.keyCode;
+    //     if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+    //         var value = $.trim($(this).val());
+    //     }
+    // });
 });
