@@ -70,10 +70,11 @@
             }
             ?>
             <!-- <p><a href="javascript:odof.user.status.doShowAddIdentityDialog();">Add Identity...</a></p> -->
+            <!-- TODO: 多身份操作先隐藏
             <p class="identity_list" id="identity_add">
                 <span class="identity_add identity_icon"></span>
                 <span class="identity_button identity_add_txt">Add identity…</span>
-            </p>
+            </p> -->
         </div>
         <div class="u_num">
             <!-- <button id="set_password_btn" class="ch_pwd">Change Password</button> -->
