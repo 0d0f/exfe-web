@@ -41,7 +41,7 @@
                 <span class="id_name"><?php echo $identity["name"]; ?></span>
                 <?php } ?>
                 <?php if($identity["status"] == 2 && $identity["provider"]=="email"){ ?>
-                <span style="width:130px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
+                <span style="width:100px; overflow:hidden; text-overflow:ellipsis" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
                 <?php }else{ ?>
                 <span style="/*width:400px;*/ overflow:hidden; text-overflow:ellipsis" class="identity_email" title='<?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?>'><?php echo $identity["external_username"]; if($identity["provider"] != "google" && $identity["provider"] != "email"){ ?>@<?php echo $identity["provider"]; } ?></span>
                 <?php } ?>
@@ -57,7 +57,8 @@
                             $dateExp = abs($dateExp)==0 ? 0 : $dateExp;
                         }
                         $status = "Pending verification, {$dateExp} days left.";
-                        $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>Re-verify...</button>";
+                        // $button="<button type='button' class='sendactiveemail' external_identity='".$identity["external_identity"]."' class='boright'>Re-verify...</button>";
+                        $button = '<span class="sendactiveemail identity_button" external_identity="'.$identity["external_identity"].'">Re-verify…</span>';
 
                         echo '<i><img class="worning" src="/static/images/translation.gif" alt=""/>'.$status.$button.'</i>';
                     }
@@ -75,7 +76,8 @@
             </p>
         </div>
         <div class="u_num">
-            <button id="set_password_btn" class="ch_pwd">Change Password</button>
+            <!-- <button id="set_password_btn" class="ch_pwd">Change Password</button> -->
+            <span id="set_password_btn" class="identity_button">Change Password…</span>
             <div id="user_cross_info">
                 <p class="num"><?php echo $cross_num; ?></p>
                 <p class="num_info"><span style="color:#0591af">X</span> attended</p>
