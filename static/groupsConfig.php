@@ -7,6 +7,8 @@ return array(
         'js/libs/jquery.ba-dotimeout.js',
         'js/libs/detect_timezone.js',
         'js/libs/jquery.imgareaselect.js',
+    ),
+    'js_jquery_ext'=>array(
         'js/libs/showdown.js',
         'js/libs/jquery.ba-outside-events.js',
     ),

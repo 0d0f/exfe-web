@@ -60,13 +60,22 @@ if($dev_environment){
             echo "<h1>Error file-type...</h1>";
             exit;
         }
+        $file_contents = file_get_contents($file);
+
+        if($ext == "css"){
+            $file_contents = str_replace("../images/", "/static/images/", $file_contents);
+            header("Content-Type:text/css; charset=UTF-8");
+        }
+        if($ext == "js"){
+            header("Content-Type:application/x-javascript; charset=UTF-8");
+        }
         $file = STATIC_FILE_ROOT."/".$file;
-        header("Content-Type:text/html; charset=UTF-8");
-        echo file_get_contents($file);
+        echo $file_contents;
         exit;
     }
     if (isset($_GET['g'])) {
         $group_name = $_GET['g'];
+        $group_type = substr($group_name, 0, strrpos($group_name, '_'));
         if(!array_key_exists($group_name, $min_serveOptions['minApp']['groups'])){
             echo "<h1>Group error...</h1>";
             exit;
@@ -75,12 +84,19 @@ if($dev_environment){
         $file_contents = "";
         foreach($file_array as $f){
             $file_name = STATIC_FILE_ROOT."/".$f;
-            $file_contents .= file_get_contents($file_name)."\r\n";
+            $file_contents .= file_get_contents($file_name);
         }
-        header("Content-Type:text/html; charset=UTF-8");
+        if($group_type == "css"){
+            $file_contents = str_replace("../images/", "/static/images/", $file_contents);
+            header("Content-Type:text/css; charset=UTF-8");
+        }
+        if($group_type == "js"){
+            header("Content-Type:application/x-javascript; charset=UTF-8");
+        }
         echo $file_contents;
         exit;
     }
+    exit;
 }
 
 if (isset($_GET['f']) || isset($_GET['g'])) {
