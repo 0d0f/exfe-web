@@ -1,6 +1,11 @@
 @charset "UTF-8";
 /* by Leask */
 
+
+#x_view {
+    min-height: 740px;
+}
+
 #x_menu_bar {
     position: relative;
     height: 30px;
