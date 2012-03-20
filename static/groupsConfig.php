@@ -7,10 +7,13 @@ return array(
         'js/libs/jquery.ba-dotimeout.js',
         'js/libs/detect_timezone.js',
         'js/libs/jquery.imgareaselect.js',
+        'js/libs/showdown.js',
+        'js/libs/jquery.ba-outside-events.js',
     ),
     'js_util'=>array(
         'js/comm/ExfeUtil.js',
         'js/exlibs/ExDialog.js',
+        'js/exlibs/excal/excal.js',
     ),
     'js_user'=>array(
         'js/user/UserStatus.js',
@@ -23,6 +26,7 @@ return array(
     ),
     'css_global'=>array(
         'css/global.css',
-        'css/style.css'
+        'css/style.css',
+        'js/exlibs/excal/skin/default/excal.css',
     )
 );
