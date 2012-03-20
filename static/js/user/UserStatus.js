@@ -444,44 +444,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         odof.exlibs.ExDialog.initialize("identification", html);
     };
 
-    // delete identity
-    ns.doShowRmIdentityDialog = function (id) {
-        var html = "<div id='identification_titles' class='titles'>"
-                    + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
-                    + "<div id='identification_handler' class='tl'>Remove Identity</div>"
-                + "</div>"
-                + "<div id='identification_dialog_con' class='identification_dialog_con' style='height: 200px;'>"
-                    + '<div id="rm_identity_dialog" class="identity_dialog_main" style="height: auto;">'
-                        + '<div id="rm_identity_title" class="dialog_titles">Delete Identity</div>'
-                        + '<div style="text-align:right;top: 155px;" class="identification_bottom_btn">'
-                            + '<a href="javascript:void(0);" id="rm_identity_discard">Discard</a>&nbsp;&nbsp;'
-                            + '<input type="submit" style="cursor:pointer;" id="submit_rm_identity" class="btn_85" value="Done">'
-                        + '</div>'
-                    + '</div>'
-                + "</div>"
-                + "<div class='identification_dialog_bottom'></div>";
-
-        odof.exlibs.ExDialog.initialize("identification", html);
-        if (ns.doShowRmIdentityDialog.status) {
-            ns.doShowRmIdentityDialog.status = 0;
-            var DOC = $(document);
-            DOC.delegate('#rm_identity_discard', 'click', function (e) {
-                $('#identification_cover').remove();
-                $('#identification_dialog').remove();
-            });
-            DOC.delegate('#submit_rm_identity', 'click', function (e) {
-                //console.log(id);
-
-                /*TODO: 先放着
-                $.get(site_url + '/s/deleteIdentity', {identity_id: id}, function (data) {
-
-                });
-                */
-            });
-        }
-    };
-    ns.doShowRmIdentityDialog.status = 1;
-
     ns.doShowLoginDialog = function(dialogBoxID, callBackFunc, userIdentity, winModal, dialogPosY){
         var html = odof.user.identification.createDialogDomCode("reg_login");
         if(typeof callBackFunc != "undefined" && callBackFunc != null){
