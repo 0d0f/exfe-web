@@ -844,5 +844,43 @@ class IdentityModels extends DataModel {
         $sql = "UPDATE identities SET avatar_file_name='{$avatar}' WHERE id={$identityID}";
         $this->query($sql);
     }
+    
+    public function updateIdentityInformation($id, $provider, $external_identity, $name, $bio, $avatar_file_name, $external_username) {
+        // improve data
+        $external_identity = "{$provider}_{$external_identity}";
+        $avatar_file_name  = preg_replace('/normal(\.[a-z]{1,5})$/i',
+                                          'reasonably_small$1',
+                                          $userInfo['profile_image_url']);
+
+        // check old identity
+        $row   = $this->getRow("SELECT `id` FROM `identities`
+                                WHERE  `provider` = '{$provider}'
+                                AND    `external_identity` = '{$external_identity}';");
+        $wasId = intval($row['id']);
+
+        // update identity
+        $chId  = $wasId > 0 ? $wasId : $id;
+        $this->query("UPDATE `identities`
+                      SET `external_identity` = '{$external_identity}',
+                          `name`              = '{$name}',
+                          `bio`               = '{$bio}',
+                          `avatar_file_name`  = '{$avatar_file_name}',
+                          `external_username` = '{$external_username}',
+                          `updated_at`        = NOW(),
+                          `avatar_updated_at` = NOW()
+                      WHERE `id` = {$id};"
+        );
+
+        // merge identity
+        if ($wasId > 0) {
+            $this->query("UPDATE `invitations`
+                          SET    `identity_id` = {$wasId}
+                          WHERE  `identity_id` = {$id};"
+            );
+            // @todo: 可能需要更新 log by @leaskh
+            $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
+        }
+    }
+
 }
 
