@@ -281,15 +281,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
      * by Leask
      */
     ns.parseId = function(strId) {
-        strId = this.trim(strId);
+        strId = odof.util.trim(strId);
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(strId)) {
             var iLt = strId.indexOf('<'),
                 iGt = strId.indexOf('>');
-            return {name              : this.trim(this.cutLongName(this.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
-                    external_identity : this.trim(strId.substring(++iLt, iGt)),
+            return {name              : odof.util.trim(odof.util.cutLongName(odof.util.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
+                    external_identity : odof.util.trim(strId.substring(++iLt, iGt)),
                     provider          : 'email'};
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(strId)) {
-            return {name              : this.trim(this.cutLongName(strId.split('@')[0])),
+            return {name              : odof.util.trim(odof.util.cutLongName(strId.split('@')[0])),
                     external_identity : strId,
                     provider          : 'email'};
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(strId)) {
