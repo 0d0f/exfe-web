@@ -254,7 +254,7 @@ em {
     width: 14px;
     height: 14px;
     background: url(/static/images/icons.png) no-repeat 0 -664px;
-    margin: 0 3px 0 10px;
+    margin: 3px 3px 0 10px;
     vertical-align: baseline;
 }
 .edit_user .u_con p i {
@@ -279,6 +279,7 @@ em {
 
 .edit_user .u_con p.identity_list {
     display: block;
+    position: relative;
     font: 12px/18px Verdana, Arial, Helvetica, sans-serif;
     clear: both;
     margin-top: 4px;
@@ -314,10 +315,10 @@ em {
 }
 
 .edit_user .u_con p.identity_list span.identity_remove_submit {
+    position: absolute;
+    left: -22px;
     cursor: pointer;
-    margin-right: 5px;
     display: none;
-    margin-left: -17px;
     width: 75px;
     height: 18px;
     text-align: center;
@@ -346,7 +347,7 @@ em {
 }
 */
 
-.edit_user .u_con p.identity_list span.identity_button {
+.edit_user .u_con p.identity_list span.identity_button, .edit_user .u_num span.identity_button {
     cursor: pointer;
     margin-left: 0px;
     text-align: center;
@@ -363,6 +364,10 @@ em {
     border-radius: 2px;
 }
 
+.edit_user .u_con p.identity_list i span.identity_button {
+    float: none;
+    width: 100px;
+}
 .edit_user .u_con p.identity_list span.identity_add_txt {
     width: 112px;
 }
@@ -378,6 +383,12 @@ em {
 .edit_user .u_num span {
     color: #aaaaaa;
     font-size: 12px;
+}
+.edit_user .u_num span.identity_button {
+    width: 132px;
+    height: 18px;
+    color: #424242;
+    display: none;
 }
 .edit_user .u_num p.num {
     font: bold 38px Verdana, Arial, Helvetica, sans-serif bold;
