@@ -715,8 +715,9 @@ $(document).ready(function() {
         if ($icons.filter('span.identity_remove').size() === 1) {
             $icons = $icons.filter(':not(.identity_remove)');
         }
-        $icons.show();
-        $('#user_cross_info').hide().prev().show();
+        // TODO: 隐去多身份操作
+        //$icons.show();
+        $('#user_cross_info').hide().prev().css('display', 'block');
     });
     DOC.delegate('div#edit_user_area', 'mouseleave', function (e) {
         $('span.identity_icon').hide();
@@ -743,14 +744,16 @@ $(document).ready(function() {
         var $that = $(this),
             clicked = $(this).data('clicked');
         if (!clicked) {
-            $that.data('clicked', 1);
+        $that.data('clicked', 1);
            var identity_id = $that.data('id');
             $.post(site_url + '/s/deleteIdentity', {identity_id: identity_id}, function (data) {
                 if (!data.error) {
                     $that.parent().hide().remove();
                     $('span.identity_remove:not(hide)').hide();
+                } else {
+                    $that.data('clicked', 0);
                 }
-            }); 
+            }, 'json');
         }
     });
 
@@ -773,7 +776,7 @@ $(document).ready(function() {
                 if (!data.error) {
                     odof.user.status.checkUserLogin();
                 }
-            });
+            },  'json');
         }
     });
 
@@ -794,7 +797,7 @@ $(document).ready(function() {
             }, function (data) {
                 if (!data.error) {
                 }
-            });
+            }, 'json');
         }
     });
 
