@@ -4,18 +4,20 @@
 
 #x_view {
     font-family: Helvetica;
+    /*
     background-color: #ffffff;
-    border: 1px solid #DDDDDD;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
     -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
     -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+    */
+    min-height: 400px;
 }
 
 #x_view.x_view_bkg {
-  background: url("/static/images/bkg.png") no-repeat #FFFFFF;
+  background: url("/static/images/bkg.png") top -181px no-repeat #FFFFFF;
 }
 
 #x_view.x_view_bkg #x_menu_bar {
