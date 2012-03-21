@@ -2,8 +2,9 @@
     include 'share/header.php';
     global $exfe_res;
 ?>
-<script type="text/javascript" src="/static/js/libs/showdown.js"></script>
-<script type="text/javascript" src="/static/js/libs/jquery.ba-outside-events.js"></script>
+<script type="text/javascript" src="/static/?f=js/libs/showdown.js"></script>
+<script type="text/javascript" src="/static/?f=js/libs/jquery.ba-outside-events.js"></script>
+
 <!-- Exfee Widget -->
 <link type="text/css" href="/static/?f=css/exfee.css" rel="stylesheet">
 <script src="/static/?f=js/apps/exfee.js"></script>
