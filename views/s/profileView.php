@@ -1,5 +1,5 @@
 <?php include 'share/header.php'; ?>
-<link rel="stylesheet" type="text/css" href="/static/css/profile.css">
+<link rel="stylesheet" type="text/css" href="/static/?f=css/profile.css">
 <script type="text/javascript" src="/static/?g=js_uploader"></script>
 </head>
 <body>
