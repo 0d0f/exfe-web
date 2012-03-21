@@ -257,6 +257,8 @@ class Conversationemail_Job
                 if ($cross['place']['line1'] === '') {
                     $cross['place']['line1'] = "Place";
                     $cross['place']['line2'] = "To be decided.";
+                } else {
+                    $cross['place']['line2'] = preg_replace('/\r/', '<br>', $cross['place']['line2']);
                 }
                 if(trim($changed_fields['place']['line1'])!=""||trim($changed_fields['place']['line2'])!="")
                     $update_part_body=str_replace("%place_hl%","color: #0591ac;",$update_part_body);

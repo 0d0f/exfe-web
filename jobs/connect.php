@@ -15,30 +15,11 @@ function smtp_connect()
     {
         print "init amazon ses email\r\n";
         $email_connect = new AmazonSES();
-        //$email_connect= new PHPMailer();
-        //$email_connect->CharSet = 'UTF-8';
-        //$email_connect->IsSMTP();
-        //$email_connect->IsHTML(true);
-        //$email_connect->Host = 'ssl://smtp.gmail.com:465';
-        //$email_connect->SMTPAuth = TRUE;
-        //$email_connect->Username = '0d0fnofity@gmail.com';  // Change this to your gmail adress
-        //$email_connect->Password = 'alter8!chill';  // Change this to your gmail password
-        //$email_connect->From = '0d0fnofity@gmail.com';  // This HAVE TO be your gmail adress
-        //$email_connect->FromName = '0d0fnofity.com'; // This is the from name in the email, you can put anything you like here
-        //$email_connect->SMTPKeepAlive = true;
     }
 }
 
 function cleanMailer()
 {
-        //global $email_connect;
-        //$email_connect->ClearAddresses();
-        //$email_connect->ClearCCs();
-        //$email_connect->ClearBCCs();
-        //$email_connect->ClearReplyTos();
-        //$email_connect->ClearAllRecipients();
-        //$email_connect->ClearAttachments();
-        //$email_connect->ClearCustomHeaders();
 }
 
 function apn_connect()
@@ -48,6 +29,9 @@ function apn_connect()
 
     $ctx = stream_context_create();
     stream_context_set_option($ctx, 'ssl', 'local_cert', 'apns-dev-exfe.pem');
+    if($apn_connect)
+        fclose($apn_connect);
+
     $apn_connect = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);
 
     if (!$apn_connect) {
@@ -59,39 +43,42 @@ function apn_connect()
         $err=stream_set_write_buffer($apn_connect, 0);
     }
 
-
 }
-
-#function json_encode_nounicode($code)
-#{
-#    $code = json_encode(urlencodeAry($code));
-#    return urldecode($code);
-#}
-#
-#function urlencodeAry($data)
-#{
-#    if(is_array($data))
-#    {
-#        foreach($data as $key=>$val)
-#        {
-#            $data[$key] = urlencodeAry($val);
-#        }
-#        return $data;
-#    }
-#    else
-#    {
-#        return urlencode($data);
-#    }
-#}
 
 function sendapn($deviceToken,$body)
 {
     global $apn_connect;
+    $identifiers = array();
+    for ($i = 0; $i < 4; $i++) {
+        $identifiers[$i] = rand(1, 100);
+    }
     $payload = json_encode_nounicode($body);
-    #$payload = json_encode($body);
-#    echo "r\n======payload size:".strlen($payload)."\r\n";
-    $msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
+    $msg = chr(1) . chr($identifiers[0]) . chr($identifiers[1]) . chr($identifiers[2]) . chr($identifiers[3]) . pack('N', time() + 3600). chr(0) . chr(32) . pack('H*', $deviceToken) . chr(0) . chr(strlen($payload)) . $payload;
+
+    #$msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
     $err=fwrite($apn_connect, $msg);
+    if($err)
+    {
+        $read = array($apn_connect);
+        $null=null;
+        $changedStreams = stream_select($read, $null, $null, 0, 1000000);
+        if ($changedStreams === false) {    
+            echo ("Error: Unabled to wait for a stream availability");
+        } elseif ($changedStreams > 0) {
+            $responseBinary = fread($apn_connect, 6);
+            if ($responseBinary !== false || strlen($responseBinary) == 6) {
+                $response = unpack('Ccommand/Cstatus_code/Nidentifier', $responseBinary);
+                if($response["identifier"]!="")
+                {
+                    fclose($apn_connect);
+                    $apn_connect=null;
+                }
+                return $response;
+            }
+        }
+
+    }
+    
     return $err;
 }
 
