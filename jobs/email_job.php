@@ -105,6 +105,8 @@ class Email_Job
         {
             $mail["place_line1"]="Place";
             $mail["place_line2"]="To be decided.";
+        } else {
+            $mail["place_line2"] = preg_replace('/\r/', '<br>', $mail["place_line2"]);
         }
 
 

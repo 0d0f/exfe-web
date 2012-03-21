@@ -428,7 +428,11 @@ var moduleNameSpace = 'odof.x.render',
     ns.setXTitleBackground = function () {
         // 设置标题背景图片
         var bkgIMG = new Image();
-        bkgIMG.src = img_url + '/xbgimage/' + crossData.background + '_web.jpg';
+        if (crossData.background) {
+            bkgIMG.src = img_url + '/xbgimage/' + crossData.background + '_web.jpg';
+        } else {
+            bkgIMG.src = '/static/images/x_background_pure.png';
+        }
         bkgIMG.onload = function () {
             $('#x_view').css('background', 'url(' + bkgIMG.src + ') no-repeat 0 -184px');
         }

@@ -821,7 +821,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
                         );
                     for (j in odof.exfee.gadget.exfeeInput) {
-                        if (odof.exfee.gadget.exfeeInput[j][curId] === 'undefined') {
+                        if (typeof odof.exfee.gadget.exfeeInput[j][curId] === 'undefined' ) {
                             continue;
                         }
                         for (var k in arrCatch) {
