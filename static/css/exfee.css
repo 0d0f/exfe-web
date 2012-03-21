@@ -42,19 +42,21 @@
     padding: 5px;
     width: 50px;
     height: 50px;
-    transition: all 100ms;
+ /* transition: all 100ms;
     -webkit-transition: all 100ms;
     -moz-transition: all 100ms;
-    -o-transition: all 100ms;
+    -o-transition: all 100ms; */
     -moz-user-select: none;
     user-select: none;
 }
 
+/*
 .exfee_avatarblock:hover {
     padding: 0;
     width: 60px;
     height: 60px;
 }
+*/
 
 .exfee_avatarblock .exfee_hostmark {
     position: absolute;
@@ -105,6 +107,7 @@
     border: 1px solid #13A2B9;
     z-index: 7;
     padding: 5px;
+    margin-left: 5px;
 }
 
 .exfee_baseinfo span {
@@ -385,7 +388,6 @@
     float: right;
 }
 
-/*#gather_form .exfeegadget_listarea > ol > li .exfee_avatar {*/
 .exfeegadget_listarea > ol > li .exfee_avatar {
     float: right;
     width: 20px;
