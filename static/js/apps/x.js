@@ -179,7 +179,9 @@ var moduleNameSpace = 'odof.x.render',
                 + '<img alt="" width="20px" height="20px" src="'
                 + tmpData[g].by_identity.avatar_file_name + '" />';
         $.each(tmpData, function (i, v) {
-            strMessage += g === i ? gather :(v.time ? self.makeHistory(v) : self.makeMessage(v));
+            if (v.by_identity) {
+                strMessage += g === i ? gather :(v.time ? self.makeHistory(v) : self.makeMessage(v));
+            }
         });
         tmpData = null;
         $('#x_conversation_list').html(strMessage);
