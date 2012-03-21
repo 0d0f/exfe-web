@@ -37,10 +37,16 @@ class Iospush_Job
         if ($sound)
           $body['aps']['sound'] = $sound;
         $body['args']=$args;
-        print_r($body);
 
+        if(!$apn_connect)
+            apn_connect();
         $err=sendapn($deviceToken,$body);
-        if($err==0)
+        if(is_array($err))
+        {
+            $status=$err["command"].":".$err["status_code"].":".$err["identifier"];
+            echo "send error:".$status." ,devicetoken:".$deviceToken. PHP_EOL;;
+        }
+        else if($err==0)
         {
             apn_connect();
             $err=sendapn($deviceToken,$body);
