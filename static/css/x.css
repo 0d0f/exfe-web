@@ -4,6 +4,7 @@
 
 #x_view {
     font-family: Helvetica;
+    word-wrap: break-word;
     /*
     background-color: #ffffff;
     -webkit-border-radius: 6px;
