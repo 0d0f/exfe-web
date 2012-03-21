@@ -215,49 +215,16 @@ class IdentityActions extends ActionController {
         $external_username = !isset($_POST['external_username']) ? ''
                            : mysql_real_escape_string(htmlspecialchars($_POST['external_username']));
 
-        // chech data
+        // check data
         if (!intval($id) || $provider === null || $external_identity === null) {
-            echo json_encode(array('success' => false));
+            header('HTTP/1.1 500 Internal Server Error');
             return;
         }
 
-        // improve data
-        $external_identity = "{$provider}_{$external_identity}";
-        $avatar_file_name  = preg_replace('/normal(\.[a-z]{1,5})$/i',
-                                          'reasonably_small$1',
-                                          $userInfo['profile_image_url']);
-
-        // check old identity
-        $row   = $this->getRow("SELECT `id` FROM `identities`
-                                WHERE  `provider` = '{$provider}'
-                                AND    `external_identity` = '{$external_identity}';");
-        $wasId = intval($row['id']);
-
-        // update identity
-        $chId  = $wasId > 0 ? $wasId : $id;
-        $this->query("UPDATE `identities`
-                      SET `external_identity` = '{$external_identity}',
-                          `name`              = '{$name}',
-                          `bio`               = '{$bio}',
-                          `avatar_file_name`  = '{$avatar_file_name}',
-                          `external_username` = '{$external_username}',
-                          `updated_at`        = NOW(),
-                          `avatar_updated_at` = NOW()
-                      WHERE `id` = {$id};"
-        );
-
-        // merge identity
-        if ($wasId > 0) {
-            $this->query("UPDATE `invitations`
-                          SET    `identity_id` = {$wasId}
-                          WHERE  `identity_id` = {$id};"
-            );
-            // @todo: 可能需要更新 log by @leaskh
-            $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
-        }
+        $objIdentity = $this->getModelByName('Identity');
+        $objIdentity->updateIdentityInformation($id, $provider, $external_identity, $name, $bio, $avatar_file_name, $external_username);
 
         // return
-        echo json_encode(array('success' => true));
         return $id;
     }
 
