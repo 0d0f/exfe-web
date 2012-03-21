@@ -20,6 +20,8 @@ b.r3{margin: 0px}
     padding: 0;
     z-index: 201;
     background: transparent;
+    font-family: "Verdana", "Helvetica", "Lucida Grande", "Sans", "Arial", "SimSun";
+    color: #4C4C4C;
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; }
 .idialog_inpage .titles { display:none; }
@@ -58,6 +60,7 @@ b.r3{margin: 0px}
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
+    color: #424242;
 }
 
 .identification_dialog_bottom{
@@ -117,16 +120,17 @@ b.r3{margin: 0px}
 
 /*登录*/
 .identity_dialog_main {
-    position:relative; margin:auto; width:360px; height:315px;
-    padding-top:35px; font-size:14px;
+    position:relative; margin:auto; width:340px; height:315px;
+    padding-top:30px; font-size:14px;
 }
 .identity_dialog_main #identity{ background:transparent; }
 .identity_dialog_main ul li{clear:both; height:32px; }
 .identity_dialog_main ul label{ }
-.identity_dialog_main ul label.title{width:110px;height:28px; float:left;text-align:right; font-size:14px; }
+.identity_dialog_main ul label.title{width:110px;height:28px; line-height: 28px; float:left;text-align:right; font-size:14px; color: #797979; }
 .identity_dialog_main ul li input.inputText{
     width:210px; height:26px; line-height:17px; border:#c5c5c5 1px solid;
     float:left; margin-left:4px; background-color:#FFF; font:18px Verdana;
+    color: #797979;
 }
 .identity_dialog_main ul li .identity_box{
     position:absolute; margin-top:0px; margin-left:110px;
@@ -170,10 +174,10 @@ b.r3{margin: 0px}
 
 .identity_dialog_main .dialog_titles{
     height:45px; font-size:18px; text-align:center; clear:both;
-    background:url(/static/images/hr_or.png) no-repeat 0 90px;
+    background:url(/static/images/hr_or.png) no-repeat -20px 90px;
 }
-.identity_dialog_main p.oauth_title{ float:left; text-align:left; width:160px; font-size:14px; }
-.identity_dialog_main p.oauth_icon{ width:180px; float:right }
+.identity_dialog_main p.oauth_title{ float:left; text-align:left; width:160px; font-size:14px; line-height: 20px; margin-top: 20px; }
+.identity_dialog_main p.oauth_icon{ width:180px; float:right; margin-top: 20px; }
 .identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
 .identity_dialog_main p.oauth_icon a.twitter_oauth{ background:url(/static/images/oauth_logo.png) no-repeat 0 0; }
 .identity_dialog_main p.oauth_icon a.twitter_oauth:hover { background:url(/static/images/oauth_logo.png) no-repeat -40px 0; }
@@ -193,6 +197,7 @@ b.r3{margin: 0px}
 .identity_dialog_main input.sign_in_btn_disabled{
     height:26px; border:0; width:85px; font-size:14px; float:right;
     background:url(/static/images/btn.png) no-repeat -90px -580px;
+    color: #424242;
 }
 .identity_dialog_main input.sign_in_btn:hover { background:url(/static/images/btn.png) no-repeat 0px -580px; }
 .identity_dialog_main input.sign_in_btn:active { background:url(/static/images/btn.png) no-repeat 0px -580px; }
@@ -209,7 +214,7 @@ b.r3{margin: 0px}
 .identity_dialog_main .forgot_password{
     display:block; float:left; height:24px; width:150px; cursor:pointer;
     padding-top:2px; border:0; font-size:14px; text-align:center; text-decoration:none;
-    background:url(/static/images/btn.png) no-repeat 0px -640px; color:#6C6E6F;
+    background:url(/static/images/btn.png) no-repeat 0px -640px; color:#424242;
 }
 .identity_dialog_main .forgot_password:hover {
     color:#6C6E6F; text-decoration:none;
@@ -220,16 +225,16 @@ b.r3{margin: 0px}
     background:url(/static/images/btn.png) no-repeat 0px -640px;
 }
 
-.identity_dialog_main .sign_up_btn { font-size:14px; text-decoration:underline; }
+.identity_dialog_main .sign_up_btn { font-size:14px; text-decoration:underline; color: #424242;}
 .identity_dialog_main .sign_up_btn:hover { font-style:italic; }
 .identity_dialog_main ul li p{height:26px;width:60px;margin:0 auto;}
 .identity_dialog_main ul li em{
     float:left; width:25px; height:20px; cursor:pointer; margin-top:5px;
     background:url(/static/images/icons.png) no-repeat;
 }
-.identity_dialog_main ul li em.ic1{background-position:4px -284px;}
-.identity_dialog_main ul li em.ic2{background-position:4px -330px;}
-.identity_dialog_main ul li em.ic3{background-position:4px -374px;}
+.identity_dialog_main ul li em.ic1{background-position:4px -284px;position: absolute;}
+.identity_dialog_main ul li em.ic2{background-position:4px -330px;position: absolute;}
+.identity_dialog_main ul li em.ic3{background-position:4px -374px;position: absolute;}
 .identity_dialog_main ul li em.loading{
     position:absolute; display:block; width:16px; height:16px;
     margin-left:340px; margin-top:8px; z-index:203; cursor:default;
@@ -258,6 +263,7 @@ b.r3{margin: 0px}
 
 .identity_dialog_main .identification_bottom_btn{
     position:absolute; z-index:203; height:40px; width:360px; top:305px; text-align:right;
+    color: #424242;
 }
 
 /******* upload user avatar window style by handaoliang ***********/
