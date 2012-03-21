@@ -587,7 +587,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     objRemove.html(' ⊖ ');
                     objRemove.removeClass('ready');
                 }
-                objItem.children('.exfee_extrainfo').fadeIn(300);
+                objItem.children('.exfee_extrainfo').fadeIn(100);
         }
     };
 
