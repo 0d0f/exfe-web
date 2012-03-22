@@ -14,6 +14,37 @@ class UserModels extends DataModel{
             return intval($result["insert_id"]);
     }
 
+    public function disConnectiOSDeviceToken($user_id,$token,$device_token)
+    {
+       $logout_identity_list=array();
+       $sql="select id from users where auth_token='$token';"; 
+       $result=$this->getRow($sql);
+       if(intval($result["id"])>0 && intval($result["id"])==$user_id)
+       {
+           $sql="select identityid as id from user_identity where userid ='$user_id' and status=3;";
+           $identity_id_list=$this->getAll($sql);
+           
+           $sql="select id from identities where external_identity='$device_token';";
+           $device_identity_id_list=$this->getAll($sql);
+           foreach($device_identity_id_list as $device_identity_id)
+           {
+               foreach($identity_id_list as $identity_id)
+               {
+                    if(intval($identity_id["id"]) === intval($device_identity_id["id"])) //disconnect
+                    {
+                        $identity_id_id=intval($identity_id["id"]); 
+                        $sql="update user_identity set status=1 where identityid=$identity_id_id and userid=$user_id;";
+                        $result=$this->query($sql);
+                        $r=array("user_id"=>$user_id,"devicetoken"=>$device_token);
+                    }
+               }
+           }
+       }
+       if(sizeof($logout_identity_list)>0)
+           return  $logout_identity_list;
+
+       return;
+    }
     public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
     {
 
