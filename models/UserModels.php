@@ -36,6 +36,7 @@ class UserModels extends DataModel{
                         $sql="update user_identity set status=1 where identityid=$identity_id_id and userid=$user_id;";
                         $result=$this->query($sql);
                         $r=array("user_id"=>$user_id,"devicetoken"=>$device_token);
+                        array_push($logout_identity_list,$r);
                     }
                }
            }
