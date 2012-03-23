@@ -9,7 +9,7 @@
     <div class="home_banner" id="home_banner"><span id="x_code_img"></span></div>
     <div class="home_bottom">
         <div class="gather_btn">
-            <a href="/x/gather"><img src="/static/images/home_gather_btn.jpg" alt="Gather" title="Gather" /></a>
+            <a href="/x/gather"><img src="/static/images/home_gather_btn.png" alt="Gather" title="Gather" /></a>
         </div>
         <div class="home_bottom_btn"></div>
     </div>
