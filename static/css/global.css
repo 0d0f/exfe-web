@@ -85,7 +85,7 @@ input, textarea {
 
 /* global body style */
 body {
-    background: #FAFAFA url(../images/global_header_bg.jpg) repeat-x 0 0;
+    background: #FAFAFA url(../images/global_header_bg.png) repeat-x 0 0;
 }
 
 
@@ -112,22 +112,41 @@ body {
 
 
 /* global header by Handaoliang */
-#global_header { width:880px; height:50px; margin:auto; overflow:hidden; }
-#global_header .logo{ position: absolute; width:450px; height:47px; margin-left: -68px;}
+#global_header { width:880px; height:50px; margin:auto; /*overflow:hidden;*/}
+#global_header .logo{ position: absolute; margin-left: 14px; /*width:450px;margin-left: -68px;*/}
+#global_header .logo .version a {
+  position: absolute;
+  bottom: 12px;
+  left: 120px;
+  font-size: 12px;
+  font-weight: 300;
+  font-style: oblique;
+  color: #7F7F7F;
+  text-shadow: 0 1px 1px #FAFAFA;
+}
+#global_header .logo .version a:hover {
+  text-decoration: none;
+}
+
 #global_header .user_info{
-    float:right; width:320px; height:47px; margin-right: -128px;
+  position: relative;
+  float: right;
+  /*
+  width: 320px;
+  margin-right: -128px;*/
 }
 #global_header .user_info a {
-  color: #FFF;
+  /*color: #FFF;*/
 }
 #global_header .user_info .global_sign_in_btn{
+    color: #7F7F7F;
     width:240px; height:20px; text-align:center; margin-top:15px; cursor:pointer;
 }
 #global_header .user_info .global_sign_in_btn #home_user_login_btn{ font-weight:bold; font-style:italic; }
 #global_header .user_info .global_sign_in_btn #home_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn{ font-weight:bold; font-style:italic; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
-#global_header .user_info .uinfo{ position:absolute; width:200px; height:47px; z-index:100; }
+#global_header .user_info .uinfo{ position:absolute; width:200px; height:47px; z-index:100; right: 0px; }
 #global_header .user_info .uinfo em.light{
     float:left; width:72px;height:45px;background:url(/static/images/btn.png) no-repeat left -314px;
 }
@@ -136,8 +155,15 @@ body {
 }
 #global_header .user_info .uinfo .name #goldLink a{
   margin-left: 5px;
-    font-size:14px; color:#ffffff;font-weight:bold;font-family:Verdana; white-space:nowrap;
-    height:40px; width:110px; display:block;line-height:40px; overflow:hidden;
+  font-size: 14px;
+  color: #7F7F7F;
+  font-weight: bold;
+  white-space: nowrap;
+  height: 40px;
+  width: 110px;
+  display: block;
+  line-height: 40px;
+  overflow:hidden;
 }
 #global_header .user_info .uinfo .name #goldLink.nameh{
   width: 120px;
@@ -148,7 +174,7 @@ body {
   border-width: 1px 1px 0 1px;
   border-style: solid;
   border-color: #D5D5D5;
-  box-shadow: 3px 0 0px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 0px 0px rgba(0, 0, 0, 0.1);
     /*position:absolute;color:#000000;background:url(/static/images/user.png) no-repeat;*/
     /*text-decoration:none;z-index:300;*/
 }
@@ -180,9 +206,9 @@ body {
 }
 #global_header .user_info .uinfo .message {
   /*width: 190px;*/
-  padding: 25px 18px 10px;
+  padding: 25px 10px 10px;
   /*text-overflow: clip;*/
-  /*overflow: hidden;*/
+  overflow: hidden;
 }
 #global_header .user_info .uinfo .message .na {
   height: 40px;
@@ -191,7 +217,7 @@ body {
   line-height: 20px;
   width: 124px;
   float: left;
-  color: #333333;
+  color: #191919;
   text-decoration: none;
 }
 #global_header .user_info .uinfo .message .na .l {
@@ -210,16 +236,88 @@ body {
 }
 #global_header .user_info .uinfo .message .na .h .num_of_x {
   font-size: 18px;
-  color: #0591AC;
+  color: #1175A5;
   display: block;
   font-weight: bold;
 }
 #global_header .user_info .uinfo .message .na .h .x_attended {
   font-size: 14px;
-  color: #0591ac;
+  color: #1175A5;
 }
+
+/* ------------- Token Identity ------------- */
+#global_header .user_info .uinfo .message {
+  padding-top: 20px;
+}
+#global_header .user_info .uinfo .message .title {
+  text-align: center;
+  color: #4C4C4C;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 24px;
+}
+#global_header .user_info .uinfo .message .detail {
+  text-align: left;
+  color: #191919;
+  font-size: 14px;
+  line-height: 20px;
+}
+#global_header .user_info .uinfo .message .identity {
+  text-align: left;
+  overflow: hidden;
+}
+#global_header .user_info .uinfo .message .identity .email {
+  background: url(../images/email.png) no-repeat 0 3px;
+  text-indent: 18px;
+  display: inline-block;
+  float: left;
+  font-size: 14px;
+  font-style: oblique;
+  line-height: 20px;
+  text-overflow: clip;
+  width: 156px;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #4C4C4c;
+}
+#global_header .user_info .uinfo .message .identity img {
+  width: 20px;
+  height: 20px;
+  /*background: #555;*/
+  float: right;
+  border-radius: 2px;
+}
+#global_header .user_info .uinfo .message .setup {
+  overflow: hidden;
+}
+#global_header .user_info .uinfo .message .setup .setup-btn {
+  display: block;
+  width: 60px;
+  height: 20px;
+  border-radius: 2px;
+  background-color: #FFFEFF;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFEFF), to(#CFDDE5));
+  background-image: -webkit-linear-gradient(top, #FFFEFF, #CFDDE5);
+  background-image:    -moz-linear-gradient(top, #FFFEFF, #CFDDE5);
+  background-image:     -ms-linear-gradient(top, #FFFEFF, #CFDDE5);
+  background-image:      -o-linear-gradient(top, #FFFEFF, #CFDDE5);
+  -moz-box-shadow:    1px 1px 3px rgba(0,0,0,0.25);
+  -webkit-box-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
+  border: 1px solid #D5D5D5;
+  margin-right: 6px;
+}
+#global_header .user_info .uinfo .message .setup p {
+  float: right;
+  width: 114px;
+  text-align: left;
+}
+#global_header .user_info .uinfo .message .setup p span {
+  color: #1175A5;
+}
+
 #global_header .user_info .uinfo .info {
-  color: #212121;
+  color: #191919;
   font-size: 14px;
   line-height: 20px;
   text-align: left;
@@ -234,9 +332,6 @@ body {
   display: block;
   /*margin-left: 30px;*/
 }
-#global_header .user_info .uinfo .info .upcoming {
-  color: #424242;
-}
 #global_header .user_info .uinfo .info .crosseslist span {
   display: block;
   width: 22px;
@@ -244,10 +339,18 @@ body {
   line-height: 14.5px;
   background: #D5D5D5;
   font-size: 9px;
-  color: #424242;
+  /*color: #424242;*/
   text-align: center;
   float: left;
   margin-top: 3.5px;
+}
+
+#global_header .user_info .uinfo .info .crosseslist span.now {
+  background: #1175A5;
+  color: #FAFAFA;
+}
+#global_header .user_info .uinfo .info .crosseslist span.hr {
+  color: #1175A5;
 }
 #global_header .user_info .uinfo .info .crosseslist ol li a {
   font-size: 14px;
@@ -263,12 +366,30 @@ body {
   margin-bottom: 12px;
 }
 #global_header .user_info .uinfo .creatbtn a {
-  text-indent: -9999px;
   display: block;
   width: 120px;
   height: 32px;
-  background: url(/static/images/add_gather_btn.png) no-repeat;
+  font-family: Helvetica;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 32px;
+  color: #191919;
+  text-shadow: 0 1px 1px #FEFFFE;
+  background-color: #D5E7F0;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#D5E7F0), to(#1F78A5));
+  background-image: -webkit-linear-gradient(top, #D5E7F0, #1F78A5);
+  background-image:    -moz-linear-gradient(top, #D5E7F0, #1F78A5);
+  background-image:     -ms-linear-gradient(top, #D5E7F0, #1F78A5);
+  background-image:      -o-linear-gradient(top, #D5E7F0, #1F78A5);
+  -moz-box-shadow:    1px 1px 3px rgba(0,0,0,0.25);
+  -webkit-box-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.25);
+  border-radius: 5px;
+  text-align: center;
   margin: 0 auto;
+}
+#global_header .user_info .uinfo .creatbtn a:hover {
+  text-decoration: none;
 }
 #global_header .user_info .uinfo .myexfefoot {
   width: 162px;
@@ -277,7 +398,7 @@ body {
   margin: 0 auto;
 }
 #global_header .user_info .uinfo .myexfefoot a {
-  color: #424242;
+  color: #7F7F7F;
   font-size: 12px;
   line-height: 30px;
 }
