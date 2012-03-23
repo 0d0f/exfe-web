@@ -154,7 +154,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.dialogElement = odof.util.createElement("div", ns.dialogID, className);
             document.body.insertBefore(ns.dialogElement,document.body.firstChild);
         }
-        odof.exlibs.ExDialog.createCover();
         if(dialogModal == "win"){
             /*
             jQuery("#"+ns.dialogID).bind("clickoutside",function(){
@@ -164,6 +163,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             */
             jQuery("#"+ns.dialogID).addClass("ex_dialog_shadow");
             jQuery("#"+ns.coverID).addClass("cover_element_shadow");
+        } else {
+            odof.exlibs.ExDialog.createCover();
         }
     };
 
