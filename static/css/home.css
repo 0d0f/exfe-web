@@ -2,20 +2,50 @@
 /* by Handaoliang */
 
 
-#home { background-color:#000 }
+#home { background-color:#FAFAFA; }
 
 #home .home_banner{
-    display:block; width:100%; height:550px; min-width:1160px; overflow:hidden;
-    background:#E6E6E6 url(../images/index_bg.jpg) repeat-y center 0;
+    display: block;
+    min-width: 1160px;
+    width:100%;
+    min-height: 410px;
+    height: 550px;
+    overflow: hidden;
+    /*background:#E6E6E6 url(../images/index_bg.jpg) repeat-y center 0;*/
 }
 #home .home_banner span{
-    position:relative; display:block; width:417px; height:410px; margin:auto; margin-top:60px;
-    background:url(../images/x-code.png) no-repeat 0 0;
+    display: block;
+    width: 417px;
+    height: 410px;
+    margin: 60px auto auto;
+    background: url(../images/x-code.png) no-repeat 0 0;
 }
 
-#home .home_bottom{ width:760px; height:200px; margin:auto; padding-top:50px; }
-#home .home_bottom .gather_btn{ clear:both; width:238px; height:57px; margin:auto; }
-#home .home_bottom .gather_btn a{ display:block; width:230px; height:57px; padding:0px; cursor:pointer; }
+#home .home_bottom {
+  width: 100%;
+  height: 220px;
+  margin: auto;
+  padding-top:50px;
+  background-color: #E6E6E6;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E6E6E6), to(#FAFAFA));
+  background-image: -webkit-linear-gradient(top, #E6E6E6, #FAFAFA);
+  background-image:    -moz-linear-gradient(top, #E6E6E6, #FAFAFA);
+  background-image:     -ms-linear-gradient(top, #E6E6E6, #FAFAFA);
+  background-image:      -o-linear-gradient(top, #E6E6E6, #FAFAFA);
+}
+#home .home_bottom .gather_btn{ clear:both; width:220px; height:60px; margin:auto; }
+#home .home_bottom .gather_btn a {
+  display: block;
+  width: 220px;
+  height: 60px;
+  padding: 0px;
+  cursor:pointer;
+  -webkit-box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: opx 2px 6px rgba(0, 0, 0, 0.5);
+  background: transparent;
+  border-radius: 5px;
+}
 
 #home .home_bottom .home_bottom_btn{
     clear:both; width:695px; height:36px; margin:auto; margin-top:50px;
