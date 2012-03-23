@@ -310,7 +310,6 @@ var moduleNameSpace = 'odof.x.render',
         // state: {0: 未知，1：去，2：不去，3：感兴趣}
         var strCnvstn = editable
                       ? '<div id="x_conversation_area">'
-                      // TODO: 先隐藏此功能
                       +     '<a id="x_hide_history" href="javascript:void(0);"><span>Show</span> history</a>'
                       +     '<h3 id="x_conversation">Conversation</h3>'
                       +     '<div id="x_conversation_input_area" class="cleanup">'
