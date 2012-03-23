@@ -10,6 +10,7 @@ if (intval($_SESSION["userid"]) > 0) {
 <a href='/'>
 <?php } ?>
 <img src="/static/images/exfe_logo.png" alt="EXFE" title="EXFE.COM" /></a>
+    <div id="exfe_version" class="version"><a href="javascript:;">SANDBOX</a></div>
         </div>
         <div class="user_info" id="global_user_info">
             <div class="global_sign_in_btn">
@@ -30,4 +31,7 @@ if (intval($_SESSION["userid"]) > 0) {
                 jQuery("#identity").focus();
             });
         }
+        $(document).delegate('div#exfe_version', 'click', function (e) {
+            odof.user.status.showExfeVersion();
+        });
     </script>
