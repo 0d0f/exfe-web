@@ -31,6 +31,30 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
     }
+    public function doLogout()
+    {
+        $userData=$this->getModelByName("user");
+        $params=$this->params;
+        $user_id=$params["id"];
+        $token=$params["token"];
+        $device_token=$_POST["device_token"];
+        if($device_token!="" && $token!="" && intval($user_id)>0)
+        {
+            //$result=$userData->($user_id,$token,$device_token);
+            $result=$userData->disConnectiOSDeviceToken($user_id,$token,$device_token);
+            if($result!=null)
+            {
+                $responobj["meta"]["code"]=200;
+                $responobj["response"]=$result;
+                echo json_encode($responobj);
+                exit(0);
+            }
+        }
+        $responobj["meta"]["code"]=500;
+        $responobj["meta"]["err"]="can't disconnect this device";
+        echo json_encode($responobj);
+        exit(0);
+    }
 
     public function doLogin()
     {
