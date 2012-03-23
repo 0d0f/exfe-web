@@ -12,7 +12,7 @@ var nameSpace = odof.util.initNameSpace(moduleNameSpace);
 
     ns.init = function(){
         var html = '<div id="upload_avatar_titles" class="titles">'
-                 + '<p class="l"><a href="#" id="upload_avatar_close_btn"></a></p>'
+                 + '<p class="l"><a href="#" id="upload_avatar_close_btn">X</a></p>'
                  + '<p id="upload_avatar_handler" class="r">Portrait</p>'
                  + '</div>'
                  + '<div id="upload_status" style="display:none;"></div>'
