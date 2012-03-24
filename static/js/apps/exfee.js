@@ -306,6 +306,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             case 'twitter':
                 return '@' + identity.external_username + '@twitter';
                 break;
+            case 'facebook':
+                return identity.external_username + '@facebook';
+                break;
             default:
                 return '';
         }

@@ -31,8 +31,9 @@ class ExfeeHelper extends ActionController {
                 } else if ($exfeeItem['identity_type'] === 'email') {
                     $identity_ext_name = isset($exfeeItem['exfee_identity'])
                                        ? $exfeeItem['exfee_identity'] : null;
-                } else if ($exfeeItem['identity_type'] === 'twitter'
-                  && isset($exfeeItem['exfee_ext_name'])) {
+                } else if (($exfeeItem['identity_type'] === 'twitter'
+                         || $exfeeItem['identity_type'] === 'facebook')
+                   && isset($exfeeItem['exfee_ext_name'])) {
                     $identity_ext_name = $exfeeItem['exfee_ext_name'];
                 } else {
                     continue;
@@ -111,7 +112,7 @@ class ExfeeHelper extends ActionController {
                 }
             }
         }
-        
+
         if ($nedUpdate) {
             $crossData->updateCrossUpdatedAt($cross_id);
         }
@@ -246,7 +247,7 @@ class ExfeeHelper extends ActionController {
                 }
                 $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                 $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
-                   
+
                 $args = array(
                     'title' => $cross["title"],
                     'description' => $cross["description"],
