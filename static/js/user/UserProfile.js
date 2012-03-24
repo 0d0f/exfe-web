@@ -237,8 +237,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         });
     };
-    
-    
+
+
     ns.showXTime = function(objTime) {
         var result = '';
         if (!objTime.begin_at || objTime.begin_at === '0000-00-00 00:00:00') {
