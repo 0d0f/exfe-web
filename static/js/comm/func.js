@@ -298,6 +298,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     external_identity : '@' + strId + '@twitter',
                     external_username : strId,
                     provider          : 'twitter'};
+        } else if (/^[a-z0-9_]{1,15}@facebook$/i.test(strId)) {
+            strId = strId.replace(/@facebook$/ig, '');
+            return {name              : strId,
+                    external_identity : strId + '@facebook',
+                    external_username : strId,
+                    provider          : 'facebook'};
         } else {
             return {external_identity : strId,
                     provider          : null};
