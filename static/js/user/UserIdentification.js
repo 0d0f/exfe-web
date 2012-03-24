@@ -458,6 +458,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var curDomain = userIdentity.split("@")[1];
 
         //check email address
+        userIdentity = odof.util.trim(userIdentity);
         if(userIdentity != "" && (userIdentity.match(odof.mailReg) || odof.util.inArray(ns.specialDomain,curDomain))) {
             jQuery("#identity_verify_loading").show();
             jQuery.ajax({
@@ -641,7 +642,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#login_hint").hide();
             };
 
-
+            identity = odof.util.trim(identity);
             if(identity == "" || !identity.match(odof.mailReg)){
                 var curDomain = identity.split("@")[1];
                 if(!odof.util.inArray(ns.specialDomain,curDomain)){
