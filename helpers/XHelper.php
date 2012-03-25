@@ -112,8 +112,6 @@ class XHelper extends ActionController {
 
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
-        ////// @todo /////////////////////////////////////////////////
-        //////$msghelper->sentChangeEmail($mail);
     }
 
 
