@@ -141,8 +141,8 @@ class ExfeeHelper extends ActionController {
         $host_identity=humanIdentity($host_identit,$user);
 
         $invitationdata=$this->getModelByName("invitation");
-        $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
-        $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false, $filter);
+        $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false);
+        $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false);
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
         $place_id=$cross["place_id"];
@@ -187,7 +187,74 @@ class ExfeeHelper extends ActionController {
 
                 );
 
-                $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+                switch ($invitation["provider"]) {
+                    case 'facebook':
+                        $invMsg = array(
+                            'to_identity_time_zone' => $args['to_identity_time_zone'],
+                            'invitation_id'         => intval($args['invitation_id']),
+                            'token'                 => $args['token'],
+                            'rsvp'                  => intval($args[rsvp_status]),
+                            'invitations'           => array(),
+                            'by_identity'           => array(
+                                'id'                => intval($args['by_identity']['id']),   
+                                'external_identity' => $args['by_identity']['external_identity'],
+                                'name'              => $args['by_identity']['name'],
+                                'bio'               => $args['by_identity']['bio'],
+                                'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
+                                'external_username' => $args['by_identity']['external_username'],
+                                'provider'          => $args['by_identity']['provider'],
+                                'user_id'           => 0,  // @todo @Leask
+                            ),
+                            'to_identity'           => array(
+                                'identity_id'       => intval($args['identity_id']),
+                                'provider'          => $args['provider'],
+                                'external_identity' => $args['external_identity'],
+                                'name'              => $args['name'],
+                                'avatar_file_name'  => $args['avatar_file_name'],
+                                'external_username' => '', // @todo @Leask
+                                'bio'               => '', // @todo @Leask
+                                'user_id'           => 0,  // @todo @Leask
+                            ), 
+                            'cross'                 => array(
+                                'title'             => $args['title'],
+                                'description'       => $args['description'],
+                                'time'              => $args['begin_at'],
+                                'place'             => array(
+                                    line1 => $args['place_line1'],
+                                    line2 => $args['place_line2'],
+                                ),
+                                'cross_id'          => intval($args['cross_id']),
+                                'cross_id_base62'   => $args['cross_id_base62'],
+                            ),
+                        );
+                        foreach ($args['invitations'] as $invRaw) {
+                            $invItem = array(
+                                'invitation_id'  => intval($invRaw['invitation_id']),
+                                'rsvp'           => intval($invRaw['state']),
+                                'token'          => $invRaw['token'],
+                                'updated_at'     => $invRaw['updated_at'],
+                                'by_identity_id' => intval($invRaw['by_identity_id']),
+                                'is_host'        => intval($invRaw['identity_id']) === intval($args['host_identity_id']),
+                                'identity'       => array(
+                                    'identity_id'       => intval($invRaw['identity_id']),
+                                    'provider'          => $invRaw['provider'],
+                                    'name'              => $invRaw['name'],
+                                    'avatar_file_name'  => $invRaw['avatar_file_name'],
+                                    'bio'               => $invRaw['bio'],
+                                    'external_username' => $invRaw['external_username'],
+                                    'user_id'           => intval($invRaw['user_id']),
+                                    'external_identity' => '',  // @todo @Leask
+                                )
+                            );
+                            $invMsg['invitations'][] = $invItem;
+                        }
+                        $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $invMsg, true);
+                        break;
+                    case 'email':
+                    case 'twitter':
+                    default:
+                        $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $args, true);
+                }
 
                 $identities=$invitation["identities"];
                 if($identities)
@@ -272,7 +339,75 @@ class ExfeeHelper extends ActionController {
                     'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
                     'invitations' => $invitations
                  );
-                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+
+                 switch ($invitation["provider"]) {
+                     case 'facebook':
+                         $invMsg = array(
+                             'to_identity_time_zone' => $args['to_identity_time_zone'],
+                             'invitation_id'         => intval($args['invitation_id']),
+                             'token'                 => $args['token'],
+                             'rsvp'                  => intval($args[rsvp_status]),
+                             'invitations'           => array(),
+                             'by_identity'           => array(
+                                 'id'                => intval($args['by_identity']['id']),   
+                                 'external_identity' => $args['by_identity']['external_identity'],
+                                 'name'              => $args['by_identity']['name'],
+                                 'bio'               => $args['by_identity']['bio'],
+                                 'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
+                                 'external_username' => $args['by_identity']['external_username'],
+                                 'provider'          => $args['by_identity']['provider'],
+                                 'user_id'           => 0,  // @todo @Leask
+                             ),
+                             'to_identity'           => array(
+                                 'identity_id'       => intval($args['identity_id']),
+                                 'provider'          => $args['provider'],
+                                 'external_identity' => $args['external_identity'],
+                                 'name'              => $args['name'],
+                                 'avatar_file_name'  => $args['avatar_file_name'],
+                                 'external_username' => '', // @todo @Leask
+                                 'bio'               => '', // @todo @Leask
+                                 'user_id'           => 0,  // @todo @Leask
+                             ), 
+                             'cross'                 => array(
+                                 'title'             => $args['title'],
+                                 'description'       => $args['description'],
+                                 'time'              => $args['begin_at'],
+                                 'place'             => array(
+                                     line1 => $args['place_line1'],
+                                     line2 => $args['place_line2'],
+                                 ),
+                                 'cross_id'          => intval($args['cross_id']),
+                                 'cross_id_base62'   => $args['cross_id_base62'],
+                             ),
+                         );
+                         foreach ($args['invitations'] as $invRaw) {
+                             $invItem = array(
+                                 'invitation_id'  => intval($invRaw['invitation_id']),
+                                 'rsvp'           => intval($invRaw['state']),
+                                 'token'          => $invRaw['token'],
+                                 'updated_at'     => $invRaw['updated_at'],
+                                 'by_identity_id' => intval($invRaw['by_identity_id']),
+                                 'is_host'        => intval($invRaw['identity_id']) === intval($args['host_identity_id']),
+                                 'identity'       => array(
+                                     'identity_id'       => intval($invRaw['identity_id']),
+                                     'provider'          => $invRaw['provider'],
+                                     'name'              => $invRaw['name'],
+                                     'avatar_file_name'  => $invRaw['avatar_file_name'],
+                                     'bio'               => $invRaw['bio'],
+                                     'external_username' => $invRaw['external_username'],
+                                     'user_id'           => intval($invRaw['user_id']),
+                                     'external_identity' => '',  // @todo @Leask
+                                 )
+                             );
+                             $invMsg['invitations'][] = $invItem;
+                         }
+                         $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $invMsg, true);
+                         break;
+                     case 'email':
+                     case 'twitter':
+                     default:
+                         $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $args, true);
+                 }
 
                  $identities=$invitation["identities"];
                  if($identities)
