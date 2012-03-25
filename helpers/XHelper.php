@@ -86,6 +86,16 @@ class XHelper extends ActionController {
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
         $msghelper->sentApnConversation($apnargs);
+        
+        foreach ($new_cross['identities'] as $identity) {
+            switch ($identity['provider']) {
+                case 'twitter':
+                    $msghelper->sentTwitterChange($mail);
+                    break;
+                case 'facebook':
+                    $msghelper->sentFacebookChange($mail);
+            }
+        }
     }
 
 
@@ -111,6 +121,16 @@ class XHelper extends ActionController {
 
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
+        
+        foreach ($cross['identities'] as $identity) {
+            switch ($identity['provider']) {
+                case 'twitter':
+                    $msghelper->sentTwitterChange($mail);
+                    break;
+                case 'facebook':
+                    $msghelper->sentFacebookChange($mail);
+            }
+        }
     }
 
 
