@@ -48,7 +48,6 @@ class XHelper extends ActionController {
         $exfee_identity=$identityData->getIdentityById($host_identity_id);
         $userData=$this->getModelByName("user");
         $user=$userData->getUserProfileByIdentityId($host_identity_id);
-
         
         $datetimeobj=humanDateTime($new_cross["begin_at"],$user["timezone"]);
         $new_cross["begin_at"]= $datetimeobj;
