@@ -467,40 +467,47 @@ class ExfeeHelper extends ActionController {
         if($invitation_identities)
         {
             $to_identities=array();
-            $to_identities_apn=array();
             foreach($invitation_identities as $invitation_identity)
             {
                 $identities=$invitation_identity["identities"];
                 if($identities && $identityData->ifIdentitiesEqualWithIdentity($identities,$host_identity_id)==FALSE)  //ifIdentitiesEqualWithIdentity dont's send to host's other identity.
-                    foreach($identities as $identity)
-                    {
-                        if(intval($identity["status"])==3)
-                        {
+                    foreach ($identities as $identity) {
+                        if (intval($identity["status"]) == 3) {
                             $muteData=$this->getmodelbyname("mute");
                             $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
-                            if($mute===FALSE)
-                            {
-                                $identity=humanidentity($identity,null);
-                                if($identity["provider"]=="email" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
-                                    array_push($to_identities,$identity);
-                                if($identity["provider"]=="iOSAPN" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
-                                    array_push($to_identities_apn,$identity);
+                            if ($mute === false && $invitation_identity["identity_id"] != $_SESSION["identity_id"]) {
+                                $identity = humanidentity($identity, null);
+                                if (!isset($to_identities[$identity['provider']])) {
+                                    $to_identities[$identity['provider']] = array();
+                                }
+                                $to_identities[$identity['provider']][] = $identity;
                             }
                         }
                     }
             }
-            $mail["to_identities"]=$to_identities;
+            // email
+            $mail["to_identities"]=$to_identities['email'];
             $mail["to_identity_time_zone"]=$user["timezone"];
             $datetimeobj=humanDateTime($mail["create_at"],$user["timezone"]);
             $mail["create_at"]=$datetimeobj;
             $msghelper=$this->gethelperbyname("msg");
             $msghelper->sentConversationEmail($mail);
-
-            $apnargs["to_identities"]=$to_identities_apn;
+            // iOSAPN
+            $apnargs["to_identities"]=$to_identities['iOSAPN'];
             $apnargs["to_identity_time_zone"]=$user["timezone"];
             $apnargs["create_at"]=$datetimeobj;
             $apnargs["job_type"]="conversation";
             $msghelper->sentApnConversation($apnargs);
+            // twitter
+            if (isset($to_identities['twitter'])) {
+                $mail["to_identities"]=$to_identities['twitter'];
+                $msghelper->sentTwitterConversation($mail);
+            }
+            // facebook
+            if (isset($to_identities['facebook'])) {
+                $mail["to_identities"]=$to_identities['facebook'];
+                $msghelper->sentFacebookConversation($mail);
+            }
         }
     }
     public function sendRSVP($cross_id,$identity_id,$state)
