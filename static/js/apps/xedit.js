@@ -435,6 +435,8 @@ var clickCallBackFunc = function(args) {
             //$('.x_rsvp_button').show();
             //$('#x_exfee_by_user').show();
             $('#x_rsvp_btns').show();
+            $('#x_exfee_users').show();
+            $('#x_rsvp_typeinfo').hide();
         } else {
             switch (event.target.id) {
                 case 'x_rsvp_yes':
