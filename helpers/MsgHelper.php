@@ -34,6 +34,22 @@ class MsgHelper extends ActionController {
         $jobId = Resque::enqueue('conversationemail','conversationemail_job' , $mail, true);
         return $jobId;
     }
+    
+    public function sentTwitterChange($mail) {
+        require_once 'lib/Resque.php';
+        date_default_timezone_set('GMT');
+        Resque::setBackend(RESQUE_SERVER);
+        $jobId = Resque::enqueue('twitter_change','twitter_change_job' , $mail, true);
+        return $jobId;
+    }
+    
+    public function sentFacebookChange($mail) {
+        require_once 'lib/Resque.php';
+        date_default_timezone_set('GMT');
+        Resque::setBackend(RESQUE_SERVER);
+        $jobId = Resque::enqueue('facebook_change','facebook_change_job' , $mail, true);
+        return $jobId;
+    }
 
     public function sentApnConversation($args) {
         require_once 'lib/Resque.php';
