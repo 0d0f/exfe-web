@@ -175,9 +175,9 @@ var moduleNameSpace = 'odof.x.render',
             g = tmpData.length - 1,
             gather = '<li class="cleanup xhistory gather">'
                 + 'Gathered by <span class="bold">'
-                + tmpData[g].by_identity.name + '</span>.'
+                + (tmpData[g].by_identity || tmpData[g].identity).name + '</span>.'
                 + '<img alt="" width="20px" height="20px" src="'
-                + tmpData[g].by_identity.avatar_file_name + '" />';
+                + (tmpData[g].by_identity || tmpData[g].identity).avatar_file_name + '" />';
         $.each(tmpData, function (i, v) {
             strMessage += g === i ? gather :(v.time ? (v.by_identity ? self.makeHistory(v) : '') : self.makeMessage(v));
         });
@@ -465,8 +465,8 @@ var moduleNameSpace = 'odof.x.render',
 
                 $(this).data('xtimer', timer);
             } else {
-                $('#x_rsvp_typeinfo').hide();
                 $('#x_exfee_users').show();
+                $('#x_rsvp_typeinfo').hide();
             }
         });
 
