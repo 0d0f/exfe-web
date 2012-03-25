@@ -448,37 +448,37 @@ b.r3{margin: 0px}
 	opacity: 0.5;
 }
 
-#exfe_version_dialog.identification_dialog {
+.exfe_version.identification_dialog {
   height: 320px;
   font-family: Helvetica;
   font-size: 14px;
   color: #191919;
 }
-#exfe_version_dialog .exfe-version-info {
+.exfe_version .exfe-version-info {
   height: 300px;
   width: 360px;
   padding: 0 20px;
   background: url(../images/exfe_rome.jpg) no-repeat;
 }
-#exfe_version_dialog .exfe-version-info h3 {
+.exfe_version .exfe-version-info h3 {
   padding-top: 70px;
   font-size: 24px;
   font-weight: 300;
   text-align: center;
   line-height: 30px;
 }
-#exfe_version_dialog .exfe-version-info p {
+.exfe_versio .exfe-version-info p {
   line-height: 20px;
   margin-top: 3px;
 }
-#exfe_version_dialog .exfe-version-info p span.blue {
+.exfe_version .exfe-version-info p span.blue {
   color: #1175A5;
 }
-#exfe_version_dialog .exfe-version-info p span.bold {
+.exfe_version .exfe-version-info p span.bold {
   color: #191919;
   font-weight: bold;
 }
-#exfe_version_dialog .exfe-version-info p span.oblique {
+.exfe_version .exfe-version-info p span.oblique {
   color: #4C4C4C;
   font-style: oblique;
 }
