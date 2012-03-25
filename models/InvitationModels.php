@@ -125,7 +125,7 @@ class InvitationModels extends DataModel
 
     public function getInvitation_Identities($cross_id, $without_token=false, $filter=null, $withAllIdentities = true)
     {
-        $sql="select a.id invitation_id, a.state, a.by_identity_id, a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username  FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
+        $sql="select a.id invitation_id, a.state, a.by_identity_id, a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
         if($without_token==true)
             $sql="select a.id invitation_id, a.state, a.by_identity_id, a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
 
@@ -153,7 +153,8 @@ class InvitationModels extends DataModel
                     $sql="select b.id identity_id,a.status,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM user_identity a,identities b where  a.identityId=b.id and a.userId=$userid; ";
                     $identities=$this->getAll($sql);
                     $invitations[$i]["identities"]=$identities;
-
+                } else if ($withAllIdentities==true) {
+                    $invitations[$i]["identities"]=array($invitations[$i]);
                 }
             }
             $invitations[$i]["user_id"]=intval($userid);
