@@ -194,7 +194,6 @@ class ExfeeHelper extends ActionController {
                             'invitation_id'         => intval($args['invitation_id']),
                             'token'                 => $args['token'],
                             'rsvp'                  => intval($args[rsvp_status]),
-                            'invitations'           => array(),
                             'by_identity'           => array(
                                 'id'                => intval($args['by_identity']['id']),   
                                 'external_identity' => $args['by_identity']['external_identity'],
@@ -219,6 +218,7 @@ class ExfeeHelper extends ActionController {
                                 'title'             => $args['title'],
                                 'description'       => $args['description'],
                                 'time'              => $args['begin_at'],
+                                'invitations'       => array(),
                                 'place'             => array(
                                     line1 => $args['place_line1'],
                                     line2 => $args['place_line2'],
@@ -246,7 +246,7 @@ class ExfeeHelper extends ActionController {
                                     'external_identity' => '',  // @todo @Leask
                                 )
                             );
-                            $invMsg['invitations'][] = $invItem;
+                            $invMsg['cross']['invitations'][] = $invItem;
                         }
                         $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $invMsg, true);
                         break;
@@ -347,7 +347,6 @@ class ExfeeHelper extends ActionController {
                              'invitation_id'         => intval($args['invitation_id']),
                              'token'                 => $args['token'],
                              'rsvp'                  => intval($args[rsvp_status]),
-                             'invitations'           => array(),
                              'by_identity'           => array(
                                  'id'                => intval($args['by_identity']['id']),   
                                  'external_identity' => $args['by_identity']['external_identity'],
@@ -372,6 +371,7 @@ class ExfeeHelper extends ActionController {
                                  'title'             => $args['title'],
                                  'description'       => $args['description'],
                                  'time'              => $args['begin_at'],
+                                 'invitations'       => array(),
                                  'place'             => array(
                                      line1 => $args['place_line1'],
                                      line2 => $args['place_line2'],
@@ -399,7 +399,7 @@ class ExfeeHelper extends ActionController {
                                      'external_identity' => '',  // @todo @Leask
                                  )
                              );
-                             $invMsg['invitations'][] = $invItem;
+                             $invMsg['cross']['invitations'][] = $invItem;
                          }
                          $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $invMsg, true);
                          break;
