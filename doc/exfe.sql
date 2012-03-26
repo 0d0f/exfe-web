@@ -16,6 +16,20 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `background`
+--
+
+DROP TABLE IF EXISTS `background`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `background` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `image` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `cross_drafts`
 --
 
@@ -28,7 +42,7 @@ CREATE TABLE `cross_drafts` (
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `json` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=288 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=299 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -54,8 +68,9 @@ CREATE TABLE `crosses` (
   `time_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `origin_begin_at` varchar(233) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `background` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=100092 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=100098 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -80,7 +95,7 @@ CREATE TABLE `identities` (
   `external_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oauth_token` text COLLATE utf8_unicode_ci COMMENT 'oauth token',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=174 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=190 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,7 +120,7 @@ CREATE TABLE `invitations` (
   `lng` double NOT NULL,
   PRIMARY KEY (`id`),
   KEY `identity_id_idx` (`identity_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=300 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=321 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -139,11 +154,11 @@ CREATE TABLE `logs` (
   `to_obj` varchar(20) NOT NULL,
   `to_id` bigint(20) NOT NULL,
   `to_field` varchar(20) NOT NULL,
-  `change_summy` varchar(50) NOT NULL,
+  `change_summy` varchar(233) NOT NULL,
   `meta` text NOT NULL,
   `time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7214 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7326 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +195,7 @@ CREATE TABLE `places` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=85 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=91 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,7 +217,7 @@ CREATE TABLE `posts` (
   PRIMARY KEY (`id`),
   KEY `index_comments_on_commentable_type` (`postable_type`),
   KEY `index_comments_on_commentable_id` (`postable_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=711 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=761 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,10 +284,11 @@ CREATE TABLE `users` (
   `cookie_loginsequ` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `auth_token` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT '+08:00',
+  `default_identity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_users_on_reset_password_token` (`reset_password_token`),
   KEY `auth_token` (`auth_token`)
-) ENGINE=MyISAM AUTO_INCREMENT=131 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=141 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -284,4 +300,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-03-09  8:14:45
+-- Dump completed on 2012-03-26  7:22:52
