@@ -173,12 +173,12 @@ var moduleNameSpace = 'odof.x.render',
             strMessage = '',
             self = this,
             g = tmpData.length - 1,
-            identity = tmpData[g].by_identity ? tmpData[g].by_identity : tmpData[g].identity,
+            identity = tmpData[g].by_identity || tmpData[g].identity,
             gather = '<li class="cleanup xhistory gather">'
                 + 'Gathered by <span class="bold">'
-                + tmpData[g].identity.name + '</span>.'
+                + identity.name + '</span>.'
                 + '<img alt="" width="20px" height="20px" src="'
-                + tmpData[g].identity.avatar_file_name + '" />';
+                + identity.avatar_file_name + '" />';
         $.each(tmpData, function (i, v) {
             strMessage += g === i ? gather :(v.time ? (v.by_identity ? self.makeHistory(v) : '') : self.makeMessage(v));
         });
@@ -314,7 +314,6 @@ var moduleNameSpace = 'odof.x.render',
         // state: {0: 未知，1：去，2：不去，3：感兴趣}
         var strCnvstn = editable
                       ? '<div id="x_conversation_area">'
-                      // TODO: 先隐藏此功能
                       +     '<a id="x_hide_history" href="javascript:void(0);"><span>Show</span> history</a>'
                       +     '<h3 id="x_conversation">Conversation</h3>'
                       +     '<div id="x_conversation_input_area" class="cleanup">'
@@ -428,7 +427,7 @@ var moduleNameSpace = 'odof.x.render',
         var c = ~~$span.html();
         $span.html(c+i);
     };
-    
+
     ns.setXTitleBackground = function () {
         // 设置标题背景图片
         var bkgIMG = new Image();
@@ -470,8 +469,8 @@ var moduleNameSpace = 'odof.x.render',
 
                 $(this).data('xtimer', timer);
             } else {
-                $('#x_rsvp_typeinfo').hide();
                 $('#x_exfee_users').show();
+                $('#x_rsvp_typeinfo').hide();
             }
         });
 

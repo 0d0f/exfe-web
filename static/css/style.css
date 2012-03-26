@@ -13,28 +13,54 @@ b.r1{margin: 0 2px}
 b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 
-.identification_dialog{
+.identification_dialog {
     position: absolute;
     width: 400px;
     height: 380px;
     padding: 0;
     z-index: 201;
-    background: transparent;
     font-family: "Verdana", "Helvetica", "Lucida Grande", "Sans", "Arial", "SimSun";
     color: #4C4C4C;
+    background-color: #FAFAFA;
+    /*background-image: url(images/fallback-gradient.png);*/
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
+    background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
+    background-image:    -moz-linear-gradient(top, #FAFAFA, #E6E6E6);
+    background-image:     -ms-linear-gradient(top, #FAFAFA, #E6E6E6);
+    background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
+    border-radius: 5px;
 }
-.idialog_inpage{ margin:auto; position:relative; z-index:0; }
+.idialog_inpage{ margin:auto; position:relative; z-index:0; margin-top: 70px;}
 .idialog_inpage .titles { display:none; }
 
 .identification_dialog .titles{
-    margin:0; height:25px; padding:0 8px; line-height:180%;
+    margin:0; height:20px; line-height:180%;
     background:url(/static/images/fuceng_title.png) no-repeat 0 0;
 }
-.identification_dialog .titles div{float:left; height:25px; width:20px;}
-.identification_dialog .titles a{float:left;display:block;height:25px;width:20px;font-style:normal;cursor:pointer;text-indent:-9999px;}
+.identification_dialog .titles div{float:left; height:20px; width:20px;}
+.identification_dialog .titles a{
+  float: left;
+  display: block;
+  height: 20px;
+  width: 20px;
+  font-style: normal;
+  cursor: pointer;
+  text-align: center;
+  cursor: pointer;
+}
+.identification_dialog .titles a:hover {
+  text-decoration: none;
+}
 .identification_dialog .titles div.tl{
-    float:right; text-align:right; color:#226571; width:350px; font-size:12px;
-    font-weight:normal; text-shadow:0 0.1em #50d2dd; cursor:move;
+    float: right;
+    text-align: right;
+    color: #A9A9A9;
+    width: 372px;
+    font-size:12px;
+    font-weight: bold;
+    cursor:move;
+    font-family: Helvetica;
+    padding-right: 8px;
 }
 
 .identification_dialog #identity_error_msg{
@@ -56,7 +82,7 @@ b.r3{margin: 0px}
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { background:#EFEFEF; height:350px; width:400px; overflow:hidden; }
+.identification_dialog_con { height:350px; width:400px; overflow:hidden; }
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
@@ -267,13 +293,49 @@ b.r3{margin: 0px}
 }
 
 /******* upload user avatar window style by handaoliang ***********/
-.upload_avatar_dialog{ position:absolute; width:400px; height:325px; padding:0px; background:transparent; z-index:201; }
-.upload_avatar_dialog .titles{ width:400px; height:25px; background:url(/static/images/fuceng_title_400.png) no-repeat 0 0; }
-.upload_avatar_dialog .titles p.l{ width:30px; height:25px; float:left; color:#FFF; padding-left:3px; }
-.upload_avatar_dialog .titles p.l a{ display:block; width:27px; height:22px; padding-top:3px; text-decoration:none; }
-.upload_avatar_dialog .titles p.r{ width:350px; height:22px; padding-top:3px; float:right; color:#FFF; text-align:right; padding-right:10px; cursor:move; }
+.upload_avatar_dialog {
+    position: absolute;
+    width: 400px;
+    height: 325px;
+    padding: 0;
+    z-index: 201;
+    font-family: "Verdana", "Helvetica", "Lucida Grande", "Sans", "Arial", "SimSun";
+    color: #4C4C4C;
+    background-color: #FAFAFA;
+    /*background-image: url(images/fallback-gradient.png);*/
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
+    background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
+    background-image:    -moz-linear-gradient(top, #FAFAFA, #E6E6E6);
+    background-image:     -ms-linear-gradient(top, #FAFAFA, #E6E6E6);
+    background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
+    border-radius: 5px;
+}
+.upload_avatar_dialog .titles{ width:400px; height:20px; background:url(/static/images/fuceng_title.png) no-repeat 0 0; }
+.upload_avatar_dialog .titles p.l{
+  width: 20px;
+  height: 20px;
+  float: left;
+  color: #FFF;
+  text-align: center;
+}
+.upload_avatar_dialog .titles p.l a{ display:block; width:20px; height:20px; text-decoration:none; }
+.upload_avatar_dialog .titles p.l a:hover {text-decoration:none; }
+.upload_avatar_dialog .titles p.r {
+    color: #A9A9A9;
+    width: 372px;
+    font-size:12px;
+    font-weight: bold;
+    cursor:move;
+    font-family: Helvetica;
+    width: 372px;
+    height:20px;
+    padding-right: 8px;
+    float: right;
+    text-align: right;
+    cursor:move;
+}
 
-.upload_avatar_dialog #container { position: absolute; left: 0px; top: 25px; width:400px; height:300px; background:#FFFFFF; }
+#upload_avatar_dialog #container { position: absolute; left: 0px; top: 20px; width:400px; height:300px;}
 
 .upload_avatar_dialog #wrapper { position: absolute; left: 20px; top: 20px; }
 .upload_avatar_dialog #div_upload_big {
@@ -384,4 +446,45 @@ b.r3{margin: 0px}
 	background-color: #000;
     filter: alpha(opacity=50);
 	opacity: 0.5;
+}
+
+.exfe_version.identification_dialog {
+  height: 320px;
+  font-family: Helvetica;
+  font-size: 14px;
+  color: #191919;
+}
+.exfe_version .exfe-version-info {
+  height: 300px;
+  width: 360px;
+  padding: 0 20px;
+  background: url(../images/exfe_rome.jpg) no-repeat;
+  background-size: 400px 300px;
+}
+.exfe_version .exfe-version-info h3 {
+  padding-top: 70px;
+  font-size: 24px;
+  font-weight: 300;
+  text-align: center;
+  line-height: 30px;
+  padding-bottom: 20px;
+}
+.exfe_versio .exfe-version-info p {
+  line-height: 20px;
+  margin-top: 3px;
+}
+.exfe_version .exfe-version-info p span.blue {
+  color: #1175A5;
+}
+.exfe_version .exfe-version-info p span.bold {
+  color: #191919;
+  font-weight: bold;
+}
+.exfe_version .exfe-version-info p span.oblique {
+  font-size: 12px;
+  color: #4C4C4C;
+  font-style: oblique;
+}
+.exfe_version .exfe-version-info p span.email {
+  font-size: 14px;
 }
