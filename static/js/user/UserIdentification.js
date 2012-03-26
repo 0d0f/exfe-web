@@ -307,7 +307,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                + "</div>";
 
         var html = "<div id='identification_titles' class='titles'>"
-               + "<div><a href='#' id='identification_close_btn'>Close</a></div>"
+               + "<div><a href='javascript:;' id='identification_close_btn'>X</a></div>"
                + "<div id='identification_handler' class='tl'>"+title+"</div>"
                + "</div>"
                + "<div id='identity_error_msg' style='display:none;'>Invalid identity</div>"
@@ -455,6 +455,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.userIdentityCache = jQuery('#identity').val();
         }
 
+        userIdentity = userIdentity || '';
         var curDomain = userIdentity.split("@")[1];
 
         //check email address

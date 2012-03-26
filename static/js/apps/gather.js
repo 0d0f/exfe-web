@@ -54,6 +54,7 @@ var moduleNameSpace = 'odof.x.gather',
                           * (intLine ? (intLine > maxLine ? maxLine : intLine) : 1)
                           + extSpce - (objDesc.height());
             if (difHeight <= 0) {
+                $('#gather_desc_x').html('');
                 return;
             }
             objDesc.animate({'height' : '+=' + difHeight}, 100);

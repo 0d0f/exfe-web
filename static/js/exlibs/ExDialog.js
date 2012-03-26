@@ -23,7 +23,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var pageSize = odof.util.getPageSize();
         var pageWidth = pageSize.PageW;
         var pageHeight = pageSize.PageH;
-        
+
         var floatWrapX, floatWrapY, dragX, dragY, pX, pY, tX, tY;
         var pX = parseInt(pageWidth-dialogWidth)/2;
         var pY = parseInt(pageHeight-dialogHeight)/2;
@@ -154,16 +154,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             ns.dialogElement = odof.util.createElement("div", ns.dialogID, className);
             document.body.insertBefore(ns.dialogElement,document.body.firstChild);
         }
-        odof.exlibs.ExDialog.createCover();
         if(dialogModal == "win"){
-            /*
             jQuery("#"+ns.dialogID).bind("clickoutside",function(){
                 odof.exlibs.ExDialog.removeDialog();
-                odof.exlibs.ExDialog.removeCover();
             });
-            */
             jQuery("#"+ns.dialogID).addClass("ex_dialog_shadow");
             jQuery("#"+ns.coverID).addClass("cover_element_shadow");
+        } else {
+            odof.exlibs.ExDialog.createCover();
         }
     };
 
