@@ -380,7 +380,7 @@ var moduleNameSpace = 'odof.x.render',
                 if (by_identity) {
                     $('#x_view_content')
                         .find('#x_exfee_by_user')
-                        .html('Invitation from ' + '<img alt="" src="' + by_identity.avatar_file_name + '" width="20px" height="20px" /><span class="x_conversation_identity" style="padding-left: 2px;">' + by_identity.name + '</span>.');
+                        .html((by_identity.state === 0 ? 'Invitation from ' : 'Set by ') + '<img alt="" src="' + by_identity.avatar_file_name + '" width="20px" height="20px" /><span class="x_conversation_identity" style="padding-left: 2px;">' + by_identity.name + '</span>.');
                 }
             }
             $('#x_exfee_users').html(this.showConfirmed(crossExfee));
