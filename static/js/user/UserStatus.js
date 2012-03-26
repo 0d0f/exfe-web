@@ -74,6 +74,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             actionURI = site_url+"/s/SendVerifyingMail";
         }
 
+        userIdentity = odof.util.trim(userIdentity);
         if(userIdentity != "" && userIdentity.match(odof.mailReg)){
             var postData = {identity:userIdentity};
             jQuery("#submit_loading_btn").show();

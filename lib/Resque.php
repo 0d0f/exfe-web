@@ -49,6 +49,7 @@ class Resque
 	public static function redis()
 	{
 		if(is_null(self::$redis)) {
+            // @todo 此处需要写入配置 by Leask
 			self::setBackend('localhost:6379');
 		}
 

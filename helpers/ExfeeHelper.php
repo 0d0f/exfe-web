@@ -31,8 +31,9 @@ class ExfeeHelper extends ActionController {
                 } else if ($exfeeItem['identity_type'] === 'email') {
                     $identity_ext_name = isset($exfeeItem['exfee_identity'])
                                        ? $exfeeItem['exfee_identity'] : null;
-                } else if ($exfeeItem['identity_type'] === 'twitter'
-                  && isset($exfeeItem['exfee_ext_name'])) {
+                } else if (($exfeeItem['identity_type'] === 'twitter'
+                         || $exfeeItem['identity_type'] === 'facebook')
+                   && isset($exfeeItem['exfee_ext_name'])) {
                     $identity_ext_name = $exfeeItem['exfee_ext_name'];
                 } else {
                     continue;
@@ -111,7 +112,7 @@ class ExfeeHelper extends ActionController {
                 }
             }
         }
-        
+
         if ($nedUpdate) {
             $crossData->updateCrossUpdatedAt($cross_id);
         }
@@ -140,8 +141,8 @@ class ExfeeHelper extends ActionController {
         $host_identity=humanIdentity($host_identit,$user);
 
         $invitationdata=$this->getModelByName("invitation");
-        $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false, $filter);
-        $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false, $filter);
+        $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false);
+        $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false);
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
         $place_id=$cross["place_id"];
@@ -186,7 +187,74 @@ class ExfeeHelper extends ActionController {
 
                 );
 
-                $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+                switch ($invitation["provider"]) {
+                    case 'facebook':
+                        $invMsg = array(
+                            'to_identity_time_zone' => $args['to_identity_time_zone'],
+                            'invitation_id'         => intval($args['invitation_id']),
+                            'token'                 => $args['token'],
+                            'rsvp'                  => intval($args[rsvp_status]),
+                            'by_identity'           => array(
+                                'id'                => intval($args['by_identity']['id']),   
+                                'external_identity' => $args['by_identity']['external_identity'],
+                                'name'              => $args['by_identity']['name'],
+                                'bio'               => $args['by_identity']['bio'],
+                                'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
+                                'external_username' => $args['by_identity']['external_username'],
+                                'provider'          => $args['by_identity']['provider'],
+                                'user_id'           => 0,  // @todo @Leask
+                            ),
+                            'to_identity'           => array(
+                                'identity_id'       => intval($args['identity_id']),
+                                'provider'          => $args['provider'],
+                                'external_identity' => $args['external_identity'],
+                                'name'              => $args['name'],
+                                'avatar_file_name'  => $args['avatar_file_name'],
+                                'external_username' => '', // @todo @Leask
+                                'bio'               => '', // @todo @Leask
+                                'user_id'           => 0,  // @todo @Leask
+                            ), 
+                            'cross'                 => array(
+                                'title'             => $args['title'],
+                                'description'       => $args['description'],
+                                'time'              => $args['begin_at'],
+                                'invitations'       => array(),
+                                'place'             => array(
+                                    line1 => $args['place_line1'],
+                                    line2 => $args['place_line2'],
+                                ),
+                                'cross_id'          => intval($args['cross_id']),
+                                'cross_id_base62'   => $args['cross_id_base62'],
+                            ),
+                        );
+                        foreach ($args['invitations'] as $invRaw) {
+                            $invItem = array(
+                                'invitation_id'  => intval($invRaw['invitation_id']),
+                                'rsvp'           => intval($invRaw['state']),
+                                'token'          => $invRaw['token'],
+                                'updated_at'     => $invRaw['updated_at'],
+                                'by_identity_id' => intval($invRaw['by_identity_id']),
+                                'is_host'        => intval($invRaw['identity_id']) === intval($args['host_identity_id']),
+                                'identity'       => array(
+                                    'identity_id'       => intval($invRaw['identity_id']),
+                                    'provider'          => $invRaw['provider'],
+                                    'name'              => $invRaw['name'],
+                                    'avatar_file_name'  => $invRaw['avatar_file_name'],
+                                    'bio'               => $invRaw['bio'],
+                                    'external_username' => $invRaw['external_username'],
+                                    'user_id'           => intval($invRaw['user_id']),
+                                    'external_identity' => '',  // @todo @Leask
+                                )
+                            );
+                            $invMsg['cross']['invitations'][] = $invItem;
+                        }
+                        $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $invMsg, true);
+                        break;
+                    case 'email':
+                    case 'twitter':
+                    default:
+                        $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $args, true);
+                }
 
                 $identities=$invitation["identities"];
                 if($identities)
@@ -246,7 +314,7 @@ class ExfeeHelper extends ActionController {
                 }
                 $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                 $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
-                   
+
                 $args = array(
                     'title' => $cross["title"],
                     'description' => $cross["description"],
@@ -271,7 +339,75 @@ class ExfeeHelper extends ActionController {
                     'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
                     'invitations' => $invitations
                  );
-                 $jobId = Resque::enqueue($invitation["provider"],$invitation["provider"]."_job" , $args, true);
+
+                 switch ($invitation["provider"]) {
+                     case 'facebook':
+                         $invMsg = array(
+                             'to_identity_time_zone' => $args['to_identity_time_zone'],
+                             'invitation_id'         => intval($args['invitation_id']),
+                             'token'                 => $args['token'],
+                             'rsvp'                  => intval($args[rsvp_status]),
+                             'by_identity'           => array(
+                                 'id'                => intval($args['by_identity']['id']),   
+                                 'external_identity' => $args['by_identity']['external_identity'],
+                                 'name'              => $args['by_identity']['name'],
+                                 'bio'               => $args['by_identity']['bio'],
+                                 'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
+                                 'external_username' => $args['by_identity']['external_username'],
+                                 'provider'          => $args['by_identity']['provider'],
+                                 'user_id'           => 0,  // @todo @Leask
+                             ),
+                             'to_identity'           => array(
+                                 'identity_id'       => intval($args['identity_id']),
+                                 'provider'          => $args['provider'],
+                                 'external_identity' => $args['external_identity'],
+                                 'name'              => $args['name'],
+                                 'avatar_file_name'  => $args['avatar_file_name'],
+                                 'external_username' => '', // @todo @Leask
+                                 'bio'               => '', // @todo @Leask
+                                 'user_id'           => 0,  // @todo @Leask
+                             ), 
+                             'cross'                 => array(
+                                 'title'             => $args['title'],
+                                 'description'       => $args['description'],
+                                 'time'              => $args['begin_at'],
+                                 'invitations'       => array(),
+                                 'place'             => array(
+                                     line1 => $args['place_line1'],
+                                     line2 => $args['place_line2'],
+                                 ),
+                                 'cross_id'          => intval($args['cross_id']),
+                                 'cross_id_base62'   => $args['cross_id_base62'],
+                             ),
+                         );
+                         foreach ($args['invitations'] as $invRaw) {
+                             $invItem = array(
+                                 'invitation_id'  => intval($invRaw['invitation_id']),
+                                 'rsvp'           => intval($invRaw['state']),
+                                 'token'          => $invRaw['token'],
+                                 'updated_at'     => $invRaw['updated_at'],
+                                 'by_identity_id' => intval($invRaw['by_identity_id']),
+                                 'is_host'        => intval($invRaw['identity_id']) === intval($args['host_identity_id']),
+                                 'identity'       => array(
+                                     'identity_id'       => intval($invRaw['identity_id']),
+                                     'provider'          => $invRaw['provider'],
+                                     'name'              => $invRaw['name'],
+                                     'avatar_file_name'  => $invRaw['avatar_file_name'],
+                                     'bio'               => $invRaw['bio'],
+                                     'external_username' => $invRaw['external_username'],
+                                     'user_id'           => intval($invRaw['user_id']),
+                                     'external_identity' => '',  // @todo @Leask
+                                 )
+                             );
+                             $invMsg['cross']['invitations'][] = $invItem;
+                         }
+                         $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $invMsg, true);
+                         break;
+                     case 'email':
+                     case 'twitter':
+                     default:
+                         $jobId = Resque::enqueue($invitation['provider'], "{$invitation['provider']}_job" , $args, true);
+                 }
 
                  $identities=$invitation["identities"];
                  if($identities)
@@ -331,40 +467,47 @@ class ExfeeHelper extends ActionController {
         if($invitation_identities)
         {
             $to_identities=array();
-            $to_identities_apn=array();
             foreach($invitation_identities as $invitation_identity)
             {
                 $identities=$invitation_identity["identities"];
                 if($identities && $identityData->ifIdentitiesEqualWithIdentity($identities,$host_identity_id)==FALSE)  //ifIdentitiesEqualWithIdentity dont's send to host's other identity.
-                    foreach($identities as $identity)
-                    {
-                        if(intval($identity["status"])==3)
-                        {
+                    foreach ($identities as $identity) {
+                        if (intval($identity["status"]) == 3) {
                             $muteData=$this->getmodelbyname("mute");
                             $mute=$muteData->ifIdentityMute("x",$cross_id,$identity["identity_id"]);
-                            if($mute===FALSE)
-                            {
-                                $identity=humanidentity($identity,null);
-                                if($identity["provider"]=="email" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
-                                    array_push($to_identities,$identity);
-                                if($identity["provider"]=="iOSAPN" && $invitation_identity["identity_id"]!=$_SESSION["identity_id"])
-                                    array_push($to_identities_apn,$identity);
+                            if ($mute === false && $invitation_identity["identity_id"] != $_SESSION["identity_id"]) {
+                                $identity = humanidentity($identity, null);
+                                if (!isset($to_identities[$identity['provider']])) {
+                                    $to_identities[$identity['provider']] = array();
+                                }
+                                $to_identities[$identity['provider']][] = $identity;
                             }
                         }
                     }
             }
-            $mail["to_identities"]=$to_identities;
+            // email
+            $mail["to_identities"]=$to_identities['email'];
             $mail["to_identity_time_zone"]=$user["timezone"];
             $datetimeobj=humanDateTime($mail["create_at"],$user["timezone"]);
             $mail["create_at"]=$datetimeobj;
             $msghelper=$this->gethelperbyname("msg");
             $msghelper->sentConversationEmail($mail);
-
-            $apnargs["to_identities"]=$to_identities_apn;
+            // iOSAPN
+            $apnargs["to_identities"]=$to_identities['iOSAPN'];
             $apnargs["to_identity_time_zone"]=$user["timezone"];
             $apnargs["create_at"]=$datetimeobj;
             $apnargs["job_type"]="conversation";
             $msghelper->sentApnConversation($apnargs);
+            // twitter
+            if (isset($to_identities['twitter'])) {
+                $mail["to_identities"]=$to_identities['twitter'];
+                $msghelper->sentTwitterConversation($mail);
+            }
+            // facebook
+            if (isset($to_identities['facebook'])) {
+                $mail["to_identities"]=$to_identities['facebook'];
+                $msghelper->sentFacebookConversation($mail);
+            }
         }
     }
     public function sendRSVP($cross_id,$identity_id,$state)
