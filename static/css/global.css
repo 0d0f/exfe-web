@@ -123,6 +123,7 @@ body {
   font-style: oblique;
   color: #7F7F7F;
   text-shadow: 0 1px 1px #FAFAFA;
+  top: 24.5px;
 }
 #global_header .logo .version a:hover {
   text-decoration: none;
