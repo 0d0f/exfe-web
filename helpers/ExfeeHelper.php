@@ -504,15 +504,42 @@ class ExfeeHelper extends ActionController {
             $apnargs["create_at"]=$datetimeobj;
             $apnargs["job_type"]="conversation";
             $msghelper->sentApnConversation($apnargs);
+            // upgrade messages object
+            $msg = array(
+             // 'action'                => $mail['action'],
+             // 'to_identity_time_zone' => $mail['to_identity_time_zone'],
+                'cross'         => array(
+                    'title'           => $mail['title'],
+                    'cross_id'        => $mail['cross_id'],
+                    'cross_id_base62' => $mail['cross_id_base62'],
+                    'link'            => $mail['link'],
+                    'mutelink'        => $mail['mutelink'],
+                    
+                ),
+                'conversation'  => array(
+                    'content'   => $mail['content'],
+                    'time'      => $mail['create_at'],
+                    'identity'  => array(
+                        'id'                => intval($mail['identity']['id']),
+                        'external_identity' => $mail['identity']['external_identity'],
+                        'name'              => $mail['identity']['name'],
+                        'bio'               => $mail['identity']['bio'],
+                        'avatar_file_name'  => $mail['identity']['avatar_file_name'],
+                        'external_username' => $mail['identity']['external_username'],
+                        'provider'          => $mail['identity']['provider'],
+                    )
+                ),
+                'to_identities' => array(),
+            );
             // twitter
             if (isset($to_identities['twitter'])) {
                 $mail["to_identities"]=$to_identities['twitter'];
-                $msghelper->sentTwitterConversation($mail);
+                $msghelper->sentTwitterConversation($msg);
             }
             // facebook
             if (isset($to_identities['facebook'])) {
                 $mail["to_identities"]=$to_identities['facebook'];
-                $msghelper->sentFacebookConversation($mail);
+                $msghelper->sentFacebookConversation($msg);
             }
         }
     }
