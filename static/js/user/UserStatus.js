@@ -18,17 +18,21 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //专门针对Cross页面，如果以Token进入，则预先设置一个ID为：cross_identity_btn的元素节点。
         //具体的事件绑定在odof.cross.index里面实现。
         //页面上写有external_identity
+
         if(typeof login_type != "undefined" && login_type == "token"){
             var display_name = external_identity;
             if(typeof token_expired != "undefined" && token_expired == "false"){
                 display_name = id_name;
             }
+            /*
             var navMenu = '<div class="global_sign_in_btn">'
                             + '<a id="cross_identity_btn" href="javascript:void(0);">'
                             + display_name
                             + '</a>'
                             + '</div>';
             jQuery("#global_user_info").html(navMenu);
+            */
+            odof.user.status.showTokenIdentityStatus(myIdentity);
             try{
                 if(odof.user.status.callBackFunc){
                     odof.user.status.callBackFunc();
@@ -560,14 +564,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             if (userData.crosses && userData.crosses.length) {
                 userPanelHTML += '<div class="info">';
-                var supcoming = '<div class="upcoming">Upcoming:<div>';
+                var supcoming = '<div class="upcoming">Upcoming:</div>';
                 supcoming += '<div class="crosseslist"><ol>';
                 var eupcoming = '</ol></div>';
                 var upcoming_status = 0;
-                var snow = '<div class="crosseslist"><span>NOW</span><ol>';
+                var snow = '<div class="crosseslist"><span class="now">NOW</span><ol>';
                 var enow = '</ol></div>';
                 var now_status = 0;
-                var s24hr = '<div class="crosseslist"><span>24hr</span><ol>';
+                var s24hr = '<div class="crosseslist"><span class="hr">24hr</span><ol>';
                 var e24hr = '</ol></div>';
                 var hr_status = 0;
                 $.each(userData.crosses, function (k, v) {
@@ -593,7 +597,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     + '</div>';
             }
 
-            userPanelHTML += '<div class="creatbtn"><a href="/x/gather">⊕ Gather</a></div>';
+            userPanelHTML += '<div class="creatbtn"><a href="/x/gather">Gather</a></div>';
             userPanelHTML += '<div class="myexfefoot">';
             userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
             userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
@@ -611,6 +615,67 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
+
+    ns.showTokenIdentityStatus = function (identity) {
+        var panel = '<div class="uinfo" data-identity-id="' + identity.id + '">'
+                + '<em class="light" style="background:none;"></em>'
+                + '<div class="name" >'
+                    + '<div id="goldLink">'
+                        + '<a href="/s/profile" >' + (identity.name || identity.external_username) + '</a>'
+                    + '</div>'
+                + '<div class="myexfe" id="myexfe">'
+                    + '<div class="message">'
+                        + '<div class="title">New Identity</div>'
+                        + '<p class="detail">You are browsing this page as identity:</p>'
+                        + '<div class="identity">'
+                            + '<span class="email">' + (identity.external_identity || identity.external_username || identity.name) + '</span>'
+                            + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
+                        + '</div>'
+                        + '<div class="setup">'
+                            + '<p>as your new <span>EXFE</span> account.</p>'
+                            + '<span class="setup-btn">Set up</span>'
+                        + '</div>'
+                    + '</div>'
+                + '</div>'
+            + '</div>';
+
+        jQuery("#global_user_info").html(panel);
+
+        jQuery('.name').mouseenter(function() {
+            jQuery('#goldLink').addClass('nameh');
+            jQuery('#myexfe').show();
+        });
+        jQuery('.name').mouseleave(function() {
+            jQuery('#goldLink').removeClass('nameh');
+            jQuery('#myexfe').hide();
+        });
+        $('.name .setup-btn').bind('click', function (e) {
+            if (login_type === 'token' && token) {
+                odof.x.edit.setreadonly(clickCallBackFunc);
+            }
+        });
+    };
+
+    ns.showExfeVersion = function () {
+        var hasDialog = $('div.ex_dialog').size();
+        if (hasDialog) return;
+        var buf = "<div id='identification_titles' class='titles'>"
+                    + "<div><a href='javascript:;' id='identification_close_btn'>X</a></div>"
+                    + "<div id='identification_handler' class='tl'>Sandbox</div>"
+                + "</div>"
+                + '<div class="exfe-version-info">'
+                    + '<h3>“Rome wasn\'t built in a day.”</h3>'
+                    + '<p><span class="blue">EXFE</span> [ˈɛksfi] is still in <span class="bold">pilot</span> stage (with <span class="oblique">SANDBOX</span> tag). We’re building up blocks of it, thus some bugs and unfinished pages. Any feedback, please email <span class="oblique email">feedback@exfe.com.</span> Our apologies for any trouble you may encounter, much appreciated.</p>'
+                + '</div>'
+                + "<div class='identification_dialog_bottom'></div>";
+        odof.exlibs.ExDialog.initialize('identification', buf, 'exfe_version identification_dialog', 'win');
+        if (ns.showExfeVersion.status) {
+            $('#identification_close_btn').click(function (e) {
+                $(this).unbind('click');
+            });
+        }
+    };
+    ns.showExfeVersion.status = 1;
 
 })(ns);
 
