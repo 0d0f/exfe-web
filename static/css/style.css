@@ -459,6 +459,7 @@ b.r3{margin: 0px}
   width: 360px;
   padding: 0 20px;
   background: url(../images/exfe_rome.jpg) no-repeat;
+  background-size: 400px 300px;
 }
 .exfe_version .exfe-version-info h3 {
   padding-top: 70px;
