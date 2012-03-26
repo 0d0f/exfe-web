@@ -660,12 +660,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var hasDialog = $('div.ex_dialog').size();
         if (hasDialog) return;
         var buf = "<div id='identification_titles' class='titles'>"
-                    + "<div><a href='#' id='identification_close_btn'>X</a></div>"
+                    + "<div><a href='javascript:;' id='identification_close_btn'>X</a></div>"
                     + "<div id='identification_handler' class='tl'>Sandbox</div>"
                 + "</div>"
                 + '<div class="exfe-version-info">'
                     + '<h3>“Rome wasn\'t built in a day.”</h3>'
-                    + '<p><span class="blue">EXFE</span> [ˈɛksfi] is still in <span class="bold">pilot</span> stage (with <span class="oblique">SANDBOX</span> tag). We’re building up blocks of it, thus some bugs and unfinished pages. Any feedback, please email <span class="oblique">feedback@exfe.com.</span> Our apologies for any trouble you may encounter, much appreciated.</p>'
+                    + '<p><span class="blue">EXFE</span> [ˈɛksfi] is still in <span class="bold">pilot</span> stage (with <span class="oblique">SANDBOX</span> tag). We’re building up blocks of it, thus some bugs and unfinished pages. Any feedback, please email <span class="oblique email">feedback@exfe.com.</span> Our apologies for any trouble you may encounter, much appreciated.</p>'
                 + '</div>'
                 + "<div class='identification_dialog_bottom'></div>";
         odof.exlibs.ExDialog.initialize('identification', buf, 'exfe_version identification_dialog', 'win');
