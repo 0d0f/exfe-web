@@ -466,6 +466,7 @@ b.r3{margin: 0px}
   font-weight: 300;
   text-align: center;
   line-height: 30px;
+  padding-bottom: 20px;
 }
 .exfe_versio .exfe-version-info p {
   line-height: 20px;
@@ -479,6 +480,10 @@ b.r3{margin: 0px}
   font-weight: bold;
 }
 .exfe_version .exfe-version-info p span.oblique {
+  font-size: 12px;
   color: #4C4C4C;
   font-style: oblique;
+}
+.exfe_version .exfe-version-info p span.email {
+  font-size: 14px;
 }
