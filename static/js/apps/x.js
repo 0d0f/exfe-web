@@ -173,11 +173,12 @@ var moduleNameSpace = 'odof.x.render',
             strMessage = '',
             self = this,
             g = tmpData.length - 1,
+            identity = tmpData[g].by_identity || tmpData[g].identity,
             gather = '<li class="cleanup xhistory gather">'
                 + 'Gathered by <span class="bold">'
-                + (tmpData[g].by_identity || tmpData[g].identity).name + '</span>.'
+                + identity.name + '</span>.'
                 + '<img alt="" width="20px" height="20px" src="'
-                + (tmpData[g].by_identity || tmpData[g].identity).avatar_file_name + '" />';
+                + identity.avatar_file_name + '" />';
         $.each(tmpData, function (i, v) {
             strMessage += g === i ? gather :(v.time ? (v.by_identity ? self.makeHistory(v) : '') : self.makeMessage(v));
         });
@@ -423,7 +424,7 @@ var moduleNameSpace = 'odof.x.render',
         var c = ~~$span.html();
         $span.html(c+i);
     };
-    
+
     ns.setXTitleBackground = function () {
         // 设置标题背景图片
         var bkgIMG = new Image();
