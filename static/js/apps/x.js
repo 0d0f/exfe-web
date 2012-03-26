@@ -260,6 +260,9 @@ var moduleNameSpace = 'odof.x.render',
                     + o.by_identity.name
                     + '</span>.';
                 c = 'user';
+                break;
+            default:
+                return '';
         }
 
         str += info;
