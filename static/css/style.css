@@ -47,6 +47,7 @@ b.r3{margin: 0px}
   cursor: pointer;
   text-align: center;
   cursor: pointer;
+  color: #A9A9A9;
 }
 .identification_dialog .titles a:hover {
   text-decoration: none;
@@ -202,8 +203,19 @@ b.r3{margin: 0px}
     height:45px; font-size:18px; text-align:center; clear:both;
     background:url(/static/images/hr_or.png) no-repeat -20px 90px;
 }
-.identity_dialog_main p.oauth_title{ float:left; text-align:left; width:160px; font-size:14px; line-height: 20px; margin-top: 20px; }
-.identity_dialog_main p.oauth_icon{ width:180px; float:right; margin-top: 20px; }
+.identity_dialog_main p.oauth_title{
+  float: left;
+  text-align: left;
+  /*width: 160px;*/ /*TODO: 去掉 facebook google*/
+  font-size: 14px;
+  line-height: 40px;
+  margin-top: 20px;
+}
+.identity_dialog_main p.oauth_icon{
+  /*width:180px;*/ /*TODO: 去掉 facebook google*/
+  float:right;
+  margin-top: 20px;
+}
 .identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
 .identity_dialog_main p.oauth_icon a.twitter_oauth{ background:url(/static/images/oauth_logo.png) no-repeat 0 0; }
 .identity_dialog_main p.oauth_icon a.twitter_oauth:hover { background:url(/static/images/oauth_logo.png) no-repeat -40px 0; }
