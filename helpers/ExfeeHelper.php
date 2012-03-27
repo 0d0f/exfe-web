@@ -433,6 +433,7 @@ class ExfeeHelper extends ActionController {
                  //echo "Queued job ".$jobId."\n\n";
             }
     }
+
     public function sendConversationMsg($cross_id,$host_identity_id,$content)
     {
         $mailargs=array();
@@ -514,7 +515,6 @@ class ExfeeHelper extends ActionController {
                     'cross_id_base62' => $mail['cross_id_base62'],
                     'link'            => $mail['link'],
                     'mutelink'        => $mail['mutelink'],
-                    
                 ),
                 'conversation'  => array(
                     'content'   => $mail['content'],
@@ -531,6 +531,19 @@ class ExfeeHelper extends ActionController {
                 ),
                 'to_identities' => array(),
             );
+            foreach ($to_identities as $tidtgI => $tidtgItem) {
+                foreach ($tidtgItem as $tidI => $tidItem) {
+                    $to_identities[$tidtgI][$tidI] = array(
+                        'status'            => intval($tidItem['status']),
+                        'provider'          => $tidItem['provider'],
+                        'external_identity' => $tidItem['external_identity'],
+                        'name'              => $tidItem['name'],
+                        'bio'               => $tidItem['bio'],
+                        'avatar_file_name'  => $tidItem['avatar_file_name'],
+                        'external_username' => $tidItem['external_username'],
+                    );
+                }
+            }
             // twitter
             if (isset($to_identities['twitter'])) {
                 $mail["to_identities"]=$to_identities['twitter'];

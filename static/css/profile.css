@@ -51,6 +51,7 @@ body {
     background: -webkit-linear-gradient(101deg, #FAFAFA, #F9F9FF);
     background: linear-gradient(101deg, #FAFAFA, #FFF9F9);
     padding: 10px 10px;
+    margin-bottom: 70px;
 }
 h5 {
     font: bold 14px/25px;
