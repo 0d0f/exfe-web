@@ -48,6 +48,7 @@ body {
     background: -moz-linear-gradient(top, #FAFAFA, #FEF2F2);
     background: -webkit-linear-gradient(top, #FAFAFA, #ECF8FF);
     padding: 10px 10px;
+    margin-bottom: 70px;
 }
 h5 {
     font: bold 14px/25px;
