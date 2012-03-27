@@ -53,13 +53,15 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         var title="", form="";
         if(type == "reg_login") {
             title="Identification";
+            //TODO: 先关闭 facebook google
             desc = "<div class='dialog_titles' style='height:110px;'>"
                 + "<p style='height:24px;line-height:24px'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
-                + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
+                //+ "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
+                + "<p class='oauth_title'>Authorize with your existing identity:</p>"
                 + "<p class='oauth_icon'>"
-                + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
+                //+ "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
                 + "<a href='/oAuth/twitterRedirect' class='twitter_oauth' alt='TwitterOAuth'></a>"
-                + "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
+                //+ "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
                 + "</p>"
                 + "</div>";
             form = "<div id='identity_reg_login_dialog' class='identity_dialog_main'>"
@@ -73,9 +75,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>"
                  + "<div class='account_hint_list' id='account_hint_list' style='display:none;'>"
                  + "<ul>"
-                 + "<li class='facebook' id='facebook'><span id='facebook_name'></span>@Facebook</li>"
+                 //+ "<li class='facebook' id='facebook'><span id='facebook_name'></span>@Facebook</li>"
                  + "<li class='twitter' id='twitter'><span id='twitter_name'></span>@Twitter</li>"
-                 + "<li class='google' id='google'><span id='google_name'></span>@Google</li>"
+                 //+ "<li class='google' id='google'><span id='google_name'></span>@Google</li>"
                  + "</ul>"
                  + "</div>"
                  + "<div id='identity_dbox' style='display:none;'>Your email here</div>"
@@ -194,11 +196,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             title="Add Identity";
             desc = "<div class='dialog_titles' style='height:110px;'>"
                  + "<p style='height:24px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
-                 + "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
+                 //+ "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
+                 + "<p class='oauth_title'>Authorize with your existing identity:</p>"
                  + "<p class='oauth_icon'>"
-                 + "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
+                 //+ "<a href='/oAuth/loginWithFacebook' class='facebook_oauth' alt='FaceBookOAuth'></a>"
                  + "<a href='/oAuth/twitterRedirect' class='twitter_oauth' alt='TwitterOAuth'></a>"
-                 + "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
+                 //+ "<a href='/oAuth/loginWithGoogle' class='google_oauth' alt='GoogleOAuth'></a>"
                  + "</p>"
                  + "</div>";
             form = "<div id='add_identity_dialog' class='identity_dialog_main'>"
