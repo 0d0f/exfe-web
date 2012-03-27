@@ -89,7 +89,7 @@
             </div>
         </div>
     </div>
-    <div class="shadow_840"></div>
+    <!--div class="shadow_840"></div-->
     <div id="cross_area">
         <div id="cross_list">
             <div id="xType_upcoming" class="category">

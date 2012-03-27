@@ -22,7 +22,7 @@ jQuery(document).ready(function() {
     var winSize = odof.util.getWindowSize();
     winHeight = winSize.height;
     if(winHeight < 600){
-        jQuery("#home_banner").css({"height":"460px"});
+        jQuery("#home_banner").css({"height":"505px"});
         jQuery("#x_code_img").css({"margin-top":"20px"});
     }
     jQuery("#pre_load_btn")[0].src = "/static/images/btn.png";
