@@ -231,7 +231,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#invitations > .crosses').html(strInvt);
                 if (strInvt) {
                     $('#invitations').show();
-                    $('#invitations_shadow').show();
+                    //$('#invitations_shadow').show();
                 }
                 $('.invitation > button').hide();
             }
@@ -365,7 +365,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#recently_updates > .crosses').html(strLogs);
                 if (strLogs) {
                     $('#recently_updates').show();
-                    $('#recently_updates_shadow').show();
+                    //$('#recently_updates_shadow').show();
                 }
             }
         });
