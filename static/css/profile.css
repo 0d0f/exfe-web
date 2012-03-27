@@ -34,7 +34,6 @@ body {
 #invitation_n_update {
     width: 310px;
     float: right;
-    margin-bottom: 20px;
 }
 #invitations {
     border: solid 1px #E6E6E6;
@@ -43,6 +42,7 @@ body {
     background: -webkit-linear-gradient(101deg, #FAFAFA, #FFF9F9);
     background: linear-gradient(101deg, #FAFAFA, #FFF9F9);
     padding: 10px 10px;
+    margin-bottom: 20px;
 }
 #recently_updates {
     border: solid 1px #E6E6E6;
@@ -274,7 +274,7 @@ em {
     color: #424242;
 }
 .edit_user .u_con p span.id_name {
-    width: 80px;
+    /*width: 80px;*/
     font-weight: bold;
     color: #424242;
     overflow: hidden;
