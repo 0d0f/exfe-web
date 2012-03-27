@@ -190,41 +190,44 @@ class ExfeeHelper extends ActionController {
                 switch ($invitation["provider"]) {
                     case 'facebook':
                         $invMsg = array(
-                            'to_identity_time_zone' => $args['to_identity_time_zone'],
-                            'invitation_id'         => intval($args['invitation_id']),
-                            'token'                 => $args['token'],
-                            'rsvp'                  => intval($args[rsvp_status]),
-                            'by_identity'           => array(
-                                'id'                => intval($args['by_identity']['id']),   
-                                'external_identity' => $args['by_identity']['external_identity'],
-                                'name'              => $args['by_identity']['name'],
-                                'bio'               => $args['by_identity']['bio'],
-                                'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
-                                'external_username' => $args['by_identity']['external_username'],
-                                'provider'          => $args['by_identity']['provider'],
-                                'user_id'           => 0,  // @todo @Leask
-                            ),
-                            'to_identity'           => array(
-                                'identity_id'       => intval($args['identity_id']),
-                                'provider'          => $args['provider'],
-                                'external_identity' => $args['external_identity'],
-                                'name'              => $args['name'],
-                                'avatar_file_name'  => $args['avatar_file_name'],
-                                'external_username' => '', // @todo @Leask
-                                'bio'               => '', // @todo @Leask
-                                'user_id'           => 0,  // @todo @Leask
-                            ), 
-                            'cross'                 => array(
-                                'title'             => $args['title'],
-                                'description'       => $args['description'],
-                                'time'              => $args['begin_at'],
-                                'invitations'       => array(),
-                                'place'             => array(
+                            'cross'      => array(
+                                'title'           => $args['title'],
+                                'description'     => $args['description'],
+                                'time'            => $args['begin_at'],
+                                'invitations'     => array(),
+                                'place'           => array(
                                     line1 => $args['place_line1'],
                                     line2 => $args['place_line2'],
                                 ),
-                                'cross_id'          => intval($args['cross_id']),
-                                'cross_id_base62'   => $args['cross_id_base62'],
+                                'cross_id'        => intval($args['cross_id']),
+                                'cross_id_base62' => $args['cross_id_base62'],
+                            ),
+                            'invitation' => array(
+                                'invitation_id' => intval($args['invitation_id']),
+                                'token'         => $args['token'],
+                                'rsvp'          => intval($args[rsvp_status]),
+                                'by_identity'   => array(
+                                    'id'                => intval($args['by_identity']['id']),   
+                                    'external_identity' => $args['by_identity']['external_identity'],
+                                    'name'              => $args['by_identity']['name'],
+                                    'bio'               => $args['by_identity']['bio'],
+                                    'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
+                                    'external_username' => $args['by_identity']['external_username'],
+                                    'provider'          => $args['by_identity']['provider'],
+                                    'user_id'           => 0,  // @todo @Leask
+                                ),
+                                'to_identity'   => array(
+                                    'identity_id'       => intval($args['identity_id']),
+                                    'provider'          => $args['provider'],
+                                    'external_identity' => $args['external_identity'],
+                                    'name'              => $args['name'],
+                                    'avatar_file_name'  => $args['avatar_file_name'],
+                                    'external_username' => '', // @todo @Leask
+                                    'bio'               => '', // @todo @Leask
+                                    'user_id'           => 0,  // @todo @Leask
+                                 // 'timezone'          => $args['to_identity_time_zone'],
+                                ), 
+                                
                             ),
                         );
                         foreach ($args['invitations'] as $invRaw) {
@@ -343,41 +346,44 @@ class ExfeeHelper extends ActionController {
                  switch ($invitation["provider"]) {
                      case 'facebook':
                          $invMsg = array(
-                             'to_identity_time_zone' => $args['to_identity_time_zone'],
-                             'invitation_id'         => intval($args['invitation_id']),
-                             'token'                 => $args['token'],
-                             'rsvp'                  => intval($args[rsvp_status]),
-                             'by_identity'           => array(
-                                 'id'                => intval($args['by_identity']['id']),   
-                                 'external_identity' => $args['by_identity']['external_identity'],
-                                 'name'              => $args['by_identity']['name'],
-                                 'bio'               => $args['by_identity']['bio'],
-                                 'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
-                                 'external_username' => $args['by_identity']['external_username'],
-                                 'provider'          => $args['by_identity']['provider'],
-                                 'user_id'           => 0,  // @todo @Leask
-                             ),
-                             'to_identity'           => array(
-                                 'identity_id'       => intval($args['identity_id']),
-                                 'provider'          => $args['provider'],
-                                 'external_identity' => $args['external_identity'],
-                                 'name'              => $args['name'],
-                                 'avatar_file_name'  => $args['avatar_file_name'],
-                                 'external_username' => '', // @todo @Leask
-                                 'bio'               => '', // @todo @Leask
-                                 'user_id'           => 0,  // @todo @Leask
-                             ), 
-                             'cross'                 => array(
-                                 'title'             => $args['title'],
-                                 'description'       => $args['description'],
-                                 'time'              => $args['begin_at'],
-                                 'invitations'       => array(),
-                                 'place'             => array(
+                             'cross'      => array(
+                                 'title'           => $args['title'],
+                                 'description'     => $args['description'],
+                                 'time'            => $args['begin_at'],
+                                 'invitations'     => array(),
+                                 'place'           => array(
                                      line1 => $args['place_line1'],
                                      line2 => $args['place_line2'],
                                  ),
-                                 'cross_id'          => intval($args['cross_id']),
-                                 'cross_id_base62'   => $args['cross_id_base62'],
+                                 'cross_id'        => intval($args['cross_id']),
+                                 'cross_id_base62' => $args['cross_id_base62'],
+                             ),
+                             'invitation' => array(
+                                 'invitation_id' => intval($args['invitation_id']),
+                                 'token'         => $args['token'],
+                                 'rsvp'          => intval($args[rsvp_status]),
+                                 'by_identity'   => array(
+                                     'id'                => intval($args['by_identity']['id']),   
+                                     'external_identity' => $args['by_identity']['external_identity'],
+                                     'name'              => $args['by_identity']['name'],
+                                     'bio'               => $args['by_identity']['bio'],
+                                     'avatar_file_name'  => $args['by_identity']['avatar_file_name'],
+                                     'external_username' => $args['by_identity']['external_username'],
+                                     'provider'          => $args['by_identity']['provider'],
+                                     'user_id'           => 0,  // @todo @Leask
+                                 ),
+                                 'to_identity'   => array(
+                                     'identity_id'       => intval($args['identity_id']),
+                                     'provider'          => $args['provider'],
+                                     'external_identity' => $args['external_identity'],
+                                     'name'              => $args['name'],
+                                     'avatar_file_name'  => $args['avatar_file_name'],
+                                     'external_username' => '', // @todo @Leask
+                                     'bio'               => '', // @todo @Leask
+                                     'user_id'           => 0,  // @todo @Leask
+                                  // 'timezone'          => $args['to_identity_time_zone'],
+                                 ), 
+                                
                              ),
                          );
                          foreach ($args['invitations'] as $invRaw) {
@@ -498,15 +504,42 @@ class ExfeeHelper extends ActionController {
             $apnargs["create_at"]=$datetimeobj;
             $apnargs["job_type"]="conversation";
             $msghelper->sentApnConversation($apnargs);
+            // upgrade messages object
+            $msg = array(
+             // 'action'                => $mail['action'],
+             // 'to_identity_time_zone' => $mail['to_identity_time_zone'],
+                'cross'         => array(
+                    'title'           => $mail['title'],
+                    'cross_id'        => $mail['cross_id'],
+                    'cross_id_base62' => $mail['cross_id_base62'],
+                    'link'            => $mail['link'],
+                    'mutelink'        => $mail['mutelink'],
+                    
+                ),
+                'conversation'  => array(
+                    'content'   => $mail['content'],
+                    'time'      => $mail['create_at'],
+                    'identity'  => array(
+                        'id'                => intval($mail['identity']['id']),
+                        'external_identity' => $mail['identity']['external_identity'],
+                        'name'              => $mail['identity']['name'],
+                        'bio'               => $mail['identity']['bio'],
+                        'avatar_file_name'  => $mail['identity']['avatar_file_name'],
+                        'external_username' => $mail['identity']['external_username'],
+                        'provider'          => $mail['identity']['provider'],
+                    )
+                ),
+                'to_identities' => array(),
+            );
             // twitter
             if (isset($to_identities['twitter'])) {
                 $mail["to_identities"]=$to_identities['twitter'];
-                $msghelper->sentTwitterConversation($mail);
+                $msghelper->sentTwitterConversation($msg);
             }
             // facebook
             if (isset($to_identities['facebook'])) {
                 $mail["to_identities"]=$to_identities['facebook'];
-                $msghelper->sentFacebookConversation($mail);
+                $msghelper->sentFacebookConversation($msg);
             }
         }
     }
