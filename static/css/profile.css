@@ -34,19 +34,22 @@ body {
 #invitation_n_update {
     width: 310px;
     float: right;
+    margin-bottom: 20px;
 }
 #invitations {
-    border: solid 1px #CCCCCC;
-    background: #F0E9E9;
-    background: -moz-linear-gradient(top, #FAFAFA, #FEF2F2);
-    background: -webkit-linear-gradient(top, #FAFAFA, #FEF2F2);
+    border: solid 1px #E6E6E6;
+    background: #FAFAFA;
+    background: -moz-linear-gradient(101deg, #FAFAFA, #FFF9F9);
+    background: -webkit-linear-gradient(101deg, #FAFAFA, #FFF9F9);
+    background: linear-gradient(101deg, #FAFAFA, #FFF9F9);
     padding: 10px 10px;
 }
 #recently_updates {
-    border: solid 1px #CCCCCC;
-    background: #E9EDF1;
-    background: -moz-linear-gradient(top, #FAFAFA, #FEF2F2);
-    background: -webkit-linear-gradient(top, #FAFAFA, #ECF8FF);
+    border: solid 1px #E6E6E6;
+    background: #FAFAFA;
+    background: -moz-linear-gradient(101deg, #FAFAFA, #F9F9FF);
+    background: -webkit-linear-gradient(101deg, #FAFAFA, #F9F9FF);
+    background: linear-gradient(101deg, #FAFAFA, #FFF9F9);
     padding: 10px 10px;
 }
 h5 {
