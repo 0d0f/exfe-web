@@ -433,6 +433,7 @@ class ExfeeHelper extends ActionController {
                  //echo "Queued job ".$jobId."\n\n";
             }
     }
+
     public function sendConversationMsg($cross_id,$host_identity_id,$content)
     {
         $mailargs=array();
@@ -514,7 +515,6 @@ class ExfeeHelper extends ActionController {
                     'cross_id_base62' => $mail['cross_id_base62'],
                     'link'            => $mail['link'],
                     'mutelink'        => $mail['mutelink'],
-                    
                 ),
                 'conversation'  => array(
                     'content'   => $mail['content'],
