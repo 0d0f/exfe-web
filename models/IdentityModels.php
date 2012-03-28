@@ -421,7 +421,6 @@ class IdentityModels extends DataModel {
                 }
             }
 
-
             $tokenSession=array();
             //$tokenSession["userid"]=$userid;
             $tokenSession["identity_id"]=$identity_id;
@@ -434,7 +433,7 @@ class IdentityModels extends DataModel {
             $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
             $tokenSession["identity"]=$identity;
             $tokenSession["auth_type"]="mailtoken";
-            if($row["tokenexpired"]=="2")
+            if($tokenexpired=="2")
                 $tokenSession["token_expired"]="true";
             $_SESSION["tokenIdentity"]=$tokenSession;
             if($_SESSION["identity_id"]!=$_SESSION["tokenIdentity"]["identity_id"])

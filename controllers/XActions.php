@@ -97,6 +97,10 @@ class XActions extends ActionController
         $placeData    = $this->getModelByName('place');
 
         $identity_id = $_SESSION['identity_id'];
+        if (isset($_SESSION["tokenIdentity"]["identity_id"])) {
+            $identity_id = $_SESSION["tokenIdentity"]["identity_id"];
+        }
+        
         $cross_id = base62_to_int($_GET['id']);
         $return_data = array('error' => 0, 'msg' => '');
 
