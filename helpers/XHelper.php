@@ -49,9 +49,10 @@ class XHelper extends ActionController {
         $userData=$this->getModelByName("user");
         $user=$userData->getUserProfileByIdentityId($host_identity_id);
 
-        $new_cross["begin_at"] = humanDateTime($new_cross["begin_at"], $user["timezone"] ? $user["timezone"] : $new_cross['timezone']);
-        $changed["begin_at"]   = humanDateTime($changed["begin_at"],   $user["timezone"] ? $user["timezone"] : $new_cross['timezone']);;
-
+        $new_cross["begin_at"]   = humanDateTime($new_cross["begin_at"], $user["timezone"] ? $user["timezone"] : $new_cross['timezone']);
+        if ($changed["begin_at"]) {
+            $changed["begin_at"] = humanDateTime($changed["begin_at"],   $user["timezone"] ? $user["timezone"] : $new_cross['timezone']);;
+        }
         $exfee_identity=humanIdentity($exfee_identity,$user);
         $cross_id=$new_cross["id"];
 
