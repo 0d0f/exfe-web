@@ -240,7 +240,7 @@ class XActions extends ActionController
     // $_SESSION["tokenIdentity"]["token_expired"] 用来标记是否第一次打开token链接
     // 此参数setVar供view中使用
     public function doIndex()
-    {
+    {print_r($_SESSION);
         // init models
         $modIdentity   = $this->getModelByName('identity');
         $modUser       = $this->getModelByName('user');
