@@ -904,9 +904,10 @@ class SActions extends ActionController {
             if($actions == "resetpwd"){
                 $token = exPost("u_token");
                 $userInfo = unpackArray($token);
-                $userId = $userInfo["user_id"];
+                $userID = $userInfo["user_id"];
                 $userToken = $userInfo["user_token"];
-                $userIdentity= $userInfo["user_identity"];
+                $identityID = $userInfo["identity_id"];
+                $userIdentity = $userInfo["identity"];
 
                 //检查Token是否过期。
                 $tokenTimeStamp = substr($userToken, 32);
@@ -921,7 +922,7 @@ class SActions extends ActionController {
 
 
                 $userDataObj = $this->getModelByName("user");
-                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userId, $userIdentity,$userToken);
+                $result = $userDataObj->doResetUserPassword($userPassword, $userDisplayName, $userID, $identityID, $userToken);
 
                 if(!$result["result"]){
                     $returnData["error"] = 1;
@@ -1044,7 +1045,8 @@ class SActions extends ActionController {
                 $userInfo = array(
                     "actions"           =>"resetPassword",
                     "user_id"           =>$result["uid"],
-                    "user_identity"     =>$userIdentity,
+                    "identity_id"       =>$result["identity_id"],
+                    "identity"          =>$userIdentity,
                     "user_token"        =>$result["token"]
                 );
 
@@ -1119,8 +1121,19 @@ class SActions extends ActionController {
             if($result["status"] == "ok"){
                 if($result["need_set_pwd"] == "no") {
                     $identityHandler->login($result["identity"], $result["password"], true, true);
+                }else{
+                    $resetPasswordTokenArr = array(
+                        "user_id"       =>$result["user_id"],
+                        "identity_id"   =>$result["identity_id"],
+                        "identity"      =>$result["identity"],
+                        "user_token"    =>$result["reset_pwd_token"]
+                    );
+                    $resetPasswordToken = packArray($resetPasswordTokenArr);
                 }
                 unset($result["password"]);
+                unset($result["user_id"]);
+                unset($result["identity_id"]);
+                $result["reset_pwd_token"] = $resetPasswordToken;
                 $this->setVar("identityInfo", $result);
                 $this->displayView();
             }else{

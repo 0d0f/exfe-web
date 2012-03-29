@@ -26,6 +26,7 @@ jQuery("#verify_success").fadeTo("slow", 0.3, function(){
 }else{
 ?>
 <div id="userResetPwdBox" class="identification_dialog idialog_inpage"></div>
+<div id="resetPwdSuccess" style="text-align:center; font-size:34px; margin-top:140px;" class="identification_dialog idialog_inpage">Password Set.</div>
 <script>
     var showSpecialIdentityDialog = true;
     var user_identity = '<?php echo $identityInfo["identity"]; ?>';
