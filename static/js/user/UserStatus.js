@@ -230,7 +230,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     };
 
-    ns.changeOAuthAccountPWD = function(userIdentity, externalUserName, callBackFunc){
+    ns.changeOAuthAccountPWD = function(userIdentity, externalUserName, userProvider, callBackFunc){
         var html = odof.user.identification.createDialogDomCode("reset_pwd");
         odof.exlibs.ExDialog.initialize("identification", html);
 
@@ -284,6 +284,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jrand:Math.round(Math.random()*10000000000),
                 u_identity:userIdentity,
                 u_passwd:userPassword,
+                u_provider:userProvider,
                 u_dname:userDisplayName
             };
 

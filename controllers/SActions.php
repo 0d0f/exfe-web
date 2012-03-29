@@ -936,7 +936,7 @@ class SActions extends ActionController {
                 if($result["newuser"])
                 {
                     $msghelper=$this->getHelperByName("msg");
-                    $identity = $identityData->getIdentity($userIdentity);
+                    $identity = $identityData->getIdentity(mysql_real_escape_string($userIdentity), "email");
 
                     $args=array("name"=>$userDisplayName,"external_identity"=>$identity["external_identity"]);
 
@@ -973,6 +973,7 @@ class SActions extends ActionController {
         header("Content-Type:application/json; charset=UTF-8");
         $userIdentity = exPost("u_identity");
         $userDisplayName = exPost("u_dname");
+        $userProvider = exPost("u_provider");
         $userNewPassword = exPost("u_passwd");
         if($userDisplayName == ""){
             $returnData["error"] = 1;
@@ -983,6 +984,12 @@ class SActions extends ActionController {
         if($userNewPassword == ""){
             $returnData["error"] = 1;
             $returnData["msg"] = "Password cannot be empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+        if($userProvider == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "user provider cannot be empty.";
             echo json_encode($returnData);
             exit();
         }
@@ -997,7 +1004,7 @@ class SActions extends ActionController {
 
         $identityObj = $this->getModelByName("identity");
 
-        $identityInfo = $identityObj->getIdentity($userIdentity);
+        $identityInfo = $identityObj->getIdentity(mysql_real_escape_string($userIdentity), mysql_real_escape_string($userProvider));
         if(is_array($identityInfo)){
             if($identityInfo["userid"] != $userID){
                 $returnData["error"] = 1;
@@ -1138,7 +1145,7 @@ class SActions extends ActionController {
             $returnData["msg"] = "User Identity is empty";
         }else{
             $identityHandler = $this->getModelByName("identity");
-            $result = $identityHandler->getIdentity($userIdentity);
+            $result = $identityHandler->getIdentity(mysql_real_escape_string($userIdentity), 'email');
             $identityID = intval($result["id"]);
             if($identityID > 0){
                 $userName = $identityHandler->getUserNameByIdentityId($identityID);
@@ -1168,6 +1175,9 @@ class SActions extends ActionController {
                         $returnData["identity"] = $result["external_identity"];
                     }
                 }
+            }else{
+                $returnData["error"] = 1;
+                $returnData["msg"] = "Get identity error.";
             }
         }
         header("Content-Type:application/json; charset=UTF-8");
