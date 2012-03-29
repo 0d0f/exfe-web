@@ -141,7 +141,7 @@ class LogHelper extends ActionController {
                 default:
                     $doSkip = true;
             }
-            if ($doSkip) {
+            if ($doSkip || !($logItem['from_id'] = intval($logItem['from_id']))) {
                 unset($rawLogs[$logI]); // 容错处理
                 continue;
             }
@@ -153,6 +153,8 @@ class LogHelper extends ActionController {
             $rawLogs[$logI]['x_place']       = $allCross[$rawLogs[$logI]['x_id']]['place'];
             $rawLogs[$logI]['log_id']        = intval($rawLogs[$logI]['id']);
             $rawLogs[$logI]['x_base62id']    = int_to_base62($rawLogs[$logI]['x_id']);
+            array_push($relatedIdentityIds, $rawLogs[$logI]['x_host_id']      = intval($allCross[$rawLogs[$logI]['x_id']]['host_id']));
+            array_push($relatedIdentityIds, $rawLogs[$logI]['by_identity_id'] = $logItem['from_id']);
             unset($rawLogs[$logI]['id']);
             unset($rawLogs[$logI]['change_summy']);
             unset($rawLogs[$logI]['from_id']);
@@ -160,8 +162,6 @@ class LogHelper extends ActionController {
             unset($rawLogs[$logI]['to_obj']);
             unset($rawLogs[$logI]['to_id']);
             unset($rawLogs[$logI]['to_field']);
-            array_push($relatedIdentityIds, $rawLogs[$logI]['x_host_id']      = intval($allCross[$rawLogs[$logI]['x_id']]['host_id']));
-            array_push($relatedIdentityIds, $rawLogs[$logI]['by_identity_id'] = intval($logItem['from_id']));
         }
         $rawLogs = array_merge($rawLogs);
 

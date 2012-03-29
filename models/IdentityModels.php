@@ -374,77 +374,76 @@ class IdentityModels extends DataModel {
     }
 
     public function loginWithXToken($cross_id,$token) {
-        $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
-        $row=$this->getRow($sql);
-        $identity_id=intval($row["identity_id"]);
-        $tokenexpired=intval($row["tokenexpired"]);
+        $sql = "SELECT `identity_id`, `tokenexpired` FROM `invitations` WHERE `cross_id` = {$cross_id} AND `token` = '{$token}'";
+        $row = $this->getRow($sql);
+        $identity_id  = intval($row["identity_id"]);
+        $tokenexpired = intval($row["tokenexpired"]);
 
         if ($identity_id > 0) {
 
-            if($tokenexpired<2) {
-                $tokenexpired=$tokenexpired+1;
-                $sql="update invitations set tokenexpired=$tokenexpired where cross_id=$cross_id and token='$token';";
+            if ($tokenexpired < 2) {
+                $tokenexpired++;
+                $sql = "UPDATE `invitations` SET `tokenexpired` = {$tokenexpired} WHERE `cross_id` = {$cross_id} AND `token` = '{$token}'";
                 $this->query($sql);
             }
 
-            $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
+            $sql = "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}";
             $row = $this->getRow($sql);
-            if($row["status"]!=STATUS_CONNECTED) {
-                $sql="UPDATE user_identity SET status=3 WHERE identityid={$identity_id}";
+            if ($row["status"] != STATUS_CONNECTED) {
+                $sql = "UPDATE `user_identity` SET `status` = 3 WHERE `identityid` = {$identity_id}";
                 $this->query($sql);
             }
+            $userid = intval($row['userid']);
 
-            $sql="select name,avatar_file_name,bio from identities where id=$identity_id limit 1";
-            $identityrow=$this->getRow($sql);
+            $sql = "SELECT `name`, `avatar_file_name`, `bio` FROM `identities` WHERE `id` = {$identity_id} LIMIT 1";
+            $identityrow = $this->getRow($sql);
 
-            if($identityrow["name"]=="" || $identityrow["avatar_file_name"]=="" || $identityrow["bio"]=="")
-            {
-                $sql="select userid from user_identity where identityid=$identity_id";
-                $result=$this->getRow($sql);
-                if(intval($result["userid"])>0)
-                {
-                    $userid=$result["userid"];
-                    $sql="select name,avatar_file_name,bio from users where id=$userid";
-                    $user=$this->getRow($sql);
-                    if($identityrow["name"]=="")
-                        $identityrow["name"]=$user["name"];
-                    if($identityrow["avatar_file_name"]=="")
-                        $identityrow["avatar_file_name"]=$user["avatar_file_name"];
-                    if($identityrow["bio"]=="")
-                        $identityrow["bio"]=$user["bio"];
+            if (($identityrow['name'] == '' || $identityrow['avatar_file_name'] == '' || $identityrow['bio'] == '') && $userid) {
+                $sql  = "SELECT `name`, `avatar_file_name`, `bio` FROM `users` WHERE `id` = {$userid}";
+                $user = $this->getRow($sql);
+                if ($identityrow['name'] == '') {
+                    $identityrow['name'] = $user['name'];
+                }
+                if ($identityrow['avatar_file_name'] == '') {
+                    $identityrow['avatar_file_name'] = $user['avatar_file_name'];
+                }
+                if ($identityrow['bio'] == '') {
+                    $identityrow['bio'] = $user['bio'];
                 }
             }
 
-            $tokenSession=array();
-            //$tokenSession["userid"]=$userid;
-            $tokenSession["identity_id"]=$identity_id;
-            $identity=array();
-            $identity["external_identity"]=$identityrow["external_identity"];
-            $identity["name"]=$identityrow["name"];
-            if($identity["name"]=="")
-                $identity["name"]=$identityrow["external_identity"];
-            $identity["bio"]=$identityrow["bio"];
-            $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
-            $tokenSession["identity"]=$identity;
-            $tokenSession["auth_type"]="mailtoken";
-            if($tokenexpired=="2")
-                $tokenSession["token_expired"]="true";
-            $_SESSION["tokenIdentity"]=$tokenSession;
-            if($_SESSION["identity_id"]!=$_SESSION["tokenIdentity"]["identity_id"])
-            {
-                unset($_SESSION["userid"]);
-                unset($_SESSION["identity_id"]);
-                unset($_SESSION["identity"]);
+            $tokenSession = array();
+            $tokenSession['identity_id'] = $identity_id;
+            $identity = array();
+            $identity['external_identity'] = $identityrow['external_identity'];
+            $identity['name'] = $identityrow['name'];
+            if ($identity['name'] == '') {
+                $identity['name'] = $identityrow['external_identity'];
+            }
+            $identity['bio'] = $identityrow['bio'];
+            $identity['avatar_file_name'] = $identityrow['avatar_file_name'];
+            $tokenSession['identity']  = $identity;
+            $tokenSession['auth_type'] = 'mailtoken';
+            if ($tokenexpired === 2) {
+                $tokenSession['token_expired'] = 'true';
+            }
+            $tokenSession['userid'] = $userid;
+            $_SESSION['tokenIdentity'] = $tokenSession;
 
-                unset($_COOKIE["uid"]);
-                unset($_COOKIE["id"]);
-                unset($_COOKIE["loginsequ"]);
-                unset($_COOKIE["logintoken"]);
+            if ($userid && $_SESSION['userid'] != $userid) {
+                unset($_SESSION['userid']);
+                unset($_SESSION['identity_id']);
+                unset($_SESSION['identity']);
 
-                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
-                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
-                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
-                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
+                unset($_COOKIE['uid']);
+                unset($_COOKIE['id']);
+                unset($_COOKIE['loginsequ']);
+                unset($_COOKIE['logintoken']);
+
+                setcookie('uid',        NULL, -1, '/', COOKIES_DOMAIN);
+                setcookie('id',         NULL, -1, '/', COOKIES_DOMAIN);
+                setcookie('loginsequ',  NULL, -1, '/', COOKIES_DOMAIN);
+                setcookie('logintoken', NULL, -1, '/', COOKIES_DOMAIN);
             }
         }
         return $identity_id;
