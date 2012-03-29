@@ -702,7 +702,7 @@ class IdentityModels extends DataModel {
                 $sql="UPDATE user_identity SET activecode='$activecode' WHERE identityid={$identity_id}";
                 $queryResult = $this->query($sql);
                 return array(
-                    "provider"=>$result["provider"],
+                    "provider"=>$row_p["provider"],
                     "activecode"=>$activecode
                 );
             }
