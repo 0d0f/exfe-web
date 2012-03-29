@@ -330,6 +330,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
         //for (var k = 0; k < 4; k++) {
+        // @cfd 为什么注释这里的代码？这里是用来排序显示的，根据rsvp状态优先显示exfee的。 @todo by @leask
             for (var i = 0; i < exfees.length; i++) {
                 var objExfee = odof.util.clone(exfees[i]);
                 objExfee.external_identity = objExfee.external_identity.toLowerCase();
