@@ -158,46 +158,51 @@ class ExfeeHelper extends ActionController {
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-               if(intval($invitation["by_identity_id"])>0)
+                if (intval($invitation["by_identity_id"]) > 0) {
                     $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
-                    $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
-                    $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
-                    $args = array(
-                        'title' => $cross["title"],
-                        'description' => $cross["description"],
-                        'begin_at' =>  humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
-                        'place_line1' => $cross["place"]["line1"],
-                        'place_line2' => $cross["place"]["line2"],
-                        'cross_id' => $cross_id,
-                        'cross_id_base62' => int_to_base62($cross_id),
-                        'invitation_id' => $invitation["invitation_id"],
-                        'token' => $invitation["token"],
-                        'identity_id' => $invitation["identity_id"],
-                        'host_identity_id' => $identity_id,
-                        'provider' => $invitation["provider"],
-                        'external_identity' => $invitation["external_identity"],
-                        'name' => $invitation["name"],
-                        'avatar_file_name' => $invitation["avatar_file_name"],
-                        'host_identity' => $host_identity,
-                        'rsvp_status' => $invitation["state"],
-                        'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
-                        'by_identity' => $by_identity,
-                        'to_identity' => $to_identity,
-                        'invitations' => $allinvitations
-
+                }
+                $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
+                $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
+                $args = array(
+                    'title' => $cross["title"],
+                    'description' => $cross["description"],
+                    'begin_at' =>  humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
+                    'place_line1' => $cross["place"]["line1"],
+                    'place_line2' => $cross["place"]["line2"],
+                    'cross_id' => $cross_id,
+                    'cross_id_base62' => int_to_base62($cross_id),
+                    'invitation_id' => $invitation["invitation_id"],
+                    'token' => $invitation["token"],
+                    'identity_id' => $invitation["identity_id"],
+                    'host_identity_id' => $identity_id,
+                    'provider' => $invitation["provider"],
+                    'external_identity' => $invitation["external_identity"],
+                    'name' => $invitation["name"],
+                    'avatar_file_name' => $invitation["avatar_file_name"],
+                    'host_identity' => $host_identity,
+                    'rsvp_status' => $invitation["state"],
+                    'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
+                    'by_identity' => $by_identity,
+                    'to_identity' => $to_identity,
+                    'invitations' => $allinvitations,
                 );
 
-                switch ($invitation["provider"]) {
+                switch ($invitation['provider']) {
                     case 'facebook':
                         $invMsg = array(
                             'cross'      => array(
                                 'title'           => $args['title'],
                                 'description'     => $args['description'],
-                                'time'            => $args['begin_at'],
+                                'time'            => array(
+                                    'begin_at'        => $cross['begin_at'],
+                                    'origin_begin_at' => $cross['origin_begin_at'],
+                                    'time_type'       => $cross['time_type'],
+                                    'timezone'        => $cross['timezone'],
+                                ),
                                 'invitations'     => array(),
                                 'place'           => array(
-                                    line1 => $args['place_line1'],
-                                    line2 => $args['place_line2'],
+                                    'line1' => $args['place_line1'],
+                                    'line2' => $args['place_line2'],
                                 ),
                                 'cross_id'        => intval($args['cross_id']),
                                 'cross_id_base62' => $args['cross_id_base62'],
@@ -205,7 +210,7 @@ class ExfeeHelper extends ActionController {
                             'invitation' => array(
                                 'invitation_id' => intval($args['invitation_id']),
                                 'token'         => $args['token'],
-                                'rsvp'          => intval($args[rsvp_status]),
+                                'rsvp'          => intval($args['rsvp_status']),
                                 'by_identity'   => array(
                                     'id'                => intval($args['by_identity']['id']),   
                                     'external_identity' => $args['by_identity']['external_identity'],
@@ -222,12 +227,11 @@ class ExfeeHelper extends ActionController {
                                     'external_identity' => $args['external_identity'],
                                     'name'              => $args['name'],
                                     'avatar_file_name'  => $args['avatar_file_name'],
-                                    'external_username' => '', // @todo @Leask
-                                    'bio'               => '', // @todo @Leask
+                                    'external_username' => $args['to_identity']['external_username'],
+                                    'bio'               => $args['to_identity']['bio'],
                                     'user_id'           => 0,  // @todo @Leask
-                                 // 'timezone'          => $args['to_identity_time_zone'],
-                                ), 
-                                
+                                    'timezone'          => $args['to_identity_time_zone'],
+                                ),
                             ),
                         );
                         foreach ($args['invitations'] as $invRaw) {
@@ -312,7 +316,7 @@ class ExfeeHelper extends ActionController {
         Resque::setBackend(RESQUE_SERVER);
         if($invitations)
             foreach ($invitations as $invitation) {
-                if(intval($invitation["by_identity_id"])>0) {
+                if(intval($invitation["by_identity_id"]) > 0) {
                     $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                 }
                 $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
@@ -343,17 +347,22 @@ class ExfeeHelper extends ActionController {
                     'invitations' => $invitations
                  );
 
-                 switch ($invitation["provider"]) {
+                 switch ($invitation['provider']) {
                      case 'facebook':
                          $invMsg = array(
                              'cross'      => array(
                                  'title'           => $args['title'],
                                  'description'     => $args['description'],
-                                 'time'            => $args['begin_at'],
+                                 'time'            => array(
+                                     'begin_at'        => $cross['begin_at'],
+                                     'origin_begin_at' => $cross['origin_begin_at'],
+                                     'time_type'       => $cross['time_type'],
+                                     'timezone'        => $cross['timezone'],
+                                 ),
                                  'invitations'     => array(),
                                  'place'           => array(
-                                     line1 => $args['place_line1'],
-                                     line2 => $args['place_line2'],
+                                     'line1' => $args['place_line1'],
+                                     'line2' => $args['place_line2'],
                                  ),
                                  'cross_id'        => intval($args['cross_id']),
                                  'cross_id_base62' => $args['cross_id_base62'],
@@ -361,7 +370,7 @@ class ExfeeHelper extends ActionController {
                              'invitation' => array(
                                  'invitation_id' => intval($args['invitation_id']),
                                  'token'         => $args['token'],
-                                 'rsvp'          => intval($args[rsvp_status]),
+                                 'rsvp'          => intval($args['rsvp_status']),
                                  'by_identity'   => array(
                                      'id'                => intval($args['by_identity']['id']),   
                                      'external_identity' => $args['by_identity']['external_identity'],
@@ -378,10 +387,10 @@ class ExfeeHelper extends ActionController {
                                      'external_identity' => $args['external_identity'],
                                      'name'              => $args['name'],
                                      'avatar_file_name'  => $args['avatar_file_name'],
-                                     'external_username' => '', // @todo @Leask
-                                     'bio'               => '', // @todo @Leask
+                                     'external_username' => $args['to_identity']['external_username'],
+                                     'bio'               => $args['to_identity']['bio'],
                                      'user_id'           => 0,  // @todo @Leask
-                                  // 'timezone'          => $args['to_identity_time_zone'],
+                                     'timezone'          => $args['to_identity_time_zone'],
                                  ), 
                                 
                              ),
