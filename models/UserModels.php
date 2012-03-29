@@ -17,13 +17,13 @@ class UserModels extends DataModel{
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
        $logout_identity_list=array();
-       $sql="select id from users where auth_token='$token';"; 
+       $sql="select id from users where auth_token='$token';";
        $result=$this->getRow($sql);
        if(intval($result["id"])>0 && intval($result["id"])==$user_id)
        {
            $sql="select identityid as id from user_identity where userid ='$user_id' and status=3;";
            $identity_id_list=$this->getAll($sql);
-           
+
            $sql="select id from identities where external_identity='$device_token';";
            $device_identity_id_list=$this->getAll($sql);
            foreach($device_identity_id_list as $device_identity_id)
@@ -32,7 +32,7 @@ class UserModels extends DataModel{
                {
                     if(intval($identity_id["id"]) === intval($device_identity_id["id"])) //disconnect
                     {
-                        $identity_id_id=intval($identity_id["id"]); 
+                        $identity_id_id=intval($identity_id["id"]);
                         $sql="update user_identity set status=1 where identityid=$identity_id_id and userid=$user_id;";
                         $result=$this->query($sql);
                         $r=array("user_id"=>$user_id,"devicetoken"=>$device_token);
@@ -376,9 +376,10 @@ class UserModels extends DataModel{
     }
     public function getResetPasswordToken($external_identity)
     {
-        $sql="SELECT b.userid AS uid, a.name AS name FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
+        $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
         $row=$this->getRow($sql);
         $uid=intval($row["uid"]);
+        $identity_id = intval($row["identity_id"]);
         $name=$row["name"];
         if($uid==0)
         {
@@ -407,9 +408,10 @@ class UserModels extends DataModel{
                 }
             }
             $returnData = array(
-                "uid"   =>$uid,
-                "name"  =>$name,
-                "token" =>$resetPasswordToken
+                "identity_id"   =>$identity_id,
+                "uid"           =>$uid,
+                "name"          =>$name,
+                "token"         =>$resetPasswordToken
             );
 
             return $returnData;
@@ -472,7 +474,7 @@ class UserModels extends DataModel{
         $this->query($sql);
     }
 
-    public function doResetUserPassword($userPwd, $userName, $userID, $external_identity,$userToken){
+    public function doResetUserPassword($userPwd, $userName, $userID, $identityID, $userToken){
         $ts = time();
         $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";
         $userrow = $this->getRow($sql);
@@ -490,18 +492,13 @@ class UserModels extends DataModel{
         $result = $this->query($sql);
 
         if($result){
-            $external_identity=mysql_real_escape_string($external_identity);
-            $sql="select id from identities where external_identity='$external_identity' limit 1";
-            $identityrow=$this->getRow($sql);
-            $identity_id=intval($identityrow["id"]);
-
-            $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
+            $sql = "SELECT status FROM user_identity WHERE identityid={$identityID}";
             $rows = $this->getRow($sql);
 
-            if($rows["status"]!=STATUS_CONNECTED && $identity_id>0)
+            if($rows["status"]!=STATUS_CONNECTED && $identityID>0)
             {
-                //$sql="update identities set status=3 where id=$identity_id;";
-                $sql="UPDATE user_identity SET status=3 WHERE identityid={$identity_id}";
+                //$sql="update identities set status=3 where id=$identityID;";
+                $sql="UPDATE user_identity SET status=3 WHERE identityid={$identityID}";
                 $this->query($sql);
             }
         }

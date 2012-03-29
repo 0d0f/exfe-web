@@ -612,6 +612,8 @@ class IdentityModels extends DataModel {
             "display_name"      =>"",
             "avatar"            =>"",
             "password"          =>"",
+            "user_id"           =>"",
+            "identity_id"       =>"",
             "reset_pwd_token"   =>"",
             "status"            =>"ok",
             "need_set_pwd"      =>"no"
@@ -626,8 +628,8 @@ class IdentityModels extends DataModel {
         $returnData["avatar"] = $identityInfo["avatar_file_name"];
 
         if(is_array($row)){
-            $userID = $row["userid"];
-            $sql = "SELECT encrypted_password FROM users WHERE id={$userID}";
+            $user_id = $row["userid"];
+            $sql = "SELECT encrypted_password FROM users WHERE id={$user_id}";
             $userInfo = $this->getRow($sql);
 
             //设置用户的Status为3，并且设置ActiveCode为空。
@@ -638,9 +640,11 @@ class IdentityModels extends DataModel {
             if(trim($userInfo["encrypted_password"]) == ""){
                 $returnData["need_set_pwd"] = "yes";
                 $resetPwdToken = createToken();
-                $sql = "UPDATE users SET reset_password_token='{$resetPwdToken}' WHERE id={$userID}";
+                $sql = "UPDATE users SET reset_password_token='{$resetPwdToken}' WHERE id={$user_id}";
                 $this->query($sql);
                 $returnData["reset_pwd_token"] = $resetPwdToken;
+                $returnData["user_id"] = $user_id;
+                $returnData["identity_id"] = $identity_id;
             }else{
                 $returnData["password"] = $userInfo["encrypted_password"];
                 $returnData["need_set_pwd"] = "no";
