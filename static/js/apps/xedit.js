@@ -603,6 +603,9 @@ var clickCallBackFunc = function(args) {
                 exfee      : JSON.stringify(odof.exfee.gadget.getExfees('xExfeeArea'))
             },
             success : function(data) {
+                if (odof.exfee.gadget.left) {
+                    location.href = '/s/profile';
+                }
                 if (!data) {
                     return;
                 }
