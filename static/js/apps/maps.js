@@ -195,7 +195,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             cityLng = odof.apps.maps.cityLng;
         }
 
-        if(typeof width == "undefined"){ width = 280; }
+        if(typeof width == "undefined"){ width = 285; }
         if(typeof height == "undefined"){ height = 175; }
 
         var center =  new google.maps.LatLng(cityLat,cityLng);

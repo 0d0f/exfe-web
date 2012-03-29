@@ -367,14 +367,8 @@ class IdentityModels extends DataModel {
         return $row;
     }
 
-    public function getIdentity($identity, $provider = '') {
-        switch ($provider) {
-            case 'email':
-                $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_identity='{$identity}'";
-                break;
-            default:
-                $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_username='{$identity}' AND a.provider='{$provider}'";
-        }
+    public function getIdentity($identity, $provider) {
+        $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_username='{$identity}' AND a.provider='{$provider}'";
         $row=$this->getRow($sql);
         return $row;
     }
