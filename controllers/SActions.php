@@ -1147,26 +1147,33 @@ class SActions extends ActionController {
      * */
     public function doSendVerifyingMail(){
         $returnData = array(
-            "error"     => 0,
+            "error"     => 1,
             "msg"       =>"",
             "identity"  =>""
         );
 
         $userIdentity = exPost("identity");
         if($userIdentity == ""){
-            $returnData["error"] = 1;
             $returnData["msg"] = "User Identity is empty";
         }else{
             $identityHandler = $this->getModelByName("identity");
             $result = $identityHandler->getIdentity(mysql_real_escape_string($userIdentity), 'email');
             $identityID = intval($result["id"]);
             if($identityID > 0){
+                //要检查User是否存在。
+                /*
+                $checkResult = $identityHandler->checkUserByIdentityID($identityID);
+                if(!$checkResult){
+                }
+                exit;
+                 */
+
                 $userName = $identityHandler->getUserNameByIdentityId($identityID);
-                $r = $identityHandler->getVerifyingCode($identityID);
+                $activeCode = $identityHandler->getVerifyingCode($identityID);
                 $tokenArray = array(
                     "actions"           =>"verifyIdentity",
                     "identityid"        =>$identityID,
-                    "activecode"        =>$r["activecode"]
+                    "activecode"        =>$activeCode
                 );
                 $verifyingToken = packArray($tokenArray);
                 $args = array(
@@ -1179,17 +1186,15 @@ class SActions extends ActionController {
                 //print_r($args);
                 //echo $verifyingToken;
                 //exit;
-                if($r["provider"]=="email") {
-                    $helperHandler=$this->getHelperByName("identity");
-                    $jobId=$helperHandler->sentVerifyingEmail($args);
-                    if($jobId == "") {
-                        $returnData["error"] = 1;
-                        $returnData["msg"] = "Send mail error.";
-                        $returnData["identity"] = $result["external_identity"];
-                    }
+                $helperHandler=$this->getHelperByName("identity");
+                $jobId=$helperHandler->sentVerifyingEmail($args);
+                if($jobId == "") {
+                    $returnData["msg"] = "Send mail error.";
+                    $returnData["identity"] = $result["external_identity"];
+                }else{
+                    $returnData["error"] = 0;
                 }
             }else{
-                $returnData["error"] = 1;
                 $returnData["msg"] = "Get identity error.";
             }
         }
