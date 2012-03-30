@@ -228,7 +228,7 @@ var clickCallBackFunc = function(args) {
         } else {
             var strTime = odof.util.parseHumanDateTime(
                     crossData.origin_begin_at,
-                    odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
+                    odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone())
                 );
             crossData.begin_at = strTime ? strTime : '';
         }
@@ -277,9 +277,7 @@ var clickCallBackFunc = function(args) {
                 if (!crossData.time_type) {
                     objStdTime = new Date(
                         objStdTime.getTime()
-                      + odof.comm.func.convertTimezoneToSecond(
-                            jstz.determine_timezone().offset()
-                        )
+                      + odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone())
                       * 1000
                     );
                 }
