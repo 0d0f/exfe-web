@@ -100,7 +100,7 @@ class XActions extends ActionController
         if (isset($_SESSION["tokenIdentity"]["identity_id"])) {
             $identity_id = $_SESSION["tokenIdentity"]["identity_id"];
         }
-        
+
         $cross_id = base62_to_int($_GET['id']);
         $return_data = array('error' => 0, 'msg' => '');
 
@@ -253,8 +253,7 @@ class XActions extends ActionController
 
         //如果是通过Token进来，且已经登录，则Session要过期。
         if($token != "" && intval($_SESSION['userid'])>0){
-            $userData = $this->getModelByName("user");
-            $userData->doDestroySessionAndCookies();
+            $modUser->doDestroySessionAndCookies();
         }
 
         if (intval($cross_id) > 0) {
@@ -278,7 +277,7 @@ class XActions extends ActionController
             $identity_id = $identity['identity_id'];
             $user = $modUser->getUserByIdentityId($identity_id);
             if (intval($user) === 0) {
-                $modUser->addUserByToken($cross_id, '', $identity['name'], $token);
+                $modUser->addUserByToken($cross_id, $identity['name'], $token);
             }
             if ($_SESSION['identity_id'] === $identity_id) {
                 $check['type'] = 'session';
