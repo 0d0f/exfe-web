@@ -361,6 +361,15 @@ class IdentityModels extends DataModel {
         }
     }
 
+    public function checkUserByIdentityID($identity_id) {
+        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id}";
+        $row = $this->getRow($sql);
+        if($row){
+            return true;
+        }
+        return false;
+    }
+
     public function getIdentityById($identity_id) {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
         $row=$this->getRow($sql);
@@ -683,8 +692,6 @@ class IdentityModels extends DataModel {
 
     public function getVerifyingCode($identity_id){
         if(intval($identity_id) > 0){
-            $sql = "SELECT provider FROM identities WHERE id={$identity_id}";
-            $row_p = $this->getRow($sql);
             $sql = "SELECT activecode FROM user_identity WHERE identityid={$identity_id}";
             $row_c = $this->getRow($sql);
             if($row_c["activecode"] != ""){//这个时候要判断一下ActiveCode是否过期
@@ -697,18 +704,12 @@ class IdentityModels extends DataModel {
                     $queryResult = $this->query($sql);
                 }
 
-                return array(
-                    "provider"=>$row_p["provider"],
-                    "activecode"=>$activecode
-                );
+                return $activecode;
             }else{
                 $activecode = createToken();
                 $sql="UPDATE user_identity SET activecode='$activecode' WHERE identityid={$identity_id}";
                 $queryResult = $this->query($sql);
-                return array(
-                    "provider"=>$row_p["provider"],
-                    "activecode"=>$activecode
-                );
+                return $activecode;
             }
         }
     }
