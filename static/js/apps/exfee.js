@@ -172,9 +172,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_main_identity_cancel').live(
             'click', this.cancelLeavingCross
         );
-        $('#' + domId + '_exfeegadget_avatararea > ol > li .exfee_main_identity_leave').live(
-            'click', this.confirmLeavingCross
-        );
         $('#' + domId + '_exfeegadget_avatararea > ol > li.last button').live('click', function () {
             $('#' + domId + '_exfeegadget_listarea').toggle();
         });
@@ -417,11 +414,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   +             '</button>'
                   +            (thisIsMe
                   ?            ('<div class="exfee_main_identity_leave_panel">'
-                  +                 'You will NOT be able to access any information in this X. '
+                  +                 '<span class="title">Remove yourself?</span><br>'
+                  +                 'You will <span class="not">NOT</span> be able to access any information in this <span class="x">X</span>. '
                   +                 'Confirm leaving?'
                   +                 '<div class="exfee_main_identity_leave_panel_button_area">'
                   +                     '<button class="exfee_main_identity_cancel">Cancel</button>'
-                  +                     '<button class="exfee_main_identity_leave">Leave</button>'
                   +                 '</div>'
                   +             '</div>') : '')) : '')
                   +         '</div>'))
@@ -636,15 +633,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
     
     
-    ns.confirmLeavingCross = function(event) {
-        var objTarget = $(event.target),
-            domItemLi = objTarget[0].parentNode.parentNode.parentNode.parentNode.parentNode,
-            identity  = $(domItemLi).attr('identity'),
-            domId     = domItemLi.parentNode.parentNode.id.split('_')[0];
-        odof.exfee.gadget.delExfee(domId, [identity]);
-    };
-
-
     ns.showBaseInfo = function(domId, identity, display) {
         var objBsInfo = $(
                 '#' + domId + '_exfeegadget_avatararea > ol > li[identity="'
@@ -702,7 +690,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         switch (objTarget.html()) {
             case ' ⊖ ':
-                objTarget.html('Remove');
+                objTarget.html(identity === (myIdentity ? myIdentity.external_identity : '') ? 'Leave' : 'Remove');
                 objTarget.addClass('ready');
                 var objLeave = $('#' + domId     + '_exfeegadget_avatararea > ol > li[identity="'
                                      + identity  + '"] .exfee_main_identity_leave_panel');
@@ -711,6 +699,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
                 break;
             case 'Remove':
+            case 'Leave':
                 odof.exfee.gadget.delExfee(domId, [identity]);
         }
     };
