@@ -166,13 +166,6 @@ class XActions extends ActionController
         $ehelper   = $this->getHelperByName('exfee');
         $exfees_list = $ehelper->addExfeeIdentify($cross_id, $exfees, $identity_id, $idents);
 
-        /**
-         * DONT send exfee changes currently
-        if (isset($_POST['exfee_only']) && $_POST['exfee_only']) {
-            return;
-        }
-        */
-
         $newExfees=$exfees_list["newexfees"];
         $allExfees=$exfees_list["allexfees"];
         $delExfees=$exfees_list["delexfees"];
@@ -281,10 +274,11 @@ class XActions extends ActionController
             exit(0);
         }
         if ($check['type'] === 'token') {
-            $identity_id  = $modIdentity->loginWithXToken($cross_id, $token);
+            $identity = $modIdentity->loginWithXToken($cross_id, $token);
+            $identity_id = $identity['identity_id'];
             $user = $modUser->getUserByIdentityId($identity_id);
             if (intval($user) === 0) {
-                $modUser->addUserByToken($cross_id, '', '', $token);
+                $modUser->addUserByToken($cross_id, '', $identity['name'], $token);
             }
             if ($_SESSION['identity_id'] === $identity_id) {
                 $check['type'] = 'session';
@@ -360,7 +354,7 @@ class XActions extends ActionController
 
             $cross['conversation'] = $modConversion->getConversation($cross_id, 'cross');
 
-            $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id);
+            $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id, date('Y-m-d H:i:s', time() - 60*60*24*7));
             foreach ($history as $hI => $hItem) {
                 foreach ($hItem as $hItemI => $hItemItem) {
                     $scrap = false;
