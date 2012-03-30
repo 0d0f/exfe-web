@@ -14,7 +14,8 @@ class RSVPActions extends ActionController {
         if($check["type"]=="token")
         {
             $identityData=$this->getModelByName("identity");
-            $identity_id=$identityData->loginWithXToken($cross_id, $token);
+            $identity=$identityData->loginWithXToken($cross_id, $token);
+            $identity_id=$identity['identity_id'];
             $status=$identityData->checkIdentityStatus($identity_id);
             if($status!=STATUS_CONNECTED)
             {

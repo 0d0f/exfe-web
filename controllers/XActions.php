@@ -274,10 +274,11 @@ class XActions extends ActionController
             exit(0);
         }
         if ($check['type'] === 'token') {
-            $identity_id  = $modIdentity->loginWithXToken($cross_id, $token);
+            $identity = $modIdentity->loginWithXToken($cross_id, $token);
+            $identity_id = $identity['identity_id'];
             $user = $modUser->getUserByIdentityId($identity_id);
             if (intval($user) === 0) {
-                $modUser->addUserByToken($cross_id, '', '', $token);
+                $modUser->addUserByToken($cross_id, '', $identity['name'], $token);
             }
             if ($_SESSION['identity_id'] === $identity_id) {
                 $check['type'] = 'session';
