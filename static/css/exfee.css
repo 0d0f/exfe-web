@@ -227,10 +227,6 @@
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
 }
 
-.exfee_main_identity_remove.ready.this_is_me {
-    display: none;
-}
-
 .exfee_main_identity_cancel {
     width: 75px;
     height: 20px;
@@ -247,7 +243,6 @@
     background-image: -ms-linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
     background-image: linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
-    margin-right: 15px;
 }
 
 .exfee_main_identity_leave {
@@ -270,6 +265,19 @@
 
 .exfee_main_identity_leave_panel {
     display: none;
+    font-size: 12px;
+}
+
+.exfee_main_identity_leave_panel .title {
+    color: #D74941;
+}
+
+.exfee_main_identity_leave_panel .not {
+    font-weight: bold;
+}
+
+.exfee_main_identity_leave_panel .x {
+    color: #1175A5;
 }
 
 .exfee_main_identity_leave_panel_button_area {
