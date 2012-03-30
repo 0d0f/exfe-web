@@ -5,7 +5,6 @@ return array(
         'js/libs/activity-indicator.js',
         'js/libs/jquery.ba-outside-events.js',
         'js/libs/jquery.ba-dotimeout.js',
-        'js/libs/detect_timezone.js',
         'js/libs/jquery.imgareaselect.js',
     ),
     'js_jquery_ext'=>array(

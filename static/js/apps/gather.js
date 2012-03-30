@@ -76,7 +76,7 @@ var moduleNameSpace = 'odof.x.gather',
         } else {
             var strTime = odof.util.parseHumanDateTime(
                     crossData.origin_begin_at,
-                    odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())
+                    odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone())
                 );
             crossData.begin_at = strTime ? strTime : null;
             $('#gather_date_x').html('');
@@ -280,7 +280,7 @@ $(document).ready(function() {
                                            external_id : '', provider : ''},
                         begin_at        : '',
                         origin_begin_at : '',
-                        timezone        : jstz.determine_timezone().offset(),
+                        timezone        : odof.comm.func.getTimezone(),
                         background      : backgrounds[parseInt(Math.random() * backgrounds.length)]};
 
     // X render
