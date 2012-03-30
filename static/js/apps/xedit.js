@@ -612,7 +612,7 @@ var clickCallBackFunc = function(args) {
                 if (!data.success) {
                     switch (data.error) {
                         case 'token_expired':
-                            odof.cross.index.setreadonly();
+                            odof.x.edit.setreadonly();
                     }
                 }
             }
