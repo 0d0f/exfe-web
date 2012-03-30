@@ -240,30 +240,42 @@ class UserModels extends DataModel{
         return false;
         //$sql="update ";
     }
-    public function addUserByToken($cross_id,$password,$displayname,$token)
+    public function addUserByIdentityId($identity_id, $display_name)
+    {
+        $time_stamp = time();
+        $sql="INSERT INTO users (name,created_at) VALUES ('{$display_name}',FROM_UNIXTIME($time_stamp));";
+        $result = $this->query($sql);
+        $user_id = intval($result["insert_id"]);
+        if($user_id > 0)
+        {
+            $sql = "INSERT INTO user_identity (identityid,userid,created_at)
+                    VALUES ({$identity_id},{$user_id},FROM_UNIXTIME($time_stamp));";
+            $this->query($sql);
+        }
+
+    }
+    public function addUserByToken($cross_id,$displayname,$token)
     {
         $sql = "select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
         if($identity_id > 0)
         {
-            $sql="select userid from user_identity where identityid=$identity_id";
+            $sql="SELECT userid FROM user_identity WHERE identityid=$identity_id";
             $result=$this->getRow($sql);
             if(intval($result["userid"])>0)
             {
                 //user exist, set password
                 return array("uid"=>intval($result["userid"]),"identity_id"=>$identity_id);
             } else {
-                $passwordSalt = md5(createToken());
-                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-
                 $time=time();
-                $sql="INSERT INTO users (encrypted_password,password_salt,name,created_at) VALUES ('{$password}','{$passwordSalt}','{$displayname}',FROM_UNIXTIME($time));";
-                $result=$this->query($sql);
-                if(intval($result["insert_id"])>0)
+                $sql = "INSERT INTO users (name,created_at) VALUES ('{$displayname}',FROM_UNIXTIME($time));";
+                $result = $this->query($sql);
+                $user_id = intval($result["insert_id"]);
+                if($user_id>0)
                 {
-                    $uid=intval($result["insert_id"]);
-                    $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+                    $sql = "INSERT INTO user_identity (identityid,userid,created_at)
+                            VALUES ($identity_id,$user_id,FROM_UNIXTIME($time));";
                     $this->query($sql);
                     $sql="select userid from user_identity where identityid=$identity_id";
                     $result=$this->getRow($sql);
@@ -277,8 +289,8 @@ class UserModels extends DataModel{
                             $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
                             $this->query($sql);
                         }
-                        if($uid==intval($result["userid"]))
-                            return array("uid"=>$uid,"identity_id"=>$identity_id);
+                        if($user_id==intval($result["userid"]))
+                            return array("uid"=>$user_id,"identity_id"=>$identity_id);
                         return false;
                     }
                 }
