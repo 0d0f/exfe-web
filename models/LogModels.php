@@ -1,4 +1,5 @@
 <?php
+
 class LogModels extends DataModel {
 
     public function addLog($from_obj, $from_id, $action, $to_obj, $to_id, $to_field, $change_summy, $meta = '') {
@@ -18,10 +19,11 @@ class LogModels extends DataModel {
     public function getRecentlyLogsByCrossIds($cross_ids, $time = '', $limit = 1000) {
         if ($cross_ids) {
             $cross_ids = implode(' OR `to_id` = ', $cross_ids);
-            if($time)
+            if ($time) {
                 $sql = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) AND time > '{$time}' ORDER BY `id` DESC LIMIT {$limit};";
-            else
+            } else {
                 $sql = "SELECT * FROM `logs` WHERE `to_obj` = 'cross' AND (`to_id` = {$cross_ids}) ORDER BY `id` DESC LIMIT {$limit};";
+            }
             return $this->getAll($sql);
         } else {
             return array();

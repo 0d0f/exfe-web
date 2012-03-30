@@ -455,7 +455,7 @@ class IdentityModels extends DataModel {
                 setcookie('logintoken', NULL, -1, '/', COOKIES_DOMAIN);
             }
         }
-        return $identity_id;
+        return $tokenSession;
     }
 
     public function getIdentitiesIdsByUser($userid)

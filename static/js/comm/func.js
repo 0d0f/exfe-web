@@ -239,6 +239,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             });
         }
     };
+
     ns.getHashFilePath = function(fileName, rootPath){
         if(fileName == "default.png"){ return rootPath+"/web"; }
         if(typeof rootPath != "undefined"){
@@ -246,6 +247,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
         return fileName.substring(0,1)+"/"+fileName.substring(1,3);
     };
+
     ns.getUserAvatar = function(fileName, fileSize, rootPath){
         pattern = /^(http[s]?:\/\/)/;
         if(fileName.match(pattern)){ return fileName; }
@@ -263,7 +265,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         offsetSecond = parseInt(offsetSign + offsetSecond);
 
         return offsetSecond;
-    }
+    };
+
+    ns.getTimezone = function() {
+        var rawTimezone = Date().toString().replace(/^.+([a-z]{3}[+-]\d{4}).+$/i, '$1'),
+            tagTimezone = rawTimezone.replace(/^([a-z]{3}).+$/i, '$1'),
+            numTimezone = rawTimezone.replace(/^[a-z]{3}([+-])(\d{2})(\d{2})$/i, '$1$2:$3');
+        return numTimezone + (tagTimezone === 'UTC' ? '' : (' ' + tagTimezone));
+    };
 
     /*
     ns.cancel = function(){
