@@ -169,20 +169,22 @@ var moduleNameSpace = 'odof.x.render',
 
     ns.showConversation = function()
     {
-        var tmpData = this.sortConversationAndHistory(),
-            strMessage = '',
-            self = this,
-            g = tmpData.length - 1,
-            identity = tmpData[g].by_identity || tmpData[g].identity,
-            gather = '<li class="cleanup xhistory gather">'
-                + 'Gathered by <span class="bold">'
-                + identity.name + '</span>.'
-                + '<img alt="" width="20px" height="20px" src="'
-                + identity.avatar_file_name + '" />';
-        $.each(tmpData, function (i, v) {
-            strMessage += g === i ? gather :(v.time ? (v.by_identity ? self.makeHistory(v) : '') : self.makeMessage(v));
-        });
-        tmpData = null;
+        var tmpData    = this.sortConversationAndHistory(),
+            strMessage = '';
+        if (tmpData.length) {
+            var self = this,
+                g = tmpData.length - 1,
+                identity = tmpData[g].by_identity || tmpData[g].identity || {},
+                gather = '<li class="cleanup xhistory gather">'
+                    + 'Gathered' + (identity ? (' by <span class="bold">'
+                    + identity.name + '</span>.'
+                    + '<img alt="" width="20px" height="20px" src="'
+                    + identity.avatar_file_name + '" />') : '.');
+            $.each(tmpData, function (i, v) {
+                strMessage += g === i ? gather : (v.time ? (v.by_identity ? self.makeHistory(v) : '') : self.makeMessage(v));
+            });
+            tmpData = null;
+        }
         $('#x_conversation_list').html(strMessage);
     };
 
