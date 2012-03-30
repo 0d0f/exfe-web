@@ -227,6 +227,59 @@
     filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
 }
 
+.exfee_main_identity_remove.ready.this_is_me {
+    display: none;
+}
+
+.exfee_main_identity_cancel {
+    width: 75px;
+    height: 20px;
+    color: #333333;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    background-color: #ffeceb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 255, 255)), to(rgb(230, 230, 230)));
+    background-image: -webkit-linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
+    background-image: -moz-linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
+    background-image: -o-linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
+    background-image: -ms-linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
+    background-image: linear-gradient(top, rgb(255, 255, 255), rgb(230, 230, 230));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
+    margin-right: 15px;
+}
+
+.exfee_main_identity_leave {
+    width: 75px;
+    height: 20px;
+    color: #333333;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    background-color: #ffeceb;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 236, 235)), to(rgb(217, 73, 65)));
+    background-image: -webkit-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -moz-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -o-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: -ms-linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    background-image: linear-gradient(top, rgb(255, 236, 235), rgb(217, 73, 65));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#ffeceb', EndColorStr='#d94941');
+}
+
+.exfee_main_identity_leave_panel {
+    display: none;
+}
+
+.exfee_main_identity_leave_panel_button_area {
+    text-align: right;
+}
+
+.exfee_main_identity_leave_panel.ready {
+    display: block;
+}
+
 #gather_form .exfee_extrainfo .exfee_extrainfo_mainid_area, #xExfeeArea .exfee_extrainfo .exfee_extrainfo_mainid_area {
     clear: both;
     font-size: 14px;

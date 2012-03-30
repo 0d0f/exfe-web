@@ -1138,7 +1138,7 @@ var odof = {
         var objTime   = this.getDateFromString(strTime),
             timestamp = objTime
                       ? (Math.round(objTime.getTime() / 1000)
-                      + odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset()))
+                      + odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone()))
                       : -1;
         if (timestamp < 0) {
             return '';
@@ -1200,7 +1200,7 @@ var odof = {
         if (withTime && !time_type) {
             objDate = new Date(objDate.getTime()
                     + (typeof offset !== 'undefined' ? offset
-                    : odof.comm.func.convertTimezoneToSecond(jstz.determine_timezone().offset())) * 1000);
+                    : odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone())) * 1000);
         }
         // rebuild time
         var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
