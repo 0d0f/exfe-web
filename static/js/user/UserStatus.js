@@ -213,7 +213,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         if(actions == "setpwd") {
                             window.location.href="/!"+JSONData.cross_id;
                         } else{
-                            console.log(jQuery("#userResetPwdBox"));
                             jQuery("#userResetPwdBox").hide();
                             jQuery("#resetPwdSuccess").show();
                             jQuery("#resetPwdSuccess").fadeTo("slow", 0.3, function(){
