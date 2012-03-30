@@ -354,7 +354,7 @@ class XActions extends ActionController
 
             $cross['conversation'] = $modConversion->getConversation($cross_id, 'cross');
 
-            $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id);
+            $history = $hlpLog->getMergedXUpdate($_SESSION['userid'], $cross_id, date('Y-m-d H:i:s', time() - 60*60*24*7));
             foreach ($history as $hI => $hItem) {
                 foreach ($hItem as $hItemI => $hItemItem) {
                     $scrap = false;
