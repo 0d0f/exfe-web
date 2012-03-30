@@ -1161,15 +1161,15 @@ class SActions extends ActionController {
             $identityID = intval($result["id"]);
             if($identityID > 0){
                 //要检查User是否存在。
-                /*
                 $checkResult = $identityHandler->checkUserByIdentityID($identityID);
                 if(!$checkResult){
+                    $modUser = $this->getModelByName('user');
+                    $modUser->addUserByIdentityId($identityID, $result["name"]);
                 }
-                exit;
-                 */
 
                 $userName = $identityHandler->getUserNameByIdentityId($identityID);
                 $activeCode = $identityHandler->getVerifyingCode($identityID);
+
                 $tokenArray = array(
                     "actions"           =>"verifyIdentity",
                     "identityid"        =>$identityID,
