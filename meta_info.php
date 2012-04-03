@@ -4,16 +4,16 @@ abstract class meta_info {
     
     public $id          = null;
 
-    public $relation    = null;
+    public $relative    = null;
 
-    public $category    = null;
-    
+    public $type        = null;
+
     public $created_at  = null;
 
     public $by_identity = null;
     
     public function __construct() {
-        $this->relation = array();
+        $this->relative = array();
     }
 
 }
