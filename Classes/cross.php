@@ -1,6 +1,4 @@
 <?php
-require_once 'meta_info.php';
-
 class cross extends meta_info {
 
     public $title        = null;
@@ -23,10 +21,10 @@ class cross extends meta_info {
         $this->attribute = array();
         $this->widget    = array();
         
-        $this->title       = $title
-        $this->description = $description
-        $this->time        = $time
-        $this->place       = $place
+        $this->title       = $title;
+        $this->description = $description;
+        $this->time        = $time;
+        $this->place       = $place;
     }
 
 }

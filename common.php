@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__FILE__)."/config.php";
+require_once dirname(__FILE__)."/Classes/object.php";
 
 date_default_timezone_set('UTC');
 
