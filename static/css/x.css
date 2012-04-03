@@ -26,7 +26,7 @@
 
 #x_view.x_view_bkg .x_title_normal {
     margin-top: 0px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 #x_view_content {
@@ -49,7 +49,7 @@
 
 .x_title_normal {
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     margin-top: 10px;
     text-overflow: clip;
     overflow: hidden;
@@ -83,11 +83,12 @@
 #x_desc p {
     font-size: 14px;
     line-height: 20px;
-     overflow: hidden;
-      white-space: normal;
-      word-warp: break-word;
-      word-break: break-all;/*Only work in IE*/
-      text-overflow: ellipsis;/*Not working in FF*/
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: normal;
+    word-warp: break-word;
+    word-break: break-all;/*Only work in IE*/
+    text-overflow: ellipsis;/*Not working in FF*/
 }
 
 #x_desc img {

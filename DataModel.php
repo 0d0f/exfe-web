@@ -5,7 +5,7 @@ function stripslashes_deep($value) {
     return is_array($value) ? array_map('reverse_escape', $value) : reverse_escape($value);
 }
 
-abstract class DataModel{
+abstract class DataModel {
 
     static $FAKE_ID = '0';
 
