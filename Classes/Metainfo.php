@@ -1,6 +1,6 @@
 <?php
 
-abstract class meta_info {
+abstract class Metainfo extends EFObject{
     
     public $id          = null;
 
