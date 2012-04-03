@@ -2,7 +2,6 @@
 
 class CrossActions extends ActionController {
 
-<<<<<<< HEAD
     public function doIndex()
     {
         $params=$this->params;
@@ -36,10 +35,5 @@ class CrossActions extends ActionController {
         //theme
         //]
         
-=======
-    public function doIndex() {
-
->>>>>>> merge_newapi
     }
-
 }
