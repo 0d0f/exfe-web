@@ -32,8 +32,9 @@ body {
     color: #424242;
 }
 #invitation_n_update {
-    width: 310px;
+    width: 300px;
     float: right;
+    margin-right: 10px;
 }
 #invitations {
     border: solid 1px #E6E6E6;
