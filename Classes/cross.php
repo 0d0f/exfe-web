@@ -1,5 +1,5 @@
 <?php
-class cross extends meta_info {
+class Cross extends Metainfo {
 
     public $title        = null;
 
