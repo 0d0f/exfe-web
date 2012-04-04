@@ -1,7 +1,6 @@
 <?php
 require_once 'Metainfo.php';
-require_once 'cross.php';
-require_once 'post.php';
+require_once 'Widget.php';
 
 abstract class EFobject{
     
