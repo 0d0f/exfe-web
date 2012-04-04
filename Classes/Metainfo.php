@@ -2,11 +2,7 @@
 
 abstract class Metainfo extends EFObject{
     
-    public $id          = null;
-
     public $relative    = null;
-
-    public $type        = null;
 
     public $created_at  = null;
 
