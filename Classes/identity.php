@@ -37,7 +37,7 @@ class Identity extends EFObject {
                                 $created_at        = '',
                                 $updated_at        = '') {
         parent::__construct();
-        $this->type              = 'identities';
+        $this->type              = 'identity';
 
         $this->id                = intval($id);
         $this->name              = $name;
