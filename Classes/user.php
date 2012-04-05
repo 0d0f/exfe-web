@@ -25,7 +25,7 @@ class User extends EFObject {
                                 $timezone          = '',
                                 $identities        = array()) {
         parent::__construct();
-        $this->type              = 'exfee';
+        $this->type              = 'user';
         $this->identities        = array();
 
         $this->id                = intval($id);
