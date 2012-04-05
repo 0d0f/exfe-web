@@ -8,7 +8,8 @@ class CrossActions extends ActionController {
         $crossData=$this->getHelperByName("cross","v2");
         $cross=$crossData->getCross($params["id"]);
 
-        $cross=new Cross($title, $description, $time, $place, $attribute, $exfee_id, $widget);
+        //$cross=new Cross($title, $description, $time, $place, $attribute, $exfee_id, $widget);
+        echo json_encode($cross);
         //var_dump($cross);
     }
 }
