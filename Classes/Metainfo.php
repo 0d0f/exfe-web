@@ -5,14 +5,13 @@ require_once 'Place.php';
 
 abstract class Metainfo extends EFObject{
     
-    public $relative_id          = null;
-    public $relation = null;
+    public $relative = null;
     public $type        = null;
     public $created_at  = null;
     public $by_identity = null;
     
-    public function __construct() {
-        $this->type="metainfo";
+    public function __construct($id=0,$type="Metainfo") {
+        parent::__construct($id,$type);
         $this->relative = array();
     }
 

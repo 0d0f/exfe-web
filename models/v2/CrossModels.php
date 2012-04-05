@@ -5,7 +5,6 @@ class CrossModels extends DataModel {
     {
         $sql="select * from crosses where id=$crossid";
         $result=$this->getRow($sql);
-
         return $result;
     }
 }
