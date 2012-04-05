@@ -3,11 +3,11 @@
 class Identity extends EFObject {
 
     public $name              = null;
-    
+
     public $nickname          = null;
     
     public $bio               = null;
-    
+
     public $provider          = null;
     
     public $connected_user_id = null;
@@ -44,7 +44,7 @@ class Identity extends EFObject {
         $this->nickname          = $nickname;
         $this->bio               = $bio;
         $this->provider          = $provider;
-        $this->connected_user_id = $connected_user_id;
+        $this->connected_user_id = intval($connected_user_id);
         $this->external_id       = $external_id;
         $this->external_username = $external_username;
         $this->avatar_filename   = $avatar_filename;
