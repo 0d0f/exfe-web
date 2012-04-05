@@ -11,13 +11,14 @@ class Cross extends Metainfo {
 
     public function setRelation($relative_id,$relation)
     {
-        $this->relative_id=$relative_id;
-        $this->$relation=$relation;
+        $this->relative["id"]=$relative_id;
+        $this->relative["relation"]=$relation;
     }
 
-    public function __construct($title, $description, $time="", $place="", $attribute, $exfee_id, $widget=array()) {
-        parent::__construct();
-        $this->type      = 'cross';
+    public function __construct($id, $title, $description, $attribute, $exfee_id, $widget=array(),$time="", $place="" ) {
+        parent::__construct($id,"Cross");
+        $this->setRelation(0,"");
+
         $this->attribute = array();
         $this->widget    =$widget;
         

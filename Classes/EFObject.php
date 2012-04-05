@@ -10,7 +10,9 @@ abstract class EFobject{
 
     public $type = null;
     
-    public function __construct() {
+    public function __construct($id=0,$type="EFObject") {
+        $this->id=$id;
+        $this->type=$type;
 
     }
 
