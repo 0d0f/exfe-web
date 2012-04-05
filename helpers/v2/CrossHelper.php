@@ -2,11 +2,10 @@
 
 class CrossHelper extends ActionController {
 
-    public function getCross($crossid)
+    public function getCross($cross_id)
     {
         $crossData=$this->getModelByName("cross","v2");
-        $cross=$crossData->getCross($crossid);
-        print_r($cross);
+        $cross=$crossData->getCross($cross_id);
 
         //$crossTime=new CrossTime($result["begin_at"],$result["timezone"],$result["origin_begin_at"]);
         //print_r($crossTime);
@@ -16,8 +15,15 @@ class CrossHelper extends ActionController {
 
         $background=new Background($cross["background"]);
         
-        $cross=new Cross($cross["title"], $cross["description"], $time="", $place, $attribute, $exfee_id, array($background));
-        print_r($cross);
+        $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute, $exfee_id, array($background),$time="", $place);
+
+        $identity=new Identity();
+        $cross->by_identity=$identity;
+        $relative_id=0;
+        $relation="";
+        $cross->setRelation($relative_id,$relation);
+
+        return $cross;
     }
 
 }
