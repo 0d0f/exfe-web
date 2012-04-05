@@ -1,4 +1,5 @@
 <?php
+
 class User extends EFObject {
     
     public $name              = null;
