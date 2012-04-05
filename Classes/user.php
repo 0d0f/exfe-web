@@ -15,14 +15,14 @@ class User extends EFObject {
 
     public $identities        = null;
 
-    public function __construct($id                = null,
-                                $name              = null,
-                                $bio               = null,
+    public function __construct($id                = 0,
+                                $name              = '',
+                                $bio               = '',
                                 $default_identity  = null,
-                                $avatar_filename   = null,
-                                $avatar_updated_at = null,
-                                $timezone          = null,
-                                $identities        = null) {
+                                $avatar_filename   = '',
+                                $avatar_updated_at = '',
+                                $timezone          = '',
+                                $identities        = array()) {
         parent::__construct();
         $this->type              = 'exfee';
         $this->identities        = array();

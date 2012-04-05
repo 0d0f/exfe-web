@@ -1,4 +1,5 @@
 <?php
+
 class Identity extends EFObject {
 
     public $name              = null;
@@ -23,20 +24,20 @@ class Identity extends EFObject {
     
     public $updated_at        = null;
 
-    public function __construct($id                = null,
-                                $name              = null,
-                                $nickname          = null,
-                                $bio               = null,
-                                $provider          = null,
-                                $connected_user_id = null,
-                                $external_id       = null,
-                                $external_username = null,
-                                $avatar_filename   = null,
-                                $avatar_updated_at = null,
-                                $created_at        = null,
-                                $updated_at        = null) {
+    public function __construct($id                = 0,
+                                $name              = '',
+                                $nickname          = '',
+                                $bio               = '',
+                                $provider          = '',
+                                $connected_user_id = 0,
+                                $external_id       = '',
+                                $external_username = '',
+                                $avatar_filename   = '',
+                                $avatar_updated_at = '',
+                                $created_at        = '',
+                                $updated_at        = '') {
         parent::__construct();
-        $this->type              = 'exfee';
+        $this->type              = 'identities';
 
         $this->id                = intval($id);
         $this->name              = $name;
