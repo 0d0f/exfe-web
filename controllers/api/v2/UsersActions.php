@@ -3,7 +3,9 @@
 class UsersActions extends ActionController {
 
     public function doIndex() {
-
+        $identityData = $this->getModelByName('Identity', 'v2');
+        $identity = $identityData->getIdentityById(96);
+        print_r($identity);
     }
     
     public function doSignin() {
