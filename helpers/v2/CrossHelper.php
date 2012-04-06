@@ -13,13 +13,14 @@ class CrossHelper extends ActionController {
         $placeData=$this->getModelByName("place","v2");
         $place=$placeData->getPlace($cross["place_id"]);
 
+        $identityData=$this->getModelByName("identity","v2");
+        $by_identity=$identityData->getIdentityById($cross["host_id"]);
         $background=new Background($cross["background"]);
-        
         $begin_at=new CrossTime("","","","","","","");
+
         $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute, $exfee_id, array($background),$begin_at, $place);
 
-        $identity=new Identity();
-        $cross->by_identity=$identity;
+        $cross->by_identity=$by_identity;
         $relative_id=0;
         $relation="";
         $cross->setRelation($relative_id,$relation);
