@@ -15,7 +15,8 @@ class CrossHelper extends ActionController {
 
         $background=new Background($cross["background"]);
         
-        $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute, $exfee_id, array($background),$time="", $place);
+        $begin_at=new CrossTime("","","","","","","");
+        $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute, $exfee_id, array($background),$begin_at, $place);
 
         $identity=new Identity();
         $cross->by_identity=$identity;

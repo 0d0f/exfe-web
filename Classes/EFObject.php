@@ -1,5 +1,6 @@
 <?php
 require_once 'Metainfo.php';
+require_once 'EFTime.php';
 require_once 'Widget.php';
 require_once 'User.php';
 require_once 'Identity.php';
