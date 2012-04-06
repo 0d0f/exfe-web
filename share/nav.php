@@ -1,4 +1,6 @@
     <div id="global_header">
+        <div class="nav-bkg"></div>
+        <div class="site-infos">
         <div class="logo">
 <?php
 if (intval($_SESSION["userid"]) > 0) {
@@ -17,6 +19,7 @@ if (intval($_SESSION["userid"]) > 0) {
                 <a id="global_user_login_btn" href="javascript:void(0);">Sign in</a>
             </div>
         </div>
+    </div>
     </div>
     <img src="/static/images/user.png" style="display:none;" width="0" height="0" />
     <script>
