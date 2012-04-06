@@ -72,20 +72,45 @@ abstract class ActionController {
     {
         $this->displayViewByAction($this->action);
     }
-    public function getHelperByName($name)
+
+    public function getHelperByNamev1($name)
     {
         $class = ucfirst($name) . "Helper";
         $helperfile = HELPER_DIR. "/" . $class.  ".php";
         include_once $helperfile;
         return new $class;
     }
-    public function getModelByName($name)
+    public function getHelperByName($name,$version="")
+    {
+        if($version=="")
+            $this->getHelperByNamev1($name);
+
+        $class = ucfirst($name) . "Helper";
+        $helperfile = HELPER_DIR. "/".$version. "/" . $class.  ".php";
+        include_once $helperfile;
+        return new $class;
+    }
+
+
+    public function getModelByNamev1($name)
     {
         $class = ucfirst($name) . "Models";
         $modelfile = MODEL_DIR . "/"  . $class.  ".php";
         include_once $modelfile;
         return new $class;
     }
+    public function getModelByName($name,$version="")
+    {
+        if($version=="")
+            $this->getModelByNamev1($name);
+
+        $class = ucfirst($name) . "Models";
+        $modelfile = MODEL_DIR . "/".$version. "/" . $class.  ".php";
+        include_once $modelfile;
+        return new $class;
+    }
+
+
     public function getDataModel($action)
     {
         $class = ucfirst($this->getName()) . "Models";
