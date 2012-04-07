@@ -4,6 +4,7 @@ class IdentityModels extends DataModel {
     
     private $salt = '_4f9g18t9VEdi2if';
 
+
     public function getIdentityById($id)
     {
         $rawIdentity = $this->getRow("SELECT * FROM `identities` WHERE `id` = {$id}");
@@ -36,100 +37,77 @@ class IdentityModels extends DataModel {
      *     $nickname,
      *     $bio,
      *     $provider,
-     *     $connected_user_id,
      *     $external_id,
      *     $external_username,
      *     $avatar_filename,
      * } 
      */
-    public function addIdentity($user_id, $provider, $external_identity, $identityDetail = array()) {
+    public function addIdentity($user_id, $provider, $external_id, $identityDetail = array()) {
+        // create new token
         $activecode = createToken();
-        
-        $name = mysql_real_escape_string($identityDetail['name']);
-        $nickname = 
-        $bio = mysql_real_escape_string($identityDetail['bio']);
-        $provider,
-        $connected_user_id,
-        $external_id = mysql_real_escape_string($external_identity);
-        $external_username = trim(mysql_real_escape_string($identityDetail["external_username"]));
-        $avatar_filename =mysql_real_escape_string($identityDetail["avatar_file_name"]);
-
-        
-        
-        
-
-        $sql="select id from identities where external_identity='$external_identity' limit 1";
-        $row=$this->getRow($sql);
-        if(intval($row["id"])>0){
-            return  intval($row["id"]);
+        // collecting new identity informations
+        $name              = trim(mysql_real_escape_string($identityDetail['name']));
+        $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
+        $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
+        $provider          = trim(mysql_real_escape_string(strtolower($identityDetail['provider'])));
+        $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
+        $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
+        $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
+        // check current identity
+        $curIdentity = $this->getRow("SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1");
+        if (intval($curIdentity['id']) > 0) {
+            return intval($curIdentity['id']);
         }
-
-
-        //set identity avatar as Gravatar img
-        if($provider == "email" && $avatar_file_name == ""){
-            $avatar_file_name = "http://www.gravatar.com/avatar/";
-            $avatar_file_name .= md5(strtolower(trim($external_identity)));
-            $avatar_file_name .= "?d=".urlencode(DEFAULT_AVATAR_URL);
+        // set identity default avatar as Gravatar
+        if ($provider === 'email' && !$avatar_filename) {
+            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode(DEFAULT_AVATAR_URL);
         }
-
-        if($external_username == ""){
-            $external_username = $external_identity;
+        // insert new identity into database
+        $dbResult = $this->query("INSERT INTO `identities` SET
+                                  `provider`          = '{$provider}',
+                                  `external_identity` = '{$external_id}',
+                                  `created_at`        = NOW(),
+                                  `name`              = '{$name}',
+                                  `bio`               = '{$bio}',
+                                  `avatar_file_name`  = '{$avatar_filename}',
+                                  `avatar_updated_at` = NOW(),
+                                  `external_username` = '{$external_username}'");
+        $id = intval($dbResult['insert_id']);
+        // update user information
+        if ($id) {
+            $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name` FROM `users` WHERE `id` = {$user_id}");
+            $userInfo['name']             = $userInfo['name']             === '' ? $name            : $userInfo['name'];
+            $userInfo['bio']              = $userInfo['bio']              === '' ? $bio             : $userInfo['bio'];
+            $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] === '' ? $avatar_filename : $userInfo['avatar_file_name'];
+            // @todo: commit these two query as a transaction
+            $this->query("UPDATE `users` SET
+                          `name`             = '{$userInfo['name']}',
+                          `bio`              = '{$userInfo["bio"]}',
+                          `avatar_file_name` = '{$userInfo['avatar_file_name']}',
+                          `default_identity` =  {$id}
+                          WHERE `id`         =  {$user_id}");
+            $this->query("INSERT INFO `user_identity` SET
+                          `identityid` =  {$id},
+                          `userid`     =  {$user_id},
+                          `created_at` = NOW(),
+                          `activecode` = '{$activecode}'");
+            // make verify token
+            $verifyToken = packArray(array('identity_id' => $id, 'activecode' => $activecode));
+            // send welcome and active email
+            if ($provider === 'email') {
+                $hlpIdentity = $this->getHelperByName('identity');
+                $hlpIdentity-> sentWelcomeAndActiveEmail(array(
+                    'identityid'        => $id,
+                    'external_identity' => $external_id,
+                    'name'              => $name,
+                    'avatar_file_name'  => $avatar_filename,
+                    'activecode'        => $activecode,
+                    'token'             => $verifyToken
+                ));
+            }
+            return $id;
         }
-
-        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
-        $result=$this->query($sql);
-        $identityid=intval($result["insert_id"]);
-        if($identityid > 0)
-        {
-            $sql="select name,bio,avatar_file_name from users where id=$user_id;";
-            $userrow=$this->getRow($sql);
-            if($userrow["name"]==""){
-                $userrow["name"]=$name;
-            }
-            if($userrow["bio"]==""){
-                $userrow["bio"]=$bio;
-            }
-            if($userrow["avatar_file_name"]==""){
-                $userrow["avatar_file_name"]=$avatar_file_name;
-            }
-
-            $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."', default_identity=".$identityid." where id=$user_id;";
-            $this->query($sql);
-
-            //TOdO: commit as a transaction
-            $time=time();
-            $sql="insert into user_identity (identityid,userid,created_at,activecode) values ($identityid,$user_id,FROM_UNIXTIME($time),'{$activecode}')";
-            $this->query($sql);
-
-            $verifyTokenArray = array(
-                "identityid"    =>$identityid,
-                "activecode"    =>$activecode
-            );
-            $verifyToken = packArray($verifyTokenArray);
-
-            $args = array(
-                     'identityid'           =>$identityid,
-                     'external_identity'    =>$external_identity,
-                     'name'                 =>$name,
-                     'avatar_file_name'     =>$avatar_file_name,
-                     'activecode'           =>$activecode,
-                     'token'                =>$verifyToken
-            );
-            /*
-            if($provider=="email")
-            {
-                $helper=$this->getHelperByName("identity");
-                $helper->sentActiveEmail($args);
-            }
-             */
-            //send welcome and active e-mail
-            if($provider=="email")
-            {
-                $helper=$this->getHelperByName("identity");
-                $helper->sentWelcomeAndActiveEmail($args);
-            }
-            return $identityid;
-        }
+        return null;
     }
     
     
