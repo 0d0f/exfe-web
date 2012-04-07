@@ -1,19 +1,6 @@
 <?php
 class UserModels extends DataModel{
 
-    private $salt="_4f9g18t9VEdi2if";
-
-    public function addUser($password)
-    {
-        $passwordSalt = md5(createToken());
-        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        $time=time();
-        $sql="INSERT INTO users (encrypted_password, password_salt, created_at) VALUES ('{$password}','{$passwordSalt}',FROM_UNIXTIME($time));";
-        $result=$this->query($sql);
-        if(intval($result["insert_id"])>0)
-            return intval($result["insert_id"]);
-    }
-
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
        $logout_identity_list=array();
@@ -95,13 +82,6 @@ class UserModels extends DataModel{
             }
         }
 
-    }
-
-    public function getUser($userid)
-    {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
-        $row=$this->getRow($sql);
-        return $row;
     }
 
     public function saveUser($name,$userid)
@@ -193,6 +173,7 @@ class UserModels extends DataModel{
         }
         return "";
     }
+
     public function getUserIdByIdentityId($identity_id)
     {
         $sql="select userid from user_identity where identityid=$identity_id";
@@ -240,6 +221,7 @@ class UserModels extends DataModel{
         return false;
         //$sql="update ";
     }
+
     public function addUserByIdentityId($identity_id, $display_name)
     {
         $time_stamp = time();
@@ -254,6 +236,7 @@ class UserModels extends DataModel{
         }
 
     }
+
     public function addUserByToken($cross_id,$displayname,$token)
     {
         $sql = "select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
@@ -386,6 +369,7 @@ class UserModels extends DataModel{
         }
         return FALSE;
     }
+
     public function getResetPasswordToken($external_identity)
     {
         $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
@@ -477,6 +461,7 @@ class UserModels extends DataModel{
         }
         return false;
     }
+
     //update user password
     public function updateUserPassword($userid, $password){
         //$password=md5($password.$this->salt);
@@ -534,4 +519,28 @@ class UserModels extends DataModel{
         setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
         setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
     }
+    
+    // upgraded
+    private $salt="_4f9g18t9VEdi2if";
+
+    // upgraded
+    public function addUser($password)
+    {
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $time=time();
+        $sql="INSERT INTO users (encrypted_password, password_salt, created_at) VALUES ('{$password}','{$passwordSalt}',FROM_UNIXTIME($time));";
+        $result=$this->query($sql);
+        if(intval($result["insert_id"])>0)
+            return intval($result["insert_id"]);
+    }
+    
+    // upgraded
+    public function getUser($userid)
+    {
+        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
+        $row=$this->getRow($sql);
+        return $row;
+    }
+
 }
