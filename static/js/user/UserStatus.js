@@ -551,9 +551,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
         }else{
             var userPanelHTML = '<div class="uinfo">'
-                                + '<em class="light" style="background:none;"></em>'
+                                //+ '<em class="light" style="background:none;"></em>'
                                 + '<div class="name" >'
-                                + '<div id="goldLink"><a href="/s/profile" >'+userData.user_name+'</a></div>';
+                                + '<div id="goldLink"><a href="/s/profile" >'+userData.user_name+'</a><span clas="name-bg-l"></span></div>';
             userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
             userPanelHTML += '<a href="/s/profile" class="h">';
             userPanelHTML += '<span class="num_of_x">' + userData.cross_num + '</span>';
@@ -606,56 +606,78 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
             jQuery("#global_user_info").html(userPanelHTML);
 
-            jQuery('.name').mousemove(function() {
-                jQuery('#goldLink').addClass('nameh');
-                jQuery('#myexfe').show();
-            });
-            jQuery('.name').mouseout(function() {
-                jQuery('#goldLink').removeClass('nameh');
-                jQuery('#myexfe').hide();
-            });
+            if (ns.showLoginStatus.status === 1) {
+                jQuery('.name').bind('mouseenter mouseleave', function (e) {
+                    jQuery('#goldLink').toggleClass('nameh');
+                    jQuery('#myexfe').stop(true, true).slideToggle('fast');
+                });
+                ns.showLoginStatus.status = 0;
+            }
         }
     };
 
+    ns.showLoginStatus.status = 1;
+
     ns.showTokenIdentityStatus = function (identity) {
         var panel = '<div class="uinfo" data-identity-id="' + identity.id + '">'
-                + '<em class="light" style="background:none;"></em>'
                 + '<div class="name" >'
                     + '<div id="goldLink">'
                         + '<a href="/s/profile" >' + (identity.name || identity.external_username) + '</a>'
+                        + '<span class="name-bg-l"></span>'
                     + '</div>'
                 + '<div class="myexfe" id="myexfe">'
                     + '<div class="message">'
-                        + '<div class="title">New Identity</div>'
-                        + '<p class="detail">You are browsing this page as identity:</p>'
+                        + '<div class="title">Browsing Identity</div>'
+                        + '<p class="detail">You are browsing this page as Email identity:</p>'
                         + '<div class="identity">'
-                            + '<span class="email">' + (identity.external_identity || identity.external_username || identity.name) + '</span>'
+                            + '<span class="iname email">' + (identity.external_identity || identity.external_username || identity.name) + '</span>'
                             + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
                         + '</div>'
                         + '<div class="setup">'
-                            + '<p>as your new <span>EXFE</span> account.</p>'
-                            + '<span class="setup-btn">Set up</span>'
+                            + '<p>'
+                                + '<span class="setup-btn">Set Up</span>'
+                                + ' as your independent new <span>EXFE</span> identity.'
+                            + '</p>'
                         + '</div>'
+                        /*TODO: 多身份合并，4.13开始做
+                        + '<div class="signin-btn">'
+                            + '<a href="javascript:;">Sign In</a>'
+                        + '</div>'
+                        + '<div class="identites">'
+                            + '<p>'
+                                + '<span class="merge">Merge</span>'
+                                + ' with your currently signed in identities:'
+                            + '</p>'
+                        + '</div>'
+                        + '<div class="identity">'
+                            + '<span class="iname twitter">' + (identity.external_identity || identity.external_username || identity.name) + '</span>'
+                            + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
+                        + '</div>'
+                        + '<div class="identity">'
+                            + '<span class="iname phone">' + (identity.external_identity || identity.external_username || identity.name) + '</span>'
+                            + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
+                        + '</div>'
+                        */
                     + '</div>'
                 + '</div>'
             + '</div>';
 
         jQuery("#global_user_info").html(panel);
 
-        jQuery('.name').mouseenter(function() {
-            jQuery('#goldLink').addClass('nameh');
-            jQuery('#myexfe').show();
-        });
-        jQuery('.name').mouseleave(function() {
-            jQuery('#goldLink').removeClass('nameh');
-            jQuery('#myexfe').hide();
-        });
-        $('.name .setup-btn').bind('click', function (e) {
-            if (login_type === 'token' && token) {
-                odof.x.edit.setreadonly(clickCallBackFunc);
-            }
-        });
+        if (ns.showTokenIdentityStatus.status === 1) {
+            jQuery('.name').bind('mouseenter mouseleave', function (e) {
+                jQuery('#goldLink').toggleClass('nameh');
+                jQuery('#myexfe').stop(true, true).slideToggle('fast');
+            });
+            $('.name .setup-btn').bind('click', function (e) {
+                if (login_type === 'token' && token) {
+                    odof.x.edit.setreadonly(clickCallBackFunc);
+                }
+            });
+            ns.showTokenIdentityStatus.status = 0;
+        }
     };
+    ns.showTokenIdentityStatus.status = 1;
 
     ns.showExfeVersion = function () {
         var hasDialog = $('div.ex_dialog').size();
