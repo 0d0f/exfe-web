@@ -1,6 +1,6 @@
 <?php
 
-class Place extends EFobject{
+class Place extends EFObject{
     
     public $title=null;
     public $description=null;
