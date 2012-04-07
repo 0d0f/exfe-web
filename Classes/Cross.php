@@ -19,7 +19,7 @@ class Cross extends Metainfo {
         parent::__construct($id,"Cross");
         $this->setRelation(0,"");
 
-        $this->attribute = array();
+        $this->attribute = $attribute;
         $this->widget    =$widget;
         
         $this->title       = $title;

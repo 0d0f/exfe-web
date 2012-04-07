@@ -2,26 +2,20 @@
 
 class CrossTime extends EFObject{
     
-    public $begin_date=null;
-    public $begin_time=null;
+    public $begin_at=null;
     public $origin=null;
-    public $timezone=null;
+    public $originMark=null;
 
-    public $end_at=null;
-    public $duration=null;
-
-    public function __construct($begin_date="",$begin_time="",$origin="",$timezone="",$keyword="") {
-        $this->type="CrossTime";
-        $this->id=0;
-        $this->begin_at=$begin_at;
-        $this->timezone=$timezone;
+    public function __construct($date_word,$date,$time_word,$time,$timezone,$origin,$originMark) {
+        parent::__construct(0,"CrossTime");
+        $this->begin_at=new EFTime($date_word,$date,$time_word,$time,$timezone);
         $this->origin=$origin;
-
-        $this->keyword=$keyword;
-        $this->end_at=$end_at;
-        $this->duration=$duration;
+        $this->originMark=$originMark;
     }
 
+    public function toString()
+    {
+    }
 }
 
 
