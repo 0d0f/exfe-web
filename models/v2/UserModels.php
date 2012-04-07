@@ -2,6 +2,8 @@
 
 class UserModels extends DataModel {
     
+    private $salt="_4f9g18t9VEdi2if";
+    
     public function getUserById($id)  {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
@@ -53,6 +55,16 @@ class UserModels extends DataModel {
         } else {
             return null;
         }
+    }
+    
+    
+    public function newUserByPassword($password)
+    {
+        $passwordSalt = md5(createToken());
+        $passwordInDb = md5($password.substr($passwordSalt, 3, 23).EXFE_PASSWORD_SALT);
+        $result = $this->query("INSERT INTO `users` (`encrypted_password`, `password_salt`, `created_at`) VALUES ('{$password}', '{$passwordSalt}', NOW())");
+        $userId = intval($result["insert_id"]);
+        return $userId > 0 ? $userId : null;
     }
 
 }
