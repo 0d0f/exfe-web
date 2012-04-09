@@ -75,50 +75,6 @@ class IdentityModels extends DataModel {
     }
 
     
-    public function loginByCookie($source='') {
-        $uid=intval($_COOKIE['uid']);
-        $identity_id=intval($_COOKIE['id']);
-        $loginsequ=$_COOKIE['loginsequ'];
-        $logintoken=$_COOKIE['logintoken'];
-        $identity = $_COOKIE["last_identity"];
-        if($uid > 0) {
-            $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
-            $logindata=$this->getRow($sql);
-
-            $ipaddress=getRealIpAddr();
-            if($ipaddress!=$logindata["current_sign_in_ip"])
-            {
-                unset($_SESSION["userid"]);
-                unset($_SESSION["identity_id"]);
-                unset($_SESSION["identity"]);
-                unset($_SESSION["tokenIdentity"]);
-                session_destroy();
-
-                unset($_COOKIE["uid"]);
-                unset($_COOKIE["id"]);
-                unset($_COOKIE["loginsequ"]);
-                unset($_COOKIE["logintoken"]);
-                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
-                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
-                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
-                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
-                if($source == ""){
-                    header( 'Location: /s/login' ) ;
-                }
-                exit(0);
-            }
-
-            if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
-            { //do login
-               $user_id=$this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-               return $user_id;
-            } else {
-                return 0;
-            }
-
-        }
-    }
-
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -886,6 +842,52 @@ class IdentityModels extends DataModel {
         $last_identity = array("identity"=>$identity,'identity_avatar'=>$userrow["avatar_file_name"]);
         $last_identity_str = json_encode($last_identity);
         setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
+    }
+    
+    
+    // upgraded
+    public function loginByCookie($source='') {
+        $uid=intval($_COOKIE['uid']);
+        $identity_id=intval($_COOKIE['id']);
+        $loginsequ=$_COOKIE['loginsequ'];
+        $logintoken=$_COOKIE['logintoken'];
+        $identity = $_COOKIE["last_identity"];
+        if($uid > 0) {
+            $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
+            $logindata=$this->getRow($sql);
+
+            $ipaddress=getRealIpAddr();
+            if($ipaddress!=$logindata["current_sign_in_ip"])
+            {
+                unset($_SESSION["userid"]);
+                unset($_SESSION["identity_id"]);
+                unset($_SESSION["identity"]);
+                unset($_SESSION["tokenIdentity"]);
+                session_destroy();
+
+                unset($_COOKIE["uid"]);
+                unset($_COOKIE["id"]);
+                unset($_COOKIE["loginsequ"]);
+                unset($_COOKIE["logintoken"]);
+                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
+                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
+                if($source == ""){
+                    header( 'Location: /s/login' ) ;
+                }
+                exit(0);
+            }
+
+            if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
+            { //do login
+               $user_id=$this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
+               return $user_id;
+            } else {
+                return 0;
+            }
+
+        }
     }
 
 }
