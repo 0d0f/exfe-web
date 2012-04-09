@@ -87,7 +87,7 @@ b.r3{margin: 0px}
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { height:350px; width:400px; overflow:hidden; }
+.identification_dialog_con { height:360px; width:400px; overflow:hidden; }
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
@@ -101,7 +101,7 @@ b.r3{margin: 0px}
 
 .identity_visual_dialog {
     position:absolute; display:block; z-index:204;
-    width:400px; height:315px; padding-top:35px;
+    width:400px; height:325px; padding-top:35px;
     background:#EFEFEF; line-height:20px; font-size:14px;
 }
 .identity_visual_dialog div {
