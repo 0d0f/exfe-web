@@ -3,29 +3,53 @@
 class IdentityModels extends DataModel {
     
     private $salt = '_4f9g18t9VEdi2if';
-
-
-    public function getIdentityById($id)
-    {
-        $rawIdentity = $this->getRow("SELECT * FROM `identities` WHERE `id` = {$id}");
+    
+    
+    protected function packageIdentity($rawIdentity) {
         if ($rawIdentity) {
-            $rawUserIdentity = $this->getRow("SELECT * FROM `user_identity` WHERE `identityid` = {$id} AND `status` = 3");
-            $objIdentity = new Identity($rawIdentity['id'],
-                                        $rawIdentity['name'],
-                                        '', // $rawIdentity['nickname'], // @todo;
-                                        $rawIdentity['bio'],
-                                        $rawIdentity['provider'],
-                                        $rawUserIdentity ? $rawUserIdentity['userid'] : 0,
-                                        $rawIdentity['external_identity'],
-                                        $rawIdentity['external_username'],
-                                        $rawIdentity['avatar_file_name'],
-                                        $rawIdentity['avatar_updated_at'],
-                                        $rawIdentity['created_at'],
-                                        $rawIdentity['updated_at']);
-            return $objIdentity;
+            $rawUserIdentity = $this->getRow(
+                "SELECT * FROM `user_identity` WHERE `identityid` = {$id} AND `status` = 3"
+            );
+            return new Identity(
+                $rawIdentity['id'],
+                $rawIdentity['name'],
+                '', // $rawIdentity['nickname'], // @todo;
+                $rawIdentity['bio'],
+                $rawIdentity['provider'],
+                $rawUserIdentity ? $rawUserIdentity['userid'] : 0,
+                $rawIdentity['external_identity'],
+                $rawIdentity['external_username'],
+                $rawIdentity['avatar_file_name'],
+                $rawIdentity['avatar_updated_at'],
+                $rawIdentity['created_at'],
+                $rawIdentity['updated_at']
+            );
         } else {
             return null;
         }
+    }
+
+
+    public function getIdentityById($id) {
+        return $this->packageIdentity($this->getRow(
+            "SELECT * FROM `identities` WHERE `id` = {$id}"
+        );
+    }
+    
+
+    public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
+        return $this->packageIdentity($this->getRow(
+            "SELECT * FROM `identities` WHERE
+             `provider`          = '{$provider}' AND
+             `external_username` = '{$external_username}'"
+        ));
+    }
+
+
+    public function getIdentityByExternalId($external_id) {
+        return $this->packageIdentity($this->getRow(
+            "SELECT * FROM `identities` WHERE `external_identity` = '{$external_id}'"
+        );
     }
 
 
@@ -95,7 +119,7 @@ class IdentityModels extends DataModel {
             $verifyToken = packArray(array('identity_id' => $id, 'activecode' => $activecode));
             // send welcome and active email
             if ($provider === 'email') {
-                $hlpIdentity = $this->getHelperByName('identity');
+                $hlpIdentity = $this->getHelperByName('identity', 'v2');
                 $hlpIdentity-> sentWelcomeAndActiveEmail(array(
                     'identityid'        => $id,
                     'external_identity' => $external_id,
