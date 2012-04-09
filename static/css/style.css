@@ -55,6 +55,7 @@ b.r3{margin: 0px}
   text-align: center;
   cursor: pointer;
   font-weight: normal;
+  font-size: 10px;
 }
 .identification_dialog .titles a:hover {
   text-decoration: none;
