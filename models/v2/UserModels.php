@@ -11,6 +11,14 @@ class UserModels extends DataModel {
         );
     }
     
+    
+    protected function getUserPasswdByUserId($user_id) {
+        return $this->getRow(
+            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `encrypted_password`, `current_sign_in_ip`
+             FROM   `users` WHERE `id` = {$user_id}"
+        );
+    }
+    
 
     public function getUserById($id) {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
@@ -94,6 +102,38 @@ class UserModels extends DataModel {
     }
     
     
+    public function signinByCookie() {
+        // get vars
+        $user_id      = intval($_COOKIE['user_id']);
+        $signin_sequ  = $_COOKIE['signin_sequ'];
+        $signin_token = $_COOKIE['signin_token'];
+        // try sign in
+        if ($user_id) {
+            $userPasswd = $this->getUserPasswdByUserId($user_id);
+            $ipAddress  = getRealIpAddr();
+            if ($ipAddress    === $userPasswd['current_sign_in_ip']
+             && $signin_sequ  === $userPasswd['cookie_loginsequ']
+             && $signin_token === $userPasswd['cookie_logintoken']) {
+                return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
+            } 
+            // unset seesion
+            unset($_SESSION['signin_user']);
+            unset($_SESSION['signin_token']);
+            session_destroy();
+            // unset cookie
+            unset($_COOKIE['user_id']);    
+            unset($_COOKIE['identity_ids']);
+            unset($_COOKIE['signin_sequ']);
+            unset($_COOKIE['signin_token']);
+            setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
+            setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
+            setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
+            setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
+        }
+        return null;
+    }
+    
+    
     public function signinByIdentityId($identity_id, $user_id = 0, $user = null, $identity = null, $authBy = 'password', $setCookie = false) {
         // init
         $hlpIdentity = getHelperByName('identity', 'v2');
@@ -104,22 +144,19 @@ class UserModels extends DataModel {
         $ipAddress   = getRealIpAddr();
         // set cookie
         if ($setCookie && $authBy === 'password') {
-            $userPasswd = $this->getRow(
-                "SELECT `cookie_logintoken`, `cookie_loginsequ`, `encrypted_password`, `current_sign_in_ip`
-                 FROM   `users` WHERE `id` = $user_id"
-            );
-            $cookie_logintoken  = md5("{$userPasswd['encrypted_password']}3firwkF");
-            $cookie_loginsequ   = md5(time() . 'glkfFDks.F');
+            $userPasswd = $this->getUserPasswdByUserId($user_id);
+            $cookie_signintoken  = md5("{$userPasswd['encrypted_password']}3firwkF");
+            $cookie_signinsequ   = md5(time() . 'glkfFDks.F');
             if ($userPasswd['cookie_loginsequ'] && $userPasswd['cookie_logintoken']) { // first time login, setup cookie
-                $cookie_logintoken = $userPasswd['cookie_logintoken'];
-                $cookie_loginsequ  = $userPasswd['cookie_loginsequ'];
+                $cookie_signintoken = $userPasswd['cookie_logintoken'];
+                $cookie_signinsequ  = $userPasswd['cookie_loginsequ'];
             } else {    
                 $this->query(
                     "UPDATE `users` SET
                      `current_sign_in_ip` = '{$ipAddress}',
                      `created_at`         = NOW(),
-                     `cookie_loginsequ`   = '{$cookie_loginsequ}',
-                     `cookie_logintoken`  = '{$cookie_logintoken}'
+                     `cookie_loginsequ`   = '{$cookie_signinsequ}',
+                     `cookie_logintoken`  = '{$cookie_signintoken}'
                      WHERE `id` = {$user_id}"
                 );
             }
@@ -128,19 +165,20 @@ class UserModels extends DataModel {
                 $identity_ids[] = $item['id'];
             }
             $identity_ids = json_encode($identity_ids);
-            setcookie('user_id',      $user_id,           time() + 31536000, '/', COOKIES_DOMAIN); // one year
+            // setcookie for one year
+            setcookie('user_id',      $user_id,           time() + 31536000, '/', COOKIES_DOMAIN);
             setcookie('identity_ids', $identity_ids,      time() + 31536000, '/', COOKIES_DOMAIN);
-            setcookie('loginsequ',    $cookie_loginsequ,  time() + 31536000, '/', COOKIES_DOMAIN);
-            setcookie('logintoken',   $cookie_logintoken, time() + 31536000, '/', COOKIES_DOMAIN);
+            setcookie('signin_sequ',  $cookie_signinsequ,  time() + 31536000, '/', COOKIES_DOMAIN);
+            setcookie('signin_token', $cookie_signintoken, time() + 31536000, '/', COOKIES_DOMAIN);
         }
         // set session
-        $_SESSION['signin_user'] = $user_id;
+        $_SESSION['signin_user'] = $user;
         unset($_SESSION['signin_token']);
         // log and return
         $this->query(
             "UPDATE `users` SET `current_sign_in_ip` = '{$ipAddress}', `last_sign_in_at` = NOW() WHERE `id` = $user_id"
         );
-        return $userid;
+        return $user;
     }
     
     
