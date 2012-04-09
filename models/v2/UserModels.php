@@ -144,7 +144,7 @@ class UserModels extends DataModel {
     }
     
     
-    public function signin($identityInfo, $password, $setcookie = false, $password_hashed = false, $oauth_signin = false) {
+    public function signin($identityInfo, $password, $setCookie = false, $password_hashed = false, $oauth_signin = false) {
         // init
         $hlpIdentity = getHelperByName('identity', 'v2');
         // get identity object
@@ -155,7 +155,7 @@ class UserModels extends DataModel {
         } else {
             $identity = $hlpIdentity->getIdentityByExternalId($identityInfo);
         }
-        // 
+        // sign in
         if ($identity) {
             if (($user_id = $this->getUserIdByIdentityId($identity->id))) {
                 $passwdInDb = $this->getUserPasswordInfoByUserId($user_id);
@@ -171,27 +171,14 @@ class UserModels extends DataModel {
                 }
                 // check password!
                 if ($password === $passwdInDb['encrypted_password']) {
-                    $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
-
-                    $returnData = array_merge($identityRow,$userInfo);
-                    $returnData["user_id"] = $userID;
-                    $returnData["identity_name"] = $identityRow["name"];
-                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
-                    $returnData["identity_bio"] = $identityRow["bio"];
-                    $returnData["user_name"] = $userInfo["name"];
-                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
-                    $returnData["user_bio"] = $userInfo["bio"];
-                    unset($returnData["encrypted_password"]);
-                    unset($returnData["password_salt"]);
-                    unset($returnData["bio"]);
-                    unset($returnData["name"]);
-                    unset($returnData["avatar_file_name"]);
-                    return $returnData;
+                    $user = $this->getUserById($user_id);
+                    $this->loginByIdentityId($identity->id, $user_id, $user, $identity, 'password', $setCookie);
+                    return $user;
                 }
 
             }
         }
-        return 0;
+        return null;
     }
 
 }
