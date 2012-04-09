@@ -33,7 +33,7 @@ class IdentityModels extends DataModel {
     public function getIdentityById($id) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `id` = {$id}"
-        );
+        ));
     }
     
 
@@ -49,7 +49,7 @@ class IdentityModels extends DataModel {
     public function getIdentityByExternalId($external_id) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `external_identity` = '{$external_id}'"
-        );
+        ));
     }
 
 
