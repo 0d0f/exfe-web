@@ -135,20 +135,46 @@ class IdentityModels extends DataModel {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * add a new identity into database without adding user
+     * all parameters allow in $identityDetail:
+     * {
+     *     $name,
+     *     $nickname,
+     *     $bio,
+     *     $provider,
+     *     $external_id,
+     *     $external_username,
+     *     $avatar_filename,
+     * }
+     */
+    public function addIdentityWithoutUser($provider, $external_id, $identityDetail = array()) {
+        // collecting new identity informations
+        $name              = trim(mysql_real_escape_string($identityDetail['name']));
+        $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
+        $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
+        $provider          = trim(mysql_real_escape_string(strtolower($identityDetail['provider'])));
+        $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
+        $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
+        $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
+
+        switch ($provider) {
+            case 'email':
+                $chkidSql = "SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1";
+                break;
+            default:
+                $chkidSql = "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND `external_username` = '{$external_id}' LIMIT 1";
+                $external_identity = null;
+        }
+        $row = $this->getRow($sql);
+        if (intval($row['id']) > 0) {
+            return intval($row['id']);
+        }
+
+        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
+        $result = $this->query($sql);
+        $identityid = intval($result["insert_id"]);
+        return $identityid;
+    }
 
 }
