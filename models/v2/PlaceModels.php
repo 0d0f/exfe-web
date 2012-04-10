@@ -18,6 +18,43 @@ class PlaceModels extends DataModel {
         return $place;
 
     }
+    public function addPlace($place)
+    {
+
+    
+    //public $title=null;
+    //public $description=null;
+    //public $lng=0.0;
+    //public $lat=0.0;
+    //public $provider=null;
+    //public $external_id=0;
+    //public $created_at=null;
+    //public $updated_at=null;
+
+        if ($placeId === null) {
+            $sql = "INSERT INTO `places` (`place_line1`, `place_line2`, `provider`,
+                    `external_id`, `lng`, `lat`, `created_at`, `updated_at`)
+                    values ('{$place->title}', '{$place->description}', '{$place->provider}',
+                    '{$place->external_id}',{$place->lng},{$place->lat}, now(), now());";
+print $sql;
+            $result = $this->query($sql);
+            return intval($result["insert_id"]) > 0
+                 ? intval($result["insert_id"]) : false;
+        } else {
+            $sql = "UPDATE `places` SET
+                    `place_line1` = '{$title}',
+                    `place_line2` = '{$description}',
+                    `provider`    = '{$provider}',
+                    `external_id` = '{$external_id}'
+                    `lng`={$lng}, 
+                    `lat`={$lat},
+                    `updated_at`  = now() 
+                    WHERE `id`    = {$placeId};";
+            return $this->query($sql);
+        }
+
+
+    }
 
 }
 
