@@ -97,7 +97,7 @@ b.r3{margin: 0px}
 
 .identification_dialog_bottom{
     display:block; margin:0; height:5px; width:400px; padding:0;
-    background:url(/static/images/fuceng_title.png) no-repeat 0 -25px;
+    /*background:url(/static/images/fuceng_title.png) no-repeat 0 -25px;*/
 }
 
 .identity_visual_dialog {
