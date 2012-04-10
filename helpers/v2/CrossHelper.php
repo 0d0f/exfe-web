@@ -7,9 +7,6 @@ class CrossHelper extends ActionController {
         $crossData=$this->getModelByName("cross","v2");
         $cross=$crossData->getCross($cross_id);
 
-        //$crossTime=new CrossTime($result["begin_at"],$result["timezone"],$result["origin_begin_at"]);
-        //print_r($crossTime);
-
         $placeData=$this->getModelByName("place","v2");
         $place=$placeData->getPlace($cross["place_id"]);
 
@@ -23,7 +20,6 @@ class CrossHelper extends ActionController {
             $time=$datetime[1];
         }
         $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],"");
-        ///($date_word,$date,$time_word,$time,$timezone,$origin,$originMark)
 
         $attribute=array();
         if($cross["state"]==1)
@@ -39,6 +35,20 @@ class CrossHelper extends ActionController {
         $cross->setRelation($relative_id,$relation);
 
         return $cross;
+    }
+    public function gatherCross($cross)
+    {
+        $placeData=$this->getModelByName("place","v2");
+        //$place_id=$placeData->addPlace($cross->place);
+
+        $crossData=$this->getModelByName("cross","v2");
+        $crossData->addCross($cross);
+
+        //if(intval($place_id>0))
+        //{
+
+        //}
+
     }
 
 }

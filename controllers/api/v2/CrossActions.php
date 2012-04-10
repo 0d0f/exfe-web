@@ -5,11 +5,20 @@ class CrossActions extends ActionController {
     public function doIndex()
     {
         $params=$this->params;
-        $crossData=$this->getHelperByName("cross","v2");
-        $cross=$crossData->getCross($params["id"]);
-
-        //$cross=new Cross($title, $description, $time, $place, $attribute, $exfee_id, $widget);
+        $crossHelper=$this->getHelperByName("cross","v2");
+        $cross=$crossHelper->getCross($params["id"]);
         echo json_encode($cross);
-        //var_dump($cross);
+    }
+    public function doNew()
+    {
+        $params=$this->params;
+        $cross_str=$_POST["cross"];
+        $cross=json_decode($cross_str);
+        $crossHelper=$this->getHelperByName("cross","v2");
+        $crossHelper->gatherCross($cross);
+
+        //print_r($cross);
+
+
     }
 }
