@@ -6,6 +6,8 @@ class CrossHelper extends ActionController {
     {
         $crossData=$this->getModelByName("cross","v2");
         $cross=$crossData->getCross($cross_id);
+        if($cross==NULL)
+            return;
 
         $placeData=$this->getModelByName("place","v2");
         $place=$placeData->getPlace($cross["place_id"]);
@@ -39,16 +41,14 @@ class CrossHelper extends ActionController {
     public function gatherCross($cross)
     {
         $placeData=$this->getModelByName("place","v2");
-        //$place_id=$placeData->addPlace($cross->place);
+        $place_id=$placeData->addPlace($cross->place);
 
         $crossData=$this->getModelByName("cross","v2");
-        $crossData->addCross($cross);
+        $exfee_id=1;
+        if($place_id>0 && $exfee_id>0)
+            $cross_id=$crossData->addCross($cross,$place_id,$exfee_id);
 
-        //if(intval($place_id>0))
-        //{
-
-        //}
-
+        return $cross_id;
     }
 
 }

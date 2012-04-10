@@ -3,7 +3,7 @@
 class CrossModels extends DataModel {
     public function getCross($crossid)
     {
-        $sql="select * from crosses where id=$crossid";
+        $sql="select * from crosses where id=$crossid;";
         $result=$this->getRow($sql);
         return $result;
     }
@@ -30,9 +30,8 @@ class CrossModels extends DataModel {
                 {$place_id}, '{$cross_time->begin_at->timezone}',
                 '{$cross_time->origin}', '{$background}','{$cross_time->begin_at->date_word}','{$cross_time->begin_at->time_word}','{$cross_time->begin_at->date}','{$cross_time->begin_at->time}','{$cross_time->outputformat}');";
 
-                print $sql;
-        //$result   = $this->query($sql);
-        //$cross_id = intval($result['insert_id']);
-
+        $result   = $this->query($sql);
+        $cross_id = intval($result['insert_id']);
+        return $cross_id;
     }
 }
