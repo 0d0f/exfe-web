@@ -331,6 +331,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.showLoginDialog = function(type){
+        $('#identity_reg_login_dialog').show();
         //改变titles
         jQuery('#identification_title_msg').html('Enter identity information:');
         jQuery('#identification_title_msg').css({color:'#333333'});
@@ -384,6 +385,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showManualVerificationDialog = function(curUserIdentity){
         jQuery("#manual_verification_dialog").show();
+        $('#identity_reg_login_dialog').hide();
 
         var userIdentity = curUserIdentity;
         if(typeof curUserIdentity == "undefined" || curUserIdentity == "" || curUserIdentity == null){
@@ -404,6 +406,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#manual_verification_btn").unbind("click");
                 jQuery("#manual_verification_btn").bind("click",function(){
                     clearManualVerifyDialog();
+                    $('#identity_reg_login_dialog').show();
                     ns.showLoginDialog('init');
                 });
             };

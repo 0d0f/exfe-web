@@ -295,7 +295,9 @@ b.r3{margin: 0px}
 }
 .identity_dialog_main ul li em.warning{
     background: url("/static/images/btn.png") no-repeat scroll left -500px transparent;
-    margin-left:4px
+    margin-left:4px;
+    position: absolute;
+    right: -16px;
 }
 
 .identity_dialog_main ul .logincheck{ height:30px; }
