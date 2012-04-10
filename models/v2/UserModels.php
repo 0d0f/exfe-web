@@ -157,8 +157,8 @@ class UserModels extends DataModel {
             }
             $identity_ids = json_encode($identity_ids);
             // setcookie for one year
-            setcookie('user_id',      $user_id,           time() + 31536000, '/', COOKIES_DOMAIN);
-            setcookie('identity_ids', $identity_ids,      time() + 31536000, '/', COOKIES_DOMAIN);
+            setcookie('user_id',      $user_id,            time() + 31536000, '/', COOKIES_DOMAIN);
+            setcookie('identity_ids', $identity_ids,       time() + 31536000, '/', COOKIES_DOMAIN);
             setcookie('signin_sequ',  $cookie_signinsequ,  time() + 31536000, '/', COOKIES_DOMAIN);
             setcookie('signin_token', $cookie_signintoken, time() + 31536000, '/', COOKIES_DOMAIN);
         }
