@@ -36,7 +36,6 @@ class PlaceModels extends DataModel {
                     `external_id`, `lng`, `lat`, `created_at`, `updated_at`)
                     values ('{$place->title}', '{$place->description}', '{$place->provider}',
                     '{$place->external_id}',{$place->lng},{$place->lat}, now(), now());";
-print $sql;
             $result = $this->query($sql);
             return intval($result["insert_id"]) > 0
                  ? intval($result["insert_id"]) : false;

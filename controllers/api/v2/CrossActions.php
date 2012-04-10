@@ -7,7 +7,13 @@ class CrossActions extends ActionController {
         $params=$this->params;
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross=$crossHelper->getCross($params["id"]);
-        echo json_encode($cross);
+        if($cross===NULL)
+        {
+            $err["code"]=500;
+            echo json_encode($err);
+            exit(0);
+        }
+        echo json_encode(array("cross"=>$cross));
     }
     public function doNew()
     {
@@ -15,7 +21,20 @@ class CrossActions extends ActionController {
         $cross_str=$_POST["cross"];
         $cross=json_decode($cross_str);
         $crossHelper=$this->getHelperByName("cross","v2");
-        $crossHelper->gatherCross($cross);
+        $cross_id=$crossHelper->gatherCross($cross);
+        
+        if(intval($cross_id)>0)
+        {
+            $crossHelper=$this->getHelperByName("cross","v2");
+            $cross=$crossHelper->getCross($cross_id);
+            echo json_encode(array("cross"=>$cross));
+        }
+        else
+        {
+            $err["code"]=500;
+            echo json_encode($err);
+        }
+
 
         //print_r($cross);
 
