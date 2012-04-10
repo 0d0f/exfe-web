@@ -6,3 +6,4 @@ ADD  `output` TINYINT NOT NULL ;
 
 ALTER TABLE  `crosses` CHANGE  `output`  `outputformat` TINYINT( 4 ) NOT NULL COMMENT  '0 OutputFormat, 1  OutputOrigin';
 
+ALTER TABLE  `crosses` ADD  `exfee_id` BIGINT NOT NULL AFTER  `code` ;
