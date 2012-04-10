@@ -5,16 +5,9 @@ class UserModels extends DataModel {
     private $salt = '_4f9g18t9VEdi2if';
     
     
-    protected function getUserPasswordInfoByUserId($user_id) {
-        return $this->getRow(
-            "SELECT `encrypted_password`, `password_salt` FROM `users` WHERE `id` = {$user_id}"
-        );
-    }
-    
-    
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
-            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `encrypted_password`, `current_sign_in_ip`
+        "SELECT `cookie_logintoken`, `cookie_loginsequ`, `encrypted_password`, `password_salt`, `current_sign_in_ip`
              FROM   `users` WHERE `id` = {$user_id}"
         );
     }
@@ -194,7 +187,7 @@ class UserModels extends DataModel {
         // sign in
         if ($identity) {
             if (($user_id = $this->getUserIdByIdentityId($identity->id))) {
-                $passwdInDb = $this->getUserPasswordInfoByUserId($user_id);
+                $passwdInDb = $this->getUserPasswdByUserId($user_id);
                 // hash the password
                 if (!$password_hashed) {
                     $passwordSalt = $passwdInDb['password_salt'];
