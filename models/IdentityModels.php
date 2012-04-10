@@ -672,6 +672,198 @@ class IdentityModels extends DataModel {
             return $identityid;
         }
     }
+    
+    // upgraded
+    public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
+        //$password = md5($password.$this->salt);
+        $sql="SELECT id AS identity_id, provider, bio, external_identity, name, avatar_file_name, external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
+        if($oauth_login){
+            $provider = $identityInfo["provider"];
+            $ex_username = $identityInfo["ex_username"];
+            $sql = "SELECT id AS identity_id, provider, bio, external_identity,name, avatar_file_name, external_username FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}' LIMIT 1";
+        }
+
+        $identityRow = $this->getRow($sql);
+        $identityID = intval($identityRow["identity_id"]);
+        if($identityID > 0) {
+            $externalIdentity = $identityRow["external_identity"];
+
+            $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
+            $userRow = $this->getRow($sql);
+            $userID = intval($userRow["userid"]);
+
+            if($userID > 0) {
+                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name FROM users WHERE id=$userID";
+                $userInfo = $this->getRow($sql);
+                if(!$password_hashed){
+                    $passwordSalt = $userInfo["password_salt"];
+                    if($passwordSalt == $this->salt){
+                        $password = md5($password.$this->salt);
+                    }else{
+                        $password = md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+                    }
+                }
+
+                if($userInfo["encrypted_password"] == $password)
+                {
+                    $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
+
+                    $returnData = array_merge($identityRow,$userInfo);
+                    $returnData["user_id"] = $userID;
+                    $returnData["identity_name"] = $identityRow["name"];
+                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
+                    $returnData["identity_bio"] = $identityRow["bio"];
+                    $returnData["user_name"] = $userInfo["name"];
+                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
+                    $returnData["user_bio"] = $userInfo["bio"];
+                    unset($returnData["encrypted_password"]);
+                    unset($returnData["password_salt"]);
+                    unset($returnData["bio"]);
+                    unset($returnData["name"]);
+                    unset($returnData["avatar_file_name"]);
+                    return $returnData;
+                }
+
+            }
+        }
+        return 0;
+    }
+    
+    // upgraded
+    public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
+        if($userid==0) {
+            $sql="select userid from user_identity where identityid=$identity_id";
+            $trow=$this->getRow($sql);
+            if(intval($trow["userid"])>0){
+                $userid=intval($trow["userid"]);
+            }
+        }
+        if($userrow==NULL) {
+            $sql="select name,bio,avatar_file_name from users where id=$userid";
+            $userrow=$this->getRow($sql);
+        }
+        if($identityrow==NULL) {
+            $sql="select * from identities where id='$identity_id' limit 1";
+            $identityrow=$this->getRow($sql);
+        }
+        if($setcookie==true && $type=="password"){
+            $this->setLoginCookie($identity, $userid,$identity_id);
+        }
+
+        $sql = "SELECT timezone FROM users WHERE id={$userid}";
+        $tz_result = $this->getRow($sql);
+
+        $ipaddress=getRealIpAddr();
+        $time=time();
+        $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time) where id=$userid;";
+        $this->query($sql);
+
+
+        $_SESSION["userid"]=$userid;
+        $_SESSION["identity_id"]=$identity_id;
+        $_SESSION["user_time_zone"] = $tz_result["timezone"];
+
+        $identity=array();
+        $identity["external_identity"]=$identityrow["external_identity"];
+        $identity["external_username"]=$identityrow["external_username"];
+        $identity["provider"] = $identityrow["provider"];
+        $identity["name"] = $identityrow["name"];
+        if(trim($identity["name"] == ""))
+            $identity["name"]=$userrow["name"];
+
+        if(trim($identity["name"]==""))
+            $identity["name"]=$identityrow["external_identity"];
+
+        $identity["bio"]=$identityrow["bio"];
+        $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+        if(trim($identity["avatar_file_name"])=="")
+            $identity["avatar_file_name"]=$userrow["avatar_file_name"];
+        $_SESSION["identity"]=$identity;
+
+        unset($_SESSION["tokenIdentity"]);
+        return $userid;
+    }
+    
+    
+    // upgraded
+    public function setLoginCookie($identity, $userid, $identity_id) {
+        $time=time();
+
+        $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip,avatar_file_name from users where id=$userid";
+        $userrow=$this->getRow($sql);
+        $encrypted_password=$userrow["encrypted_password"];
+        $current_ip=$userrow["current_sign_in_ip"];
+
+        $cookie_logintoken=md5($encrypted_password."3firwkF");
+        $cookie_loginsequ=md5($time."glkfFDks.F");
+
+        $ipaddress=getRealIpAddr();
+
+        if( $userrow["cookie_loginsequ"]=="" ||  $userrow["cookie_logintoken"]=="") //first time login, setup cookie
+        {
+
+            $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
+            $this->query($sql);
+        } else {
+            $cookie_logintoken=$userrow["cookie_logintoken"];
+            $cookie_loginsequ=$userrow["cookie_loginsequ"];
+        }
+
+        setcookie('uid', $userid, time()+31536000, "/", COOKIES_DOMAIN);
+        setcookie('id', $identity_id, time()+31536000, "/", COOKIES_DOMAIN);
+        setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/", COOKIES_DOMAIN);
+        setcookie('logintoken', $cookie_logintoken, time()+31536000, "/", COOKIES_DOMAIN);
+        //最后登录的identity缓存。连同头像一块缓存。
+        $last_identity = array("identity"=>$identity,'identity_avatar'=>$userrow["avatar_file_name"]);
+        $last_identity_str = json_encode($last_identity);
+        setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
+    }
+    
+    
+    // upgraded
+    public function loginByCookie($source='') {
+        $uid=intval($_COOKIE['uid']);
+        $identity_id=intval($_COOKIE['id']);
+        $loginsequ=$_COOKIE['loginsequ'];
+        $logintoken=$_COOKIE['logintoken'];
+        $identity = $_COOKIE["last_identity"];
+        if($uid > 0) {
+            $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
+            $logindata=$this->getRow($sql);
+
+            $ipaddress=getRealIpAddr();
+            if($ipaddress!=$logindata["current_sign_in_ip"])
+            {
+                unset($_SESSION["userid"]);
+                unset($_SESSION["identity_id"]);
+                unset($_SESSION["identity"]);
+                unset($_SESSION["tokenIdentity"]);
+                session_destroy();
+
+                unset($_COOKIE["uid"]);
+                unset($_COOKIE["id"]);
+                unset($_COOKIE["loginsequ"]);
+                unset($_COOKIE["logintoken"]);
+                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
+                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
+                if($source == ""){
+                    header( 'Location: /s/login' ) ;
+                }
+                exit(0);
+            }
+
+            if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
+            { //do login
+               $user_id=$this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
+               return $user_id;
+            } else {
+                return 0;
+            }
+
+        }
+    }
 
 
     // upgraded

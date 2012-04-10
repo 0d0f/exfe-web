@@ -17,17 +17,18 @@ class UserActions extends ActionController {
     }
     
     public function doSignin() {
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
-        
-        $external_id   = $_POST['external_identity'];
-        $provider      = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password      = $_POST['password'];
-        $name          = $_POST['name'];
-        $autoSignin    = intval($_POST['auto_signin']) === 1;
-        $isNewIdentity = false;
-        
-        if ($external_id && $password && $name) {
+        // init
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        $external_identity = $_POST['external_identity'];
+        $provider          = $_POST['provider'] ? $_POST['provider'] : 'email';
+        $password          = $_POST['password'];
+        $name              = $_POST['name'];
+        $autosignin        = intval($_POST['auto_signin']) === 1;
+        $isNewIdentity     = false;
+        // adding new identity
+        if ($external_identity !== '' && $password !== '' && $name !== '') {
             // @todo: 根据 $provider 检查 $external_identity 有效性
             $user_id = $modUser->newUserByPassword($password);
             // @todo: check returns
@@ -35,9 +36,9 @@ class UserActions extends ActionController {
             // @todo: check returns
             $isNewIdentity = true;
         }
-        
-        if ($external_id && $password) {
-            $user_id = $modUser ->login($external_id, $password, $autoSignin);
+        // try to sign in 
+        if ($external_identity !== '' && $password !== '') {
+            $user_id = $modIdentity->login($identity,$password,$autosignin);
             if(intval($userid)>0)
             {
                 //$_SESSION["userid"]=$userid;

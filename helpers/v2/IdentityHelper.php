@@ -6,6 +6,29 @@ Resque::setBackend(RESQUE_SERVER);
 
 class IdentityHelper extends ActionController {
 
+    protected $modIdentity = null;
+    
+    
+    protected function __construct() {
+        $this->modIdentity = $this->getModelByName('Identity', 'v2');
+    }
+    
+
+    public function getIdentityById($id) {
+        return $this->modIdentity->getIdentityById($id);
+    }
+        
+        
+    public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
+        return $this->modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
+    }
+    
+    
+    public function getIdentityByExternalId($external_id) {
+        return $this->modIdentity->getIdentityByExternalId($external_id);
+    }
+
+
     public function sentVerifyingEmail($args) {
         return Resque::enqueue('email', 'emailverifying_job', $args, true);
     }
