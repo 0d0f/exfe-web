@@ -43,6 +43,10 @@ class IdentityModels extends DataModel {
      * } 
      */
     public function addIdentity($user_id, $provider, $external_id, $identityDetail = array()) {
+        // init
+        if (!$provider || (!$external_id && !$identityDetail['external_username']) {
+            return null;
+        }
         // create new token
         $activecode = createToken();
         // collecting new identity informations
@@ -63,15 +67,17 @@ class IdentityModels extends DataModel {
             $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode(DEFAULT_AVATAR_URL);
         }
         // insert new identity into database
-        $dbResult = $this->query("INSERT INTO `identities` SET
-                                  `provider`          = '{$provider}',
-                                  `external_identity` = '{$external_id}',
-                                  `created_at`        = NOW(),
-                                  `name`              = '{$name}',
-                                  `bio`               = '{$bio}',
-                                  `avatar_file_name`  = '{$avatar_filename}',
-                                  `avatar_updated_at` = NOW(),
-                                  `external_username` = '{$external_username}'");
+        $dbResult = $this->query(
+            "INSERT INTO `identities` SET
+             `provider`          = '{$provider}',
+             `external_identity` = '{$external_id}',
+             `created_at`        = NOW(),
+             `name`              = '{$name}',
+             `bio`               = '{$bio}',
+             `avatar_file_name`  = '{$avatar_filename}',
+             `avatar_updated_at` = NOW(),
+             `external_username` = '{$external_username}'"
+        );
         $id = intval($dbResult['insert_id']);
         // update user information
         if ($id) {
@@ -125,6 +131,10 @@ class IdentityModels extends DataModel {
      * }
      */
     public function addIdentityWithoutUser($provider, $external_id, $identityDetail = array()) {
+        // init
+        if (!$provider || (!$external_id && !$identityDetail['external_username']) {
+            return null;
+        }
         // collecting new identity informations
         $name              = trim(mysql_real_escape_string($identityDetail['name']));
         $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
@@ -133,24 +143,24 @@ class IdentityModels extends DataModel {
         $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
         $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
         $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
-
-        switch ($provider) {
-            case 'email':
-                $chkidSql = "SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1";
-                break;
-            default:
-                $chkidSql = "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND `external_username` = '{$external_id}' LIMIT 1";
-                $external_identity = null;
+        // check current identity
+        $curIdentity = $this->getRow($external_id ? "SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1" : "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND `external_username` = '{$external_username}' LIMIT 1");
+        if (intval($curIdentity['id']) > 0) {
+            return intval($curIdentity['id']);
         }
-        $row = $this->getRow($sql);
-        if (intval($row['id']) > 0) {
-            return intval($row['id']);
-        }
-
-        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
-        $result = $this->query($sql);
-        $identityid = intval($result["insert_id"]);
-        return $identityid;
+        // insert new identity into database
+        $dbResult = $this->query(
+            "INSERT INTO `identities` SET
+             `provider`          = '{$provider}',
+             `external_identity` = '{$external_id}',
+             `created_at`        = NOW(),
+             `name`              = '{$name}',
+             `bio`               = '{$bio}',
+             `avatar_file_name`  = '{$avatar_filename}',
+             `avatar_updated_at` = NOW(),
+             `external_username` = '{$external_username}'"
+        );
+        return intval($dbResult['insert_id']);
     }
 
 }
