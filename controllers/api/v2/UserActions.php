@@ -18,18 +18,18 @@ class UserActions extends ActionController {
     
     
     public function doSignin() {
-        // init
+        // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
+        // init
+        $rtResult      = array(); 
+        $isNewIdentity = false;
         // collecting post data
         $external_id   = $_POST['external_id'];
         $provider      = $_POST['provider'] ? $_POST['provider'] : 'email';
         $password      = $_POST['password'];
         $name          = $_POST['name'];
         $autoSignin    = intval($_POST['auto_signin']) === 1;
-        // 
-        $rtResult      = array(); 
-        $isNewIdentity = false;
         // adding new identity
         if ($external_id && $password && $name) {
             // @todo: 根据 $provider 检查 $external_identity 有效性
@@ -49,7 +49,6 @@ class UserActions extends ActionController {
     
     
     public function doGet() {
-        
         $modUser = $this->getModelByName('User', 'v2');
         $user = $modUser->getUserById(1);
         print_r($user);
