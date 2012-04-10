@@ -864,6 +864,46 @@ class IdentityModels extends DataModel {
 
         }
     }
+    
+    
+    // upgraded
+    public function getIdentityById($identity_id) {
+        $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
+        $row=$this->getRow($sql);
+        return $row;
+    }
+    
+    
+    // upgraded
+    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
+        // collecting new identity informations
+        $name                = mysql_real_escape_string($identityDetail["name"]);
+        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
+        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
+        $avatar_content_type = $identityDetail["avatar_content_type"];
+        $avatar_file_size    = $identityDetail["avatar_file_size"];
+        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
+        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
+        $external_identity   = mysql_real_escape_string($external_identity);
+        $time = time();
+        switch ($provider) {
+            case 'email':
+                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
+                break;
+            default:
+                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
+                $external_identity = null;
+        }
+        $row = $this->getRow($sql);
+        if (intval($row['id']) > 0) {
+            return intval($row['id']);
+        }
+
+        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
+        $result = $this->query($sql);
+        $identityid = intval($result["insert_id"]);
+        return $identityid;
+    }
 
 
     // upgraded
