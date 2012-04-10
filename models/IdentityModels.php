@@ -2,36 +2,6 @@
 
 class IdentityModels extends DataModel {
 
-    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
-
-        $name                = mysql_real_escape_string($identityDetail["name"]);
-        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
-        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
-        $avatar_content_type = $identityDetail["avatar_content_type"];
-        $avatar_file_size    = $identityDetail["avatar_file_size"];
-        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
-        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
-        $external_identity   = mysql_real_escape_string($external_identity);
-        $time = time();
-        switch ($provider) {
-            case 'email':
-                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
-                break;
-            default:
-                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
-                $external_identity = null;
-        }
-        $row = $this->getRow($sql);
-        if (intval($row['id']) > 0) {
-            return intval($row['id']);
-        }
-
-        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
-        $result = $this->query($sql);
-        $identityid = intval($result["insert_id"]);
-        return $identityid;
-    }
-
     public function ifIdentityExist($external_identity, $provider = '') {
         $external_identity = mysql_real_escape_string($external_identity);
         $provider = mysql_real_escape_string($provider);
@@ -74,192 +44,7 @@ class IdentityModels extends DataModel {
         }
     }
 
-    public function setLoginCookie($identity, $userid, $identity_id) {
-            $time=time();
-
-            $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip,avatar_file_name from users where id=$userid";
-            $userrow=$this->getRow($sql);
-            $encrypted_password=$userrow["encrypted_password"];
-            $current_ip=$userrow["current_sign_in_ip"];
-
-            $cookie_logintoken=md5($encrypted_password."3firwkF");
-            $cookie_loginsequ=md5($time."glkfFDks.F");
-
-            $ipaddress=getRealIpAddr();
-
-            if( $userrow["cookie_loginsequ"]=="" ||  $userrow["cookie_logintoken"]=="") //first time login, setup cookie
-            {
-
-                $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
-                $this->query($sql);
-            } else {
-                $cookie_logintoken=$userrow["cookie_logintoken"];
-                $cookie_loginsequ=$userrow["cookie_loginsequ"];
-            }
-
-            setcookie('uid', $userid, time()+31536000, "/", COOKIES_DOMAIN);
-            setcookie('id', $identity_id, time()+31536000, "/", COOKIES_DOMAIN);
-            setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/", COOKIES_DOMAIN);
-            setcookie('logintoken', $cookie_logintoken, time()+31536000, "/", COOKIES_DOMAIN);
-            //最后登录的identity缓存。连同头像一块缓存。
-            $last_identity = array("identity"=>$identity,'identity_avatar'=>$userrow["avatar_file_name"]);
-            $last_identity_str = json_encode($last_identity);
-            setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
-    }
-
-    public function loginByCookie($source='') {
-        $uid=intval($_COOKIE['uid']);
-        $identity_id=intval($_COOKIE['id']);
-        $loginsequ=$_COOKIE['loginsequ'];
-        $logintoken=$_COOKIE['logintoken'];
-        $identity = $_COOKIE["last_identity"];
-        if($uid > 0) {
-            $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
-            $logindata=$this->getRow($sql);
-
-            $ipaddress=getRealIpAddr();
-            if($ipaddress!=$logindata["current_sign_in_ip"])
-            {
-                unset($_SESSION["userid"]);
-                unset($_SESSION["identity_id"]);
-                unset($_SESSION["identity"]);
-                unset($_SESSION["tokenIdentity"]);
-                session_destroy();
-
-                unset($_COOKIE["uid"]);
-                unset($_COOKIE["id"]);
-                unset($_COOKIE["loginsequ"]);
-                unset($_COOKIE["logintoken"]);
-                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
-                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
-                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
-                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
-                if($source == ""){
-                    header( 'Location: /s/login' ) ;
-                }
-                exit(0);
-            }
-
-            if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
-            { //do login
-               $user_id=$this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-               return $user_id;
-            } else {
-                return 0;
-            }
-
-        }
-    }
-
-    public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
-        if($userid==0) {
-            $sql="select userid from user_identity where identityid=$identity_id";
-            $trow=$this->getRow($sql);
-            if(intval($trow["userid"])>0){
-                $userid=intval($trow["userid"]);
-            }
-        }
-        if($userrow==NULL) {
-            $sql="select name,bio,avatar_file_name from users where id=$userid";
-            $userrow=$this->getRow($sql);
-        }
-        if($identityrow==NULL) {
-            $sql="select * from identities where id='$identity_id' limit 1";
-            $identityrow=$this->getRow($sql);
-        }
-        if($setcookie==true && $type=="password"){
-            $this->setLoginCookie($identity, $userid,$identity_id);
-        }
-
-        $sql = "SELECT timezone FROM users WHERE id={$userid}";
-        $tz_result = $this->getRow($sql);
-
-        $ipaddress=getRealIpAddr();
-        $time=time();
-        $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time) where id=$userid;";
-        $this->query($sql);
-
-
-        $_SESSION["userid"]=$userid;
-        $_SESSION["identity_id"]=$identity_id;
-        $_SESSION["user_time_zone"] = $tz_result["timezone"];
-
-        $identity=array();
-        $identity["external_identity"]=$identityrow["external_identity"];
-        $identity["external_username"]=$identityrow["external_username"];
-        $identity["provider"] = $identityrow["provider"];
-        $identity["name"] = $identityrow["name"];
-        if(trim($identity["name"] == ""))
-            $identity["name"]=$userrow["name"];
-
-        if(trim($identity["name"]==""))
-            $identity["name"]=$identityrow["external_identity"];
-
-        $identity["bio"]=$identityrow["bio"];
-        $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
-        if(trim($identity["avatar_file_name"])=="")
-            $identity["avatar_file_name"]=$userrow["avatar_file_name"];
-        $_SESSION["identity"]=$identity;
-
-        unset($_SESSION["tokenIdentity"]);
-        return $userid;
-    }
-
-    public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
-        //$password = md5($password.$this->salt);
-        $sql="SELECT id AS identity_id, provider, bio, external_identity, name, avatar_file_name, external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
-        if($oauth_login){
-            $provider = $identityInfo["provider"];
-            $ex_username = $identityInfo["ex_username"];
-            $sql = "SELECT id AS identity_id, provider, bio, external_identity,name, avatar_file_name, external_username FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}' LIMIT 1";
-        }
-
-        $identityRow = $this->getRow($sql);
-        $identityID = intval($identityRow["identity_id"]);
-        if($identityID > 0) {
-            $externalIdentity = $identityRow["external_identity"];
-
-            $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
-            $userRow = $this->getRow($sql);
-            $userID = intval($userRow["userid"]);
-
-            if($userID > 0) {
-                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name FROM users WHERE id=$userID";
-                $userInfo = $this->getRow($sql);
-                if(!$password_hashed){
-                    $passwordSalt = $userInfo["password_salt"];
-                    if($passwordSalt == $this->salt){
-                        $password = md5($password.$this->salt);
-                    }else{
-                        $password = md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-                    }
-                }
-
-                if($userInfo["encrypted_password"] == $password)
-                {
-                    $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
-
-                    $returnData = array_merge($identityRow,$userInfo);
-                    $returnData["user_id"] = $userID;
-                    $returnData["identity_name"] = $identityRow["name"];
-                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
-                    $returnData["identity_bio"] = $identityRow["bio"];
-                    $returnData["user_name"] = $userInfo["name"];
-                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
-                    $returnData["user_bio"] = $userInfo["bio"];
-                    unset($returnData["encrypted_password"]);
-                    unset($returnData["password_salt"]);
-                    unset($returnData["bio"]);
-                    unset($returnData["name"]);
-                    unset($returnData["avatar_file_name"]);
-                    return $returnData;
-                }
-
-            }
-        }
-        return 0;
-    }
-
+    
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -271,6 +56,7 @@ class IdentityModels extends DataModel {
         }
     }
 
+
     public function checkUserByIdentityID($identity_id) {
         $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id}";
         $row = $this->getRow($sql);
@@ -280,17 +66,13 @@ class IdentityModels extends DataModel {
         return false;
     }
 
-    public function getIdentityById($identity_id) {
-        $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
-        $row=$this->getRow($sql);
-        return $row;
-    }
 
     public function getIdentity($identity, $provider) {
         $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_username='{$identity}' AND a.provider='{$provider}'";
         $row=$this->getRow($sql);
         return $row;
     }
+
 
     public function loginWithXToken($cross_id,$token) {
         $sql = "SELECT `identity_id`, `tokenexpired` FROM `invitations` WHERE `cross_id` = {$cross_id} AND `token` = '{$token}'";
@@ -368,6 +150,7 @@ class IdentityModels extends DataModel {
         return $tokenSession;
     }
 
+
     public function getIdentitiesIdsByUser($userid)
     {
         $sql="select identityid from user_identity where userid=$userid";
@@ -380,6 +163,8 @@ class IdentityModels extends DataModel {
             }
         return $ids;
     }
+    
+    
     public function getIdentitiesByUser($userid)
     {
         $sql="select identityid,status,activecode from user_identity where userid=$userid";
@@ -401,6 +186,7 @@ class IdentityModels extends DataModel {
 
     }
 
+
     public function checkUserIdentityRelation($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
         $result = $this->getRow($sql);
@@ -409,6 +195,7 @@ class IdentityModels extends DataModel {
         }
         return false;
     }
+
 
     public function deleteIdentity($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
@@ -433,10 +220,12 @@ class IdentityModels extends DataModel {
         }
     }
 
+
     public function changeDefaultIdentity($user_id, $identity_id) {
         $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
         $this->query($sql);
     }
+
 
     public function checkIdentityStatus($identity_id)
     {
@@ -444,6 +233,7 @@ class IdentityModels extends DataModel {
         $result=$this->getRow($sql);
         return intval($result["status"]);
     }
+
 
     public function setRelation($identity_id,$status=0)
     {
@@ -502,6 +292,7 @@ class IdentityModels extends DataModel {
         }
     }
 
+
     public function getIdentitiesByIdentityIds($identity_ids)
     {
         if ($identity_ids) {
@@ -512,6 +303,7 @@ class IdentityModels extends DataModel {
             return array();
         }
     }
+
 
     public function delVerifyCode($identity_id, $active_code){
         $activecode = mysql_real_escape_string($activecode);
@@ -574,6 +366,7 @@ class IdentityModels extends DataModel {
         return $returnData;
     }
 
+
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $result=$this->ifIdentityExist($external_identity);
@@ -588,6 +381,7 @@ class IdentityModels extends DataModel {
         return FALSE;
     }
 
+
     public function ifIdentityIdBelongsUser($identity_id,$user_id)
     {
         if(intval($identity_id)>0 && intval($user_id)>0)
@@ -599,6 +393,7 @@ class IdentityModels extends DataModel {
         }
         return FALSE;
     }
+
 
     public function getVerifyingCode($identity_id){
         if(intval($identity_id) > 0){
@@ -623,6 +418,7 @@ class IdentityModels extends DataModel {
             }
         }
     }
+
 
     public function buildIndex($userid)
     {
@@ -655,6 +451,7 @@ class IdentityModels extends DataModel {
             }
         }
     }
+
 
     public function getIdentitiesByIdsFromCache($identity_id_list)
     {
@@ -716,16 +513,9 @@ class IdentityModels extends DataModel {
             return $identity;
             //one value
         }
-
-    //public function getIdentityById($identity_id)
-    //{
-    //    $sql="select id,external_identity,name,bio,avatar_file_name,external_username from identities where id='$identity_id'";
-    //    $row=$this->getRow($sql);
-    //    return $row;
-    //}
-
-
     }
+    
+
     public function ifIdentitiesEqualWithIdentity($identities,$identity_id)
     {
         foreach($identities as $identity)
@@ -881,6 +671,239 @@ class IdentityModels extends DataModel {
             }
             return $identityid;
         }
+    }
+
+
+    // upgraded
+    public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
+        //$password = md5($password.$this->salt);
+        $sql="SELECT id AS identity_id, provider, bio, external_identity, name, avatar_file_name, external_username FROM identities WHERE external_identity='$identityInfo' LIMIT 1";
+        if($oauth_login){
+            $provider = $identityInfo["provider"];
+            $ex_username = $identityInfo["ex_username"];
+            $sql = "SELECT id AS identity_id, provider, bio, external_identity,name, avatar_file_name, external_username FROM identities WHERE provider='{$provider}' AND external_username='{$ex_username}' LIMIT 1";
+        }
+
+        $identityRow = $this->getRow($sql);
+        $identityID = intval($identityRow["identity_id"]);
+        if($identityID > 0) {
+            $externalIdentity = $identityRow["external_identity"];
+
+            $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
+            $userRow = $this->getRow($sql);
+            $userID = intval($userRow["userid"]);
+
+            if($userID > 0) {
+                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name FROM users WHERE id=$userID";
+                $userInfo = $this->getRow($sql);
+                if(!$password_hashed){
+                    $passwordSalt = $userInfo["password_salt"];
+                    if($passwordSalt == $this->salt){
+                        $password = md5($password.$this->salt);
+                    }else{
+                        $password = md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+                    }
+                }
+
+                if($userInfo["encrypted_password"] == $password)
+                {
+                    $this->loginByIdentityId( $identityID,$userID,$externalIdentity,$userInfo,$identityRow,"password",$setcookie);
+
+                    $returnData = array_merge($identityRow,$userInfo);
+                    $returnData["user_id"] = $userID;
+                    $returnData["identity_name"] = $identityRow["name"];
+                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
+                    $returnData["identity_bio"] = $identityRow["bio"];
+                    $returnData["user_name"] = $userInfo["name"];
+                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
+                    $returnData["user_bio"] = $userInfo["bio"];
+                    unset($returnData["encrypted_password"]);
+                    unset($returnData["password_salt"]);
+                    unset($returnData["bio"]);
+                    unset($returnData["name"]);
+                    unset($returnData["avatar_file_name"]);
+                    return $returnData;
+                }
+
+            }
+        }
+        return 0;
+    }
+    
+    // upgraded
+    public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
+        if($userid==0) {
+            $sql="select userid from user_identity where identityid=$identity_id";
+            $trow=$this->getRow($sql);
+            if(intval($trow["userid"])>0){
+                $userid=intval($trow["userid"]);
+            }
+        }
+        if($userrow==NULL) {
+            $sql="select name,bio,avatar_file_name from users where id=$userid";
+            $userrow=$this->getRow($sql);
+        }
+        if($identityrow==NULL) {
+            $sql="select * from identities where id='$identity_id' limit 1";
+            $identityrow=$this->getRow($sql);
+        }
+        if($setcookie==true && $type=="password"){
+            $this->setLoginCookie($identity, $userid,$identity_id);
+        }
+
+        $sql = "SELECT timezone FROM users WHERE id={$userid}";
+        $tz_result = $this->getRow($sql);
+
+        $ipaddress=getRealIpAddr();
+        $time=time();
+        $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time) where id=$userid;";
+        $this->query($sql);
+
+
+        $_SESSION["userid"]=$userid;
+        $_SESSION["identity_id"]=$identity_id;
+        $_SESSION["user_time_zone"] = $tz_result["timezone"];
+
+        $identity=array();
+        $identity["external_identity"]=$identityrow["external_identity"];
+        $identity["external_username"]=$identityrow["external_username"];
+        $identity["provider"] = $identityrow["provider"];
+        $identity["name"] = $identityrow["name"];
+        if(trim($identity["name"] == ""))
+            $identity["name"]=$userrow["name"];
+
+        if(trim($identity["name"]==""))
+            $identity["name"]=$identityrow["external_identity"];
+
+        $identity["bio"]=$identityrow["bio"];
+        $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+        if(trim($identity["avatar_file_name"])=="")
+            $identity["avatar_file_name"]=$userrow["avatar_file_name"];
+        $_SESSION["identity"]=$identity;
+
+        unset($_SESSION["tokenIdentity"]);
+        return $userid;
+    }
+    
+    
+    // upgraded
+    public function setLoginCookie($identity, $userid, $identity_id) {
+        $time=time();
+
+        $sql="select cookie_logintoken,cookie_loginsequ,encrypted_password,current_sign_in_ip,avatar_file_name from users where id=$userid";
+        $userrow=$this->getRow($sql);
+        $encrypted_password=$userrow["encrypted_password"];
+        $current_ip=$userrow["current_sign_in_ip"];
+
+        $cookie_logintoken=md5($encrypted_password."3firwkF");
+        $cookie_loginsequ=md5($time."glkfFDks.F");
+
+        $ipaddress=getRealIpAddr();
+
+        if( $userrow["cookie_loginsequ"]=="" ||  $userrow["cookie_logintoken"]=="") //first time login, setup cookie
+        {
+
+            $sql="update users set current_sign_in_ip='$ipaddress',created_at=FROM_UNIXTIME($time),cookie_loginsequ='$cookie_loginsequ',cookie_logintoken='$cookie_logintoken' where id=$userid;";
+            $this->query($sql);
+        } else {
+            $cookie_logintoken=$userrow["cookie_logintoken"];
+            $cookie_loginsequ=$userrow["cookie_loginsequ"];
+        }
+
+        setcookie('uid', $userid, time()+31536000, "/", COOKIES_DOMAIN);
+        setcookie('id', $identity_id, time()+31536000, "/", COOKIES_DOMAIN);
+        setcookie('loginsequ', $cookie_loginsequ, time()+31536000, "/", COOKIES_DOMAIN);
+        setcookie('logintoken', $cookie_logintoken, time()+31536000, "/", COOKIES_DOMAIN);
+        //最后登录的identity缓存。连同头像一块缓存。
+        $last_identity = array("identity"=>$identity,'identity_avatar'=>$userrow["avatar_file_name"]);
+        $last_identity_str = json_encode($last_identity);
+        setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
+    }
+    
+    
+    // upgraded
+    public function loginByCookie($source='') {
+        $uid=intval($_COOKIE['uid']);
+        $identity_id=intval($_COOKIE['id']);
+        $loginsequ=$_COOKIE['loginsequ'];
+        $logintoken=$_COOKIE['logintoken'];
+        $identity = $_COOKIE["last_identity"];
+        if($uid > 0) {
+            $sql="select current_sign_in_ip,cookie_loginsequ,cookie_logintoken from users where id=$uid";
+            $logindata=$this->getRow($sql);
+
+            $ipaddress=getRealIpAddr();
+            if($ipaddress!=$logindata["current_sign_in_ip"])
+            {
+                unset($_SESSION["userid"]);
+                unset($_SESSION["identity_id"]);
+                unset($_SESSION["identity"]);
+                unset($_SESSION["tokenIdentity"]);
+                session_destroy();
+
+                unset($_COOKIE["uid"]);
+                unset($_COOKIE["id"]);
+                unset($_COOKIE["loginsequ"]);
+                unset($_COOKIE["logintoken"]);
+                setcookie('uid', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('id', NULL, -1,"/", COOKIES_DOMAIN);
+                setcookie('loginsequ', NULL,-1,"/", COOKIES_DOMAIN);
+                setcookie('logintoken',NULL,-1,"/", COOKIES_DOMAIN);
+                if($source == ""){
+                    header( 'Location: /s/login' ) ;
+                }
+                exit(0);
+            }
+
+            if($loginsequ==$logindata["cookie_loginsequ"] && $logintoken==$logindata["cookie_logintoken"])
+            { //do login
+               $user_id=$this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
+               return $user_id;
+            } else {
+                return 0;
+            }
+
+        }
+    }
+    
+    
+    // upgraded
+    public function getIdentityById($identity_id) {
+        $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
+        $row=$this->getRow($sql);
+        return $row;
+    }
+    
+    
+    // upgraded
+    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
+        // collecting new identity informations
+        $name                = mysql_real_escape_string($identityDetail["name"]);
+        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
+        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
+        $avatar_content_type = $identityDetail["avatar_content_type"];
+        $avatar_file_size    = $identityDetail["avatar_file_size"];
+        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
+        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
+        $external_identity   = mysql_real_escape_string($external_identity);
+        $time = time();
+        switch ($provider) {
+            case 'email':
+                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
+                break;
+            default:
+                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
+                $external_identity = null;
+        }
+        $row = $this->getRow($sql);
+        if (intval($row['id']) > 0) {
+            return intval($row['id']);
+        }
+
+        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
+        $result = $this->query($sql);
+        $identityid = intval($result["insert_id"]);
+        return $identityid;
     }
 
 }
