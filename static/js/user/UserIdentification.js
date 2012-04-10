@@ -38,6 +38,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.showRegisteMsg = function(){
+        jQuery('#identity_reg_login_dialog').hide();
         jQuery("#identity_register_msg").show();
         jQuery("#close_reg_msg_btn").bind("click",function(){
             ns.hideRegisteMsg();
@@ -46,6 +47,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.hideRegisteMsg = function(){
         jQuery("#identity_register_msg").hide();
+        jQuery('#identity_reg_login_dialog').show();
         jQuery("#close_reg_msg_btn").unbind("click");
     }
 
