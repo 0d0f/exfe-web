@@ -64,17 +64,21 @@ class ExfeeModels extends DataModel {
 
     public function addExfee($invitations = array()) {
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
-        $id       = intval($dbResult['insert_id']);
+        $exfee_id = intval($dbResult['insert_id']);
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id);
         }
-        return $id;
+        return $exfee_id;
     }
 
 
     public function updateExfeeById($id, $invitations = array()) {
         if (!$id) {
             return null;
+        }
+        $objExfee = $this->getExfeeById($id);
+        foreach ($objExfee->invitations as $iI => $iItem) {
+        
         }
         $this->query("DELETE FROM `invitations` WHERE `cross_id` = {$id}");
         return $this->addExfee($id, $invitations);
