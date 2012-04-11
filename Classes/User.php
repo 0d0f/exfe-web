@@ -26,7 +26,6 @@ class User extends EFObject {
                                 $identities        = array()) {
         parent::__construct();
         $this->type              = 'user';
-        $this->identities        = array();
 
         $this->id                = intval($id);
         $this->name              = $name;
