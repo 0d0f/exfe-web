@@ -57,7 +57,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             title="Identification";
             //TODO: 先关闭 facebook google
             desc = "<div class='dialog_titles' style='height:110px;'>"
-                + "<p style='height:24px;line-height:24px'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
+                + "<p class='dtitle'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
                 //+ "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
                 + "<p class='oauth_title'>Authorize account through Twitter:</p>"
                 + "<p class='oauth_icon'>"
@@ -197,7 +197,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         } else if(type == "add_identity") {
             title="Add Identity";
             desc = "<div class='dialog_titles' style='height:110px;'>"
-                 + "<p style='height:24px;line-height:18px'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
+                 + "<p class='dtitle'>Welcome to <span style='color:#0591AC;'>EXFE</p>"
                  //+ "<p class='oauth_title'>Authorize with your <br/> existing identity:</p>"
                  + "<p class='oauth_title'>Authorize account through Twitter:</p>"
                  + "<p class='oauth_icon'>"
@@ -230,7 +230,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //新的找回密码对话框。用户点击Forgot Password进去。
         var forgot_verification = "<div id='forgot_verification_dialog' class='identity_visual_dialog' style='display:none;'>"
-               + "<div style='text-align:center; height:45px; font-size:18px;'>Forgot password</div>"
+               + "<div class='dtitle'>Forgot password</div>"
                + "<div style='height:25px; text-align:left;'>"
                + "A verification will be sent to your identity:"
                + "</div>"
@@ -248,23 +248,29 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         //需要验证的identity，从identity输入框跳过来。1AM71 D5
         var manual_verification = "<div id='manual_verification_dialog' class='identity_visual_dialog' style='display:none;'>"
-               + "<div style='text-align:center; height:45px; font-size:18px;'>"
-               + "Welcome to <span style='color:#0591AC;'>EXFE</span>"
+               + "<div class='dtitle'>"
+               + "Identity Verification"
                + "</div>"
                + "<div style='height:30px; text-align:left;'>"
-               + "Enter identity information:"
+               + "Identity to verify:"
                + "</div>"
                + "<div style='height:40px;'>"
-               + "<label class='title'>Identity:</label>"
                + "<input type='text' id='manual_verify_identity' />"
+               + '<div class="manual_identity">'
+                  + '<img alt="" src="" width="40" height="40" />'
+                  + '<div class="provider"></div>'
                + "</div>"
-               + "<div id='manual_verification_hint_box' style='height:40px; text-align:left;'>"
-               + "<p style='color:#CC3333;'>This identity needs to be verified before using.</p>"
-               + "<p>Confirm sending verification to your mailbox?</p>"
+               + "</div>"
+               + "<div id='manual_verification_hint_box' style='margin-top: -10px; text-align:left;'>"
+               //+ "<p style='color:#CC3333;'>This identity needs to be verified before using.</p>"
+               + '<p>Confirm sending verification to your mailbox? It should arrive in minutes.'
+               + '<span class="detail" style="color:#D44644;display:none;"><br/ >Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam. Or try ‘Manual Verification’.</span>'
+               + '</p>'
                + "</div>"
                + "<div class='float_panel_bottom_btn' style='text-align:right;'>"
-               + "<a id='manual_startover' class='startover'>Start Over</a>"
-               + "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;display:none;'>I See</a>&nbsp;&nbsp;"
+               //+ "<a id='manual_verfiy' class='manual_verfiy'>Manual Verification</a>"
+               + "<a href='javascript:void(0);' id='cancel_manual_verify_btn'>Cancel</a>&nbsp;&nbsp;"
+               //+ "<a href='javascript:void(0);' id='cancel_manual_verification_btn' style='line-height:20pt;display:none;'>I See</a>&nbsp;&nbsp;"
                + "<input type='button' id='manual_verification_btn' value='Verify' />"
                + "</div>"
                + "</div>";
@@ -331,6 +337,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.showLoginDialog = function(type){
+        $('#identity_reg_login_dialog').show();
         //改变titles
         jQuery('#identification_title_msg').html('Enter identity information:');
         jQuery('#identification_title_msg').css({color:'#333333'});
@@ -384,6 +391,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.showManualVerificationDialog = function(curUserIdentity){
         jQuery("#manual_verification_dialog").show();
+        $('#identity_reg_login_dialog').hide();
 
         var userIdentity = curUserIdentity;
         if(typeof curUserIdentity == "undefined" || curUserIdentity == "" || curUserIdentity == null){
@@ -392,18 +400,38 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.userManualVerifyIdentityCache = userIdentity;
 
         jQuery("#manual_verify_identity").val(userIdentity);
+        $('.manual_identity').find(':first-child').attr('src', myIdentity.avatar_file_name);
 
-        jQuery("#manual_verification_hint_box").html("<p style='color:#CC3333;'>This identity needs to be verified before using.</p><p>Confirm sending verification to your mailbox?</p>");
+        var email_class = 'email';
+        var isTW = userIdentity.search('twitter') != -1;
+        if (isTW) {
+          email_class = 'twitter';
+          $("#manual_verification_hint_box").html('<p>You will be directed to Twitter website to authorize <span style="color:#1175A5;">EXFE</span>. Don’t forget to follow @EXFE, it’s necessary for smooth service integration.</p>'
++ '<p>We hate spam, will NEVER disappoint your trust.</p>');
+          $('#manual_verfiy').hide();
+        }
+        $('.manual_identity').find('.provider').addClass(email_class);
+
+        jQuery("#cancel_manual_verify_btn").bind("click", function(){
+          odof.exlibs.ExDialog.removeDialog();
+          odof.exlibs.ExDialog.removeCover();
+          jQuery("#cancel_manual_verify_btn").unbind("click");
+        });
+
         jQuery("#manual_verification_btn").unbind("click");
         jQuery("#manual_verification_btn").val("Verify");
         jQuery("#manual_verification_btn").bind("click",function(){
+
+            if (isTW) window.location = site_url + '/oAuth/twitterRedirect';
+
             var callBackFunc = function(){
-                var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
-                jQuery("#manual_verification_hint_box").html(msg);
+                //var msg = "Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.";
+                //jQuery("#manual_verification_hint_box").find('span.detail').show();
                 jQuery("#manual_verification_btn").val("Done");
                 jQuery("#manual_verification_btn").unbind("click");
                 jQuery("#manual_verification_btn").bind("click",function(){
                     clearManualVerifyDialog();
+                    $('#identity_reg_login_dialog').show();
                     ns.showLoginDialog('init');
                 });
             };
