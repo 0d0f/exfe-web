@@ -19,8 +19,8 @@ b.r3{margin: 0px}
     height: 380px;
     padding: 0;
     z-index: 201;
-    font-family: "Verdana", "Helvetica", "Lucida Grande", "Sans", "Arial", "SimSun";
-    color: #4C4C4C;
+    font-family: "Helvetica", Verdana, "Lucida Grande", "Sans", "Arial", "SimSun";
+    color: #424242;
     background-color: #FAFAFA;
     /*background-image: url(images/fallback-gradient.png);*/
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
@@ -69,6 +69,14 @@ b.r3{margin: 0px}
     padding-right: 8px;
 }
 
+.identification_dialog .dtitle {
+  line-height: 24px;
+  padding-bottom: 20px;
+  font-size: 18px;
+  font-weight: 300;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+
 .identification_dialog #identity_error_msg{
     position:absolute; left:340px; top:190px; width:112px; height:25px; padding:2px 2px 0px 15px;
     background:url(/static/images/dialog_error_msg_bg.png) no-repeat 0 0; color:#CC3333; z-index:204;
@@ -88,7 +96,7 @@ b.r3{margin: 0px}
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { height:360px; width:400px; overflow:hidden; }
+.identification_dialog_con { height:360px; width:400px; overflow:hidden;}
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
@@ -105,9 +113,10 @@ b.r3{margin: 0px}
     width:400px; height:325px; padding-top:35px;
     /*background:#EFEFEF;*/
     line-height:20px; font-size:14px;
+  font-size: 300;
 }
 .identity_visual_dialog div {
-    width:330px; margin:auto; text-align:center;
+    width:340px; margin:auto; text-align:center;
 }
 .identification_dialog_con .reg_hint{
     /*-moz-opacity: 0.85; opacity: 0.85; filter: alpha(opacity=85); -khtml-opacity: 0.85;*/
@@ -115,8 +124,44 @@ b.r3{margin: 0px}
 .identification_dialog_con .reg_hint div{ width:360px; }
 
 #manual_verify_identity{
-    width:210px; height:22px; padding:2px; border:1px solid #CCC;
+    width:260px; height:22px; padding:2px; border:1px solid #CCC;
     color:#666; font-size:18px; font-style:italic;
+    background: transparent;
+    float: left;
+    margin-left: 10px;
+    text-align: center;
+}
+
+#manual_verification_dialog .manual_identity {
+  height: 40px;
+  width: 40px;
+  float: right;
+  margin-right: 10px;
+  margin-top: -12px;
+  position: relative;
+}
+
+#manual_verification_dialog .manual_identity .provider {
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  bottom: -3px;
+  right: -3px;
+}
+#manual_verification_dialog .manual_identity .provider.email {
+  background: url(../images/small_icons.png) no-repeat 0 2px;
+}
+
+#manual_verification_dialog .manual_identity .provider.twitter {
+  background: url(../images/small_icons.png) no-repeat 0 -12px;
+}
+
+#manual_verification_dialog .manual_identity .provider.phone {
+  background: url(../images/small_icons.png) no-repeat 0 -28px;
+}
+
+#manual_verification_hint_box p {
+  padding-top: 10px;
 }
 
 #close_reg_msg_btn,
@@ -130,12 +175,17 @@ b.r3{margin: 0px}
 #cancel_forgot_verify_btn { line-height:20pt; }
 #forgot_identity_input {
     width:310px; height:28px; border:1px solid #CCCCCC;
-    font-size:18px; font-style:italic; color:#666666; text-align:center;
+    font-size:18px; font-style:italic; color:#7f7f7f; text-align:center;
     background:transparent;
 }
 
 .float_panel_bottom_btn{ position:absolute; z-index:205; height:40px; width:400px; top:305px; left:30px; }
 
+.identity_visual_dialog .manual_verfiy {
+    display:block; float:left; height:24px; width:155px; cursor:pointer;
+    padding-top:2px; border:0; font-size:14px; text-align:center; text-decoration:none;
+    background:url(/static/images/btn.png) no-repeat 0px -644px; color:#6C6E6F;
+}
 .identification_dialog .startover{
     display:block; float:left; height:24px; width:110px; cursor:pointer;
     padding-top:2px; border:0; font-size:14px; text-align:center; text-decoration:none;
@@ -215,12 +265,12 @@ b.r3{margin: 0px}
   /*width: 160px;*/ /*TODO: 去掉 facebook google*/
   font-size: 14px;
   line-height: 40px;
-  margin-top: 20px;
+  /*margin-top: 20px;*/
 }
 .identity_dialog_main p.oauth_icon{
   /*width:180px;*/ /*TODO: 去掉 facebook google*/
   float:right;
-  margin-top: 20px;
+  /*margin-top: 20px;*/
 }
 .identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
 .identity_dialog_main p.oauth_icon a.twitter_oauth{ background:url(/static/images/oauth_logo.png) no-repeat 0 0; }
