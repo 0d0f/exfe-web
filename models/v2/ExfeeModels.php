@@ -2,7 +2,20 @@
 
 class ExfeeModels extends DataModel {
     
-    public function getExfeeById($id) {
+    protected $rsvp_status = array('NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED', 'REMOVED', 'NOTIFICATION');
+        
+    
+    protected function makeExfeeToken() {
+        return md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+    }
+    
+    
+    protected function getIndexOfRsvpStatus($rsvp_status) {
+        return intval(array_search(strtoupper($rsvp_status), $this->rsvp_status));
+    }
+    
+    
+    public function getExfeeById($id, $withRemoved = false) {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // get invitations
@@ -11,14 +24,14 @@ class ExfeeModels extends DataModel {
         foreach ($rawExfee as $ei => $eItem) {
             $objIdentity   = $hlpIdentity->getIdentityById($eItem['identity_id']);
             $oByIdentity   = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
-            if (!$objIdentity || !$oByIdentity) {
+            if (!$objIdentity || !$oByIdentity || ($eItem['state'] === 4 && !$withRemoved)) {
                 continue;
             }
             $objExfee->invitations[] = new Invitation(
                 $eItem['id'],
                 $objIdentity,
                 $oByIdentity,
-                $eItem['state'],
+                $this->rsvp_status[$eItem['state']],
                 $eItem['via'],
                 $eItem['created_at'],
                 $eItem['updated_at']
@@ -28,7 +41,7 @@ class ExfeeModels extends DataModel {
     }
     
     
-    public function addInvitationIntoExfee($invitation, $exfee_id) {
+    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id) {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // adding new identity
@@ -46,42 +59,107 @@ class ExfeeModels extends DataModel {
             return null;
         }
         // make invitation token
-        $invToken = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+        $invToken    = $this->makeExfeeToken();
+        // translate rsvp status
+        $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // insert invitation into database
-        $dbResult = $this->query(
-            'INSERT INTO `invitations` SET'
-          . '`identity_id`    = ' . $invitation->identity->id . ','
-          . '`cross_id`       = ' . $exfee_id                 . ','
-          . '`state`          = ' . $invitation->rsvp_status  . ','
-          . '`created_at`     = NOW(),'
-          . '`updated_at`     = NOW(),'
-          . "`token`          = '{$invToken}',"
-          . '`by_identity_id` = ' . $invitation->by_identity->id       
+        $dbResult    = $this->query(
+            "INSERT INTO `invitations` SET
+             `identity_id`    =  {$invitation->identity->id},
+             `cross_id`       =  {$exfee_id},
+             `state`          = '{$rsvp_status}',
+             `created_at`     = NOW(),'
+             `updated_at`     = NOW(),'
+             `token`          = '{$invToken}',
+             `by_identity_id` =  {$by_identity_id}"    
         );
         return intval($dbResult['insert_id']);
     }
+    
+    
+    public function updateInvitation($invitation, $by_identity_id, $updateToken = false) {
+        // base check
+        if (!$invitation->id || !$invitation->identity->id || $by_identity_id) {
+            return null;
+        }
+        // make invitation token
+        $sqlToken = $updateToken ? (", `token` = '" . $this->makeExfeeToken() . "'") : '';
+        // translate rsvp status
+        $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        // update database
+        return $this->query(
+            "UPDATE `invitations` SET
+             `state`          = {$rsvp_status},
+             `updated_at`     = NOW(),
+             `by_identity_id` = {$by_identity_id}{$sqlToken}
+             WHERE `id`       = {$invitation->id}"   
+        );
+    }
 
 
-    public function addExfee($invitations = array()) {
+    public function addExfee($invitations, $by_identity_id) {
+        if (!is_array($invitations) || !$by_identity_id) {
+            return null;
+        }
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
         foreach ($invitations as $iI => $iItem) {
-            $this->addInvitationIntoExfee($iItem, $exfee_id);
+            $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
         }
         return $exfee_id;
     }
 
 
-    public function updateExfeeById($id, $invitations = array()) {
-        if (!$id) {
+    public function updateExfeeById($id, $invitations, $by_identity_id) {
+        // get helper
+        $hlpIdentity = $this->getHelperByName('identity', 'v2');
+        // base check
+        if (!$id || !is_array($invitations) || !$by_identity_id) {
             return null;
         }
-        $objExfee = $this->getExfeeById($id);
-        foreach ($objExfee->invitations as $iI => $iItem) {
-        
+        //
+        $objExfee = $this->getExfeeById($id, true);
+        foreach ($invitations as $tI => $tItem) {
+            // adding new identity
+            if (!$tItem->identity->id) {
+                $tItem->identity->id = $hlpIdentity->addIdentity(
+                    $tItem->identity->provider,
+                    $tItem->identity->external_id,
+                    $tItem = array(
+                        'name'              => $tItem->identity->name,
+                        'external_username' => $tItem->identity->external_username,
+                    )
+                );
+            }
+            // if no identity id, skip it
+            if (!$tItem->identity->id) {
+                continue;
+            }
+            // find out the existing invitation
+            $exists = false;
+            foreach ($objExfee->invitations as $fI => $fItem) {
+                if ($tItem->identity->id === $fItem->identity->id) {
+                    $exists = true;
+                    // update existing invitaion
+                    $tItem->id = $fItem->id;
+                    // update exfee token
+                    $updateToken = $this->getIndexOfRsvpStatus($fItem->rsvp_status) === 4
+                                && $this->getIndexOfRsvpStatus($tItem->rsvp_status) !== 4;
+                    $this->updateInvitation($tItem, $by_identity_id, $updateToken);
+                    unset($objExfee->invitations[$fI]);
+                }
+            }
+            // add new invitation if it's a new invitation
+            if (!$exists) {
+                $this->addInvitationIntoExfee($tItem, $id, $by_identity_id);
+            }
         }
-        $this->query("DELETE FROM `invitations` WHERE `cross_id` = {$id}");
-        return $this->addExfee($id, $invitations);
+        foreach ($objExfee->invitations as $fI => $fItem) {
+            // mark as leaved
+            $fItem->rsvp_status = $this->rsvp_status[4];
+            $this->updateInvitation($fItem, $by_identity_id);
+        }
+        return $id;
     }
 
 }
