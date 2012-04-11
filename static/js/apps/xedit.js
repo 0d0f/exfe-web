@@ -136,19 +136,20 @@ var clickCallBackFunc = function(args) {
         }
         //======End=====Token已经过期，用户点击之前弹窗口
         */
+        var _external_username = myIdentity.external_username + (myIdentity.provider === 'email' ? '' : ('@' + myIdentity.provider));
         if (token != "") {
             if (show_idbox == 'setpassword') {//如果要求弹设置密码窗口。
                 if (token_expired == "true") {
-                    var args = {"identity" : external_identity};
+                    var args = {"identity" : _external_username};
                     odof.user.status.doShowCrossPageVerifyDialog(null, args);
                 } else {
                     odof.user.status.doShowResetPwdDialog(null, 'setpwd');
-                    jQuery("#show_identity_box").val(external_identity);
+                    jQuery("#show_identity_box").val(_external_username);
                 }
             } else if (show_idbox == "login"){
-                odof.user.status.doShowLoginDialog(null, callBackFunc, external_identity);
+                odof.user.status.doShowLoginDialog(null, callBackFunc, _external_username);
             } else {
-                args = {"identity" : external_identity};
+                args = {"identity" : _external_username};
                 odof.user.status.doShowCrossPageVerifyDialog(null, args);
             }
         }
