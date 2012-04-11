@@ -17,7 +17,7 @@ class Invitation extends EFObject {
     public function __construct($id          = 0,
                                 $identity    = null,
                                 $by_identity = null,
-                                $rsvp_status = 0,
+                                $rsvp_status = '',
                                 $via         = '',
                                 $created_at  = '',
                                 $updated_at  = '') {
