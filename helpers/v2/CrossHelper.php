@@ -29,7 +29,12 @@ class CrossHelper extends ActionController {
         else if($cross["state"]==0)
             $attribute["state"]="draft";
 
-        $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute, $exfee_id, array($background),$begin_at, $place);
+        $exfeeData=$this->getModelByName("exfee","v2");
+        $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
+
+        $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute,$exfee, array($background),$begin_at, $place);
+        
+        
 
         $cross->by_identity=$by_identity;
         $relative_id=0;
