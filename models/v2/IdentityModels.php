@@ -69,7 +69,7 @@ class IdentityModels extends DataModel {
      */
     public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
         // init
-        if (!$provider || (!$external_id && !$identityDetail['external_username']) {
+        if (!$provider || (!$external_id && !$identityDetail['external_username'])) {
             return null;
         }
         // collecting new identity informations
