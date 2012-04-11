@@ -14,6 +14,13 @@ class UserActions extends ActionController {
         $userData = $this->getModelByName('User', 'v2');
         $user = $userData->getUserById(1);
         print_r($user);
+        
+        echo "\n\n";
+        
+        echo "Try to get a exfee:\n";
+        $exfeeData = $this->getModelByName('exfee', 'v2');
+        $exfee = $exfeeData->getExfeeById(100118);
+        print_r($exfee);
     }
     
     
