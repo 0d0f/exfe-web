@@ -630,7 +630,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         + '<div class="title">Browsing Identity</div>'
                         + '<p class="detail">You are browsing this page as Email identity:</p>'
                         + '<div class="identity">'
-                            + '<span class="iname email">' + (identity.external_identity || identity.external_username || identity.name) + '</span>'
+                            + '<span class="iname email">' + identity.external_username + (identity.provider === 'email' ? '' : '@' + identity.provider) + '</span>'
                             + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
                         + '</div>'
                         + '<div class="setup">'
