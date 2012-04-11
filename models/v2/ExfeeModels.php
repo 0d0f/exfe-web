@@ -37,8 +37,8 @@ class ExfeeModels extends DataModel {
                 $invitation->identity->provider,
                 $invitation->identity->external_id,
                 $identityDetail = array(
-                    'name'              => $invitation->identity->name
-                    'external_username' => $invitation->identity->external_username
+                    'name'              => $invitation->identity->name,
+                    'external_username' => $invitation->identity->external_username,
                 )
             );      
         }
@@ -56,7 +56,7 @@ class ExfeeModels extends DataModel {
           . '`created_at`     = NOW(),'
           . '`updated_at`     = NOW(),'
           . "`token`          = '{$invToken}',"
-          . '`by_identity_id` = ' . $invitation->by_identity->id;        
+          . '`by_identity_id` = ' . $invitation->by_identity->id       
         );
         return intval($dbResult['insert_id']);
     }
