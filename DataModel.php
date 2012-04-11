@@ -10,13 +10,25 @@ abstract class DataModel {
     static $FAKE_ID = '0';
 
 
-    public function getHelperByName($name)
+    public function getHelperByNamev1($name)
     {
         $class = ucfirst($name) . "Helper";
         $helperfile = HELPER_DIR. "/" . $class.  ".php";
         include_once $helperfile;
         return new $class;
     }
+    
+    public function getHelperByName($name,$version="")
+    {
+        if($version=="")
+            $this->getHelperByNamev1($name);
+
+        $class = ucfirst($name) . "Helper";
+        $helperfile = HELPER_DIR. "/".$version. "/" . $class.  ".php";
+        include_once $helperfile;
+        return new $class;
+    }
+    
     private function endswith($str, $test) {
         return substr($str, -strlen($test)) == $test;
     }
