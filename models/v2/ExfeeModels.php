@@ -29,13 +29,26 @@ class ExfeeModels extends DataModel {
     
     
     public function addInvitationIntoExfee($invitation, $exfee_id) {
+        // init
+        $hlpIdentity = $this->getHelperByName('identity', 'v2');
+        // adding new identity
         if (!$invitation->identity->id) {
-            
+            $invitation->identity->id = $hlpIdentity->addIdentity(
+                $invitation->identity->provider,
+                $invitation->identity->external_id,
+                $identityDetail = array(
+                    'name'              => $invitation->identity->name
+                    'external_username' => $invitation->identity->external_username
+                )
+            );      
+        }
+        if (!$invitation->identity->id) {
+            return null;
         }
         // make invitation token
         $invToken = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
         // insert invitation into database
-        return $this->query(
+        $dbResult = $this->query(
             'INSERT INTO `invitations` SET'
           . '`identity_id`    = ' . $invitation->identity->id . ','
           . '`cross_id`       = ' . $exfee_id                 . ','
@@ -45,6 +58,7 @@ class ExfeeModels extends DataModel {
           . "`token`          = '{$invToken}',"
           . '`by_identity_id` = ' . $invitation->by_identity->id;        
         );
+        return intval($dbResult['insert_id']);
     }
 
 
@@ -52,8 +66,9 @@ class ExfeeModels extends DataModel {
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $id       = intval($dbResult['insert_id']);
         foreach ($invitations as $iI => $iItem) {
-            $this->addExfee($iItem, $exfee_id);
+            $this->addInvitationIntoExfee($iItem, $exfee_id);
         }
+        return $id;
     }
 
 
