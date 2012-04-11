@@ -13,6 +13,11 @@ class IdentityHelper extends ActionController {
         $this->modIdentity = $this->getModelByName('Identity', 'v2');
     }
     
+    
+    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
+        return $this->modIdentity->addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
+    }
+    
 
     public function getIdentityById($id) {
         return $this->modIdentity->getIdentityById($id);
