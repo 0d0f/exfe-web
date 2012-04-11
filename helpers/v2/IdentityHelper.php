@@ -9,7 +9,7 @@ class IdentityHelper extends ActionController {
     protected $modIdentity = null;
     
     
-    protected function __construct() {
+    public function __construct() {
         $this->modIdentity = $this->getModelByName('Identity', 'v2');
     }
     
