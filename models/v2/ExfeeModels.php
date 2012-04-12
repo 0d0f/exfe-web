@@ -82,7 +82,9 @@ class ExfeeModels extends DataModel {
             return null;
         }
         // make invitation token
-        $sqlToken = $updateToken ? (", `token` = '" . $this->makeExfeeToken() . "'") : '';
+        $sqlToken = $updateToken
+                  ? (", `token` = '" . $this->makeExfeeToken() . "', `tokenexpired` = 0")
+                  : '';
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // update database
