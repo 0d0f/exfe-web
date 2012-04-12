@@ -117,6 +117,7 @@ class UserModels extends DataModel{
         return $this->getUser($userid);
     }
 
+
     public function getUserIdByToken($token)
     {
         $sql="select id from users where auth_token='$token';";
@@ -124,42 +125,7 @@ class UserModels extends DataModel{
         return intval($row["id"]);
     }
 
-    public function loginForAuthToken($user,$password)
-    {
-        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
-        $row=$this->getRow($sql);
-        $result=array();
-        if(intval($row["uid"])>0)
-        {
-            $uid=intval($row["uid"]);
-            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
-            $salt_result = $this->getRow($sql);
-            $passwordSalt = $salt_result["password_salt"];
-            if($passwordSalt == $this->salt){
-                $password=md5($password.$this->salt);
-            }else{
-                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-            }
-
-            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
-            $row=$this->getRow($sql);
-            if(intval($row["id"])==$uid )
-            {
-                $result["userid"]=$uid;
-                if($row["auth_token"]=="")
-                {
-                    $auth_token=md5($time.uniqid());
-                    $sql="update users set auth_token='$auth_token'  where id=$uid";
-                    $this->query($sql);
-                    $result["auth_token"]=$auth_token;
-                }
-                else
-                    $result["auth_token"]=$row["auth_token"];
-            }
-        }
-        return $result;
-    }
-
+    
     public function getUserProfileByIdentityId($identity_id)
     {
         $sql="select userid from user_identity where identityid=$identity_id";
@@ -174,6 +140,7 @@ class UserModels extends DataModel{
         return "";
     }
 
+
     public function getUserIdByIdentityId($identity_id)
     {
         $sql="select userid from user_identity where identityid=$identity_id";
@@ -183,6 +150,7 @@ class UserModels extends DataModel{
             return intval($result["userid"]);
         }
     }
+
 
     public function getUserByIdentityId($identity_id)
     {
@@ -196,6 +164,7 @@ class UserModels extends DataModel{
             return $user;
         }
     }
+
 
     public function setPassword($identity_id,$password,$displayname)
     {
@@ -520,8 +489,10 @@ class UserModels extends DataModel{
         setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
     }
     
+    
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
+
 
     // upgraded
     public function addUser($password)
@@ -534,6 +505,7 @@ class UserModels extends DataModel{
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);
     }
+
     
     // upgraded
     public function getUser($userid)
@@ -541,6 +513,44 @@ class UserModels extends DataModel{
         $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
         $row=$this->getRow($sql);
         return $row;
+    }
+
+    
+    // upgraded
+    public function loginForAuthToken($user,$password)
+    {
+        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
+        $row=$this->getRow($sql);
+        $result=array();
+        if(intval($row["uid"])>0)
+        {
+            $uid=intval($row["uid"]);
+            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
+            $salt_result = $this->getRow($sql);
+            $passwordSalt = $salt_result["password_salt"];
+            if($passwordSalt == $this->salt){
+                $password=md5($password.$this->salt);
+            }else{
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+            }
+
+            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
+            $row=$this->getRow($sql);
+            if(intval($row["id"])==$uid )
+            {
+                $result["userid"]=$uid;
+                if($row["auth_token"]=="")
+                {
+                    $auth_token=md5($time.uniqid());
+                    $sql="update users set auth_token='$auth_token'  where id=$uid";
+                    $this->query($sql);
+                    $result["auth_token"]=$auth_token;
+                }
+                else
+                    $result["auth_token"]=$row["auth_token"];
+            }
+        }
+        return $result;
     }
 
 }
