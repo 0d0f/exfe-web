@@ -56,27 +56,7 @@ class UsersActions extends ActionController {
         exit(0);
     }
 
-    public function doLogin()
-    {
-        $userData=$this->getModelByName("user");
-        $user=$_POST["user"];
-        $password=$_POST["password"];
-        $result=$userData->loginForAuthToken($user,$password);
-        if($result)
-        {
-            $responobj["meta"]["code"]=200;
-            $responobj["response"]=$result;;
-        }
-        else
-        {
-            $responobj["meta"]["code"]=404;
-            $responobj["meta"]["err"]="login error";
-        }
-
-        echo json_encode($responobj);
-        exit(0);
-    }
-
+    
     public function doGetUpdate()
     {
         $params=$this->params;
@@ -103,6 +83,7 @@ class UsersActions extends ActionController {
 
         echo json_encode($responobj);
     }
+
 
     public function doX()
     {
@@ -162,6 +143,7 @@ class UsersActions extends ActionController {
 
     }
 
+
     public function doRegdevicetoken()
     {
         //check if this token allow
@@ -195,6 +177,29 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
         //add devicetoken with $check["uid"]
+    }
+    
+    
+    // upgraded
+    public function doLogin()
+    {
+        $userData=$this->getModelByName("user");
+        $user=$_POST["user"];
+        $password=$_POST["password"];
+        $result=$userData->loginForAuthToken($user,$password);
+        if($result)
+        {
+            $responobj["meta"]["code"]=200;
+            $responobj["response"]=$result;;
+        }
+        else
+        {
+            $responobj["meta"]["code"]=404;
+            $responobj["meta"]["err"]="login error";
+        }
+
+        echo json_encode($responobj);
+        exit(0);
     }
 
 }
