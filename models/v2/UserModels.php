@@ -93,8 +93,24 @@ class UserModels extends DataModel {
     }
     
     
+    public function getUserIdsByIdentityIds($identity_ids) {
+        $identity_ids = implode($identity_ids, ' OR `identityid` = ');
+        $dbResult = $this->getAll(
+            "SELECT `userid` FROM `user_identity`
+             WHERE `identityid` = {$identity_ids} AND `status` = 3"
+        );
+        $user_ids = array();
+        if ($dbResult) {
+            foreach ($dbResult as $uI => $uItem) {
+                $user_ids[] = $uItem['userid'];
+            }
+        }
+        return $user_ids;
+    }
+    
+    
     ///////// working on this ////////
-    public function loginForAuthToken($user,$password) {
+    public function signinForAuthToken($external_id, $password) {
         $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
         $row=$this->getRow($sql);
         $result=array();
