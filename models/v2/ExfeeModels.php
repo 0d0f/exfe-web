@@ -154,11 +154,11 @@ class ExfeeModels extends DataModel {
                 $this->addInvitationIntoExfee($tItem, $id, $by_identity_id);
             }
         }
-        foreach ($objExfee->invitations as $fI => $fItem) {
-            // mark as leaved
-            $fItem->rsvp_status = $this->rsvp_status[4];
-            $this->updateInvitation($fItem, $by_identity_id);
-        }
+        // foreach ($objExfee->invitations as $fI => $fItem) {
+        //     // mark as leaved
+        //     $fItem->rsvp_status = $this->rsvp_status[4];
+        //     $this->updateInvitation($fItem, $by_identity_id);
+        // }
         return $id;
     }
 
