@@ -24,7 +24,7 @@ class UserActions extends ActionController {
     }
     
     
-    public function doSignin() {
+    public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
@@ -52,6 +52,28 @@ class UserActions extends ActionController {
         } else {
             echo json_encode(array('error' => 'Invalid identity or password'));
         }   
+    }
+    
+    
+    public function doSignin()
+    {
+        $userData=$this->getModelByName("user");
+        $user=$_POST["user"];
+        $password=$_POST["password"];
+        $result=$userData->loginForAuthToken($user,$password);
+        if($result)
+        {
+            $responobj["meta"]["code"]=200;
+            $responobj["response"]=$result;;
+        }
+        else
+        {
+            $responobj["meta"]["code"]=404;
+            $responobj["meta"]["err"]="login error";
+        }
+
+        echo json_encode($responobj);
+        exit(0);
     }
     
     
