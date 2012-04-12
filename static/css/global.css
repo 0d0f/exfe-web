@@ -386,18 +386,24 @@ body {
   overflow: hidden;
   color: #4C4C4c;
   margin-left: 10px;
+  overflow: hidden;
 }
 #global_header .user_info .uinfo .message .identity .iname.email {
   /*background: url(../images/email.png) no-repeat 0 3px;*/
-  background: url(../images/small_icons.png) no-repeat 0 2px;
+  background: url(../images/email.png) no-repeat;
+  background-size: 18px 14px;
 }
 #global_header .user_info .uinfo .message .identity .iname.phone {
   /*background: url(../images/phone-filtered.png) no-repeat 0 3px;*/
-  background: url(../images/small_icons.png) no-repeat 0 -28px;
+  /*background: url(../images/small_icons.png) no-repeat 0 -28px;*/
+  background: url(../images/phone.png) no-repeat;
+  background-size: 18px 14px;
 }
 #global_header .user_info .uinfo .message .identity .iname.twitter {
   /*background: url(../images/twitter-icon-filtered.png) no-repeat 0 3px;*/
-  background: url(../images/small_icons.png) no-repeat 0 -12px;
+  /*background: url(../images/small_icons.png) no-repeat 0 -12px;*/
+  background: url(../images/twitter.png) no-repeat;
+  background-size: 18px 14px;
 }
 #global_header .user_info .uinfo .message .identity img {
   width: 20px;
