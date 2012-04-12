@@ -57,10 +57,10 @@ class UserActions extends ActionController {
     
     public function doSignin()
     {
-        $userData=$this->getModelByName("user");
-        $user=$_POST["user"];
-        $password=$_POST["password"];
-        $result=$userData->loginForAuthToken($user,$password);
+        $modUser  = $this->getModelByName('user');
+        $user     = $_POST['external_id'];
+        $password = $_POST['password'];
+        $result   = $userData->loginForAuthToken($user,$password);
         if($result)
         {
             $responobj["meta"]["code"]=200;
