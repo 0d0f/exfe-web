@@ -552,6 +552,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }else{
             var userPanelHTML = '<div class="uinfo">'
                                 //+ '<em class="light" style="background:none;"></em>'
+                    + '<span class="fill-left"></span>'
                                 + '<div class="name" >'
                                 + '<div id="goldLink"><a href="/s/profile" >'+userData.user_name+'</a><span clas="name-bg-l"></span></div>';
             userPanelHTML += '<div class="myexfe" id="myexfe"><div class="message"><div class="na">';
@@ -602,24 +603,52 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '<div class="myexfefoot">';
             userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
             userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
-            userPanelHTML += '</div></div></div>';
+            userPanelHTML += '</div></div>'+ '<span class="fill-right"></span></div>';
 
             jQuery("#global_user_info").html(userPanelHTML);
 
-            if (ns.showLoginStatus.status === 1) {
+            //if (ns.showLoginStatus.status === 1) {
+              var $myexfe = $('#myexfe'), oh = -$myexfe.outerHeight();
+              $myexfe.css('top', oh);
                 jQuery('.name').bind('mouseenter mouseleave', function (e) {
-                    jQuery('#goldLink').toggleClass('nameh');
-                    jQuery('#myexfe').stop(true, true).slideToggle('fast');
+                //jQuery('#myexfe').stop(true, true).slideToggle('fast');
+                var self = $(this), timer = self.data('timer');
+                if (e.type === 'mouseleave') {
+                  timer = setTimeout(function () {
+                    $myexfe
+                      //.stop(true, true)
+                      .animate({top: oh}, 200);
+                      clearTimeout(timer);
+                      timer = null;
+                      self.data('timer', timer);
+                      $('#goldLink').removeClass('nameh');
+                    }, 200);
+                  self.data('timer', timer);
+                  return false;
+                }
+
+                if (timer) {
+                  clearTimeout(timer);
+                  self.timer = null;
+                  self.data('timer', timer);
+                  return false;
+                }
+
+                $myexfe
+                  //.stop(true, true)
+                  .animate({top: 50}, 200);
+                  $('#goldLink').addClass('nameh');
                 });
                 ns.showLoginStatus.status = 0;
             }
-        }
+        //}
     };
 
     ns.showLoginStatus.status = 1;
 
     ns.showTokenIdentityStatus = function (identity) {
         var panel = '<div class="uinfo" data-identity-id="' + identity.id + '">'
+                    + '<span class="fill-left"></span>'
                 + '<div class="name" >'
                     + '<div id="goldLink">'
                         + '<a href="/s/profile" >' + (identity.name || identity.external_username) + '</a>'
@@ -660,14 +689,42 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         */
                     + '</div>'
                 + '</div>'
-            + '</div>';
+            + '</div>'
+            + '<span class="fill-right"></span>';
 
         jQuery("#global_user_info").html(panel);
 
-        if (ns.showTokenIdentityStatus.status === 1) {
+        //if (ns.showTokenIdentityStatus.status === 1) {
+          var $myexfe = $('#myexfe'), oh = -$myexfe.outerHeight();
+          $myexfe.css('top', oh);
             jQuery('.name').bind('mouseenter mouseleave', function (e) {
-                jQuery('#goldLink').toggleClass('nameh');
-                jQuery('#myexfe').stop(true, true).slideToggle('fast');
+                //jQuery('#myexfe').stop(true, true).slideToggle('fast');
+                var self = $(this), timer = self.data('timer');
+                if (e.type === 'mouseleave') {
+                  timer = setTimeout(function () {
+                    $myexfe
+                      //.stop(true, true)
+                      .animate({top: oh}, 200);
+                      clearTimeout(timer);
+                      timer = null;
+                      self.data('timer', timer);
+                      $('#goldLink').removeClass('nameh');
+                    }, 200);
+                  self.data('timer', timer);
+                  return false;
+                }
+
+                if (timer) {
+                  clearTimeout(timer);
+                  self.timer = null;
+                  self.data('timer', timer);
+                  return false;
+                }
+
+                $myexfe
+                  //.stop(true, true)
+                  .animate({top: 50}, 200);
+                  $('#goldLink').addClass('nameh');
             });
             $('.name .setup-btn').bind('click', function (e) {
                 if (login_type === 'token' && token) {
@@ -675,7 +732,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 }
             });
             ns.showTokenIdentityStatus.status = 0;
-        }
+        //}
     };
     ns.showTokenIdentityStatus.status = 1;
 
