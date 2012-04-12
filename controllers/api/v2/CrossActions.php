@@ -15,6 +15,8 @@ class CrossActions extends ActionController {
         }
         echo json_encode(array("cross"=>$cross));
     }
+    
+    
     public function doAdd()
     {
         $params=$this->params;
@@ -36,6 +38,8 @@ class CrossActions extends ActionController {
         }
 
     }
+    
+    
     public function doEdit()
     {
         $params=$this->params;
