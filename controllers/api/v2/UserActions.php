@@ -19,7 +19,7 @@ class UserActions extends ActionController {
         
         echo "Try to get a exfee:\n";
         $exfeeData = $this->getModelByName('exfee', 'v2');
-        $exfee = $exfeeData->getExfeeById(100118);
+        $exfee = $exfeeData->getExfeeById(100092);
         print_r($exfee);
     }
     
