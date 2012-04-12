@@ -44,7 +44,7 @@ class ExfeeModels extends DataModel {
     public function getUserIdsByExfeeId($exfee_id) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
-        $rawExfee     = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id}");
+        $rawExfee     = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}");
         if ($rawExfee) {
             foreach ($rawExfee as $ei => $eItem) {
                 if ($eItem['identity_id'] && $eItem['state'] !== 4) {
