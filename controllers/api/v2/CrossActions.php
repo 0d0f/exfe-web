@@ -41,6 +41,7 @@ class CrossActions extends ActionController {
         $params=$this->params;
         $cross_str=$_POST["cross"];
         $cross=json_decode($cross_str);
+        $cross->id=$params["id"];
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross_id=$crossHelper->editCross($cross);
         if(intval($cross_id)>0)
