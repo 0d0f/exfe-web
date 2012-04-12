@@ -118,7 +118,7 @@ body {
   height: 56px;
   margin: auto;
   /*overflow:hidden;*/
-  /*background: #FAFAFA url(../images/global_header_bg.png) repeat-x 0 0;*/
+  background: transparent url(../images/global_header_bg.png) repeat-x 0 0;
 }
 #global_header .nav-bkg {
   position: relative;
@@ -128,11 +128,11 @@ body {
   background: rgba(250, 250, 250, 0) url(../images/global_header_bg.png) repeat-x 0 0;
 }
 #global_header .site-infos {
-  position: relative;
+  /*position: relative;*/
   width: 880px;
   height: 56px;
   margin: 0 auto;
-  top: -56px;
+  /*top: -56px;*/
 }
 #global_header .logo{
   position: absolute;
@@ -157,8 +157,10 @@ body {
 }
 
 #global_header .user_info{
-  position: relative;
+  /*position: relative;*/
   float: right;
+  margin-right: -10px;
+  /*width: 236px;*/
   /*
   width: 320px;
   margin-right: -128px;*/
@@ -168,7 +170,7 @@ body {
 }
 #global_header .user_info .global_sign_in_btn{
     color: #7F7F7F;
-    width: 240px;
+    /*width: 240px;*/
     height: 20px;
     text-align: center;
     margin-top: 15px;
@@ -180,19 +182,53 @@ body {
 #global_header .user_info .global_sign_in_btn #home_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn{ font-weight:bold; font-style:italic; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
-#global_header .user_info .uinfo{ position:absolute; right: 0px; }
+/*#global_header .user_info .uinfo{ position:absolute; right: 0px; }*/
 #global_header .user_info .uinfo em.light{
     float:left; width:72px;height:45px;background:url(/static/images/btn.png) no-repeat left -314px;
 }
+#global_header .user_info .uinfo  {
+  background-color: #fafafa;
+}
 #global_header .user_info .uinfo .name{
-    float: right;
+    /*float: right;*/
+  position: relative;
     height: 56px;
     /*margin-top: 5px;*/
-    text-align: center;
+    /*text-align: center;*/
     cursor: pointer;
-    margin-right: 6px;
+    /*margin-right: 6px;*/
+    /*padding-right: 6px;*/
+  background-color: #fafafa;
+  display: inline-block;
+}
+#global_header .user_info .uinfo .fill-left {
+  height: 56px;
+  width: 186px;
+  min-width: 36px;
+  max-width: 186px;
+  display: inline-block;
+  background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
+  position: relative;
+  z-index: 100;
+}
+#global_header .user_info .uinfo .fill-right {
+  display: inline-block;
+  background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
+  height: 56px;
+  width: 10px;
+  position: relative;
+  z-index: 110;
 }
 #global_header .user_info .uinfo .name #goldLink {
+  background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
+  display: inline-block;
+  /*width: 78px;*/
+  min-width: 78px;
+  max-width: 228px;
+  /*float: right;*/
+  text-align: center;
+  /*margin-top: -56px;*/
+  /*width: 50px;*/
   position: relative;
   z-index: 110;
 }
@@ -207,6 +243,7 @@ body {
   /*width: 110px;*/
   max-width: 200px;
   min-width: 50px;
+  /*width: 50px;*/
   display: block;
   line-height: 56px;
   overflow: hidden;
@@ -217,7 +254,7 @@ body {
   display: none;
   width: 12px;
   height: 56px;
-  background: url(/static/images/titlebar-bg-L.png) no-repeat rgba(250,250,250,0.5);
+  background: url(/static/images/titlebar-bg-L.png) no-repeat transparent; 
   position: absolute;
   right: 0;
   top: 0;
@@ -229,9 +266,9 @@ body {
   /*width: 120px;*/
   /*width: 96px;*/
   /*position: absolute;*/
-  z-index: 300;
-  border-style: solid;
-  background: url(/static/images/titlebar-bg-R.png) no-repeat rgba(250,250,250,0.5);
+  /*z-index: 300;*/
+  /*border-style: solid;*/
+  background: url(/static/images/titlebar-bg-R.png) no-repeat transparent;
   /*background: #FFFEFF;*/
   /*border-radius: 3px 3px 0 0;*/
   /*border-width: 1px 1px 0 1px;*/
@@ -244,17 +281,17 @@ body {
 #global_header .user_info .uinfo .name #goldLink.nameh a {
   /*color: #000;*/
   text-decoration: none;
-  background: url(/static/images/titlebar-bg-down.png) repeat rgba(250,250,250,0.5);
+  background: url(/static/images/titlebar-bg-down.png) repeat transparent;
 }
 #global_header .user_info .uinfo .myexfe {
-    display: none;
+    /*display: none;*/
     position: absolute;
     width: 228px;
     /*padding: 26px 10px 0;*/
     /*padding: 5px 0px 0;*/
     /*background: url(/static/images/user.png) no-repeat 0 -40px;*/
     font-size: 14px;
-    right: 0;
+    right: 4px;
     background-color: #FAFAFA;
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
     background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
@@ -267,8 +304,8 @@ body {
     border-radius: 0px 0px 3px 3px;
     border: 1px solid #D5D5D5;
     border-top: none;
-    top: 50px;
-    z-index: 1;
+    /*top: -300px;*/
+    z-index: 99;
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 #global_header .user_info .uinfo .message {

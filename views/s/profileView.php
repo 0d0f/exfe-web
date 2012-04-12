@@ -23,6 +23,7 @@
         </div>
         <div class="u_con">
             <h1 id="user_name"><span class="edit-area"><?php echo $user["name"];?></span></h1>
+            <span id="set_password_btn" class="identity_button">Change Password…</span>
             <?php foreach($identities as $identity) {
                 if( $identity["provider"]!="iOSAPN") {
                     $identity=humanIdentity($identity,NULL);
@@ -78,10 +79,9 @@
         </div>
         <div class="u_num">
             <!-- <button id="set_password_btn" class="ch_pwd">Change Password</button> -->
-            <span id="set_password_btn" class="identity_button">Change Password…</span>
             <div id="user_cross_info">
                 <p class="num"><?php echo $cross_num; ?></p>
-                <p class="num_info"><span style="color:#0591af">X</span> attended</p>
+                <p class="num_info"><span style="color:#1175A5">X</span> attended</p>
             </div>
             <div>
                 <a href="javascript:;" style="display:none;" id='discard_edit'>Discard</a>
