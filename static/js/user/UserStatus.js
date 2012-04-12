@@ -600,6 +600,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
 
             userPanelHTML += '<div class="creatbtn"><a href="/x/gather">Gather</a></div>';
+            userPanelHTML += '<div class="splitline"></div>'
             userPanelHTML += '<div class="myexfefoot">';
             userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
             userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
@@ -672,6 +673,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                         + '<div class="signin-btn">'
                             + '<a href="javascript:;">Sign In</a>'
                         + '</div>'
+                        + '<div class="splitline"></div>'
                         + '<div class="identites">'
                             + '<p>'
                                 + '<span class="merge">Merge</span>'
