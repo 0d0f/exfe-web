@@ -47,11 +47,11 @@ class CrossHelper extends ActionController {
     {
         $placeData=$this->getModelByName("place","v2");
         $place_id=$placeData->addPlace($cross->place);
-        // create exfee
-        //$exfee_id=xxx;
+
+        $exfeeData=$this->getModelByName("exfee","v2");
+        $exfee_id=$exfeeData->addExfee($cross->exfee->invitations, $cross->by_identity_id);
 
         $crossData=$this->getModelByName("cross","v2");
-        $exfee_id=1;
         if($place_id>0 && $exfee_id>0)
             $cross_id=$crossData->addCross($cross,$place_id,$exfee_id);
 
