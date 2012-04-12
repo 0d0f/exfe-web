@@ -711,18 +711,22 @@ $(document).ready(function() {
     var DOC = $(document);
     // edit_user_area hover
     DOC.delegate('div#edit_user_area', 'mouseenter', function (e) {
+      $(this).data('out', 0);
         var $icons = $('span.identity_icon');
         if ($icons.filter('span.identity_remove').size() === 1) {
             $icons = $icons.filter(':not(.identity_remove)');
         }
+        $('#set_password_btn').css('display', 'inline-block');
         // TODO: 隐去多身份操作
         //$icons.show();
-        $('#user_cross_info').hide().prev().css('display', 'block');
+        //$('#user_cross_info').hide().prev().css('display', 'block');
     });
     DOC.delegate('div#edit_user_area', 'mouseleave', function (e) {
+      $(this).data('out', 1);
         $('span.identity_icon').hide();
         $('span.identity_remove_submit:not(hide)').hide();
-        $('#set_password_btn').hide().next().show();
+        //$('#set_password_btn').hide().next().show();
+        $('#set_password_btn').hide();
     });
 
     // change pwd
@@ -764,6 +768,7 @@ $(document).ready(function() {
         var $input = $('<input type="text" value="' + value + '" />');
         $(this).after($input).hide();
         $input.focus();
+        $('#set_password_btn').hide();
     });
 
     DOC.delegate('h1#user_name > input', 'focusout keydown', function (e) {
@@ -772,6 +777,7 @@ $(document).ready(function() {
             var value = $.trim($(this).val());
             $(this).hide().prev().html(value).show();
             $(this).remove();
+            !$('#edit_user_area').data('out') && $('#set_password_btn').css('display', 'inline-block');
             $.post(site_url + '/s/editUserProfile', {user_name: value}, function (data) {
                 if (!data.error) {
                     odof.user.status.checkUserLogin();
