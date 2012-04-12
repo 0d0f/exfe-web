@@ -13,10 +13,9 @@ abstract class EFobject{
 
     public $type = null;
     
-    public function __construct($id=0,$type="EFObject") {
-        $this->id=$id;
-        $this->type=$type;
-
+    public function __construct($id = 0, $type = 'EFObject') {
+        $this->id   = intval($id);
+        $this->type = $type;
     }
 
 }

@@ -6,7 +6,7 @@ class Cross extends Metainfo {
     public $time         = null;
     public $place        = null;
     public $attribute    = null;
-    public $exfee     = null;
+    public $exfee        = null;
     public $widget       = null;
 
     public function setRelation($relative_id,$relation)
