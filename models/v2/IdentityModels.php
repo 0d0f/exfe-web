@@ -8,7 +8,7 @@ class IdentityModels extends DataModel {
     protected function packageIdentity($rawIdentity) {
         if ($rawIdentity) {
             $rawUserIdentity = $this->getRow(
-                "SELECT * FROM `user_identity` WHERE `identityid` = {$id} AND `status` = 3"
+                "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
             );
             return new Identity(
                 $rawIdentity['id'],

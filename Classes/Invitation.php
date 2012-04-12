@@ -21,10 +21,8 @@ class Invitation extends EFObject {
                                 $via         = '',
                                 $created_at  = '',
                                 $updated_at  = '') {
-        parent::__construct();
-        $this->type        = 'invitation';
-
-        $this->id          = intval($id);
+        parent::__construct($id, 'invitation');
+        
         $this->identity    = $identity;
         $this->by_identity = $by_identity;
         $this->rsvp_status = $rsvp_status;
