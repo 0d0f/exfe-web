@@ -63,16 +63,15 @@ class ExfeeModels extends DataModel {
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // insert invitation into database
-        $dbResult    = $this->query(
-            "INSERT INTO `invitations` SET
+        $sql= "INSERT INTO `invitations` SET
              `identity_id`    =  {$invitation->identity->id},
              `cross_id`       =  {$exfee_id},
              `state`          = '{$rsvp_status}',
-             `created_at`     = NOW(),'
-             `updated_at`     = NOW(),'
+             `created_at`     = NOW(),
+             `updated_at`     = NOW(),
              `token`          = '{$invToken}',
-             `by_identity_id` =  {$by_identity_id}"    
-        );
+             `by_identity_id` =  {$by_identity_id}";
+        $dbResult    = $this->query($sql);
         return intval($dbResult['insert_id']);
     }
     
