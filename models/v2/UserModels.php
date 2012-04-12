@@ -93,6 +93,43 @@ class UserModels extends DataModel {
     }
     
     
+    ///////// working on this ////////
+    public function loginForAuthToken($user,$password) {
+        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
+        $row=$this->getRow($sql);
+        $result=array();
+        if(intval($row["uid"])>0)
+        {
+            $uid=intval($row["uid"]);
+            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
+            $salt_result = $this->getRow($sql);
+            $passwordSalt = $salt_result["password_salt"];
+            if($passwordSalt == $this->salt){
+                $password=md5($password.$this->salt);
+            }else{
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+            }
+
+            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
+            $row=$this->getRow($sql);
+            if(intval($row["id"])==$uid )
+            {
+                $result["userid"]=$uid;
+                if($row["auth_token"]=="")
+                {
+                    $auth_token=md5($time.uniqid());
+                    $sql="update users set auth_token='$auth_token'  where id=$uid";
+                    $this->query($sql);
+                    $result["auth_token"]=$auth_token;
+                }
+                else
+                    $result["auth_token"]=$row["auth_token"];
+            }
+        }
+        return $result;
+    }
+
+
     public function signinByCookie() {
         // get vars
         $user_id      = intval($_COOKIE['user_id']);
