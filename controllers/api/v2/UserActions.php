@@ -64,23 +64,47 @@ class UserActions extends ActionController {
     
     public function doSignin()
     {
+        $modUser     = $this->getModelByName('user');
+        $external_id = $_POST['external_id'];
+        $password    = $_POST['password'];
+        $siResult    = $userData->loginForAuthToken($user,$password);
+        echo json_encode(
+            ($external_id && $password && $siResult)
+           ? array('meta' => array('code' => 200), 'response' => $siResult)
+           : array('meta' => array('code' => 404,  'err'      => 'login error'))
+        );
+    }
+    
+    
+    public function doRegdevicetoken()
+    {
+        // check if this token allow
+        $params   = $this->params;
+        $hlpCheck = $this->getHelperByName('check');
         $modUser  = $this->getModelByName('user');
-        $user     = $_POST['external_id'];
-        $password = $_POST['password'];
-        $result   = $userData->loginForAuthToken($user,$password);
-        if($result)
-        {
-            $responobj["meta"]["code"]=200;
-            $responobj["response"]=$result;;
+        $user_id  = intval($params['id']);
+        $check    = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
+        if (!$check['check']) {
+            $responobj['meta']['code']  = 403;
+            $responobj['meta']['error'] = 'forbidden';
+            echo json_encode($responobj);
+            return;
         }
-        else
-        {
-            $responobj["meta"]["code"]=404;
-            $responobj["meta"]["err"]="login error";
+        $devicetoken = $_POST['devicetoken'];
+        $provider    = $_POST['provider'];
+        $devicename  = $_POST['devicename'];
+        $identity_id = $modUser->regDeviceToken($devicetoken, $devicename, $provider, $user_id);
+        $identity_id = intval($identity_id);
+        if ($identity_id) {
+            $responobj['meta']['code'] = 200;
+            $responobj['response']['device_token'] = $devicetoken;
+            $responobj['response']['identity_id']  = $identity_id;
+        } else {
+            $responobj['meta']['code']  = 500;
+            $responobj['meta']['error'] = 'reg device token error';
         }
-
         echo json_encode($responobj);
-        exit(0);
+        //add devicetoken with $check['uid']
     }
     
     
