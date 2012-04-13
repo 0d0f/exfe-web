@@ -5,15 +5,21 @@ class CrossActions extends ActionController {
     public function doIndex()
     {
         $params=$this->params;
+        $checkHelper=$this->getHelperByName("check","v2");
+        $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
+        if($result["check"]!==true)
+        {
+            if($result["uid"]===0)
+                apiError(401,"invalid_auth","");
+            else
+                apiError(403,"not_authorized","The X you're requesting is private.");
+        }
+
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross=$crossHelper->getCross($params["id"]);
         if($cross===NULL)
-        {
-            $err["code"]=500;
-            echo json_encode($err);
-            exit(0);
-        }
-        echo json_encode(array("cross"=>$cross));
+            apiError(400,"param_error","The X you're requesting is not found.");
+        apiResponse(array("cross"=>$cross));
     }
     
     
