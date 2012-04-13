@@ -15,7 +15,7 @@ class ExfeeModels extends DataModel {
     }
     
     
-    public function getExfeeById($id, $withRemoved = false) {
+    public function getExfeeById($id, $withRemoved = false, $withToken = false) {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // get invitations
@@ -33,6 +33,7 @@ class ExfeeModels extends DataModel {
                 $oByIdentity,
                 $this->rsvp_status[$eItem['state']],
                 $eItem['via'],
+                $withToken ? $eItem['token'] : '',
                 $eItem['created_at'],
                 $eItem['updated_at']
             );
