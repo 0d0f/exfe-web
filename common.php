@@ -720,3 +720,20 @@ function ipToInt($IPAddress) {
     return $intIP;
 }
 
+
+function apiError($code,$errorType,$errorDetail)
+{
+    $meta["code"]=$code;
+    $meta["errorType"]=$errorType;
+    $meta["errorDetail"]=$errorDetail;
+    echo json_encode(array("meta"=>$meta,"response"=>new stdClass));
+    exit(0);
+}
+function apiResponse($object)
+{
+    $meta["code"]=200;
+    echo json_encode(array("meta"=>$meta,"response"=>$object));
+}
+
+
+
