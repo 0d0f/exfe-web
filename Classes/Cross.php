@@ -1,6 +1,7 @@
 <?php
 class Cross extends Metainfo {
 
+    public $id_base62    = null;
     public $title        = null;
     public $description  = null;
     public $time         = null;
@@ -14,16 +15,23 @@ class Cross extends Metainfo {
         $this->relative["id"]=$relative_id;
         $this->relative["relation"]=$relation;
     }
+    
     public function setExfee($exfee)
     {
         $this->exfee=$exfee;
+    }
+    
+    public function base62Id($id) {
+        return int_to_base62($id);
     }
 
     public function __construct($id, $title, $description, $attribute, $exfee, $widget=array(),$time="", $place="" ) {
         parent::__construct($id,"Cross");
         $this->setRelation(0,"");
         $this->setExfee($exfee);
-
+        
+        $this->id_base62 = $id ? $this->base62Id($id) : '';
+        
         $this->attribute = $attribute;
         $this->widget    =$widget;
         
