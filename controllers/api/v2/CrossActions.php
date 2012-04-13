@@ -26,6 +26,15 @@ class CrossActions extends ActionController {
     public function doAdd()
     {
         $params=$this->params;
+        $checkHelper=$this->getHelperByName("check","v2");
+        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("cross_id"=>$params["id"]));
+        if($result["check"]!==true)
+        {
+            if($result["uid"]===0)
+                apiError(401,"invalid_auth","");
+            else
+                apiError(403,"not_authorized","The X you're requesting is private.");
+        }
         $cross_str=$_POST["cross"];
         $cross=json_decode($cross_str);
         $crossHelper=$this->getHelperByName("cross","v2");
@@ -35,13 +44,10 @@ class CrossActions extends ActionController {
         {
             $crossHelper=$this->getHelperByName("cross","v2");
             $cross=$crossHelper->getCross($cross_id);
-            echo json_encode(array("cross"=>$cross));
+            apiResponse(array("cross"=>$cross));
         }
         else
-        {
-            $err["code"]=500;
-            echo json_encode($err);
-        }
+            apiError(500,"server_error","Can't gather this Cross.");
 
     }
     
@@ -49,6 +55,15 @@ class CrossActions extends ActionController {
     public function doEdit()
     {
         $params=$this->params;
+        $checkHelper=$this->getHelperByName("check","v2");
+        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("cross_id"=>$params["id"]));
+        if($result["check"]!==true)
+        {
+            if($result["uid"]===0)
+                apiError(401,"invalid_auth","");
+            else
+                apiError(403,"not_authorized","The X you're requesting is private.");
+        }
         $cross_str=$_POST["cross"];
         $cross=json_decode($cross_str);
         $cross->id=$params["id"];
@@ -58,12 +73,9 @@ class CrossActions extends ActionController {
         {
             $crossHelper=$this->getHelperByName("cross","v2");
             $cross=$crossHelper->getCross($cross_id);
-            echo json_encode(array("cross"=>$cross));
+            apiResponse(array("cross"=>$cross));
         }
         else
-        {
-            $err["code"]=500;
-            echo json_encode($err);
-        }
+            apiError(500,"server_error","Can't Edit this Cross.");
     }
 }
