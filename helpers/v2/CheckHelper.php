@@ -19,10 +19,13 @@ class CheckHelper extends ActionController {
             return array("check"=>false,"uid"=>0);
         }
 
-        if($api=="cross" || $api=="cross_add" || $api=="cross_edit") {
+        if($api=="cross"|| $api=="cross_edit") {
             $exfee_id=$crossData->getExfeeByCrossId($args["cross_id"]);
             $userids=$exfeeData->getUserIdsByExfeeId($exfee_id);
             if(in_array($uid, $userids))
+                return array("check"=>true,"uid"=>$uid);
+        }
+        else if($api=="cross_add" ){
                 return array("check"=>true,"uid"=>$uid);
         }
         else if($api=="user") {
