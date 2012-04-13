@@ -76,40 +76,35 @@ class UserActions extends ActionController {
     }
     
     
-    ////////////////////////////////////////////working on this////////////////////////////////////////////////////
     public function doRegdevicetoken()
     {
         // check if this token allow
-        $params=$this->params;
-        $checkhelper=$this->getHelperByName("check");
-        $uid=$params["id"];
-        $check=$checkhelper->isAPIAllow("user_regdevicetoken",$params["token"],array("user_id"=>$params["id"]));
-        if($check["check"]==false)
-        {
-            $responobj["meta"]["code"]=403;
-            $responobj["meta"]["error"]="forbidden";
+        $params   = $this->params;
+        $hlpCheck = $this->getHelperByName('check');
+        $modUser  = $this->getModelByName('user');
+        $user_id  = intval($params['id']);
+        $check    = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
+        if (!$check['check']) {
+            $responobj['meta']['code']  = 403;
+            $responobj['meta']['error'] = 'forbidden';
             echo json_encode($responobj);
-            exit(0);
+            return;
         }
-        $devicetoken=$_POST["devicetoken"];
-        $provider=$_POST["provider"];
-        $devicename=$_POST["devicename"];
-        $userData=$this->getModelByName("user");
-        $identity_id=$userData->regDeviceToken($devicetoken,$devicename,$provider,$uid);
-        if(intval($identity_id)>0)
-        {
-            $responobj["meta"]["code"]=200;
-            $responobj["response"]["device_token"]=$devicetoken;
-            $responobj["response"]["identity_id"]=$identity_id;
-        }
-        else
-        {
-            $responobj["meta"]["code"]=500;
-            $responobj["meta"]["error"]="reg device token error";
+        $devicetoken = $_POST['devicetoken'];
+        $provider    = $_POST['provider'];
+        $devicename  = $_POST['devicename'];
+        $identity_id = $modUser->regDeviceToken($devicetoken, $devicename, $provider, $user_id);
+        $identity_id = intval($identity_id);
+        if ($identity_id) {
+            $responobj['meta']['code'] = 200;
+            $responobj['response']['device_token'] = $devicetoken;
+            $responobj['response']['identity_id']  = $identity_id;
+        } else {
+            $responobj['meta']['code']  = 500;
+            $responobj['meta']['error'] = 'reg device token error';
         }
         echo json_encode($responobj);
-        exit(0);
-        //add devicetoken with $check["uid"]
+        //add devicetoken with $check['uid']
     }
     
     
