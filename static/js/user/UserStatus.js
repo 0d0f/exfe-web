@@ -623,7 +623,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                       timer = null;
                       self.data('timer', timer);
                       $('#goldLink').removeClass('nameh');
-                    }, 200);
+                    }, 350);
                   self.data('timer', timer);
                   return false;
                 }
@@ -711,7 +711,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                       timer = null;
                       self.data('timer', timer);
                       $('#goldLink').removeClass('nameh');
-                    }, 200);
+                    }, 350);
                   self.data('timer', timer);
                   return false;
                 }
