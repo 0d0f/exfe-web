@@ -144,6 +144,7 @@ class UsersActions extends ActionController {
     }
 
 
+    // upgraded
     public function doRegdevicetoken()
     {
         //check if this token allow

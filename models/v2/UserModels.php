@@ -7,9 +7,18 @@ class UserModels extends DataModel {
     
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
-        "SELECT `cookie_logintoken`, `cookie_loginsequ`, `encrypted_password`, `password_salt`, `current_sign_in_ip`
+            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`
+             `encrypted_password`, `password_salt`, `current_sign_in_ip`
              FROM   `users` WHERE `id` = {$user_id}"
         );
+    }
+    
+    
+    protected function encryptPassword($user_password, $password_salt) {
+        return md5($password.( // compatible with the old users
+            $password_salt === $this->salt ? $this->salt
+          : (substr($password_salt, 3, 23) . EXFE_PASSWORD_SALT)
+        ));
     }
     
 
@@ -109,40 +118,26 @@ class UserModels extends DataModel {
     }
     
     
-    ///////// working on this ////////
     public function signinForAuthToken($external_id, $password) {
-        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
-        $row=$this->getRow($sql);
-        $result=array();
-        if(intval($row["uid"])>0)
-        {
-            $uid=intval($row["uid"]);
-            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
-            $salt_result = $this->getRow($sql);
-            $passwordSalt = $salt_result["password_salt"];
-            if($passwordSalt == $this->salt){
-                $password=md5($password.$this->salt);
-            }else{
-                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-            }
-
-            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
-            $row=$this->getRow($sql);
-            if(intval($row["id"])==$uid )
-            {
-                $result["userid"]=$uid;
-                if($row["auth_token"]=="")
-                {
-                    $auth_token=md5($time.uniqid());
-                    $sql="update users set auth_token='$auth_token'  where id=$uid";
-                    $this->query($sql);
-                    $result["auth_token"]=$auth_token;
+        $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
+                WHERE  `identities`.`external_identity` = '{$external_id}'
+                AND    `identities`.`id` = `user_identity`.`identityid`";
+        $rawUser = $this->getRow($sql);
+        $user_id = intval($rawUser['userid']);
+        if ($user_id) {
+            $rtResult   = array('user_id' => $user_id);
+            $passwdInDb = $this->getUserPasswdByUserId($user_id);
+            $password   = $this->encryptPassword($password, $userPasswd['password_salt']);
+            if ($password === $passwdInDb['encrypted_password']) {
+                if (!$passwdInDb['auth_token']) {
+                    $passwdInDb['auth_token'] = md5($time.uniqid());
+                    $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
                 }
-                else
-                    $result["auth_token"]=$row["auth_token"];
+                $rtResult['auth_token'] = $passwdInDb['auth_token'];
+                return $rtResult;
             }
         }
-        return $result;
+        return null;
     }
 
 
@@ -242,15 +237,7 @@ class UserModels extends DataModel {
             if (($user_id = $this->getUserIdByIdentityId($identity->id))) {
                 $passwdInDb = $this->getUserPasswdByUserId($user_id);
                 // hash the password
-                if (!$password_hashed) {
-                    $passwordSalt = $passwdInDb['password_salt'];
-                    $password = md5(
-                        // compatible with the old users
-                        $passwordSalt === $this->salt
-                      ? ($password . $this->salt)
-                      : ($password . substr($passwordSalt, 3, 23) . EXFE_PASSWORD_SALT)
-                    );
-                }
+                $password = $password_hashed ? $password : $this->encryptPassword($password, $passwdInDb['password_salt']);
                 // check password!
                 if ($password === $passwdInDb['encrypted_password']) {
                     $user = $this->getUserById($user_id);
