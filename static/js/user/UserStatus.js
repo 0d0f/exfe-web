@@ -41,7 +41,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
         }else{//正常检查是否登录。
             var getURI = site_url+"/s/checkUserLogin";
-            jQuery.ajax({
+            ns.checkUserLogin_dfd = jQuery.ajax({
                 type: "GET",
                 url: getURI,
                 dataType:"json",
@@ -623,7 +623,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                       timer = null;
                       self.data('timer', timer);
                       $('#goldLink').removeClass('nameh');
-                    }, 350);
+                    }, 500);
                   self.data('timer', timer);
                   return false;
                 }
@@ -637,7 +637,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                 $myexfe
                   //.stop(true, true)
-                  .animate({top: 50}, 200);
+                  .animate({top: 50}, 100);
                   $('#goldLink').addClass('nameh');
                 });
                 ns.showLoginStatus.status = 0;
@@ -711,7 +711,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                       timer = null;
                       self.data('timer', timer);
                       $('#goldLink').removeClass('nameh');
-                    }, 350);
+                    }, 500);
                   self.data('timer', timer);
                   return false;
                 }
@@ -725,7 +725,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                 $myexfe
                   //.stop(true, true)
-                  .animate({top: 50}, 200);
+                  .animate({top: 50}, 100);
                   $('#goldLink').addClass('nameh');
             });
             $('.name .setup-btn').bind('click', function (e) {
@@ -764,6 +764,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 jQuery(document).ready(function(){
     //odof.user.status.doShowLoginDialog();
     //odof.user.status.doShowAddIdentityDialog();
+
+    //Todo: 下一版本必须修改，每次调用此文件都会发送一个请求，失去模块化的意义、以及部署
     odof.user.status.checkUserLogin();
 
     // check accuracy of the local time

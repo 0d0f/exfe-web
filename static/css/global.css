@@ -181,9 +181,11 @@ body {
 }
 #global_header .user_info .uinfo .fill-left {
   height: 56px;
-  width: 186px;
+  /*width: 186px;*/
+  width: 500px;
   min-width: 36px;
-  max-width: 186px;
+  /*max-width: 186px;*/
+  max-width: 500px;
   display: inline-block;
   background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
   position: relative;
