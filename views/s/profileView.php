@@ -147,7 +147,7 @@
                 </div>
                 <div class="crosses"></div>
             </div>
-            <div id="invitations_shadow" class="shadow_310"></div>
+            <!--<div id="invitations_shadow" class="shadow_310"></div>-->
             <div id="recently_updates" class="category">
                 <div class="category_title">
                     <img src="/static/images/translation.gif" class="category_icon"/>
@@ -155,7 +155,13 @@
                 </div>
                 <div class="crosses"></div>
             </div>
-            <div id="recently_updates_shadow" class="shadow_310"></div>
+            <!--<div id="recently_updates_shadow" class="shadow_310"></div>-->
+            <div id="ios-app">
+              <div class="dismiss"><a href="#">Dismiss</a></div>
+              <div class="ios-app-download">
+                Try <a href="#"><span>EXFE</span> app</a> on iPhone - instant, mobile.
+              </div> 
+            </div>
         </div>
     </div>
 </div>
