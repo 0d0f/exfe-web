@@ -47,15 +47,19 @@
     if (winHeight < 680) {
       w = 450;
     } else if (winSize > 960) {
-      p = 60;
       w = 600;
+      p = 60;
     } else {
-      w = 450 + 450 * (winHeight - 680) / 680;
-      p = 465 + 465 * (winHeight - 680) / 680;
+      w = 450 + 450 * (winHeight - 680) / 960;
+      p = 465 * (winHeight - 680) / 960;
     }
     h = (w / 470) * 465;
     $(".x-sign").width(w).height(h).parent().css('margin-left', -w/2);
-    $('#home_banner').css('height', p);
+    $('#home_banner').css({
+        'height': 465 + p,
+        'margin-top': p,
+        'margin-bottom': p
+        });
 
     $("#pre_load_btn")[0].src = "/static/images/btn.png";
     $("#pre_load_icons")[0].src = "/static/images/icons.png";
