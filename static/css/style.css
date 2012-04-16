@@ -96,7 +96,7 @@ b.r3{margin: 0px}
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { height:360px; width:400px; overflow:hidden;}
+.identification_dialog_con { height:340px; width:400px; overflow:hidden;}
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
@@ -121,7 +121,7 @@ b.r3{margin: 0px}
 .identification_dialog_con .reg_hint{
     /*-moz-opacity: 0.85; opacity: 0.85; filter: alpha(opacity=85); -khtml-opacity: 0.85;*/
 }
-.identification_dialog_con .reg_hint div{ width:360px; }
+.identification_dialog_con .reg_hint div{ width:340px; }
 
 #manual_verify_identity{
     width:260px; height:22px; padding:2px; border:1px solid #CCC;
@@ -276,6 +276,7 @@ b.r3{margin: 0px}
 .identity_dialog_main p.oauth_icon{
   /*width:180px;*/ /*TODO: 去掉 facebook google*/
   float:right;
+  margin-right: 23px;
   /*margin-top: 20px;*/
 }
 .identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
@@ -364,7 +365,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .notice span{ margin-left:115px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
-    position:absolute; z-index:203; height:40px; width:360px; top:305px; text-align:right;
+    position:absolute; z-index:203; height:40px; width:340px; top:305px; text-align:right;
     color: #424242;
 }
 
@@ -532,7 +533,7 @@ b.r3{margin: 0px}
 }
 .exfe_version .exfe-version-info {
   height: 300px;
-  width: 360px;
+  width: 340px;
   padding: 0 20px;
   background: url(../images/exfe_rome.jpg) no-repeat;
   background-size: 400px 300px;
