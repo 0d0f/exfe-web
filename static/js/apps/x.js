@@ -439,7 +439,7 @@ var moduleNameSpace = 'odof.x.render',
             bkgIMG.src = '/static/images/x_background_pure.png';
         }
         bkgIMG.onload = function () {
-            $('#x_view').css('background', 'url(' + bkgIMG.src + ') no-repeat 0 -184px');
+            $('#x_view').css('background', 'url(' + bkgIMG.src + ') no-repeat 0 -198px');
         }
         bkgIMG.onerror = function () {};
     }
