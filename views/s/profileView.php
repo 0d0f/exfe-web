@@ -151,7 +151,7 @@
             <div id="recently_updates" class="category">
                 <div class="category_title">
                     <img src="/static/images/translation.gif" class="category_icon"/>
-                    Recently updates
+                    Recent updates
                 </div>
                 <div class="crosses"></div>
             </div>

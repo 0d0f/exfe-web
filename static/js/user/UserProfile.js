@@ -624,6 +624,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
       });
 
       return function (){
+        if (!/\/s\/profile/g.test(window.location.href)) return;
         if (n > 3 || (window['localStorage'] && Boolean(+window['localStorage'].getItem('newbie')))) return false;
         $('#cross_list').append($(s).find('.con').html(c1).end());
         $('#invitations').append($(s).find('.con').html(c2).end()).show();
