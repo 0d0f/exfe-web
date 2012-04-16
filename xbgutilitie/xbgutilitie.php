@@ -23,13 +23,13 @@ class xbgUtilitie extends DataModel {
                        'width'      => 882,
                        'height'     => 936,
                        'img-width'  => 880,
-                       'img-height' => 481),
+                       'img-height' => 495),
         'ios' => array('type'       => 'jpg',
                        'quality'    => 90,
                        'width'      => 640,
                        'height'     => 681,
                        'img-width'  => 640,
-                       'img-height' => 350),
+                       'img-height' => 360),
     );
 
 
