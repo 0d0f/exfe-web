@@ -602,7 +602,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
       
       var s = '<div class="newbie_box">'
             + '<div class="con"></div>'
-            + '<div class="close">&times;</div>'
+            + '<div class="close"><span>&times;</span></div>'
           + '</div>'
         , c1 = '<p>All your <span class="x">X</span> are listed here with basic information.</p>'
             + '<p><span class="x">X</span> (cross) is<br /> a gathering of people,<br />on purpose or not.</p>'
@@ -634,6 +634,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
           if (parseInt($('.name').css('top')) === 50) return;
           $('.name').trigger('mouseenter');
           $('.newbie_gather').fadeIn(100)
+          if ($(document).scrollTop()) $(document).scrollTop(0);
           return false;
         });
       };
