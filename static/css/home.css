@@ -68,12 +68,12 @@
   background-image:      -o-linear-gradient(280deg, #d5e8f2, #1175A5);
 }
 .circle-o.cx {
-  left: -90%;
+  left: -70%;
   top: 3%;
 }
 
 .circle-o.cexfee {
-  right: -90%;
+  right: -70%;
   bottom: 3%;
 }
 
@@ -158,6 +158,9 @@
   background-image:    -moz-linear-gradient(top, #D5E8F2, #1175A5);
   background-image:     -ms-linear-gradient(top, #D5E8F2, #1175A5);
   background-image:      -o-linear-gradient(top, #D5E8F2, #1175A5);
+}
+#home .home_bottom .gather_btn a:hover {
+  text-decoration: none;
 }
 #home .home_bottom .gather_btn a span {
   color: #1175A5;
