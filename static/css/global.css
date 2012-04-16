@@ -328,6 +328,7 @@ body {
   padding: 5px 0;
 }
 #global_header .user_info .uinfo .message .identity .iname {
+  height: 20px;
   text-indent: 18px;
   display: inline-block;
   float: left;
