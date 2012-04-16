@@ -31,7 +31,8 @@
     </div>
     <div class="home_bottom">
         <div class="gather_btn">
-            <a href="/x/gather"><img src="/static/images/home_gather_btn.png" alt="Gather" title="Gather" /></a>
+            <!--<a href="/x/gather"><img src="/static/images/home_gather_btn.png" alt="Gather" title="Gather" /></a>-->
+            <a href="/x/gather">Gather a <span>X</span></a>
         </div>
         <div class="home_bottom_btn"></div>
     </div>
@@ -48,7 +49,7 @@
       w = 450;
     } else if (winHeight > 960) {
       w = 600;
-      p = 60;
+      p = 20;
     } else {
       w = 450 + 450 * (winHeight - 680) / 960;
       p = 60 * (winHeight - 680) / 960;
@@ -65,7 +66,7 @@
     $("#pre_load_icons")[0].src = "/static/images/icons.png";
 
     $('.xci-l, .xci-r').hover(function (e) {
-      $(this).find('.circle-o').addClass('bounceIn').show();
+      $(this).find('.circle-o').stop(true, true).addClass('bounceIn').show();
     }, function (e) {
       $(this).find('.circle-o').delay(1000).fadeOut();
     });
