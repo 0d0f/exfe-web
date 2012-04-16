@@ -12,18 +12,18 @@
         <div class="xci-l">
           <div class="circle-o cx">
             <div class="circle-i">
-              <h3>X</h3>
-              <p class="explain">is a gathering of people, for anything to do with them.</p>
-              <p class="additional">All <span class="x-blue">X</span> are private by default, only attendees could access information inside.</p>
+              <h3>X <span>(cross)</span></h3>
+              <p class="explain">is a gathering<br />of people,<br />on purpose or not.</p>
+              <p class="additional">All <span class="x-blue">X</span> are private by<br />default, accessible to<br />only attendees.</p>
             </div>
           </div>
         </div>
         <div class="xci-r">
           <div class="circle-o cexfee">
             <div class="circle-i">
-              <h3>EXFE</h3>
-              <p class="explain">is an utility for hanging out with friends.</p>
-              <p class="additional">We save you from calling up every one RSVP, losing in endless emails messages off the <br />point.</p>
+              <h3>EXFE <span>[ˈɛksfi]</span></h3>
+              <p class="explain">is an utility<br />for hanging out<br />with friends.</p>
+              <p class="additional">Stop calling up every<br />one RSVP, losing in endless<br />emails and messages<br />off the point.</p>
             </div>
           </div>
         </div>
@@ -46,17 +46,17 @@
     var w, h, p = 0;
     if (winHeight < 680) {
       w = 450;
-    } else if (winSize > 960) {
+    } else if (winHeight > 960) {
       w = 600;
       p = 60;
     } else {
       w = 450 + 450 * (winHeight - 680) / 960;
-      p = 465 * (winHeight - 680) / 960;
+      p = 60 * (winHeight - 680) / 960;
     }
     h = (w / 470) * 465;
     $(".x-sign").width(w).height(h).parent().css('margin-left', -w/2);
     $('#home_banner').css({
-        'height': 465 + p,
+        'height': h + p*2,
         'margin-top': p,
         'margin-bottom': p
         });
