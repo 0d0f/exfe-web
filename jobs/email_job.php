@@ -26,13 +26,16 @@ class Email_Job
         $host_name=$host_identity["name"];
         $host_avatar=$host_identity["avatar_file_name"];
         $rsvpyeslink=$site_url.'/rsvp/yes?id='.$this->args['cross_id'].'&token='.$this->args['token'];
-
+        $report_spam_url=$site_url.'/s/reportSpam?token='.$this->args['token'];
+        $exfe_app_url='http://itunes.apple.com/us/app/exfe/id514026604';
 
         $mail["exfe_title"]=$this->args['title'];
         $mail["time_type"]=$this->args['time_type'];
         $mail["exfee_name"]=$name;
         $mail["host_name"]=$host_name;
         $mail["by_identity_name"]=$by_identity_name;
+        $mail["report_spam_url"]=$report_spam_url;
+        $mail["exfe_app_url"]=$exfe_app_url;
 
         $mail["hint_title"]='Invitation from <span>'.$host_name."</span>.";
 
@@ -146,6 +149,8 @@ class Email_Job
         $mail_body=str_replace("%place_line2%",$mail["place_line2"],$mail_body);
         $mail_body=str_replace("%site_url%",$site_url,$mail_body);
         $mail_body=str_replace("%by_identity_names%",$mail["by_identity_names"],$mail_body);
+        $mail_body=str_replace("%report_spam_url%",$mail["report_spam_url"],$mail_body);
+        $mail_body=str_replace("%exfe_app_url%",$mail["exfe_app_url"],$mail_body);
 
         return array("title"=>$mail_title,"body"=>$mail_body);
     }
