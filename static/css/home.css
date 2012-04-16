@@ -110,6 +110,9 @@
   padding-right: 25px;
   line-height: 36px;
 }
+.circle-o.cexfee .explain {
+  padding-bottom: 10px;
+}
 .circle-i .additional {
   font-weight: normal;
   font-size: 18px;
