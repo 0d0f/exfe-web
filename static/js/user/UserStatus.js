@@ -498,7 +498,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         jQuery("#forgot_identity_input").val(userIdentity);
         jQuery("#cancel_forgot_verify_btn").bind("click",function(){
             jQuery("#forgot_verification_dialog").hide();
-            if (window['token']) $('#identity_reg_login_dialog').show();
+            $('#identity_reg_login_dialog').show();
             jQuery("#fogot_verify_btn").unbind("click");
         });
         jQuery("#forgot_verification_msg").html("Confirm sending reset token to your mailbox?");
@@ -511,6 +511,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#fogot_verify_btn").unbind("click");
                 jQuery("#fogot_verify_btn").bind("click",function(){
                     jQuery("#forgot_verification_dialog").hide();
+                    $('#identity_reg_login_dialog').show();
                     jQuery("#fogot_verify_btn").unbind("click");
                 });
             };
@@ -767,7 +768,7 @@ jQuery(document).ready(function(){
     //odof.user.status.doShowLoginDialog();
     //odof.user.status.doShowAddIdentityDialog();
 
-    //Todo: 下一版本必须修改，每次调用此文件都会发送一个请求，失去模块化的意义、以及部署
+    //TODO: 下一版本必须修改，每次调用此文件都会发送一个请求，失去模块化的意义、以及部署
     odof.user.status.checkUserLogin();
 
     // check accuracy of the local time
