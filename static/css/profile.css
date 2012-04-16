@@ -546,7 +546,7 @@ em {
   #cross_list .newbie_box {
     width: 280px;
   }
-  #cross_list .newbie_box .con :last-child {
+  .newbie_box .con :last-child {
     padding-bottom: 0;
   }
   #invitation_n_update .newbie_box {
