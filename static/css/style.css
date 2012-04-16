@@ -143,21 +143,27 @@ b.r3{margin: 0px}
 
 #manual_verification_dialog .manual_identity .provider {
   position: absolute;
-  height: 14px;
-  width: 14px;
+  height: 15px;
+  width: 20px;
   bottom: -3px;
   right: -3px;
 }
 #manual_verification_dialog .manual_identity .provider.email {
-  background: url(../images/small_icons.png) no-repeat 0 2px;
+  /*background: url(../images/small_icons.png) no-repeat 0 2px;*/
+  background: url(../images/email.png) no-repeat;
+  background-size: 20px 15px;
 }
 
 #manual_verification_dialog .manual_identity .provider.twitter {
-  background: url(../images/small_icons.png) no-repeat 0 -12px;
+  /*background: url(../images/small_icons.png) no-repeat 0 -12px;*/
+  background: url(../images/twitter.png) no-repeat;
+  background-size: 20px 15px;
 }
 
 #manual_verification_dialog .manual_identity .provider.phone {
-  background: url(../images/small_icons.png) no-repeat 0 -28px;
+  /*background: url(../images/small_icons.png) no-repeat 0 -28px;*/
+  background: url(../images/phone.png) no-repeat;
+  background-size: 20px 15px;
 }
 
 #manual_verification_hint_box p {

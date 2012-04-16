@@ -85,7 +85,6 @@ input, textarea {
 
 /* global body style */
 body {
-    /*background: #FAFAFA url(../images/global_header_bg.png) repeat-x 0 0;*/
     background-color: #FAFAFA;
 }
 
@@ -114,11 +113,9 @@ body {
 
 /* global header by Handaoliang */
 #global_header {
-  /*width: 880px;*/
   height: 56px;
   margin: auto;
-  /*overflow:hidden;*/
-  /*background: #FAFAFA url(../images/global_header_bg.png) repeat-x 0 0;*/
+  background: transparent url(../images/global_header_bg.png) repeat-x 0 0;
 }
 #global_header .nav-bkg {
   position: relative;
@@ -128,18 +125,14 @@ body {
   background: rgba(250, 250, 250, 0) url(../images/global_header_bg.png) repeat-x 0 0;
 }
 #global_header .site-infos {
-  position: relative;
   width: 880px;
   height: 56px;
   margin: 0 auto;
-  top: -56px;
 }
 #global_header .logo{
   position: absolute;
   z-index: 100;
-  /*top: 0px;*/
   margin-left: 14px;
-  /*width: 450px; margin-left: -68px;*/
 }
 #global_header .logo .version a {
   position: absolute;
@@ -157,18 +150,11 @@ body {
 }
 
 #global_header .user_info{
-  position: relative;
   float: right;
-  /*
-  width: 320px;
-  margin-right: -128px;*/
-}
-#global_header .user_info a {
-  /*color: #FFF;*/
+  margin-right: -10px;
 }
 #global_header .user_info .global_sign_in_btn{
     color: #7F7F7F;
-    width: 240px;
     height: 20px;
     text-align: center;
     margin-top: 15px;
@@ -180,31 +166,55 @@ body {
 #global_header .user_info .global_sign_in_btn #home_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn{ font-weight:bold; font-style:italic; }
 #global_header .user_info .global_sign_in_btn #global_user_login_btn:hover { font-weight:bold; font-style:normal; text-decoration:none; }
-#global_header .user_info .uinfo{ position:absolute; right: 0px; }
 #global_header .user_info .uinfo em.light{
     float:left; width:72px;height:45px;background:url(/static/images/btn.png) no-repeat left -314px;
 }
+#global_header .user_info .uinfo  {
+  background-color: #fafafa;
+}
 #global_header .user_info .uinfo .name{
-    float: right;
+  position: relative;
     height: 56px;
-    /*margin-top: 5px;*/
-    text-align: center;
     cursor: pointer;
-    margin-right: 6px;
+  background-color: #fafafa;
+  display: inline-block;
+}
+#global_header .user_info .uinfo .fill-left {
+  height: 56px;
+  /*width: 186px;*/
+  width: 500px;
+  min-width: 36px;
+  /*max-width: 186px;*/
+  max-width: 500px;
+  display: inline-block;
+  background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
+  position: relative;
+  z-index: 100;
+}
+#global_header .user_info .uinfo .fill-right {
+  display: inline-block;
+  background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
+  height: 56px;
+  width: 10px;
+  position: relative;
+  z-index: 110;
 }
 #global_header .user_info .uinfo .name #goldLink {
+  background: transparent url(/static/images/global_header_bg.png) repeat-x 0 0;
+  display: inline-block;
+  min-width: 78px;
+  max-width: 228px;
+  float: left;
+  text-align: center;
   position: relative;
   z-index: 110;
 }
 #global_header .user_info .uinfo .name #goldLink a{
-  /*margin-left: 5px;*/
-  /*margin-right: 6px;*/
   font-size: 14px;
   color: #7F7F7F;
   font-weight: bold;
   white-space: nowrap;
   height: 56px;
-  /*width: 110px;*/
   max-width: 200px;
   min-width: 50px;
   display: block;
@@ -217,7 +227,7 @@ body {
   display: none;
   width: 12px;
   height: 56px;
-  background: url(/static/images/titlebar-bg-L.png) no-repeat rgba(250,250,250,0.5);
+  background: url(/static/images/titlebar-bg-L.png) no-repeat transparent; 
   position: absolute;
   right: 0;
   top: 0;
@@ -226,35 +236,18 @@ body {
   display: block;
 }
 #global_header .user_info .uinfo .name #goldLink.nameh{
-  /*width: 120px;*/
-  /*width: 96px;*/
-  /*position: absolute;*/
-  z-index: 300;
-  border-style: solid;
-  background: url(/static/images/titlebar-bg-R.png) no-repeat rgba(250,250,250,0.5);
-  /*background: #FFFEFF;*/
-  /*border-radius: 3px 3px 0 0;*/
-  /*border-width: 1px 1px 0 1px;*/
-  /*border-style: solid;*/
-  /*border-color: #D5D5D5;*/
-  /*box-shadow: 2px 0 0px 0px rgba(0, 0, 0, 0.1);*/
-  /*position:absolute;color:#000000;background:url(/static/images/user.png) no-repeat;*/
-  /*text-decoration:none;z-index:300;*/
+  background: url(/static/images/titlebar-bg-R.png) no-repeat transparent;
 }
 #global_header .user_info .uinfo .name #goldLink.nameh a {
-  /*color: #000;*/
   text-decoration: none;
-  background: url(/static/images/titlebar-bg-down.png) repeat rgba(250,250,250,0.5);
+  background: url(/static/images/titlebar-bg-down.png) repeat transparent;
 }
 #global_header .user_info .uinfo .myexfe {
-    display: none;
     position: absolute;
     width: 228px;
-    /*padding: 26px 10px 0;*/
-    /*padding: 5px 0px 0;*/
     /*background: url(/static/images/user.png) no-repeat 0 -40px;*/
     font-size: 14px;
-    right: 0;
+    right: 4px;
     background-color: #FAFAFA;
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
     background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
@@ -267,14 +260,11 @@ body {
     border-radius: 0px 0px 3px 3px;
     border: 1px solid #D5D5D5;
     border-top: none;
-    top: 50px;
-    z-index: 1;
+    z-index: 99;
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 #global_header .user_info .uinfo .message {
-  /*width: 190px;*/
   padding: 20px 15px 20px;
-  /*text-overflow: clip;*/
   overflow: hidden;
 }
 #global_header .user_info .uinfo .message .na {
@@ -286,6 +276,7 @@ body {
   float: left;
   color: #191919;
   text-decoration: none;
+  text-align: center;
 }
 #global_header .user_info .uinfo .message .na .l {
   height: 40px;
@@ -306,6 +297,7 @@ body {
   color: #1175A5;
   display: block;
   font-weight: 300;
+  text-shadow: 0 1px 2px rgba(20, 24, 26, 0.15);
 }
 #global_header .user_info .uinfo .message .na .h .x_attended {
   font-size: 14px;
@@ -349,18 +341,24 @@ body {
   overflow: hidden;
   color: #4C4C4c;
   margin-left: 10px;
+  overflow: hidden;
 }
 #global_header .user_info .uinfo .message .identity .iname.email {
   /*background: url(../images/email.png) no-repeat 0 3px;*/
-  background: url(../images/small_icons.png) no-repeat 0 2px;
+  background: url(../images/email.png) no-repeat;
+  background-size: 20px 15px;
 }
 #global_header .user_info .uinfo .message .identity .iname.phone {
   /*background: url(../images/phone-filtered.png) no-repeat 0 3px;*/
-  background: url(../images/small_icons.png) no-repeat 0 -28px;
+  /*background: url(../images/small_icons.png) no-repeat 0 -28px;*/
+  background: url(../images/phone.png) no-repeat;
+  background-size: 20px 15px;
 }
 #global_header .user_info .uinfo .message .identity .iname.twitter {
   /*background: url(../images/twitter-icon-filtered.png) no-repeat 0 3px;*/
-  background: url(../images/small_icons.png) no-repeat 0 -12px;
+  /*background: url(../images/small_icons.png) no-repeat 0 -12px;*/
+  background: url(../images/twitter.png) no-repeat;
+  background-size: 20px 15px;
 }
 #global_header .user_info .uinfo .message .identity img {
   width: 20px;
@@ -374,8 +372,6 @@ body {
 }
 #global_header .user_info .uinfo .message .setup p span.setup-btn,
 #global_header .user_info .uinfo .message .identites p span.merge {
-  /*display: block;*/
-  /*width: 60px;*/
   color: #191919;
   text-decoration: underline;
   height: 20px;
@@ -528,10 +524,24 @@ body {
   margin: 0 auto;
   border: 1px solid rgba(127,127,127,0.15);
 }
+#global_header .user_info .uinfo .splitline {
+  background-image: -webkit-gradient(linear, left, from(#e6e6e6), color-stop(0.5, #b2b2b2), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(left, #e6e6e6, #b2b2b2, #e6e6e6);
+  background-image: -moz-linear-gradient(left, #e6e6e6, #b2b2b2, #e6e6e6);
+  background-image: -ms-linear-gradient(left, #e6e6e6, #b2b2b2, #e6e6e6);
+  background-image: -o-linear-gradient(left, #e6e6e6, #b2b2b2, #e6e6e6);
+  background-image: linear-gradient(left #e6e6e6, #b2b2b2, #e6e6e6);
+  background-repeat: no-repeat;
+  /*filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",#e6e6e6,#b2b2b2)); */
+  height: 1px;
+  width: 162px;
+  margin: 0 auto;
+  box-shadow: 0 1px 1px rgba(250, 250, 250, 0.75);
+}
 #global_header .user_info .uinfo .myexfefoot {
   width: 162px;
   height: 30px;
-  border-top: 1px solid #D5D5D5;
+  /*border-top: 1px solid #D5D5D5;*/
   margin: 0 auto;
 }
 #global_header .user_info .uinfo .myexfefoot a {
