@@ -602,13 +602,14 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
       
       var s = '<div class="newbie_box">'
             + '<div class="con"></div>'
-            + '<div class="close">x</div>'
+            + '<div class="close">&times;</div>'
           + '</div>'
-        , c1 = '<p>All your <span class="x">X</span> are listed here with basic information for quickly browse.</p>'
-            + '<p><span class="x">X</span> (cross) is a gathering of people, for anything to do with them.</p>'
+        , c1 = '<p>All your <span class="x">X</span> are listed here with basic information.</p>'
+            + '<p><span class="x">X</span> (cross) is<br /> a gathering of people,<br />on purpose or not.</p>'
+            + '<p class="detail">Meals, meetings, hang-outs, events, etc. <br />All <span class="x">X</span> are private by default, <br />accessible to only attendees.</p>'
             + '<p>Try <a href="#" id="gather_new_x">Gathering new <span class="x">X</span></a>?</p>'
         , c2 = '<p>Incoming invitations will be listed here.</p>'
-        , c3 = '<p>Here you can find recent updates of all your <span class="x">X</span> (cross).</p>'
+        , c3 = '<p>Here you can find recent updates of<br /> all your <span class="x">X</span> (cross).</p>'
         , c4 = '<div class="newbie_gather"><div class="arrow-right"></div>Gather new <span class="x">X</span> here.</div>';
 
       $('#myexfe').mouseleave(function (e) {
