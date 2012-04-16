@@ -114,4 +114,17 @@ class UserActions extends ActionController {
         print_r($user);
     }
 
+    public function doCrosses() {
+        $params   = $this->params;
+        $uid=$params["id"];
+        $exfeeHelper= $this->getHelperByName('exfee', 'v2');
+        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid));
+
+        $crossHelper= $this->getHelperByName('cross', 'v2');
+        $crossHelper->getCrossesByExfeeIdList($exfee_id_list);
+
+        print_r($identities);  
+        //user
+    }
+
 }
