@@ -2,6 +2,13 @@
 
 class CrossHelper extends ActionController {
 
+    public function getCrossesByExfeeIdList($exfee_id_list)
+    {
+        $crossData=$this->getModelByName("cross","v2");
+        $cross=$crossData->getCross($cross_id);
+        if($cross==NULL)
+            return;
+    }
     public function getCross($cross_id)
     {
         $crossData=$this->getModelByName("cross","v2");
