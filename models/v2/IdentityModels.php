@@ -51,6 +51,51 @@ class IdentityModels extends DataModel {
             "SELECT * FROM `identities` WHERE `external_identity` = '{$external_id}'"
         ));
     }
+    
+    
+    public function updateIdentityById($id, $identityDetail = array()) {
+        $id = intval($id);
+        if (!$id || !$identityDetail['provider'] || !$identityDetail['external_id']) {
+            return null;
+        }
+        // improve data
+        if ($identityDetail['provider'] !== 'email') {
+            $identityDetail['external_id'] = "{$identityDetail['provider']}_{$identityDetail['external_id']}";
+        }
+        $identityDetail['avatar_filename'] = preg_replace(
+            '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $identityDetail['avatar_filename']
+        );
+        // check old identity
+        $rawIdentity = $this->getRow(
+            "SELECT `id` FROM `identities`
+             WHERE  `provider`          = '{$identityDetail['provider']}'
+             AND    `external_identity` = '{$identityDetail['external_id']}'"
+        );
+        $wasId = intval($rawIdentity['id']);
+        // update identity
+        $chgId = $wasId > 0 ? $wasId : $id;
+        $this->query(
+            "UPDATE `identities`
+             SET `external_identity` = '{$identityDetail['external_id']}',
+                 `name`              = '{$identityDetail['name']}',
+                 `bio`               = '{$identityDetail['bio']}',
+                 `avatar_file_name`  = '{$identityDetail['avatar_filename']}',
+                 `external_username` = '{$identityDetail['external_username']}',
+                 `updated_at`        = NOW(),
+                 `avatar_updated_at` = NOW()
+             WHERE `id` = {$chgId}"////////////$nickname pending and avatar_updated_at removing
+        );
+        // merge identity
+        if ($wasId > 0 && $wasId !== $id) {
+            $this->query("UPDATE `invitations`
+                          SET    `identity_id` = {$wasId}
+                          WHERE  `identity_id` = {$id};");
+            // @todo: 可能需要更新 log by @leaskh
+            $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
+        }
+        // return
+        return $chgId;
+    }
 
 
     /**

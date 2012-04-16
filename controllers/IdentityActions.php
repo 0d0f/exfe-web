@@ -186,6 +186,7 @@ class IdentityActions extends ActionController {
     }
 
 
+    // upgraded
     public function doUpdate() {
         /*--------------------+--------------+------+-----+---------+----------------+
         | Field               | Type         | Null | Key | Default | Extra          |

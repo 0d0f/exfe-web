@@ -543,6 +543,7 @@ class IdentityModels extends DataModel {
     }
 
 
+    // upgraded
     public function updateIdentityInformation($id, $provider, $external_identity, $name, $bio, $avatar_file_name, $external_username) {
         // improve data
         $external_identity = "{$provider}_{$external_identity}";
