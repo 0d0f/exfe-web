@@ -493,10 +493,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //隐藏掉头像的显示。
         jQuery("#user_avatar").hide();
 
+        $('#identity_reg_login_dialog').hide();
         jQuery("#forgot_verification_dialog").show();
         jQuery("#forgot_identity_input").val(userIdentity);
         jQuery("#cancel_forgot_verify_btn").bind("click",function(){
             jQuery("#forgot_verification_dialog").hide();
+            if (window['token']) $('#identity_reg_login_dialog').show();
             jQuery("#fogot_verify_btn").unbind("click");
         });
         jQuery("#forgot_verification_msg").html("Confirm sending reset token to your mailbox?");

@@ -276,7 +276,7 @@ b.r3{margin: 0px}
 .identity_dialog_main p.oauth_icon{
   /*width:180px;*/ /*TODO: 去掉 facebook google*/
   float:right;
-  margin-right: 23px;
+  margin-right: 35px;
   /*margin-top: 20px;*/
 }
 .identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
