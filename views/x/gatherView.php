@@ -92,7 +92,7 @@
             <li id="gather_submit_blank">
                 <div id="gather_submit_area" class="gather_input">
                     <span id="exfe_iphone_ad">
-                        <span class="exfe">EXFE</span> for iPhone, keep everything on track.
+                        <a href="http://itunes.apple.com/us/app/exfe/id514026604" target="_blank" class="exfe">EXFE</a> for iPhone, keep everything on track.
                     </span>
                     <button type="button" id="gather_submit">Submit</button>
                     <a href="/<?php echo $external_identity ? 's/profile' : ''; ?>" id="gather_discard">Discard</a>
