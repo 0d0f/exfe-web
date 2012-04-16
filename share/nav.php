@@ -1,5 +1,5 @@
     <div id="global_header">
-        <div class="nav-bkg"></div>
+        <!--<div class="nav-bkg"></div>-->
         <div class="site-infos">
         <div class="logo">
 <?php
