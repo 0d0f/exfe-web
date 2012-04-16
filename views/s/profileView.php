@@ -159,7 +159,7 @@
             <div id="ios-app">
               <div class="dismiss"><a href="#">Dismiss</a></div>
               <div class="ios-app-download">
-                Try <a href="#"><span>EXFE</span> app</a> on iPhone - instant, mobile.
+                Try <a title="EXFEE" href="http://itunes.apple.com/us/app/exfe/id514026604"><span>EXFE</span> app</a> on iPhone - instant, mobile.
               </div> 
             </div>
         </div>
