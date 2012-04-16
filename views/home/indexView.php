@@ -68,7 +68,7 @@
     $('.xci-l, .xci-r').hover(function (e) {
       $(this).find('.circle-o').stop(true, true).addClass('bounceIn').show();
     }, function (e) {
-      $(this).find('.circle-o').delay(1000).fadeOut();
+      $(this).find('.circle-o').delay(233).fadeOut();
     });
 });
 </script>
