@@ -224,8 +224,8 @@ em {
     display: inline-block;
 }
 .edit_user .u_con h1 input {
-    width: 200px; height: 18px;
-    font: 18px/20px Verdana, Arial, Helvetica, sans-serif;
+    width: 200px; height: 22px;
+    font: 18px/22px Verdana, Arial, Helvetica, sans-serif;
     border: #c5c5c5 1px solid;
 }
 .edit_user .u_con p {
