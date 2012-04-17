@@ -1,6 +1,13 @@
 <?php
 
 class CrossModels extends DataModel {
+    public function getCrossesByExfeeids($exfee_id_list)
+    {
+        $exfee_ids=implode($exfee_id_list,",");
+        $sql="select c.*,p.place_line1,p.place_line2,p.provider,p.external_id,p.lng,p.lat from crosses c,places p where c.place_id=p.id and c.exfee_id in ({$exfee_ids});";
+        $result=$this->getAll($sql);
+        return $result;
+    }
     public function getCross($crossid)
     {
         $sql="select * from crosses where id=$crossid;";
