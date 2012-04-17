@@ -30,6 +30,10 @@ class CheckHelper extends ActionController {
         }
         else if($api=="user") {
         }
+        else if($api=="user_crosses") {
+            if($uid==$args["user_id"])
+                return array("check"=>true,"uid"=>$uid);
+        }
         else if($api=="user_signin" || $api=="user_signup") {
                 return array("check"=>true);
         }
