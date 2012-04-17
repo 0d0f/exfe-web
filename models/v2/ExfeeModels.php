@@ -178,5 +178,15 @@ class ExfeeModels extends DataModel {
         // }
         return $id;
     }
+    public function getExfeeIdByUserid($userid)
+    {
+        $sql="select identityid from user_identity where userid=$userid;";
+        $identities=$this->getColumn($sql);
 
+        $identities_list=implode($identities,",");
+        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list);";
+        //TODO: cross_id will be renamed to exfee_id
+        $exfee_id_list=$this->getColumn($sql);
+        return $exfee_id_list;
+    }
 }
