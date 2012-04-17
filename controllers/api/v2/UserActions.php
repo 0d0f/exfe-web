@@ -63,10 +63,11 @@ class UserActions extends ActionController {
     
     
     public function doSignin() {
-        $modUser     = $this->getModelByName('user');
+        $modUser     = $this->getModelByName('user', 'v2');
         $external_id = $_POST['external_id'];
+        $provider    = $_POST['provider'];
         $password    = $_POST['password'];
-        $siResult    = $userData->loginForAuthToken($user,$password);
+        $siResult    = $userData->signinForAuthToken($provider, $external_id, $password);
         echo json_encode(
             ($external_id && $password && $siResult)
            ? array('meta' => array('code' => 200), 'response' => $siResult)

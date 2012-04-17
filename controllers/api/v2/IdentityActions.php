@@ -7,6 +7,74 @@ class IdentityActions extends ActionController {
     }
     
     
+    public function doGet() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $arrIdentities = trim($_POST['external_ids']) ? json_decode($_POST['identities']) : array();
+        $bolWithUserIdentityStatus = intval($_POST['with_user_identity_status']);
+        // ready
+        $responobj['response']['identities'] = array();
+        // get
+        if ($arrIdentities) {
+            foreach ($arrIdentities as $identityI => $identityItem) {
+                if (!$identityItem->provider) {
+                    continue;
+                }
+                $identity = $IdentityData->getIdentityByProviderExternalId(
+                    $identityItem->provider, $identityItem->external_id
+                );
+                if ($identity) {
+                    if ($bolWithUserIdentityStatus) {
+                        $identity->user_identity_status = $modUser->getUserIdentityStatusByIdentityId(
+                            $identity->id
+                        );
+                    }
+                    $responobj['response']['identities'][] = $identity;
+                } else {
+                    switch ($identityItem->provider) {
+                        case 'twitter':
+                            if ($identityItem->external_username) {
+                                $twitterConn = new tmhOAuth(array(
+                                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                                    'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
+                                    'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
+                                ));
+                                $responseCode = $twitterConn->request(
+                                    'GET',
+                                    $twitterConn->url('1/users/show'),
+                                    array('screen_name' => $identityItem->external_username)
+                                );
+                                if ($responseCode === 200) {
+                                    $twitterUser = (array)json_decode($twitterConn->response['response'], true);
+                                    $objIdentity = new Identity(
+                                        $twitterUser['name'],
+                                        $twitterUser['description'],
+                                        'twitter',
+                                        0,
+                                        "@{$twitterUser['screen_name']}@twitter",
+                                        $twitterUser['screen_name'],
+                                        $modIdentity->getTwitterLargeAvatarBySmallAvatar(
+                                            $twitterUser['profile_image_url']
+                                        )
+                                    );
+                                    if ($bolWithUserIdentityStatus) {
+                                        $objIdentity->user_identity_status = 'NEWIDENTITY';
+                                    }
+                                    $responobj['response']['identities'][] 
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        $responobj['meta']['code'] = 200;
+        echo json_encode($responobj);
+    }
+    
+    
     public function doUpdate() {
         // get raw data
         $id                = isset($_POST['id'])                ? intval(htmlspecialchars($_POST['id']))                                  : null;

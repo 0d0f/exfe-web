@@ -409,63 +409,6 @@ class SActions extends ActionController {
     }
 
 
-    public function doIfIdentityExist() {
-        //TODO: private API ,must check session
-        $identity=$_GET["identity"];
-
-        $responobj["meta"]["code"]=200;
-        $identityData = $this->getModelByName("identity");
-
-        $identityArrayInfo = explode("@", $identity);
-        if(count($identityArrayInfo) > 1){
-            $currentDomain = $identityArrayInfo[1];
-            $specialIdentity = $identityArrayInfo[0];
-            if(in_array($currentDomain, $this->specialDomain)){
-                if($currentDomain == "google"){
-                    $specialIdentity .= "@gmail.com";
-                }
-                $result = $identityData->ifIdentityExist($specialIdentity, $currentDomain);
-                if($result != false){
-                    if(array_key_exists("user_avatar", $result)){
-                        $responobj["response"]["avatar"]=trim($result["user_avatar"]);
-                    }
-                    if(intval($result["status"]) == 3){
-                        $responobj["response"]["status"]="connected";
-                    }else{
-                        $responobj["response"]["status"]="empty_pwd";
-                    }
-                    $responobj["response"]["identity_exist"]="true";
-                } else {
-                    $responobj["response"]["identity_exist"]="false";
-                }
-                echo json_encode($responobj);
-                exit();
-            }
-        }
-
-        $result = $identityData->ifIdentityExist($identity);
-        //$responobj["meta"]["errType"]="Bad Request";
-        //$responobj["meta"]["errorDetail"]="invalid_auth";
-
-        if($result !== false)
-        {
-            if(intval($result["status"]) == 3){
-                $responobj["response"]["status"]="connected";
-                if(array_key_exists("user_avatar", $result)){
-                    $responobj["response"]["avatar"]=trim($result["user_avatar"]);
-                }
-            }else{
-                $responobj["response"]["status"]="verifying";
-            }
-
-            $responobj["response"]["identity_exist"]="true";
-        } else {
-            $responobj["response"]["identity_exist"]="false";
-        }
-        echo json_encode($responobj);
-        exit();
-    }
-
     /**
      * check user login status.
      *
@@ -1368,6 +1311,65 @@ class SActions extends ActionController {
     public function doExfee()
     {
         $this->displayView();
+    }
+    
+    
+    // upgraded
+    public function doIfIdentityExist() {
+        //TODO: private API ,must check session
+        $identity=$_GET["identity"];
+
+        $responobj["meta"]["code"]=200;
+        $identityData = $this->getModelByName("identity");
+
+        $identityArrayInfo = explode("@", $identity);
+        if(count($identityArrayInfo) > 1){
+            $currentDomain = $identityArrayInfo[1];
+            $specialIdentity = $identityArrayInfo[0];
+            if(in_array($currentDomain, $this->specialDomain)){
+                if($currentDomain == "google"){
+                    $specialIdentity .= "@gmail.com";
+                }
+                $result = $identityData->ifIdentityExist($specialIdentity, $currentDomain);
+                if($result != false){
+                    if(array_key_exists("user_avatar", $result)){
+                        $responobj["response"]["avatar"]=trim($result["user_avatar"]);
+                    }
+                    if(intval($result["status"]) == 3){
+                        $responobj["response"]["status"]="connected";
+                    }else{
+                        $responobj["response"]["status"]="empty_pwd";
+                    }
+                    $responobj["response"]["identity_exist"]="true";
+                } else {
+                    $responobj["response"]["identity_exist"]="false";
+                }
+                echo json_encode($responobj);
+                exit();
+            }
+        }
+
+        $result = $identityData->ifIdentityExist($identity);
+        //$responobj["meta"]["errType"]="Bad Request";
+        //$responobj["meta"]["errorDetail"]="invalid_auth";
+
+        if($result !== false)
+        {
+            if(intval($result["status"]) == 3){
+                $responobj["response"]["status"]="connected";
+                if(array_key_exists("user_avatar", $result)){
+                    $responobj["response"]["avatar"]=trim($result["user_avatar"]);
+                }
+            }else{
+                $responobj["response"]["status"]="verifying";
+            }
+
+            $responobj["response"]["identity_exist"]="true";
+        } else {
+            $responobj["response"]["identity_exist"]="false";
+        }
+        echo json_encode($responobj);
+        exit();
     }
 
 }
