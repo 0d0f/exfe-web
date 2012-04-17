@@ -2,6 +2,7 @@
 require_once 'Cross.php';
 require_once 'CrossTime.php';
 require_once 'Place.php';
+require_once 'Post.php';
 
 abstract class Metainfo extends EFObject{
     
