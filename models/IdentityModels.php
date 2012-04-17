@@ -2,49 +2,6 @@
 
 class IdentityModels extends DataModel {
 
-    public function ifIdentityExist($external_identity, $provider = '') {
-        $external_identity = mysql_real_escape_string($external_identity);
-        $provider = mysql_real_escape_string($provider);
-
-        if ($provider) {
-            $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}'";
-        } else {
-            $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
-        }
-
-        $row = $this->getRow($sql);
-        $identity_id = intval($row["id"]);
-        if ($identity_id > 0) {
-            $sql = "SELECT userid, status FROM user_identity WHERE identityid={$identity_id}";
-            $result = $this->getRow($sql);
-            $uid = intval($result["userid"]);
-            $user_status = intval($result["status"]);
-
-            $returnData = array(
-                "id"=>$identity_id,
-                "status"=>$user_status,
-                "user_avatar"=>""
-            );
-
-            if($user_status == 3 && $uid > 0) {
-                $sql = "SELECT id, encrypted_password, avatar_file_name FROM users WHERE id={$uid}";
-                $user_info = $this->getRow($sql);
-
-                if(intval($user_info["id"])>0 && trim($user_info["encrypted_password"])==""){
-                    $returnData["status"] = 2;
-                }
-
-                $returnData["user_avatar"] = $user_info["avatar_file_name"];
-                return $returnData;
-            }
-            return $returnData;
-
-        } else {
-            return false;
-        }
-    }
-
-    
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -904,6 +861,50 @@ class IdentityModels extends DataModel {
         $result = $this->query($sql);
         $identityid = intval($result["insert_id"]);
         return $identityid;
+    }
+    
+    
+    // upgraded
+    public function ifIdentityExist($external_identity, $provider = '') {
+        $external_identity = mysql_real_escape_string($external_identity);
+        $provider = mysql_real_escape_string($provider);
+
+        if ($provider) {
+            $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}'";
+        } else {
+            $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
+        }
+
+        $row = $this->getRow($sql);
+        $identity_id = intval($row["id"]);
+        if ($identity_id > 0) {
+            $sql = "SELECT userid, status FROM user_identity WHERE identityid={$identity_id}";
+            $result = $this->getRow($sql);
+            $uid = intval($result["userid"]);
+            $user_status = intval($result["status"]);
+
+            $returnData = array(
+                "id"=>$identity_id,
+                "status"=>$user_status,
+                "user_avatar"=>""
+            );
+
+            if($user_status == 3 && $uid > 0) {
+                $sql = "SELECT id, encrypted_password, avatar_file_name FROM users WHERE id={$uid}";
+                $user_info = $this->getRow($sql);
+
+                if(intval($user_info["id"])>0 && trim($user_info["encrypted_password"])==""){
+                    $returnData["status"] = 2;
+                }
+
+                $returnData["user_avatar"] = $user_info["avatar_file_name"];
+                return $returnData;
+            }
+            return $returnData;
+
+        } else {
+            return false;
+        }
     }
 
 }
