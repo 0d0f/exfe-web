@@ -25,10 +25,19 @@ class CheckHelper extends ActionController {
             if(in_array($uid, $userids))
                 return array("check"=>true,"uid"=>$uid);
         }
+        if($api=="conversation") {
+            $userids=$exfeeData->getUserIdsByExfeeId($args["exfee_id"]);
+            if(in_array($uid, $userids))
+                return array("check"=>true,"uid"=>$uid);
+        }
         else if($api=="cross_add" ){
                 return array("check"=>true,"uid"=>$uid);
         }
         else if($api=="user") {
+        }
+        else if($api=="user_crosses") {
+            if($uid==$args["user_id"])
+                return array("check"=>true,"uid"=>$uid);
         }
         else if($api=="user_signin" || $api=="user_signup") {
                 return array("check"=>true);
