@@ -4,7 +4,9 @@ class UserModels extends DataModel {
     
     private $salt = '_4f9g18t9VEdi2if';
     
-    
+    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED');
+
+
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
             "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`
@@ -118,9 +120,29 @@ class UserModels extends DataModel {
     }
     
     
-    public function signinForAuthToken($external_id, $password) {
+    public function getUserIdentityStatusByIdentityId($identity_id) {
+        if (!$identity_id) {
+            return null;
+        }
+        $rawStatus = $this->getRow(
+            "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}"
+        );
+        $user_id = intval($rawStatus['userid']);
+        $status  = intval($rawStatus['status'])
+        if ($user_id && $status === 3) {
+            $passwdInfo = $this->getUserPasswdByUserId($user_id);
+            if (!$passwdInfo['encrypted_password']) {
+                return 'NOPASSWORD';
+            }
+        }
+        return $this->arrUserIdentityStatus['$status'];
+    }
+    
+    
+    public function signinForAuthToken($provider, $external_id, $password) {
         $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
-                WHERE  `identities`.`external_identity` = '{$external_id}'
+                WHERE  `identities`.`provider`          = '{$provider}'
+                AND    `identities`.`external_identity` = '{$external_id}'
                 AND    `identities`.`id` = `user_identity`.`identityid`";
         $rawUser = $this->getRow($sql);
         $user_id = intval($rawUser['userid']);
@@ -227,10 +249,12 @@ class UserModels extends DataModel {
         // get identity object
         if ($oauth_signin) {
             $provider          = $identityInfo['provider'];
-            $external_username = $identityInfo["ex_username"];
+            $external_username = $identityInfo['external_username'];
             $identity = $hlpIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         } else {
-            $identity = $hlpIdentity->getIdentityByExternalId($identityInfo);
+            $provider          = $identityInfo['provider'];
+            $external_id       = $identityInfo['external_id'];
+            $identity = $hlpIdentity->getIdentityByProviderExternalId($provider, $external_id);
         }
         // sign in
         if ($identity) {

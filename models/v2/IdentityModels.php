@@ -1,4 +1,7 @@
 <?php
+session_write_close();
+require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
+
 
 class IdentityModels extends DataModel {
     
@@ -46,10 +49,19 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityByExternalId($external_id) {
+    public function getIdentityByProviderExternalId($provider, $external_id) {
         return $this->packageIdentity($this->getRow(
-            "SELECT * FROM `identities` WHERE `external_identity` = '{$external_id}'"
+            "SELECT * FROM `identities` WHERE
+             `provider`          = '{$provider}' AND
+             `external_identity` = '{$external_id}'"
         ));
+    }
+    
+    
+    public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
+        return preg_replace(
+            '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $strUrl
+        );
     }
     
     
@@ -62,9 +74,12 @@ class IdentityModels extends DataModel {
         if ($identityDetail['provider'] !== 'email') {
             $identityDetail['external_id'] = "{$identityDetail['provider']}_{$identityDetail['external_id']}";
         }
-        $identityDetail['avatar_filename'] = preg_replace(
-            '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $identityDetail['avatar_filename']
-        );
+        switch ($identityDetail['provider']) {
+            case 'twitter':
+                $identityDetail['avatar_filename'] = $this->getTwitterLargeAvatarBySmallAvatar(
+                    $identityDetail['avatar_filename']
+                );
+        }
         // check old identity
         $rawIdentity = $this->getRow(
             "SELECT `id` FROM `identities`
