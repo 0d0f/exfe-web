@@ -62,8 +62,7 @@ class UserActions extends ActionController {
     }
     
     
-    public function doSignin()
-    {
+    public function doSignin() {
         $modUser     = $this->getModelByName('user');
         $external_id = $_POST['external_id'];
         $password    = $_POST['password'];
@@ -74,7 +73,29 @@ class UserActions extends ActionController {
            : array('meta' => array('code' => 404,  'err'      => 'login error'))
         );
     }
-    
+
+
+    public function doSignout() {
+        $modUser      = $this->getModelByName('user');
+        $params       = $this->params;
+        $user_id      = intval($params['id']);
+        $token        = $params['token'];
+        $device_token = $_POST['device_token'];
+        $responobj    = array();
+        if ($user_id && $token && $device_token) {
+            $soResult = $modUser->disConnectiOSDeviceToken($user_id, $token, $device_token);
+            if ($soResult) {
+                $responobj['meta']['code'] = 200;
+                $responobj['response'] = $soResult;
+                echo json_encode($responobj);
+                return;
+            }
+        }
+        $responobj['meta']['code'] = 500;
+        $responobj['meta']['err'] = "can't disconnect this device";
+        echo json_encode($responobj);
+    }
+
     
     public function doRegdevicetoken()
     {
