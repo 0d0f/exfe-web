@@ -4,8 +4,8 @@ class ExfeeHelper extends ActionController {
     public function getExfeeIdByUserid($userid)
     {
         $exfeeData = $this->getModelByName('exfee', 'v2');
-        $exfee_ids= $exfeeData->getExfeeIdByUserid($userid);
-        print_r($exfee_ids);
+        $exfee_id_list= $exfeeData->getExfeeIdByUserid($userid);
+        return $exfee_id_list;
     }
 
 }

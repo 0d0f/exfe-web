@@ -117,13 +117,21 @@ class UserActions extends ActionController {
     public function doCrosses() {
         $params   = $this->params;
         $uid=$params["id"];
+
+        $checkHelper=$this->getHelperByName("check","v2");
+        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("user_id"=>$uid));
+        if($result["check"]!==true)
+        {
+            if($result["uid"]===0)
+                apiError(401,"invalid_auth","");
+        }
+
         $exfeeHelper= $this->getHelperByName('exfee', 'v2');
         $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid));
-
         $crossHelper= $this->getHelperByName('cross', 'v2');
-        $crossHelper->getCrossesByExfeeIdList($exfee_id_list);
+        $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
+        apiResponse(array("crosses"=>$cross_list));
 
-        print_r($identities);  
         //user
     }
 
