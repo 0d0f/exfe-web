@@ -140,7 +140,7 @@ class UserActions extends ActionController {
         $uid=$params["id"];
 
         $checkHelper=$this->getHelperByName("check","v2");
-        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("user_id"=>$uid));
+        $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
