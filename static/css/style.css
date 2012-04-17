@@ -14,23 +14,22 @@ b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 
 .identification_dialog {
-    position: absolute;
-    width: 400px;
-    height: 380px;
-    padding: 0;
-    z-index: 201;
-    font-family: "Helvetica", Verdana, "Lucida Grande", "Sans", "Arial", "SimSun";
-    color: #424242;
-    background-color: #FAFAFA;
-    /*background-image: url(images/fallback-gradient.png);*/
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
-    background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
-    background-image:    -moz-linear-gradient(top, #FAFAFA, #E6E6E6);
-    background-image:     -ms-linear-gradient(top, #FAFAFA, #E6E6E6);
-    background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
-    border-radius: 0 0 5px 5px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+  position: absolute;
+  width: 400px;
+  height: 380px;
+  padding: 0;
+  z-index: 201;
+  font-family: "Helvetica", Verdana, "Lucida Grande", "Sans", "Arial", "SimSun";
+  color: #424242;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 0 0 5px 5px;
+  background-color: #FAFAFA;
+  /*background-image: url(images/fallback-gradient.png);*/
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
+  background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
+  background-image:    -moz-linear-gradient(top, #FAFAFA, #E6E6E6);
+  background-image:     -ms-linear-gradient(top, #FAFAFA, #E6E6E6);
+  background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; margin-top: 70px;}
 .idialog_inpage .titles { display:none; }
@@ -96,7 +95,14 @@ b.r3{margin: 0px}
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { height:340px; width:400px; overflow:hidden;}
+.identification_dialog_con {
+  height: 359px;
+  width: 398px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+}
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
