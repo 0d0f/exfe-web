@@ -850,66 +850,6 @@ class SActions extends ActionController {
         exit();
     }
 
-
-    /**
-     * 用户忘记密码时，发送重置邮件
-     **/
-    public function doSendResetPasswordMail()
-    {
-        $returnData = array(
-            "error" => 0,
-            "msg"   =>""
-        );
-        $userIdentity = exPost("identity");
-        if($userIdentity == ""){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "User Identity is empty";
-        }else{
-
-            $userData = $this->getModelByName("user");
-            $result=$userData->getResetPasswordToken($userIdentity);
-            if($result["token"] != "" && intval($result["uid"]) > 0)
-            {
-                $userInfo = array(
-                    "actions"           =>"resetPassword",
-                    "user_id"           =>$result["uid"],
-                    "identity_id"       =>$result["identity_id"],
-                    "identity"          =>$userIdentity,
-                    "user_token"        =>$result["token"]
-                );
-
-                $pakageToken = packArray($userInfo);
-                $name=$result["name"];
-                if($name==""){
-                    $name=$userIdentity;
-                }
-                $args = array(
-                    'external_identity' => $userIdentity,
-                    'name' => $name,
-                    'token' => $pakageToken
-                );
-                //echo $pakageToken;
-                //exit();
-                $helper=$this->getHelperByName("identity");
-                $jobId=$helper->sendResetPassword($args);
-                if($jobId=="")
-                {
-                    $returnData["error"] = 1;
-                    $returnData["msg"] = "mail server error";
-                }
-            } else {
-                $returnData["error"] = 1;
-                $returnData["msg"] = "can't reset password";
-            }
-            //echo "get $userIdentity";
-            //@Huoju
-            //do send verication email
-        }
-        //sleep(1);
-        header("Content-Type:application/json; charset=UTF-8");
-        echo json_encode($returnData);
-    }
-
     
     public function doVerifyIdentity(){
         $userToken = exGet("token");
@@ -1387,6 +1327,64 @@ class SActions extends ActionController {
         $userData = $this->getModelByName("user");
         $userData->doDestroySessionAndCookies();
         header('location:/');
+    }
+    
+    
+    // upgraded
+    public function doSendResetPasswordMail()
+    {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>""
+        );
+        $userIdentity = exPost("identity");
+        if($userIdentity == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "User Identity is empty";
+        }else{
+
+            $userData = $this->getModelByName("user");
+            $result=$userData->getResetPasswordToken($userIdentity);
+            if($result["token"] != "" && intval($result["uid"]) > 0)
+            {
+                $userInfo = array(
+                    "actions"           =>"resetPassword",
+                    "user_id"           =>$result["uid"],
+                    "identity_id"       =>$result["identity_id"],
+                    "identity"          =>$userIdentity,
+                    "user_token"        =>$result["token"]
+                );
+
+                $pakageToken = packArray($userInfo);
+                $name=$result["name"];
+                if($name==""){
+                    $name=$userIdentity;
+                }
+                $args = array(
+                    'external_identity' => $userIdentity,
+                    'name' => $name,
+                    'token' => $pakageToken
+                );
+                //echo $pakageToken;
+                //exit();
+                $helper=$this->getHelperByName("identity");
+                $jobId=$helper->sendResetPassword($args);
+                if($jobId=="")
+                {
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "mail server error";
+                }
+            } else {
+                $returnData["error"] = 1;
+                $returnData["msg"] = "can't reset password";
+            }
+            //echo "get $userIdentity";
+            //@Huoju
+            //do send verication email
+        }
+        //sleep(1);
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
     }
 
 }
