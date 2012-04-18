@@ -143,6 +143,24 @@ class UserModels extends DataModel {
     }
     
     
+    public function signout() {
+        // unset seesion
+        unset($_SESSION['signin_user']);
+        unset($_SESSION['signin_token']);
+        session_destroy();
+        // unset cookie
+        unset($_COOKIE['user_id']);    
+        unset($_COOKIE['identity_ids']);
+        unset($_COOKIE['signin_sequ']);
+        unset($_COOKIE['signin_token']);
+        setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
+        setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
+        setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
+        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);        
+    }
+    
+    
+    
     public function signinForAuthToken($provider, $external_id, $password) {
         $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
@@ -181,19 +199,7 @@ class UserModels extends DataModel {
              && $signin_token === $userPasswd['cookie_logintoken']) {
                 return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
             } 
-            // unset seesion
-            unset($_SESSION['signin_user']);
-            unset($_SESSION['signin_token']);
-            session_destroy();
-            // unset cookie
-            unset($_COOKIE['user_id']);    
-            unset($_COOKIE['identity_ids']);
-            unset($_COOKIE['signin_sequ']);
-            unset($_COOKIE['signin_token']);
-            setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
-            setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
-            setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-            setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
+            $this->signout();
         }
         return null;
     }

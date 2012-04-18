@@ -1,8 +1,6 @@
 <?php
+
 class SActions extends ActionController {
-
-    private $specialDomain = array("facebook", "twitter", "google");
-
 
     public function doTestUser() {
         $identityData = $this->getModelByName("identity");
@@ -538,41 +536,6 @@ class SActions extends ActionController {
         exit();
     }
 
-    public function doGetUserProfile()
-    {
-        //TODO: private API ,must check session
-        $name=$_POST["name"];
-        $userid=intval($_SESSION["userid"]);
-        if ($userid > 0)
-        {
-            $userData = $this->getModelByName("user");
-            $user=$userData->getUser($userid);
-            $responobj["meta"]["code"]=200;
-            //$responobj["meta"]["errType"]="Bad Request";
-            //$responobj["meta"]["errorDetail"]="invalid_auth";
-            $responobj["response"]["user"]=$user;
-            echo json_encode($responobj);
-            exit();
-        }
-    }
-
-    public function doLogoutsession()
-    {
-        unset($_SESSION["userid"]);
-        unset($_SESSION["identity_id"]);
-        unset($_SESSION["identity"]);
-        unset($_SESSION["tokenIdentity"]);
-        //logout session
-        session_destroy();
-    }
-
-    public function doLogout()
-    {
-        $userData = $this->getModelByName("user");
-        $userData->doDestroySessionAndCookies();
-        header('location:/');
-    }
-
     
     public function doDialogaddidentity()
     {
@@ -947,19 +910,7 @@ class SActions extends ActionController {
         echo json_encode($returnData);
     }
 
-    public function doCheckLogin(){
-        //header("Content-Type:application/json; charset=UTF-8");
-        if(intval($_SESSION["userid"])>0)
-        {
-            echo 1;
-            $userData = $this->getModelByName("user");
-            $user=$userData->getUser($_SESSION["userid"]);
-        }else{
-            echo 0;
-        }
-
-    }
-
+    
     public function doVerifyIdentity(){
         $userToken = exGet("token");
         if($userToken == ""){
@@ -1099,6 +1050,10 @@ class SActions extends ActionController {
         }
         $this->displayView();
     }
+    
+    
+    // upgraded
+    private $specialDomain = array("facebook", "twitter", "google");
 
     
     // upgraded
@@ -1377,6 +1332,61 @@ class SActions extends ActionController {
         $userObj->updateUserPassword($userID, $userNewPassword);
         echo json_encode($returnData);
         exit();
+    }
+    
+    
+    // upgraded
+    public function doCheckLogin(){
+        //header("Content-Type:application/json; charset=UTF-8");
+        if(intval($_SESSION["userid"])>0)
+        {
+            echo 1;
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($_SESSION["userid"]);
+        }else{
+            echo 0;
+        }
+    }
+    
+    
+    // upgraded
+    public function doGetUserProfile()
+    {
+        //TODO: private API ,must check session
+        $name=$_POST["name"];
+        $userid=intval($_SESSION["userid"]);
+        if ($userid > 0)
+        {
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($userid);
+            $responobj["meta"]["code"]=200;
+            //$responobj["meta"]["errType"]="Bad Request";
+            //$responobj["meta"]["errorDetail"]="invalid_auth";
+            $responobj["response"]["user"]=$user;
+            echo json_encode($responobj);
+            exit();
+        }
+    }
+
+
+    // upgraded
+    public function doLogoutsession()
+    {
+        unset($_SESSION["userid"]);
+        unset($_SESSION["identity_id"]);
+        unset($_SESSION["identity"]);
+        unset($_SESSION["tokenIdentity"]);
+        //logout session
+        session_destroy();
+    }
+
+
+    // upgraded
+    public function doLogout()
+    {
+        $userData = $this->getModelByName("user");
+        $userData->doDestroySessionAndCookies();
+        header('location:/');
     }
 
 }

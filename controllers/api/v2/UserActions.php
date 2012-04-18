@@ -74,6 +74,12 @@ class UserActions extends ActionController {
             echo json_encode(array('error' => 'Invalid identity or password'));
         }   
     }
+
+
+    public function doWebSignout() {
+        $modUser = $this->getModelByName('user', 'v2');
+        $modUser->signout();
+    }
     
     
     public function doSignin() {
