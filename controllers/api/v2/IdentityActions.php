@@ -66,7 +66,7 @@ class IdentityActions extends ActionController {
                                     if ($bolWithUserIdentityStatus) {
                                         $objIdentity->user_identity_status = 'NEWIDENTITY';
                                     }
-                                    $responobj['response']['identities'][] 
+                                    $responobj['response']['identities'][] = $objIdentity;
                                 }
                             }
                     }
