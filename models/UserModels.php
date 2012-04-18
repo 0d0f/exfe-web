@@ -453,18 +453,18 @@ class UserModels extends DataModel{
         return array("result"=>$result,"newuser"=>$newUser);
     }
 
+
+    // upgraded
     public function doDestroySessionAndCookies(){
         unset($_SESSION["userid"]);
         unset($_SESSION["identity_id"]);
         unset($_SESSION["identity"]);
         unset($_SESSION["tokenIdentity"]);
         session_destroy();
-
         unset($_COOKIE["uid"]);
         unset($_COOKIE["id"]);
         unset($_COOKIE["loginsequ"]);
         unset($_COOKIE["logintoken"]);
-
         setcookie('uid', NULL, -1,"/",COOKIES_DOMAIN);
         setcookie('id', NULL, -1,"/",COOKIES_DOMAIN);
         setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
