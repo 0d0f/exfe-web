@@ -31,6 +31,20 @@ class UserActions extends ActionController {
     }
     
     
+    public function doAddIdentity() {
+        // get models
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        $external_id = $_POST['external_id'];
+        $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
+        $password    = $_POST['password'];
+        $user_id     = $_SESSION['signin_user']->id;
+        if ($user_id) {
+            $modIdentity->addIdentity($provider, $external_id, $userID = 0);
+        }
+    }
+    
+    
     public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
@@ -65,7 +79,7 @@ class UserActions extends ActionController {
     public function doSignin() {
         $modUser     = $this->getModelByName('user', 'v2');
         $external_id = $_POST['external_id'];
-        $provider    = $_POST['provider'];
+        $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
         $password    = $_POST['password'];
         $siResult    = $userData->signinForAuthToken($provider, $external_id, $password);
         echo json_encode(

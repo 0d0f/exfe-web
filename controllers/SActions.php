@@ -3,27 +3,13 @@ class SActions extends ActionController {
 
     private $specialDomain = array("facebook", "twitter", "google");
 
+
     public function doTestUser() {
         $identityData = $this->getModelByName("identity");
         $identityData->setRelation($_GET["identity_id"]);
 
     }
 
-    public function doAdd() {
-        $identity = $_GET["identity"];
-        $provider = $_GET["provider"];
-        $password = $_GET["password"];
-
-        //package as a transaction
-        if(intval($_SESSION["userid"])>0) {
-            $userID=$_SESSION["userid"];
-        } else {
-            $userData = $this->getModelByName("user");
-            $userID = $userData->addUser($password);
-        }
-        $identityData = $this->getModelByName("identity");
-        $identityData->addIdentity($userID,$provider,$identity);
-    }
 
     public function doProfile() {
         if (intval($_SESSION['userid']) <= 0) {
@@ -1373,6 +1359,24 @@ class SActions extends ActionController {
         } else {
             $this->displayView();
         }
+    }
+    
+    
+    // upgraded
+    public function doAdd() {
+        $identity = $_GET["identity"];
+        $provider = $_GET["provider"];
+        $password = $_GET["password"];
+
+        //package as a transaction
+        if(intval($_SESSION["userid"])>0) {
+            $userID=$_SESSION["userid"];
+        } else {
+            $userData = $this->getModelByName("user");
+            $userID = $userData->addUser($password);
+        }
+        $identityData = $this->getModelByName("identity");
+        $identityData->addIdentity($userID,$provider,$identity);
     }
 
 }

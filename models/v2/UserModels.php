@@ -265,7 +265,7 @@ class UserModels extends DataModel {
                 // check password!
                 if ($password === $passwdInDb['encrypted_password']) {
                     $user = $this->getUserById($user_id);
-                    $this->loginByIdentityId($identity->id, $user_id, $user, $identity, 'password', $setCookie);
+                    $this->signinByIdentityId($identity->id, $user_id, $user, $identity, 'password', $setCookie);
                     return $user;
                 }
 
