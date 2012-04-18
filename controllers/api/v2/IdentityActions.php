@@ -86,13 +86,36 @@ class IdentityActions extends ActionController {
         if (!($user_id = $_SESSION['signin_user']->id)) {
             // 需要登录
         }
-        if (!($identity_id = $_POST['identity_id'])) {
+        if (!($identity_id = intval($_POST['identity_id']))) {
             // 需要输入identity_id
         }
+        // @todo check password
         if (($relation = $modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) === null) {
             // 用户和身份没关系
         }
         if (($acResult = $modIdentity->deleteIdentityFromUser($identity_id, $user_id))) {
+            // 成功
+        }
+        // 操作失败
+    }
+    
+    
+    public function doSetDefaultIdentity() {
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            // 需要登录
+        }
+        if (!($identity_id = intval($_POST['identity_id']))) {
+            // 需要输入identity_id
+        }
+        // @todo check password
+        if (($relation = $modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) === null) {
+            // 用户和身份没关系
+        }
+        if (($acResult = $modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id))) {
             // 成功
         }
         // 操作失败
