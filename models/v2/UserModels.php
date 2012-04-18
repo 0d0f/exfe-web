@@ -93,10 +93,10 @@ class UserModels extends DataModel {
     
     public function newUserByPassword($password) {
         $passwordSalt = md5(createToken());
-        $passwordInDb = md5($password . substr($passwordSalt, 3, 23) . EXFE_PASSWORD_SALT);
+        $passwordInDb = $this->encryptPassword($password, $passwordSalt);
         $dbResult = $this->query(
             "INSERT INTO `users` SET
-             `encrypted_password` = '{$password}',
+             `encrypted_password` = '{$passwordInDb}',
              `password_salt`      = '{$passwordSalt}',
              `created_at`         = NOW()"
         );
@@ -129,7 +129,7 @@ class UserModels extends DataModel {
           . ($user_id ? " AND `userid` = {$user_id}" : '')
         );
         $user_id = intval($rawStatus['userid']);
-        $status  = intval($rawStatus['status'])
+        $status  = intval($rawStatus['status']);
         if ($user_id) {
             if ($user_id && $status === 3 && $withPasswdStatus) {
                 $passwdInfo = $this->getUserPasswdByUserId($user_id);
@@ -272,7 +272,6 @@ class UserModels extends DataModel {
                     $this->signinByIdentityId($identity->id, $user_id, $user, $identity, 'password', $setCookie);
                     return $user;
                 }
-
             }
         }
         return null;
@@ -283,6 +282,16 @@ class UserModels extends DataModel {
         $sql="select id from users where auth_token='$token';";
         $row=$this->getRow($sql);
         return intval($row["id"]);
+    }
+    
+    
+    public function verifyUserPassword($user_id, $password) {
+        if (!$user_id || !$password) {
+            return false;
+        }
+        $passwdInDb = $this->getUserPasswdByUserId($user_id);
+        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
+        return $password === $passwdInDb['encrypted_password'];
     }
 
 }
