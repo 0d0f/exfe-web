@@ -120,22 +120,26 @@ class UserModels extends DataModel {
     }
     
     
-    public function getUserIdentityStatusByIdentityId($identity_id) {
+    public function getUserIdentityStatusByUserIdAndIdentityId($user_id = 0, $identity_id = 0, $withPasswdStatus = false) {
         if (!$identity_id) {
             return null;
         }
         $rawStatus = $this->getRow(
             "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}"
+          . ($user_id ? " AND `userid` = {$user_id}" : '')
         );
         $user_id = intval($rawStatus['userid']);
         $status  = intval($rawStatus['status'])
-        if ($user_id && $status === 3) {
-            $passwdInfo = $this->getUserPasswdByUserId($user_id);
-            if (!$passwdInfo['encrypted_password']) {
-                return 'NOPASSWORD';
+        if ($user_id) {
+            if ($user_id && $status === 3 && $withPasswdStatus) {
+                $passwdInfo = $this->getUserPasswdByUserId($user_id);
+                if (!$passwdInfo['encrypted_password']) {
+                    return 'NOPASSWORD';
+                }
             }
+            return $this->arrUserIdentityStatus[$status];
         }
-        return $this->arrUserIdentityStatus['$status'];
+        return null;
     }
     
     
@@ -273,9 +277,9 @@ class UserModels extends DataModel {
         }
         return null;
     }
+    
 
-    public function getUserIdByToken($token)
-    {
+    public function getUserIdByToken($token) {
         $sql="select id from users where auth_token='$token';";
         $row=$this->getRow($sql);
         return intval($row["id"]);
