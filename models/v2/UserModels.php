@@ -128,7 +128,7 @@ class UserModels extends DataModel {
             "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}"
         );
         $user_id = intval($rawStatus['userid']);
-        $status  = intval($rawStatus['status'])
+        $status  = intval($rawStatus['status']);
         if ($user_id && $status === 3) {
             $passwdInfo = $this->getUserPasswdByUserId($user_id);
             if (!$passwdInfo['encrypted_password']) {
