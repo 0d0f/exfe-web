@@ -15,7 +15,7 @@ class IdentityActions extends ActionController {
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
-        $arrIdentities = trim($_POST['external_ids']) ? json_decode($_POST['identities']) : array();
+        $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : array();
         $bolWithUserIdentityStatus = intval($_POST['with_user_identity_status']);
         // ready
         $responobj['response']['identities'] = array();

@@ -1,5 +1,6 @@
 <?php
-class UserModels extends DataModel{
+
+class UserModels extends DataModel {
 
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
@@ -33,6 +34,8 @@ class UserModels extends DataModel{
 
        return;
     }
+    
+    
     public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
     {
 
@@ -84,12 +87,14 @@ class UserModels extends DataModel{
 
     }
 
+
     public function saveUser($name,$userid)
     {
         $sql="update users set name='$name' where id=$userid";
         $this->query($sql);
         return $this->getUser($userid);
     }
+
 
     //保存用户头像
     public function saveUserAvatar($avatar,$userid) {
@@ -125,46 +130,6 @@ class UserModels extends DataModel{
         return intval($row["id"]);
     }
 
-    
-    public function getUserProfileByIdentityId($identity_id)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            $userid=$result["userid"];
-            $sql="select name,bio,avatar_file_name,timezone from users where id=$userid";
-            $user=$this->getRow($sql);
-            return $user;
-        }
-        return "";
-    }
-
-
-    public function getUserIdByIdentityId($identity_id)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            return intval($result["userid"]);
-        }
-    }
-
-
-    public function getUserByIdentityId($identity_id)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            $userid=$result["userid"];
-            $sql="select * from users where id=$userid";
-            $user=$this->getRow($sql);
-            return $user;
-        }
-    }
-
 
     public function setPassword($identity_id,$password,$displayname)
     {
@@ -191,6 +156,7 @@ class UserModels extends DataModel{
         //$sql="update ";
     }
 
+
     public function addUserByIdentityId($identity_id, $display_name)
     {
         $time_stamp = time();
@@ -205,6 +171,7 @@ class UserModels extends DataModel{
         }
 
     }
+
 
     public function addUserByToken($cross_id,$displayname,$token)
     {
@@ -253,6 +220,7 @@ class UserModels extends DataModel{
 
     }
 
+
     public function setPasswordByToken($cross_id,$token,$password,$displayname)
     {
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
@@ -284,6 +252,7 @@ class UserModels extends DataModel{
         }
         return false;
     }
+
 
     //todo for huoju
     public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
@@ -322,6 +291,7 @@ class UserModels extends DataModel{
         return $identity_id;
     }
 
+
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $sql="select id from identities where external_identity='$external_identity';";
@@ -339,50 +309,6 @@ class UserModels extends DataModel{
         return FALSE;
     }
 
-    public function getResetPasswordToken($external_identity)
-    {
-        $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
-        $row=$this->getRow($sql);
-        $uid=intval($row["uid"]);
-        $identity_id = intval($row["identity_id"]);
-        $name=$row["name"];
-        if($uid==0)
-        {
-            $result=$this->addUserAndSetRelation($password,$displayname,0,$external_identity);
-            if($result!=false)
-                $uid=intval($result["uid"]);
-        }
-
-        if($uid > 0)
-        {
-            $sql = "SELECT reset_password_token FROM users WHERE id={$uid}";
-            $result = $this->getRow($sql);
-            $resetPasswordToken = $result["reset_password_token"];
-            if(trim($resetPasswordToken) == "" || $resetPasswordToken == null){
-                $resetPasswordToken = createToken();
-                $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
-                $this->query($sql);
-            }else{
-                $tokenTimeStamp = substr($resetPasswordToken, 32);
-                $curTimeStamp = time();
-                //如果Token已经过期。
-                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
-                    $resetPasswordToken = createToken();
-                    $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
-                    $this->query($sql);
-                }
-            }
-            $returnData = array(
-                "identity_id"   =>$identity_id,
-                "uid"           =>$uid,
-                "name"          =>$name,
-                "token"         =>$resetPasswordToken
-            );
-
-            return $returnData;
-        }
-        return "";
-    }
 
     public function verifyResetPassword($userID, $resetPasswordToken){
         $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
@@ -411,16 +337,7 @@ class UserModels extends DataModel{
         }
         return false;
     }
-
     
-    //update user password
-    public function updateUserPassword($userid, $password){
-        //$password=md5($password.$this->salt);
-        $passwordSalt = md5(createToken());
-        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
-        $this->query($sql);
-    }
 
     public function doResetUserPassword($userPwd, $userName, $userID, $identityID, $userToken){
         $ts = time();
@@ -452,10 +369,14 @@ class UserModels extends DataModel{
         }
         return array("result"=>$result,"newuser"=>$newUser);
     }
+    
+    
+    // upgraded
+    private $salt="_4f9g18t9VEdi2if";
 
 
     // upgraded
-    public function doDestroySessionAndCookies(){
+    public function doDestroySessionAndCookies() {
         unset($_SESSION["userid"]);
         unset($_SESSION["identity_id"]);
         unset($_SESSION["identity"]);
@@ -473,7 +394,13 @@ class UserModels extends DataModel{
     
     
     // upgraded
-    private $salt="_4f9g18t9VEdi2if";
+    public function updateUserPassword($userid, $password){
+        //$password=md5($password.$this->salt);
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
+        $this->query($sql);
+    }
 
 
     // upgraded
@@ -553,6 +480,96 @@ class UserModels extends DataModel{
             return true;
         }
         return false;
+    }
+    
+    
+    // upgraded
+    public function getResetPasswordToken($external_identity)
+    {
+        $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
+        $row=$this->getRow($sql);
+        $uid=intval($row["uid"]);
+        $identity_id = intval($row["identity_id"]);
+        $name=$row["name"];
+        if($uid==0)
+        {
+            $result=$this->addUserAndSetRelation($password,$displayname,0,$external_identity);
+            if($result!=false)
+                $uid=intval($result["uid"]);
+        }
+
+        if($uid > 0)
+        {
+            $sql = "SELECT reset_password_token FROM users WHERE id={$uid}";
+            $result = $this->getRow($sql);
+            $resetPasswordToken = $result["reset_password_token"];
+            if(trim($resetPasswordToken) == "" || $resetPasswordToken == null){
+                $resetPasswordToken = createToken();
+                $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                $this->query($sql);
+            }else{
+                $tokenTimeStamp = substr($resetPasswordToken, 32);
+                $curTimeStamp = time();
+                //如果Token已经过期。
+                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
+                    $resetPasswordToken = createToken();
+                    $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                    $this->query($sql);
+                }
+            }
+            $returnData = array(
+                "identity_id"   =>$identity_id,
+                "uid"           =>$uid,
+                "name"          =>$name,
+                "token"         =>$resetPasswordToken
+            );
+
+            return $returnData;
+        }
+        return "";
+    }
+    
+    
+    // upgraded
+    public function getUserProfileByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $userid=$result["userid"];
+            $sql="select name,bio,avatar_file_name,timezone from users where id=$userid";
+            $user=$this->getRow($sql);
+            return $user;
+        }
+        return "";
+    }
+
+
+    // upgraded
+    public function getUserIdByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            return intval($result["userid"]);
+        }
+    }
+    
+    
+    // upgraded
+    public function getUserByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $userid=$result["userid"];
+            $sql="select * from users where id=$userid";
+            $user=$this->getRow($sql);
+            return $user;
+        }
     }
 
 }
