@@ -25,6 +25,50 @@ class ConversationActions extends ActionController {
     {
         $params=$this->params;
         $exfee_id=$params["id"];
-        print $exfee_id;
+
+        $checkHelper=$this->getHelperByName("check","v2");
+        $result=$checkHelper->isAPIAllow("conversation_add",$params["token"],array("user_id"=>$uid,"exfee_id"=>$exfee_id));
+        if($result["check"]!==true)
+        {
+            if($result["uid"]===0)
+                apiError(401,"invalid_auth","");
+            else
+                apiError(403,"not_authorized","The X you're requesting is private.");
+        }
+
+        $post=json_decode($_POST["post"]);
+
+        $modelData=$this->getModelByName("conversation","v2");
+        $post_id=$modelData->addPost($post);
+        $new_post=$modelData->getPostById($post_id);
+        unset($new_post["del"]);
+        apiResponse(array("post"=>$new_post));
+    }
+    public function doDel()
+    {
+        $params=$this->params;
+        $exfee_id=$params["id"];
+        $post_id=$params["post_id"];
+
+        $modelData=$this->getModelByName("conversation","v2");
+        $userid=$modelData->getUserIdById($post_id);
+        $checkHelper=$this->getHelperByName("check","v2");
+        $result=$checkHelper->isAPIAllow("conversation_del",$params["token"],array("user_id"=>$userid));
+        if($result["check"]!==true)
+        {
+            if($result["uid"]===0)
+                apiError(401,"invalid_auth","");
+            else
+                apiError(403,"not_authorized","The X you're requesting is private.");
+        }
+
+        $result=$modelData->delPostById($exfee_id,$post_id);
+        $post["id"]=$post_id;
+        $post["exfee_id"]=$exfee_id;
+        if($result===true)
+            apiResponse(array("post"=>$post));
+        else
+            apiError(400,"param_error","Can't delete this post.");
+
     }
 }
