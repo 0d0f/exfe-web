@@ -199,4 +199,66 @@ class UserActions extends ActionController {
         // 失败
     }
 
+
+    public function doSendResetPasswordMail() {
+        $modUser = $this->getModelByName('user', 'v2');
+        if (!($external_id = $_POST['external_id'])) {
+            // 需要输入external_id
+        }
+        
+        
+        
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>""
+        );
+        $userIdentity = exPost("identity");
+        if($userIdentity == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "User Identity is empty";
+        }else{
+
+            $result=$userData->getResetPasswordToken($userIdentity);
+            if($result["token"] != "" && intval($result["uid"]) > 0)
+            {
+                $userInfo = array(
+                    "actions"           =>"resetPassword",
+                    "user_id"           =>$result["uid"],
+                    "identity_id"       =>$result["identity_id"],
+                    "identity"          =>$userIdentity,
+                    "user_token"        =>$result["token"]
+                );
+
+                $pakageToken = packArray($userInfo);
+                $name=$result["name"];
+                if($name==""){
+                    $name=$userIdentity;
+                }
+                $args = array(
+                    'external_identity' => $userIdentity,
+                    'name' => $name,
+                    'token' => $pakageToken
+                );
+                //echo $pakageToken;
+                //exit();
+                $helper=$this->getHelperByName("identity");
+                $jobId=$helper->sendResetPassword($args);
+                if($jobId=="")
+                {
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "mail server error";
+                }
+            } else {
+                $returnData["error"] = 1;
+                $returnData["msg"] = "can't reset password";
+            }
+            //echo "get $userIdentity";
+            //@Huoju
+            //do send verication email
+        }
+        //sleep(1);
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
+    }
+
 }

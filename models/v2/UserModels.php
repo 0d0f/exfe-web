@@ -299,5 +299,64 @@ class UserModels extends DataModel {
         $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
         return $password === $passwdInDb['encrypted_password'];
     }
+    
+    
+    
+    
+    
+    ///////////////////////////////////
+    
+    public function getResetPasswordToken($external_identity)
+    {
+        $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
+        $row=$this->getRow($sql);
+        $uid=intval($row["uid"]);
+        $identity_id = intval($row["identity_id"]);
+        $name=$row["name"];
+        if($uid==0)
+        {
+            $result=$this->addUserAndSetRelation($password,$displayname,0,$external_identity);
+            if($result!=false)
+                $uid=intval($result["uid"]);
+        }
+
+        if($uid > 0)
+        {
+            $sql = "SELECT reset_password_token FROM users WHERE id={$uid}";
+            $result = $this->getRow($sql);
+            $resetPasswordToken = $result["reset_password_token"];
+            if(trim($resetPasswordToken) == "" || $resetPasswordToken == null){
+                $resetPasswordToken = createToken();
+                $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                $this->query($sql);
+            }else{
+                $tokenTimeStamp = substr($resetPasswordToken, 32);
+                $curTimeStamp = time();
+                //如果Token已经过期。
+                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
+                    $resetPasswordToken = createToken();
+                    $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
+                    $this->query($sql);
+                }
+            }
+            $returnData = array(
+                "identity_id"   =>$identity_id,
+                "uid"           =>$uid,
+                "name"          =>$name,
+                "token"         =>$resetPasswordToken
+            );
+
+            return $returnData;
+        }
+        return "";
+    }
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
