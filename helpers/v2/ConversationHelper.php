@@ -19,6 +19,7 @@ class ConversationHelper extends ActionController {
             }
         
             $conversation_post=new Post($post["id"],$identities[$identity_id],$post["content"], $post["postable_id"],$post["postable_type"],"");
+            $conversation_post->created_at=$post["created_at"];
             array_push($conversation,$conversation_post);
         }
         return $conversation;
