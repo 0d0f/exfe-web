@@ -150,6 +150,7 @@ class UserActions extends ActionController {
         print_r($user);
     }
 
+
     public function doCrosses() {
         $params   = $this->params;
         $uid=$params["id"];
@@ -169,6 +170,27 @@ class UserActions extends ActionController {
         apiResponse(array("crosses"=>$cross_list));
 
         //user
+    }
+    
+    
+    public function doSetPassword() {
+        $modUser = $this->getModelByName('user', 'v2');
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            // 需要登录
+        }
+        if (!($curPassword = $_POST['current_password'])) {
+            // 请输入当前密码
+        }
+        if (!($newPassword = $_POST['current_password'])) {
+            // 请输入当新密码
+        }
+        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
+            // 密码错误
+        }
+        if ($modUser->setUserPassword($user_id, $newPassword)) {
+            // 成功
+        }
+        // 失败
     }
 
 }
