@@ -79,7 +79,6 @@ class IdentityActions extends ActionController {
     
     
     public function doDeleteIdentity() {
-        // get models
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
@@ -89,7 +88,12 @@ class IdentityActions extends ActionController {
         if (!($identity_id = intval($_POST['identity_id']))) {
             // 需要输入identity_id
         }
-        // @todo check password
+        if (!($curPassword = $_POST['current_password'])) {
+            // 请输入当前密码
+        }
+        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
+            // 密码错误
+        }
         if (($relation = $modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) === null) {
             // 用户和身份没关系
         }
@@ -101,21 +105,28 @@ class IdentityActions extends ActionController {
     
     
     public function doSetDefaultIdentity() {
-        // get models
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
-        // collecting post data
         if (!($user_id = $_SESSION['signin_user']->id)) {
             // 需要登录
         }
         if (!($identity_id = intval($_POST['identity_id']))) {
             // 需要输入identity_id
         }
-        // @todo check password
-        if (($relation = $modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) === null) {
-            // 用户和身份没关系
+        if (!($curPassword = $_POST['current_password'])) {
+            // 请输入当前密码
         }
-        if (($acResult = $modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id))) {
+        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
+            // 密码错误
+        }
+        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
+            case 'RELATED':
+            case 'CONNECTED':
+                break;
+            default:
+                // 用户和身份关系不正确
+        }
+        if ($modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id)) {
             // 成功
         }
         // 操作失败
