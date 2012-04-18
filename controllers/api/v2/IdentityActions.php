@@ -30,8 +30,8 @@ class IdentityActions extends ActionController {
                 );
                 if ($identity) {
                     if ($bolWithUserIdentityStatus) {
-                        $identity->user_identity_status = $modUser->getUserIdentityStatusByIdentityId(
-                            $identity->id
+                        $identity->user_identity_status = $modUser->getUserIdentityStatusByUserIdAndIdentityId(
+                            0, $identity->id, true
                         );
                     }
                     $responobj['response']['identities'][] = $identity;
@@ -75,6 +75,27 @@ class IdentityActions extends ActionController {
         }
         $responobj['meta']['code'] = 200;
         echo json_encode($responobj);
+    }
+    
+    
+    public function doDeleteIdentity() {
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            // 需要登录
+        }
+        if (!($identity_id = $_POST['identity_id'])) {
+            // 需要输入identity_id
+        }
+        if (($relation = $modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) === null) {
+            // 用户和身份没关系
+        }
+        if (($acResult = $modIdentity->deleteIdentityFromUser($identity_id, $user_id))) {
+            // 成功
+        }
+        // 操作失败
     }
     
     

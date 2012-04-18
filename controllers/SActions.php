@@ -1121,45 +1121,7 @@ class SActions extends ActionController {
         exit();
     }
 
-    public function doDeleteIdentity(){
-        $returnData = array(
-            "error"     => 0,
-            "msg"       =>""
-        );
-
-        //check user login
-        $userID = intval($_SESSION["userid"]);
-        if($userID <= 0)
-        {
-            $returnData["error"] = 1;
-            $returnData["msg"] = "Please login first.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $identityID = exPost("identity_id");
-        //check user identity relation
-        $identityObj = $this->getModelByName("identity");
-        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
-
-        if(!$checkResult){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "identity not belong current users.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $result = $identityObj->deleteIdentity($userID, $identityID);
-        if(!$result){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "Delete identity fail.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        echo json_encode($returnData);
-    }
-
+    
     public function doChangeDefaultIdentity() {
         $returnData = array(
             "error"     => 0,
@@ -1226,15 +1188,6 @@ class SActions extends ActionController {
         $this->displayView();
     }
 
-    public function doLinkInvalid() {
-        $this->displayView();
-    }
-
-    public function doExfee()
-    {
-        $this->displayView();
-    }
-    
     
     // upgraded
     public function doIfIdentityExist() {
@@ -1377,6 +1330,60 @@ class SActions extends ActionController {
         }
         $identityData = $this->getModelByName("identity");
         $identityData->addIdentity($userID,$provider,$identity);
+    }
+
+
+    // upgraded
+    public function doLinkInvalid() {
+        $this->displayView();
+    }
+
+
+    // upgraded
+    public function doExfee()
+    {
+        $this->displayView();
+    }
+    
+    
+    // upgraded
+    public function doDeleteIdentity(){
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+
+        //check user login
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityID = exPost("identity_id");
+        //check user identity relation
+        $identityObj = $this->getModelByName("identity");
+        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
+
+        if(!$checkResult){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "identity not belong current users.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $result = $identityObj->deleteIdentity($userID, $identityID);
+        if(!$result){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Delete identity fail.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        echo json_encode($returnData);
     }
 
 }
