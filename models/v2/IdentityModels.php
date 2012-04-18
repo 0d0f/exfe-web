@@ -1,7 +1,4 @@
 <?php
-session_write_close();
-require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
-
 
 class IdentityModels extends DataModel {
     
