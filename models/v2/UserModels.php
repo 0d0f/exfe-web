@@ -339,7 +339,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function getResetPasswordTokenBy($identity_id) {
+    public function getResetPasswordTokenByIdentityId($identity_id) {
         $user_id = getUserIdByIdentityId($identity_id)
                 ?: $this->addUserAndSetRelation('', '', $identity_id);
         if ($user_id) {
@@ -352,7 +352,10 @@ class UserModels extends DataModel {
                     "UPDATE `users` SET `reset_password_token` = '{$reset_password_token}' WHERE `id` = $uid"
                 );
             }
-            return $reset_password_token;
+            return array(
+                'user_id' => $user_id,
+                'token'   => $reset_password_token
+            );
         }
         return null;
     }
