@@ -46,12 +46,13 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityByProviderExternalId($provider, $external_id) {
-        return $this->packageIdentity($this->getRow(
+    public function getIdentityByProviderExternalId($provider, $external_id, $get_id_only = false) {
+        $rawIdentity = $this->getRow(
             "SELECT * FROM `identities` WHERE
              `provider`          = '{$provider}' AND
              `external_identity` = '{$external_id}'"
-        ));
+        );
+        return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity);
     }
     
     
