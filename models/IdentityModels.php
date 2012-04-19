@@ -793,8 +793,8 @@ class IdentityModels extends DataModel {
 
         }
     }
-    
-    
+
+
     // upgraded
     public function getIdentityById($identity_id) {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";

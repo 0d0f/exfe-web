@@ -10,7 +10,8 @@ class UserModels extends DataModel {
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
             "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`
-             `encrypted_password`, `password_salt`, `current_sign_in_ip`
+             `encrypted_password`, `password_salt`, `current_sign_in_ip`,
+             `reset_password_token`
              FROM   `users` WHERE `id` = {$user_id}"
         );
     }
@@ -160,7 +161,6 @@ class UserModels extends DataModel {
     }
     
     
-    
     public function signinForAuthToken($provider, $external_id, $password) {
         $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
@@ -301,62 +301,60 @@ class UserModels extends DataModel {
     }
     
     
-    
-    
-    
-    ///////////////////////////////////
-    
-    public function getResetPasswordToken($external_identity)
-    {
-        $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
-        $row=$this->getRow($sql);
-        $uid=intval($row["uid"]);
-        $identity_id = intval($row["identity_id"]);
-        $name=$row["name"];
-        if($uid==0)
-        {
-            $result=$this->addUserAndSetRelation($password,$displayname,0,$external_identity);
-            if($result!=false)
-                $uid=intval($result["uid"]);
+    public function addUserAndSetRelation($password, $name, $identity_id) {
+        $modIdentity = getModelByName('identity', 'v2');
+        $name        = mysql_real_escape_string($name);
+        $external_id = mysql_real_escape_string($external_id);
+        if (!$identity_id) {
+            return false;
         }
-
-        if($uid > 0)
-        {
-            $sql = "SELECT reset_password_token FROM users WHERE id={$uid}";
-            $result = $this->getRow($sql);
-            $resetPasswordToken = $result["reset_password_token"];
-            if(trim($resetPasswordToken) == "" || $resetPasswordToken == null){
-                $resetPasswordToken = createToken();
-                $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
-                $this->query($sql);
-            }else{
-                $tokenTimeStamp = substr($resetPasswordToken, 32);
-                $curTimeStamp = time();
-                //如果Token已经过期。
-                if(intval($tokenTimeStamp)+5*24*60*60 < $curTimeStamp){
-                    $resetPasswordToken = createToken();
-                    $sql="update users set reset_password_token='$resetPasswordToken' where id=$uid";
-                    $this->query($sql);
-                }
-            }
-            $returnData = array(
-                "identity_id"   =>$identity_id,
-                "uid"           =>$uid,
-                "name"          =>$name,
-                "token"         =>$resetPasswordToken
+        if (($user_id = $this->getUserIdByIdentityId($identity_id))) {
+            return $user_id;
+        } else {
+            $insResult = $this->query(
+                "INSERT INTO `users` SET
+                 `encrypted_password` = '{$password}',
+                 `name`               = '{$name}',
+                 `created_at`         = NOW()"
             );
-
-            return $returnData;
+            if (($user_id = intval($insResult))) {
+                $this->query(
+                    "INSERT INTO `user_identity` SET
+                     `identityid` = {$identity_id},
+                     `userid`     = {$user_id},
+                     `created_at` = NOW()"
+                );
+                if ($name) {
+                    $this->query(
+                        "UPDATE `identities` SET `name` = '{$displayname}' WHERE `id` = {$identity_id}"
+                    );
+                    $this->query(
+                        "UPDATE `user_identity` SET `status` = 3 WHERE `identityid` = {$identity_id}"
+                    );
+                }
+                return $user_id;
+            }
         }
-        return "";
+        return false;
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+    public function getResetPasswordTokenBy($identity_id) {
+        $user_id = getUserIdByIdentityId($identity_id)
+                ?: $this->addUserAndSetRelation('', '', $identity_id);
+        if ($user_id) {
+            $passwdInfo = $this->getUserPasswdByUserId($user_id);
+            $reset_password_token = $passwdInfo['reset_password_token'];
+            if (!$reset_password_token
+             || (intval(substr($reset_password_token, 32)) + 5 * 24 * 60 * 60 < time())) { // token timeout
+                $reset_password_token = createToken();
+                $this->query(
+                    "UPDATE `users` SET `reset_password_token` = '{$reset_password_token}' WHERE `id` = $uid"
+                );
+            }
+            return $reset_password_token;
+        }
+        return null;
+    }
 
 }

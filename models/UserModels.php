@@ -36,58 +36,6 @@ class UserModels extends DataModel {
     }
     
     
-    public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
-    {
-
-        $external_identity = mysql_real_escape_string($external_identity);
-        $displayname = mysql_real_escape_string($displayname);
-
-
-        if($identity_id == 0 && $external_identity != "")
-        {
-            $sql="select id from identities where external_identity='$external_identity';";
-            $result=$this->getRow($sql);
-            $identity_id=$result["id"];
-        }
-
-        $sql="select userid from user_identity where identityid=$identity_id";
-
-        $result=$this->getRow($sql);
-        if(intval($result["userid"]) > 0)
-        {
-            $uid=intval($result["userid"]);
-            return array("uid"=>$uid,"identity_id"=>$identity_id);
-        } else {
-            $time=time();
-            $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
-            $result=$this->query($sql);
-            if(intval($result["insert_id"])>0)
-            {
-                $uid=intval($result["insert_id"]);
-                $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
-                $this->query($sql);
-                $sql="select userid from user_identity where identityid=$identity_id";
-                $result=$this->getRow($sql);
-                if(intval($result["userid"])>0)
-                {
-                    if($displayname!="")
-                    {
-                        //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
-                        $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
-                        $this->query($sql);
-                        $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
-                        $this->query($sql);
-                    }
-                    if($uid==intval($result["userid"]))
-                        return array("uid"=>$uid,"identity_id"=>$identity_id);
-                    return false;
-                }
-            }
-        }
-
-    }
-
-
     public function saveUser($name,$userid)
     {
         $sql="update users set name='$name' where id=$userid";
@@ -569,6 +517,58 @@ class UserModels extends DataModel {
             $sql="select * from users where id=$userid";
             $user=$this->getRow($sql);
             return $user;
+        }
+    }
+    
+    
+    // upgraded
+    public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
+    {
+
+        $external_identity = mysql_real_escape_string($external_identity);
+        $displayname = mysql_real_escape_string($displayname);
+
+
+        if($identity_id == 0 && $external_identity != "")
+        {
+            $sql="select id from identities where external_identity='$external_identity';";
+            $result=$this->getRow($sql);
+            $identity_id=$result["id"];
+        }
+
+        $sql="select userid from user_identity where identityid=$identity_id";
+
+        $result=$this->getRow($sql);
+        if(intval($result["userid"]) > 0)
+        {
+            $uid=intval($result["userid"]);
+            return array("uid"=>$uid,"identity_id"=>$identity_id);
+        } else {
+            $time=time();
+            $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
+            $result=$this->query($sql);
+            if(intval($result["insert_id"])>0)
+            {
+                $uid=intval($result["insert_id"]);
+                $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
+                $this->query($sql);
+                $sql="select userid from user_identity where identityid=$identity_id";
+                $result=$this->getRow($sql);
+                if(intval($result["userid"])>0)
+                {
+                    if($displayname!="")
+                    {
+                        //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                        $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                        $this->query($sql);
+                        $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
+                        $this->query($sql);
+                    }
+                    if($uid==intval($result["userid"]))
+                        return array("uid"=>$uid,"identity_id"=>$identity_id);
+                    return false;
+                }
+            }
         }
     }
 
