@@ -201,60 +201,37 @@ class UserActions extends ActionController {
 
 
     public function doSendResetPasswordMail() {
-        $modUser = $this->getModelByName('user', 'v2');
+        $modUser = $this->getModelByName('user',  'v2');
+        $hlpUser = $this->getHelperByName('user', 'v2');
         if (!($external_id = $_POST['external_id'])) {
             // 需要输入external_id
         }
-        $provider = 'email';
-        
-        
-        
-        $provider    = $provider ?: 'email';
-        if (!$identity_id && $external_id) {
-            $identity_id = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        if (!($identity_id = $modIdentity->getIdentityByProviderExternalId('email', $external_id))) {
+            // 无此身份
         }
-        
-        
-        
-        
-        
-        $result=$userData->getResetPasswordToken($userIdentity);
-        if($result["token"] != "" && intval($result["uid"]) > 0)
-        {
-            $userInfo = array(
-                "actions"           =>"resetPassword",
-                "user_id"           =>$result["uid"],
-                "identity_id"       =>$result["identity_id"],
-                "identity"          =>$userIdentity,
-                "user_token"        =>$result["token"]
-            );
-
-            $pakageToken = packArray($userInfo);
-            $name=$result["name"];
-            if($name==""){
-                $name=$userIdentity;
-            }
-            $args = array(
-                'external_identity' => $userIdentity,
-                'name' => $name,
-                'token' => $pakageToken
-            );
-            //echo $pakageToken;
-            //exit();
-            $helper=$this->getHelperByName("identity");
-            $jobId=$helper->sendResetPassword($args);
-            if($jobId=="")
-            {
-                $returnData["error"] = 1;
-                $returnData["msg"] = "mail server error";
-            }
-        } else {
-            $returnData["error"] = 1;
-            $returnData["msg"] = "can't reset password";
+        $tkResult = $userData->getResetPasswordTokenByIdentityId($identity_id);
+        if (!$tkResult) {
+            // 出错
         }
-        //echo "get $userIdentity";
-        //@Huoju
-        //do send verication email
+        $strArrPack = packArray(array(
+            'actions'     => 'reset_password',
+            'user_id'     => $tkResult['user_id'],
+            'identity_id' => $identity_id,
+            'provider'    => 'email',
+            'external_id' => $external_id,
+            'token'       => $tkResult['token'],
+        ));
+        $objUser = $userData->getUserById($tkResult['user_id']);
+        $idJob = $hlpUser->sendResetPasswordMail(array(
+            'user'        => $objUser,
+            'external_id' => $external_id,
+            'provider'    => 'email',
+            'token'       => $strArrPack,
+        ));
+        if ($idJob) {
+            // 成功
+        }
+        // 出错
     }
 
 }
