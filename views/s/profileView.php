@@ -1,6 +1,6 @@
 <?php include 'share/header.php'; ?>
-<link rel="stylesheet" type="text/css" href="/static/?f=css/profile.css">
-<script type="text/javascript" src="/static/?g=js_uploader"></script>
+<link rel="stylesheet" type="text/css" href="/static/?f=css/profile.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>">
+<script type="text/javascript" src="/static/?g=js_uploader&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 </head>
 <body>
 <?php include 'share/nav.php'; ?>

@@ -6,18 +6,18 @@
 <script type="text/javascript" src="/static/?f=js/libs/jquery.ba-outside-events.js"></script>
 
 <!-- Exfee Widget -->
-<link type="text/css" href="/static/?f=css/exfee.css" rel="stylesheet">
-<script src="/static/?f=js/apps/exfee.js"></script>
+<link type="text/css" href="/static/?f=css/exfee.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet">
+<script src="/static/?f=js/apps/exfee.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <!-- X Render -->
-<link type="text/css" href="/static/?f=css/x.css" rel="stylesheet">
-<script src="/static/?f=js/apps/x.js"></script>
+<link type="text/css" href="/static/?f=css/x.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet">
+<script src="/static/?f=js/apps/x.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <!-- X Gather -->
-<link type="text/css" rel="stylesheet" href="/static/?f=css/gather.css">
-<script src="/static/?f=js/apps/gather.js"></script>
+<link type="text/css" rel="stylesheet" href="/static/?f=css/gather.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>">
+<script src="/static/?f=js/apps/gather.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <!-- EXFE Maps -->
-<link type="text/css" rel="stylesheet" href="/static/?f=css/maps.css">
+<link type="text/css" rel="stylesheet" href="/static/?f=css/maps.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>">
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-<script src="/static/?f=js/apps/maps.js"></script>
+<script src="/static/?f=js/apps/maps.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </head>
 <body>

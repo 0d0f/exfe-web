@@ -8,12 +8,12 @@
     <meta name="Keywords" content="EXFE, Gather">
     <meta name="Description" content="EXFE.COM website">
     <title>EXFE.COM</title>
-    <link rel="stylesheet" type="text/css" href="/static/?g=css_global" />
+    <link rel="stylesheet" type="text/css" href="/static/?g=css_global&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" />
 
-    <script type="text/javascript" src="/static/?g=js_libs"></script>
-    <script type="text/javascript" src="/static/?g=js_util"></script>
-    <script type="text/javascript" src="/static/js/comm/func.js"></script>
-    <script type="text/javascript" src="/static/?g=js_user"></script>
+    <script type="text/javascript" src="/static/?g=js_libs&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+    <script type="text/javascript" src="/static/?g=js_util&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+    <script type="text/javascript" src="/static/js/comm/func.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+    <script type="text/javascript" src="/static/?g=js_user&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
     <script>
         var site_url = "<?php echo SITE_URL; ?>";
