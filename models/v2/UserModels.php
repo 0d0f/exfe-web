@@ -4,7 +4,7 @@ class UserModels extends DataModel {
     
     private $salt = '_4f9g18t9VEdi2if';
     
-    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED');
+    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
     protected function getUserPasswdByUserId($user_id) {
@@ -157,7 +157,9 @@ class UserModels extends DataModel {
         setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
         setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
         setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);        
+        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);     
+        // return
+        return true;   
     }
     
     
@@ -177,7 +179,7 @@ class UserModels extends DataModel {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
                     $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
                 }
-                $rtResult['auth_token'] = $passwdInDb['auth_token'];
+                $rtResult['token'] = $passwdInDb['auth_token'];
                 return $rtResult;
             }
         }
