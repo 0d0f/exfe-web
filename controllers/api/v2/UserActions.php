@@ -3,6 +3,8 @@
 class UserActions extends ActionController {
 
     public function doIndex() {
+        return;
+        
         echo "Try to get an identity object:\n";
         $identityData = $this->getModelByName('Identity', 'v2');
         $identity = $identityData->getIdentityById(1);
@@ -31,6 +33,33 @@ class UserActions extends ActionController {
     }
     
     
+    public function doAddIdentity() {
+        // get models
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        if (!($external_id = $_POST['external_id'])) {
+            apiError(400, 'no_external_id', '');
+        }
+        if (!($provider = $_POST['provider'])) {
+            apiError(400, 'no_provider', '');
+        }
+        if (!($password = $_POST['password'])) {
+            apiError(401, 'no_password', ''); // 请输入当前密码
+        }
+        if (!$modUser->verifyUserPassword($user_id, $password)) {
+            apiError(403, 'invalid_password', ''); // 密码错误
+        }
+        if ($modIdentity->addIdentity($provider, $external_id, $userID = 0)) {
+            apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
+        } else {
+            apiError(400, 'failed', '');
+        }
+    }
+    
+    
     public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
@@ -55,24 +84,34 @@ class UserActions extends ActionController {
         }
         // try to sign in 
         if ($external_id && $password && ($user_id = $modUser->login($external_id, $password, $autosignin))) {
-            echo json_encode(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
+            apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
         } else {
-            echo json_encode(array('error' => 'Invalid identity or password'));
+            apiError(403, 'invalid_identity_or_password', ''); // 失败
         }   
+    }
+
+
+    public function doWebSignout() {
+        $modUser = $this->getModelByName('user', 'v2');
+        if ($modUser->signout()) {
+            apiResponse(array('success' => true));
+        } else {
+            apiError(400, 'failed', ''); // 失败
+        }
     }
     
     
     public function doSignin() {
         $modUser     = $this->getModelByName('user', 'v2');
         $external_id = $_POST['external_id'];
-        $provider    = $_POST['provider'];
+        $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
         $password    = $_POST['password'];
         $siResult    = $userData->signinForAuthToken($provider, $external_id, $password);
-        echo json_encode(
-            ($external_id && $password && $siResult)
-           ? array('meta' => array('code' => 200), 'response' => $siResult)
-           : array('meta' => array('code' => 404,  'err'      => 'login error'))
-        );
+        if ($external_id && $password && $siResult) {
+            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
+        } else {
+            apiError(403, 'failed', ''); // 失败
+        }
     }
 
 
@@ -86,15 +125,10 @@ class UserActions extends ActionController {
         if ($user_id && $token && $device_token) {
             $soResult = $modUser->disConnectiOSDeviceToken($user_id, $token, $device_token);
             if ($soResult) {
-                $responobj['meta']['code'] = 200;
-                $responobj['response'] = $soResult;
-                echo json_encode($responobj);
-                return;
+                apiResponse(array('logout_identity_list' => $soResult));
             }
         }
-        $responobj['meta']['code'] = 500;
-        $responobj['meta']['err'] = "can't disconnect this device";
-        echo json_encode($responobj);
+        apiError(500, 'failed', "can't disconnect this device"); // 失败
     }
 
     
@@ -107,10 +141,7 @@ class UserActions extends ActionController {
         $user_id  = intval($params['id']);
         $check    = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
         if (!$check['check']) {
-            $responobj['meta']['code']  = 403;
-            $responobj['meta']['error'] = 'forbidden';
-            echo json_encode($responobj);
-            return;
+            apiError(403, 'forbidden');
         }
         $devicetoken = $_POST['devicetoken'];
         $provider    = $_POST['provider'];
@@ -118,23 +149,24 @@ class UserActions extends ActionController {
         $identity_id = $modUser->regDeviceToken($devicetoken, $devicename, $provider, $user_id);
         $identity_id = intval($identity_id);
         if ($identity_id) {
-            $responobj['meta']['code'] = 200;
-            $responobj['response']['device_token'] = $devicetoken;
-            $responobj['response']['identity_id']  = $identity_id;
+            apiResponse(array('device_token' => $devicetoken, 'identity_id' => $identity_id));
         } else {
-            $responobj['meta']['code']  = 500;
-            $responobj['meta']['error'] = 'reg device token error';
+            apiError(500, 'reg device token error');
         }
-        echo json_encode($responobj);
-        //add devicetoken with $check['uid']
     }
     
     
     public function doGet() {
         $modUser = $this->getModelByName('User', 'v2');
-        $user = $modUser->getUserById(1);
-        print_r($user);
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        if (!($objUser = $modUser->getUserById($user_id))) {
+            apiError(400, 'failed', ''); // 失败
+        }
+        apiResponse(array('user' => $objUser)); // 成功
     }
+
 
     public function doCrosses() {
         $params   = $this->params;
@@ -155,6 +187,62 @@ class UserActions extends ActionController {
         apiResponse(array("crosses"=>$cross_list));
 
         //user
+    }
+    
+    
+    public function doSetPassword() {
+        $modUser = $this->getModelByName('user', 'v2');
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        if (!($curPassword = $_POST['current_password'])) {
+            apiError(401, 'no_current_password', ''); // 请输入当前密码
+        }
+        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
+            apiError(403, 'invalid_password', ''); // 密码错误
+        }
+        if (!($newPassword = $_POST['new_password'])) {
+            apiError(400, 'no_new_password', ''); // 请输入当新密码
+        }
+        if ($modUser->setUserPassword($user_id, $newPassword)) {
+            apiResponse(array('user_id' => $user_id)); // 成功
+        }
+        apiError(500, 'failed', ''); // 操作失败
+    }
+
+
+    public function doSendResetPasswordMail() {
+        $modUser = $this->getModelByName('user',  'v2');
+        $hlpUser = $this->getHelperByName('user', 'v2');
+        if (!($external_id = $_POST['external_id'])) {
+            apiError(401, 'no_signin', ''); // 需要输入external_id
+        }
+        if (!($identity_id = $modIdentity->getIdentityByProviderExternalId('email', $external_id))) {
+            apiError(400, 'identity_error', ''); // 无此身份
+        }
+        $tkResult = $userData->getResetPasswordTokenByIdentityId($identity_id);
+        if (!$tkResult) {
+            apiError(400, 'failed', ''); // 出错
+        }
+        $strArrPack = packArray(array(
+            'actions'     => 'reset_password',
+            'user_id'     => $tkResult['user_id'],
+            'identity_id' => $identity_id,
+            'provider'    => 'email',
+            'external_id' => $external_id,
+            'token'       => $tkResult['token'],
+        ));
+        $objUser = $userData->getUserById($tkResult['user_id']);
+        $idJob = $hlpUser->sendResetPasswordMail(array(
+            'user'        => $objUser,
+            'external_id' => $external_id,
+            'provider'    => 'email',
+            'token'       => $strArrPack,
+        ));
+        if ($idJob) {
+            apiResponse(array('user_id' => $tkResult['user_id'])); // 成功
+        }
+        apiError(500, 'failed', ''); // 出错
     }
 
 }
