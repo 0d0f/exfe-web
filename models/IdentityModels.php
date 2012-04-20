@@ -144,46 +144,6 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function checkUserIdentityRelation($user_id, $identity_id){
-        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
-        $result = $this->getRow($sql);
-        if(is_array($result)){
-            return true;
-        }
-        return false;
-    }
-
-
-    public function deleteIdentity($user_id, $identity_id){
-        $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
-        $result = $this->getRow($sql);
-        if(count($result) > 1){
-            $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
-            $this->query($sql);
-
-            $userIdentityArr = array();
-            foreach($result as $v){
-                if($v["identityid"] != $identity_id){
-                    array_push($userIdentityArr, $v);
-                }
-            }
-            $curDefaultIdentityID = $userIdentityArr[0]["identityid"];
-            $sql = "UPDATE users SET default_identity={$curDefaultIdentityID} WHERE id={$user_id}";
-            $this->query($sql);
-
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-
-    public function changeDefaultIdentity($user_id, $identity_id) {
-        $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
-        $this->query($sql);
-    }
-
-
     public function checkIdentityStatus($identity_id)
     {
         $sql = "SELECT status FROM user_identity WHERE identityid={$identity_id}";
@@ -540,6 +500,17 @@ class IdentityModels extends DataModel {
     
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
+    
+    
+    // upgraded
+    public function checkUserIdentityRelation($user_id, $identity_id){
+        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(is_array($result)){
+            return true;
+        }
+        return false;
+    }
 
 
     // upgraded
@@ -822,8 +793,8 @@ class IdentityModels extends DataModel {
 
         }
     }
-    
-    
+
+
     // upgraded
     public function getIdentityById($identity_id) {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
@@ -905,6 +876,38 @@ class IdentityModels extends DataModel {
         } else {
             return false;
         }
+    }
+    
+    
+    // upgraded
+    public function deleteIdentity($user_id, $identity_id){
+        $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(count($result) > 1){
+            $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
+            $this->query($sql);
+
+            $userIdentityArr = array();
+            foreach($result as $v){
+                if($v["identityid"] != $identity_id){
+                    array_push($userIdentityArr, $v);
+                }
+            }
+            $curDefaultIdentityID = $userIdentityArr[0]["identityid"];
+            $sql = "UPDATE users SET default_identity={$curDefaultIdentityID} WHERE id={$user_id}";
+            $this->query($sql);
+
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+    // upgraded
+    public function changeDefaultIdentity($user_id, $identity_id) {
+        $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
+        $this->query($sql);
     }
 
 }
