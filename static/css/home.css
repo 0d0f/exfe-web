@@ -9,7 +9,7 @@
     /*display: block;*/
     /*min-width: 1160px;*/
     width:100%;
-    min-height: 465px;
+    min-height: 349px;
     /*height: 550px;*/
     /*overflow: hidden;*/
     /*background:#E6E6E6 url(../images/index_bg.jpg) repeat-y center 0;*/
@@ -22,18 +22,16 @@
     position: absolute;
     left: 50%;
     /*margin-left: -235px;*/
-    min-height: 404px;
+    min-height: 349px;
     /*max-height: 704px;*/
   dipslay:table-cell;vertical-align:middle
 }
 
 #home .home_banner #x_code_img img {
-  min-width: 450px;
-  min-height: 454px;
-  max-width: 600px;
-  max-height: 596px;
-  /*width: 470px;*/
-  /*height: 465px;*/
+  min-width: 353px;
+  min-height: 349px;
+  max-width: 470px;
+  max-height: 465px;
   display: block;
 }
 #home .home_banner #x_code_img .xci-l {

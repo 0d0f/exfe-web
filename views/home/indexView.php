@@ -8,7 +8,7 @@
     <?php include "share/nav.php" ?>
     <div class="home_banner" id="home_banner">
       <div id="x_code_img">
-        <img class="x-sign" src="/static/images/x-sign.png" alt=""/>
+        <img class="x-sign" src="/static/images/X-sign.jpg" alt=""/>
         <div class="xci-l">
           <div class="circle-o cx">
             <div class="circle-i">
@@ -44,23 +44,20 @@
     document.title = 'EXFE';
     var winSize = odof.util.getWindowSize();
     winHeight = winSize.height;
-    var w, h, p = 0;
-    if (winHeight < 680) {
-      w = 450;
-    } else if (winHeight > 960) {
-      w = 600;
-      p = 20;
+    var minH = 349, maxH = 465,
+        minWh = 680, maxWh = 960,
+        w = 470, h;
+    if (winHeight < minWh) {
+      h = minH;
+    } else if (winHeight > maxWh) {
+      h = maxH;
     } else {
-      w = 450 + 450 * (winHeight - 680) / 960;
-      p = 60 * (winHeight - 680) / 960;
+      h = minH + (maxH - minH) * ((winHeight - minWh) / (maxWh - minWh));
     }
-    h = (w / 470) * 465;
+    w *= h / maxH;
+    w = Math.ceil(w);
     $(".x-sign").width(w).height(h).parent().css('margin-left', -w/2);
-    $('#home_banner').css({
-        'height': h + p*2,
-        'margin-top': p,
-        'margin-bottom': p
-        });
+    $('#home_banner').css('height', h);
 
     $("#pre_load_btn")[0].src = "/static/images/btn.png";
     $("#pre_load_icons")[0].src = "/static/images/icons.png";
@@ -68,7 +65,9 @@
     $('.xci-l, .xci-r').hover(function (e) {
       $(this).find('.circle-o').stop(true, true).addClass('bounceIn').show();
     }, function (e) {
-      $(this).find('.circle-o').delay(233).fadeOut();
+      $(this).find('.circle-o').delay(233).fadeOut(function () {
+        $(this).removeClass('bounceIn');
+      });
     });
 });
 </script>
