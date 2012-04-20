@@ -38,7 +38,11 @@ class PlaceModels extends DataModel {
                     `lat`={$place->lat},
                     `updated_at`  = now() 
                     WHERE `id`    = {$place->id};";
-            return $this->query($sql);
+            $result=$this->query($sql);
+            if(intval($result)>0)
+                return $place->id;
+            else 
+                return false;
         }
 
 
