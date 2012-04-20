@@ -73,8 +73,7 @@ class IdentityActions extends ActionController {
                 }
             }
         }
-        $responobj['meta']['code'] = 200;
-        echo json_encode($responobj);
+        apiResponse(array('identities' => $responobj));
     }
     
     
@@ -83,24 +82,28 @@ class IdentityActions extends ActionController {
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
         if (!($user_id = $_SESSION['signin_user']->id)) {
-            // 需要登录
+            apiError(401, 'no_signin', ''); // 需要登录
         }
         if (!($identity_id = intval($_POST['identity_id']))) {
-            // 需要输入identity_id
+            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
-        if (!($curPassword = $_POST['current_password'])) {
-            // 请输入当前密码
+        if (!($password = $_POST['password'])) {
+            apiError(403, 'password', ''); // 请输入当前密码
         }
-        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
-            // 密码错误
+        if (!$modUser->verifyUserPassword($user_id, $password)) {
+            apiError(403, 'invalid_password', ''); // 密码错误
         }
-        if (($relation = $modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) === null) {
-            // 用户和身份没关系
+        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
+            case 'CONNECTED':
+            case 'REVOKED':
+                if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) { 
+                    apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
+                }
+                break;
+            default:
+                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
         }
-        if (($acResult = $modIdentity->deleteIdentityFromUser($identity_id, $user_id))) {
-            // 成功
-        }
-        // 操作失败
+        apiError(500, 'failed', '');
     }
     
     
@@ -108,28 +111,27 @@ class IdentityActions extends ActionController {
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         if (!($user_id = $_SESSION['signin_user']->id)) {
-            // 需要登录
+            apiError(401, 'no_signin', ''); // 需要登录
         }
         if (!($identity_id = intval($_POST['identity_id']))) {
-            // 需要输入identity_id
+            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
-        if (!($curPassword = $_POST['current_password'])) {
-            // 请输入当前密码
+        if (!($password = $_POST['password'])) {
+            apiError(403, 'no_current_password', ''); // 请输入当前密码
         }
-        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
-            // 密码错误
+        if (!$modUser->verifyUserPassword($user_id, $password)) {
+            apiError(403, 'invalid_password', ''); // 密码错误
         }
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
-            case 'RELATED':
             case 'CONNECTED':
+                if ($modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id)) {
+                    apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
+                }
                 break;
             default:
-                // 用户和身份关系不正确
+                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
         }
-        if ($modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id)) {
-            // 成功
-        }
-        // 操作失败
+        apiError(500, 'failed', '');
     }
     
     
