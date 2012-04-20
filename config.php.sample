@@ -1,4 +1,6 @@
 <?php
+define("STATIC_CODE_TIMESTAMP", 1334903539); // date +%s
+
 $dbhost="127.0.0.1";
 $dbuser="root";
 $dbpasswd="";

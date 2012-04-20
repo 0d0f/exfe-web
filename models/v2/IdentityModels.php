@@ -176,5 +176,9 @@ class IdentityModels extends DataModel {
         $identityid = intval($result["insert_id"]);
         return $identityid;
     }
+    
+    
+    public function makeDefaultAvatar() {
+    }
 
 }
