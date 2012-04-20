@@ -24,5 +24,15 @@ class ExfeeActions extends ActionController {
         }
         echo json_encode(array('error' => 500));
     }
+    public function doUpdate(){
+        $params   = $this->params;
+        $exfee_id=$params["id"];
+        $updated_at=$params["updated_at"];
+
+        $exfeeHelper = $this->getHelperByName('exfee', 'v2');
+        $update=$exfeeHelper->getUpdate($exfee_id,$updated_at);
+        print_r($update);
+
+    }
 
 }
