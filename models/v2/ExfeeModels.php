@@ -187,7 +187,7 @@ class ExfeeModels extends DataModel {
         $identities=$this->getColumn($sql);
 
         $identities_list=implode($identities,",");
-        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list);";
+        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) order by created_at limit 100;";
         //TODO: cross_id will be renamed to exfee_id
         $exfee_id_list=$this->getColumn($sql);
         return $exfee_id_list;
@@ -196,8 +196,11 @@ class ExfeeModels extends DataModel {
     public function updateExfeeTime($exfee_id)
     {
         $sql="update exfees set updated_at=NOW() where `id`=$exfee_id;";
-        print $sql;
         $this->query($sql);
     }
 
+    public function getUpdate($exfee_id,$updated_at)
+    {
+        //$sql="select id from exfees where ";
+    }
 }
