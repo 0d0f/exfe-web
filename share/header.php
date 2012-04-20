@@ -12,7 +12,7 @@
 
     <script type="text/javascript" src="/static/?g=js_libs&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
     <script type="text/javascript" src="/static/?g=js_util&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-    <script type="text/javascript" src="/static/js/comm/func.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+    <script type="text/javascript" src="/static/js/comm/func.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
     <script type="text/javascript" src="/static/?g=js_user&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
     <script>
