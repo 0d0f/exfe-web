@@ -44,7 +44,7 @@ class CrossModels extends DataModel {
             return $cross_id;
         }
         else {
-            $sql="update crosses set host_id={$cross->by_identity_id},  updated_at=now(),title='{$cross->title}', description='{$cross->description}',exfee_id=$exfee_id, begin_at='{$cross_time->begin_at->date_word}', place_id=$place_id, timezone='{$cross_time->begin_at->timezone}', origin_begin_at='{$cross_time->origin}', background='{$background}',date_word='{$cross_time->begin_at->date_word}',time_word='{$cross_time->begin_at->time_word}',`date`='{$cross_time->begin_at->date}',`time`='{$cross_time->begin_at->time}',outputformat='{$cross_time->outputformat}' where `id`=$cross->id;";
+            $sql="update crosses set host_id={$cross->by_identity_id},  updated_at=now(),title='{$cross->title}', description='{$cross->description}', begin_at='{$cross_time->begin_at->date_word}', place_id=$place_id, timezone='{$cross_time->begin_at->timezone}', origin_begin_at='{$cross_time->origin}', background='{$background}',date_word='{$cross_time->begin_at->date_word}',time_word='{$cross_time->begin_at->time_word}',`date`='{$cross_time->begin_at->date}',`time`='{$cross_time->begin_at->time}',outputformat='{$cross_time->outputformat}' where `id`=$cross->id;";
 
             $result   = $this->query($sql);
             if($result   >0)
