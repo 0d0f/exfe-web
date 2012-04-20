@@ -178,7 +178,58 @@ class IdentityModels extends DataModel {
     }
     
     
-    public function makeDefaultAvatar() {
+    public function makeDefaultAvatar($external_id) {
+        $specification = array(
+            'width'  => 80,
+            'height' => 80,
+        );
+        $colors = array(
+            array(138,  59, 197),
+            array(189,  53,  55),
+            array(219,  98,  11),
+            array( 66, 163,  36),
+            array( 41,  95, 204),
+        );
+        
+        
+        $curDir = dirname(__FILE__);
+        require_once "{$curDir}/../../xbgutilitie/libimage.php";
+        $objLibImage = new libImage;
+        
+        $resDir = "{$curDir}/../../default_avatar_portrait/";
+        $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
+        
+        $bi = rand(1, 3);
+        
+        $bgFile = "{$resDir}/bg_{$bi}.png";
+
+        $image = ImageCreateFromPNG($bgFile);
+        $foreColor = imagecolorallocate($image, 0xE6, 0xE6, 0xE6);
+
+        imageline($image,  0,  0, 79,  0, $foreColor);
+        imageline($image, 79,  0, 79, 79, $foreColor);
+        imageline($image, 79, 79,  0, 79, $foreColor);
+        imageline($image,  0, 79,  0,  0, $foreColor);
+
+        $ci = rand(0, count($colors) - 1);
+        
+        $foreColor = imagecolorallocate($image, $colors[$ci][0], $colors[$ci][1], $colors[$ci][2]);
+        $tsS = 36;
+        do {
+            $tmpImg = imagecreate(80, 80);
+            $arr = imagettftext($tmpImg, $tsS, 0, 3, 65, $foreColor, $ftFile, $external_id);
+            $siz = $arr[2] - $arr[0];
+            $tsS--;
+        } while ($siz > (80 - 2));
+
+        imagettftext($image, $tsS, 0, (80 - $siz) / 2, 65, $foreColor, $ftFile, $external_id);
+        
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header("Content-type: image/png");
+        imagepng($image);
+        imagedestroy($image);
     }
 
 }
