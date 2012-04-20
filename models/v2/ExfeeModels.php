@@ -118,7 +118,7 @@ class ExfeeModels extends DataModel {
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
         }
-        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
+        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0, `updated_at` = NOW()");
         $exfee_id = intval($dbResult['insert_id']);
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
@@ -176,8 +176,11 @@ class ExfeeModels extends DataModel {
         //     $fItem->rsvp_status = $this->rsvp_status[4];
         //     $this->updateInvitation($fItem, $by_identity_id);
         // }
+        $this->query("UPDATE `exfees` SET `updated_at` = NOW() WHERE `id` = {$id}");
         return $id;
     }
+
+
     public function getExfeeIdByUserid($userid)
     {
         $sql="select identityid from user_identity where userid=$userid;";
@@ -189,4 +192,5 @@ class ExfeeModels extends DataModel {
         $exfee_id_list=$this->getColumn($sql);
         return $exfee_id_list;
     }
+
 }
