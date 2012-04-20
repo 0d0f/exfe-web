@@ -55,7 +55,6 @@ function sendapn($deviceToken,$body)
     $payload = json_encode_nounicode($body);
     $msg = chr(1) . chr($identifiers[0]) . chr($identifiers[1]) . chr($identifiers[2]) . chr($identifiers[3]) . pack('N', time() + 3600). chr(0) . chr(32) . pack('H*', $deviceToken) . chr(0) . chr(strlen($payload)) . $payload;
 
-    #$msg = chr(0) . pack("n",32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($payload)) . $payload;
     $err=fwrite($apn_connect, $msg);
     if($err)
     {
@@ -76,7 +75,6 @@ function sendapn($deviceToken,$body)
                 return $response;
             }
         }
-
     }
     
     return $err;

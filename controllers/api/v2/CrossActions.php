@@ -55,8 +55,11 @@ class CrossActions extends ActionController {
     public function doEdit()
     {
         $params=$this->params;
+        $cross_str=$_POST["cross"];
+        $cross=json_decode($cross_str);
+
         $checkHelper=$this->getHelperByName("check","v2");
-        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("cross_id"=>$params["id"]));
+        $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"]));
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
@@ -64,9 +67,8 @@ class CrossActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
-        $cross_str=$_POST["cross"];
-        $cross=json_decode($cross_str);
         $cross->id=$params["id"];
+        $cross->exfee_id=$result["exfee_id"];
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross_id=$crossHelper->editCross($cross);
         if(intval($cross_id)>0)

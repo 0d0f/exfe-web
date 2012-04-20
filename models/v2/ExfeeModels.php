@@ -176,7 +176,7 @@ class ExfeeModels extends DataModel {
         //     $fItem->rsvp_status = $this->rsvp_status[4];
         //     $this->updateInvitation($fItem, $by_identity_id);
         // }
-        $this->query("UPDATE `exfees` SET `updated_at` = NOW() WHERE `id` = {$id}");
+        $this->updateExfeeTime($id);
         return $id;
     }
 
@@ -191,6 +191,13 @@ class ExfeeModels extends DataModel {
         //TODO: cross_id will be renamed to exfee_id
         $exfee_id_list=$this->getColumn($sql);
         return $exfee_id_list;
+    }
+
+    public function updateExfeeTime($exfee_id)
+    {
+        $sql="update exfees set updated_at=NOW() where `id`=$exfee_id;";
+        print $sql;
+        $this->query($sql);
     }
 
 }
