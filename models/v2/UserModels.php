@@ -4,13 +4,14 @@ class UserModels extends DataModel {
     
     private $salt = '_4f9g18t9VEdi2if';
     
-    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED');
+    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
             "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`
-             `encrypted_password`, `password_salt`, `current_sign_in_ip`
+             `encrypted_password`, `password_salt`, `current_sign_in_ip`,
+             `reset_password_token`
              FROM   `users` WHERE `id` = {$user_id}"
         );
     }
@@ -93,10 +94,10 @@ class UserModels extends DataModel {
     
     public function newUserByPassword($password) {
         $passwordSalt = md5(createToken());
-        $passwordInDb = md5($password . substr($passwordSalt, 3, 23) . EXFE_PASSWORD_SALT);
+        $passwordInDb = $this->encryptPassword($password, $passwordSalt);
         $dbResult = $this->query(
             "INSERT INTO `users` SET
-             `encrypted_password` = '{$password}',
+             `encrypted_password` = '{$passwordInDb}',
              `password_salt`      = '{$passwordSalt}',
              `created_at`         = NOW()"
         );
@@ -120,22 +121,45 @@ class UserModels extends DataModel {
     }
     
     
-    public function getUserIdentityStatusByIdentityId($identity_id) {
+    public function getUserIdentityStatusByUserIdAndIdentityId($user_id = 0, $identity_id = 0, $withPasswdStatus = false) {
         if (!$identity_id) {
             return null;
         }
         $rawStatus = $this->getRow(
             "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}"
+          . ($user_id ? " AND `userid` = {$user_id}" : '')
         );
         $user_id = intval($rawStatus['userid']);
         $status  = intval($rawStatus['status']);
-        if ($user_id && $status === 3) {
-            $passwdInfo = $this->getUserPasswdByUserId($user_id);
-            if (!$passwdInfo['encrypted_password']) {
-                return 'NOPASSWORD';
+        if ($user_id) {
+            if ($user_id && $status === 3 && $withPasswdStatus) {
+                $passwdInfo = $this->getUserPasswdByUserId($user_id);
+                if (!$passwdInfo['encrypted_password']) {
+                    return 'NOPASSWORD';
+                }
             }
+            return $this->arrUserIdentityStatus[$status];
         }
-        return $this->arrUserIdentityStatus['$status'];
+        return null;
+    }
+    
+    
+    public function signout() {
+        // unset seesion
+        unset($_SESSION['signin_user']);
+        unset($_SESSION['signin_token']);
+        session_destroy();
+        // unset cookie
+        unset($_COOKIE['user_id']);    
+        unset($_COOKIE['identity_ids']);
+        unset($_COOKIE['signin_sequ']);
+        unset($_COOKIE['signin_token']);
+        setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
+        setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
+        setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
+        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);     
+        // return
+        return true;   
     }
     
     
@@ -155,7 +179,7 @@ class UserModels extends DataModel {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
                     $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
                 }
-                $rtResult['auth_token'] = $passwdInDb['auth_token'];
+                $rtResult['token'] = $passwdInDb['auth_token'];
                 return $rtResult;
             }
         }
@@ -177,19 +201,7 @@ class UserModels extends DataModel {
              && $signin_token === $userPasswd['cookie_logintoken']) {
                 return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
             } 
-            // unset seesion
-            unset($_SESSION['signin_user']);
-            unset($_SESSION['signin_token']);
-            session_destroy();
-            // unset cookie
-            unset($_COOKIE['user_id']);    
-            unset($_COOKIE['identity_ids']);
-            unset($_COOKIE['signin_sequ']);
-            unset($_COOKIE['signin_token']);
-            setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
-            setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
-            setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-            setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
+            $this->signout();
         }
         return null;
     }
@@ -265,20 +277,89 @@ class UserModels extends DataModel {
                 // check password!
                 if ($password === $passwdInDb['encrypted_password']) {
                     $user = $this->getUserById($user_id);
-                    $this->loginByIdentityId($identity->id, $user_id, $user, $identity, 'password', $setCookie);
+                    $this->signinByIdentityId($identity->id, $user_id, $user, $identity, 'password', $setCookie);
                     return $user;
                 }
-
             }
         }
         return null;
     }
+    
 
-    public function getUserIdByToken($token)
-    {
+    public function getUserIdByToken($token) {
         $sql="select id from users where auth_token='$token';";
         $row=$this->getRow($sql);
         return intval($row["id"]);
+    }
+    
+    
+    public function verifyUserPassword($user_id, $password) {
+        if (!$user_id || !$password) {
+            return false;
+        }
+        $passwdInDb = $this->getUserPasswdByUserId($user_id);
+        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
+        return $password === $passwdInDb['encrypted_password'];
+    }
+    
+    
+    public function addUserAndSetRelation($password, $name, $identity_id) {
+        $modIdentity = getModelByName('identity', 'v2');
+        $name        = mysql_real_escape_string($name);
+        $external_id = mysql_real_escape_string($external_id);
+        if (!$identity_id) {
+            return false;
+        }
+        if (($user_id = $this->getUserIdByIdentityId($identity_id))) {
+            return $user_id;
+        } else {
+            $insResult = $this->query(
+                "INSERT INTO `users` SET
+                 `encrypted_password` = '{$password}',
+                 `name`               = '{$name}',
+                 `created_at`         = NOW()"
+            );
+            if (($user_id = intval($insResult))) {
+                $this->query(
+                    "INSERT INTO `user_identity` SET
+                     `identityid` = {$identity_id},
+                     `userid`     = {$user_id},
+                     `created_at` = NOW()"
+                );
+                if ($name) {
+                    $this->query(
+                        "UPDATE `identities` SET `name` = '{$displayname}' WHERE `id` = {$identity_id}"
+                    );
+                    $this->query(
+                        "UPDATE `user_identity` SET `status` = 3 WHERE `identityid` = {$identity_id}"
+                    );
+                }
+                return $user_id;
+            }
+        }
+        return false;
+    }
+
+
+    public function getResetPasswordTokenByIdentityId($identity_id) {
+        $user_id = getUserIdByIdentityId($identity_id)
+                ?: $this->addUserAndSetRelation('', '', $identity_id);
+        if ($user_id) {
+            $passwdInfo = $this->getUserPasswdByUserId($user_id);
+            $reset_password_token = $passwdInfo['reset_password_token'];
+            if (!$reset_password_token
+             || (intval(substr($reset_password_token, 32)) + 5 * 24 * 60 * 60 < time())) { // token timeout
+                $reset_password_token = createToken();
+                $this->query(
+                    "UPDATE `users` SET `reset_password_token` = '{$reset_password_token}' WHERE `id` = $uid"
+                );
+            }
+            return array(
+                'user_id' => $user_id,
+                'token'   => $reset_password_token
+            );
+        }
+        return null;
     }
 
 }

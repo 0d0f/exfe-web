@@ -46,12 +46,13 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityByProviderExternalId($provider, $external_id) {
-        return $this->packageIdentity($this->getRow(
+    public function getIdentityByProviderExternalId($provider, $external_id, $get_id_only = false) {
+        $rawIdentity = $this->getRow(
             "SELECT * FROM `identities` WHERE
              `provider`          = '{$provider}' AND
              `external_identity` = '{$external_id}'"
-        ));
+        );
+        return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity);
     }
     
     
@@ -207,6 +208,42 @@ class IdentityModels extends DataModel {
             return $id;
         }
         return null;
+    }
+
+
+    public function setIdentityAsDefaultIdentityOfUser($identity_id, $user_id) {
+        if (!$identity_id || !$user_id) {
+            return false;
+        }
+        return $this->query(
+            "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
+        );
+    }
+    
+    
+    public function deleteIdentityFromUser($identity_id, $user_id) {
+        if (!$identity_id || !$user_id) {
+            return false;
+        }
+        $identities = $this->getRow(
+            "SELECT * FROM `user_identity` WHERE `userid` = {$user_id}"
+        );
+        if (count($identities) > 1) {
+            $upResult = $this->query(
+                "UPDATE `user_identity` SET `status` = 1
+                 WHERE  `identityid` = {$identity_id}
+                 AND    `userid`     = {$user_id}"
+            );
+            if (!$upResult) {
+                return false;
+            }
+            foreach ($identities as $item){
+                if ($item['identityid'] !== $identity_id) {
+                    return $this->setIdentityAsDefaultIdentityOfUser($item['identityid'], $user_id);
+                }
+            }
+        }
+        return false;
     }
 
 }
