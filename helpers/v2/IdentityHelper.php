@@ -9,8 +9,13 @@ class IdentityHelper extends ActionController {
     protected $modIdentity = null;
     
     
-    protected function __construct() {
+    public function __construct() {
         $this->modIdentity = $this->getModelByName('Identity', 'v2');
+    }
+    
+    
+    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
+        return $this->modIdentity->addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0);
     }
     
 
@@ -24,8 +29,8 @@ class IdentityHelper extends ActionController {
     }
     
     
-    public function getIdentityByExternalId($external_id) {
-        return $this->modIdentity->getIdentityByExternalId($external_id);
+    public function getIdentityByProviderExternalId($provider, $external_id) {
+        return $this->modIdentity->getIdentityByExternalId($provider, $external_id);
     }
 
 

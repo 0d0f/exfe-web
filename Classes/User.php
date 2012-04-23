@@ -24,11 +24,8 @@ class User extends EFObject {
                                 $avatar_updated_at = '',
                                 $timezone          = '',
                                 $identities        = array()) {
-        parent::__construct();
-        $this->type              = 'user';
-        $this->identities        = array();
-
-        $this->id                = intval($id);
+        parent::__construct($id, 'user');
+        
         $this->name              = $name;
         $this->bio               = $bio;
         $this->default_identity  = $default_identity;

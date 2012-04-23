@@ -36,10 +36,8 @@ class Identity extends EFObject {
                                 $avatar_updated_at = '',
                                 $created_at        = '',
                                 $updated_at        = '') {
-        parent::__construct();
-        $this->type              = 'identity';
+        parent::__construct($id, 'identity');
 
-        $this->id                = intval($id);
         $this->name              = $name;
         $this->nickname          = $nickname;
         $this->bio               = $bio;

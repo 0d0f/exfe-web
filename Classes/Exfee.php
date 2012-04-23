@@ -1,16 +1,13 @@
 <?php
+
 class Exfee extends EFObject {
 
-    public $identities = null;
+    public $invitations = null;
 
-    public function __construct($id         = null,
-                                $identities = null) {
-        parent::__construct();
-        $this->type       = 'exfee';
-        $this->identities = array();
-
-        $this->id         = intval($id);
-        $this->identities = $identities;
+    public function __construct($id = 0, $invitations = array()) {
+        parent::__construct($id, 'exfee');
+        
+        $this->invitations = $invitations;
     }
 
 }
