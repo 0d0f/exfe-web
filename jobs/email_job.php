@@ -102,8 +102,8 @@ class Email_Job
         }
         else if($mail["time_type"]=="Anytime")
             $mail["time"]="Anytime";
-        $mail["place_line1"]=$this->args['place']['line1'];
-        $mail["place_line2"]=$this->args['place']['line2'];
+        $mail["place_line1"]=$this->args['place_line1'];
+        $mail["place_line2"]=$this->args['place_line2'];
         if($mail["place_line1"]=="")
         {
             $mail["place_line1"]="Place";
