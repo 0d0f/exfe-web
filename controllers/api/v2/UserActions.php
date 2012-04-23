@@ -256,7 +256,7 @@ class UserActions extends ActionController {
         if (!($curPassword = $_POST['current_password'])) {
             apiError(401, 'no_current_password', ''); // 请输入当前密码
         }
-        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
+        if (!$modUser->verifyUserPassword($user_id, $curPassword, true)) {
             apiError(403, 'invalid_password', ''); // 密码错误
         }
         if (!($newPassword = $_POST['new_password'])) {
