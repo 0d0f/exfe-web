@@ -13,7 +13,7 @@ class Invitation extends EFObject {
     
     public $updated_at       = null;
     
-    public $exfee_updated_at = NOW(),
+    public $exfee_updated_at = null;
     
     public $token            = null;
 
