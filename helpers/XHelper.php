@@ -84,14 +84,18 @@ class XHelper extends ActionController {
         $msghelper=$this->getHelperByName("msg");
         $msghelper->sentChangeEmail($mail);
         $msghelper->sentApnConversation($apnargs);
-        
-        foreach ($new_cross['identities'] as $identity) {
-            switch ($identity['provider']) {
-                case 'twitter':
-                    $msghelper->sentTwitterChange($mail);
-                    break;
-                case 'facebook':
-                    $msghelper->sentFacebookChange($mail);
+
+        foreach($new_cross['invitations'] as  $invitation)
+        {
+            foreach ($invitation['identities'] as $identity) {
+                //TODO: waiting for googollee's twitter client
+                //switch ($identity['provider']) {
+                //    case 'twitter':
+                //        $msghelper->sentTwitterChange($mail);
+                //        break;
+                //    case 'facebook':
+                //        $msghelper->sentFacebookChange($mail);
+                //}
             }
         }
     }
