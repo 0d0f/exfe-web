@@ -418,6 +418,8 @@ class Conversationemail_Job
 
                     $change_object_content=$update_array["id_".$cross_id];
                     $new_exfee_table=$change_object_content["new_exfee_table"];
+
+                    $invitations=$change_object_content["cross"]["invitations"];
                     $to_identities=$change_object_content["to_identity"];
                     if($change_object_content)
                     {
@@ -428,21 +430,24 @@ class Conversationemail_Job
                         $mail_body=str_replace("%update_part%",$change_object_content["content"],$mail_body);
                         $mail["title"]=str_replace("%exfe_title%",$change_object_content["old_title"],$template_title);
                         $mail["body"]=$mail_body;
-
-                        foreach($to_identities as $to_identity)
+                        foreach($invitations as $invitation)
                         {
-                            if($new_exfee_table[$to_identity["external_identity"]]!=1)
+                            foreach($invitation["identities"] as $to_identity)
                             {
-                                $mail["to"]=$to_identity["external_identity"];
-                                array_push($mails,$mail);
+                                if($to_identity["provider"]=='email')
+                                {
+                                    if($new_exfee_table[$to_identity["external_identity"]]!=1)
+                                    {
+                                        $mail["to"]=$to_identity["external_identity"];
+                                        array_push($mails,$mail);
+                                    }
+                                }
                             }
                         }
                     }
                 }
-
             }
         }
-
         return $mails;
     }
 

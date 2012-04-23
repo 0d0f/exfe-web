@@ -8,6 +8,7 @@ class Apn_Job
 {
     public function multi_perform($args)
     {
+        print_r($args);
         $change_objects=array();
         $rsvp_objects=array();
         foreach($args as $arg)
@@ -273,16 +274,17 @@ class Apn_Job
 
     public function generateCrossUpdatePush($args)
     {
+        print "generateCrossUpdatePush\r\n";
         #"%X_OLDTITLE" updates: Title is changed to "%X_TITLE". New time: %X_SHORTTIME. New Place: %X_PLACETITLE, %X_PLACEDESCRIPTION
         $title=$args["title"];
 
         #if($args["cross"]["identities"]=="")
         #{
-            $obj["identity_id"] ="24";
-            $obj["status"] ="3";
-            $obj["provider"] = "iOSAPN";
-            $obj["external_identity"] = "96da067d5b5fba84c032b12fa5667b19acd47d8fb383784ae2a4dd4904fb8858";
-            $args["cross"]["identities"][0]=$obj;
+            //$obj["identity_id"] ="24";
+            //$obj["status"] ="3";
+            //$obj["provider"] = "iOSAPN";
+            //$obj["external_identity"] = "96da067d5b5fba84c032b12fa5667b19acd47d8fb383784ae2a4dd4904fb8858";
+            //$args["cross"]["identities"][0]=$obj;
         #}
 //        $change_str="";
         $changemsgs=array();
@@ -341,14 +343,18 @@ class Apn_Job
             $msgbodyobj["cid"]=$args["id"];
             $msgbodyobj["t"]="u";
 
-            $to_identities=$args["cross"]["identities"];
-            foreach($to_identities as $to_identity)
+            $invitations=$args["cross"]["invitations"];
+            foreach($invitations as $invitation)
             {
-               if( $to_identity["provider"]=="iOSAPN")
-               {
-                   $msgbodyobj["external_identity"]=$to_identity["external_identity"];
-                   $this->deliver($msgbodyobj);
-               }
+                $to_identities=$invitation["identities"];
+                foreach($to_identities as $to_identity)
+                {
+                   if( $to_identity["provider"]=="iOSAPN")
+                   {
+                       $msgbodyobj["external_identity"]=$to_identity["external_identity"];
+                       $this->deliver($msgbodyobj);
+                   }
+                }
             }
         }
 
@@ -424,24 +430,24 @@ class Apn_Job
                     $title=replacemarks($args["title"]);
 
                     $begin_at=$args["begin_at"];
-                    $time_type=$args["time_type"];
-                    $datetimestr="";
-                    if($begin_at=="0000-00-00 00:00:00"){ // hasn't datetime
-                       $datetimestr="";
-                    } else {
-                        /*
-                        if(intval($time_type)==2)
-                            $datetimestr="on ".date("M j",strtotime($begin_at));
-                        else
-                            $datetimestr="at ".date("g:iA D,M j",strtotime($begin_at));
-                        */
-                       if(trim($time_type) != ""){
-                            $datetimestr = $time_type;
-                        } else {
-                            $datetimestr = date("g:iA D,M j",strtotime($begin_at));
-                        }
+                    $time_type=$args["begin_at"]["time_type"];
+                    $datetimestr=$begin_at["datetime"];
+                    //if($begin_at=="0000-00-00 00:00:00"){ // hasn't datetime
+                    //   $datetimestr="";
+                    //} else {
+                    //    /*
+                    //    if(intval($time_type)==2)
+                    //        $datetimestr="on ".date("M j",strtotime($begin_at));
+                    //    else
+                    //        $datetimestr="at ".date("g:iA D,M j",strtotime($begin_at));
+                    //    */
+                    //   if(trim($time_type) != ""){
+                    //        $datetimestr = $time_type;
+                    //    } else {
+                    //        $datetimestr = date("g:iA D,M j",strtotime($begin_at));
+                    //    }
 
-                    }
+                    //}
                     if($isHost==FALSE)
                     {
                         $msgdefaultlen=strlen(" is inviting you for \\\"\\\" ");
