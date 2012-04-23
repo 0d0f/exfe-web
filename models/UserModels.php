@@ -542,5 +542,13 @@ class UserModels extends DataModel{
         $row=$this->getRow($sql);
         return $row;
     }
+    
+    // upgraded
+    public function getUserWithPasswd($userid)
+    {
+        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,encrypted_password from users where id=$userid";
+        $row=$this->getRow($sql);
+        return $row;
+    }
 
 }
