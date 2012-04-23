@@ -18,6 +18,35 @@ class PlaceModels extends DataModel {
         return $place;
 
     }
+    public function addPlace($place)
+    {
+        if (intval($place->id)==0) {
+            $sql = "INSERT INTO `places` (`place_line1`, `place_line2`, `provider`,
+                    `external_id`, `lng`, `lat`, `created_at`, `updated_at`)
+                    values ('{$place->title}', '{$place->description}', '{$place->provider}',
+                    '{$place->external_id}',{$place->lng},{$place->lat}, now(), now());";
+            $result = $this->query($sql);
+            return intval($result["insert_id"]) > 0
+                 ? intval($result["insert_id"]) : false;
+        } else {
+            $sql = "UPDATE `places` SET
+                    `place_line1` = '{$place->title}',
+                    `place_line2` = '{$place->description}',
+                    `provider`    = '{$place->provider}',
+                    `external_id` = '{$place->external_id}',
+                    `lng`={$place->lng}, 
+                    `lat`={$place->lat},
+                    `updated_at`  = now() 
+                    WHERE `id`    = {$place->id};";
+            $result=$this->query($sql);
+            if(intval($result)>0)
+                return $place->id;
+            else 
+                return false;
+        }
+
+
+    }
 
 }
 

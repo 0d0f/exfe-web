@@ -4,6 +4,8 @@ require_once 'EFTime.php';
 require_once 'Widget.php';
 require_once 'User.php';
 require_once 'Identity.php';
+require_once 'Exfee.php';
+require_once 'Invitation.php';
 
 abstract class EFobject{
     
@@ -11,10 +13,9 @@ abstract class EFobject{
 
     public $type = null;
     
-    public function __construct($id=0,$type="EFObject") {
-        $this->id=$id;
-        $this->type=$type;
-
+    public function __construct($id = 0, $type = 'EFObject') {
+        $this->id   = intval($id);
+        $this->type = $type;
     }
 
 }

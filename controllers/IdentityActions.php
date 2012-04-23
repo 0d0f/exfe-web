@@ -1,80 +1,9 @@
 <?php
-
 session_write_close();
-
 require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
 
+
 class IdentityActions extends ActionController {
-
-    public function doGet() {
-        $IdentityData  = $this->getModelByName('identity');
-
-        $arrIdentities = json_decode($_GET['identities'], true);
-
-        $responobj['response']['identities'] = array();
-
-        if ($arrIdentities) {
-            foreach ($arrIdentities as $identityI => $identityItem) {
-                if (!$identityItem['provider']) {
-                    continue;
-                }
-                $identity = $IdentityData->getIdentity($identityItem['external_identity'], $identityItem['provider']);
-                if (intval($identity['id']) > 0) {
-                    if (!$identity['avatar_file_name'] || !$identity['name']) {
-                        $userData = $this->getModelByName('user');
-                        $user     = $userData->getUserProfileByIdentityId($identity['id']);
-                        $identity = humanIdentity($identity, $user);
-                    }
-                }
-
-                if ($identity) {
-                    $responobj['response']['identities'][] = $identity;
-                } else {
-                    switch ($identityItem['provider']) {
-                        case 'twitter':
-                            if (isset($identityItem['external_username'])) {
-                                $twitterConn = new tmhOAuth(array(
-                                    'consumer_key'    => TWITTER_CONSUMER_KEY,
-                                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                                    'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
-                                    'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
-                                ));
-                                $responseCode = $twitterConn->request(
-                                    'GET',
-                                    $twitterConn->url('1/users/show'),
-                                    array('screen_name' => $identityItem['external_username'])
-                                );
-                                if ($responseCode === 200) {
-                                    $twitterUser = (array)json_decode($twitterConn->response['response'], true);
-                                    $twitterUser['profile_image_url'] = preg_replace(
-                                        '/normal(\.[a-z]{1,5})$/i',
-                                        'reasonably_small$1',
-                                        $twitterUser['profile_image_url']
-                                    );
-                                    $responobj['response']['identities'][] = array(
-                                        'provider'          => 'twitter',
-                                        'name'              => $twitterUser['name'],
-                                        'bio'               => $twitterUser['description'],
-                                        'avatar_file_name'  => $twitterUser['profile_image_url'],
-                                        'external_username' => $twitterUser['screen_name'],
-                                        'external_identity' => "@{$twitterUser['screen_name']}@twitter",
-                                    );
-                                }
-                            }
-                    }
-                }
-            }
-        }
-
-        $responobj['meta']['code'] = 200;
-        //$responobj['meta']['errType'] = 'Bad Request';
-        //$responobj['meta']['errorDetail'] = 'invalid_auth';
-
-        echo json_encode($responobj);
-
-        exit();
-    }
-
 
     public function doComplete() {
         $rangelen=50;
@@ -184,8 +113,80 @@ class IdentityActions extends ActionController {
         echo $resultstr;
         #echo json_encode($resultidentities, JSON_FORCE_OBJECT);
     }
+    
+    
+    // upgraded
+    public function doGet() {
+        $IdentityData  = $this->getModelByName('identity');
+
+        $arrIdentities = json_decode($_GET['identities'], true);
+
+        $responobj['response']['identities'] = array();
+
+        if ($arrIdentities) {
+            foreach ($arrIdentities as $identityI => $identityItem) {
+                if (!$identityItem['provider']) {
+                    continue;
+                }
+                $identity = $IdentityData->getIdentity($identityItem['external_identity'], $identityItem['provider']);
+                if (intval($identity['id']) > 0) {
+                    if (!$identity['avatar_file_name'] || !$identity['name']) {
+                        $userData = $this->getModelByName('user');
+                        $user     = $userData->getUserProfileByIdentityId($identity['id']);
+                        $identity = humanIdentity($identity, $user);
+                    }
+                }
+
+                if ($identity) {
+                    $responobj['response']['identities'][] = $identity;
+                } else {
+                    switch ($identityItem['provider']) {
+                        case 'twitter':
+                            if (isset($identityItem['external_username'])) {
+                                $twitterConn = new tmhOAuth(array(
+                                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                                    'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
+                                    'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
+                                ));
+                                $responseCode = $twitterConn->request(
+                                    'GET',
+                                    $twitterConn->url('1/users/show'),
+                                    array('screen_name' => $identityItem['external_username'])
+                                );
+                                if ($responseCode === 200) {
+                                    $twitterUser = (array)json_decode($twitterConn->response['response'], true);
+                                    $twitterUser['profile_image_url'] = preg_replace(
+                                        '/normal(\.[a-z]{1,5})$/i',
+                                        'reasonably_small$1',
+                                        $twitterUser['profile_image_url']
+                                    );
+                                    $responobj['response']['identities'][] = array(
+                                        'provider'          => 'twitter',
+                                        'name'              => $twitterUser['name'],
+                                        'bio'               => $twitterUser['description'],
+                                        'avatar_file_name'  => $twitterUser['profile_image_url'],
+                                        'external_username' => $twitterUser['screen_name'],
+                                        'external_identity' => "@{$twitterUser['screen_name']}@twitter",
+                                    );
+                                }
+                            }
+                    }
+                }
+            }
+        }
+
+        $responobj['meta']['code'] = 200;
+        //$responobj['meta']['errType'] = 'Bad Request';
+        //$responobj['meta']['errorDetail'] = 'invalid_auth';
+
+        echo json_encode($responobj);
+
+        exit();
+    }
 
 
+    // upgraded
     public function doUpdate() {
         /*--------------------+--------------+------+-----+---------+----------------+
         | Field               | Type         | Null | Key | Default | Extra          |

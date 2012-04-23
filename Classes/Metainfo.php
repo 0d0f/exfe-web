@@ -2,6 +2,7 @@
 require_once 'Cross.php';
 require_once 'CrossTime.php';
 require_once 'Place.php';
+require_once 'Post.php';
 
 abstract class Metainfo extends EFObject{
     
@@ -11,7 +12,7 @@ abstract class Metainfo extends EFObject{
     public $by_identity = null;
     
     public function __construct($id=0,$type="Metainfo") {
-        parent::__construct($id,$type);
+        parent::__construct($id, $type);
         $this->relative = array();
     }
 

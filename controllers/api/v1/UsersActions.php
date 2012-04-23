@@ -31,52 +31,8 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
     }
-    public function doLogout()
-    {
-        $userData=$this->getModelByName("user");
-        $params=$this->params;
-        $user_id=$params["id"];
-        $token=$params["token"];
-        $device_token=$_POST["device_token"];
-        if($device_token!="" && $token!="" && intval($user_id)>0)
-        {
-            //$result=$userData->($user_id,$token,$device_token);
-            $result=$userData->disConnectiOSDeviceToken($user_id,$token,$device_token);
-            if($result!=null)
-            {
-                $responobj["meta"]["code"]=200;
-                $responobj["response"]=$result;
-                echo json_encode($responobj);
-                exit(0);
-            }
-        }
-        $responobj["meta"]["code"]=500;
-        $responobj["meta"]["err"]="can't disconnect this device";
-        echo json_encode($responobj);
-        exit(0);
-    }
 
-    public function doLogin()
-    {
-        $userData=$this->getModelByName("user");
-        $user=$_POST["user"];
-        $password=$_POST["password"];
-        $result=$userData->loginForAuthToken($user,$password);
-        if($result)
-        {
-            $responobj["meta"]["code"]=200;
-            $responobj["response"]=$result;;
-        }
-        else
-        {
-            $responobj["meta"]["code"]=404;
-            $responobj["meta"]["err"]="login error";
-        }
-
-        echo json_encode($responobj);
-        exit(0);
-    }
-
+    
     public function doGetUpdate()
     {
         $params=$this->params;
@@ -103,6 +59,7 @@ class UsersActions extends ActionController {
 
         echo json_encode($responobj);
     }
+
 
     public function doX()
     {
@@ -161,7 +118,36 @@ class UsersActions extends ActionController {
         //get x by id and updated_since
 
     }
+    
+    
+    // upgraded
+    public function doLogout()
+    {
+        $userData=$this->getModelByName("user");
+        $params=$this->params;
+        $user_id=$params["id"];
+        $token=$params["token"];
+        $device_token=$_POST["device_token"];
+        if($device_token!="" && $token!="" && intval($user_id)>0)
+        {
+            //$result=$userData->($user_id,$token,$device_token);
+            $result=$userData->disConnectiOSDeviceToken($user_id,$token,$device_token);
+            if($result!=null)
+            {
+                $responobj["meta"]["code"]=200;
+                $responobj["response"]=$result;
+                echo json_encode($responobj);
+                exit(0);
+            }
+        }
+        $responobj["meta"]["code"]=500;
+        $responobj["meta"]["err"]="can't disconnect this device";
+        echo json_encode($responobj);
+        exit(0);
+    }
 
+
+    // upgraded
     public function doRegdevicetoken()
     {
         //check if this token allow
@@ -195,6 +181,29 @@ class UsersActions extends ActionController {
         echo json_encode($responobj);
         exit(0);
         //add devicetoken with $check["uid"]
+    }
+    
+    
+    // upgraded
+    public function doLogin()
+    {
+        $userData=$this->getModelByName("user");
+        $user=$_POST["user"];
+        $password=$_POST["password"];
+        $result=$userData->loginForAuthToken($user,$password);
+        if($result)
+        {
+            $responobj["meta"]["code"]=200;
+            $responobj["response"]=$result;;
+        }
+        else
+        {
+            $responobj["meta"]["code"]=404;
+            $responobj["meta"]["err"]="login error";
+        }
+
+        echo json_encode($responobj);
+        exit(0);
     }
 
 }
