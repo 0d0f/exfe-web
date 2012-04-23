@@ -201,8 +201,8 @@ class XActions extends ActionController
         }
         if ($changed != false) {
             $invitationData=$this->getModelByName("invitation");
-            $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
-            $new_cross["identities"]=$invitations;
+            $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,true);
+            $new_cross["invitations"]=$invitations;
             $xhelper->sendXChangeMsg($new_cross, $identity_id, $changed,$new_cross["title"]);
         }
         if ((is_array($newExfees)==TRUE && sizeof($newExfees) > 0 )||(is_array($delExfees)==TRUE && sizeof($delExfees) > 0))
@@ -221,8 +221,8 @@ class XActions extends ActionController
             //$newExfee_ids//=array();
             //$delExfee_ids//=array();
             $invitationData=$this->getModelByName("invitation");
-            $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,false);
-            $new_cross["identities"]=$invitations;
+            $invitations=$invitationData->getInvitation_Identities($cross_id,true,null,true);
+            $new_cross["invitations"]=$invitations;
             $xhelper->sendXInvitationChangeMsg($cross_id,$identity_id,$changed_identity,$new_cross,$new_cross["title"]);
             //send identity invitation changes msg
         }
