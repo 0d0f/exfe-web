@@ -250,7 +250,7 @@ class UserActions extends ActionController {
     
     public function doSetPassword() {
         $modUser = $this->getModelByName('user', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id)) {
+        if (!($user_id = $_SESSION['signin_user']->id || $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
             apiError(401, 'no_signin', ''); // 需要登录
         }
         if (!($curPassword = $_POST['current_password'])) {
