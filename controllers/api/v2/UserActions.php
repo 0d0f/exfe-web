@@ -31,8 +31,8 @@ class UserActions extends ActionController {
         $exfee = $exfeeData->getUserIdsByExfeeId(100092);
         print_r($exfee);
     }
-    
-    
+
+
     public function doAddIdentity() {
         // get models
         $modIdentity = $this->getModelByName('identity', 'v2');
@@ -57,6 +57,36 @@ class UserActions extends ActionController {
         } else {
             apiError(400, 'failed', '');
         }
+    }
+    
+
+    public function doDeleteIdentity() {
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!($user_id = $_SESSION['signin_user']->id)) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        if (!($identity_id = intval($_POST['identity_id']))) {
+            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
+        }
+        if (!($password = $_POST['password'])) {
+            apiError(403, 'password', ''); // 请输入当前密码
+        }
+        if (!$modUser->verifyUserPassword($user_id, $password)) {
+            apiError(403, 'invalid_password', ''); // 密码错误
+        }
+        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
+            case 'CONNECTED':
+            case 'REVOKED':
+                if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) { 
+                    apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
+                }
+                break;
+            default:
+                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
+        }
+        apiError(500, 'failed', '');
     }
     
     
