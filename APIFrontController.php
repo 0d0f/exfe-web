@@ -85,7 +85,7 @@ class FrontController {
 
         foreach($_GET as $k=>$v)
         {
-            if($k!="v" && $k!="class" && $k!=path)
+            if($k!="v" && $k!="class" && $k!=$path)
                 $params[$k]=$v;
         }
         require_once $file;
