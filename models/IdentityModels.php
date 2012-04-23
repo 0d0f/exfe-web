@@ -2,49 +2,6 @@
 
 class IdentityModels extends DataModel {
 
-    public function ifIdentityExist($external_identity, $provider = '') {
-        $external_identity = mysql_real_escape_string($external_identity);
-        $provider = mysql_real_escape_string($provider);
-
-        if ($provider) {
-            $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}'";
-        } else {
-            $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
-        }
-
-        $row = $this->getRow($sql);
-        $identity_id = intval($row["id"]);
-        if ($identity_id > 0) {
-            $sql = "SELECT userid, status FROM user_identity WHERE identityid={$identity_id}";
-            $result = $this->getRow($sql);
-            $uid = intval($result["userid"]);
-            $user_status = intval($result["status"]);
-
-            $returnData = array(
-                "id"=>$identity_id,
-                "status"=>$user_status,
-                "user_avatar"=>""
-            );
-
-            if($user_status == 3 && $uid > 0) {
-                $sql = "SELECT id, encrypted_password, avatar_file_name FROM users WHERE id={$uid}";
-                $user_info = $this->getRow($sql);
-
-                if(intval($user_info["id"])>0 && trim($user_info["encrypted_password"])==""){
-                    $returnData["status"] = 2;
-                }
-
-                $returnData["user_avatar"] = $user_info["avatar_file_name"];
-                return $returnData;
-            }
-            return $returnData;
-
-        } else {
-            return false;
-        }
-    }
-
-    
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -184,46 +141,6 @@ class IdentityModels extends DataModel {
         }
         return $userIdentityInfo;
 
-    }
-
-
-    public function checkUserIdentityRelation($user_id, $identity_id){
-        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
-        $result = $this->getRow($sql);
-        if(is_array($result)){
-            return true;
-        }
-        return false;
-    }
-
-
-    public function deleteIdentity($user_id, $identity_id){
-        $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
-        $result = $this->getRow($sql);
-        if(count($result) > 1){
-            $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
-            $this->query($sql);
-
-            $userIdentityArr = array();
-            foreach($result as $v){
-                if($v["identityid"] != $identity_id){
-                    array_push($userIdentityArr, $v);
-                }
-            }
-            $curDefaultIdentityID = $userIdentityArr[0]["identityid"];
-            $sql = "UPDATE users SET default_identity={$curDefaultIdentityID} WHERE id={$user_id}";
-            $this->query($sql);
-
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-
-    public function changeDefaultIdentity($user_id, $identity_id) {
-        $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
-        $this->query($sql);
     }
 
 
@@ -513,13 +430,6 @@ class IdentityModels extends DataModel {
             return $identity;
             //one value
         }
-
-    //public function getIdentityById($identity_id)
-    //{
-    //    $sql="select id,external_identity,name,bio,avatar_file_name,external_username from identities where id='$identity_id'";
-    //    $row=$this->getRow($sql);
-    //    return $row;
-    //}
     }
     
 
@@ -550,6 +460,7 @@ class IdentityModels extends DataModel {
     }
 
 
+    // upgraded
     public function updateIdentityInformation($id, $provider, $external_identity, $name, $bio, $avatar_file_name, $external_username) {
         // improve data
         $external_identity = "{$provider}_{$external_identity}";
@@ -589,6 +500,17 @@ class IdentityModels extends DataModel {
     
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
+    
+    
+    // upgraded
+    public function checkUserIdentityRelation($user_id, $identity_id){
+        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(is_array($result)){
+            return true;
+        }
+        return false;
+    }
 
 
     // upgraded
@@ -871,8 +793,8 @@ class IdentityModels extends DataModel {
 
         }
     }
-    
-    
+
+
     // upgraded
     public function getIdentityById($identity_id) {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
@@ -910,6 +832,82 @@ class IdentityModels extends DataModel {
         $result = $this->query($sql);
         $identityid = intval($result["insert_id"]);
         return $identityid;
+    }
+    
+    
+    // upgraded
+    public function ifIdentityExist($external_identity, $provider = '') {
+        $external_identity = mysql_real_escape_string($external_identity);
+        $provider = mysql_real_escape_string($provider);
+
+        if ($provider) {
+            $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}'";
+        } else {
+            $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}'";
+        }
+
+        $row = $this->getRow($sql);
+        $identity_id = intval($row["id"]);
+        if ($identity_id > 0) {
+            $sql = "SELECT userid, status FROM user_identity WHERE identityid={$identity_id}";
+            $result = $this->getRow($sql);
+            $uid = intval($result["userid"]);
+            $user_status = intval($result["status"]);
+
+            $returnData = array(
+                "id"=>$identity_id,
+                "status"=>$user_status,
+                "user_avatar"=>""
+            );
+
+            if($user_status == 3 && $uid > 0) {
+                $sql = "SELECT id, encrypted_password, avatar_file_name FROM users WHERE id={$uid}";
+                $user_info = $this->getRow($sql);
+
+                if(intval($user_info["id"])>0 && trim($user_info["encrypted_password"])==""){
+                    $returnData["status"] = 2;
+                }
+
+                $returnData["user_avatar"] = $user_info["avatar_file_name"];
+                return $returnData;
+            }
+            return $returnData;
+
+        } else {
+            return false;
+        }
+    }
+    
+    
+    // upgraded
+    public function deleteIdentity($user_id, $identity_id){
+        $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
+        $result = $this->getRow($sql);
+        if(count($result) > 1){
+            $sql = "UPDATE user_identity SET status=1 WHERE identityid={$identity_id} AND userid={$user_id}";
+            $this->query($sql);
+
+            $userIdentityArr = array();
+            foreach($result as $v){
+                if($v["identityid"] != $identity_id){
+                    array_push($userIdentityArr, $v);
+                }
+            }
+            $curDefaultIdentityID = $userIdentityArr[0]["identityid"];
+            $sql = "UPDATE users SET default_identity={$curDefaultIdentityID} WHERE id={$user_id}";
+            $this->query($sql);
+
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+    // upgraded
+    public function changeDefaultIdentity($user_id, $identity_id) {
+        $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
+        $this->query($sql);
     }
 
 }

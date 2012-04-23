@@ -1,7 +1,6 @@
 <?php
-class SActions extends ActionController {
 
-    private $specialDomain = array("facebook", "twitter", "google");
+class SActions extends ActionController {
 
     public function doTestUser() {
         $identityData = $this->getModelByName("identity");
@@ -9,21 +8,6 @@ class SActions extends ActionController {
 
     }
 
-    public function doAdd() {
-        $identity = $_GET["identity"];
-        $provider = $_GET["provider"];
-        $password = $_GET["password"];
-
-        //package as a transaction
-        if(intval($_SESSION["userid"])>0) {
-            $userID=$_SESSION["userid"];
-        } else {
-            $userData = $this->getModelByName("user");
-            $userID = $userData->addUser($password);
-        }
-        $identityData = $this->getModelByName("identity");
-        $identityData->addIdentity($userID,$provider,$identity);
-    }
 
     public function doProfile() {
         if (intval($_SESSION['userid']) <= 0) {
@@ -409,63 +393,6 @@ class SActions extends ActionController {
     }
 
 
-    public function doIfIdentityExist() {
-        //TODO: private API ,must check session
-        $identity=$_GET["identity"];
-
-        $responobj["meta"]["code"]=200;
-        $identityData = $this->getModelByName("identity");
-
-        $identityArrayInfo = explode("@", $identity);
-        if(count($identityArrayInfo) > 1){
-            $currentDomain = $identityArrayInfo[1];
-            $specialIdentity = $identityArrayInfo[0];
-            if(in_array($currentDomain, $this->specialDomain)){
-                if($currentDomain == "google"){
-                    $specialIdentity .= "@gmail.com";
-                }
-                $result = $identityData->ifIdentityExist($specialIdentity, $currentDomain);
-                if($result != false){
-                    if(array_key_exists("user_avatar", $result)){
-                        $responobj["response"]["avatar"]=trim($result["user_avatar"]);
-                    }
-                    if(intval($result["status"]) == 3){
-                        $responobj["response"]["status"]="connected";
-                    }else{
-                        $responobj["response"]["status"]="empty_pwd";
-                    }
-                    $responobj["response"]["identity_exist"]="true";
-                } else {
-                    $responobj["response"]["identity_exist"]="false";
-                }
-                echo json_encode($responobj);
-                exit();
-            }
-        }
-
-        $result = $identityData->ifIdentityExist($identity);
-        //$responobj["meta"]["errType"]="Bad Request";
-        //$responobj["meta"]["errorDetail"]="invalid_auth";
-
-        if($result !== false)
-        {
-            if(intval($result["status"]) == 3){
-                $responobj["response"]["status"]="connected";
-                if(array_key_exists("user_avatar", $result)){
-                    $responobj["response"]["avatar"]=trim($result["user_avatar"]);
-                }
-            }else{
-                $responobj["response"]["status"]="verifying";
-            }
-
-            $responobj["response"]["identity_exist"]="true";
-        } else {
-            $responobj["response"]["identity_exist"]="false";
-        }
-        echo json_encode($responobj);
-        exit();
-    }
-
     /**
      * check user login status.
      *
@@ -610,106 +537,7 @@ class SActions extends ActionController {
         exit();
     }
 
-    public function doGetUserProfile()
-    {
-        //TODO: private API ,must check session
-        $name=$_POST["name"];
-        $userid=intval($_SESSION["userid"]);
-        if ($userid > 0)
-        {
-            $userData = $this->getModelByName("user");
-            $user=$userData->getUser($userid);
-            $responobj["meta"]["code"]=200;
-            //$responobj["meta"]["errType"]="Bad Request";
-            //$responobj["meta"]["errorDetail"]="invalid_auth";
-            $responobj["response"]["user"]=$user;
-            echo json_encode($responobj);
-            exit();
-        }
-    }
-
-    public function doLogoutsession()
-    {
-        unset($_SESSION["userid"]);
-        unset($_SESSION["identity_id"]);
-        unset($_SESSION["identity"]);
-        unset($_SESSION["tokenIdentity"]);
-        //logout session
-        session_destroy();
-    }
-
-    public function doLogout()
-    {
-        $userData = $this->getModelByName("user");
-        $userData->doDestroySessionAndCookies();
-        header('location:/');
-    }
-
-    public function doLogin()
-    {
-        //如果已经登录。则访问这个页面时跳转到Profile页面。
-        if(intval($_SESSION["userid"])>0){
-            header("location:/s/profile");
-        }
-
-        //取得变量。
-        $identity=$_POST["identity"];
-        $password=$_POST["password"];
-        //$repassword=$_POST["retypepassword"];
-        $displayname=$_POST["displayname"];
-        $autosignin=$_POST["auto_signin"];
-        if(intval($autosignin)==1){
-            $autosignin=true;
-        }
-
-        $isNewIdentity=FALSE;
-
-        //if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
-        if($identity!="" && $password!="" && $displayname!="" )
-        {
-            $Data = $this->getModelByName("user");
-            $userid = $Data->AddUser($password);
-            $identityData = $this->getModelByName("identity");
-            $provider= $_POST["provider"];
-            if($provider=="")
-                $provider="email";
-            $identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
-            //TODO: check return value
-            $isNewIdentity=TRUE;
-            $this->setVar("displayname", $displayname);
-
-        }
-
-        if($identity!="" && $password!="")
-        {
-            $Data=$this->getModelByName("identity");
-            $userid=$Data->login($identity,$password,$autosignin);
-            if(intval($userid)>0)
-            {
-                //$_SESSION["userid"]=$userid;
-                if($isNewIdentity===TRUE)
-                    $this->setVar("isNewIdentity", TRUE);
-
-                //if(intval($autosignin)>0)
-                //{
-                //    //TODO: set cookie
-                //    //set cookie
-                //}
-
-                if($_GET["url"]!="")
-                    header( 'Location:'.$_GET["url"] ) ;
-                else if( $isNewIdentity==TRUE)
-                    $this->displayView();
-                else
-                    header( 'Location: /s/profile' ) ;
-            } else {
-                $this->displayView();
-            }
-        } else {
-            $this->displayView();
-        }
-    }
-
+    
     public function doDialogaddidentity()
     {
         $identity=$_POST["identity"];
@@ -1023,79 +851,7 @@ class SActions extends ActionController {
         exit();
     }
 
-
-    /**
-     * 用户忘记密码时，发送重置邮件
-     **/
-    public function doSendResetPasswordMail()
-    {
-        $returnData = array(
-            "error" => 0,
-            "msg"   =>""
-        );
-        $userIdentity = exPost("identity");
-        if($userIdentity == ""){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "User Identity is empty";
-        }else{
-
-            $userData = $this->getModelByName("user");
-            $result=$userData->getResetPasswordToken($userIdentity);
-            if($result["token"] != "" && intval($result["uid"]) > 0)
-            {
-                $userInfo = array(
-                    "actions"           =>"resetPassword",
-                    "user_id"           =>$result["uid"],
-                    "identity_id"       =>$result["identity_id"],
-                    "identity"          =>$userIdentity,
-                    "user_token"        =>$result["token"]
-                );
-
-                $pakageToken = packArray($userInfo);
-                $name=$result["name"];
-                if($name==""){
-                    $name=$userIdentity;
-                }
-                $args = array(
-                    'external_identity' => $userIdentity,
-                    'name' => $name,
-                    'token' => $pakageToken
-                );
-                //echo $pakageToken;
-                //exit();
-                $helper=$this->getHelperByName("identity");
-                $jobId=$helper->sendResetPassword($args);
-                if($jobId=="")
-                {
-                    $returnData["error"] = 1;
-                    $returnData["msg"] = "mail server error";
-                }
-            } else {
-                $returnData["error"] = 1;
-                $returnData["msg"] = "can't reset password";
-            }
-            //echo "get $userIdentity";
-            //@Huoju
-            //do send verication email
-        }
-        //sleep(1);
-        header("Content-Type:application/json; charset=UTF-8");
-        echo json_encode($returnData);
-    }
-
-    public function doCheckLogin(){
-        //header("Content-Type:application/json; charset=UTF-8");
-        if(intval($_SESSION["userid"])>0)
-        {
-            echo 1;
-            $userData = $this->getModelByName("user");
-            $user=$userData->getUser($_SESSION["userid"]);
-        }else{
-            echo 0;
-        }
-
-    }
-
+    
     public function doVerifyIdentity(){
         $userToken = exGet("token");
         if($userToken == ""){
@@ -1203,7 +959,269 @@ class SActions extends ActionController {
         echo json_encode($returnData);
     }
 
-    //change password
+    
+    public function doReportSpam() {
+        $token = exGet("token");
+        if($token == ""){
+            header("location:/s/linkInvalid");
+            exit;
+        }
+        $reportInfo = unpackArray($token);
+        //如果Token串有问题。
+        if(!is_array($reportInfo)){
+            header("location:/s/linkInvalid");
+            exit;
+        }
+        //如果是身份验证邮件的ReportSpam
+        if($reportInfo["actions"] == "verifyIdentity"){
+            $identityID = $reportInfo["identityid"];
+            $activeCode = $reportInfo["activecode"];
+
+            $identityHandler = $this->getModelByName("identity");
+            $result = $identityHandler->delVerifyCode($identityID, $activeCode);
+        }
+        //如果是重置密码邮件的ReportSpam
+        if($reportInfo["actions"] == "resetPassword"){
+            $userID = $reportInfo["user_id"];
+            $resetPasswordToken = $reportInfo["user_token"];
+            $userIdentity = $reportInfo["user_identity"];
+
+            $userHandler = $this->getModelByName("user");
+            $result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
+        }
+        $this->displayView();
+    }
+    
+    
+    // upgraded
+    private $specialDomain = array("facebook", "twitter", "google");
+
+    
+    // upgraded
+    public function doIfIdentityExist() {
+        //TODO: private API ,must check session
+        $identity=$_GET["identity"];
+        $responobj["meta"]["code"]=200;
+        $identityData = $this->getModelByName("identity");
+        $identityArrayInfo = explode("@", $identity);
+        if(count($identityArrayInfo) > 1){
+            $currentDomain = $identityArrayInfo[1];
+            $specialIdentity = $identityArrayInfo[0];
+            if(in_array($currentDomain, $this->specialDomain)){
+                if($currentDomain == "google"){
+                    $specialIdentity .= "@gmail.com";
+                }
+                $result = $identityData->ifIdentityExist($specialIdentity, $currentDomain);
+                if($result != false){
+                    if(array_key_exists("user_avatar", $result)){
+                        $responobj["response"]["avatar"]=trim($result["user_avatar"]);
+                    }
+                    if(intval($result["status"]) == 3){
+                        $responobj["response"]["status"]="connected";
+                    }else{
+                        $responobj["response"]["status"]="empty_pwd";
+                    }
+                    $responobj["response"]["identity_exist"]="true";
+                } else {
+                    $responobj["response"]["identity_exist"]="false";
+                }
+                echo json_encode($responobj);
+                exit();
+            }
+        }
+        $result = $identityData->ifIdentityExist($identity);
+        //$responobj["meta"]["errType"]="Bad Request";
+        //$responobj["meta"]["errorDetail"]="invalid_auth";
+        if($result !== false)
+        {
+            if(intval($result["status"]) == 3){
+                $responobj["response"]["status"]="connected";
+                if(array_key_exists("user_avatar", $result)){
+                    $responobj["response"]["avatar"]=trim($result["user_avatar"]);
+                }
+            }else{
+                $responobj["response"]["status"]="verifying";
+            }
+
+            $responobj["response"]["identity_exist"]="true";
+        } else {
+            $responobj["response"]["identity_exist"]="false";
+        }
+        echo json_encode($responobj);
+        exit();
+    }
+    
+    
+    // upgraded
+    public function doLogin()
+    {
+        //如果已经登录。则访问这个页面时跳转到Profile页面。
+        if(intval($_SESSION["userid"])>0){
+            header("location:/s/profile");
+        }
+
+        //取得变量。
+        $identity=$_POST["identity"];
+        $password=$_POST["password"];
+        //$repassword=$_POST["retypepassword"];
+        $displayname=$_POST["displayname"];
+        $autosignin=$_POST["auto_signin"];
+        if(intval($autosignin)==1){
+            $autosignin=true;
+        }
+
+        $isNewIdentity=FALSE;
+
+        //if($identity!="" && $password!="" && $repassword==$password && $displayname!="" )
+        if($identity!="" && $password!="" && $displayname!="" )
+        {
+            $Data = $this->getModelByName("user");
+            $userid = $Data->AddUser($password);
+            $identityData = $this->getModelByName("identity");
+            $provider= $_POST["provider"];
+            if($provider=="")
+                $provider="email";
+            $identityData->addIdentity($userid,$provider,$identity,array("name"=>$displayname));
+            //TODO: check return value
+            $isNewIdentity=TRUE;
+            $this->setVar("displayname", $displayname);
+
+        }
+
+        if($identity!="" && $password!="")
+        {
+            $Data=$this->getModelByName("identity");
+            $userid=$Data->login($identity,$password,$autosignin);
+            if(intval($userid)>0)
+            {
+                //$_SESSION["userid"]=$userid;
+                if($isNewIdentity===TRUE)
+                    $this->setVar("isNewIdentity", TRUE);
+
+                //if(intval($autosignin)>0)
+                //{
+                //    //TODO: set cookie
+                //    //set cookie
+                //}
+
+                if($_GET["url"]!="")
+                    header( 'Location:'.$_GET["url"] ) ;
+                else if( $isNewIdentity==TRUE)
+                    $this->displayView();
+                else
+                    header( 'Location: /s/profile' ) ;
+            } else {
+                $this->displayView();
+            }
+        } else {
+            $this->displayView();
+        }
+    }
+    
+    
+    // upgraded
+    public function doAdd() {
+        $identity = $_GET["identity"];
+        $provider = $_GET["provider"];
+        $password = $_GET["password"];
+
+        //package as a transaction
+        if(intval($_SESSION["userid"])>0) {
+            $userID=$_SESSION["userid"];
+        } else {
+            $userData = $this->getModelByName("user");
+            $userID = $userData->addUser($password);
+        }
+        $identityData = $this->getModelByName("identity");
+        $identityData->addIdentity($userID,$provider,$identity);
+    }
+
+
+    // upgraded
+    public function doLinkInvalid() {
+        $this->displayView();
+    }
+
+
+    // upgraded
+    public function doExfee()
+    {
+        $this->displayView();
+    }
+    
+    
+    // upgraded
+    public function doDeleteIdentity(){
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+        //check user login
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+        $identityID = exPost("identity_id");
+        //check user identity relation
+        $identityObj = $this->getModelByName("identity");
+        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
+        if(!$checkResult){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "identity not belong current users.";
+            echo json_encode($returnData);
+            exit();
+        }
+        $result = $identityObj->deleteIdentity($userID, $identityID);
+        if(!$result){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Delete identity fail.";
+            echo json_encode($returnData);
+            exit();
+        }
+        echo json_encode($returnData);
+    }
+    
+    
+    // upgraded
+    public function doChangeDefaultIdentity() {
+        $returnData = array(
+            "error"     => 0,
+            "msg"       =>""
+        );
+
+        //check user login
+        $userID = intval($_SESSION["userid"]);
+        if($userID <= 0)
+        {
+            $returnData["error"] = 1;
+            $returnData["msg"] = "Please login first.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityID = exPost("identity_id");
+
+        $identityObj = $this->getModelByName("identity");
+        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
+
+        if(!$checkResult){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "identity not belong current users.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $identityObj->changeDefaultIdentity($userID, $identityID);
+
+        echo json_encode($returnData);
+    }
+    
+    
+    // upgraded
     public function doChangePassword() {
         $returnData = array(
             "error"     => 0,
@@ -1256,119 +1274,118 @@ class SActions extends ActionController {
         echo json_encode($returnData);
         exit();
     }
-
-    public function doDeleteIdentity(){
-        $returnData = array(
-            "error"     => 0,
-            "msg"       =>""
-        );
-
-        //check user login
-        $userID = intval($_SESSION["userid"]);
-        if($userID <= 0)
+    
+    
+    // upgraded
+    public function doCheckLogin(){
+        //header("Content-Type:application/json; charset=UTF-8");
+        if(intval($_SESSION["userid"])>0)
         {
-            $returnData["error"] = 1;
-            $returnData["msg"] = "Please login first.";
-            echo json_encode($returnData);
-            exit();
+            echo 1;
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($_SESSION["userid"]);
+        }else{
+            echo 0;
         }
-
-        $identityID = exPost("identity_id");
-        //check user identity relation
-        $identityObj = $this->getModelByName("identity");
-        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
-
-        if(!$checkResult){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "identity not belong current users.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $result = $identityObj->deleteIdentity($userID, $identityID);
-        if(!$result){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "Delete identity fail.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        echo json_encode($returnData);
     }
-
-    public function doChangeDefaultIdentity() {
-        $returnData = array(
-            "error"     => 0,
-            "msg"       =>""
-        );
-
-        //check user login
-        $userID = intval($_SESSION["userid"]);
-        if($userID <= 0)
-        {
-            $returnData["error"] = 1;
-            $returnData["msg"] = "Please login first.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $identityID = exPost("identity_id");
-
-        $identityObj = $this->getModelByName("identity");
-        $checkResult = $identityObj->checkUserIdentityRelation($userID, $identityID);
-
-        if(!$checkResult){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "identity not belong current users.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $identityObj->changeDefaultIdentity($userID, $identityID);
-
-        echo json_encode($returnData);
-    }
-
-    public function doReportSpam() {
-        $token = exGet("token");
-        if($token == ""){
-            header("location:/s/linkInvalid");
-            exit;
-        }
-
-        $reportInfo = unpackArray($token);
-        //如果Token串有问题。
-        if(!is_array($reportInfo)){
-            header("location:/s/linkInvalid");
-            exit;
-        }
-        //如果是身份验证邮件的ReportSpam
-        if($reportInfo["actions"] == "verifyIdentity"){
-            $identityID = $reportInfo["identityid"];
-            $activeCode = $reportInfo["activecode"];
-
-            $identityHandler = $this->getModelByName("identity");
-            $result = $identityHandler->delVerifyCode($identityID, $activeCode);
-        }
-        //如果是重置密码邮件的ReportSpam
-        if($reportInfo["actions"] == "resetPassword"){
-            $userID = $reportInfo["user_id"];
-            $resetPasswordToken = $reportInfo["user_token"];
-            $userIdentity = $reportInfo["user_identity"];
-
-            $userHandler = $this->getModelByName("user");
-            $result = $userHandler->delResetPasswordToken($userID, $resetPasswordToken);
-        }
-        $this->displayView();
-    }
-
-    public function doLinkInvalid() {
-        $this->displayView();
-    }
-
-    public function doExfee()
+    
+    
+    // upgraded
+    public function doGetUserProfile()
     {
-        $this->displayView();
+        //TODO: private API ,must check session
+        $name=$_POST["name"];
+        $userid=intval($_SESSION["userid"]);
+        if ($userid > 0)
+        {
+            $userData = $this->getModelByName("user");
+            $user=$userData->getUser($userid);
+            $responobj["meta"]["code"]=200;
+            //$responobj["meta"]["errType"]="Bad Request";
+            //$responobj["meta"]["errorDetail"]="invalid_auth";
+            $responobj["response"]["user"]=$user;
+            echo json_encode($responobj);
+            exit();
+        }
+    }
+
+
+    // upgraded
+    public function doLogoutsession()
+    {
+        unset($_SESSION["userid"]);
+        unset($_SESSION["identity_id"]);
+        unset($_SESSION["identity"]);
+        unset($_SESSION["tokenIdentity"]);
+        //logout session
+        session_destroy();
+    }
+
+
+    // upgraded
+    public function doLogout()
+    {
+        $userData = $this->getModelByName("user");
+        $userData->doDestroySessionAndCookies();
+        header('location:/');
+    }
+    
+    
+    // upgraded
+    public function doSendResetPasswordMail()
+    {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>""
+        );
+        $userIdentity = exPost("identity");
+        if($userIdentity == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "User Identity is empty";
+        }else{
+
+            $userData = $this->getModelByName("user");
+            $result=$userData->getResetPasswordToken($userIdentity);
+            if($result["token"] != "" && intval($result["uid"]) > 0)
+            {
+                $userInfo = array(
+                    "actions"           =>"resetPassword",
+                    "user_id"           =>$result["uid"],
+                    "identity_id"       =>$result["identity_id"],
+                    "identity"          =>$userIdentity,
+                    "user_token"        =>$result["token"]
+                );
+
+                $pakageToken = packArray($userInfo);
+                $name=$result["name"];
+                if($name==""){
+                    $name=$userIdentity;
+                }
+                $args = array(
+                    'external_identity' => $userIdentity,
+                    'name' => $name,
+                    'token' => $pakageToken
+                );
+                //echo $pakageToken;
+                //exit();
+                $helper=$this->getHelperByName("identity");
+                $jobId=$helper->sendResetPassword($args);
+                if($jobId=="")
+                {
+                    $returnData["error"] = 1;
+                    $returnData["msg"] = "mail server error";
+                }
+            } else {
+                $returnData["error"] = 1;
+                $returnData["msg"] = "can't reset password";
+            }
+            //echo "get $userIdentity";
+            //@Huoju
+            //do send verication email
+        }
+        //sleep(1);
+        header("Content-Type:application/json; charset=UTF-8");
+        echo json_encode($returnData);
     }
 
 }

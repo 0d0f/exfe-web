@@ -1,5 +1,6 @@
 <?php
-class UserModels extends DataModel{
+
+class UserModels extends DataModel {
 
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
@@ -33,63 +34,15 @@ class UserModels extends DataModel{
 
        return;
     }
-    public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
-    {
-
-        $external_identity = mysql_real_escape_string($external_identity);
-        $displayname = mysql_real_escape_string($displayname);
-
-
-        if($identity_id == 0 && $external_identity != "")
-        {
-            $sql="select id from identities where external_identity='$external_identity';";
-            $result=$this->getRow($sql);
-            $identity_id=$result["id"];
-        }
-
-        $sql="select userid from user_identity where identityid=$identity_id";
-
-        $result=$this->getRow($sql);
-        if(intval($result["userid"]) > 0)
-        {
-            $uid=intval($result["userid"]);
-            return array("uid"=>$uid,"identity_id"=>$identity_id);
-        } else {
-            $time=time();
-            $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
-            $result=$this->query($sql);
-            if(intval($result["insert_id"])>0)
-            {
-                $uid=intval($result["insert_id"]);
-                $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
-                $this->query($sql);
-                $sql="select userid from user_identity where identityid=$identity_id";
-                $result=$this->getRow($sql);
-                if(intval($result["userid"])>0)
-                {
-                    if($displayname!="")
-                    {
-                        //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
-                        $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
-                        $this->query($sql);
-                        $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
-                        $this->query($sql);
-                    }
-                    if($uid==intval($result["userid"]))
-                        return array("uid"=>$uid,"identity_id"=>$identity_id);
-                    return false;
-                }
-            }
-        }
-
-    }
-
+    
+    
     public function saveUser($name,$userid)
     {
         $sql="update users set name='$name' where id=$userid";
         $this->query($sql);
         return $this->getUser($userid);
     }
+
 
     //保存用户头像
     public function saveUserAvatar($avatar,$userid) {
@@ -117,6 +70,7 @@ class UserModels extends DataModel{
         return $this->getUser($userid);
     }
 
+
     public function getUserIdByToken($token)
     {
         $sql="select id from users where auth_token='$token';";
@@ -124,78 +78,6 @@ class UserModels extends DataModel{
         return intval($row["id"]);
     }
 
-    public function loginForAuthToken($user,$password)
-    {
-        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
-        $row=$this->getRow($sql);
-        $result=array();
-        if(intval($row["uid"])>0)
-        {
-            $uid=intval($row["uid"]);
-            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
-            $salt_result = $this->getRow($sql);
-            $passwordSalt = $salt_result["password_salt"];
-            if($passwordSalt == $this->salt){
-                $password=md5($password.$this->salt);
-            }else{
-                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-            }
-
-            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
-            $row=$this->getRow($sql);
-            if(intval($row["id"])==$uid )
-            {
-                $result["userid"]=$uid;
-                if($row["auth_token"]=="")
-                {
-                    $auth_token=md5($time.uniqid());
-                    $sql="update users set auth_token='$auth_token'  where id=$uid";
-                    $this->query($sql);
-                    $result["auth_token"]=$auth_token;
-                }
-                else
-                    $result["auth_token"]=$row["auth_token"];
-            }
-        }
-        return $result;
-    }
-
-    public function getUserProfileByIdentityId($identity_id)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            $userid=$result["userid"];
-            $sql="select name,bio,avatar_file_name,timezone from users where id=$userid";
-            $user=$this->getRow($sql);
-            return $user;
-        }
-        return "";
-    }
-
-    public function getUserIdByIdentityId($identity_id)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            return intval($result["userid"]);
-        }
-    }
-
-    public function getUserByIdentityId($identity_id)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            $userid=$result["userid"];
-            $sql="select * from users where id=$userid";
-            $user=$this->getRow($sql);
-            return $user;
-        }
-    }
 
     public function setPassword($identity_id,$password,$displayname)
     {
@@ -222,6 +104,7 @@ class UserModels extends DataModel{
         //$sql="update ";
     }
 
+
     public function addUserByIdentityId($identity_id, $display_name)
     {
         $time_stamp = time();
@@ -236,6 +119,7 @@ class UserModels extends DataModel{
         }
 
     }
+
 
     public function addUserByToken($cross_id,$displayname,$token)
     {
@@ -284,6 +168,7 @@ class UserModels extends DataModel{
 
     }
 
+
     public function setPasswordByToken($cross_id,$token,$password,$displayname)
     {
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
@@ -315,6 +200,7 @@ class UserModels extends DataModel{
         }
         return false;
     }
+
 
     //todo for huoju
     public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
@@ -353,6 +239,7 @@ class UserModels extends DataModel{
         return $identity_id;
     }
 
+
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $sql="select id from identities where external_identity='$external_identity';";
@@ -370,6 +257,189 @@ class UserModels extends DataModel{
         return FALSE;
     }
 
+
+    public function verifyResetPassword($userID, $resetPasswordToken){
+        $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
+        $row = $this->getRow($sql);
+        return $row;
+    }
+
+    public function delResetPasswordToken($userID, $resetPasswordToken){
+        $sql = "SELECT id FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
+        $row = $this->getRow($sql);
+        if(is_array($row)){
+            $sql = "UPDATE users SET `reset_password_token`=NULL WHERE `id`={$userID}";
+            $this->query($sql);
+        }
+    }
+
+    public function doSetOAuthAccountPassword($userPassword, $userDisplayName, $userID){
+        $passwordSalt = md5(createToken());
+        $passWord = md5($userPassword.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $userName = mysql_real_escape_string($userDisplayName);
+
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID}";
+        $result = $this->query($sql);
+        if($result){
+            return true;
+        }
+        return false;
+    }
+    
+
+    public function doResetUserPassword($userPwd, $userName, $userID, $identityID, $userToken){
+        $ts = time();
+        $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";
+        $userrow = $this->getRow($sql);
+        $newUser = false;
+
+
+        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]==""){
+            $newUser = true;
+        }
+
+        $passwordSalt = md5(createToken());
+        $passWord=md5($userPwd.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
+        $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
+        $result = $this->query($sql);
+
+        if($result){
+            $sql = "SELECT status FROM user_identity WHERE identityid={$identityID}";
+            $rows = $this->getRow($sql);
+
+            if($rows["status"]!=STATUS_CONNECTED && $identityID>0)
+            {
+                //$sql="update identities set status=3 where id=$identityID;";
+                $sql="UPDATE user_identity SET status=3 WHERE identityid={$identityID}";
+                $this->query($sql);
+            }
+        }
+        return array("result"=>$result,"newuser"=>$newUser);
+    }
+    
+    
+    // upgraded
+    private $salt="_4f9g18t9VEdi2if";
+
+
+    // upgraded
+    public function doDestroySessionAndCookies() {
+        unset($_SESSION["userid"]);
+        unset($_SESSION["identity_id"]);
+        unset($_SESSION["identity"]);
+        unset($_SESSION["tokenIdentity"]);
+        session_destroy();
+        unset($_COOKIE["uid"]);
+        unset($_COOKIE["id"]);
+        unset($_COOKIE["loginsequ"]);
+        unset($_COOKIE["logintoken"]);
+        setcookie('uid', NULL, -1,"/",COOKIES_DOMAIN);
+        setcookie('id', NULL, -1,"/",COOKIES_DOMAIN);
+        setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
+        setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
+    }
+    
+    
+    // upgraded
+    public function updateUserPassword($userid, $password){
+        //$password=md5($password.$this->salt);
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
+        $this->query($sql);
+    }
+
+
+    // upgraded
+    public function addUser($password)
+    {
+        $passwordSalt = md5(createToken());
+        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $time=time();
+        $sql="INSERT INTO users (encrypted_password, password_salt, created_at) VALUES ('{$password}','{$passwordSalt}',FROM_UNIXTIME($time));";
+        $result=$this->query($sql);
+        if(intval($result["insert_id"])>0)
+            return intval($result["insert_id"]);
+    }
+
+    
+    // upgraded
+    public function getUser($userid)
+    {
+        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
+        $row=$this->getRow($sql);
+        return $row;
+    }
+    
+    // upgraded
+    public function getUserWithPasswd($userid)
+    {
+        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,encrypted_password from users where id=$userid";
+        $row=$this->getRow($sql);
+        return $row;
+    }
+
+    
+    // upgraded
+    public function loginForAuthToken($user,$password)
+    {
+        $sql="select b.userid as uid from identities a,user_identity b where a.external_identity='$user' and a.id=b.identityid;";
+        $row=$this->getRow($sql);
+        $result=array();
+        if(intval($row["uid"])>0)
+        {
+            $uid=intval($row["uid"]);
+            $sql = "SELECT password_salt FROM users WHERE id={$uid}";
+            $salt_result = $this->getRow($sql);
+            $passwordSalt = $salt_result["password_salt"];
+            if($passwordSalt == $this->salt){
+                $password=md5($password.$this->salt);
+            }else{
+                $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+            }
+
+            $sql="select id,auth_token from users where id=$uid and encrypted_password='$password';";
+            $row=$this->getRow($sql);
+            if(intval($row["id"])==$uid )
+            {
+                $result["userid"]=$uid;
+                if($row["auth_token"]=="")
+                {
+                    $auth_token=md5($time.uniqid());
+                    $sql="update users set auth_token='$auth_token'  where id=$uid";
+                    $this->query($sql);
+                    $result["auth_token"]=$auth_token;
+                }
+                else
+                    $result["auth_token"]=$row["auth_token"];
+            }
+        }
+        return $result;
+    }
+    
+    
+    // upgraded
+    public function checkUserPassword($userid, $password){
+        //$password = md5($password.$this->salt);
+        $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
+        $row=$this->getRow($sql);
+        $passwordSalt = $row["password_salt"];
+        if($passwordSalt == $this->salt){
+            $password=md5($password.$this->salt);
+        }else{
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        }
+
+
+        if($row["encrypted_password"] == $password){
+            return true;
+        }
+        return false;
+    }
+    
+    
+    // upgraded
     public function getResetPasswordToken($external_identity)
     {
         $sql="SELECT b.userid AS uid, a.name AS name, a.id AS identity_id FROM identities a,user_identity b WHERE a.external_identity='$external_identity' AND a.id=b.identityid";
@@ -414,141 +484,100 @@ class UserModels extends DataModel{
         }
         return "";
     }
-
-    public function verifyResetPassword($userID, $resetPasswordToken){
-        $sql = "SELECT id,name FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
-        $row = $this->getRow($sql);
-        return $row;
+    
+    
+    // upgraded
+    public function getUserProfileByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $userid=$result["userid"];
+            $sql="select name,bio,avatar_file_name,timezone from users where id=$userid";
+            $user=$this->getRow($sql);
+            return $user;
+        }
+        return "";
     }
 
-    public function delResetPasswordToken($userID, $resetPasswordToken){
-        $sql = "SELECT id FROM users WHERE `id`={$userID} AND `reset_password_token`='{$resetPasswordToken}'";
-        $row = $this->getRow($sql);
-        if(is_array($row)){
-            $sql = "UPDATE users SET `reset_password_token`=NULL WHERE `id`={$userID}";
-            $this->query($sql);
+
+    // upgraded
+    public function getUserIdByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            return intval($result["userid"]);
         }
     }
-
-    public function doSetOAuthAccountPassword($userPassword, $userDisplayName, $userID){
-        $passwordSalt = md5(createToken());
-        $passWord = md5($userPassword.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        $userName = mysql_real_escape_string($userDisplayName);
-
-        $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID}";
-        $result = $this->query($sql);
-        if($result){
-            return true;
+    
+    
+    // upgraded
+    public function getUserByIdentityId($identity_id)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $userid=$result["userid"];
+            $sql="select * from users where id=$userid";
+            $user=$this->getRow($sql);
+            return $user;
         }
-        return false;
     }
+    
+    
+    // upgraded
+    public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
+    {
 
-    //check user password
-    public function checkUserPassword($userid, $password){
-        //$password = md5($password.$this->salt);
-        $sql="SELECT encrypted_password, password_salt FROM users WHERE id={$userid} LIMIT 1";
-        $row=$this->getRow($sql);
-        $passwordSalt = $row["password_salt"];
-        if($passwordSalt == $this->salt){
-            $password=md5($password.$this->salt);
-        }else{
-            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+        $external_identity = mysql_real_escape_string($external_identity);
+        $displayname = mysql_real_escape_string($displayname);
+
+
+        if($identity_id == 0 && $external_identity != "")
+        {
+            $sql="select id from identities where external_identity='$external_identity';";
+            $result=$this->getRow($sql);
+            $identity_id=$result["id"];
         }
 
+        $sql="select userid from user_identity where identityid=$identity_id";
 
-        if($row["encrypted_password"] == $password){
-            return true;
-        }
-        return false;
-    }
-
-    //update user password
-    public function updateUserPassword($userid, $password){
-        //$password=md5($password.$this->salt);
-        $passwordSalt = md5(createToken());
-        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}' WHERE id={$userid}";
-        $this->query($sql);
-    }
-
-    public function doResetUserPassword($userPwd, $userName, $userID, $identityID, $userToken){
-        $ts = time();
-        $sql = "select id,encrypted_password from users WHERE id={$userID} AND reset_password_token='{$userToken}';";
-        $userrow = $this->getRow($sql);
-        $newUser = false;
-
-
-        if(intval($userrow["id"])>0 && $userrow["encrypted_password"]==""){
-            $newUser = true;
-        }
-
-        $passwordSalt = md5(createToken());
-        $passWord=md5($userPwd.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-
-        $sql = "UPDATE users SET encrypted_password='{$passWord}', password_salt='{$passwordSalt}', name='{$userName}', updated_at='FROM_UNIXTIME({$ts})',reset_password_token=NULL WHERE id={$userID} AND reset_password_token='{$userToken}';";
-        $result = $this->query($sql);
-
-        if($result){
-            $sql = "SELECT status FROM user_identity WHERE identityid={$identityID}";
-            $rows = $this->getRow($sql);
-
-            if($rows["status"]!=STATUS_CONNECTED && $identityID>0)
+        $result=$this->getRow($sql);
+        if(intval($result["userid"]) > 0)
+        {
+            $uid=intval($result["userid"]);
+            return array("uid"=>$uid,"identity_id"=>$identity_id);
+        } else {
+            $time=time();
+            $sql="insert into users (encrypted_password,name,created_at) values('$password','$displayname',FROM_UNIXTIME($time));";
+            $result=$this->query($sql);
+            if(intval($result["insert_id"])>0)
             {
-                //$sql="update identities set status=3 where id=$identityID;";
-                $sql="UPDATE user_identity SET status=3 WHERE identityid={$identityID}";
+                $uid=intval($result["insert_id"]);
+                $sql="insert into user_identity  (identityid,userid,created_at) values ($identity_id,$uid,FROM_UNIXTIME($time));";
                 $this->query($sql);
+                $sql="select userid from user_identity where identityid=$identity_id";
+                $result=$this->getRow($sql);
+                if(intval($result["userid"])>0)
+                {
+                    if($displayname!="")
+                    {
+                        //$sql="update status,identities set status=3,name='$displayname' where id=$identity_id";
+                        $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                        $this->query($sql);
+                        $sql="UPDATE user_identity SET status=3 WHERE identityid=$identity_id";
+                        $this->query($sql);
+                    }
+                    if($uid==intval($result["userid"]))
+                        return array("uid"=>$uid,"identity_id"=>$identity_id);
+                    return false;
+                }
             }
         }
-        return array("result"=>$result,"newuser"=>$newUser);
-    }
-
-    public function doDestroySessionAndCookies(){
-        unset($_SESSION["userid"]);
-        unset($_SESSION["identity_id"]);
-        unset($_SESSION["identity"]);
-        unset($_SESSION["tokenIdentity"]);
-        session_destroy();
-
-        unset($_COOKIE["uid"]);
-        unset($_COOKIE["id"]);
-        unset($_COOKIE["loginsequ"]);
-        unset($_COOKIE["logintoken"]);
-
-        setcookie('uid', NULL, -1,"/",COOKIES_DOMAIN);
-        setcookie('id', NULL, -1,"/",COOKIES_DOMAIN);
-        setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
-        setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
-    }
-    
-    // upgraded
-    private $salt="_4f9g18t9VEdi2if";
-
-    // upgraded
-    public function addUser($password)
-    {
-        $passwordSalt = md5(createToken());
-        $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-        $time=time();
-        $sql="INSERT INTO users (encrypted_password, password_salt, created_at) VALUES ('{$password}','{$passwordSalt}',FROM_UNIXTIME($time));";
-        $result=$this->query($sql);
-        if(intval($result["insert_id"])>0)
-            return intval($result["insert_id"]);
-    }
-    
-    // upgraded
-    public function getUser($userid)
-    {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
-        $row=$this->getRow($sql);
-        return $row;
-    }
-    
-    // upgraded
-    public function getUserWithPasswd($userid)
-    {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,encrypted_password from users where id=$userid";
-        $row=$this->getRow($sql);
-        return $row;
     }
 
 }

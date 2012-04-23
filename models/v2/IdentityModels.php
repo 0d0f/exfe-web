@@ -8,7 +8,7 @@ class IdentityModels extends DataModel {
     protected function packageIdentity($rawIdentity) {
         if ($rawIdentity) {
             $rawUserIdentity = $this->getRow(
-                "SELECT * FROM `user_identity` WHERE `identityid` = {$id} AND `status` = 3"
+                "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
             );
             return new Identity(
                 $rawIdentity['id'],
@@ -46,10 +46,68 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityByExternalId($external_id) {
-        return $this->packageIdentity($this->getRow(
-            "SELECT * FROM `identities` WHERE `external_identity` = '{$external_id}'"
-        ));
+    public function getIdentityByProviderExternalId($provider, $external_id, $get_id_only = false) {
+        $rawIdentity = $this->getRow(
+            "SELECT * FROM `identities` WHERE
+             `provider`          = '{$provider}' AND
+             `external_identity` = '{$external_id}'"
+        );
+        return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity);
+    }
+    
+    
+    public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
+        return preg_replace(
+            '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $strUrl
+        );
+    }
+    
+    
+    public function updateIdentityById($id, $identityDetail = array()) {
+        $id = intval($id);
+        if (!$id || !$identityDetail['provider'] || !$identityDetail['external_id']) {
+            return null;
+        }
+        // improve data
+        if ($identityDetail['provider'] !== 'email') {
+            $identityDetail['external_id'] = "{$identityDetail['provider']}_{$identityDetail['external_id']}";
+        }
+        switch ($identityDetail['provider']) {
+            case 'twitter':
+                $identityDetail['avatar_filename'] = $this->getTwitterLargeAvatarBySmallAvatar(
+                    $identityDetail['avatar_filename']
+                );
+        }
+        // check old identity
+        $rawIdentity = $this->getRow(
+            "SELECT `id` FROM `identities`
+             WHERE  `provider`          = '{$identityDetail['provider']}'
+             AND    `external_identity` = '{$identityDetail['external_id']}'"
+        );
+        $wasId = intval($rawIdentity['id']);
+        // update identity
+        $chgId = $wasId > 0 ? $wasId : $id;
+        $this->query(
+            "UPDATE `identities`
+             SET `external_identity` = '{$identityDetail['external_id']}',
+                 `name`              = '{$identityDetail['name']}',
+                 `bio`               = '{$identityDetail['bio']}',
+                 `avatar_file_name`  = '{$identityDetail['avatar_filename']}',
+                 `external_username` = '{$identityDetail['external_username']}',
+                 `updated_at`        = NOW(),
+                 `avatar_updated_at` = NOW()
+             WHERE `id` = {$chgId}"////////////$nickname pending and avatar_updated_at removing
+        );
+        // merge identity
+        if ($wasId > 0 && $wasId !== $id) {
+            $this->query("UPDATE `invitations`
+                          SET    `identity_id` = {$wasId}
+                          WHERE  `identity_id` = {$id};");
+            // @todo: 可能需要更新 log by @leaskh
+            $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
+        }
+        // return
+        return $chgId;
     }
 
 
@@ -64,11 +122,14 @@ class IdentityModels extends DataModel {
      *     $external_id,
      *     $external_username,
      *     $avatar_filename,
-     * } 
+     * }
+     * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($user_id, $provider, $external_id, $identityDetail = array()) {
-        // create new token
-        $activecode = createToken();
+    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
+        // init
+        if (!$provider || (!$external_id && !$identityDetail['external_username'])) {
+            return null;
+        }
         // collecting new identity informations
         $name              = trim(mysql_real_escape_string($identityDetail['name']));
         $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
@@ -78,7 +139,11 @@ class IdentityModels extends DataModel {
         $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
         $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
         // check current identity
-        $curIdentity = $this->getRow("SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1");
+        $curIdentity = $this->getRow(
+            $external_id
+          ? "SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1"
+          : "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND `external_username` = '{$external_username}' LIMIT 1"
+        );
         if (intval($curIdentity['id']) > 0) {
             return intval($curIdentity['id']);
         }
@@ -87,94 +152,98 @@ class IdentityModels extends DataModel {
             $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode(DEFAULT_AVATAR_URL);
         }
         // insert new identity into database
-        $dbResult = $this->query("INSERT INTO `identities` SET
-                                  `provider`          = '{$provider}',
-                                  `external_identity` = '{$external_id}',
-                                  `created_at`        = NOW(),
-                                  `name`              = '{$name}',
-                                  `bio`               = '{$bio}',
-                                  `avatar_file_name`  = '{$avatar_filename}',
-                                  `avatar_updated_at` = NOW(),
-                                  `external_username` = '{$external_username}'");
+        $dbResult = $this->query(
+            "INSERT INTO `identities` SET
+             `provider`          = '{$provider}',
+             `external_identity` = '{$external_id}',
+             `created_at`        = NOW(),
+             `name`              = '{$name}',
+             `bio`               = '{$bio}',
+             `avatar_file_name`  = '{$avatar_filename}',
+             `avatar_updated_at` = NOW(),
+             `external_username` = '{$external_username}'"
+        );
         $id = intval($dbResult['insert_id']);
         // update user information
         if ($id) {
-            $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name` FROM `users` WHERE `id` = {$user_id}");
-            $userInfo['name']             = $userInfo['name']             === '' ? $name            : $userInfo['name'];
-            $userInfo['bio']              = $userInfo['bio']              === '' ? $bio             : $userInfo['bio'];
-            $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] === '' ? $avatar_filename : $userInfo['avatar_file_name'];
-            // @todo: commit these two query as a transaction
-            $this->query("UPDATE `users` SET
-                          `name`             = '{$userInfo['name']}',
-                          `bio`              = '{$userInfo["bio"]}',
-                          `avatar_file_name` = '{$userInfo['avatar_file_name']}',
-                          `default_identity` =  {$id}
-                          WHERE `id`         =  {$user_id}");
-            $this->query("INSERT INFO `user_identity` SET
-                          `identityid` =  {$id},
-                          `userid`     =  {$user_id},
-                          `created_at` = NOW(),
-                          `activecode` = '{$activecode}'");
-            // make verify token
-            $verifyToken = packArray(array('identity_id' => $id, 'activecode' => $activecode));
-            // send welcome and active email
-            if ($provider === 'email') {
-                $hlpIdentity = $this->getHelperByName('identity', 'v2');
-                $hlpIdentity-> sentWelcomeAndActiveEmail(array(
-                    'identityid'        => $id,
-                    'external_identity' => $external_id,
-                    'name'              => $name,
-                    'avatar_file_name'  => $avatar_filename,
-                    'activecode'        => $activecode,
-                    'token'             => $verifyToken
-                ));
+            if ($user_id) {
+                // create new token
+                $activecode = createToken();
+                // do update
+                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo['name']             = $userInfo['name']             === '' ? $name            : $userInfo['name'];
+                $userInfo['bio']              = $userInfo['bio']              === '' ? $bio             : $userInfo['bio'];
+                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] === '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                // @todo: commit these two query as a transaction
+                $this->query(
+                    "UPDATE `users` SET
+                     `name`             = '{$userInfo['name']}',
+                     `bio`              = '{$userInfo["bio"]}',
+                     `avatar_file_name` = '{$userInfo['avatar_file_name']}',
+                     `default_identity` =  {$id}
+                     WHERE `id`         =  {$user_id}"
+                );
+                $this->query(
+                    "INSERT INFO `user_identity` SET
+                     `identityid` =  {$id},
+                     `userid`     =  {$user_id},
+                     `created_at` = NOW(),
+                     `activecode` = '{$activecode}'"
+                );
+                // make verify token
+                $verifyToken = packArray(array('identity_id' => $id, 'activecode' => $activecode));
+                // send welcome and active email
+                if ($provider === 'email') {
+                    $hlpIdentity = $this->getHelperByName('identity');
+                    $hlpIdentity-> sentWelcomeAndActiveEmail(array(
+                        'identityid'        => $id,
+                        'external_identity' => $external_id,
+                        'name'              => $name,
+                        'avatar_file_name'  => $avatar_filename,
+                        'activecode'        => $activecode,
+                        'token'             => $verifyToken
+                    ));
+                }
             }
             return $id;
         }
         return null;
     }
+
+
+    public function setIdentityAsDefaultIdentityOfUser($identity_id, $user_id) {
+        if (!$identity_id || !$user_id) {
+            return false;
+        }
+        return $this->query(
+            "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
+        );
+    }
     
     
-    /**
-     * add a new identity into database without adding user
-     * all parameters allow in $identityDetail:
-     * {
-     *     $name,
-     *     $nickname,
-     *     $bio,
-     *     $provider,
-     *     $external_id,
-     *     $external_username,
-     *     $avatar_filename,
-     * }
-     */
-    public function addIdentityWithoutUser($provider, $external_id, $identityDetail = array()) {
-        // collecting new identity informations
-        $name              = trim(mysql_real_escape_string($identityDetail['name']));
-        $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
-        $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
-        $provider          = trim(mysql_real_escape_string(strtolower($identityDetail['provider'])));
-        $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
-        $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
-        $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
-
-        switch ($provider) {
-            case 'email':
-                $chkidSql = "SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1";
-                break;
-            default:
-                $chkidSql = "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND `external_username` = '{$external_id}' LIMIT 1";
-                $external_identity = null;
+    public function deleteIdentityFromUser($identity_id, $user_id) {
+        if (!$identity_id || !$user_id) {
+            return false;
         }
-        $row = $this->getRow($sql);
-        if (intval($row['id']) > 0) {
-            return intval($row['id']);
+        $identities = $this->getRow(
+            "SELECT * FROM `user_identity` WHERE `userid` = {$user_id}"
+        );
+        if (count($identities) > 1) {
+            $upResult = $this->query(
+                "UPDATE `user_identity` SET `status` = 1
+                 WHERE  `identityid` = {$identity_id}
+                 AND    `userid`     = {$user_id}"
+            );
+            if (!$upResult) {
+                return false;
+            }
+            foreach ($identities as $item){
+                if ($item['identityid'] !== $identity_id) {
+                    return $this->setIdentityAsDefaultIdentityOfUser($item['identityid'], $user_id);
+                }
+            }
         }
-
-        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
-        $result = $this->query($sql);
-        $identityid = intval($result["insert_id"]);
-        return $identityid;
+        return false;
     }
     
     
