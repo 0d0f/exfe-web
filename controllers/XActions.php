@@ -25,7 +25,7 @@ class XActions extends ActionController
 
                     // @todo: package as a translaction
                     $place = json_decode($_POST['place'], true);
-                    if (trim($_POST['place']['line1']) !== '') {
+                    if (trim($place['line1']) !== '') {
                         $placeid = $placedata->savePlace($place);
                     } else {
                         $placeid = 0;
