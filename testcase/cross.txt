@@ -1,0 +1,81 @@
+cross= {
+    "attribute": {
+        "state": "published"
+    }, 
+    "by_identity_id": "29", 
+    "description": "desc...", 
+    "place": { 
+        "description": "", 
+        "external_id": "", 
+        "lat": "23.13177681", 
+        "lng": "113.26757050", 
+        "provider": "", 
+        "title": "place title", 
+        "type": "Place" 
+        }, 
+    "exfee": { 
+        "invitations": [
+            {
+                "identity":{
+                    "avatar_filename": "http:\/\/www.gravatar.com\/avatar\/e461fe2d48746288ffef676def2f6e82?d=DEFAULT_AVATAR_URL",
+                    "bio": "",
+                    "connected_user_id": 132,
+                    "external_id": "hj@exfe.com",
+                    "external_username": "hj@exfe.com",
+                    "id": 66,
+                    "name": "huoju",
+                    "nickname": "",
+                    "provider": "email"
+                },
+                "rsvp_status":"ACCEPTED",
+                "type":"Invitation"
+            },
+            {
+                "identity":{
+                    "avatar_filename": "default.png",
+                    "bio": "",
+                    "connected_user_id": 0,
+                    "external_id": "bbbbb@c.com",
+                    "external_username": "bbbbb@c.com",
+                    "id": 29,
+                    "name": "bbbbb",
+                    "nickname": "",
+                    "provider": "email"
+                },
+                "rsvp_status":"NORESPONSE",
+                "type":"Invitation"
+            }
+
+        ], 
+        "type": "Exfee" 
+    }, 
+    "relative": { 
+        "id": 0, 
+        "relation": "" 
+        }, 
+    "time": {
+        "begin_at": {
+            "date": "2012-03-22", 
+            "date_word": "", 
+            "id": 0, 
+            "time": "08:00:00", 
+            "time_word": "", 
+            "timezone": "%2B08:00", 
+            "type": "EFTime"
+        }, 
+        "id": 0, 
+        "origin": "03-22-2012 04:00 PM", 
+        "outputformat": "", 
+        "type": "CrossTime"
+    }, 
+    "title": "post by curl", 
+    "type": "Cross", 
+    "widget": [
+        {
+            "id": 0, 
+            "image": "IMG_0111", 
+            "type": "Background", 
+            "widget_id": 0
+        }
+    ]
+}
