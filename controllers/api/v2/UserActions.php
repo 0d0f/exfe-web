@@ -164,7 +164,7 @@ class UserActions extends ActionController {
         $external_id = $_POST['external_id'];
         $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
         $password    = $_POST['password'];
-        $siResult    = $userData->signinForAuthToken($provider, $external_id, $password);
+        $siResult    = $modUser->signinForAuthToken($provider, $external_id, $password);
         if ($external_id && $password && $siResult) {
             apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
         } else {
