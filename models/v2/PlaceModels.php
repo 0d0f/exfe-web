@@ -14,7 +14,7 @@ class PlaceModels extends DataModel {
         $external_id=$result["external_id"];
 
         $place=new Place($title,$description,$lng,$lat,$provider,$external_id); 
-        $place->id=$place_id;
+        $place->id=(int)$place_id;
         return $place;
 
     }
