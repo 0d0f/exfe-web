@@ -22,7 +22,7 @@ class CrossHelper extends ActionController {
                 $date=$datetime[0];
                 $time=$datetime[1];
             }
-            $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],"");
+            $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],intval($cross["outputformat"]));
             $attribute=array();
             if($cross["state"]==1)
                 $attribute["state"]="published";
@@ -62,7 +62,7 @@ class CrossHelper extends ActionController {
             $date=$datetime[0];
             $time=$datetime[1];
         }
-        $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],"");
+        $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],intval($cross["outputformat"]));
 
         $attribute=array();
         if($cross["state"]==1)
