@@ -2,7 +2,7 @@ cross= {
     "attribute": {
         "state": "published"
     }, 
-    "by_identity_id": "174", 
+    "by_identity_id": "29", 
     "description": "desc...", 
     "place": { 
         "description": "", 
@@ -22,7 +22,7 @@ cross= {
                     "connected_user_id": 132,
                     "external_id": "hj@exfe.com",
                     "external_username": "hj@exfe.com",
-                    "id": 175,
+                    "id": 66,
                     "name": "huoju",
                     "nickname": "",
                     "provider": "email"
@@ -37,7 +37,7 @@ cross= {
                     "connected_user_id": 0,
                     "external_id": "bbbbb@c.com",
                     "external_username": "bbbbb@c.com",
-                    "id": 177,
+                    "id": 29,
                     "name": "bbbbb",
                     "nickname": "",
                     "provider": "email"
