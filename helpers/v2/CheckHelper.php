@@ -7,7 +7,6 @@ class CheckHelper extends ActionController {
         $exfeeData=$this->getModelByName("exfee","v2");
         $crossData=$this->getModelByName("cross","v2");
         $uid=$userData->getUserIdByToken($token);
-        $access_type="";
         if(intval($uid)>0)
             $access_type="token";
         else {
