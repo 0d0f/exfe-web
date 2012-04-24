@@ -5,8 +5,7 @@ require_once dirname(__FILE__)."/DataModel.php";
 class FrontController {
     
     public function __construct() {
-        header('Origin: http://www.nczonline.net');
-        header('Access-Control-Request-Method: POST');
+        header('Access-Control-Allow-Origin: *');
     }
 
 #	public static function checkOauthToken() {
