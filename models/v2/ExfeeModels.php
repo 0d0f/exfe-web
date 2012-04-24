@@ -120,7 +120,7 @@ class ExfeeModels extends DataModel {
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
         }
-        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0, `updated_at` = NOW()");
+        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
