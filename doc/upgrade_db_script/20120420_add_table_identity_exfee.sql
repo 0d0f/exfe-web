@@ -3,4 +3,4 @@ CREATE TABLE  `exfe_dev`.`identity_exfee` (
 `exfee_id` BIGINT NOT NULL ,
 `created_at` DATETIME NOT NULL ,
 `updated_at` DATETIME NOT NULL
-) ENGINE = MYISAM
+) ENGINE = MYISAM;
