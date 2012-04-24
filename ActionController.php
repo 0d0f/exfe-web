@@ -25,9 +25,9 @@ abstract class ActionController {
     //        }
     //}
     
-    public function __construct() {
-        ini_set('session.cookie_domain', ROOT_DOMAIN);
-    }
+    // public function __construct() {
+    //     ini_set('session.cookie_domain', ROOT_DOMAIN); 
+    // }
 
     public function setName($name) {
         $this->name = $name;
