@@ -2,7 +2,7 @@ cross= {
     "attribute": {
         "state": "published"
     }, 
-    "by_identity_id": "29", 
+    "by_identity_id": "74", 
     "description": "desc...", 
     "place": { 
         "description": "", 
@@ -19,10 +19,40 @@ cross= {
                 "identity":{
                     "avatar_filename": "http:\/\/www.gravatar.com\/avatar\/e461fe2d48746288ffef676def2f6e82?d=DEFAULT_AVATAR_URL",
                     "bio": "",
-                    "connected_user_id": 132,
+                    "connected_user_id":0 ,
                     "external_id": "hj@exfe.com",
                     "external_username": "hj@exfe.com",
-                    "id": 66,
+                    "id": 74,
+                    "name": "huoju",
+                    "nickname": "",
+                    "provider": "email"
+                },
+                "rsvp_status":"ACCEPTED",
+                "type":"Invitation"
+            },
+            {
+                "identity":{
+                    "avatar_filename": "http:\/\/www.gravatar.com\/avatar\/e461fe2d48746288ffef676def2f6e82?d=DEFAULT_AVATAR_URL",
+                    "bio": "",
+                    "connected_user_id":0 ,
+                    "external_id": "hj@exfe.com",
+                    "external_username": "hj@exfe.com",
+                    "id": 84,
+                    "name": "huoju",
+                    "nickname": "",
+                    "provider": "email"
+                },
+                "rsvp_status":"ACCEPTED",
+                "type":"Invitation"
+            },
+            {
+                "identity":{
+                    "avatar_filename": "http:\/\/www.gravatar.com\/avatar\/e461fe2d48746288ffef676def2f6e82?d=DEFAULT_AVATAR_URL",
+                    "bio": "",
+                    "connected_user_id":0 ,
+                    "external_id": "hj@exfe.com",
+                    "external_username": "hj@exfe.com",
+                    "id": 83,
                     "name": "huoju",
                     "nickname": "",
                     "provider": "email"
@@ -37,7 +67,7 @@ cross= {
                     "connected_user_id": 0,
                     "external_id": "bbbbb@c.com",
                     "external_username": "bbbbb@c.com",
-                    "id": 29,
+                    "id": 66,
                     "name": "bbbbb",
                     "nickname": "",
                     "provider": "email"
