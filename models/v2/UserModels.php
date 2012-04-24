@@ -9,7 +9,7 @@ class UserModels extends DataModel {
 
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
-            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`
+            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
              `encrypted_password`, `password_salt`, `current_sign_in_ip`,
              `reset_password_token`
              FROM   `users` WHERE `id` = {$user_id}"
@@ -17,7 +17,7 @@ class UserModels extends DataModel {
     }
     
     
-    protected function encryptPassword($user_password, $password_salt) {
+    protected function encryptPassword($password, $password_salt) {
         return md5($password.( // compatible with the old users
             $password_salt === $this->salt ? $this->salt
           : (substr($password_salt, 3, 23) . EXFE_PASSWORD_SALT)
@@ -173,7 +173,7 @@ class UserModels extends DataModel {
         if ($user_id) {
             $rtResult   = array('user_id' => $user_id);
             $passwdInDb = $this->getUserPasswdByUserId($user_id);
-            $password   = $this->encryptPassword($password, $userPasswd['password_salt']);
+            $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
             if ($password === $passwdInDb['encrypted_password']) {
                 if (!$passwdInDb['auth_token']) {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
