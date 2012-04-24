@@ -178,6 +178,7 @@ class UserModels extends DataModel {
                 if (!$passwdInDb['auth_token']) {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
                     $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
+                    $this->query($sql);
                 }
                 $rtResult['token'] = $passwdInDb['auth_token'];
                 return $rtResult;
