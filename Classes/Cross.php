@@ -12,8 +12,9 @@ class Cross extends Metainfo {
 
     public function setRelation($relative_id,$relation)
     {
-        $this->relative["id"]=$relative_id;
-        $this->relative["relation"]=$relation;
+        $relative["id"]=$relative_id;
+        $relative["relation"]=$relation;
+        array_push($this->relative,$relative);
     }
     
     public function setExfee($exfee)
