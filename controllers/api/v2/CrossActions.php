@@ -56,10 +56,11 @@ class CrossActions extends ActionController {
     {
         $params=$this->params;
         $cross_str=$_POST["cross"];
+        $by_identity_id=$_POST["by_identity_id"];
         $cross=json_decode($cross_str);
 
         $checkHelper=$this->getHelperByName("check","v2");
-        $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"]));
+        $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"],"by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
@@ -70,7 +71,7 @@ class CrossActions extends ActionController {
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
         $crossHelper=$this->getHelperByName("cross","v2");
-        $cross_id=$crossHelper->editCross($cross);
+        $cross_id=$crossHelper->editCross($cross,$by_identity_id);
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName("cross","v2");

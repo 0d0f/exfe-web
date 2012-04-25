@@ -364,6 +364,13 @@ class UserModels extends DataModel {
         }
         return null;
     }
+    public function getIdentityIdByUserId($user_id){
+        $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
+        $identity_ids=$this->getColumn($sql);
+        return $identity_ids;
+        
+
+    }
 
 
     public function setUserPassword($user_id, $password) {

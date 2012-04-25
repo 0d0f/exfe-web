@@ -303,4 +303,23 @@ class UserActions extends ActionController {
         apiError(500, 'failed', ''); // 出错
     }
 
+    public function doUpdate(){
+        $params   = $this->params;
+        $user_id=$params["id"];
+        $updated_at=$params["updated_at"];
+        $userData = $this->getModelByName('User', 'v2');
+        $identity_ids=$userData->getIdentityIdByUserId($user_id);
+
+        $exfeeData = $this->getModelByName('exfee', 'v2');
+        $cross_ids=$exfeeData->getUpdatedExfeeByIdentityIds($identity_ids,$updated_at);
+        print_r($cross_ids);
+
+        //print_r($identity_ids);
+        //SELECT distinct cross_id FROM `invitations` WHERE `exfee_updated_at`>'2012-04-24 08:25:10' and identity_id=174
+        //$exfeeHelper = $this->getHelperByName('exfee', 'v2');
+        //$update=$exfeeHelper->getUpdate($exfee_id,$updated_at);
+        //print_r($update);
+
+    }
+
 }
