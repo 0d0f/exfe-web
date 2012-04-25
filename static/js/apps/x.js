@@ -37,7 +37,7 @@ var moduleNameSpace = 'odof.x.render',
         ? 'Write some words about this X.'
         : crossData.description,
         converter = new Showdown.converter();
-        $('#x_desc').html(converter.makeHtml(odof.util.escapeXml(strDesc)));
+        $('#x_desc').html(converter.makeHtml(strDesc));
         if (!this.expended && $('#x_desc').height() > 200) {
             $('#x_desc_expand').show();
         } else {
@@ -140,10 +140,10 @@ var moduleNameSpace = 'odof.x.render',
         var objPlace = $('#x_place_line1');
         objPlace.html(
             crossData.place.line1
-          ? odof.util.escapeXml(crossData.place.line1) : 'Somewhere'
+          ? crossData.place.line1 : 'Somewhere'
         );
         $('#x_place_line2').html(
-            odof.util.escapeXml(crossData.place.line2).replace(/\r/g, '<br>')
+            crossData.place.line2.replace(/\r/g, '<br>')
         );
         if (objPlace.hasClass('x_place_line1_double') && objPlace.height() < 70) {
             objPlace.addClass('x_place_line1_normal').removeClass('x_place_line1_double');
