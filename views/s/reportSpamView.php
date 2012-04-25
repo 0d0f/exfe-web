@@ -5,7 +5,7 @@
 .reporting_msg p.titles{ font-size:34px; height:70px; }
 </style>
 </head>
-<body style="background-color:#EFEFEF;">
+<body>
 <?php include "share/nav.php"; ?>
 <div class="reporting_msg" id="reporting_msg">
     <p class="titles">Thank you for reporting spam.</p>
