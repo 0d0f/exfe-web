@@ -415,31 +415,6 @@ var odof = {
 
 
     /*
-     * This function will be used to encode the string with XML
-     * @str, the string to be encoded
-     */
-    util.escapeXml = function(str){
-        if (!str){
-            return "";
-        }
-        return str.replace(/&/gm, "&amp;").replace(/</gm, "&lt;").replace(/>/gm, "&gt;").replace(/"/gm, "&quot;");
-    };
-
-
-    /*
-     * This function will be used to decode the string with XML
-     * @str, the string to be decoded
-     */
-    util.unescapeXml = function(str)
-    {
-        if (!str){
-            return "";
-        }
-        return str.replace(/&quot;/gm, "\"").replace(/&gt;/gm, ">").replace(/&lt;/gm, "<").replace(/&amp;/gm, "&");
-    };
-
-
-    /*
      * This function will be used to decode the string with HTML
      * @str, the string to be decoded
      */
