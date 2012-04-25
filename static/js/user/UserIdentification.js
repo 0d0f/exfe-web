@@ -225,6 +225,30 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                  + "</div>"
                  + "</form>"
                  + "</div>";
+        } else if (type === 'set_pwd') {
+            title = "Set Password";
+            form = "<div id='identity_set_pwd_dialog' class='identity_dialog_main'>"
+                 + "<div id='set_password_titles' class='dialog_titles'>Set Password</div>"
+                 + "<p id='set_password_desc'>"
+                 + "Please set a universal password for your account. Then you can sign in with any of your identities, with the same password."
+                 + "</p>"
+                 + "<form id='set_pwd_form' accept-charset='UTF-8' action='' method='post'>"
+                 + "<ul>"
+                 + "<li>"
+                 + "<label class='title'>Password:</label>"
+                 + "<input type='password' name='o_pwd' id='o_pwd' class='inputText' placeholder='Your password' />"
+                 + "<input  type='text'  name='o_pwd_a' id='o_pwd_a' class='inputText' style='display:none;' />"
+                 + "<em class='ic3' id='o_pwd_ic'></em>"
+                 + "</li>"
+                 + "</ul>"
+                 + "<p>e.g.: To sign in with your Twitter account. Just use “@myTwitterID@Twitter” as your identity, along with your password above.</p>"
+                 + "<p id='set_pwd_error_msg' style='padding-left:118px; color:#FD6311; display:none;'></p>"
+                 + "<div class='identification_bottom_btn' style='text-align:right;'>"
+                 + "<input type='submit' value='Done' class='btn_85' id='submit_set_password' style='cursor:pointer;' />"
+                 + "</div>"
+                 + "</form>"
+                 + "</div>";
+
         }
 
 
@@ -400,7 +424,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         ns.userManualVerifyIdentityCache = userIdentity;
 
         jQuery("#manual_verify_identity").val(userIdentity);
-        $('.manual_identity').find(':first-child').attr('src', myIdentity.avatar_file_name);
+        $('.manual_identity').find(':first-child').attr('src', typeof myIdentity === 'undefined' ? img_url+'/web/80_80_default.png'  : myIdentity .avatar_file_name);
 
         var email_class = 'email';
         var isTW = userIdentity.search('twitter') != -1;
@@ -820,6 +844,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
                                 //显示注册成功窗口
                                 jQuery("#identity_reg_success").show();
+                                $('#dentity_reg_login_dialog').hide();
                                 jQuery("#identity_display_box").html(identity);
                                 jQuery("#identification_handler").html("Welcome");
                                 jQuery("#close_reg_success_dialog_btn").bind("click",function(){
