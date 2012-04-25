@@ -6,6 +6,9 @@ class FrontController {
     
     public function __construct() {
         header('Access-Control-Allow-Origin: *');
+        if ($_GET['ssid']) {
+            session_id($_GET['ssid']);
+        }
     }
 
 #	public static function checkOauthToken() {
