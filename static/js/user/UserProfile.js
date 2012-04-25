@@ -387,6 +387,83 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         }
     };
 
+    (function( jQuery ) {
+
+      if ( window.XDomainRequest ) {
+        jQuery.ajaxTransport(function( s ) {
+          if ( s.crossDomain && s.async ) {
+            if ( s.timeout ) {
+              s.xdrTimeout = s.timeout;
+              delete s.timeout;
+            }
+            var xdr;
+            return {
+              send: function( _, complete ) {
+                function callback( status, statusText, responses, responseHeaders ) {
+                  xdr.onload = xdr.onerror = xdr.ontimeout = jQuery.noop;
+                  xdr = undefined;
+                  complete( status, statusText, responses, responseHeaders );
+                }
+                xdr = new XDomainRequest();
+                xdr.open( s.type, s.url );
+                xdr.onload = function() {
+                  callback( 200, "OK", { text: xdr.responseText }, "Content-Type: " + xdr.contentType );
+                };
+                xdr.onerror = function() {
+                  callback( 404, "Not Found" );
+                };
+                if ( s.xdrTimeout ) {
+                  xdr.ontimeout = function() {
+                    callback( 0, "timeout" );
+                  };
+                  xdr.timeout = s.xdrTimeout;
+                }
+                xdr.send( ( s.hasContent && s.data ) || null );
+              },
+              abort: function() {
+                if ( xdr ) {
+                  xdr.onerror = jQuery.noop();
+                  xdr.abort();
+                }
+              }
+            };
+          }
+        });
+      }
+    })( jQuery );
+    ns.showSetPasswordDialog = function () {
+      var html = odof.user.identification.createDialogDomCode("set_pwd");
+      odof.exlibs.ExDialog.initialize("identification", html);
+
+      $('#submit_set_password').bind('click', function (e) {
+          e.preventDefault();
+          var new_password = $.trim($('#o_pwd').val());
+          var SSID = odof.util.getCookie('PHPSESSID');
+          if (new_password) {
+            $.ajax({
+              type: 'post',
+              cache: false,
+              data: {
+                new_password: new_password
+              },
+              dataType: 'json',
+              url: 'http://api.localexfe.me/v2/user/SetPassword?' + ($.browser.msie ? 'ssid='+SSID : ''),
+              xhrFields: { withCredentials: true },
+              success: function (data) {
+                //data = $.parseJSON(data);
+                if (data.meta.code === 200) {
+                  odof.exlibs.ExDialog.removeDialog();
+                  odof.exlibs.ExDialog.removeCover();
+                } else {
+                  $("#set_pwd_error_msg").html(data.meta.errorType);
+                  $("#set_pwd_error_msg").show();
+                }
+              }
+            });
+          }
+      });
+    };
+
     ns.showChangePasswordDialog = function(userName, callBackFunc){
         var html = odof.user.identification.createDialogDomCode("change_pwd");
         odof.exlibs.ExDialog.initialize("identification", html);
@@ -628,7 +705,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         if (n > 3 || (window['localStorage'] && Boolean(+window['localStorage'].getItem('newbie')))) return false;
         $('#cross_list').append($(s).find('.con').html(c1).end());
         $('#invitations').append($(s).find('.con').html(c2).end()).show();
-        $('#recently_updates').append($(s).find('.con').html(c3).end());
+        $('#recently_updates').append($(s).find('.con').html(c3).end()).show();
         $('#myexfe').append($(c4));
         $('#gather_new_x').click(function (e) {
           //if (!$('.newbie_gather').is(':hidden')) return;
@@ -748,6 +825,12 @@ $(document).ready(function() {
         _UP.getInvitation();
         _UP.getUpdate();
         $.when(_UP.getCross_dfd, _UP.getInvitation_dfd, _UP.getUpdate_dfd).then(_UP.newbie(d.cross_num));
+
+        var $password = $('#set_password_btn');
+        $password.data('no_password', d.no_password);
+        if (d.no_password) {
+            $password.html('Set Password...')
+        }
       });
     }
     //odof.user.profile.getCross();
@@ -789,7 +872,11 @@ $(document).ready(function() {
     // change pwd
     DOC.delegate('#set_password_btn', "click", function(event){
         var userName = odof.util.trim(jQuery("#user_name > span.edit-area").html());
-        ns.showChangePasswordDialog(userName);
+        if ($(this).data('no_password')) {
+          ns.showSetPasswordDialog();
+        } else {
+          ns.showChangePasswordDialog(userName);
+        }
     });
 
     // add identity
@@ -866,7 +953,7 @@ $(document).ready(function() {
 
     if ('localStorage' in window) {
       var dismiss = localStorage.getItem('dismiss');
-      if (!dismiss) {
+      if (!Number(dismiss)) {
         var $ios = $('#ios-app');
         $ios.show();
         DOC.on('click', '.dismiss > a', function (e) {
