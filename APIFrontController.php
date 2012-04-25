@@ -5,6 +5,7 @@ require_once dirname(__FILE__)."/DataModel.php";
 class FrontController {
     
     public function __construct() {
+        header('Content-Type: application/json; charset=UTF-8');
         header('Access-Control-Allow-Origin: *');
         if ($_GET['ssid']) {
             session_id($_GET['ssid']);
