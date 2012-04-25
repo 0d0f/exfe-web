@@ -6,7 +6,8 @@ class FrontController {
     
     public function __construct() {
         header('Content-Type: application/json; charset=UTF-8');
-        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Origin: ' . SITE_URL);
+        header('Access-Control-Allow-Credentials: true');
         if ($_GET['ssid']) {
             session_id($_GET['ssid']);
         }
