@@ -20,7 +20,7 @@ var moduleNameSpace = 'odof.x.render',
     ns.showTitle = function()
     {
         var objTitle = $('#x_title');
-        objTitle.html(odof.util.escapeXml(crossData.title));
+        objTitle.html(crossData.title);
         document.title = 'EXFE - ' + crossData.title;
         if (objTitle.hasClass('x_title_double') && objTitle.height() < 112) {
             objTitle.addClass('x_title_normal').removeClass('x_title_double');
@@ -285,7 +285,7 @@ var moduleNameSpace = 'odof.x.render',
              +                 objItem.identity.name + ': '
              +             '</span>'
              +             '<span class="x_conversation_content">'
-             +                 odof.util.escapeXml(objItem.content)
+             +                 objItem.content
              +             '</span>'
              +         '</p>'
              +         '<span class="x_conversation_time">'
