@@ -316,6 +316,7 @@ class UserModels extends DataModel {
             return $user_id;
         } else {
             $insResult = $this->query(
+                // @todo: need to add salt!!!
                 "INSERT INTO `users` SET
                  `encrypted_password` = '{$password}',
                  `name`               = '{$name}',
@@ -362,6 +363,17 @@ class UserModels extends DataModel {
             );
         }
         return null;
+    }
+
+
+    public function setUserPassword($user_id, $password) {
+        $password = $this->encryptPassword($password, $passwordSalt = md5(createToken()));
+        return $this->query(
+            "UPDATE `users` SET
+             `encrypted_password` = '{$password}',
+             `password_salt`      = '{$passwordSalt}'
+             WHERE `id` = {$user_id}"
+        );
     }
 
 }
