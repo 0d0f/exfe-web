@@ -8,7 +8,7 @@
     <?php include "share/nav.php" ?>
     <div class="home_banner" id="home_banner">
       <div id="x_code_img">
-        <img class="x-sign" src="/static/images/X-sign.jpg" alt=""/>
+        <img style="display:none;" class="x-sign" src="/static/images/X-sign.jpg" alt=""/>
         <div class="xci-l">
           <div class="circle-o cx">
             <div class="circle-i">
@@ -21,7 +21,7 @@
         <div class="xci-r">
           <div class="circle-o cexfee">
             <div class="circle-i">
-              <h3>EXFE <span>[ˈɛksfi]</span></h3>
+              <h3>EXFE <span>[ˈ<em>ɛ</em>ksfi]</span></h3>
               <p class="explain">is an utility<br />for hanging out<br />with friends.</p>
               <p class="additional">Stop calling up every<br />one RSVP, losing in endless<br />emails and messages<br />off the point.</p>
             </div>
@@ -44,19 +44,40 @@
     document.title = 'EXFE';
     var winSize = odof.util.getWindowSize();
     winHeight = winSize.height;
-    var minH = 349, maxH = 465,
-        minWh = 680, maxWh = 960,
-        w = 470, h;
+    var minH = 528, maxH = 704,
+        imgminH = 450, imgmaxH = 600,
+        minWh = 680, maxWh = 980,
+        wi, h, hi,
+        minL = 177.82, minT = 11.84,
+        maxL = 175, maxT = 25, l, t;
     if (winHeight < minWh) {
+      hi = 450;
       h = minH;
+      l = minL;
+      t = minT;
     } else if (winHeight > maxWh) {
       h = maxH;
+      hi = imgmaxH;
+      l = maxL;
+      t = maxT;
     } else {
-      h = minH + (maxH - minH) * ((winHeight - minWh) / (maxWh - minWh));
+      var p = (winHeight - minWh) / (maxWh - minWh);
+      h = minH + (maxH - minH) * p;
+      hi = imgminH + (imgmaxH - imgminH) * p;
+      l = minL + (maxL - minL) * p;
+      t = minT + (maxT - minT) * p;
     }
-    w *= h / maxH;
-    w = Math.ceil(w);
-    $(".x-sign").width(w).height(h).parent().css('margin-left', -w/2);
+    wi = hi;
+    $(".x-sign").width(wi).height(hi).show().parent().css({
+        'margin-left': -wi / 2,
+        'margin-top': (h - hi) / 2 - 10
+    });
+    $('.cexfee').css({
+      'right': -l, 'bottom': t
+    });
+    $('.cx').css({
+      'left': -l, 'top': t
+    });
     $('#home_banner').css('height', h);
 
     $("#pre_load_btn")[0].src = "/static/images/btn.png";
