@@ -1,26 +1,7 @@
 cross= {
-    "attribute": {
-        "state": "published"
-    }, 
-    "by_identity_id": "174", 
-    "description": "desc...", 
-    "place": {
-        "description": "place desc", 
-        "external_id": "", 
-        "id": "94", 
-        "lat": "23.13177681", 
-        "lng": "113.26757050", 
-        "provider": "", 
-        "title": "place title", 
-        "type": "Place"
-    },
-    "relative": {
-        "id": 0, 
-        "relation": ""
-    }, 
     "time": {
         "begin_at": {
-            "date": "2012-03-22", 
+            "date": "2012-04-22", 
             "date_word": "", 
             "id": 0, 
             "time": "08:00:00", 
@@ -29,12 +10,21 @@ cross= {
             "type": "EFTime"
         }, 
         "id": 0, 
-        "origin": "03-22-2012 04:00 PM", 
+        "origin": "04-22-2012 04:00 PM", 
         "outputformat": "", 
         "type": "CrossTime"
     }, 
-    "title": "post by curl updated", 
-    "type": "Cross", 
+    "place": {
+        "description": "place desc", 
+        "external_id": "", 
+        "lat": "23.13177681", 
+        "lng": "113.26757050", 
+        "provider": "", 
+        "title": "place title", 
+        "type": "Place"
+    },
+    "description": "desc...1" ,
+    "title": "title...1" ,
     "widget": [
         {
             "id": 0, 
@@ -44,4 +34,5 @@ cross= {
         }
     ]
 }
+&by_identity_id=174
 
