@@ -79,32 +79,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function setPassword($identity_id,$password,$displayname)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            $userid=intval($result["userid"]);
-
-            $passwordSalt = md5(createToken());
-            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-
-            //$password=md5($password.$this->salt);
-            $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}',name='{$displayname}' WHERE id={$userid}";
-            $result=$this->query($sql);
-            if($result==1)
-            {
-                $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
-                $result=$this->query($sql);
-                return true;
-            }
-        }
-        return false;
-        //$sql="update ";
-    }
-
-
     public function addUserByIdentityId($identity_id, $display_name)
     {
         $time_stamp = time();
@@ -578,6 +552,33 @@ class UserModels extends DataModel {
                 }
             }
         }
+    }
+
+
+    // upgraded
+    public function setPassword($identity_id,$password,$displayname)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $userid=intval($result["userid"]);
+
+            $passwordSalt = md5(createToken());
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
+            //$password=md5($password.$this->salt);
+            $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}',name='{$displayname}' WHERE id={$userid}";
+            $result=$this->query($sql);
+            if($result==1)
+            {
+                $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                $result=$this->query($sql);
+                return true;
+            }
+        }
+        return false;
+        //$sql="update ";
     }
 
 }
