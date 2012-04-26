@@ -30,8 +30,15 @@ class CrossHelper extends ActionController {
 
             $created_at=$cross["created_at"];
             $host_identity=$identityData->getIdentityById($cross["host_id"]);
+
+            if($cross["host_id"]==$cross["by_identity_id"])
+                $by_identity=$host_identity;
+            else
+                $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
+
             $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
             $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
+            $cross->by_identity=$by_identity;
             $cross->created_at=$created_at;
             $relative_id=0;
             $relation="";
