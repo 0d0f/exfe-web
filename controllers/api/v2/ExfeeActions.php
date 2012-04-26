@@ -17,7 +17,7 @@ class ExfeeActions extends ActionController {
             apiError(401, 'invalid_auth', '');
         }
         if (!($by_identity_id = intval($_POST['by_identity_id']))) {
-            apiError(400, 'not_by_identity_id', 'by_identity_id must be provided');    
+            apiError(400, 'no_by_identity_id', 'by_identity_id must be provided');    
         }
         // get cross id
         $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id)
