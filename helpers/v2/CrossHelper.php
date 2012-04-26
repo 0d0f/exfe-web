@@ -12,8 +12,7 @@ class CrossHelper extends ActionController {
         $cross_list=array();
         foreach($crosses as $cross)
         {
-            $place=new Place($cross["place_line1"],$cross["place_line2"],$cross["lng"],$cross["lat"],$cross["provider"],$cross["external_id"]);
-            $place->id=$cross["place_id"];
+            $place=new Place($cross["place_id"],$cross["place_line1"],$cross["place_line2"],$cross["lng"],$cross["lat"],$cross["provider"],$cross["external_id"]);
             $background=new Background($cross["background"]);
 
             if(sizeof(explode(" ",$cross["begin_at"]))>1)
@@ -29,11 +28,11 @@ class CrossHelper extends ActionController {
             else if($cross["state"]==0)
                 $attribute["state"]="draft";
 
-            $by_identity=$identityData->getIdentityById($cross["host_id"]);
+            $created_at=$cross["created_at"];
+            $host_identity=$identityData->getIdentityById($cross["host_id"]);
             $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
-            $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $attribute,$exfee, array($background),$begin_at, $place);
-            $cross->by_identity=$by_identity;
-
+            $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
+            $cross->created_at=$created_at;
             $relative_id=0;
             $relation="";
             $cross->setRelation($relative_id,$relation);
@@ -54,7 +53,13 @@ class CrossHelper extends ActionController {
         $place=$placeData->getPlace($cross["place_id"]);
 
         $identityData=$this->getModelByName("identity","v2");
-        $by_identity=$identityData->getIdentityById($cross["host_id"]);
+        $host_identity=$identityData->getIdentityById($cross["host_id"]);
+        if($cross["host_id"]==$cross["by_identity_id"])
+            $by_identity=$host_identity;
+        else
+            $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
+
+
         $background=new Background($cross["background"]);
         if(sizeof(explode(" ",$cross["begin_at"]))>1)
         {
@@ -72,30 +77,28 @@ class CrossHelper extends ActionController {
 
         $exfeeData=$this->getModelByName("exfee","v2");
         $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
+        $created_at=$cross["created_at"];
 
-        $cross=new Cross($cross_id,$cross["title"], $cross["description"], $attribute,$exfee, array($background),$begin_at, $place);
-        
-        
-
+        $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
         $cross->by_identity=$by_identity;
+        $cross->created_at=$created_at;
         $relative_id=0;
         $relation="";
-        $cross->setRelation($relative_id,$relation);
-
+        //$cross->setRelation($relative_id,$relation);
         return $cross;
     }
-    public function gatherCross($cross)
+    public function gatherCross($cross,$by_identity_id)
     {
         $placeData=$this->getModelByName("place","v2");
         $place_id=$placeData->addPlace($cross->place);
 
         $exfeeData=$this->getModelByName("exfee","v2");
-        $exfee_id=$exfeeData->addExfee($cross->exfee->invitations, $cross->by_identity_id);
+        $exfee_id=$exfeeData->addExfee($cross->exfee->invitations, $cross->host_id);
 
         $crossData=$this->getModelByName("cross","v2");
         if($place_id>0 && $exfee_id>0)
         {
-            $cross_id=$crossData->addCross($cross,$place_id,$exfee_id);
+            $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
             $exfeeData->updateExfeeTime($exfee_id);
         }
 
