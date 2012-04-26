@@ -736,6 +736,28 @@ function apiResponse($object) {
     exit(0);
 }
 
+function mgetUpdate($cross_ids)
+{
+    $fields=implode($cross_ids," ");
+    $redis = new Redis();
+    $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+    if(sizeof($cross_ids)>0)
+    {
+        $key=$cross_id;
+        $update=$redis->HMGET("cross:updated",$cross_ids);
+        return $update;
+    }
+}
+function getUpdate($cross_id){
+    if(intval($cross_id)>0)
+    {
+        $key=$cross_id;
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $update=json_decode($redis->HGET("cross:updated",$key),true);
+        return $update;
+    }
+}
 
 function saveUpdate($cross_id,$updated) {
     if(intval($cross_id)>0)
