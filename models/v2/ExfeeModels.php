@@ -195,16 +195,19 @@ class ExfeeModels extends DataModel {
         return $exfee_id_list;
     }
 
+
     public function updateExfeeTime($exfee_id)
     {
         $sql="update invitations set exfee_updated_at=NOW() where `cross_id`=$exfee_id;";
         $this->query($sql);
     }
 
+
     public function getUpdate($exfee_id,$updated_at)
     {
         //$sql="select id from exfees where ";
     }
+
     
     public function getUpdatedExfeeByIdentityIds($identityids,$updated_at)
     {
@@ -214,4 +217,11 @@ class ExfeeModels extends DataModel {
         $cross_ids=$this->getColumn($sql);
         return $cross_ids;
     }
+
+
+    public function getCrossIdByExfeeId($exfee_id) {
+        $result=$this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
+        return intval($result['id']);
+    }
+        
 }
