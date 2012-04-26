@@ -10,43 +10,52 @@ class CrossHelper extends ActionController {
         $exfeeData=$this->getModelByName("exfee","v2");
         $identityData=$this->getModelByName("identity","v2");
         $cross_list=array();
-        foreach($crosses as $cross)
-        {
-            $place=new Place($cross["place_id"],$cross["place_line1"],$cross["place_line2"],$cross["lng"],$cross["lat"],$cross["provider"],$cross["external_id"]);
-            $background=new Background($cross["background"]);
+        $cross_ids=array();
 
-            if(sizeof(explode(" ",$cross["begin_at"]))>1)
+        if($crosses)
+            foreach($crosses as $cross)
+                array_push($cross_ids,$cross["id"]);
+        $updated_crosses=mgetUpdate($cross_ids);
+
+        if($crosses)
+            foreach($crosses as $cross)
             {
-                $datetime=explode(" ",$cross["begin_at"]);
-                $date=$datetime[0];
-                $time=$datetime[1];
+                $place=new Place($cross["place_id"],$cross["place_line1"],$cross["place_line2"],$cross["lng"],$cross["lat"],$cross["provider"],$cross["external_id"]);
+                $background=new Background($cross["background"]);
+
+                if(sizeof(explode(" ",$cross["begin_at"]))>1)
+                {
+                    $datetime=explode(" ",$cross["begin_at"]);
+                    $date=$datetime[0];
+                    $time=$datetime[1];
+                }
+                $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],intval($cross["outputformat"]));
+                $attribute=array();
+                if($cross["state"]==1)
+                    $attribute["state"]="published";
+                else if($cross["state"]==0)
+                    $attribute["state"]="draft";
+
+                $created_at=$cross["created_at"];
+                $host_identity=$identityData->getIdentityById($cross["host_id"]);
+
+                if($cross["host_id"]==$cross["by_identity_id"])
+                    $by_identity=$host_identity;
+                else
+                    $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
+
+                $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
+                $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
+                $cross->by_identity=$by_identity;
+                $cross->created_at=$created_at;
+                $relative_id=0;
+                $relation="";
+                $cross->setRelation($relative_id,$relation);
+                $updated=json_decode($updated_crosses[$cross->id],true);
+                if($updated)
+                    $cross->updated=$updated;
+                array_push($cross_list,$cross);
             }
-            $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],intval($cross["outputformat"]));
-            $attribute=array();
-            if($cross["state"]==1)
-                $attribute["state"]="published";
-            else if($cross["state"]==0)
-                $attribute["state"]="draft";
-
-            $created_at=$cross["created_at"];
-            $host_identity=$identityData->getIdentityById($cross["host_id"]);
-
-            if($cross["host_id"]==$cross["by_identity_id"])
-                $by_identity=$host_identity;
-            else
-                $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
-
-            $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
-            $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
-            $cross->by_identity=$by_identity;
-            $cross->created_at=$created_at;
-            $relative_id=0;
-            $relation="";
-            $cross->setRelation($relative_id,$relation);
-            array_push($cross_list,$cross);
-        }
-        if(sizeof($cross_list)===0)
-            return;
         return $cross_list;
     }
     public function getCross($cross_id)
@@ -91,6 +100,8 @@ class CrossHelper extends ActionController {
         $cross->created_at=$created_at;
         $relative_id=0;
         $relation="";
+
+        $update_result=getUpdate($cross_id);
         //$cross->setRelation($relative_id,$relation);
         return $cross;
     }
