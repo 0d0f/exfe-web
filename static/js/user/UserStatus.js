@@ -753,7 +753,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     + '<p><span class="blue">EXFE</span> [ˈɛksfi] is still in <span class="bold">pilot</span> stage (with <span class="oblique">SANDBOX</span> tag). We’re building up blocks of it, thus some bugs and unfinished pages. Any feedback, please email <span class="oblique email">feedback@exfe.com.</span> Our apologies for any trouble you may encounter, much appreciated.</p>'
                 + '</div>'
                 + "<div class='identification_dialog_bottom'></div>";
-        odof.exlibs.ExDialog.initialize('identification', buf, 'exfe_version identification_dialog', 'win');
+        odof.exlibs.ExDialog.initialize('identification', buf, 'exfe_version identification_dialog');
         if (ns.showExfeVersion.status) {
             $('#identification_close_btn').click(function (e) {
                 $(this).unbind('click');

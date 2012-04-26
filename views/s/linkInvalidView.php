@@ -10,7 +10,7 @@
  }
 </style>
 </head>
-<body style="background-color:#EFEFEF;">
+<body>
 <?php include "share/nav.php"; ?>
 <div class="link_invalid_msg" id="link_invalid_msg">
     <p class="titles">Invalid Link</p>
