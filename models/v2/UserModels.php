@@ -107,10 +107,9 @@ class UserModels extends DataModel {
     
     public function getUserIdsByIdentityIds($identity_ids) {
         $identity_ids = implode($identity_ids, ' OR `identityid` = ');
-        $dbResult = $this->getAll(
-            "SELECT `userid` FROM `user_identity`
-             WHERE `identityid` = {$identity_ids} AND `status` = 3"
-        );
+        $sql= "SELECT `userid` FROM `user_identity`
+             WHERE `identityid` = {$identity_ids} AND `status` = 3";
+        $dbResult = $this->getAll($sql);
         $user_ids = array();
         if ($dbResult) {
             foreach ($dbResult as $uI => $uItem) {

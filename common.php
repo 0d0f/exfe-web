@@ -740,14 +740,14 @@ function apiResponse($object) {
 function saveUpdate($cross_id,$updated) {
     if(intval($cross_id)>0)
     {
-        $key="cross:".$cross_id;
+        $key=$cross_id;
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $update=json_decode($redis->HGET("cross_updated",$key),true);
+        $update=json_decode($redis->HGET("cross:updated",$key),true);
         foreach($updated as $k=>$v)
             $update[$k]=$v;
 
         $update_json=json_encode($update);
-        $redis->HSET("cross_updated",$key,$update_json);
+        $redis->HSET("cross:updated",$key,$update_json);
     }
 }
