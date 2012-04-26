@@ -20,7 +20,7 @@ b.r3{margin: 0px}
   padding: 0;
   z-index: 201;
   font-family: "Helvetica", Verdana, "Lucida Grande", "Sans", "Arial", "SimSun";
-  color: #424242;
+  color: #4c4c4c;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   border-radius: 0 0 5px 5px;
   background-color: #FAFAFA;
@@ -570,4 +570,25 @@ b.r3{margin: 0px}
 }
 .exfe_version .exfe-version-info p span.email {
   font-size: 14px;
+}
+
+#identity_set_pwd_dialog #set_password_desc {
+  color: #424242;
+  height: auto;
+  line-height: 20px;
+}
+
+#identity_set_pwd_dialog #set_pwd_form ul {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+#identity_set_pwd_dialog #set_pwd_form p {
+  color: #797979;
+}
+
+#identity_set_pwd_dialog #o_pwd:-moz-placeholder {
+  color: #d5d5d5;
+}
+#identity_set_pwd_dialog #o_pwd::-webkit-intpu-placeholder {
+  color: #d5d5d5;
 }

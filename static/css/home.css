@@ -9,7 +9,7 @@
     /*display: block;*/
     /*min-width: 1160px;*/
     width:100%;
-    min-height: 349px;
+    min-height: 528px;
     /*height: 550px;*/
     /*overflow: hidden;*/
     /*background:#E6E6E6 url(../images/index_bg.jpg) repeat-y center 0;*/
@@ -22,16 +22,16 @@
     position: absolute;
     left: 50%;
     /*margin-left: -235px;*/
-    min-height: 349px;
+    min-height: 450px;
     /*max-height: 704px;*/
   dipslay:table-cell;vertical-align:middle
 }
 
 #home .home_banner #x_code_img img {
-  min-width: 353px;
-  min-height: 349px;
-  max-width: 470px;
-  max-height: 465px;
+  min-width: 450px;
+  min-height: 450px;
+  max-width: 600px;
+  max-height: 600px;
   display: block;
 }
 #home .home_banner #x_code_img .xci-l {
@@ -65,15 +65,17 @@
   background-image:     -ms-linear-gradient(280deg, #d5e8f2, #1175A5);
   background-image:      -o-linear-gradient(280deg, #d5e8f2, #1175A5);
 }
+/*
 .circle-o.cx {
-  left: -70%;
-  top: 3%;
+  left: -90%;
+  top: 4%;
 }
 
 .circle-o.cexfee {
-  right: -70%;
-  bottom: 3%;
+  right: -90%;
+  bottom: 4%;
 }
+*/
 
 .circle-i {
   margin: 5.5px auto;
@@ -98,6 +100,8 @@
 .circle-i h3 span {
   font-size: 18px;
   color: #7f7f7f;
+}
+.circle-i h3 span em {
   font-family: "Times New Roman";
 }
 .explain {
