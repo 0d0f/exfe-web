@@ -562,6 +562,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 ns.actions = "sign_up";
                             }
                         } else if(data.response.identity_exist=="true") {
+                            $('#identity_reg_login_dialog').hide();
                             if(data.response.status == "verifying"){
                                 jQuery("#user_avatar").hide();
                                 ns.showManualVerificationDialog();
