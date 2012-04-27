@@ -417,11 +417,15 @@ class Apn_Job
                        if($identity["identity_id"]==$host_identity_id)
                             $isHost=TRUE;
 
-                       if($identity["provider"]=="iOSAPN")
-                            $msgbodyobj["external_identity"]=$identity["external_identity"];
+                       //if($identity["provider"]=="iOSAPN")
+                       //     $msgbodyobj["external_identity"]=$identity["external_identity"];
                 }
-                if($msgbodyobj["external_identity"]!="")
+                
+                //if($msgbodyobj["external_identity"]!="")
+                if($invitation["identity"]["external_identity"]!="")
                 {
+
+                    $msgbodyobj["external_identity"]=$args["identity"]["external_identity"];
                     //generate push msg
                     $by_identity_name=$args["by_identity"]["name"];
                     if($by_identity_name=="")
