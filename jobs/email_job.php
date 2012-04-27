@@ -37,7 +37,7 @@ class Email_Job
         $mail["report_spam_url"]=$report_spam_url;
         $mail["exfe_app_url"]=$exfe_app_url;
 
-        $mail["hint_title"]='Invitation from <span>'.$host_name."</span>.";
+        $mail["hint_title"]='Invitation from <span>'.$by_identity_name."</span>.";
 
         if(intval($this->args["host_identity_id"])==intval($this->args["identity_id"]))
             $mail["hint_title"]="You're successfully gathering this <span style='color: #0591ac; text-decoration: none;'>X</span>.";
