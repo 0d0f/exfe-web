@@ -32,7 +32,9 @@ b.r3{margin: 0px}
   background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; margin-top: 70px;}
-.idialog_inpage .titles { display:none; }
+.idialog_inpage .titles {
+  visibility: hidden;
+}
 
 .identification_dialog .titles {
     font-family: Helvetica;

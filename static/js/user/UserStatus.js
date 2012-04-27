@@ -666,16 +666,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             + '<span class="iname email">' + identity.external_username + (identity.provider === 'email' ? '' : '@' + identity.provider) + '</span>'
                             + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
                         + '</div>'
-                        + '<div class="setup">'
+                        + (show_idbox === 'setpassword' ? '<div class="setup">'
                             + '<p>'
                                 + '<span class="setup-btn">Set Up</span>'
                                 + ' as your independent new <span>EXFE</span> identity.'
                             + '</p>'
                         + '</div>'
-                        /*TODO: 多身份合并，4.13开始做
-                        + '<div class="signin-btn">'
+                         : '<div class="signin-btn">'
                             + '<a href="javascript:;">Sign In</a>'
-                        + '</div>'
+                        + '</div>')
+                        /*
                         + '<div class="splitline"></div>'
                         + '<div class="identites">'
                             + '<p>'
@@ -732,6 +732,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                   $('#goldLink').addClass('nameh');
             });
             $('.name .setup-btn').bind('click', function (e) {
+                if (login_type === 'token' && token) {
+                    odof.x.edit.setreadonly(clickCallBackFunc);
+                }
+            });
+            $('.name .signin-btn').bind('click', function (e) {
                 if (login_type === 'token' && token) {
                     odof.x.edit.setreadonly(clickCallBackFunc);
                 }
