@@ -13,8 +13,6 @@ class Invitation extends EFObject {
     
     public $updated_at       = null;
     
-    public $exfee_updated_at = null;
-    
     public $token            = null;
 
 
@@ -25,8 +23,7 @@ class Invitation extends EFObject {
                                 $via              = '',
                                 $token            = '',
                                 $created_at       = '',
-                                $updated_at       = '',
-                                $exfee_updated_at = '') {
+                                $updated_at       = '') {
         parent::__construct($id, 'invitation');
         
         $this->identity         = $identity;
@@ -36,7 +33,6 @@ class Invitation extends EFObject {
         $this->token            = $token;
         $this->created_at       = $created_at;
         $this->updated_at       = $updated_at;
-        $this->exfee_updated_at = $exfee_updated_at;
     }
 
 }
