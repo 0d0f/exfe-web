@@ -256,7 +256,7 @@ var moduleNameSpace = 'odof.x.render',
                 break;
             case 'addexfee':
                 info = '<span class="oblique">'
-                    + o.to_identity[0].external_identity
+                    + (o.to_identity[0].name || o.to_identity[0].external_username || o.to_identity[0].external_identity)
                     + '</span> is invited by '
                     + '<span class="bold">'
                     + o.by_identity.name

@@ -562,6 +562,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 ns.actions = "sign_up";
                             }
                         } else if(data.response.identity_exist=="true") {
+                            $('#identity_reg_login_dialog').hide();
                             if(data.response.status == "verifying"){
                                 jQuery("#user_avatar").hide();
                                 ns.showManualVerificationDialog();
@@ -845,6 +846,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 //显示注册成功窗口
                                 jQuery("#identity_reg_success").show();
                                 $('#dentity_reg_login_dialog').hide();
+
+                                $('#identity_reg_login_dialog').hide();
                                 jQuery("#identity_display_box").html(identity);
                                 jQuery("#identification_handler").html("Welcome");
                                 jQuery("#close_reg_success_dialog_btn").bind("click",function(){
