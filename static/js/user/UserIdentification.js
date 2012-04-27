@@ -846,6 +846,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                                 //显示注册成功窗口
                                 jQuery("#identity_reg_success").show();
                                 $('#dentity_reg_login_dialog').hide();
+
                                 $('#identity_reg_login_dialog').hide();
                                 jQuery("#identity_display_box").html(identity);
                                 jQuery("#identification_handler").html("Welcome");
