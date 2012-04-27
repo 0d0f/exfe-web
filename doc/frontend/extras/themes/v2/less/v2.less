@@ -1,0 +1,56 @@
+// v2 Theme
+
+@import "variables.less";
+@import "mixins.less";
+
+.navbar {
+  margin-bottom: 24px;
+
+  .navbar-bg {
+    position: absolute;
+    top: 0;
+    z-index: @zindexDropdown + 1;
+    width: 100%;
+    height: @navbarHeight;
+    #gradient > .vertical(#f8f8f8, #f5f5f5);
+    @shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
+    .box-shadow(@shadow);
+  }
+
+  .navbar-inner {
+    padding: 0;
+    background: transparent;
+    .box-shadow(none);
+    .border-radius(0);
+  }
+
+  .container {
+    height: @navbarHeight;
+    #grid > .core > .span(@gridColumns);
+  }
+
+  .nav-collapse {
+    margin-right: 30px;
+  }
+
+  .brand {
+    margin-left: 20px;
+  }
+
+  .brand, .nav > li > a {
+    position: relative;
+  }
+
+  .version {
+    position: absolute;
+  }
+
+  .brand, .version, .nav > li > a {
+    z-index: @zindexDropdown + 2;
+  }
+
+  .dropdown-menu {
+    height: 88px;
+  }
+
+}
