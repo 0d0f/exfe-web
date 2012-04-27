@@ -145,6 +145,7 @@ class InvitationModels extends DataModel
                     $invitations[$i]["identities"]=array($invitations[$i]);
                 }
             }
+            $invitations[$i]["withnum"]=0;
             $invitations[$i]["user_id"]=intval($userid);
             $invitations[$i]["state"]=intval($invitations[$i]["state"]);
             // fixed empty external_identity
