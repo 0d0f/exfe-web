@@ -34,11 +34,11 @@ class CrossModels extends DataModel {
         {
             $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
                 state, title, description,exfee_id, begin_at, place_id,
-                timezone, origin_begin_at, background,date_word,time_word,`date`,`time`,outputformat) values({$cross->host_id}, NOW(),
+                timezone, origin_begin_at, background,date_word,time_word,`date`,`time`,outputformat,by_identity_id) values({$cross->host_id}, NOW(),
                 '{$time_type}', NOW(), '1', '{$cross->title}',
                 '{$cross->description}',{$exfee_id},'{$begin_at_time_in_old_format}',
                 {$place_id}, '{$cross_time->begin_at->timezone}',
-                '{$cross_time->origin}', '{$background}','{$cross_time->begin_at->date_word}','{$cross_time->begin_at->time_word}','{$cross_time->begin_at->date}','{$cross_time->begin_at->time}','{$cross_time->outputformat}');";
+                '{$cross_time->origin}', '{$background}','{$cross_time->begin_at->date_word}','{$cross_time->begin_at->time_word}','{$cross_time->begin_at->date}','{$cross_time->begin_at->time}','{$cross_time->outputformat}',$by_identity_id);";
 
             $result   = $this->query($sql);
             $cross_id = intval($result['insert_id']);

@@ -26,8 +26,9 @@ class CrossActions extends ActionController {
     public function doAdd()
     {
         $params=$this->params;
+        $by_identity_id=$_POST["by_identity_id"];
         $checkHelper=$this->getHelperByName("check","v2");
-        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("cross_id"=>$params["id"]));
+        $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
@@ -38,7 +39,7 @@ class CrossActions extends ActionController {
         $cross_str=$_POST["cross"];
         $cross=json_decode($cross_str);
         $crossHelper=$this->getHelperByName("cross","v2");
-        $cross_id=$crossHelper->gatherCross($cross);
+        $cross_id=$crossHelper->gatherCross($cross,$by_identity_id);
         
         if(intval($cross_id)>0)
         {

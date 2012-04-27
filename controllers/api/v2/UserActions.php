@@ -229,6 +229,7 @@ class UserActions extends ActionController {
     public function doCrosses() {
         $params   = $this->params;
         $uid=$params["id"];
+        $updated_at=$params["updated_at"];
 
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
@@ -239,7 +240,7 @@ class UserActions extends ActionController {
         }
 
         $exfeeHelper= $this->getHelperByName('exfee', 'v2');
-        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid));
+        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
         $crossHelper= $this->getHelperByName('cross', 'v2');
         $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
         apiResponse(array("crosses"=>$cross_list));
