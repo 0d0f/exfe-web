@@ -139,6 +139,7 @@ class ExfeeModels extends DataModel {
         }
         //
         $objExfee = $this->getExfeeById($id, true);
+        $chdExfee = array();
         foreach ($invitations as $tI => $tItem) {
             // adding new identity
             if (!$tItem->identity->id) {
@@ -180,6 +181,17 @@ class ExfeeModels extends DataModel {
         //     $this->updateInvitation($fItem, $by_identity_id);
         // }
         $this->updateExfeeTime($id);
+        // call Gobus
+        $hlpCross = $this->getHelperByName('cross', 'v2');
+        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+        $cross_id = $this->getCrossIdByExfeeId($exfee_id);
+        $cross    = $hlpCross->getCross($cross_id);
+        $msgArg   = array('cross' => $cross, 'changed_invitations' => $chdExfee);
+        foreach ($cross->exfee->invitations as $invitation) {
+            $msg['to_identity'] = $invitation->identity;
+            $hlpGobus->send("{$invitation->identity->provider}_job", 'exfee', $msgArg);
+        }
+        //
         return $id;
     }
 
