@@ -287,6 +287,8 @@ class UserModels extends DataModel {
     
 
     public function getUserIdByToken($token) {
+        if(trim($token)==='')
+            return 0;
         $sql="select id from users where auth_token='$token';";
         $row=$this->getRow($sql);
         return intval($row["id"]);
