@@ -166,7 +166,7 @@ class ExfeeHelper extends ActionController {
                 if (intval($invitation["by_identity_id"]) > 0) {
                     $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
                 }
-                if($invitation["by_identity_id"]===$invitation["identity_id"]) //don't send to myself
+                if($identity_id===$invitation["identity_id"]) //don't send to myself
                     continue;
                 $by_identity=$identitydata->getIdentityById($invitation["by_identity_id"]);
                 $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
