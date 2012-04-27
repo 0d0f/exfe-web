@@ -432,18 +432,23 @@ class ExfeeHelper extends ActionController {
                  }
 
                  $identities=$invitation["identities"];
-                 $send_apn_push_flag=false;
                  if($identities)
                      foreach ($identities as $identity)
                          if($identity["provider"]=="iOSAPN" && $identity["status"]==3)
-                             $send_apn_push_flag=true;
+                         {
 
-                 if($send_apn_push_flag===true)
-                 {
-                    $args["identity"]=$identity;
-                    $args["job_type"]="invitation";
-                    $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
-                 }
+                            $args["identity"]=$identity;
+                            $args["job_type"]="invitation";
+                            $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
+                             //$send_apn_push_flag=true;
+                         }
+
+                 //if($send_apn_push_flag===true)
+                 //{
+                 //   $args["identity"]=$identity;
+                 //   $args["job_type"]="invitation";
+                 //   $jobId = Resque::enqueue("iOSAPN","apn_job" , $args, true);
+                 //}
 
                  //echo "Queued job ".$jobId."\n\n";
             }
