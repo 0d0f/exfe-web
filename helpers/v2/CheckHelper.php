@@ -50,7 +50,12 @@ class CheckHelper extends ActionController {
                 return array("check"=>true,"uid"=>$uid);
         }
         else if($api=="cross_add" ){
-                return array("check"=>true,"uid"=>$uid);
+            $by_identity_id=$args["by_identity_id"];
+            $r=$identityData->isIdentityBelongsUser($by_identity_id,$uid);
+            if($r===true)
+                return array("check"=>true,"uid"=>$uid,"by_identity_id"=>$by_identity_id);
+            else
+                return array("check"=>false);
         }
         else if($api=="user") {
         }

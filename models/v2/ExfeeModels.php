@@ -45,7 +45,8 @@ class ExfeeModels extends DataModel {
     public function getUserIdsByExfeeId($exfee_id) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
-        $rawExfee     = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}");
+        $sql="SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
+        $rawExfee     = $this->getAll($sql);
         if ($rawExfee) {
             foreach ($rawExfee as $ei => $eItem) {
                 if ($eItem['identity_id'] && $eItem['state'] !== 4) {
@@ -183,13 +184,15 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getExfeeIdByUserid($userid)
+    public function getExfeeIdByUserid($userid,$updated_at="")
     {
         $sql="select identityid from user_identity where userid=$userid;";
         $identities=$this->getColumn($sql);
+        if($updated_at!="")
+            $updated_sql="and exfee_updated_at>'$updated_at'";
 
         $identities_list=implode($identities,",");
-        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) order by created_at limit 100;";
+        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) {$updated_sql} order by created_at limit 100;";
         //TODO: cross_id will be renamed to exfee_id
         $exfee_id_list=$this->getColumn($sql);
         return $exfee_id_list;
