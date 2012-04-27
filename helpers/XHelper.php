@@ -53,6 +53,7 @@ class XHelper extends ActionController {
         if ($changed["begin_at"]) {
             $changed["begin_at"] = humanDateTime($changed["begin_at"],   $user["timezone"] ? $user["timezone"] : $new_cross['timezone']);;
         }
+        print_r($new_cross);
         $exfee_identity=humanIdentity($exfee_identity,$user);
         $cross_id=$new_cross["id"];
 
@@ -99,7 +100,6 @@ class XHelper extends ActionController {
             }
         }
     }
-
 
     public function sendXInvitationChangeMsg($cross_id,$action_identity_id,$identities,$cross,$old_title) {
         $identityData=$this->getModelByName("identity");
