@@ -118,14 +118,31 @@ class ExfeeModels extends DataModel {
 
 
     public function addExfee($invitations, $by_identity_id) {
+        // basic check
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
         }
+        // get exfee id
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
+        // add invitations
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
         }
+        // call Gobus
+        // @todo: to find the iOSAPN identities?
+        $hlpCross = $this->getHelperByName('cross', 'v2');
+        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+        $cross_id = $this->getCrossIdByExfeeId($exfee_id);
+        $cross    = $hlpCross->getCross($cross_id);
+        $msgArg   = array('cross' => $cross, 'changed_invitations' => $chdExfee);
+        foreach ($cross->exfee->invitations as $invitation) {
+            $msg['to_identity'] = $invitation->identity;
+            $hlpGobus->send("{$invitation->identity->provider}_job", 'exfee', $msgArg);
+        }
+        
+        
+        
         return $exfee_id;
     }
 
@@ -182,6 +199,7 @@ class ExfeeModels extends DataModel {
         // }
         $this->updateExfeeTime($id);
         // call Gobus
+        // @todo: to find the iOSAPN identities?
         $hlpCross = $this->getHelperByName('cross', 'v2');
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
