@@ -126,25 +126,30 @@ class ExfeeHelper extends ActionController {
 
     public function sendIdentitiesInvitation($cross_id,$identity_list,$allexfee)
     {
-        $identity_id = $_SESSION['identity_id'];
-        if($identity_id >0)
-        {
-            $identitydata=$this->getModelByName("identity");
-            $host_identity=$identitydata->getIdentityById($identity_id);
-        }
         $userid=$_SESSION["userid"];
         if($userid>0)
         {
             $userData = $this->getModelByName("user");
             $user=$userData->getUser($userid);
         }
-        $host_identity=humanIdentity($host_identit,$user);
+        $identity_id = $_SESSION['identity_id'];
 
         $invitationdata=$this->getModelByName("invitation");
         $invitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $identity_list,false);
         $allinvitations=$invitationdata->getInvitation_Identities_ByIdentities($cross_id, $allexfee ,false);
         $crossData=$this->getModelByName("X");
         $cross=$crossData->getCross($cross_id);
+
+        $host_id=$cross["host_id"];
+        if($host_id >0)
+        {
+            $identitydata=$this->getModelByName("identity");
+            $host_identity=$identitydata->getIdentityById($host_id);
+        }
+        //$host_identity=humanIdentity($host_identit,$user);
+
+
+
         $place_id=$cross["place_id"];
         if(intval($place_id)>0)
         {
@@ -174,12 +179,12 @@ class ExfeeHelper extends ActionController {
                     'invitation_id' => $invitation["invitation_id"],
                     'token' => $invitation["token"],
                     'identity_id' => $invitation["identity_id"],
-                    'host_identity_id' => $identity_id,
+                    'host_identity_id' => $host_id,
+                    'host_identity' => $host_identity,
                     'provider' => $invitation["provider"],
                     'external_identity' => $invitation["external_identity"],
                     'name' => $invitation["name"],
                     'avatar_file_name' => $invitation["avatar_file_name"],
-                    'host_identity' => $host_identity,
                     'rsvp_status' => $invitation["state"],
                     'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
                     'by_identity' => $by_identity,
