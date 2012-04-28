@@ -402,39 +402,41 @@ class Apn_Job
         }
     }
 
-    public function generateInvitationPush($args)
+    public function generateInvitationPush($arg)
     {
             //find out which invitation should be push to a device, and which invitation is belongs to host and send grather success hint.
-            $invitations=$args["invitations"];
-            $host_identity_id=$args["host_identity_id"];
-            foreach ($invitations as $invitation)
-            {
+            $invitations=$arg["invitations"];
+            $host_identity_id=$arg["host_identity_id"];
+            //foreach ($invitations as $invitation)
+            //{
                 $isHost=FALSE;
                 $identities=$invitation["identities"];
                 $msgbodyobj=array();
-                foreach($identities as $identity)
-                {
-                       if($identity["identity_id"]==$host_identity_id)
-                            $isHost=TRUE;
+                if($identity["identity_id"]==$host_identity_id)
+                     $isHost=TRUE;
+                //foreach($identities as $identity)
+                //{
+                //       if($identity["identity_id"]==$host_identity_id)
+                //            $isHost=TRUE;
 
-                       //if($identity["provider"]=="iOSAPN")
-                       //     $msgbodyobj["external_identity"]=$identity["external_identity"];
-                }
+                //       //if($identity["provider"]=="iOSAPN")
+                //       //     $msgbodyobj["external_identity"]=$identity["external_identity"];
+                //}
                 
                 //if($msgbodyobj["external_identity"]!="")
-                if($invitation["identity"]["external_identity"]!="")
+                if($arg["identity"]["external_identity"]!="")
                 {
 
-                    $msgbodyobj["external_identity"]=$args["identity"]["external_identity"];
+                    $msgbodyobj["external_identity"]=$arg["identity"]["external_identity"];
                     //generate push msg
-                    $by_identity_name=$args["by_identity"]["name"];
+                    $by_identity_name=$arg["by_identity"]["name"];
                     if($by_identity_name=="")
-                        $by_identity_name=$args["by_identity"]["external_identity"];
+                        $by_identity_name=$arg["by_identity"]["external_identity"];
 
-                    $title=replacemarks($args["title"]);
+                    $title=replacemarks($arg["title"]);
 
-                    $begin_at=$args["begin_at"];
-                    $time_type=$args["begin_at"]["time_type"];
+                    $begin_at=$arg["begin_at"];
+                    $time_type=$arg["begin_at"]["time_type"];
                     $datetimestr=$begin_at["datetime"];
                     //if($begin_at=="0000-00-00 00:00:00"){ // hasn't datetime
                     //   $datetimestr="";
@@ -473,13 +475,13 @@ class Apn_Job
                     }
 
                     $msgbodyobj["msg"]=$msg;
-                    $msgbodyobj["cid"]=$args["cross_id"];
+                    $msgbodyobj["cid"]=$arg["cross_id"];
                     $msgbodyobj["t"]="i";
 
                     $this->deliver($msgbodyobj);
                 }
 
-            }
+            //}
     }
     public function deliver($msgbodyobj)
     {
