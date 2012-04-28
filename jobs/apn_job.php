@@ -8,7 +8,6 @@ class Apn_Job
 {
     public function multi_perform($args)
     {
-        print_r($args);
         $change_objects=array();
         $rsvp_objects=array();
         foreach($args as $arg)
