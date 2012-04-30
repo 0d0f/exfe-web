@@ -605,7 +605,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '<div class="creatbtn"><a href="/x/gather">Gather</a></div>';
             userPanelHTML += '<div class="splitline"></div>'
             userPanelHTML += '<div class="myexfefoot">';
-            userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
+            //TODO: Setting 暂时隐藏
+            //userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
             userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
             userPanelHTML += '</div></div>'+ '<span class="fill-right"></span></div>';
 
