@@ -186,6 +186,28 @@ class UserModels extends DataModel {
         return null;
     }
 
+    public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id)
+    {
+        if(intval($identity_id)>0 && intval($user_id)>0)
+        {
+            $sql="select userid from user_identity where identityid={$identity_id} and userid={$user_id};";
+            $rawUser = $this->getRow($sql);
+            if(intval($rawUser["userid"])>0)
+            {
+                $rtResult   = array('user_id' => $user_id);
+                $passwdInDb = $this->getUserPasswdByUserId($user_id);
+                if (!$passwdInDb['auth_token']) {
+                    $passwdInDb['auth_token'] = md5($time.uniqid());
+                    $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
+                    $this->query($sql);
+                }
+                $rtResult['token'] = $passwdInDb['auth_token'];
+                return $rtResult;
+            }
+
+        }
+        return null;
+    }
 
     public function signinByCookie() {
         // get vars
