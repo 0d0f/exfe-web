@@ -661,7 +661,7 @@ select,
   font-size: 14px;
   line-height: 20px;
   color: #555555;
-  border: 1px solid #cccccc;
+  border: 1px solid #d5d5d5;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -1006,10 +1006,10 @@ select:focus:required:invalid:focus {
   cursor: not-allowed;
 }
 :-moz-placeholder {
-  color: #999999;
+  color: #e6e6e6;
 }
 ::-webkit-input-placeholder {
-  color: #999999;
+  color: #e6e6e6;
 }
 .help-block,
 .help-inline {
@@ -1443,7 +1443,7 @@ table .span24 {
   height: 14px;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/img/glyphicons-halflings.png");
+  background-image: url("../img/glyphicons-halflings.png");
   background-position: 14px 14px;
   background-repeat: no-repeat;
   *margin-right: .3em;
@@ -1453,7 +1453,7 @@ table .span24 {
   *margin-left: 0;
 }
 .icon-white {
-  background-image: url("/img/glyphicons-halflings-white.png");
+  background-image: url("../img/glyphicons-halflings-white.png");
 }
 .icon-glass {
   background-position: 0      0;
@@ -4070,6 +4070,47 @@ a.thumbnail:hover {
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
   hyphens: auto;
+}
+.text-overflow-clip {
+  text-overflow: clip;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.xxx-leave {
+  width: 55px;
+  height: 16px;
+  background-color: #eda9a8;
+  background-image: -moz-linear-gradient(top, #feebeb, #d44644);
+  background-image: -ms-linear-gradient(top, #feebeb, #d44644);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#feebeb), to(#d44644));
+  background-image: -webkit-linear-gradient(top, #feebeb, #d44644);
+  background-image: -o-linear-gradient(top, #feebeb, #d44644);
+  background-image: linear-gradient(top, #feebeb, #d44644);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#feebeb', endColorstr='#d44644', GradientType=0);
+  border-color: #d44644 #d44644 #a52826;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+  font-size: 12px;
+  line-height: 14px;
+  padding: 0;
+  color: #191919;
+  text-shadow: none;
+  border: 1px solid rgba(127, 127, 127, 0.15);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+.xxx-leave:hover,
+.xxx-leave:active,
+.xxx-leave.active,
+.xxx-leave.disabled,
+.xxx-leave[disabled] {
+  background-color: #d44644;
+}
+.xxx-leave:active,
+.xxx-leave.active {
+  background-color: #ba2d2b \9;
 }
 .navbar {
   margin-bottom: 24px;

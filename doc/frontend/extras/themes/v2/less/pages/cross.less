@@ -27,6 +27,7 @@
 .avatar {
   display: inline-block;
   position: relative;
+  line-height: 0;
 
   img {
     .border-radius(3px);
@@ -170,6 +171,17 @@
   .cross-identities {
     .thumbnails {
       margin: 0;
+
+      .identity-name {
+        width: 50px;
+        overflow: hidden;
+        font-size: 12px;
+        line-height: 16px;
+        color: #b2b2b2;
+        text-align: center;
+        .text-overflow-clip;
+      }
+      
     }
 
     .rt, .rb, .lb, .lt {
@@ -244,16 +256,6 @@
       .opacity(25);
     }
 
-    .identity-name {
-      width: 50px;
-      overflow: hidden;
-      font-size: 12px;
-      line-height: 16px;
-      color: #b2b2b2;
-      text-align: center;
-      .text-overflow-clip;
-    }
-
     .identity-more > div {
       display: table-cell;
       width: 15px;
@@ -266,12 +268,68 @@
   }
 
   .invite-form {
+    position: relative;
+    margin: 0;
+
     input[type="text"] {
-      width: 253px;
-      height: 22px;
+      width: 258px;
+      height: 14px;
+      margin-bottom: 0;
+      padding-right: 16px;
       background-color: transparent;
       .border-radius(0);
     }
+
+    i {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+    }
+  }
+
+  .invite-list {
+    ul {
+      margin: 0;
+      list-style: none;
+    }
+
+    li {
+      /*height: 30px;*/
+      line-height: 24px;
+      > div {
+        padding: 5px 0;
+        height: 20px;
+      }        
+    }
+
+    .identity-name {
+      font-size: 18px;
+      color: #424242;
+    }
+
+    .host {
+      font-size: 12px;
+      line-height: 14px;
+      color: #eaeaea;
+      background: #1175A5;
+      padding: 0 2px;
+    }
+    .avatar-invite {
+      line-height: 0;
+    }
+
+    .hover {
+      width: 275px;
+      padding-right: 15px;
+      padding-left: 10px;
+      margin-left: -10px;
+      background-color: #d5e8f2;
+
+      .avatar-invite {
+        .show;
+      }
+    }
+
   }
 
   .exfeetip {
@@ -305,6 +363,7 @@
     z-index: 1021;
     width: 195px;
     padding: 0 10px 7px;
+    color: #424242;
     #gradient > .directional(#fafafa, #e6e6e6, 255deg);
     .box-shadow(0 1px 4px rgba(0,0,0,.25));
     border: 1px solid rgba(255,255,255,0.8);
@@ -467,6 +526,16 @@
       text-align: center;
       color: #424242;
       font-style: oblique;
+      line-height: 20px;
+    }
+
+    .identity-actions {
+
+      p {
+        font-size: 12px;
+        line-height: 18px;
+        color: #424242;
+      }
     }
 
   }

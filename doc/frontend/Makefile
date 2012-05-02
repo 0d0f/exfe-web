@@ -82,4 +82,7 @@ down:
 	killall 'node'
 
 
-.PHONY: up down docs IMG JS CSS watch gh-pages
+export:
+	git archive master | bzip2 >source-tree.tar.bz2
+
+.PHONY: up down docs IMG JS CSS watch gh-pages export
