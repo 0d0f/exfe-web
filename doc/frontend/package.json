@@ -1,0 +1,9 @@
+{
+  "name": "xstrap",
+  "version": "0.0.1",
+  "dependencies": {
+    "connect": "*",
+    "h5bp": "*",
+    "less": "*"
+  }
+}
