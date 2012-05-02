@@ -90,5 +90,12 @@
   white-space: nowrap;
 }
 
+.xButtonBackground(@startColor, @endColor) {
+ // gradientBar will set the background to a pleasing blend of these, to support IE<=9
+  .gradientBar(@startColor, @endColor);
+  .reset-filter();
+}
+
 @import "./pages/partial/angle.less";
 @import "./pages/partial/buttons.less";
+@import "./pages/partial/xalert.less";
