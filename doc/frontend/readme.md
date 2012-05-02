@@ -12,3 +12,8 @@ EXFE.COM 前端架构
   * Validating Tools
     - http://validator.w3.org/unicorn/
     - http://html5/validator.nu/
+
+## Node.js & Packages
+npm install -gd less
+npm install -gd connect
+npm install -gd h5bp
