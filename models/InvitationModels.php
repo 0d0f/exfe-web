@@ -232,19 +232,25 @@ class InvitationModels extends DataModel
         $returnResult = false;
         $sql = "SELECT identityid FROM user_identity WHERE userid={$user_id}";
         $identityArr = $this->getAll($sql);
-        $sql = "SELECT identity_id FROM invitations WHERE cross_id={$cross_id}";
-        $crossIdentity = $this->getAll($sql);
+        
+        $sql = "SELECT exfee_id FROM crosses WHERE id={$cross_id}";
+        $cross=$this->getRow($sql);
+        if(intval($cross["exfee_id"])>0)
+        {
+            $exfee_id=intval($cross["exfee_id"]);
+            $sql = "SELECT identity_id FROM invitations WHERE cross_id={$exfee_id}";
+            $crossIdentity = $this->getAll($sql);
 
-        foreach($identityArr as $v){
-            foreach($crossIdentity as $vv){
-                if($v["identityid"] == $vv["identity_id"]){
-                    $returnResult = true;
+            foreach($identityArr as $v){
+                foreach($crossIdentity as $vv){
+                    if($v["identityid"] == $vv["identity_id"]){
+                        $returnResult = true;
+                    }
                 }
             }
+            return $returnResult;
         }
-        return $returnResult;
     }
-
     public function ifIdentityHasInvitationByToken($token,$cross_id)
     {
         $sql="select id,tokenexpired from invitations where token='$token' and  cross_id=$cross_id;";
