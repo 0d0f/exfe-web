@@ -18,8 +18,13 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.strInputTips      = 'Enter attendees’ information';
 
-    ns.arrStrRsvp        = ['Not responded', 'Accepted', 'Declined', 'Interested'];
-
+    ns.arrStrRsvp        = { NORESPONSE   : 'No response',
+                             ACCEPTED     : 'Accepted',
+                             DECLINED     : 'Declined',
+                             INTERESTED   : 'Interested',
+                             REMOVED      : 'Removed',
+                             NOTIFICATION : 'Notification'};
+    
     ns.inputed           = {};
 
     ns.editable          = {};
