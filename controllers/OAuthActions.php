@@ -80,6 +80,7 @@ class OAuthActions extends ActionController {
             "avatar"        =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"]),
             "oauth_token"   =>$accessTokenStr
         );
+        $external_identity=$oAuthUserInfo["provider"]."_".$oAuthUserInfo["id"];
 
         $OAuthModel = $this->getModelByName("oAuth");
         $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
@@ -108,7 +109,7 @@ class OAuthActions extends ActionController {
             if($signinResult["token"]!="" && intval($signinResult["user_id"]) == intval($result["userID"]))
             {
                 
-                header("location:".$_SESSION['oauth_device_callback']."?token=".$signinResult["token"]."&name=".$oAuthUserInfo["name"]."&userid=".$signinResult["user_id"]);
+                header("location:".$_SESSION['oauth_device_callback']."?token=".$signinResult["token"]."&name=".$oAuthUserInfo["name"]."&userid=".$signinResult["user_id"]."&external_id=".$external_identity);
                 exit(0);
             }
             header("location:".$_SESSION['oauth_device_callback']."?err=OAuth error.");
