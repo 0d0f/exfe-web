@@ -22,7 +22,7 @@ class ExfeeActions extends ActionController {
         // get cross id
         $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id)
         // check rights
-        $result   = $checkHelper->isAPIAllow('cross_add', $params['token'], array('cross_id' => $cross_id));
+        $result   = $hlpCheck->isAPIAllow('cross_add', $params['token'], array('cross_id' => $cross_id));
         if (!$result['check']) {
             if ($result['uid']) {
                 apiError(403, 'not_authorized', 'You are not a member of this exfee.');    
