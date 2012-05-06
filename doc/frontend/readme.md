@@ -12,8 +12,14 @@ EXFE.COM 前端架构
   * Validating Tools
     - http://validator.w3.org/unicorn/
     - http://html5/validator.nu/
+  * Style Guide
+    - http://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml
+  * [odof.js][]
 
 ## Node.js & Packages
 npm install -gd less
 npm install -gd connect
 npm install -gd h5bp
+npm install -gd dox
+
+[odof.js]: https://github.com/cfddream/odof
