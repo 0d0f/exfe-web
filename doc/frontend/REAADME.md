@@ -1,6 +1,16 @@
 EXFE.COM 前端架构
 =================
 
+## PageList `pagelist.html`:
+  * home.html           - index     首页
+  * gather.html         - Gather    Cross 创建页面
+  * cross.html          - Cross     Cross Show 页面
+  * profile.html        - Profile   个人页面
+  * xedit.html          - Xedit     Cross 编辑页
+  * dialog.html         - Dialog    弹窗
+  * topnav.html         - Topnav
+  * sample.html         - Sample    实例页面
+
 ## 开发工具
   * Node.js
   * Less
