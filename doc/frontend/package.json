@@ -4,6 +4,7 @@
   "dependencies": {
     "connect": "*",
     "h5bp": "*",
-    "less": "*"
+    "less": "*",
+    "dox": "*"
   }
 }

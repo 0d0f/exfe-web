@@ -76,13 +76,17 @@ watch:
 # start static files server
 #
 up:
-	node server.js > /dev/null &
+	@node ./tools/server.js > /dev/null &
 
 down:
-	killall 'node'
+	@killall 'node'
 
 
 export:
 	git archive master | bzip2 >source-tree.tar.bz2
 
-.PHONY: up down docs IMG JS CSS watch gh-pages export
+upOO:
+	@echo git pull odof
+	@(cd odof; git pull;)
+
+.PHONY: up down docs IMG JS CSS watch gh-pages export upOO
