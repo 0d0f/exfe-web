@@ -2,6 +2,13 @@
 
 class IdentityModels extends DataModel {
 
+    // v1_v2_bridge
+    protected function getExfeeIdByCrossId($cross_id) {
+        $sql      = "SELECT `exfee_id` FROM `crosses` WHERE `id` = {$cross_id}";
+        $dbResult = $this->getRow($sql);
+        return intval($dbResult['exfee_id']);
+    }
+
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -32,6 +39,7 @@ class IdentityModels extends DataModel {
 
 
     public function loginWithXToken($cross_id,$token) {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql = "SELECT `identity_id`, `tokenexpired` FROM `invitations` WHERE `cross_id` = {$cross_id} AND `token` = '{$token}'";
         $row = $this->getRow($sql);
         $identity_id  = intval($row["identity_id"]);
