@@ -2,6 +2,13 @@
 
 class UserModels extends DataModel {
 
+    // v1_v2_bridge
+    protected function getExfeeIdByCrossId($cross_id) {
+        $sql      = "SELECT `exfee_id` FROM `crosses` WHERE `id` = {$cross_id}";
+        $dbResult = $this->getRow($sql);
+        return intval($dbResult['exfee_id']);
+    }
+
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
        $logout_identity_list=array();
@@ -97,6 +104,7 @@ class UserModels extends DataModel {
 
     public function addUserByToken($cross_id,$displayname,$token)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql = "select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
@@ -145,6 +153,7 @@ class UserModels extends DataModel {
 
     public function setPasswordByToken($cross_id,$token,$password,$displayname)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
         $identity_id=intval($row["identity_id"]);
