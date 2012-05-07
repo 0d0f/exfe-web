@@ -76,7 +76,7 @@ watch:
 # start static files server
 #
 up:
-	@node server.js > /dev/null &
+	@node ./tools/server.js > /dev/null &
 
 down:
 	@killall 'node'
