@@ -123,12 +123,12 @@ class ExfeeModels extends DataModel {
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
         $cross    = $hlpCross->getCross($cross_id);
-        $msgArg   = array('cross' => $cross);
+        $msgArg   = array('cross' => $cross, 'event' => array());
         if (is_array($new_invitations)) {
-            $msgArg['new_invitations']     = $new_invitations;
+            $msgArg['event']['new_invitations']     = $new_invitations;
         } 
         if (is_array($changed_invitations)) {
-            $msgArg['changed_invitations'] = $changed_invitations;
+            $msgArg['event']['changed_invitations'] = $changed_invitations;
         }
         foreach ($cross->exfee->invitations as $invitation) {
             if ($invitation->identity->id === $by_identity_id) {
