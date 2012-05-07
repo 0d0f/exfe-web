@@ -76,10 +76,10 @@ watch:
 # start static files server
 #
 up:
-	node server.js > /dev/null &
+	@node server.js > /dev/null &
 
 down:
-	killall 'node'
+	@killall 'node'
 
 
 export:
