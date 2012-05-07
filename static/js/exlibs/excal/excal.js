@@ -465,10 +465,23 @@ function exCalendar() {
 
         excalCon += "</table></div>";
 
-        var timeList = createTimeList();
+        var listType;
+        if (dateField) {
+          var objRegExpDateTime = /^(\d{2})\-(\d{2})\-(\d{4})( (\d{2}):(\d{2}) ([AM|PM]{2}))?$/;
+          var dateString = new String(dateField.value);
+          var m = dateString.match(objRegExpDateTime);
+          if (m) {
+            if (thisMonth != m[1] || thisDay != m[2] || thisYear != m[3]) {
+              listType = 'newday';
+            }
+          }
+        }
+
+        var timeList = createTimeList(listType);
+
         excalCon += "<div class='exCalTimes'><ul><li class='header'>" + exLang.timeAllDay + "</li></ul><ul class='list' id='excal_time_list'>";
         for(i=0; i<timeList.length; i++){
-            excalCon += "<li onclick='exCal.setCalendarTime(\""+ timeList[i].displayTime +"\",\"" + timeList[i].standardTime + "\");' name='exCalTimeList' id='" + timeList[i].displayTime + "'>"+ timeList[i].displayTime +"</li>";
+          excalCon += "<li onclick='exCal.setCalendarTime(\""+ timeList[i].displayTime +"\",\"" + timeList[i].standardTime + "\");' name='exCalTimeList' id='" + timeList[i].displayTime + "'>"+ timeList[i].displayTime +"</li>";
         }
         excalCon += "</ul></div>";
 
@@ -480,11 +493,11 @@ function exCalendar() {
      *
      * */
     function isArray(obj) {
-        if(obj.constructor.toString().indexOf("Array") == -1){
-            return false;
-        }else{
-            return true;
-        }
+      if(obj.constructor.toString().indexOf("Array") == -1){
+        return false;
+      }else{
+        return true;
+      }
     };
 
     /**
@@ -492,11 +505,11 @@ function exCalendar() {
      *
      * */
     function removeArrayItemById(myArray, itemIDToRemove) {
-        if(!isArray(myArray) || isNaN(itemIDToRemove)){
-            return false;
-        }
-        myArray.splice(itemIDToRemove, 1);
-        return myArray;
+      if(!isArray(myArray) || isNaN(itemIDToRemove)){
+        return false;
+      }
+      myArray.splice(itemIDToRemove, 1);
+      return myArray;
     };
 
     /**
