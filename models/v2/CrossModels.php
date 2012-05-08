@@ -1,6 +1,7 @@
 <?php
 
 class CrossModels extends DataModel {
+
     public function getCrossesByExfeeids($exfee_id_list)
     {
         $exfee_ids=implode($exfee_id_list,",");
@@ -8,12 +9,14 @@ class CrossModels extends DataModel {
         $result=$this->getAll($sql);
         return $result;
     }
+
     public function getCross($crossid)
     {
         $sql="select * from crosses where id=$crossid;";
         $result=$this->getRow($sql);
         return $result;
     }
+
     public function addCross($cross,$place_id=0,$exfee_id=0,$by_identity_id=0)
     {
         $cross_time=$cross->time;
@@ -25,10 +28,8 @@ class CrossModels extends DataModel {
                 if($widget->type==="Background")
                     $background=$widget->image;
             }
-
-        
+  
         $begin_at_time_in_old_format=$cross_time->begin_at->date." ".$cross_time->begin_at->time;
-
 
         if(intval($cross->id)==0)
         {
