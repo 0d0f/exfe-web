@@ -324,7 +324,7 @@ class InvitationModels extends DataModel
         if ($result) {
             foreach ($result as $key => $value) {
                 $result[$key]['cross_id'] = $this->getCrossIdByExfeeId($value['cross_id']);
-                echo $result[$key]['cross_id'];
+                echo $value['cross_id'];
                 
             }
         }
