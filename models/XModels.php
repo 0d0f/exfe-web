@@ -2,6 +2,13 @@
 
 class XModels extends DataModel {
 
+    // v1_v2_bridge
+    protected function getCrossIdByExfeeId($exfee_id) {
+        $sql      = "SELECT `id` FROM `crosses` WHERE `exfee_id` = {$exfee_id}";
+        $dbResult = $this->getRow($sql);
+        return intval($dbResult['id']);
+    }
+
     public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
         // state=1 draft
@@ -10,6 +17,12 @@ class XModels extends DataModel {
         // $end_at=$cross["end_at"];
         // $duration=$cross["duration"];
         // time type
+
+        // get exfee id
+        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
+        $exfee_id = intval($dbResult['insert_id']);
+        // }
+
         $datetime_array = explode(' ', $cross['datetime']);
         $time_type = '';
         if ($cross['datetime'] && sizeof($datetime_array) === 1) {
@@ -17,11 +30,11 @@ class XModels extends DataModel {
         }
         $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
                 state, title, description, begin_at, end_at, duration, place_id,
-                timezone, origin_begin_at, background) values({$identityId}, NOW(),
+                timezone, origin_begin_at, background, exfee_id) values({$identityId}, NOW(),
                 '{$time_type}', NOW(), '1', '{$cross['title']}',
                 '{$cross['description']}', '{$cross['datetime']}', '{$end_at}',
                 '{$duration}', {$cross['place_id']}, '{$cross['timezone']}',
-                '{$cross['ori_datetime']}', '{$cross['background']}');";
+                '{$cross['ori_datetime']}', '{$cross['background']}', {$exfee_id});";
 
         $result   = $this->query($sql);
         $cross_id = intval($result['insert_id']);
@@ -137,7 +150,7 @@ class XModels extends DataModel {
         {
             for($i=0;$i<sizeof($cross_id_list);$i++)
             {
-                $cross_id_list[$i]= "c.id=".$cross_id_list[$i];
+                $cross_id_list[$i]= "c.id=" . $this->getCrossIdByExfeeId($cross_id_list[$i]);
             }
             $str=implode(" or ",$cross_id_list);
             $sql = "SELECT c.*, p.place_line1, p.place_line2,p.provider as place_provider,p.external_id as place_external_id,p.lng as place_lng,p.lat as place_lat FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) ORDER BY created_at DESC;";
@@ -175,7 +188,7 @@ class XModels extends DataModel {
             return array();
         }
         for ($i = 0; $i < sizeof($cross_id_list); $i++) {
-            $cross_id_list[$i] = 'c.id = ' . $cross_id_list[$i];
+            $cross_id_list[$i] = 'c.id = ' . $this->getCrossIdByExfeeId($cross_id_list[$i]);
         }
         $str = implode(' or ', $cross_id_list);
         switch ($opening) {
