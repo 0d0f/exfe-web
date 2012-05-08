@@ -1,6 +1,6 @@
 <?php
 
-class CrossActions extends ActionController {
+class CrossesActions extends ActionController {
 
     public function doIndex()
     {
