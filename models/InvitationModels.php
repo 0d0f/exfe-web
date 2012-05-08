@@ -3,9 +3,17 @@
 class InvitationModels extends DataModel
 {
 
+    // v1_v2_bridge
+    protected function getExfeeIdByCrossId($cross_id) {
+        $sql      = "SELECT `exfee_id` FROM `crosses` WHERE `id` = {$cross_id}";
+        $dbResult = $this->getRow($sql);
+        return intval($dbResult['exfee_id']);
+    }
+
+
     public function rsvpIdentities($cross_id,$identity_id_list,$state,$userid)
     {
-
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         for($i=0;$i<sizeof($identity_id_list);$i++)
         {
             $identity_id_list[$i]= "a.identity_id=".$identity_id_list[$i];
@@ -46,6 +54,7 @@ class InvitationModels extends DataModel
 
     public function rsvp($cross_id,$identity_id,$state)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $time=time();
         $sql="update invitations set state=$state,updated_at=FROM_UNIXTIME($time) where identity_id=$identity_id and cross_id=$cross_id;";
         $this->query($sql);
@@ -64,6 +73,7 @@ class InvitationModels extends DataModel
 
     public function delInvitation($cross_id, $identity_id)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="DELETE FROM `invitations` WHERE `cross_id` = '{$cross_id}' AND `identity_id` = {$identity_id};";
         return $this->query($sql);
     }
@@ -80,12 +90,12 @@ class InvitationModels extends DataModel
 
         $crossstr="";
         if(sizeof($cross_ids)==1)
-            $crossstr="cross_id=$cross_ids[0]";
+            $crossstr='cross_id=' . $this->getExfeeIdByCrossId($cross_ids[0]);
         else if(sizeof($cross_ids)>1)
         {
             for($i=0;$i<sizeof($cross_ids);$i++)
             {
-                $cross_ids[$i]= "cross_id=".$cross_ids[$i];
+                $cross_ids[$i]= "cross_id=" . $this->getExfeeIdByCrossId($cross_ids[$i]);
             }
             $crossstr=implode(" or ",$cross_ids);
         }
@@ -97,7 +107,7 @@ class InvitationModels extends DataModel
 
     public function getInvitatedIdentityByUserid($userid,$cross_id)
     {
-
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="select identityid from user_identity where userid=$userid;";
         $identity_id_list=$this->getColumn($sql);
         for($i=0;$i<sizeof($identity_id_list);$i++)
@@ -113,6 +123,7 @@ class InvitationModels extends DataModel
 
     public function getInvitation_Identities($cross_id, $without_token=false, $filter=null, $withAllIdentities = true)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="select a.id invitation_id, a.state, a.by_identity_id, a.token,a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
         if($without_token==true)
             $sql="select a.id invitation_id, a.state, a.by_identity_id, a.updated_at ,b.id identity_id,b.provider, b.external_identity, b.name, b.bio,b.avatar_file_name,b.external_username FROM invitations a,identities b where b.id=a.identity_id and a.cross_id=$cross_id";
@@ -161,6 +172,7 @@ class InvitationModels extends DataModel
 
     public function getInvitation_Identities_ByIdentities($cross_id, $identities_id_list,$without_token=false, $filter=null)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $id_list=array();
         for($i=0;$i<sizeof($identities_id_list);$i++)
         {
@@ -219,6 +231,7 @@ class InvitationModels extends DataModel
 
     public function ifIdentityHasInvitation($identity_id,$cross_id)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="select id from invitations where identity_id=$identity_id and cross_id=$cross_id;";
         $row=$this->getRow($sql);
         if(intval($row["id"])>0){
@@ -232,21 +245,29 @@ class InvitationModels extends DataModel
         $returnResult = false;
         $sql = "SELECT identityid FROM user_identity WHERE userid={$user_id}";
         $identityArr = $this->getAll($sql);
-        $sql = "SELECT identity_id FROM invitations WHERE cross_id={$cross_id}";
-        $crossIdentity = $this->getAll($sql);
+        
+        $sql = "SELECT exfee_id FROM crosses WHERE id={$cross_id}";
+        $cross=$this->getRow($sql);
+        if(intval($cross["exfee_id"])>0)
+        {
+            $exfee_id=intval($cross["exfee_id"]);
+            $sql = "SELECT identity_id FROM invitations WHERE cross_id={$exfee_id}";
+            $crossIdentity = $this->getAll($sql);
 
-        foreach($identityArr as $v){
-            foreach($crossIdentity as $vv){
-                if($v["identityid"] == $vv["identity_id"]){
-                    $returnResult = true;
+            foreach($identityArr as $v){
+                foreach($crossIdentity as $vv){
+                    if($v["identityid"] == $vv["identity_id"]){
+                        $returnResult = true;
+                    }
                 }
             }
+            return $returnResult;
         }
-        return $returnResult;
     }
 
     public function ifIdentityHasInvitationByToken($token,$cross_id)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="select id,tokenexpired from invitations where token='$token' and  cross_id=$cross_id;";
         $row=$this->getRow($sql);
         if($row && intval($row["tokenexpired"])<2) {
@@ -256,8 +277,10 @@ class InvitationModels extends DataModel
         }
         return array("allow"=>"false");
     }
+
     public function ifIdentityHasInvitationByIdentity($identity,$cross_id)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql="select id from identities where external_identity='$identity';";
         $row=$this->getRow($sql);
         if(intval($row["id"])>0 && intval($cross_id)>0)
@@ -274,6 +297,9 @@ class InvitationModels extends DataModel
     public function getIdentitiesIdsByCrossIds($cross_ids)
     {
         if ($cross_ids) {
+            foreach ($cross_ids as $i => $item) {
+                $cross_ids[$i] = $this->getExfeeIdByCrossId($item);
+            }
             $cross_ids = implode(' OR `cross_id` = ', $cross_ids);
             $sql       = "SELECT `identity_id`, `cross_id`, `state` FROM `invitations` WHERE `cross_id` = {$cross_ids};";
             return $this->getAll($sql);
@@ -300,6 +326,7 @@ class InvitationModels extends DataModel
     // upgraded
     public function addInvitation($cross_id,$identity_id,$state=0,$my_identity_id=0)
     {
+        $cross_id = $this->getExfeeIdByCrossId($cross_id);
         //TODO: ADD token
         $time=time();
         $token=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
