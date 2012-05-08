@@ -79,32 +79,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function setPassword($identity_id,$password,$displayname)
-    {
-        $sql="select userid from user_identity where identityid=$identity_id";
-        $result=$this->getRow($sql);
-        if(intval($result["userid"])>0)
-        {
-            $userid=intval($result["userid"]);
-
-            $passwordSalt = md5(createToken());
-            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
-
-            //$password=md5($password.$this->salt);
-            $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}',name='{$displayname}' WHERE id={$userid}";
-            $result=$this->query($sql);
-            if($result==1)
-            {
-                $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
-                $result=$this->query($sql);
-                return true;
-            }
-        }
-        return false;
-        //$sql="update ";
-    }
-
-
     public function addUserByIdentityId($identity_id, $display_name)
     {
         $time_stamp = time();
@@ -243,11 +217,13 @@ class UserModels extends DataModel {
     public function ifIdentityBelongsUser($external_identity,$user_id)
     {
         $sql="select id from identities where external_identity='$external_identity';";
+        //print $sql;
         $row=$this->getRow($sql);
         if(intval($row["id"])>0)
         {
             $identity_id=intval($row["id"]);
             $sql="select identityid from user_identity where identityid =$identity_id and userid=$user_id;";
+        //print $sql;
             $row=$this->getRow($sql);
             if(intval($row["identityid"])>0)
             {
@@ -368,6 +344,14 @@ class UserModels extends DataModel {
     public function getUser($userid)
     {
         $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
+        $row=$this->getRow($sql);
+        return $row;
+    }
+    
+    // upgraded
+    public function getUserWithPasswd($userid)
+    {
+        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,encrypted_password from users where id=$userid";
         $row=$this->getRow($sql);
         return $row;
     }
@@ -570,6 +554,33 @@ class UserModels extends DataModel {
                 }
             }
         }
+    }
+
+
+    // upgraded
+    public function setPassword($identity_id,$password,$displayname)
+    {
+        $sql="select userid from user_identity where identityid=$identity_id";
+        $result=$this->getRow($sql);
+        if(intval($result["userid"])>0)
+        {
+            $userid=intval($result["userid"]);
+
+            $passwordSalt = md5(createToken());
+            $password=md5($password.substr($passwordSalt,3,23).EXFE_PASSWORD_SALT);
+
+            //$password=md5($password.$this->salt);
+            $sql="UPDATE users SET encrypted_password='{$password}', password_salt='{$passwordSalt}',name='{$displayname}' WHERE id={$userid}";
+            $result=$this->query($sql);
+            if($result==1)
+            {
+                $sql="UPDATE identities SET name='$displayname' WHERE id=$identity_id";
+                $result=$this->query($sql);
+                return true;
+            }
+        }
+        return false;
+        //$sql="update ";
     }
 
 }

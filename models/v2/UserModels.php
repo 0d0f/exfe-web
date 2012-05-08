@@ -9,7 +9,7 @@ class UserModels extends DataModel {
 
     protected function getUserPasswdByUserId($user_id) {
         return $this->getRow(
-            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`
+            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
              `encrypted_password`, `password_salt`, `current_sign_in_ip`,
              `reset_password_token`
              FROM   `users` WHERE `id` = {$user_id}"
@@ -17,7 +17,7 @@ class UserModels extends DataModel {
     }
     
     
-    protected function encryptPassword($user_password, $password_salt) {
+    protected function encryptPassword($password, $password_salt) {
         return md5($password.( // compatible with the old users
             $password_salt === $this->salt ? $this->salt
           : (substr($password_salt, 3, 23) . EXFE_PASSWORD_SALT)
@@ -107,10 +107,9 @@ class UserModels extends DataModel {
     
     public function getUserIdsByIdentityIds($identity_ids) {
         $identity_ids = implode($identity_ids, ' OR `identityid` = ');
-        $dbResult = $this->getAll(
-            "SELECT `userid` FROM `user_identity`
-             WHERE `identityid` = {$identity_ids} AND `status` = 3"
-        );
+        $sql= "SELECT `userid` FROM `user_identity`
+             WHERE `identityid` = {$identity_ids} AND `status` = 3";
+        $dbResult = $this->getAll($sql);
         $user_ids = array();
         if ($dbResult) {
             foreach ($dbResult as $uI => $uItem) {
@@ -173,11 +172,12 @@ class UserModels extends DataModel {
         if ($user_id) {
             $rtResult   = array('user_id' => $user_id);
             $passwdInDb = $this->getUserPasswdByUserId($user_id);
-            $password   = $this->encryptPassword($password, $userPasswd['password_salt']);
+            $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
             if ($password === $passwdInDb['encrypted_password']) {
                 if (!$passwdInDb['auth_token']) {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
                     $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
+                    $this->query($sql);
                 }
                 $rtResult['token'] = $passwdInDb['auth_token'];
                 return $rtResult;
@@ -186,6 +186,28 @@ class UserModels extends DataModel {
         return null;
     }
 
+    public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id)
+    {
+        if(intval($identity_id)>0 && intval($user_id)>0)
+        {
+            $sql="select userid from user_identity where identityid={$identity_id} and userid={$user_id};";
+            $rawUser = $this->getRow($sql);
+            if(intval($rawUser["userid"])>0)
+            {
+                $rtResult   = array('user_id' => $user_id);
+                $passwdInDb = $this->getUserPasswdByUserId($user_id);
+                if (!$passwdInDb['auth_token']) {
+                    $passwdInDb['auth_token'] = md5($time.uniqid());
+                    $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
+                    $this->query($sql);
+                }
+                $rtResult['token'] = $passwdInDb['auth_token'];
+                return $rtResult;
+            }
+
+        }
+        return null;
+    }
 
     public function signinByCookie() {
         // get vars
@@ -287,19 +309,22 @@ class UserModels extends DataModel {
     
 
     public function getUserIdByToken($token) {
+        if(trim($token)==='')
+            return 0;
         $sql="select id from users where auth_token='$token';";
         $row=$this->getRow($sql);
         return intval($row["id"]);
     }
     
     
-    public function verifyUserPassword($user_id, $password) {
-        if (!$user_id || !$password) {
+    public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
+        if (!$user_id) {
             return false;
         }
         $passwdInDb = $this->getUserPasswdByUserId($user_id);
         $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-        return $password === $passwdInDb['encrypted_password'];
+        return $password === $passwdInDb['encrypted_password']
+            || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
     }
     
     
@@ -314,6 +339,7 @@ class UserModels extends DataModel {
             return $user_id;
         } else {
             $insResult = $this->query(
+                // @todo: need to add salt!!!
                 "INSERT INTO `users` SET
                  `encrypted_password` = '{$password}',
                  `name`               = '{$name}',
@@ -360,6 +386,24 @@ class UserModels extends DataModel {
             );
         }
         return null;
+    }
+    public function getIdentityIdByUserId($user_id){
+        $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
+        $identity_ids=$this->getColumn($sql);
+        return $identity_ids;
+        
+
+    }
+
+
+    public function setUserPassword($user_id, $password) {
+        $password = $this->encryptPassword($password, $passwordSalt = md5(createToken()));
+        return $this->query(
+            "UPDATE `users` SET
+             `encrypted_password` = '{$password}',
+             `password_salt`      = '{$passwordSalt}'
+             WHERE `id` = {$user_id}"
+        );
     }
 
 }

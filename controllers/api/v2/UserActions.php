@@ -52,8 +52,8 @@ class UserActions extends ActionController {
         if (!$modUser->verifyUserPassword($user_id, $password)) {
             apiError(403, 'invalid_password', ''); // 密码错误
         }
-        if ($modIdentity->addIdentity($provider, $external_id, $userID = 0)) {
-            apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
+        if ($identity_id = $modIdentity->addIdentity($provider, $external_id, $user_id)) {
+            apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
         } else {
             apiError(400, 'failed', '');
         }
@@ -164,7 +164,7 @@ class UserActions extends ActionController {
         $external_id = $_POST['external_id'];
         $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
         $password    = $_POST['password'];
-        $siResult    = $userData->signinForAuthToken($provider, $external_id, $password);
+        $siResult    = $modUser->signinForAuthToken($provider, $external_id, $password);
         if ($external_id && $password && $siResult) {
             apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
         } else {
@@ -229,6 +229,7 @@ class UserActions extends ActionController {
     public function doCrosses() {
         $params   = $this->params;
         $uid=$params["id"];
+        $updated_at=$params["updated_at"];
 
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
@@ -239,7 +240,7 @@ class UserActions extends ActionController {
         }
 
         $exfeeHelper= $this->getHelperByName('exfee', 'v2');
-        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid));
+        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
         $crossHelper= $this->getHelperByName('cross', 'v2');
         $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
         apiResponse(array("crosses"=>$cross_list));
@@ -250,14 +251,14 @@ class UserActions extends ActionController {
     
     public function doSetPassword() {
         $modUser = $this->getModelByName('user', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id || $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
+        if (!($user_id = $_SESSION['signin_user']->id ?: $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
             apiError(401, 'no_signin', ''); // 需要登录
         }
-        if (!($curPassword = $_POST['current_password'])) {
-            apiError(401, 'no_current_password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $curPassword)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
+        // if (!($curPassword = $_POST['current_password'])) {
+        //     apiError(401, 'no_current_password', ''); // 请输入当前密码
+        // }
+        if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
+            apiError(403, 'invalid_current_password', ''); // 密码错误
         }
         if (!($newPassword = $_POST['new_password'])) {
             apiError(400, 'no_new_password', ''); // 请输入当新密码
@@ -301,6 +302,25 @@ class UserActions extends ActionController {
             apiResponse(array('user_id' => $tkResult['user_id'])); // 成功
         }
         apiError(500, 'failed', ''); // 出错
+    }
+
+    public function doUpdate(){
+        $params   = $this->params;
+        $user_id=$params["id"];
+        $updated_at=$params["updated_at"];
+        $userData = $this->getModelByName('User', 'v2');
+        $identity_ids=$userData->getIdentityIdByUserId($user_id);
+
+        $exfeeData = $this->getModelByName('exfee', 'v2');
+        $cross_ids=$exfeeData->getUpdatedExfeeByIdentityIds($identity_ids,$updated_at);
+        print_r($cross_ids);
+
+        //print_r($identity_ids);
+        //SELECT distinct cross_id FROM `invitations` WHERE `exfee_updated_at`>'2012-04-24 08:25:10' and identity_id=174
+        //$exfeeHelper = $this->getHelperByName('exfee', 'v2');
+        //$update=$exfeeHelper->getUpdate($exfee_id,$updated_at);
+        //print_r($update);
+
     }
 
 }
