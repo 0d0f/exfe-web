@@ -63,9 +63,13 @@ class SActions extends ActionController {
                 $modIdentity->getIdentityById($newInvtItem['by_identity_id']),
                 $modUser->getUserByIdentityId($newInvtItem['by_identity_id'])
             );
-            $newInvt[$newInvtI]['cross'] = $modCross->getCross(
-                $newInvtItem['cross_id']
-            );
+            if (intval($newInvtItem['cross_id'])) {
+                $newInvt[$newInvtI]['cross'] = $modCross->getCross(
+                    $newInvtItem['cross_id']
+                );
+            } else {
+                unset($newInvt[$newInvtI]);
+            }
         }
 
         echo json_encode($newInvt);
