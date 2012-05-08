@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.16, for FreeBSD8.2 (amd64)
+-- MySQL dump 10.13  Distrib 5.1.41, for debian-linux-gnu (i486)
 --
--- Host: localhost    Database: exfe_dev
+-- Host: localhost    Database: exfe
 -- ------------------------------------------------------
--- Server version	5.5.16
+-- Server version	5.1.41-3ubuntu12.10
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -26,7 +26,7 @@ CREATE TABLE `background` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `image` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +42,7 @@ CREATE TABLE `cross_drafts` (
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `json` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=175 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=385 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,27 +57,28 @@ CREATE TABLE `crosses` (
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` text COLLATE utf8_unicode_ci,
   `code` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `exfee_id` bigint(20) NOT NULL,
   `begin_at` datetime DEFAULT NULL,
   `end_at` datetime DEFAULT NULL,
   `duration` int(11) DEFAULT NULL,
   `host_id` bigint(20) unsigned DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
-  `state` tinyint(4) DEFAULT NULL COMMENT '1 published 0 hidden',
+  `state` tinyint(4) DEFAULT NULL COMMENT '1 published 0 draft',
   `place_id` int(11) DEFAULT NULL,
   `time_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `origin_begin_at` varchar(233) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `background` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `exfee_id` bigint(20) NOT NULL,
   `date_word` varchar(34) COLLATE utf8_unicode_ci NOT NULL,
   `time_word` varchar(34) COLLATE utf8_unicode_ci NOT NULL,
   `date` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `time` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
   `outputformat` tinyint(4) NOT NULL COMMENT '0 OutputFormat, 1  OutputOrigin',
   `by_identity_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=81 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `exfee_id` (`exfee_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=100134 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,9 +90,10 @@ DROP TABLE IF EXISTS `exfees`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `exfees` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `update_at_exfeeid` (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=110012 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `update_at_exfeeid` (`id`,`updated_at`)
+) ENGINE=MyISAM AUTO_INCREMENT=110000 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -116,23 +118,7 @@ CREATE TABLE `identities` (
   `external_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oauth_token` text COLLATE utf8_unicode_ci COMMENT 'oauth token',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=108 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `identity_exfee`
---
-
-DROP TABLE IF EXISTS `identity_exfee`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `identity_exfee` (
-  `identity_id` bigint(20) NOT NULL,
-  `exfee_id` bigint(20) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  KEY `identity_exfee_updated` (`identity_id`,`exfee_id`,`updated_at`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=261 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,9 +143,8 @@ CREATE TABLE `invitations` (
   `lng` double NOT NULL,
   `exfee_updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `identity_id_idx` (`identity_id`),
-  KEY `exfee_updated_at` (`exfee_updated_at`)
-) ENGINE=MyISAM AUTO_INCREMENT=229 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `identity_id_idx` (`identity_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=433 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +182,7 @@ CREATE TABLE `logs` (
   `meta` text NOT NULL,
   `time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=578 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7921 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,12 +214,12 @@ CREATE TABLE `places` (
   `place_line2` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `provider` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `external_id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `lng` float NOT NULL,
-  `lat` float NOT NULL,
+  `lng` float(12,8) NOT NULL,
+  `lat` float(12,8) NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=120 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -257,7 +242,7 @@ CREATE TABLE `posts` (
   PRIMARY KEY (`id`),
   KEY `index_comments_on_commentable_type` (`postable_type`),
   KEY `index_comments_on_commentable_id` (`postable_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=46 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=984 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -271,6 +256,7 @@ CREATE TABLE `user_identity` (
   `identityid` bigint(20) NOT NULL,
   `userid` bigint(20) NOT NULL,
   `created_at` datetime NOT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` int(11) NOT NULL DEFAULT '2' COMMENT '3 connected 1 relatived/disconnected 2 veryifing',
   `activecode` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -320,14 +306,15 @@ CREATE TABLE `users` (
   `avatar_file_size` int(11) DEFAULT NULL,
   `avatar_updated_at` datetime DEFAULT NULL,
   `external_username` varchar(255) CHARACTER SET utf8 NOT NULL,
-  `cookie_logintoken` varchar(255) CHARACTER SET utf8 NOT NULL,
-  `cookie_loginsequ` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `cookie_logintoken` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `cookie_loginsequ` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `auth_token` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT '+08:00',
   `default_identity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `index_users_on_reset_password_token` (`reset_password_token`),
   KEY `auth_token` (`auth_token`)
-) ENGINE=MyISAM AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=179 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -339,4 +326,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-05-08  7:40:14
+-- Dump completed on 2012-05-08 11:33:47
