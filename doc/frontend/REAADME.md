@@ -27,6 +27,7 @@ EXFE.COM 前端架构
     - http://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml
   * [odof.js][id]
   * https://developers.google.com/closure/
+  * http://semver.org/
 
 ## Node.js & Packages
   - npm install -gd less

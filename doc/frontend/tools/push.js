@@ -24,9 +24,8 @@ function main(args, argv) {
         source = Fs.readFileSync(Path.join(path, 'lib', module + '.js'), 'utf8');
         package = JSON.parse(Fs.readFileSync(config, 'utf8'));
         newpath = Path.join(jsdist, module, package.version);
-        if ('hint' in package) jscheck = package.hint;
-        mkdirp(newpath);
 
+        if ('hint' in package) jscheck = package.hint;
         if (jscheck) {
           if (hint(source, jshintrc)) {
             console.log('JSHint check passed.'); 
@@ -35,6 +34,8 @@ function main(args, argv) {
             hintErrors();
           }
         }
+
+        mkdirp(newpath);
 
         dist = Path.join(newpath, module + '.js');
         mindist = Path.join(newpath, module + '.min.js');
