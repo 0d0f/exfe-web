@@ -18,18 +18,22 @@ EXFE.COM 前端架构
   * bootstrap
   * HTML5 + CSS3
     - Modernizr
+    - http://modernizr.github.com/Modernizr/test/
     - https://github.com/paulirish/html5-boilerplate
   * Validating Tools
     - http://validator.w3.org/unicorn/
     - http://html5/validator.nu/
   * Style Guide
     - http://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml
-  * [odof.js][]
+  * [odof.js][id]
+  * https://developers.google.com/closure/
+  * http://semver.org/
 
 ## Node.js & Packages
-npm install -gd less
-npm install -gd connect
-npm install -gd h5bp
-npm install -gd dox
+  - npm install -gd less
+  - npm install -gd connect
+  - npm install -gd h5bp
+  - npm install -gd dox
+  - npm install -gd uglify-js
 
-[odof.js]: https://github.com/cfddream/odof
+[id]: https://github.com/cfddream/odof
