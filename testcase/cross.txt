@@ -2,7 +2,7 @@ cross= {
     "attribute": {
         "state": "published"
     }, 
-    "host_id": "74", 
+    "host_id": "174", 
     "description": "desc...", 
     "place": { 
         "description": "", 
@@ -22,7 +22,7 @@ cross= {
                     "connected_user_id":0 ,
                     "external_id": "hj@exfe.com",
                     "external_username": "hj@exfe.com",
-                    "id": 74,
+                    "id": 174,
                     "name": "huoju",
                     "nickname": "",
                     "provider": "email"
@@ -37,7 +37,7 @@ cross= {
                     "connected_user_id":0 ,
                     "external_id": "hj@exfe.com",
                     "external_username": "hj@exfe.com",
-                    "id": 84,
+                    "id": 175,
                     "name": "huoju",
                     "nickname": "",
                     "provider": "email"
@@ -52,7 +52,7 @@ cross= {
                     "connected_user_id":0 ,
                     "external_id": "hj@exfe.com",
                     "external_username": "hj@exfe.com",
-                    "id": 83,
+                    "id": 190,
                     "name": "huoju",
                     "nickname": "",
                     "provider": "email"
@@ -67,7 +67,7 @@ cross= {
                     "connected_user_id": 0,
                     "external_id": "bbbbb@c.com",
                     "external_username": "bbbbb@c.com",
-                    "id": 66,
+                    "id": 176,
                     "name": "bbbbb",
                     "nickname": "",
                     "provider": "email"
