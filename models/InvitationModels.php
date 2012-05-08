@@ -11,6 +11,14 @@ class InvitationModels extends DataModel
     }
 
 
+    // v1_v2_bridge
+    protected function getCrossIdByExfeeId($exfee_id) {
+        $sql      = "SELECT `id` FROM `crosses` WHERE `exfee_id` = {$exfee_id}";
+        $dbResult = $this->getRow($sql);
+        return intval($dbResult['id']);
+    }
+
+
     public function rsvpIdentities($cross_id,$identity_id_list,$state,$userid)
     {
         $cross_id = $this->getExfeeIdByCrossId($cross_id);
@@ -312,8 +320,15 @@ class InvitationModels extends DataModel
     {
         $identity_ids = implode(' OR `identity_id` = ', $identity_ids);
         $sql = "SELECT * FROM `invitations` WHERE (`identity_id` = {$identity_ids}) AND `state` = 0 ORDER by `updated_at` DESC LIMIT {$limit};";
-        return $this->getAll($sql) ?: array();
+        $result = $this->getAll($sql);
+        if ($result) {
+            foreach ($result as $key => $value) {
+                $result[$key]['cross_id'] = $this->getCrossIdByExfeeId($value['cross_id']);
+            }
+        }
+        return $result ?: array();
     }
+
     public function getYESInvitationsByCrossId($cross_id,$my_identity_id)
     {
         $sql="SELECT identity_id FROM invitations WHERE cross_id=$cross_id AND state=".INVITATION_YES." AND identity_id<>$my_identity_id;";
