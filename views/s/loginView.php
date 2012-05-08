@@ -1,6 +1,6 @@
 <?php include "share/header.php"; ?>
 </head>
-<body style="background-color:#EFEFEF;">
+<body>
 <?php include "share/nav.php"; ?>
 <?php
 $isNewIdentity=$this->getVar("isNewIdentity");

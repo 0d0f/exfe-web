@@ -1,6 +1,6 @@
 <?php include 'share/header.php'; ?>
-<link rel="stylesheet" type="text/css" href="/static/?f=css/profile.css">
-<script type="text/javascript" src="/static/?g=js_uploader"></script>
+<link rel="stylesheet" type="text/css" href="/static/?f=css/profile.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>">
+<script type="text/javascript" src="/static/?g=js_uploader&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 </head>
 <body>
 <?php include 'share/nav.php'; ?>
@@ -151,7 +151,7 @@
             <div id="recently_updates" class="category">
                 <div class="category_title">
                     <img src="/static/images/translation.gif" class="category_icon"/>
-                    Recently updates
+                    Recent updates
                 </div>
                 <div class="crosses"></div>
             </div>
@@ -159,7 +159,7 @@
             <div id="ios-app">
               <div class="dismiss"><a href="#">Dismiss</a></div>
               <div class="ios-app-download">
-                Try <a href="#"><span>EXFE</span> app</a> on iPhone - instant, mobile.
+                Try <a title="EXFEE" target="_blank" href="http://itunes.apple.com/us/app/exfe/id514026604"><span>EXFE</span> app</a> on iPhone - instant, mobile.
               </div> 
             </div>
         </div>

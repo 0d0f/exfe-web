@@ -493,10 +493,12 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
         //隐藏掉头像的显示。
         jQuery("#user_avatar").hide();
 
+        $('#identity_reg_login_dialog').hide();
         jQuery("#forgot_verification_dialog").show();
         jQuery("#forgot_identity_input").val(userIdentity);
         jQuery("#cancel_forgot_verify_btn").bind("click",function(){
             jQuery("#forgot_verification_dialog").hide();
+            $('#identity_reg_login_dialog').show();
             jQuery("#fogot_verify_btn").unbind("click");
         });
         jQuery("#forgot_verification_msg").html("Confirm sending reset token to your mailbox?");
@@ -509,6 +511,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 jQuery("#fogot_verify_btn").unbind("click");
                 jQuery("#fogot_verify_btn").bind("click",function(){
                     jQuery("#forgot_verification_dialog").hide();
+                    $('#identity_reg_login_dialog').show();
                     jQuery("#fogot_verify_btn").unbind("click");
                 });
             };
@@ -602,7 +605,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             userPanelHTML += '<div class="creatbtn"><a href="/x/gather">Gather</a></div>';
             userPanelHTML += '<div class="splitline"></div>'
             userPanelHTML += '<div class="myexfefoot">';
-            userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
+            //TODO: Setting 暂时隐藏
+            //userPanelHTML += '<a href="/s/profile" class="l">Setting</a>';
             userPanelHTML += '<a href="/s/logout" class="r">Sign out</a></div>';
             userPanelHTML += '</div></div>'+ '<span class="fill-right"></span></div>';
 
@@ -663,16 +667,16 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                             + '<span class="iname email">' + identity.external_username + (identity.provider === 'email' ? '' : '@' + identity.provider) + '</span>'
                             + '<img alt="" width="20px" height="20px" src="' + identity.avatar_file_name + '" />'
                         + '</div>'
-                        + '<div class="setup">'
+                        + (show_idbox === 'setpassword' ? '<div class="setup">'
                             + '<p>'
                                 + '<span class="setup-btn">Set Up</span>'
                                 + ' as your independent new <span>EXFE</span> identity.'
                             + '</p>'
                         + '</div>'
-                        /*TODO: 多身份合并，4.13开始做
-                        + '<div class="signin-btn">'
+                         : '<div class="signin-btn">'
                             + '<a href="javascript:;">Sign In</a>'
-                        + '</div>'
+                        + '</div>')
+                        /*
                         + '<div class="splitline"></div>'
                         + '<div class="identites">'
                             + '<p>'
@@ -733,6 +737,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     odof.x.edit.setreadonly(clickCallBackFunc);
                 }
             });
+            $('.name .signin-btn').bind('click', function (e) {
+                if (login_type === 'token' && token) {
+                    odof.x.edit.setreadonly(clickCallBackFunc);
+                }
+            });
             ns.showTokenIdentityStatus.status = 0;
         //}
     };
@@ -750,7 +759,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     + '<p><span class="blue">EXFE</span> [ˈɛksfi] is still in <span class="bold">pilot</span> stage (with <span class="oblique">SANDBOX</span> tag). We’re building up blocks of it, thus some bugs and unfinished pages. Any feedback, please email <span class="oblique email">feedback@exfe.com.</span> Our apologies for any trouble you may encounter, much appreciated.</p>'
                 + '</div>'
                 + "<div class='identification_dialog_bottom'></div>";
-        odof.exlibs.ExDialog.initialize('identification', buf, 'exfe_version identification_dialog', 'win');
+        odof.exlibs.ExDialog.initialize('identification', buf, 'exfe_version identification_dialog');
         if (ns.showExfeVersion.status) {
             $('#identification_close_btn').click(function (e) {
                 $(this).unbind('click');
@@ -765,7 +774,7 @@ jQuery(document).ready(function(){
     //odof.user.status.doShowLoginDialog();
     //odof.user.status.doShowAddIdentityDialog();
 
-    //Todo: 下一版本必须修改，每次调用此文件都会发送一个请求，失去模块化的意义、以及部署
+    //TODO: 下一版本必须修改，每次调用此文件都会发送一个请求，失去模块化的意义、以及部署
     odof.user.status.checkUserLogin();
 
     // check accuracy of the local time

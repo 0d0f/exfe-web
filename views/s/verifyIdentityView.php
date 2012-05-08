@@ -7,7 +7,7 @@
 .identity_dialog_main .identification_bottom_btn { top:290px; }
 </style>
 </head>
-<body style="background-color:#EFEFEF;">
+<body>
 <?php
 $identityInfo = $this->getVar("identityInfo");
 ?>
