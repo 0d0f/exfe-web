@@ -1,4 +1,5 @@
 <?php
+#image functions by @Leaskh
 
 class libImage {
 
@@ -69,6 +70,82 @@ class libImage {
         ImageDestroy($newImage);
 
         return true;
+    }
+    
+    
+    public function imagetextouter(&$im, $size, $x, $y, $color, $fontfile, $text, $outer) {
+        if (!function_exists('ImageColorAllocateHEX'))
+        {
+            function ImageColorAllocateHEX($im, $s)
+            {
+               if($s{0} == "#") $s = substr($s,1);
+               $bg_dec = hexdec($s);
+               return imagecolorallocate($im,
+                           ($bg_dec & 0xFF0000) >> 16,
+                           ($bg_dec & 0x00FF00) >>  8,
+                           ($bg_dec & 0x0000FF)
+                           );
+            }
+        }
+
+        $ttf = false;
+
+        if (is_file($fontfile))
+        {
+            $ttf = true;
+            $area = imagettfbbox($size, $angle, $fontfile, $text);
+
+            $width  = $area[2] - $area[0] + 2;
+            $height = $area[1] - $area[5] + 2;
+        }
+        else
+        {
+            $width  = strlen($text) * 10;
+            $height = 16;
+        }
+
+        $im_tmp = imagecreate($width, $height);
+        $white = imagecolorallocate($im_tmp, 255, 255, 255);
+        $black = imagecolorallocate($im_tmp, 0, 0, 0);
+
+        $color = ImageColorAllocateHEX($im, $color);
+        $outer = ImageColorAllocateHEX($im, $outer);
+
+        if ($ttf)
+        {
+            imagettftext($im_tmp, $size, 0, 0, $height - 2, $black, $fontfile, $text);
+            imagettftext($im, $size, 0, $x, $y, $color, $fontfile, $text);
+            $y = $y - $height + 2;
+        }
+        else
+        {
+            imagestring($im_tmp, $size, 0, 0, $text, $black);
+            imagestring($im, $size, $x, $y, $text, $color);
+        }
+
+        for ($i = 0; $i < $width; $i ++)
+        {
+            for ($j = 0; $j < $height; $j ++)
+            {
+                $c = ImageColorAt($im_tmp, $i, $j);
+                if ($c !== $white)
+                {
+                    ImageColorAt ($im_tmp, $i, $j - 1) != $white || imagesetpixel($im, $x + $i, $y + $j - 1, $outer);
+                    ImageColorAt ($im_tmp, $i, $j + 1) != $white || imagesetpixel($im, $x + $i, $y + $j + 1, $outer);
+                    ImageColorAt ($im_tmp, $i - 1, $j) != $white || imagesetpixel($im, $x + $i - 1, $y + $j, $outer);
+                    ImageColorAt ($im_tmp, $i + 1, $j) != $white || imagesetpixel($im, $x + $i + 1, $y + $j, $outer);
+                    // 发光效果
+                    /*
+                    ImageColorAt ($im_tmp, $i - 1, $j - 1) != $white || imagesetpixel($im, $x + $i - 1, $y + $j - 1, $outer);
+                    ImageColorAt ($im_tmp, $i + 1, $j - 1) != $white || imagesetpixel($im, $x + $i + 1, $y + $j - 1, $outer);
+                    ImageColorAt ($im_tmp, $i - 1, $j + 1) != $white || imagesetpixel($im, $x + $i - 1, $y + $j + 1, $outer);
+                    ImageColorAt ($im_tmp, $i + 1, $j + 1) != $white || imagesetpixel($im, $x + $i + 1, $y + $j + 1, $outer);
+                    */
+                }
+            }
+        }
+
+        imagedestroy($im_tmp);
     }
 
 }

@@ -45,7 +45,8 @@ class ExfeeModels extends DataModel {
     public function getUserIdsByExfeeId($exfee_id) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
-        $rawExfee     = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}");
+        $sql="SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
+        $rawExfee     = $this->getAll($sql);
         if ($rawExfee) {
             foreach ($rawExfee as $ei => $eItem) {
                 if ($eItem['identity_id'] && $eItem['state'] !== 4) {
@@ -114,17 +115,49 @@ class ExfeeModels extends DataModel {
              WHERE `id`         = {$invitation->id}"   
         );
     }
+    
+    
+    public function sendToGobus($exfee_id, $by_identity_id, $new_invitations = null, $changed_invitations = null) {
+        // @todo: to find the iOSAPN identities?
+        $hlpCross = $this->getHelperByName('cross', 'v2');
+        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+        $cross_id = $this->getCrossIdByExfeeId($exfee_id);
+        $cross    = $hlpCross->getCross($cross_id);
+        $msgArg   = array('cross' => $cross, 'event' => array());
+        if (is_array($new_invitations)) {
+            $msgArg['event']['new_invitations']     = $new_invitations;
+        } 
+        if (is_array($changed_invitations)) {
+            $msgArg['event']['changed_invitations'] = $changed_invitations;
+        }
+        foreach ($cross->exfee->invitations as $invitation) {
+            if ($invitation->identity->id === $by_identity_id) {
+                $msgArg['by_identity'] = $invitation->identity;
+                break;
+            }
+        }
+        foreach ($cross->exfee->invitations as $invitation) {
+            $msgArg['to_identity'] = $invitation->identity;
+            $hlpGobus->send("{$invitation->identity->provider}_job", 'exfee', $msgArg);
+        }
+    }
 
 
     public function addExfee($invitations, $by_identity_id) {
+        // basic check
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
         }
-        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0, `updated_at` = NOW()");
+        // get exfee id
+        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
+        // add invitations
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
         }
+        // call Gobus
+        $this->sendToGobus($exfee_id, $by_identity_id);
+        //
         return $exfee_id;
     }
 
@@ -138,6 +171,8 @@ class ExfeeModels extends DataModel {
         }
         //
         $objExfee = $this->getExfeeById($id, true);
+        $newExfee = array();
+        $chdExfee = array();
         foreach ($invitations as $tI => $tItem) {
             // adding new identity
             if (!$tItem->identity->id) {
@@ -166,11 +201,13 @@ class ExfeeModels extends DataModel {
                                 && $this->getIndexOfRsvpStatus($tItem->rsvp_status) !== 4;
                     $this->updateInvitation($tItem, $by_identity_id, $updateToken);
                     unset($objExfee->invitations[$fI]);
+                    $chdExfee[] = $tItem;
                 }
             }
             // add new invitation if it's a new invitation
             if (!$exists) {
                 $this->addInvitationIntoExfee($tItem, $id, $by_identity_id);
+                $newExfee[] = $tItem;
             }
         }
         // foreach ($objExfee->invitations as $fI => $fItem) {
@@ -179,21 +216,27 @@ class ExfeeModels extends DataModel {
         //     $this->updateInvitation($fItem, $by_identity_id);
         // }
         $this->updateExfeeTime($id);
+        // call Gobus
+        $this->sendToGobus($exfee_id, $by_identity_id, $newExfee, $chdExfee);
+        //
         return $id;
     }
 
 
-    public function getExfeeIdByUserid($userid)
+    public function getExfeeIdByUserid($userid,$updated_at="")
     {
         $sql="select identityid from user_identity where userid=$userid;";
         $identities=$this->getColumn($sql);
+        if($updated_at!="")
+            $updated_sql="and exfee_updated_at>'$updated_at'";
 
         $identities_list=implode($identities,",");
-        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) order by created_at limit 100;";
+        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) {$updated_sql} order by created_at limit 100;";
         //TODO: cross_id will be renamed to exfee_id
         $exfee_id_list=$this->getColumn($sql);
         return $exfee_id_list;
     }
+
 
     public function updateExfeeTime($exfee_id)
     {
@@ -201,8 +244,26 @@ class ExfeeModels extends DataModel {
         $this->query($sql);
     }
 
+
     public function getUpdate($exfee_id,$updated_at)
     {
         //$sql="select id from exfees where ";
     }
+
+    
+    public function getUpdatedExfeeByIdentityIds($identityids,$updated_at)
+    {
+
+        $join_identity_ids=implode($identityids,",");
+        $sql="select cross_id from invitations where identity_id in ({$join_identity_ids}) and exfee_updated_at >'$updated_at'; ";
+        $cross_ids=$this->getColumn($sql);
+        return $cross_ids;
+    }
+
+
+    public function getCrossIdByExfeeId($exfee_id) {
+        $result=$this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
+        return intval($result['id']);
+    }
+        
 }

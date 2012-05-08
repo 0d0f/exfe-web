@@ -12,6 +12,8 @@ class OAuthActions extends ActionController {
     }
 
     public function doTwitterRedirect(){
+        $_SESSION['oauth_device']=$_GET["device"];
+        $_SESSION['oauth_device_callback']=$_GET["device_callback"];
         $twitterConn = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
         $requestToken = $twitterConn->getRequestToken(TWITTER_OAUTH_CALLBACK);
         $_SESSION['oauth_token'] = $requestToken['oauth_token'];
@@ -78,6 +80,7 @@ class OAuthActions extends ActionController {
             "avatar"        =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"]),
             "oauth_token"   =>$accessTokenStr
         );
+        $external_identity=$oAuthUserInfo["provider"]."_".$oAuthUserInfo["id"];
 
         $OAuthModel = $this->getModelByName("oAuth");
         $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
@@ -96,6 +99,24 @@ class OAuthActions extends ActionController {
         );
         $OAuthHelperHandler = $this->getHelperByName("oAuth");
         $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
+
+        $userData = $this->getModelByName("User","v2");
+
+        if($_SESSION['oauth_device']=='iOS')
+        {
+
+            $signinResult=$userData->signinForAuthTokenByOAuth("twitter",$result["identityID"],$result["userID"]);
+            if($signinResult["token"]!="" && intval($signinResult["user_id"]) == intval($result["userID"]))
+            {
+                
+                header("location:".$_SESSION['oauth_device_callback']."?token=".$signinResult["token"]."&name=".$oAuthUserInfo["name"]."&userid=".$signinResult["user_id"]."&external_id=".$external_identity);
+                exit(0);
+            }
+            header("location:".$_SESSION['oauth_device_callback']."?err=OAuth error.");
+            exit(0);
+        }
+        
+
         $identityModels = $this->getModelByName("identity");
         //===========
 

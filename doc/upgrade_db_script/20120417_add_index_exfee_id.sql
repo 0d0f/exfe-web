@@ -1,1 +1,1 @@
-ALTER TABLE  `crosses` ADD INDEX (  `exfee_id` )
+ALTER TABLE  `crosses` ADD INDEX (  `exfee_id` );

@@ -3,6 +3,18 @@ require_once dirname(__FILE__)."/ActionController.php";
 require_once dirname(__FILE__)."/DataModel.php";
 
 class FrontController {
+    
+    public function __construct() {
+        header('Content-Type: application/json; charset=UTF-8');
+
+        if ($_SERVER['HTTP_ORIGIN'] === SITE_URL) {
+            header('Access-Control-Allow-Origin: ' . SITE_URL);
+            header('Access-Control-Allow-Credentials: true');
+            if ($_GET['ssid']) {
+                session_id($_GET['ssid']);
+            }
+        }
+    }
 
 #	public static function checkOauthToken() {
 #
@@ -85,7 +97,7 @@ class FrontController {
 
         foreach($_GET as $k=>$v)
         {
-            if($k!="v" && $k!="class" && $k!=path)
+            if($k!="v" && $k!="class" && $k!=$path)
                 $params[$k]=$v;
         }
         require_once $file;

@@ -14,26 +14,27 @@ b.r2{margin: 0 1px}
 b.r3{margin: 0px}
 
 .identification_dialog {
-    position: absolute;
-    width: 400px;
-    height: 380px;
-    padding: 0;
-    z-index: 201;
-    font-family: "Helvetica", Verdana, "Lucida Grande", "Sans", "Arial", "SimSun";
-    color: #424242;
-    background-color: #FAFAFA;
-    /*background-image: url(images/fallback-gradient.png);*/
-    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
-    background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
-    background-image:    -moz-linear-gradient(top, #FAFAFA, #E6E6E6);
-    background-image:     -ms-linear-gradient(top, #FAFAFA, #E6E6E6);
-    background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
-    border-radius: 0 0 5px 5px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+  position: absolute;
+  width: 400px;
+  height: 380px;
+  padding: 0;
+  z-index: 201;
+  font-family: "Helvetica", Verdana, "Lucida Grande", "Sans", "Arial", "SimSun";
+  color: #4c4c4c;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 0 0 5px 5px;
+  background-color: #FAFAFA;
+  /*background-image: url(images/fallback-gradient.png);*/
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAFAFA), to(#E6E6E6));
+  background-image: -webkit-linear-gradient(top, #FAFAFA, #E6E6E6);
+  background-image:    -moz-linear-gradient(top, #FAFAFA, #E6E6E6);
+  background-image:     -ms-linear-gradient(top, #FAFAFA, #E6E6E6);
+  background-image:      -o-linear-gradient(top, #FAFAFA, #E6E6E6);
 }
 .idialog_inpage{ margin:auto; position:relative; z-index:0; margin-top: 70px;}
-.idialog_inpage .titles { display:none; }
+.idialog_inpage .titles {
+  visibility: hidden;
+}
 
 .identification_dialog .titles {
     font-family: Helvetica;
@@ -96,7 +97,14 @@ b.r3{margin: 0px}
     -moz-opacity:0.8; opacity: 0.8; filter: alpha(opacity=80); -khtml-opacity:0.8;
 }
 
-.identification_dialog_con { height:360px; width:400px; overflow:hidden;}
+.identification_dialog_con {
+  height: 359px;
+  width: 398px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+}
 
 .identification_dialog_con #identification_title_msg{
     height:25px; font-size:14px; line-height:1em;
@@ -121,7 +129,7 @@ b.r3{margin: 0px}
 .identification_dialog_con .reg_hint{
     /*-moz-opacity: 0.85; opacity: 0.85; filter: alpha(opacity=85); -khtml-opacity: 0.85;*/
 }
-.identification_dialog_con .reg_hint div{ width:360px; }
+.identification_dialog_con .reg_hint div{ width:340px; }
 
 #manual_verify_identity{
     width:260px; height:22px; padding:2px; border:1px solid #CCC;
@@ -276,6 +284,7 @@ b.r3{margin: 0px}
 .identity_dialog_main p.oauth_icon{
   /*width:180px;*/ /*TODO: 去掉 facebook google*/
   float:right;
+  margin-right: 35px;
   /*margin-top: 20px;*/
 }
 .identity_dialog_main p.oauth_icon a{ display:block; float:left; width:40px; height:40px; margin-left:15px; font-size:0px; }
@@ -364,7 +373,7 @@ b.r3{margin: 0px}
 .identity_dialog_main ul .notice span{ margin-left:115px; margin-top:0;}
 
 .identity_dialog_main .identification_bottom_btn{
-    position:absolute; z-index:203; height:40px; width:360px; top:305px; text-align:right;
+    position:absolute; z-index:203; height:40px; width:340px; top:305px; text-align:right;
     color: #424242;
 }
 
@@ -563,4 +572,25 @@ b.r3{margin: 0px}
 }
 .exfe_version .exfe-version-info p span.email {
   font-size: 14px;
+}
+
+#identity_set_pwd_dialog #set_password_desc {
+  color: #424242;
+  height: auto;
+  line-height: 20px;
+}
+
+#identity_set_pwd_dialog #set_pwd_form ul {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+#identity_set_pwd_dialog #set_pwd_form p {
+  color: #797979;
+}
+
+#identity_set_pwd_dialog #o_pwd:-moz-placeholder {
+  color: #d5d5d5;
+}
+#identity_set_pwd_dialog #o_pwd::-webkit-intpu-placeholder {
+  color: #d5d5d5;
 }
