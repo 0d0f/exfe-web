@@ -39,7 +39,7 @@ class ExfeeActions extends ActionController {
                     array('exfee' => array('updated_at' => time(), 'identity_id' => $by_identity_id))
                 );
             }
-            apiResponse(array('exfee_id' => $exfee_id));
+            apiResponse(array('exfee' => $modExfee->getExfeeById($exfee_id)));
         }
         apiError(400, 'editing failed', '');  
     }
