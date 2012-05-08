@@ -21,6 +21,7 @@ class ConversationActions extends ActionController {
         $conversation=$helperData->getConversationByExfeeId($exfee_id);
         apiResponse(array("conversation"=>$conversation));
     }
+
     public function doAdd()
     {
         $params=$this->params;
@@ -44,6 +45,7 @@ class ConversationActions extends ActionController {
         unset($new_post["del"]);
         apiResponse(array("post"=>$new_post));
     }
+    
     public function doDel()
     {
         $params=$this->params;
