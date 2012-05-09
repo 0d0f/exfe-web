@@ -126,6 +126,7 @@ class UsersActions extends ActionController {
     }
 
 
+    //@todo: merge with new sign out
     public function doWebSignout() {
         $modUser = $this->getModelByName('user', 'v2');
         if ($modUser->signout()) {
