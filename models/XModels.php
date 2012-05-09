@@ -8,6 +8,11 @@ class XModels extends DataModel {
         $dbResult = $this->getRow($sql);
         return intval($dbResult['id']);
     }
+    public function updateCrossUpdateTime($cross_id)
+    {
+        $sql="update crosses set updated_at=now() where `id`=$cross_id;";
+        $result = $this->query($sql);
+    }
 
     public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
