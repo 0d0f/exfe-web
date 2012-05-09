@@ -3,33 +3,24 @@
 class UsersActions extends ActionController {
 
     public function doIndex() {
-        return;
-        
-        echo "Try to get an identity object:\n";
-        $identityData = $this->getModelByName('Identity', 'v2');
-        $identity = $identityData->getIdentityById(1);
-        print_r($identity);
-        
-        echo "\n\n";
-
-        echo "Try to get a user object:\n";
-        $userData = $this->getModelByName('User', 'v2');
-        $user = $userData->getUserById(1);
-        print_r($user);
-        
-        echo "\n\n";
-        
-        echo "Try to get a exfee:\n";
-        $exfeeData = $this->getModelByName('exfee', 'v2');
-        $exfee = $exfeeData->getExfeeById(100092);
-        print_r($exfee);
-        
-        echo "\n\n";
-        
-        echo "Try to get user ids by exfee:\n";
-        $exfeeData = $this->getModelByName('exfee', 'v2');
-        $exfee = $exfeeData->getUserIdsByExfeeId(100092);
-        print_r($exfee);
+        $modUser = $this->getModelByName('User', 'v2');
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params  = $this->params;
+        if (!$params['id']) {
+            apiError(400, 'no_user_id', 'user_id must be provided');
+        }
+        $result = $checkHelper->isAPIAllow('user', $params['token'], array('user_id' => $params['id']));
+        if (!$result['check']) {
+            if ($result['uid']) {
+                apiError(403, 'not_authorized', 'You can not access the informations of this user.');
+            } else {
+                apiError(401, 'invalid_auth', '');
+            }
+        }
+        if ($objUser = $modUser->getUserById($params['id'])) {
+            apiResponse(array('user' => $objUser));
+        }
+        apiError(404, 'user_not_found', 'user not found');
     }
 
 
@@ -58,7 +49,7 @@ class UsersActions extends ActionController {
             apiError(400, 'failed', '');
         }
     }
-    
+
 
     public function doDeleteIdentity() {
         $modUser     = $this->getModelByName('user',     'v2');
@@ -79,7 +70,7 @@ class UsersActions extends ActionController {
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
             case 'CONNECTED':
             case 'REVOKED':
-                if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) { 
+                if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) {
                     apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
                 }
                 break;
@@ -88,14 +79,14 @@ class UsersActions extends ActionController {
         }
         apiError(500, 'failed', '');
     }
-    
-    
+
+
     public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // init
-        $rtResult      = array(); 
+        $rtResult      = array();
         $isNewIdentity = false;
         // collecting post data
         $external_id   = $_POST['external_id'];
@@ -112,12 +103,12 @@ class UsersActions extends ActionController {
             // @todo: check returns
             $isNewIdentity = true;
         }
-        // try to sign in 
+        // try to sign in
         if ($external_id && $password && ($user_id = $modUser->login($external_id, $password, $autosignin))) {
             apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
         } else {
             apiError(403, 'invalid_identity_or_password', ''); // 失败
-        }   
+        }
     }
 
 
@@ -147,8 +138,8 @@ class UsersActions extends ActionController {
         }
         apiError(500, 'failed', '');
     }
-    
-    
+
+
     public function doWebSignout() {
         $modUser = $this->getModelByName('user', 'v2');
         if ($modUser->signout()) {
@@ -157,8 +148,8 @@ class UsersActions extends ActionController {
             apiError(400, 'failed', ''); // 失败
         }
     }
-    
-    
+
+
     public function doSignin() {
         $modUser     = $this->getModelByName('user', 'v2');
         $external_id = $_POST['external_id'];
@@ -189,7 +180,7 @@ class UsersActions extends ActionController {
         apiError(500, 'failed', "can't disconnect this device"); // 失败
     }
 
-    
+
     public function doRegdevicetoken()
     {
         // check if this token allow
@@ -212,8 +203,8 @@ class UsersActions extends ActionController {
             apiError(500, 'reg device token error');
         }
     }
-    
-    
+
+
     public function doGet() {
         $modUser = $this->getModelByName('User', 'v2');
         if (!($user_id = $_SESSION['signin_user']->id)) {
@@ -247,8 +238,8 @@ class UsersActions extends ActionController {
 
         //user
     }
-    
-    
+
+
     public function doSetPassword() {
         $modUser = $this->getModelByName('user', 'v2');
         if (!($user_id = $_SESSION['signin_user']->id ?: $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
