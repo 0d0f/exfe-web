@@ -96,7 +96,7 @@ class ExfeeModels extends DataModel {
 
     public function updateInvitation($invitation, $by_identity_id, $updateToken = false) {
         // base check
-        if (!$invitation->id || !$invitation->identity->id || $by_identity_id) {
+        if (!$invitation->id || !$invitation->identity->id || !$by_identity_id) {
             return null;
         }
         // make invitation token
