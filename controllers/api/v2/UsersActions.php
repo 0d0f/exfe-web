@@ -245,16 +245,24 @@ class UsersActions extends ActionController {
         $crossHelper= $this->getHelperByName('cross', 'v2');
         $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
         apiResponse(array("crosses"=>$cross_list));
-
-        //user
     }
 
 
     public function doSetPassword() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id ?: $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else if (intval($_SESSION['userid'])) { // @todo removing $_SESSION['userid']
+            $user_id = intval($_SESSION['userid']);
+        } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
+        // get models
+        $modUser = $this->getModelByName('user', 'v2');
+        // collecting post data
         if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
             apiError(403, 'invalid_current_password', ''); // 密码错误
         }
