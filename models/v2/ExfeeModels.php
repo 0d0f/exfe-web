@@ -122,6 +122,7 @@ class ExfeeModels extends DataModel {
         $hlpCross = $this->getHelperByName('cross', 'v2');
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
+
         $cross    = $hlpCross->getCross($cross_id);
         $msgArg   = array('cross' => $cross, 'event' => array());
         if (is_array($new_invitations)) {
@@ -142,15 +143,18 @@ class ExfeeModels extends DataModel {
         }
     }
 
+    public function getNewExfeeId()
+    {
+        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
+        $exfee_id = intval($dbResult['insert_id']);
+        return $exfee_id;
+    }
 
-    public function addExfee($invitations, $by_identity_id) {
+    public function addExfee($exfee_id, $invitations, $by_identity_id) {
         // basic check
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
         }
-        // get exfee id
-        $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
-        $exfee_id = intval($dbResult['insert_id']);
         // add invitations
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);

@@ -2,7 +2,15 @@
 
 class ConversationModels extends DataModel {
 
+    // v1_v2_bridge
+    protected function getExfeeIdByCrossId($cross_id) {
+        $sql      = "SELECT `exfee_id` FROM `crosses` WHERE `id` = {$cross_id}";
+        $dbResult = $this->getRow($sql);
+        return intval($dbResult['exfee_id']);
+    }
+
     public function addConversation($postable_id, $postable_type, $identity_id, $title, $content,$date="") {
+        $postable_id = $this->getExfeeIdByCrossId($postable_id);
         if (intval($postable_id) > 0 && $postable_type === 'cross') {
             // @todo: check if identity_id belongs this cross
             if($date=="")
@@ -47,6 +55,7 @@ class ConversationModels extends DataModel {
 
     public function getConversationByTimeStr($postable_id,$postable_type,$updated_since="",$limit=0)
     {
+        $postable_id = $this->getExfeeIdByCrossId($postable_id);
         $sql="select id,identity_id,title,content as message,postable_id,postable_type,created_at,updated_at from posts where postable_id=$postable_id and postable_type='$postable_type'";
         if($updated_since>0)
             $sql=$sql." and created_at>'$updated_since' ";
@@ -83,6 +92,7 @@ class ConversationModels extends DataModel {
 
     public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
+        $postable_id = $this->getExfeeIdByCrossId($postable_id);
         $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
         if($updated_since>0)
             $sql=$sql." and created_at>FROM_UNIXTIME($updated_since) ";
