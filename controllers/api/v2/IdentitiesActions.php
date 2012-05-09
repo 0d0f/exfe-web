@@ -1,15 +1,23 @@
 <?php
 session_write_close();
-require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
+require_once dirname(dirname(__FILE__)).'/../../lib/tmhOAuth.php';
 
 
 class IdentitiesActions extends ActionController {
 
     public function doIndex() {
-        
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        $params = $this->params;
+        if (!$params['id']) {
+            apiError(400, 'no_identity_id', 'identity_id must be provided');
+        }
+        if ($objIdentity = $modIdentity->getIdentityById($params['id'])) {
+            apiResponse(array('identity' => $objIdentity));
+        }
+        apiError(404, 'identity_not_found', 'identity not found');
     }
-    
-    
+
+
     public function doGet() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
@@ -72,11 +80,14 @@ class IdentitiesActions extends ActionController {
                     }
                 }
             }
+            apiResponse(array('identities' => $responobj));
+        } else {
+            apiError(400, 'no_identities', 'identities must be provided');
         }
-        apiResponse(array('identities' => $responobj));
+        apiError(500, "server_error", "Can't fetch identities.");
     }
-    
-    
+
+
     public function doUpdate() {
         // get raw data
         $id                = isset($_POST['id'])                ? intval(htmlspecialchars($_POST['id']))                                  : null;
@@ -96,17 +107,18 @@ class IdentitiesActions extends ActionController {
         $objIdentity = $this->getModelByName('Identity', 'v2');
         $id = $objIdentity->updateIdentityById(
             $id,
-            array('provider'          => $provider,       
-                  'external_id'       => $external_id,    
-                  'name'              => $name,           
-                  'nickname'          => $nickname,       
-                  'bio'               => $bio,         
+            array('provider'          => $provider,
+                  'external_id'       => $external_id,
+                  'name'              => $name,
+                  'nickname'          => $nickname,
+                  'bio'               => $bio,
                   'avatar_filename'   => $avatar_filename,
-                  'external_username' => $external_username),
+                  'external_username' => $external_username)
         );
         echo json_encode(array('identity_id' => $id));
     }
-    
+
+
     public function doMakeDefaultAvatar() {
         $objIdentity = $this->getModelByName('identity', 'v2');
         $objIdentity->makeDefaultAvatar('vir');
