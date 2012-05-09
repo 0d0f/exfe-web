@@ -2,7 +2,7 @@
 
 class CheckHelper extends ActionController {
 
-    function isAPIAllow($api,$token,$args)
+    function isAPIAllow($api, $token, $args = array())
     {
         $userData=$this->getModelByName("user","v2");
         $identityData=$this->getModelByName("identity","v2");
