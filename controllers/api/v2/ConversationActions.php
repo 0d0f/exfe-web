@@ -71,6 +71,6 @@ class ConversationActions extends ActionController {
             apiResponse(array("post"=>$post));
         else
             apiError(400,"param_error","Can't delete this post.");
-
     }
+
 }

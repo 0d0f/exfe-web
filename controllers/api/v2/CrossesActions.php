@@ -96,4 +96,5 @@ class CrossesActions extends ActionController {
         else
             apiError(500,"server_error","Can't Edit this Cross.");
     }
+
 }
