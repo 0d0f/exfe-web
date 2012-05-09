@@ -2,7 +2,7 @@ cross= {
     "attribute": {
         "state": "published"
     },
-    "host_id": "174",
+    "host_id": 174,
     "description": "desc...",
     "place": {
         "description": "",
