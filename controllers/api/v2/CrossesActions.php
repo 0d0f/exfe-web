@@ -88,7 +88,7 @@ class CrossesActions extends ActionController {
             }
             foreach ($cross->exfee->invitations as $invitation) {
                 $msgArg['to_identity'] = $invitation->identity;
-                $hlpGobus->send("{$invitation->identity->provider}_job", 'cross', $msgArg);
+                $hlpGobus->send("{$invitation->identity->provider}_job", 'update_cross', $msgArg);
             }
             //
             apiResponse(array("cross"=>$cross));

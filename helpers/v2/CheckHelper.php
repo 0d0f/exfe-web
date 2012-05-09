@@ -59,6 +59,7 @@ class CheckHelper extends ActionController {
                 }
                 break;
             case 'user':
+                return array('check' => $uid == $args['user_id'], 'uid' => $uid);
                 break;
             case 'user_crosses':
                 if ($uid==$args["user_id"]) {
