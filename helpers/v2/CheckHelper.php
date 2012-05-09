@@ -58,7 +58,7 @@ class CheckHelper extends ActionController {
                     return array("check"=>true,"uid"=>$uid);
                 }
                 break;
-            case 'user':
+            case 'user_self':
                 return array('check' => $uid == $args['user_id'], 'uid' => $uid);
                 break;
             case 'user_crosses':
@@ -69,6 +69,9 @@ class CheckHelper extends ActionController {
             case 'user_signin':
             case 'user_signup':
                 return array("check"=>true);
+                break;
+            case 'user_edit':
+                return array('check' => true, 'uid' => $uid);
                 break;
         }
         return array("check"=>false);
