@@ -21,8 +21,8 @@ class CrossesActions extends ActionController {
             apiError(400,"param_error","The X you're requesting is not found.");
         apiResponse(array("cross"=>$cross));
     }
-    
-    
+
+
     public function doAdd()
     {
         $params=$this->params;
@@ -40,7 +40,7 @@ class CrossesActions extends ActionController {
         $cross=json_decode($cross_str);
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross_id=$crossHelper->gatherCross($cross,$by_identity_id);
-        
+
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName("cross","v2");
@@ -51,8 +51,8 @@ class CrossesActions extends ActionController {
             apiError(500,"server_error","Can't gather this Cross.");
 
     }
-    
-    
+
+
     public function doEdit()
     {
         $params=$this->params;

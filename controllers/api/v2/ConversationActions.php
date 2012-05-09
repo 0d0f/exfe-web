@@ -45,7 +45,7 @@ class ConversationActions extends ActionController {
         unset($new_post["del"]);
         apiResponse(array("post"=>$new_post));
     }
-    
+
     public function doDel()
     {
         $params=$this->params;
