@@ -9,7 +9,7 @@ class UsersActions extends ActionController {
         if (!$params['id']) {
             apiError(400, 'no_user_id', 'user_id must be provided');
         }
-        $result = $checkHelper->isAPIAllow('user', $params['token'], array('user_id' => $params['id']));
+        $result = $checkHelper->isAPIAllow('user_self', $params['token'], array('user_id' => $params['id']));
         if (!$result['check']) {
             if ($result['uid']) {
                 apiError(403, 'not_authorized', 'You can not access the informations of this user.');
@@ -25,12 +25,18 @@ class UsersActions extends ActionController {
 
 
     public function doAddIdentity() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
         // get models
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!($user_id = $_SESSION['signin_user']->id)) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
         if (!($external_id = $_POST['external_id'])) {
             apiError(400, 'no_external_id', '');
         }
@@ -52,12 +58,19 @@ class UsersActions extends ActionController {
 
 
     public function doDeleteIdentity() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!($user_id = $_SESSION['signin_user']->id)) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
@@ -81,6 +94,7 @@ class UsersActions extends ActionController {
     }
 
 
+    //@todo: merge with new sign in
     public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
@@ -112,12 +126,30 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doWebSignout() {
+        $modUser = $this->getModelByName('user', 'v2');
+        if ($modUser->signout()) {
+            apiResponse(array('success' => true));
+        } else {
+            apiError(400, 'failed', ''); // 失败
+        }
+    }
+
+
     public function doSetDefaultIdentity() {
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id)) {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
@@ -137,16 +169,6 @@ class UsersActions extends ActionController {
                 apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
         }
         apiError(500, 'failed', '');
-    }
-
-
-    public function doWebSignout() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if ($modUser->signout()) {
-            apiResponse(array('success' => true));
-        } else {
-            apiError(400, 'failed', ''); // 失败
-        }
     }
 
 
@@ -205,18 +227,6 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doGet() {
-        $modUser = $this->getModelByName('User', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id)) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
-        if (!($objUser = $modUser->getUserById($user_id))) {
-            apiError(400, 'failed', ''); // 失败
-        }
-        apiResponse(array('user' => $objUser)); // 成功
-    }
-
-
     public function doCrosses() {
         $params   = $this->params;
         $uid=$params["id"];
@@ -245,9 +255,6 @@ class UsersActions extends ActionController {
         if (!($user_id = $_SESSION['signin_user']->id ?: $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
             apiError(401, 'no_signin', ''); // 需要登录
         }
-        // if (!($curPassword = $_POST['current_password'])) {
-        //     apiError(401, 'no_current_password', ''); // 请输入当前密码
-        // }
         if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
             apiError(403, 'invalid_current_password', ''); // 密码错误
         }
@@ -293,25 +300,6 @@ class UsersActions extends ActionController {
             apiResponse(array('user_id' => $tkResult['user_id'])); // 成功
         }
         apiError(500, 'failed', ''); // 出错
-    }
-
-    public function doUpdate(){
-        $params   = $this->params;
-        $user_id=$params["id"];
-        $updated_at=$params["updated_at"];
-        $userData = $this->getModelByName('User', 'v2');
-        $identity_ids=$userData->getIdentityIdByUserId($user_id);
-
-        $exfeeData = $this->getModelByName('exfee', 'v2');
-        $cross_ids=$exfeeData->getUpdatedExfeeByIdentityIds($identity_ids,$updated_at);
-        print_r($cross_ids);
-
-        //print_r($identity_ids);
-        //SELECT distinct cross_id FROM `invitations` WHERE `exfee_updated_at`>'2012-04-24 08:25:10' and identity_id=174
-        //$exfeeHelper = $this->getHelperByName('exfee', 'v2');
-        //$update=$exfeeHelper->getUpdate($exfee_id,$updated_at);
-        //print_r($update);
-
     }
 
 }
