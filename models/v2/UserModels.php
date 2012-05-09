@@ -209,6 +209,10 @@ class UserModels extends DataModel {
         return null;
     }
 
+
+    /**
+     * @todo: removing
+     */
     public function signinByCookie() {
         // get vars
         $user_id      = intval($_COOKIE['user_id']);
