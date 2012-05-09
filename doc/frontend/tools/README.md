@@ -18,3 +18,26 @@
 ## lesspull.js
   * 根据 less/xxx/package.json 文件中的配置，下载 xxx 模块
   * ***`:node lesspull.js bootstrap`***
+
+## package.json
+    例子, name description version author hint 必填项
+    {
+      "name": "blamo",
+      "description": "a thing that blams the o's",
+      "version": "1.0.0",
+      "keywords": ['blamo', 'ender'],
+      "homepage": "http://example.com",
+      "authors": ["Mr. Blam", "Miss O"],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/fake-account/blamo.git"
+      },
+      "dependencies": {
+        "klass": "*"
+      },
+      "pull": {
+        "url": "",
+        "minurl": ""
+      }
+      "hint": true
+    }
