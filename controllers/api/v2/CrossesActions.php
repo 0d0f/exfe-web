@@ -1,6 +1,6 @@
 <?php
 
-class CrossActions extends ActionController {
+class CrossesActions extends ActionController {
 
     public function doIndex()
     {
@@ -21,8 +21,8 @@ class CrossActions extends ActionController {
             apiError(400,"param_error","The X you're requesting is not found.");
         apiResponse(array("cross"=>$cross));
     }
-    
-    
+
+
     public function doAdd()
     {
         $params=$this->params;
@@ -40,7 +40,7 @@ class CrossActions extends ActionController {
         $cross=json_decode($cross_str);
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross_id=$crossHelper->gatherCross($cross,$by_identity_id);
-        
+
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName("cross","v2");
@@ -51,8 +51,8 @@ class CrossActions extends ActionController {
             apiError(500,"server_error","Can't gather this Cross.");
 
     }
-    
-    
+
+
     public function doEdit()
     {
         $params=$this->params;
@@ -77,7 +77,7 @@ class CrossActions extends ActionController {
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName("cross","v2");
-            $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id);
+            $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus
             $hlpGobus = $this->getHelperByName('gobus', 'v2');
             foreach ($cross->exfee->invitations as $invitation) {
@@ -86,9 +86,10 @@ class CrossActions extends ActionController {
                     break;
                 }
             }
-            foreach ($cross->exfee->invitations as $invitation) {
-                $msgArg['to_identity'] = $invitation->identity;
-                $hlpGobus->send("{$invitation->identity->provider}_job", 'cross', $msgArg);
+            foreach ($cross->exfee->invitations as $i => $invitation) {
+                $msgArg['to_invitation'] = $invitation;
+                $hlpGobus->send("{$invitation->identity->provider}_job", 'Update_cross', $msgArg);
+                $cross->exfee->invitations[$i]->token = '';
             }
             //
             apiResponse(array("cross"=>$cross));
@@ -96,4 +97,5 @@ class CrossActions extends ActionController {
         else
             apiError(500,"server_error","Can't Edit this Cross.");
     }
+
 }
