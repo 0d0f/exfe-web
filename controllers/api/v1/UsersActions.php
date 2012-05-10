@@ -150,6 +150,7 @@ class UsersActions extends ActionController {
     // upgraded
     public function doRegdevicetoken()
     {
+
         //check if this token allow
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
