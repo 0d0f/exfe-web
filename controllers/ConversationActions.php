@@ -25,7 +25,7 @@ class ConversationActions extends ActionController
             if(trim($comment)!="" && intval($identity_id)>0  && $cross_id>0)
             {
                 $postData=$this->getModelByName("conversation");
-                $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$comment);
+                $r=$postData->addConversation($cross_id,"exfee",$identity_id,"",$comment);
 
                 $logdata=$this->getModelByName("log");
                 if(intval($r)>0)
@@ -92,7 +92,7 @@ class ConversationActions extends ActionController
             if(trim($comment)!="" && intval($identity_id)>0 )
             {
                 $postData=$this->getModelByName("conversation");
-                $r=$postData->addConversation($cross_id,"cross",$identity_id,"",$comment);
+                $r=$postData->addConversation($cross_id,"exfee",$identity_id,"",$comment);
                 $logdata=$this->getModelByName("log");
                 if(intval($r)>0)
                 {
