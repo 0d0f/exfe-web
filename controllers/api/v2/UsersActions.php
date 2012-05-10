@@ -35,6 +35,7 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
+        $modUser = $this->getModelByName('User', 'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
         if (!($external_id = $_POST['external_id'])) {
