@@ -438,8 +438,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
       $('#submit_set_password').bind('click', function (e) {
           e.preventDefault();
           var new_password = $.trim($('#o_pwd').val());
-          var token = new RegExp('[\\?&]token=([^&#]*)').exec(window.location.href);
-          token = token && token[1];
+          var SSID = odof.util.getCookie('PHPSESSID');
           if (new_password) {
             $.ajax({
               type: 'post',
@@ -448,7 +447,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 new_password: new_password
               },
               dataType: 'json',
-              url: 'http://api.exfe.com/v2/users/SetPassword?' + 'token='+token,
+              url: 'https://api.exfe.com/v2/users/SetPassword?ssid='+SSID,
               xhrFields: { withCredentials: true },
               success: function (data) {
                 //data = $.parseJSON(data);
