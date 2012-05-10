@@ -38,6 +38,8 @@ class ConversationActions extends ActionController {
         }
 
         $post=json_decode($_POST["post"]);
+        $post->postable_type='exfee';
+        $post->postable_id=$exfee_id;
 
         $modelData=$this->getModelByName("conversation","v2");
         $post_id=$modelData->addPost($post);
