@@ -26,7 +26,7 @@ class IdentitiesActions extends ActionController {
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : array();
         $bolWithUserIdentityStatus = intval($_POST['with_user_identity_status']);
         // ready
-        $responobj['response']['identities'] = array();
+        $objIdentities = array();
         // get
         if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
@@ -42,7 +42,7 @@ class IdentitiesActions extends ActionController {
                             0, $identity->id, true
                         );
                     }
-                    $responobj['response']['identities'][] = $identity;
+                    $objIdentities[] = $identity;
                 } else {
                     switch ($identityItem->provider) {
                         case 'twitter':
@@ -74,13 +74,13 @@ class IdentitiesActions extends ActionController {
                                     if ($bolWithUserIdentityStatus) {
                                         $objIdentity->user_identity_status = 'NEWIDENTITY';
                                     }
-                                    $responobj['response']['identities'][] = $objIdentity;
+                                    $objIdentities[] = $objIdentity;
                                 }
                             }
                     }
                 }
             }
-            apiResponse(array('identities' => $responobj));
+            apiResponse(array('identities' => $objIdentities));
         } else {
             apiError(400, 'no_identities', 'identities must be provided');
         }
