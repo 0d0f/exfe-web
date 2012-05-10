@@ -42,6 +42,26 @@ class XHelper extends ActionController {
     }
 
 
+    //v1_v2_bridge
+    public function updateXChange($cross_id,$by_identity_id,$cross)
+    {
+        $cross_updated=array();
+        $updated=array("updated_at"=>time(),"identity_id"=>$by_identity_id);
+
+        if($cross["title"])
+            $cross_updated["title"]=$updated;
+        if($cross["description"])
+            $cross_updated["description"]=$updated;
+        if($cross["begin_at"])
+            $cross_updated["time"]=$updated;
+        if($cross["place"])
+            $cross_updated["place"]=$updated;
+        $sql="update crosses set updated_at=now() where `id`=$cross_id;";
+
+        $crossData=$this->getModelByName("X");
+        $crossData->updateCrossUpdateTime($cross_id);
+        saveUpdate($cross_id,$cross_updated);
+    }
     public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title) {
 
         $identityData=$this->getModelByName("identity");
@@ -53,9 +73,10 @@ class XHelper extends ActionController {
         if ($changed["begin_at"]) {
             $changed["begin_at"] = humanDateTime($changed["begin_at"],   $user["timezone"] ? $user["timezone"] : $new_cross['timezone']);;
         }
-        print_r($new_cross);
         $exfee_identity=humanIdentity($exfee_identity,$user);
         $cross_id=$new_cross["id"];
+
+        $this->updateXChange($cross_id,$host_identity_id,$changed);
 
         $link=SITE_URL.'/!'.int_to_base62($cross_id);
         $mail["link"]=$link;
