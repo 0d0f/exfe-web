@@ -1,9 +1,9 @@
 <?php
 
 class UserModels extends DataModel {
-    
+
     private $salt = '_4f9g18t9VEdi2if';
-    
+
     protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
@@ -15,15 +15,15 @@ class UserModels extends DataModel {
              FROM   `users` WHERE `id` = {$user_id}"
         );
     }
-    
-    
+
+
     protected function encryptPassword($password, $password_salt) {
         return md5($password.( // compatible with the old users
             $password_salt === $this->salt ? $this->salt
           : (substr($password_salt, 3, 23) . EXFE_PASSWORD_SALT)
         ));
     }
-    
+
 
     public function getUserById($id) {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
@@ -48,7 +48,7 @@ class UserModels extends DataModel {
                 foreach ($rawIdentityIds as $i => $item) {
                     $identityIds[] = $item['identityid'];
                 }
-                $identityIds = implode($identityIds, ', OR `id` = ');
+                $identityIds = implode($identityIds, ' OR `id` = ');
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` = {$identityIds}");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
@@ -90,8 +90,8 @@ class UserModels extends DataModel {
         $user_id = intval($dbResult["userid"]);
         return $user_id ?: null;
     }
-    
-    
+
+
     public function newUserByPassword($password) {
         $passwordSalt = md5(createToken());
         $passwordInDb = $this->encryptPassword($password, $passwordSalt);
@@ -103,8 +103,8 @@ class UserModels extends DataModel {
         );
         return intval($dbResult['insert_id']);
     }
-    
-    
+
+
     public function getUserIdsByIdentityIds($identity_ids) {
         $identity_ids = implode($identity_ids, ' OR `identityid` = ');
         $sql= "SELECT `userid` FROM `user_identity`
@@ -118,8 +118,8 @@ class UserModels extends DataModel {
         }
         return $user_ids;
     }
-    
-    
+
+
     public function getUserIdentityStatusByUserIdAndIdentityId($user_id = 0, $identity_id = 0, $withPasswdStatus = false) {
         if (!$identity_id) {
             return null;
@@ -141,27 +141,27 @@ class UserModels extends DataModel {
         }
         return null;
     }
-    
-    
+
+
     public function signout() {
         // unset seesion
         unset($_SESSION['signin_user']);
         unset($_SESSION['signin_token']);
         session_destroy();
         // unset cookie
-        unset($_COOKIE['user_id']);    
+        unset($_COOKIE['user_id']);
         unset($_COOKIE['identity_ids']);
         unset($_COOKIE['signin_sequ']);
         unset($_COOKIE['signin_token']);
         setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
         setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
         setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);     
+        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
         // return
-        return true;   
+        return true;
     }
-    
-    
+
+
     public function signinForAuthToken($provider, $external_id, $password) {
         $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
@@ -209,6 +209,10 @@ class UserModels extends DataModel {
         return null;
     }
 
+
+    /**
+     * @todo: removing
+     */
     public function signinByCookie() {
         // get vars
         $user_id      = intval($_COOKIE['user_id']);
@@ -222,13 +226,13 @@ class UserModels extends DataModel {
              && $signin_sequ  === $userPasswd['cookie_loginsequ']
              && $signin_token === $userPasswd['cookie_logintoken']) {
                 return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-            } 
+            }
             $this->signout();
         }
         return null;
     }
-    
-    
+
+
     public function signinByIdentityId($identity_id, $user_id = 0, $user = null, $identity = null, $authBy = 'password', $setCookie = false) {
         // init
         $hlpIdentity = getHelperByName('identity', 'v2');
@@ -245,7 +249,7 @@ class UserModels extends DataModel {
             if ($userPasswd['cookie_loginsequ'] && $userPasswd['cookie_logintoken']) { // first time login, setup cookie
                 $cookie_signintoken = $userPasswd['cookie_logintoken'];
                 $cookie_signinsequ  = $userPasswd['cookie_loginsequ'];
-            } else {    
+            } else {
                 $this->query(
                     "UPDATE `users` SET
                      `current_sign_in_ip` = '{$ipAddress}',
@@ -275,8 +279,8 @@ class UserModels extends DataModel {
         );
         return $user;
     }
-    
-    
+
+
     public function signin($identityInfo, $password, $setCookie = false, $password_hashed = false, $oauth_signin = false) {
         // init
         $hlpIdentity = getHelperByName('identity', 'v2');
@@ -306,7 +310,7 @@ class UserModels extends DataModel {
         }
         return null;
     }
-    
+
 
     public function getUserIdByToken($token) {
         if(trim($token)==='')
@@ -315,8 +319,8 @@ class UserModels extends DataModel {
         $row=$this->getRow($sql);
         return intval($row["id"]);
     }
-    
-    
+
+
     public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
         if (!$user_id) {
             return false;
@@ -326,8 +330,8 @@ class UserModels extends DataModel {
         return $password === $passwdInDb['encrypted_password']
             || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
     }
-    
-    
+
+
     public function addUserAndSetRelation($password, $name, $identity_id) {
         $modIdentity = getModelByName('identity', 'v2');
         $name        = mysql_real_escape_string($name);
@@ -391,7 +395,7 @@ class UserModels extends DataModel {
         $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
         $identity_ids=$this->getColumn($sql);
         return $identity_ids;
-        
+
 
     }
 

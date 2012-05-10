@@ -1,45 +1,42 @@
 <?php
 
-class UserActions extends ActionController {
+class UsersActions extends ActionController {
 
     public function doIndex() {
-        return;
-        
-        echo "Try to get an identity object:\n";
-        $identityData = $this->getModelByName('Identity', 'v2');
-        $identity = $identityData->getIdentityById(1);
-        print_r($identity);
-        
-        echo "\n\n";
-
-        echo "Try to get a user object:\n";
-        $userData = $this->getModelByName('User', 'v2');
-        $user = $userData->getUserById(1);
-        print_r($user);
-        
-        echo "\n\n";
-        
-        echo "Try to get a exfee:\n";
-        $exfeeData = $this->getModelByName('exfee', 'v2');
-        $exfee = $exfeeData->getExfeeById(100092);
-        print_r($exfee);
-        
-        echo "\n\n";
-        
-        echo "Try to get user ids by exfee:\n";
-        $exfeeData = $this->getModelByName('exfee', 'v2');
-        $exfee = $exfeeData->getUserIdsByExfeeId(100092);
-        print_r($exfee);
+        $modUser = $this->getModelByName('User', 'v2');
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params  = $this->params;
+        if (!$params['id']) {
+            apiError(400, 'no_user_id', 'user_id must be provided');
+        }
+        $result = $checkHelper->isAPIAllow('user_self', $params['token'], array('user_id' => $params['id']));
+        if (!$result['check']) {
+            if ($result['uid']) {
+                apiError(403, 'not_authorized', 'You can not access the informations of this user.');
+            } else {
+                apiError(401, 'invalid_auth', '');
+            }
+        }
+        if ($objUser = $modUser->getUserById($params['id'])) {
+            apiResponse(array('user' => $objUser));
+        }
+        apiError(404, 'user_not_found', 'user not found');
     }
 
 
     public function doAddIdentity() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
         // get models
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!($user_id = $_SESSION['signin_user']->id)) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
         if (!($external_id = $_POST['external_id'])) {
             apiError(400, 'no_external_id', '');
         }
@@ -58,15 +55,22 @@ class UserActions extends ActionController {
             apiError(400, 'failed', '');
         }
     }
-    
+
 
     public function doDeleteIdentity() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!($user_id = $_SESSION['signin_user']->id)) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
@@ -79,7 +83,7 @@ class UserActions extends ActionController {
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
             case 'CONNECTED':
             case 'REVOKED':
-                if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) { 
+                if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) {
                     apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
                 }
                 break;
@@ -88,14 +92,15 @@ class UserActions extends ActionController {
         }
         apiError(500, 'failed', '');
     }
-    
-    
+
+
+    //@todo: merge with new sign in
     public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // init
-        $rtResult      = array(); 
+        $rtResult      = array();
         $isNewIdentity = false;
         // collecting post data
         $external_id   = $_POST['external_id'];
@@ -112,21 +117,40 @@ class UserActions extends ActionController {
             // @todo: check returns
             $isNewIdentity = true;
         }
-        // try to sign in 
+        // try to sign in
         if ($external_id && $password && ($user_id = $modUser->login($external_id, $password, $autosignin))) {
             apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
         } else {
             apiError(403, 'invalid_identity_or_password', ''); // 失败
-        }   
+        }
+    }
+
+
+    //@todo: merge with new sign out
+    public function doWebSignout() {
+        $modUser = $this->getModelByName('user', 'v2');
+        if ($modUser->signout()) {
+            apiResponse(array('success' => true));
+        } else {
+            apiError(400, 'failed', ''); // 失败
+        }
     }
 
 
     public function doSetDefaultIdentity() {
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id)) {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
@@ -147,18 +171,8 @@ class UserActions extends ActionController {
         }
         apiError(500, 'failed', '');
     }
-    
-    
-    public function doWebSignout() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if ($modUser->signout()) {
-            apiResponse(array('success' => true));
-        } else {
-            apiError(400, 'failed', ''); // 失败
-        }
-    }
-    
-    
+
+
     public function doSignin() {
         $modUser     = $this->getModelByName('user', 'v2');
         $external_id = $_POST['external_id'];
@@ -189,7 +203,7 @@ class UserActions extends ActionController {
         apiError(500, 'failed', "can't disconnect this device"); // 失败
     }
 
-    
+
     public function doRegdevicetoken()
     {
         // check if this token allow
@@ -212,18 +226,6 @@ class UserActions extends ActionController {
             apiError(500, 'reg device token error');
         }
     }
-    
-    
-    public function doGet() {
-        $modUser = $this->getModelByName('User', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id)) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
-        if (!($objUser = $modUser->getUserById($user_id))) {
-            apiError(400, 'failed', ''); // 失败
-        }
-        apiResponse(array('user' => $objUser)); // 成功
-    }
 
 
     public function doCrosses() {
@@ -244,19 +246,24 @@ class UserActions extends ActionController {
         $crossHelper= $this->getHelperByName('cross', 'v2');
         $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
         apiResponse(array("crosses"=>$cross_list));
-
-        //user
     }
-    
-    
+
+
     public function doSetPassword() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if (!($user_id = $_SESSION['signin_user']->id ?: $_SESSION['userid'])) { // @todo removing $_SESSION['userid']
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else if (intval($_SESSION['userid'])) { // @todo removing $_SESSION['userid']
+            $user_id = intval($_SESSION['userid']);
+        } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
-        // if (!($curPassword = $_POST['current_password'])) {
-        //     apiError(401, 'no_current_password', ''); // 请输入当前密码
-        // }
+        // get models
+        $modUser = $this->getModelByName('user', 'v2');
+        // collecting post data
         if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
             apiError(403, 'invalid_current_password', ''); // 密码错误
         }
@@ -302,25 +309,6 @@ class UserActions extends ActionController {
             apiResponse(array('user_id' => $tkResult['user_id'])); // 成功
         }
         apiError(500, 'failed', ''); // 出错
-    }
-
-    public function doUpdate(){
-        $params   = $this->params;
-        $user_id=$params["id"];
-        $updated_at=$params["updated_at"];
-        $userData = $this->getModelByName('User', 'v2');
-        $identity_ids=$userData->getIdentityIdByUserId($user_id);
-
-        $exfeeData = $this->getModelByName('exfee', 'v2');
-        $cross_ids=$exfeeData->getUpdatedExfeeByIdentityIds($identity_ids,$updated_at);
-        print_r($cross_ids);
-
-        //print_r($identity_ids);
-        //SELECT distinct cross_id FROM `invitations` WHERE `exfee_updated_at`>'2012-04-24 08:25:10' and identity_id=174
-        //$exfeeHelper = $this->getHelperByName('exfee', 'v2');
-        //$update=$exfeeHelper->getUpdate($exfee_id,$updated_at);
-        //print_r($update);
-
     }
 
 }

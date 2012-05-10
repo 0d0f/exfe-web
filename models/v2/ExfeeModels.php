@@ -96,7 +96,7 @@ class ExfeeModels extends DataModel {
 
     public function updateInvitation($invitation, $by_identity_id, $updateToken = false) {
         // base check
-        if (!$invitation->id || !$invitation->identity->id || $by_identity_id) {
+        if (!$invitation->id || !$invitation->identity->id || !$by_identity_id) {
             return null;
         }
         // make invitation token
@@ -123,13 +123,13 @@ class ExfeeModels extends DataModel {
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
 
-        $cross    = $hlpCross->getCross($cross_id);
-        $msgArg   = array('cross' => $cross, 'event' => array());
+        $cross    = $hlpCross->getCross($cross_id, true);
+        $msgArg   = array('cross' => $cross, 'event' => new StdClass);
         if (is_array($new_invitations)) {
-            $msgArg['event']['new_invitations']     = $new_invitations;
+            $msgArg['event']->new_invitations     = $new_invitations;
         }
         if (is_array($changed_invitations)) {
-            $msgArg['event']['changed_invitations'] = $changed_invitations;
+            $msgArg['event']->changed_invitations = $changed_invitations;
         }
         foreach ($cross->exfee->invitations as $invitation) {
             if ($invitation->identity->id === $by_identity_id) {
@@ -138,8 +138,8 @@ class ExfeeModels extends DataModel {
             }
         }
         foreach ($cross->exfee->invitations as $invitation) {
-            $msgArg['to_identity'] = $invitation->identity;
-            $hlpGobus->send("{$invitation->identity->provider}_job", 'exfee', $msgArg);
+            $msgArg['to_invitation'] = $invitation;
+            $hlpGobus->send("{$invitation->identity->provider}_job", 'Update_exfee', $msgArg);
         }
     }
 
@@ -221,7 +221,7 @@ class ExfeeModels extends DataModel {
         // }
         $this->updateExfeeTime($id);
         // call Gobus
-        $this->sendToGobus($exfee_id, $by_identity_id, $newExfee, $chdExfee);
+        $this->sendToGobus($id, $by_identity_id, $newExfee, $chdExfee);
         //
         return $id;
     }

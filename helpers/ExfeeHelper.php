@@ -115,6 +115,10 @@ class ExfeeHelper extends ActionController {
 
         if ($nedUpdate) {
             $crossData->updateCrossUpdatedAt($cross_id);
+            saveUpdate(
+                $cross_id,
+                array('exfee' => array('updated_at' => time(), 'identity_id' => $my_identity_id))
+            );
         }
 
         if (is_array($invited)) {
@@ -219,7 +223,7 @@ class ExfeeHelper extends ActionController {
                                 'token'         => $args['token'],
                                 'rsvp'          => intval($args['rsvp_status']),
                                 'by_identity'   => array(
-                                    'id'                => intval($args['by_identity']['id']),   
+                                    'id'                => intval($args['by_identity']['id']),
                                     'external_identity' => $args['by_identity']['external_identity'],
                                     'name'              => $args['by_identity']['name'],
                                     'bio'               => $args['by_identity']['bio'],
@@ -379,7 +383,7 @@ class ExfeeHelper extends ActionController {
                                  'token'         => $args['token'],
                                  'rsvp'          => intval($args['rsvp_status']),
                                  'by_identity'   => array(
-                                     'id'                => intval($args['by_identity']['id']),   
+                                     'id'                => intval($args['by_identity']['id']),
                                      'external_identity' => $args['by_identity']['external_identity'],
                                      'name'              => $args['by_identity']['name'],
                                      'bio'               => $args['by_identity']['bio'],
@@ -398,8 +402,8 @@ class ExfeeHelper extends ActionController {
                                      'bio'               => $args['to_identity']['bio'],
                                      'user_id'           => 0,  // @todo @Leask
                                      'timezone'          => $args['to_identity_time_zone'],
-                                 ), 
-                                
+                                 ),
+
                              ),
                          );
                          foreach ($args['invitations'] as $invRaw) {
