@@ -447,7 +447,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 new_password: new_password
               },
               dataType: 'json',
-              url: 'http://api.localexfe.me/v2/user/SetPassword?' + ($.browser.msie ? 'ssid='+SSID : ''),
+              url: 'https://api.exfe.com/v2/users/SetPassword?ssid='+SSID,
               xhrFields: { withCredentials: true },
               success: function (data) {
                 //data = $.parseJSON(data);
