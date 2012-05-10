@@ -139,7 +139,7 @@ class ExfeeModels extends DataModel {
         }
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_invitation'] = $invitation;
-            $hlpGobus->send("{$invitation->identity->provider}_job", 'update_exfee', $msgArg);
+            $hlpGobus->send("{$invitation->identity->provider}_job", 'Update_exfee', $msgArg);
         }
     }
 
