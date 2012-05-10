@@ -123,7 +123,7 @@ class ExfeeModels extends DataModel {
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
 
-        $cross    = $hlpCross->getCross($cross_id);
+        $cross    = $hlpCross->getCross($cross_id, true);
         $msgArg   = array('cross' => $cross, 'event' => new StdClass);
         if (is_array($new_invitations)) {
             $msgArg['event']->new_invitations     = $new_invitations;

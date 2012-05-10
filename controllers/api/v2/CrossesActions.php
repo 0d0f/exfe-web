@@ -77,7 +77,7 @@ class CrossesActions extends ActionController {
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName("cross","v2");
-            $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id);
+            $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus
             $hlpGobus = $this->getHelperByName('gobus', 'v2');
             foreach ($cross->exfee->invitations as $invitation) {
@@ -86,9 +86,10 @@ class CrossesActions extends ActionController {
                     break;
                 }
             }
-            foreach ($cross->exfee->invitations as $invitation) {
+            foreach ($cross->exfee->invitations as $i => $invitation) {
                 $msgArg['to_invitation'] = $invitation;
                 $hlpGobus->send("{$invitation->identity->provider}_job", 'update_cross', $msgArg);
+                $cross->exfee->invitations[$i]->token = '';
             }
             //
             apiResponse(array("cross"=>$cross));
