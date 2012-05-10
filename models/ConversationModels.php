@@ -10,8 +10,9 @@ class ConversationModels extends DataModel {
     }
 
     public function addConversation($postable_id, $postable_type, $identity_id, $title, $content,$date="") {
+        $cross_id=$postable_id;
         $postable_id = $this->getExfeeIdByCrossId($postable_id);
-        if (intval($postable_id) > 0 && $postable_type === 'cross') {
+        if (intval($postable_id) > 0 && $postable_type === 'exfee') {
             // @todo: check if identity_id belongs this cross
             if($date=="")
             {
@@ -24,10 +25,14 @@ class ConversationModels extends DataModel {
             if (intval($row['id']) > 0) {
                 $content = mysql_real_escape_string($content);
                 $title = mysql_real_escape_string($title);
-                $sql = "insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type','$craete_at',NOW())";
+                $sql = "insert into posts (identity_id,title,content,postable_id,postable_type,created_at,updated_at) values($identity_id,'$title','$content',$postable_id,'$postable_type',NOW(),NOW())";
 
 		        $result = $this->query($sql);
                 if (intval($result["insert_id"]) > 0) {
+                    $cross_updated=array();
+                    $updated=array("updated_at"=>time(),"identity_id"=>$identity_id);
+                    $cross_updated["conversation"]=$updated;
+                    saveUpdate($cross_id,$cross_updated);
                     return intval($result["insert_id"]);
                 }
             }
@@ -93,7 +98,8 @@ class ConversationModels extends DataModel {
     public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
         $postable_id = $this->getExfeeIdByCrossId($postable_id);
-        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        //$sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        $sql="select * from posts where postable_id=$postable_id and postable_type='exfee'";
         if($updated_since>0)
             $sql=$sql." and created_at>FROM_UNIXTIME($updated_since) ";
 
