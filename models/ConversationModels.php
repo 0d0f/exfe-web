@@ -10,6 +10,7 @@ class ConversationModels extends DataModel {
     }
 
     public function addConversation($postable_id, $postable_type, $identity_id, $title, $content,$date="") {
+        $cross_id=$postable_id;
         $postable_id = $this->getExfeeIdByCrossId($postable_id);
         if (intval($postable_id) > 0 && $postable_type === 'cross') {
             // @todo: check if identity_id belongs this cross
@@ -28,6 +29,10 @@ class ConversationModels extends DataModel {
 
 		        $result = $this->query($sql);
                 if (intval($result["insert_id"]) > 0) {
+                    $cross_updated=array();
+                    $updated=array("updated_at"=>time(),"identity_id"=>$identity_id);
+                    $cross_updated["conversation"]=$updated;
+                    saveUpdate($cross_id,$cross_updated);
                     return intval($result["insert_id"]);
                 }
             }
