@@ -33,7 +33,7 @@ class IdentitiesActions extends ActionController {
                 if (!$identityItem->provider) {
                     continue;
                 }
-                $identity = $IdentityData->getIdentityByProviderExternalId(
+                $identity = $modIdentity->getIdentityByProviderExternalId(
                     $identityItem->provider, $identityItem->external_id
                 );
                 if ($identity) {
