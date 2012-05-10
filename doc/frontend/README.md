@@ -29,6 +29,8 @@ EXFE.COM 前端架构
   * [odof.js][id]
   * https://developers.google.com/closure/
   * http://semver.org/
+  * https://github.com/styleguide
+  * http://tomdoc.org/
 
 ## Node.js & Packages
   - npm install -gd less
