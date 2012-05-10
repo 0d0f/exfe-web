@@ -211,7 +211,7 @@ class UserModels extends DataModel {
         if(intval($identity_id)==0)
         {
             $time=time();
-            $sql="insert into identities (provider,external_identity,external_username,created_at) values('iOSAPN','$devicetoken','$devicename',FROM_UNIXTIME($time));";
+            $sql="insert into identities (provider,external_identity,external_username,created_at) values('$provider','$devicetoken','$devicename',FROM_UNIXTIME($time));";
             $result=$this->query($sql);
             if(intval($result["insert_id"])>0)
                 $identity_id=$result["insert_id"];
