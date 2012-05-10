@@ -72,7 +72,7 @@ class XActions extends ActionController {
             {
                 $postData=$this->getModelByName("conversation");
                 $comment=$_POST["content"];
-                $insert_id=$postData->addConversation($cross_id,"cross",$identity_id,"",$comment);
+                $insert_id=$postData->addConversation($cross_id,"exfee",$identity_id,"",$comment);
                 if($insert_id>0)
                 {
                     $post=$postData->getConversationById($insert_id);
