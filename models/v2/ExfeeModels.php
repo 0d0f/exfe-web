@@ -1,20 +1,20 @@
 <?php
 
 class ExfeeModels extends DataModel {
-    
+
     protected $rsvp_status = array('NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED', 'REMOVED', 'NOTIFICATION');
-        
-    
+
+
     protected function makeExfeeToken() {
         return md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
     }
-    
-    
+
+
     protected function getIndexOfRsvpStatus($rsvp_status) {
         return intval(array_search(strtoupper($rsvp_status), $this->rsvp_status));
     }
-    
-    
+
+
     public function getExfeeById($id, $withRemoved = false, $withToken = false) {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
@@ -40,8 +40,8 @@ class ExfeeModels extends DataModel {
         }
         return $objExfee;
     }
-    
-    
+
+
     public function getUserIdsByExfeeId($exfee_id) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
@@ -56,8 +56,8 @@ class ExfeeModels extends DataModel {
         }
         return $hlpUser->getUserIdsByIdentityIds($identity_ids);
     }
-    
-    
+
+
     public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id) {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
@@ -70,7 +70,7 @@ class ExfeeModels extends DataModel {
                     'name'              => $invitation->identity->name,
                     'external_username' => $invitation->identity->external_username,
                 )
-            );      
+            );
         }
         if (!$invitation->identity->id) {
             return null;
@@ -92,8 +92,8 @@ class ExfeeModels extends DataModel {
         $dbResult = $this->query($sql);
         return intval($dbResult['insert_id']);
     }
-    
-    
+
+
     public function updateInvitation($invitation, $by_identity_id, $updateToken = false) {
         // base check
         if (!$invitation->id || !$invitation->identity->id || $by_identity_id) {
@@ -112,11 +112,11 @@ class ExfeeModels extends DataModel {
              `updated_at`       = NOW(),
              `exfee_updated_at` = NOW(),
              `by_identity_id`   = {$by_identity_id}{$sqlToken}
-             WHERE `id`         = {$invitation->id}"   
+             WHERE `id`         = {$invitation->id}"
         );
     }
-    
-    
+
+
     public function sendToGobus($exfee_id, $by_identity_id, $new_invitations = null, $changed_invitations = null) {
         // @todo: to find the iOSAPN identities?
         $hlpCross = $this->getHelperByName('cross', 'v2');
@@ -127,7 +127,7 @@ class ExfeeModels extends DataModel {
         $msgArg   = array('cross' => $cross, 'event' => array());
         if (is_array($new_invitations)) {
             $msgArg['event']['new_invitations']     = $new_invitations;
-        } 
+        }
         if (is_array($changed_invitations)) {
             $msgArg['event']['changed_invitations'] = $changed_invitations;
         }
@@ -254,7 +254,7 @@ class ExfeeModels extends DataModel {
         //$sql="select id from exfees where ";
     }
 
-    
+
     public function getUpdatedExfeeByIdentityIds($identityids,$updated_at)
     {
 
@@ -269,5 +269,5 @@ class ExfeeModels extends DataModel {
         $result=$this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
         return intval($result['id']);
     }
-        
+
 }
