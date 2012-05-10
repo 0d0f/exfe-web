@@ -98,7 +98,8 @@ class ConversationModels extends DataModel {
     public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
         $postable_id = $this->getExfeeIdByCrossId($postable_id);
-        $sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        //$sql="select * from posts where postable_id=$postable_id and postable_type='$postable_type'";
+        $sql="select * from posts where postable_id=$postable_id and postable_type='exfee'";
         if($updated_since>0)
             $sql=$sql." and created_at>FROM_UNIXTIME($updated_since) ";
 
