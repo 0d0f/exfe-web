@@ -80,7 +80,7 @@ class CrossesActions extends ActionController {
             $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus
             $hlpGobus = $this->getHelperByName('gobus', 'v2');
-            $modUser  = $this->getModelByName('user', 'v2');
+            $modUser  = $this->getModelByName('user',   'v2');
             $chkMobUs = array();
             foreach ($cross->exfee->invitations as $invitation) {
                 if ($invitation->identity->id === $by_identity_id) {
