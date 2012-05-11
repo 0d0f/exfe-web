@@ -391,12 +391,53 @@ class UserModels extends DataModel {
         }
         return null;
     }
+
+
     public function getIdentityIdByUserId($user_id){
         $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
         $identity_ids=$this->getColumn($sql);
         return $identity_ids;
 
 
+    }
+
+
+    public function getMobileIdentitiesByUserId($user_id) {
+        $rawIdentityIds = $this->getAll(
+            "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id} AND `status` = 3"
+        );
+        $objIdentities = array();
+        if ($rawIdentityIds) {
+            $identityIds = array();
+            foreach ($rawIdentityIds as $i => $item) {
+                $identityIds[] = $item['identityid'];
+            }
+            $identityIds = implode($identityIds, ' OR `id` = ');
+            $identities  = $this->getAll("SELECT * FROM `identities` WHERE (`id` = {$identityIds}) AND (`provider` = 'iOSAPN' OR `provider` = 'Android')");
+
+            if ($identities) {
+                foreach ($identities as $i => $item) {
+                    array_push(
+                        $objIdentities,
+                        new Identity(
+                            $item['id'],
+                            $item['name'],
+                            '', // $$item['nickname'], // @todo;
+                            $item['bio'],
+                            $item['provider'],
+                            $user_id,
+                            $item['external_identity'],
+                            $item['external_username'],
+                            $item['avatar_file_name'],
+                            $item['avatar_updated_at'],
+                            $item['created_at'],
+                            $item['updated_at']
+                        )
+                    );
+                }
+            }
+        }
+        return $objIdentities;
     }
 
 
