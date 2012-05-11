@@ -397,8 +397,6 @@ class UserModels extends DataModel {
         $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
         $identity_ids=$this->getColumn($sql);
         return $identity_ids;
-
-
     }
 
 
