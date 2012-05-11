@@ -1,0 +1,33 @@
+exfee={
+    "invitations": [
+        {
+            "identity":{
+                "id": 174
+            },
+            "rsvp_status":"ACCEPTED",
+            "type":"Invitation"
+        },
+        {
+            "identity":{
+                "id": 233
+            },
+            "rsvp_status":"ACCEPTED",
+            "type":"Invitation"
+        },
+        {
+            "identity":{
+                "id": 237
+            },
+            "rsvp_status":"ACCEPTED",
+            "type":"Invitation"
+        },
+        {
+            "identity":{
+                "id": 239
+            },
+            "rsvp_status":"INTERESTED",
+            "type":"Invitation"
+        }
+    ],
+    "type": "Exfee"
+}&by_identity_id=174
