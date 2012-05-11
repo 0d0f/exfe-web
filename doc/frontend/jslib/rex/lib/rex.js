@@ -5,6 +5,10 @@
  *    - https://github.com/ded/valentine/blob/master/valentine.js
  *    - https://github.com/documentcloud/underscore/blob/master/underscore.js
  *    - https://github.com/jquery/jquery/blob/master/src/core.js
+ *    - http://cjohansen.no/talks/2012/sdc-functional/#1
+ *    - http://osteele.com/sources/javascript/functional/
+ *    - https://github.com/osteele/functional-javascript
+ *    - http://fitzgen.github.com/wu.js/
  */
 
 var NULL = null
@@ -62,7 +66,7 @@ R.every = function (a, fn, scope) {
   return true;
 };
 
-R.filter = function (a, fn, scope) {
+R.filter = R.select = function (a, fn, scope) {
   var r = [], i = 0, j = 0, l = a.length;
   for (; i < l; ++i) {
     if (i in a) {
@@ -99,6 +103,10 @@ function rex(v, scope) {
   return new Rex(v, scope);
 }
 
+rex.chain = function (o) {
+  return new Rex(o).chain();
+};
+
 R.mix(rex, R);
 
 function Rex(v, scope) {
@@ -120,7 +128,7 @@ RP.value = function () {
   return this._value;
 };
 
-rex.each(R.keys(rex), function (name, fn) {
+rex.each(R.keys(R), function (name, fn) {
   fn = rex[name]
   RP[name] = function () {
     var i = 0
