@@ -94,7 +94,7 @@ R.keys = Object.keys || function (o) {
 R.extend = function () {
 };
 
-R.mix = function (r, s) {
+R.mixin = function (r, s) {
   var p;
   for (p in s) r[p] = s[p];
 };
@@ -107,7 +107,7 @@ rex.chain = function (o) {
   return new Rex(o).chain();
 };
 
-R.mix(rex, R);
+R.mixin(rex, R);
 
 function Rex(v, scope) {
   this._value = v;
