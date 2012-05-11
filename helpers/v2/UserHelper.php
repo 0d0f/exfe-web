@@ -22,4 +22,9 @@ class UserHelper extends ActionController {
         return Resque::enqueue('email', 'emailresetpassword_job', $args, true);
     }
 
+
+    public function getMobileIdentitiesByUserId($user_id) {
+        return $this->modUser->getMobileIdentitiesByUserId($user_id);
+    }
+
 }

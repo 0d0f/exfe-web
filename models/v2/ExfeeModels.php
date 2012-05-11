@@ -119,15 +119,14 @@ class ExfeeModels extends DataModel {
 
 
     public function sendToGobus($exfee_id, $by_identity_id, $to_identities = null, $old_cross = null) {
-        // get models
-        $modUser  = $this->getModelByName('user',   'v2');
         // get helpers
         $hlpCross = $this->getHelperByName('cross', 'v2');
+        $hlpUser  = $this->getHelperByName('user',  'v2');
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         // get cross
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
         $cross    = $hlpCross->getCross($cross_id);
-        $msgArg   = array('cross' => $cross, 'to_identities' = array());
+        $msgArg   = array('cross' => $cross, 'to_identities' => array());
         // get old cross
         if ($old_cross) {
             $msgArg['old_cross'] = $old_cross;
@@ -141,7 +140,7 @@ class ExfeeModels extends DataModel {
             $msgArg['to_identities'][] = $invitation->identity;
             // get mobile identities
             if (!$chkMobUs[$invitation->identity->connected_user_id]) {
-                $mobIdentities = $modUser->getMobileIdentitiesByUserId(
+                $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
                     $invitation->identity->connected_user_id
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
@@ -235,7 +234,7 @@ class ExfeeModels extends DataModel {
                             $delExfee[]  = $fmItem->identity;
                             $updateToken = false;
                         } else { // update exfee token
-                            $updateToken = $this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
+                            $updateToken = $this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4;
                         }
                         $this->updateInvitation($toItem, $by_identity_id, $updateToken);
                         $chkInvit[$fmI] = true;
