@@ -9,3 +9,7 @@ console.dir(rex([1,2,3]).chain().map(function (v) {
 console.dir(rex.map([1,2,3], function (v) {
   return v += 4;
 }));
+
+console.dir(rex.chain([1,2,3]).map(function (v) {
+  return v += 4;
+}));
