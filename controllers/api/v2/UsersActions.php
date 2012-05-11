@@ -194,7 +194,6 @@ class UsersActions extends ActionController {
         $user_id      = intval($params['id']);
         $token        = $params['token'];
         $device_token = $_POST['device_token'];
-        $responobj    = array();
         if ($user_id && $token && $device_token) {
             $soResult = $modUser->disConnectiOSDeviceToken($user_id, $token, $device_token);
             if ($soResult) {
