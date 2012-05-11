@@ -88,6 +88,7 @@ class InvitationModels extends DataModel
 
     public function getInvitatedIdentityByUseridAndCrossList($userid,$cross_ids)
     {
+        $exfee_cross_ids=array();
         $sql="select identityid from user_identity where userid=$userid;";
         $identity_id_list=$this->getColumn($sql);
         for($i=0;$i<sizeof($identity_id_list);$i++)
@@ -98,18 +99,30 @@ class InvitationModels extends DataModel
 
         $crossstr="";
         if(sizeof($cross_ids)==1)
-            $crossstr='cross_id=' . $this->getExfeeIdByCrossId($cross_ids[0]);
+        {
+            $exfee_id=$this->getExfeeIdByCrossId($cross_ids[0]);
+            $crossstr='cross_id=' . $exfee_id;
+            $exfee_cross_ids[$exfee_id]=$cross_ids[0];
+        }
         else if(sizeof($cross_ids)>1)
         {
             for($i=0;$i<sizeof($cross_ids);$i++)
             {
+                $exfee_id=$this->getExfeeIdByCrossId($cross_ids[0]);
                 $cross_ids[$i]= "cross_id=" . $this->getExfeeIdByCrossId($cross_ids[$i]);
+                $exfee_cross_ids[$exfee_id]=$cross_ids[i];
             }
             $crossstr=implode(" or ",$cross_ids);
         }
         //SELECT * FROM `invitations` WHERE (cross_id=1 or cross_id=2 or cross_id=3) and (identity_id=1 or identity_id=3)
-        $sql="select cross_id,identity_id from invitations where ($crossstr) and ($str);";
+        $sql="select cross_id as exfee_id,identity_id from invitations where ($crossstr) and ($str);";
         $identity_id_list=$this->getAll($sql);
+        for($i=0;$i<sizeof($identity_id_list);$i++)
+        {
+            $exfee_id=$identity_id_list[$i]["exfee_id"];
+            $identity_id_list[$i]["cross_id"]=$exfee_cross_ids[$exfee_id];
+        }
+
         return $identity_id_list;
     }
 
