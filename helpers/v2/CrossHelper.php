@@ -58,7 +58,9 @@ class CrossHelper extends ActionController {
             }
         return $cross_list;
     }
-    public function getCross($cross_id, $withToken = false)
+
+
+    public function getCross($cross_id, $withToken = false, $withRemoved = false)
     {
         $crossData=$this->getModelByName("cross","v2");
         $cross=$crossData->getCross($cross_id);
@@ -92,7 +94,7 @@ class CrossHelper extends ActionController {
             $attribute["state"]="draft";
 
         $exfeeData=$this->getModelByName("exfee","v2");
-        $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), false, $withToken);
+        $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), $withRemoved, $withToken);
         $created_at=$cross["created_at"];
 
         $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
@@ -105,6 +107,8 @@ class CrossHelper extends ActionController {
         //$cross->setRelation($relative_id,$relation);
         return $cross;
     }
+
+
     public function gatherCross($cross,$by_identity_id)
     {
         $placeData=$this->getModelByName("place","v2");
