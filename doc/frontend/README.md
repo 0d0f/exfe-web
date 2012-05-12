@@ -11,6 +11,17 @@ EXFE.COM 前端架构
   * topnav.html         - Topnav
   * sample.html         - Sample    实例页面
 
+## 目录结构:
+  * templates           - HTML 页面，不包含 JS 逻辑
+  * jslib               - JS modules development
+  * js                  - JS modules production
+  * less                - less modules development
+  * css                 - css production
+  * odof                - JS Module Library
+  * tools               - 开发工具集
+  * test                - 测试文件夹
+  * img                 - 图片文件夹
+
 ## 开发工具
   * Node.js
   * Less
@@ -31,6 +42,7 @@ EXFE.COM 前端架构
   * http://semver.org/
   * https://github.com/styleguide
   * http://tomdoc.org/
+  * http://rng.io/
 
 ## Node.js & Packages
   - npm install -gd less

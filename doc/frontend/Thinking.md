@@ -1,3 +1,4 @@
+http://jsfiddle.net/NQBjn/
 - timeline comments - http://jsfiddle.net/necolas/vhZds/
 - User panel        - http://jsfiddle.net/Idered/mGFfy/
 - CSS3  2x images   - http://www.quora.com/CSS3/What-is-the-best-method-for-adding-2x-images-to-webpages-that-will-be-displayed-on-the-new-iPad-with-Retina-graphics
