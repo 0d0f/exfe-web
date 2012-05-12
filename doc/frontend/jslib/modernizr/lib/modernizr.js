@@ -1,3 +1,6 @@
+define('modernizr', [], function (require, exports, module) {
+
+
 /*!
  * Modernizr v2.5.3
  * www.modernizr.com
@@ -1335,3 +1338,8 @@ window.Modernizr = (function( window, document, undefined ) {
     return Modernizr;
 
 })(this, this.document);
+
+
+
+  return Modernizr;
+});
