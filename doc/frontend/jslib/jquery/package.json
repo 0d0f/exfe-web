@@ -10,5 +10,9 @@
     "url": "http://code.jquery.com/jquery-1.7.2.js",
     "minurl": "http://code.jquery.com/jquery-1.7.2.min.js"
   },
-  "hint": false
+  "hint": false,
+  "module": {
+    "header": "define('jquery', [], function (require, exports, module) {\n\n\n",
+    "footer": "\n\n\n  return jQuery;\n});"
+  }
 }

@@ -10,5 +10,9 @@
   "pull": {
     "url": "https://raw.github.com/Modernizr/Modernizr/master/modernizr.js"
   },
-  "hint": false
+  "hint": false,
+  "module": {
+    "header": "define('modernizr', [], function (require, exports, module) {\n\n\n",
+    "footer": "\n\n\n  return Modernizr;\n});"
+  }
 }
