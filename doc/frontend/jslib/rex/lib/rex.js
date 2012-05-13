@@ -12,6 +12,8 @@
  *    - http://fitzgen.github.com/wu.js/
  */
 
+define('rex', [], function (require, exports, module) {
+
 var NULL = null
   , UNDEFINED = undefined
   , ArrayProto = Array.prototype
@@ -23,6 +25,7 @@ var NULL = null
   , NIndexOf = ArrayProto.indexof
   , NLastIndexOf = ArrayProto.lastIndexOf
   , NReduce = ArrayProto.reduce
+  , NReduceRight = ArrayProto.reduceRight
   , R = {};
 
 R.each = function (a, fn, ctx) {
@@ -308,6 +311,7 @@ R.values = function (o) {
   return r;
 };
 
+// TODO: 深拷贝/潜拷贝
 R.extend = function () {
 };
 
@@ -433,4 +437,7 @@ rex.each(R.keys(R), function (name, fn) {
     this._value = ret;
     return this._chained ? this : ret;
   };
+});
+
+return rex;
 });
