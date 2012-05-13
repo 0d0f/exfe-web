@@ -2,6 +2,7 @@
   "name": "rex",
   "version": "0.0.1",
   "homepage": "轻量级的 JavaScript 函数库",
+  "author": "cfd",
   "repository": {
   },
   "pull": {
