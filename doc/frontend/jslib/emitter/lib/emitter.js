@@ -8,6 +8,10 @@ define('emitter', [], function (require, exports, module) {
   *  - https://github.com/documentcloud/backbone/blob/master/backbone.js
   *  - https://github.com/joyent/node/blob/master/lib/events.js
   *  - https://github.com/alipay/arale/blob/master/lib/events/src/events.js
+  *
+  *  Test:
+  *
+  *   - http://jsperf.com/odof-events-test/4
   */
   var EVENT_SPLITTER = /\s+/
     , keys = Object.keys || function (o) {
