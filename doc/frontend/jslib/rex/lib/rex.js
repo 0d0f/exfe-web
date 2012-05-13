@@ -240,7 +240,7 @@ R.flatten = function (a) {
   }, []);
 };
 
-R.uniq = function (a) {
+R.unique = function (a) {
   var r = [], i = a.length - 1, j = 0;
   label:
   for (; i >= 0; --i) {
