@@ -18,7 +18,18 @@ function main(args, argv) {
         package = JSON.parse(Fs.readFileSync(config, 'utf-8'));
         pull = package.pull;
         console.log('Download ' + module, path + '/lib/' + module + '.js');
-        Request(pull.url).pipe(Fs.createWriteStream(path + '/lib/' + module + '.js'));
+        var file = Fs.createWriteStream(path + '/lib/' + module + '.js');
+        if (package.module) {
+          file.write(package.module.header);
+        }
+        Request(pull.url, function (err, response, body) {
+          if (!err && response.statusCode == 200) {
+            file.write(body);
+            if (package.module) {
+              file.write(package.module.footer);
+            }
+          }
+        });
       } else {
         console.log('Not found module ' + module + '\'s package.json.');
       }
