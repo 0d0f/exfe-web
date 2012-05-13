@@ -12,17 +12,22 @@ define('emitter', [], function (require, exports, module) {
   *  Test:
   *
   *   - http://jsperf.com/odof-events-test/4
+  *   - http://jsperf.com/if-vs-short-circuiting
   */
   var EVENT_SPLITTER = /\s+/
-    , keys = Object.keys || function (o) {
-        var r = [], p;
-        for (p in o) {
-          if (o.hasOwnProperty(p)) {
-            r[r.length] = p;
-          }
+    , keys = Object.keys;
+
+  if (!keys) {
+    keys = function (o) {
+      var r = [], p;
+      for (p in o) {
+        if (o.hasOwnProperty(p)) {
+          r[r.length] = p;
         }
-        return r;
-      };
+      }
+      return r;
+    };
+  }
 
   function Emitter() {}
 
@@ -104,8 +109,12 @@ define('emitter', [], function (require, exports, module) {
       if ((list = callbacks[event])) {
         for (i = 0, len = list.length; i < len; ++i) {
           cb = list[i];
-          cb.__once && list.splice(i, 1) && (len--) && (i--);
           cb.apply(cb.__context || this, rest);
+          if (cb.__once) {
+            list.splice(i, 1);
+            len--;
+            i--;
+          }
         }
       }
 
