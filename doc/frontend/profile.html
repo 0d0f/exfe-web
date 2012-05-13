@@ -167,88 +167,6 @@
           <div class="gr-a">
             <div class="crosses">
 
-              <div class="clearfix crosses-container">
-                <div class="pull-right cross-type">
-                  <i class="icon-list-alt"></i>
-                  <span>Upcoming</span>
-                  <span class="rb"></span>
-                </div>
-                <div class="cross-list">
-
-                  <div class="cross-box">
-                    <h5>Dinner in SF</h5>
-                    <time>6:30PM Tomorrow, Friday April 8</time>
-                    <address>Crab House <span class="gray">(Pier 39, 203 C, San Francisco, CA, (555) 434-2722)</span></address>
-                    <div>4 <span class="gray">of</span> 6 <span class="gray">confirmed</span>: gkp, dm., Virushuo x2</div>
-                  </div>
-
-                  <div class="cross-box">
-                    <h5>Ferry famers market</h5>
-                    <time>10AM, Saturday April 9</time>
-                    <address>Ferry market <span class="gray">(1 Ferry Building, San Francisco, CA)</span></address>
-                    <div>6 <span class="gray">of</span> 8 <span class="gray">confirmed</span>: gkp, dm., Virushuo x2, delphij, SteveE</div>
-                  </div>
-
-                  <div class="cross-box">
-                    <h5>0d0f team con call</h5>
-                    <time>11PM, Saturday April 9</time>
-                    <!--<address>Crab House (Pier 39, 203 C, San Francisco, CA, (555) 434-2722)</address>-->
-                    <div>4 <span class="gray">of</span> 4 <span class="gray">confirmed</span>: gkp, dm., Virushuo, SteveE</div>
-                  </div>
-
-                </div>
-              </div>
-
-              <div class="clearfix crosses-container">
-                <div class="pull-right cross-type">
-                  <span>Next 7 days</span>
-                  <span class="rb"></span>
-                </div>
-                <div class="cross-list">
-
-                  <div class="cross-box">
-                    <h5>0d0f team con call</h5>
-                    <time>11PM, Saturday April 9</time>
-                    <!--<address>Crab House (Pier 39, 203 C, San Francisco, CA, (555) 434-2722)</address>-->
-                    <div>4 <span class="gray">of</span> 4 <span class="gray">confirmed</span>: gkp, dm., Virushuo, SteveE</div>
-                  </div>
-
-                </div>
-              </div>
-
-              <div class="clearfix crosses-container">
-                <div class="pull-right cross-type">
-                  <span>Later</span>
-                  <span class="rb"></span>
-                </div>
-                <div class="cross-list">
-
-                  <div class="cross-box">
-                    <h5>0d0f team con call</h5>
-                    <time>11PM, Saturday April 9</time>
-                    <!--<address>Crab House (Pier 39, 203 C, San Francisco, CA, (555) 434-2722)</address>-->
-                    <div>4 <span class="gray">of</span> 4 <span class="gray">confirmed</span>: gkp, dm., Virushuo, SteveE</div>
-                  </div>
-
-                </div>
-              </div>
-
-              <div class="clearfix crosses-container">
-                <div class="pull-right cross-type">
-                  <span>Past</span>
-                  <span class="lt"></span>
-                </div>
-                <div class="cross-list">
-
-                  <div class="cross-box">
-                    <h5>0d0f team con call</h5>
-                    <time>11PM, Saturday April 9</time>
-                    <!--<address>Crab House (Pier 39, 203 C, San Francisco, CA, (555) 434-2722)</address>-->
-                    <div>4 <span class="gray">of</span> 4 <span class="gray">confirmed</span>: gkp, dm., Virushuo, SteveE</div>
-                  </div>
-
-                </div>
-              </div>
             </div>
 
           </div>
@@ -342,15 +260,26 @@
       <span class="lt"></span>
     </div>
     <div class="cross-list">
+      {{#crosses}}
+      {{> jst-cross-box}}
+      {{/crosses}}
     </div>
   </div>
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
   <div class="cross-box">
-    <h5>Dinner in SF</h5>
-    <time>6:30PM Tomorrow, Friday April 8</time>
-    <address>Crab House <span class="gray">(Pier 39, 203 C, San Francisco, CA, (555) 434-2722)</span></address>
-    <div>4 <span class="gray">of</span> 6 <span class="gray">confirmed</span>: gkp, dm., Virushuo x2</div>
+    <h5>{{title}}</h5>
+    <time>{{time.origin}}</time>
+    <address>{{place.title}} 
+      {{#if place.description}}
+      <span class="gray">({{place.description}})</span>
+      {{/if}}
+    </address>
+    <div>{{{confirmed_nums exfee.invitations}}} 
+      <span class="gray">of</span> 
+      {{{total exfee.invitations}}} 
+      <span class="gray">confirmed</span>: {{{confirmed_identities exfee.invitations}}}
+    </div>
   </div>
   </script>
 
@@ -359,6 +288,7 @@
   <script src="jslib/modernizr/lib/modernizr.js"></script>
   <script src="jslib/jquery/lib/jquery.js"></script>
   <script src="jslib/handlebars/lib/handlebars.js"></script>
+  <script src="jslib/rex/lib/rex.js"></script>
   <script src="jslib/store/lib/store.js"></script>
   <script src="jslib/profile/lib/profile.js"></script>
 
