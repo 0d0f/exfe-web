@@ -1,5 +1,7 @@
 <?php
-class RelationModels extends DataModel{
+
+class RelationModels extends DataModel {
+
     public function saveRelations($userid,$r_identityid)
     {
 //,$name,$external_identity
@@ -27,6 +29,8 @@ class RelationModels extends DataModel{
         }
         return 0;
     }
+
+
     public function saveRelationsWithIds($userid,$identityid_list,$my_identity_id)
     {
         $redis = new Redis();
@@ -107,5 +111,6 @@ class RelationModels extends DataModel{
             }
         }
     }
+
 }
 

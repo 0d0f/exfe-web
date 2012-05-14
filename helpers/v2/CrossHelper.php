@@ -128,6 +128,8 @@ class CrossHelper extends ActionController {
 
         return $cross_id;
     }
+
+
     public function editCross($cross,$by_identity_id)
     {
         $exfee_id=intval($cross->exfee_id);
