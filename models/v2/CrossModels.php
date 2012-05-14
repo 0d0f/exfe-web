@@ -10,12 +10,14 @@ class CrossModels extends DataModel {
         return $result;
     }
 
+
     public function getCross($crossid)
     {
         $sql="select * from crosses where id=$crossid;";
         $result=$this->getRow($sql);
         return $result;
     }
+
 
     public function addCross($cross,$place_id=0,$exfee_id=0,$by_identity_id=0)
     {
@@ -28,7 +30,7 @@ class CrossModels extends DataModel {
                 if($widget->type==="Background")
                     $background=$widget->image;
             }
-  
+
         $begin_at_time_in_old_format=$cross_time->begin_at->date." ".$cross_time->begin_at->time;
 
         if(intval($cross->id)==0)
@@ -48,9 +50,9 @@ class CrossModels extends DataModel {
         else {
             $updatefields=array();
             $cross_updated=array();
-            
+
             $updated=array("updated_at"=>time(),"identity_id"=>$by_identity_id);
-            if($place_id>0) 
+            if($place_id>0)
             {
                 array_push($updatefields,"place_id=$place_id");
                 $cross_updated["place"]=$updated;
@@ -87,7 +89,7 @@ class CrossModels extends DataModel {
                 array_push($updatefields,"host_id={$cross->host_id}'");
                 $cross_updated["host"]=$updated;
             }
-                
+
             $updatesql=implode($updatefields,",");
 
             $sql="update crosses set updated_at=now(), $updatesql where `id`=$cross->id;";
@@ -102,13 +104,13 @@ class CrossModels extends DataModel {
         }
 
     }
-    
-    
+
+
     public function getExfeeByCrossId($cross_id)
     {
         $sql="select exfee_id from crosses where `id`=$cross_id;";
         $result=$this->getRow($sql);
         return $result["exfee_id"];
     }
-    
+
 }

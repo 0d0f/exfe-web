@@ -229,7 +229,7 @@ class UsersActions extends ActionController {
 
 
     public function doCrosses() {
-        $params   = $this->params;
+        $params = $this->params;
         $uid=$params["id"];
         $updated_at=$params["updated_at"];
 
@@ -246,6 +246,240 @@ class UsersActions extends ActionController {
         $crossHelper= $this->getHelperByName('cross', 'v2');
         $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
         apiResponse(array("crosses"=>$cross_list));
+    }
+
+
+    public function doCrossList() {
+        // auth check
+        $params      = $this->params;
+        $user_id     = (int)$params['id'];
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $result      = $checkHelper->isAPIAllow('user_crosses', $params['token'], array('user_id' => $user_id));
+        if (!$result['check']) {
+            apiError(401, 'invalid_auth');
+        }
+        // init models
+        $modCross    = $this->getModelByName('cross', 'v2');
+        // get crosses
+        $today       = strtotime(date('Y-m-d'));
+        $upcoming    = $today + 60 * 60 * 24 * 3;
+        $sevenDays   = $today + 60 * 60 * 24 * 7;
+        $fetchArgs   = array(
+            'upcoming_included'  => $_GET['upcoming_included']  === 'false' ? false : true,
+            'upcoming_folded'    => $_GET['upcoming_folded']    === 'true'  ? true  : false,
+            'upcoming_more'      => $_GET['upcoming_more']      === 'false' ? false : true,
+            'anytime_included'   => $_GET['anytime_included']   === 'false' ? false : true,
+            'anytime_folded'     => $_GET['anytime_folded']     === 'true'  ? true  : false,
+            'anytime_more'       => $_GET['anytime_more']       === 'true'  ? true  : false,
+            'sevendays_included' => $_GET['sevendays_included'] === 'false' ? false : true,
+            'sevendays_folded'   => $_GET['sevendays_folded']   === 'true'  ? true  : false,
+            'sevendays_more'     => $_GET['sevendays_more']     === 'true'  ? true  : false,
+            'later_included'     => $_GET['later_included']     === 'false' ? false : true,
+            'later_folded'       => $_GET['later_folded']       === 'true'  ? true  : false,
+            'later_more'         => $_GET['later_more']         === 'true'  ? true  : false,
+            'past_included'      => $_GET['past_included']      === 'false' ? false : true,
+            'past_folded'        => $_GET['past_folded']        === 'true'  ? true  : false,
+            'past_more'          => $_GET['past_more']          === 'true'  ? true  : false,
+        );
+        $fetchArgs['past_quantity'] = 0;
+        if (isset($_GET['past_quantity'])) {
+            $fetchArgs['past_quantity'] = intval($_GET['past_quantity']);
+        }
+        if ($fetchArgs['upcoming_included']
+         || $fetchArgs['sevendays_included']
+         || $fetchArgs['later_included']) {
+            $futureXs  = $modCross->fetchCross($_SESSION['userid'], $today,
+                                               'yes', '`begin_at` DESC');
+        }
+        if ($fetchArgs['past_included']) {
+            $pastXs    = $modCross->fetchCross($_SESSION['userid'], $today,
+                                               'no',  '`begin_at` DESC');
+        }
+        if ($fetchArgs['anytime_included']) {
+            $anytimeXs = $modCross->fetchCross($_SESSION['userid'], 0,
+                                               'anytime', '`created_at` DESC');
+        }
+
+        // sort crosses
+        $crosses   = array();
+        $xShowing  = 0;
+        $maxCross  = 20;
+        $minCross  = 3;
+        // sort upcoming crosses
+        if ($fetchArgs['upcoming_included']
+         || $fetchArgs['sevenDays_included']
+         || $fetchArgs['later_included']) {
+            foreach ($futureXs as $crossI => $crossItem) {
+                $futureXs[$crossI]['timestamp']
+              = strtotime($crossItem['begin_at']);
+                if (!$fetchArgs['upcoming_included']) {
+                    continue;
+                }
+                if ($futureXs[$crossI]['timestamp'] < $upcoming) {
+                    $futureXs[$crossI]['sort'] = 'upcoming';
+                    array_push($crosses, $futureXs[$crossI]);
+                    $xShowing += !$fetchArgs['upcoming_folded'] ? 1 : 0;
+                    unset($futureXs[$crossI]);
+                }
+            }
+        }
+        // sort anytime crosses
+        if ($fetchArgs['anytime_included']) {
+            $xQuantity = !$fetchArgs['anytime_more'] && $xShowing >= $maxCross
+                       ? $minCross : 0;
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($anytimeXs as $crossItem) {
+                if ($enough) {
+                    array_push($crosses,
+                               array('sort'=>'anytime', 'more'=>true));
+                    continue;
+                }
+                $crossItem['sort'] = 'anytime';
+                array_push($crosses, $crossItem);
+                $xShowing += !$fetchArgs['anytime_folded'] ? 1 : 0;
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    $enough = true;
+                }
+            }
+            unset($anytimeXs);
+        }
+        // sort next-seven-days cross
+        if ($fetchArgs['sevenDays_included']) {
+            $xQuantity = !$fetchArgs['sevenDays_more'] && $xShowing >= $maxCross
+                       ? $minCross : 0;
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($futureXs as $crossI => $crossItem) {
+                if ($crossItem['timestamp'] >= $upcoming
+                 && $crossItem['timestamp'] <  $sevenDays) {
+                    if ($enough) {
+                        array_push($crosses,
+                                   array('sort'=>'sevenDays', 'more'=>true));
+                        continue;
+                    }
+                    $crossItem['sort'] = 'sevenDays';
+                    array_push($crosses, $crossItem);
+                    $xShowing += !$fetchArgs['sevenDays_folded'] ? 1 : 0;
+                    unset($futureXs[$crossI]);
+                    if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                        $enough = true;
+                    }
+                }
+            }
+        }
+        // sort later cross
+        if ($fetchArgs['later_included']) {
+            $xQuantity = !$fetchArgs['later_more'] && $xShowing >= $maxCross
+                       ? $minCross : 0;
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($futureXs as $crossItem) {
+                if ($crossItem['timestamp'] >= $sevenDays) {
+                    if ($enough) {
+                        array_push($crosses,
+                                   array('sort'=>'later', 'more'=>true));
+                        continue;
+                    }
+                    $crossItem['sort'] = 'later';
+                    array_push($crosses, $crossItem);
+                    $xShowing += !$fetchArgs['later_folded'] ? 1 : 0;
+                    unset($futureXs[$crossI]);
+                    if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                        $enough = true;
+                    }
+                }
+            }
+        }
+        unset($futureXs);
+        // sort past cross
+        if ($fetchArgs['past_included']) {
+            $xQuantity = $fetchArgs['past_more']
+                       ? $maxCross
+                       : ($xShowing >= $maxCross ? $minCross : 0);
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($pastXs as $crossItem) {
+                if ($fetchArgs['past_quantity']-- > 0) {
+                    continue;
+                }
+                if ($enough) {
+                    array_push($crosses,
+                               array('sort'=>'past', 'more'=>true));
+                    continue;
+                }
+                $crossItem['sort'] = 'past';
+                array_push($crosses, $crossItem);
+                $xShowing += !$fetchArgs['past_folded'] ? 1 : 0;
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    $enough = true;
+                }
+            }
+            unset($pastXs);
+        }
+
+        // get confirmed informations
+        $crossIds = array();
+        foreach ($crosses as $crossI => $crossItem) {
+            if ($crossItem['id'] !== null) {
+                array_push($crossIds, $crossItem['id']);
+            }
+        }
+        $cfedInfo = $modIvit->getIdentitiesIdsByCrossIds($crossIds);
+
+        // get related identities
+        $relatedIdentityIds = array();
+        foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
+            $relatedIdentityIds[$cfedInfoItem['identity_id']] = true;
+        }
+        $relatedIdentities = $modIdentity->getIdentitiesByIdentityIds(
+            array_keys($relatedIdentityIds)
+        ) ?: array();
+
+        // get human identities
+        $humanIdentities = array();
+        foreach ($relatedIdentities as $ridI => $ridItem) {
+            $user = $modUser->getUserByIdentityId($ridItem['identity_id']);
+            $humanIdentities[$ridItem['id']] = humanIdentity($ridItem, $user);
+            //unset($humanIdentities[$ridItem['id']]['activecode']);
+        }
+
+        // Add informations into crosses
+        foreach ($crosses as $crossI => $crossItem) {
+            $crosses[$crossI]['base62id'] = int_to_base62($crossItem['id']);
+            $crosses[$crossI]['begin_at'] = array(
+                'begin_at'        => $crosses[$crossI]['begin_at'],
+                'time_type'       => $crosses[$crossI]['time_type'],
+                'timezone'        => $crosses[$crossI]['timezone'],
+                'origin_begin_at' => $crosses[$crossI]['origin_begin_at'],
+            );
+            $crosses[$crossI]['exfee']     = array();
+            foreach ($cfedInfo as $cfedInfoI => $cfedInfoItem) {
+                if ($cfedInfoItem['cross_id'] === $crossItem['id']) {
+                    $exfe = $humanIdentities[$cfedInfoItem['identity_id']];
+                    $exfe['rsvp'] = $cfedInfoItem['state'];
+                    array_push($crosses[$crossI]['exfee'], $exfe);
+                }
+            }
+        }
+
+        echo json_encode($crosses);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 

@@ -8,11 +8,14 @@ class XModels extends DataModel {
         $dbResult = $this->getRow($sql);
         return intval($dbResult['id']);
     }
+
+
     public function updateCrossUpdateTime($cross_id)
     {
-        $sql="update crosses set updated_at=now() where `id`=$cross_id;";
+        $sql = "update crosses set updated_at=now() where `id`=$cross_id;";
         $result = $this->query($sql);
     }
+
 
     public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
@@ -101,15 +104,15 @@ class XModels extends DataModel {
 
         return $this->query($sql);
     }
-    
-    
+
+
     public function updateCrossUpdatedAt($crossId)
     {
         $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
 
         return $this->query($sql);
     }
-    
+
 
     public function checkCrossExists($cross_id)
     {
@@ -117,6 +120,7 @@ class XModels extends DataModel {
         $result = $this->getRow($sql);
         return $result;
     }
+
 
     public function getCrossesByIds($cross_id_list)
     {
@@ -132,6 +136,7 @@ class XModels extends DataModel {
             return $crosses;
         }
     }
+
 
     public function getCrossByUserId($userid, $updated_since="")
     {
@@ -166,6 +171,7 @@ class XModels extends DataModel {
         //get my host cross or cross_id
         //now, if a cross related with you, you must have a invitation.
     }
+
 
     public function fetchCross($userid, $begin_at = 0, $opening = 'yes',
                                $order_by = '`begin_at`', $limit = null,
