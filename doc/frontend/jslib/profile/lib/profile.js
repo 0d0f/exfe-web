@@ -57,7 +57,10 @@ define(function (require, exports, module) {
     })
       .done(function (data) {
         if (data.meta.code === 200) {
-          console.dir(data);
+          var jst_user = $('#jst-user-avatar');
+          var s = Handlebars.compile(jst_user.html());
+          var h = s({avatar_filename: data.response.user.avatar_filename});
+          $('.user-avatar').append(h);
         }
       });
 
