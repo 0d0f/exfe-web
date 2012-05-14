@@ -105,21 +105,23 @@ define('emitter', [], function (require, exports, module) {
       rest[i - 1] = arguments[i];
     }
 
+    if ((all = callbacks.call)) args = [0].concat(rest);
+
     while ((event = events.shift())) {
       if ((list = callbacks[event])) {
         for (i = 0, len = list.length; i < len; ++i) {
           cb = list[i];
           cb.apply(cb.__context || this, rest);
           if (cb.__once) {
-            list.splice(i, 1);
+            list.splice(i--, 1);
             len--;
-            i--;
           }
         }
       }
 
-      if ((all = callbacks.all)) {
-        args = [event].concat(rest);
+      // if `list` not found, don't trigger `all`
+      if (list && all) {
+        args[0] = event;
         for (i = 0, len = all.length; i < len; ++i) {
           cb = all[i];
           cb.apply(cb.__context || this, args);
