@@ -45,7 +45,7 @@ class ConversationActions extends ActionController {
         $modelData=$this->getModelByName("conversation","v2");
         $post_id=$modelData->addPost($post);
         $new_post=$modelData->getPostById($post_id);
-        $new_post_obj=new Post($post["id"],$post["identity_id"],$post["content"], $post["postable_id"],$post["postable_type"],"");
+        $new_post_obj=new Post($new_post["id"],$new_post["identity_id"],$new_post["content"], $new_post["postable_id"],$new_post["postable_type"],"");
         apiResponse(array("post"=>$new_post_obj));
     }
 
