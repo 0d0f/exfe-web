@@ -1,10 +1,10 @@
 <?php
 
 class IdentityModels extends DataModel {
-    
+
     private $salt = '_4f9g18t9VEdi2if';
-    
-    
+
+
     protected function packageIdentity($rawIdentity) {
         if ($rawIdentity) {
             $rawUserIdentity = $this->getRow(
@@ -35,7 +35,7 @@ class IdentityModels extends DataModel {
             "SELECT * FROM `identities` WHERE `id` = {$id}"
         ));
     }
-    
+
 
     public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
         return $this->packageIdentity($this->getRow(
@@ -62,15 +62,15 @@ class IdentityModels extends DataModel {
             return true;
         return false;
     }
-    
-    
+
+
     public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
         return preg_replace(
             '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $strUrl
         );
     }
-    
-    
+
+
     public function updateIdentityById($id, $identityDetail = array()) {
         $id = intval($id);
         if (!$id || !$identityDetail['provider'] || !$identityDetail['external_id']) {
@@ -227,8 +227,8 @@ class IdentityModels extends DataModel {
             "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
         );
     }
-    
-    
+
+
     public function deleteIdentityFromUser($identity_id, $user_id) {
         if (!$identity_id || !$user_id) {
             return false;
@@ -253,9 +253,10 @@ class IdentityModels extends DataModel {
         }
         return false;
     }
-    
-    
+
+
     public function makeDefaultAvatar($external_id) {
+        // image config
         $specification = array(
             'width'  => 80,
             'height' => 80,
@@ -267,40 +268,28 @@ class IdentityModels extends DataModel {
             array( 66, 163,  36),
             array( 41,  95, 204),
         );
-        
-        
+        $ftSize = 36;
+        // init lib
         $curDir = dirname(__FILE__);
         require_once "{$curDir}/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
-        
+        // init path
         $resDir = "{$curDir}/../../default_avatar_portrait/";
         $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
-        
-        $bi = rand(1, 3);
-        
-        $bgFile = "{$resDir}/bg_{$bi}.png";
-
-        $image = ImageCreateFromPNG($bgFile);
-        $foreColor = imagecolorallocate($image, 0xE6, 0xE6, 0xE6);
-
-        imageline($image,  0,  0, 79,  0, $foreColor);
-        imageline($image, 79,  0, 79, 79, $foreColor);
-        imageline($image, 79, 79,  0, 79, $foreColor);
-        imageline($image,  0, 79,  0,  0, $foreColor);
-
-        $ci = rand(0, count($colors) - 1);
-        
-        $foreColor = imagecolorallocate($image, $colors[$ci][0], $colors[$ci][1], $colors[$ci][2]);
-        $tsS = 36;
+        // get image
+        $bgIdx  = rand(1, 3);
+        $image  = ImageCreateFromPNG("{$resDir}/bg_{$bgIdx}.png");
+        // get color
+        $clIdx  = rand(0, count($colors) - 1);
+        $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
+        // calcular font size
         do {
-            $tmpImg = imagecreate(80, 80);
-            $arr = imagettftext($tmpImg, $tsS, 0, 3, 65, $foreColor, $ftFile, $external_id);
-            $siz = $arr[2] - $arr[0];
-            $tsS--;
-        } while ($siz > (80 - 2));
+            $posArr = imagettftext(imagecreate(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $external_id);
+            $fWidth = $posArr[2] - $posArr[0];
+            $ftSize--;
+        } while ($fWidth > (80 - 2));
+        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $external_id);
 
-        imagettftext($image, $tsS, 0, (80 - $siz) / 2, 65, $foreColor, $ftFile, $external_id);
-        
         header('Pragma: no-cache');
         header('Cache-Control: no-cache');
         header('Content-Transfer-Encoding: binary');
