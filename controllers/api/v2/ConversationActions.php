@@ -41,11 +41,12 @@ class ConversationActions extends ActionController {
         $post->postable_type='exfee';
         $post->postable_id=$exfee_id;
 
+
         $modelData=$this->getModelByName("conversation","v2");
         $post_id=$modelData->addPost($post);
         $new_post=$modelData->getPostById($post_id);
-        unset($new_post["del"]);
-        apiResponse(array("post"=>$new_post));
+        $new_post_obj=new Post($post["id"],$post["identity_id"],$post["content"], $post["postable_id"],$post["postable_type"],"");
+        apiResponse(array("post"=>$new_post_obj));
     }
 
     public function doDel()
