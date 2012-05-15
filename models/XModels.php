@@ -1,5 +1,6 @@
 <?php
 
+// upgraded
 class XModels extends DataModel {
 
     // v1_v2_bridge
@@ -10,6 +11,7 @@ class XModels extends DataModel {
     }
 
 
+    // upgraded
     public function updateCrossUpdateTime($cross_id)
     {
         $sql = "update crosses set updated_at=now() where `id`=$cross_id;";
@@ -17,6 +19,7 @@ class XModels extends DataModel {
     }
 
 
+    // upgraded
     public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
         // state=1 draft
@@ -64,6 +67,7 @@ class XModels extends DataModel {
     }
 
 
+    // upgraded
     public function getCross($crossid)
     {
         $sql="select * from crosses where id=$crossid";
@@ -72,7 +76,25 @@ class XModels extends DataModel {
     }
 
 
-    //update cross
+    // upgraded
+    public function updateCrossUpdatedAt($crossId)
+    {
+        $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
+
+        return $this->query($sql);
+    }
+
+
+    // upgraded
+    public function checkCrossExists($cross_id)
+    {
+        $sql = "SELECT * FROM crosses WHERE id={$cross_id}";
+        $result = $this->getRow($sql);
+        return $result;
+    }
+
+
+    // upgraded
     public function updateCross($cross)
     {
         // update place
@@ -106,22 +128,7 @@ class XModels extends DataModel {
     }
 
 
-    public function updateCrossUpdatedAt($crossId)
-    {
-        $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
-
-        return $this->query($sql);
-    }
-
-
-    public function checkCrossExists($cross_id)
-    {
-        $sql = "SELECT * FROM crosses WHERE id={$cross_id}";
-        $result = $this->getRow($sql);
-        return $result;
-    }
-
-
+    // upgraded
     public function getCrossesByIds($cross_id_list)
     {
         if(sizeof($cross_id_list)>0)
@@ -138,6 +145,7 @@ class XModels extends DataModel {
     }
 
 
+    // upgraded
     public function getCrossByUserId($userid, $updated_since="")
     {
         //get all identityid
@@ -173,6 +181,7 @@ class XModels extends DataModel {
     }
 
 
+    // upgraded
     public function fetchCross($userid, $begin_at = 0, $opening = 'yes',
                                $order_by = '`begin_at`', $limit = null,
                                $actions  = '')
