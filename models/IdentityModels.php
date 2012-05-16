@@ -951,11 +951,8 @@ class IdentityModels extends DataModel {
             array( 41,  95, 204),
         );
         $ftSize = 36;
-        // init lib
-        $curDir = dirname(__FILE__);
-        require_once "{$curDir}/../xbgutilitie/libimage.php";
-        $objLibImage = new libImage;
         // init path
+        $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../default_avatar_portrait/";
         $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
         // get image
