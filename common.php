@@ -368,7 +368,7 @@ function reverse_escape($str)
 function hashFileSavePath($savePath, $fileName = '') {
     // basic check
     if (!is_dir($savePath)) {
-        return array('error' = 1);
+        return array('error' => 1);
     }
     // do hash
     $hash_name   = md5(randStr(20) . $fileName . getMicrotime() . uniqid());
@@ -377,7 +377,7 @@ function hashFileSavePath($savePath, $fileName = '') {
     // make dir
     if(!is_dir($hash_path)){
         if(!mkdir($hash_path, 0777, true)) {
-            return array('error' = 2);
+            return array('error' => 2);
         }
     }
     // return
