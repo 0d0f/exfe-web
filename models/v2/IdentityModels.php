@@ -287,7 +287,7 @@ class IdentityModels extends DataModel {
         $name   = substr($name ?: $external_id, 0, 3);
         // calcular font size
         do {
-            $posArr = imagettftext(imagecreate(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
+            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
         } while ($fWidth > (80 - 2));
