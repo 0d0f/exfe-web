@@ -68,7 +68,7 @@ class xbgUtilitie extends DataModel {
             if ($file !== '.' && $file !== '..' && $file !== '.DS_Store') {
                 if (!is_dir($fmFullpath = "{$this->fmImagePath}/{$file}")) {
                     echo ++$num . ": {$fmFullpath}";
-                    $toFileName  = preg_replace('/^.*\/([^\/]*)\.[^\.]*$/', '$1', $fmFullpa”th);
+                    $toFileName  = preg_replace('/^.*\/([^\/]*)\.[^\.]*$/', '$1', $fmFullpath);
                     foreach ($this->toSpecification as $sI => $sItem) {
                         // create image
                         $dtImage = imagecreatetruecolor($sItem['width'], $sItem['height']);
