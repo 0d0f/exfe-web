@@ -157,7 +157,8 @@ class IdentityModels extends DataModel {
         }
         // set identity default avatar as Gravatar
         if ($provider === 'email' && !$avatar_filename) {
-            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode(DEFAULT_AVATAR_URL);
+            $default_avatar  = $this->makeDefaultAvatar($external_id, $name) ?: DEFAULT_AVATAR_URL;
+            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($default_avatar);
         }
         // insert new identity into database
         $dbResult = $this->query(
@@ -286,11 +287,11 @@ class IdentityModels extends DataModel {
         $name   = substr($name ?: $external_id, 0, 3);
         // calcular font size
         do {
-            $posArr = imagettftext(imagecreate(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
+            $posArr = imagettftext(imagecreate(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
         } while ($fWidth > (80 - 2));
-        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
+        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 70, $fColor, $ftFile, $name);
         // show image
         // header('Pragma: no-cache');
         // header('Cache-Control: no-cache');
