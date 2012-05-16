@@ -3,23 +3,35 @@
 class AvatarActions extends ActionController {
 
 	public function doGet() {
-		// get source image
 		$params = $this->params;
-		$type = strtolower(array_pop(explode('.', $params['url'])));
-		switch ($type) {
-			case 'png':
-				$srcImage = ImageCreateFromPNG($params['url']);
-				break;
-			case 'jpg':
-			case 'jpeg':
-				$srcImage = ImageCreateFromJpeg($params['url']);
-				break;
-			case 'gif':
-				$srcImage = ImageCreateFromGif($params['url']);
-				break;
-			default:
-				// error
+		try {
+			// get source image
+			if (!$params['url']) {
+				throw new Exception('Image url must be given.');
+			}
+			$type = strtolower(array_pop(explode('.', $params['url'])));
+			switch ($type) {
+				case 'png':
+					@$srcImage = ImageCreateFromPNG($params['url']);
+					break;
+				case 'jpg':
+				case 'jpeg':
+					@$srcImage = ImageCreateFromJpeg($params['url']);
+					break;
+				case 'gif':
+					@$srcImage = ImageCreateFromGif($params['url']);
+					break;
+				default:
+					throw new Exception('Error image type.');
+			}
+			if (!$srcImage) {
+				throw new Exception('Error while fetching image.');
+			}
+		} catch (Exception $error) {
+			// get fall back image
+			$srcImage = ImageCreateFromPNG(dirname(__FILE__) . '/../../../eimgs/web/80_80_default.png');
 		}
+		// get size of source image
 		$imgSize  = array(imagesx($srcImage), imagesy($srcImage));
 		// make target image
 		$tgtImage = imagecreatetruecolor($imgSize[0], $imgSize[1]);
