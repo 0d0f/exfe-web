@@ -128,8 +128,8 @@ class IdentityModels extends DataModel {
             }
         return $ids;
     }
-    
-    
+
+
     public function getIdentitiesByUser($userid)
     {
         $sql="select identityid,status,activecode from user_identity where userid=$userid";
@@ -148,7 +148,6 @@ class IdentityModels extends DataModel {
             }
         }
         return $userIdentityInfo;
-
     }
 
 
@@ -439,7 +438,7 @@ class IdentityModels extends DataModel {
             //one value
         }
     }
-    
+
 
     public function ifIdentitiesEqualWithIdentity($identities,$identity_id)
     {
@@ -504,12 +503,12 @@ class IdentityModels extends DataModel {
             $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
         }
     }
-    
-    
+
+
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
-    
-    
+
+
     // upgraded
     public function checkUserIdentityRelation($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
@@ -609,7 +608,7 @@ class IdentityModels extends DataModel {
             return $identityid;
         }
     }
-    
+
     // upgraded
     public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
         //$password = md5($password.$this->salt);
@@ -665,7 +664,7 @@ class IdentityModels extends DataModel {
         }
         return 0;
     }
-    
+
     // upgraded
     public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
         if($userid==0) {
@@ -720,8 +719,8 @@ class IdentityModels extends DataModel {
         unset($_SESSION["tokenIdentity"]);
         return $userid;
     }
-    
-    
+
+
     // upgraded
     public function setLoginCookie($identity, $userid, $identity_id) {
         $time=time();
@@ -755,8 +754,8 @@ class IdentityModels extends DataModel {
         $last_identity_str = json_encode($last_identity);
         setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
     }
-    
-    
+
+
     // upgraded
     public function loginByCookie($source='') {
         $uid=intval($_COOKIE['uid']);
@@ -809,8 +808,8 @@ class IdentityModels extends DataModel {
         $row=$this->getRow($sql);
         return $row;
     }
-    
-    
+
+
     // upgraded
     public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
         // collecting new identity informations
@@ -841,8 +840,8 @@ class IdentityModels extends DataModel {
         $identityid = intval($result["insert_id"]);
         return $identityid;
     }
-    
-    
+
+
     // upgraded
     public function ifIdentityExist($external_identity, $provider = '') {
         $external_identity = mysql_real_escape_string($external_identity);
@@ -885,8 +884,8 @@ class IdentityModels extends DataModel {
             return false;
         }
     }
-    
-    
+
+
     // upgraded
     public function deleteIdentity($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";

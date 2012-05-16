@@ -255,7 +255,7 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function makeDefaultAvatar($external_id) {
+    public function makeDefaultAvatar($external_id, $name = '') {
         // image config
         $specification = array(
             'width'  => 80,
@@ -282,20 +282,31 @@ class IdentityModels extends DataModel {
         // get color
         $clIdx  = rand(0, count($colors) - 1);
         $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
+        // get name
+        $name   = substr($name ?: $external_id, 0, 3);
         // calcular font size
         do {
-            $posArr = imagettftext(imagecreate(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $external_id);
+            $posArr = imagettftext(imagecreate(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
         } while ($fWidth > (80 - 2));
-        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $external_id);
-
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header("Content-type: image/png");
-        imagepng($image);
+        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
+        // show image
+        // header('Pragma: no-cache');
+        // header('Cache-Control: no-cache');
+        // header('Content-Transfer-Encoding: binary');
+        // header('Content-type: image/png');
+        // imagepng($image);
+        // save image
+        $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$external_id}");
+        $filename = "{$hashed_path_info['fname']}.png";
+        if ($hashed_path_info['error'] || !imagepng($image, "{$hashed_path_info['fpath']}/{$filename}")) {
+            return null;
+        }
+        // release memory
         imagedestroy($image);
+        // return
+        return IMG_URL . "{$hashed_path_info['webpath']}/{$filename}";
     }
 
 }
