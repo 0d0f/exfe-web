@@ -121,7 +121,7 @@ class IdentitiesActions extends ActionController {
 
     public function doMakeDefaultAvatar() {
         $objIdentity = $this->getModelByName('identity', 'v2');
-        $objIdentity->makeDefaultAvatar('vir');
+        echo $objIdentity->makeDefaultAvatar('vi123adfasdfasdf', 111);
     }
 
 }
