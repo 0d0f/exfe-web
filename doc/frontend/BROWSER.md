@@ -9,6 +9,8 @@
     - Opera12+       XHR2     XMLHttpRequests
     - Chrome         XHR2     XMLHttpRequests
 
+    http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content-1.html#attr-img-srcset
+
 [CORS w3]: http://www.w3.org/TR/cors/ (Cross-Origin Resource Sharing)
 [cors caniuse]: http://caniuse.com/#feat=cors
 [RNG]: http://rng.io/

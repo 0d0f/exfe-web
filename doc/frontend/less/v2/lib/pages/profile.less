@@ -36,6 +36,7 @@
 }
 
   .settings-panel {
+    position: relative;
     min-height: 105px;
     background: #fafafa;
     margin: 0 20px 40px;
@@ -85,6 +86,7 @@
     }
 
     .user-infos {
+      padding-bottom: 20px;
       padding-left: 15px;
 
       input[type="text"] {
@@ -234,18 +236,25 @@
 
     .cross-list {
       clear: right;
-      color: #424242;
     }
 
     .cross-box {
       margin-left: -9.5px;
-      padding: 8px 10px;
-      border: 1px solid rgba(0,0,0,0);
+
+      > a {
+        display: block;
+        padding: 8px 10px;
+        border: 1px solid rgba(0,0,0,0);
+        color: #424242;
+        text-decoration: none;
+      }
+
+      > a:hover {
+        border: 1px dashed #d5d5d5;
+      }
     }
 
-    .cross-box:hover {
-      border: 1px dashed #d5d5d5;
-    }
+    //.cross-box:hover {}
 
   }
 
@@ -267,13 +276,20 @@
     }
 
     .cross-box {
-      padding: 5px 8px;
-      border: 1px solid rgba(0,0,0,0);
+      > a {
+        display: block;
+        padding: 5px 8px;
+        border: 1px solid rgba(0,0,0,0);
+        color: #424242;
+        text-decoration: none;
+      }
+
+      > a:hover {
+        border: 1px dashed #d5d5d5;
+      }
     }
 
-    .cross-box:hover {
-      border: 1px dashed #d5d5d5;
-    }
+    //.cross-box:hover {}
 
     time {
       font-size: 10px;
