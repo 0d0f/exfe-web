@@ -13,8 +13,24 @@
   .x-gather {
     text-align: center;
 
-    a.btn {
-      width: 220px;
+    a.xbtn {
+      display: inline-block;
+      width: 218px;
+      height: 58px;
+      &:hover {
+        color: #050505;
+        text-decoration: none;
+      }
+    }
+
+    .xbtn-gather {
+      margin-top: 40px;
+      margin-bottom: 40px;
+      font-size: 34px;
+      line-height: 60px;
+      border: none;
+      .box-shadow(0 1px 4px rgba(5, 5, 5, .5));
+      .border-radius(5px);
     }
   }
 
@@ -28,5 +44,12 @@
       height: 25px;
       margin-left: 42px;
     }
+  }
+
+  .x-features {
+    width: 695px;
+    height: 36px;
+    margin: 0 auto;
+    background: url(/img/index-icons-bt.png) no-repeat 
   }
 }

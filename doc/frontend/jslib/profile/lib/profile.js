@@ -4,6 +4,29 @@ define(function (require, exports, module) {
   var Handlebars = require('handlebars');
   var R = require('rex');
 
+  // 覆盖默认 `each` 添加 `__index__` 属性
+  Handlebars.registerHelper('each', function (context, options) {
+    var fn = options.fn
+      , inverse = options.inverse
+      , ret = ''
+      , i, l;
+
+    if(context && context.length) {
+      for(i = 0, l = context.length; i < l; ++i) {
+        context[i].__index__ = i;
+        ret = ret + fn(context[i]);
+      }
+    } else {
+      ret = inverse(this);
+    }
+    return ret;
+  });
+
+  // 添加 `ifFalse` 判断
+  Handlebars.registerHelper('ifFalse', function (context, options) {
+    return Handlebars.helpers['if'].call(this, !context, options);
+  });
+
   var signin_defe = function () {
     var user_id = Store.get('user_id')
       , token = Store.get('token')
@@ -57,10 +80,18 @@ define(function (require, exports, module) {
     })
       .done(function (data) {
         if (data.meta.code === 200) {
+          var user = data.response.user;
           var jst_user = $('#jst-user-avatar');
           var s = Handlebars.compile(jst_user.html());
-          var h = s({avatar_filename: data.response.user.avatar_filename});
+          var h = s({avatar_filename: user.avatar_filename});
           $('.user-avatar').append(h);
+
+          $('.user-name').find('h3').html(user.name);
+
+          var jst_identity_list = $('#jst-identity-list');
+          var s = Handlebars.compile(jst_identity_list.html());
+          var h = s({identities: user.identities});
+          $('.identity-list').append(h);
         }
       });
 

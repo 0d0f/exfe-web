@@ -320,6 +320,13 @@ R.mixin = function (r, s) {
   for (p in s) r[p] = s[p];
 };
 
+// https://gist.github.com/2708275
+R.tap = function (o, f) {
+  var r;
+  if (f) r = fn(o);v
+  return !r ? o : r;
+};
+
 R.isFunction = function (f) {
   return typeof f === 'function';
 };

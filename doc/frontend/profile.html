@@ -67,7 +67,6 @@
 
         <div class="row settings-panel">
           <div class="pull-left user-avatar">
-            <span class="avatar"><img src="/img/users/u1x50.png" alt="" width="80" height="80" /></span>
           </div>
 
           <div class="pull-right user-xstats">
@@ -79,12 +78,10 @@
 
           <div class="user-infos">
             <div class="user-name">
-              <input value="Steve Exfee" type="text" />
-            </div>
-            <div class="user-name">
               <h3>Steve Exfee</h3>
             </div>
             <ul class="identity-list">
+              <!--
               <li class="default">
                 <i class="icon-minus-sign">
                   </i><span class="avatar"><img src="/img/users/u1x20.png" alt="" width="20" height="20" />
@@ -157,10 +154,11 @@
                   <li><span class="device">Steve's Kindle</span></li>
                 </ul>
               </li>
+              -->
             </ul>
 
-            <button class="pull-right xbtn xbtn-addidentity">Add Identity…</button>
           </div>
+          <button class="pull-right xbtn xbtn-addidentity">Add Identity…</button>
         </div>
 
         <div class="row">
@@ -253,6 +251,29 @@
   </div>
 
   <!-- JS Templates -->
+  <script id="jst-identity-list" type="text/x-handlebars-template">
+  {{#each identities}}
+  <li {{#ifFalse __index__}}class="default"{{/ifFalse}}>
+    <i class="icon-minus-sign hide"></i><span class="avatar"><img src="/img/users/u1x20.png" alt="" width="20" height="20" />
+    </span><span class="username">SteveE</span><span class="identity">@stevexfee</span>
+    <span class="xlabel hide">
+      <i class="icon-warning-sign"></i>
+      <span>Authorization failed.</span>
+      <button class="xbtn xbtn-reauthorize">Re-Authorize</button>
+    </span>
+  </li>
+  {{/each}}
+  </script>
+  <script id="jst-user-avatar" type="text/x-handlebars-template">
+  {{#if avatar_filename}}
+  <span class="avatar"><img src="{{this}}" alt="" width="80" height="80" /></span>
+  {{else}}
+  <div class="add-avatar">
+    <span class="plus">+</span>
+    <span class="portrait">Portrait</span>
+  </div>
+  {{/if}}
+  </script>
   <script id="jst-crosses-container" type="text/x-handlebars-template">
   <div class="clearfix crosses-container">
     <div class="pull-right cross-type">
@@ -268,18 +289,20 @@
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
   <div class="cross-box">
+  <a href="/cross.html?id={{id}}" title="">
     <h5>{{title}}</h5>
     <time>{{time.origin}}</time>
     <address>{{place.title}} 
-      {{#if place.description}}
+    {{#if place.description}}
       <span class="gray">({{place.description}})</span>
-      {{/if}}
+    {{/if}}
     </address>
     <div>{{{confirmed_nums exfee.invitations}}} 
       <span class="gray">of</span> 
       {{{total exfee.invitations}}} 
       <span class="gray">confirmed</span>: {{{confirmed_identities exfee.invitations}}}
     </div>
+  </a>
   </div>
   </script>
 
