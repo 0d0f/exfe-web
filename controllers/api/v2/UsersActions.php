@@ -132,48 +132,39 @@ class UsersActions extends ActionController {
 
 
     public function doSignin() {
-        $modUser     = $this->getModelByName('user', 'v2');
-        $external_id = $_POST['external_id'];
-        $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password    = $_POST['password'];
-        $siResult    = $modUser->signinForAuthToken($provider, $external_id, $password);
-        if ($external_id && $password && $siResult) {
-            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
-        } else {
-            apiError(403, 'failed', ''); // 失败
-        }
-    }
-
-
-    //@todo: merge with new sign in
-    public function doWebSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
-        // init
-        $rtResult      = array();
-        $isNewIdentity = false;
         // collecting post data
-        $external_id   = $_POST['external_id'];
-        $provider      = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password      = $_POST['password'];
-        $name          = $_POST['name'];
-        $autoSignin    = intval($_POST['auto_signin']) === 1;
+        $isNewIdentity = false;
+        if (!$external_id = $_POST['external_id']) {
+            apiError(403, 'no_external_id', 'external_id must be provided');
+        }
+        if (!$provider = $_POST['provider']) {
+            apiError(403, 'no_provider', 'provider must be provided');
+        }
+        if (!$password = $_POST['password']) {
+            apiError(403, 'no_password', 'password must be provided');
+        };
+        $name       = $_POST['name'];
+        $autoSignin = intval($_POST['auto_signin']) === 1;
         // adding new identity
-        if ($external_id && $password && $name) {
+        if ($name) {
             // @todo: 根据 $provider 检查 $external_identity 有效性
             $user_id = $modUser->newUserByPassword($password);
             // @todo: check returns
-            $modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id);
-            // @todo: check returns
+            $identity_id = $modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id);
             $isNewIdentity = true;
+            if ($identity_id) {
+                apiResponse(array('is_new_identity' => $isNewIdentity));
+            }
         }
-        // try to sign in
-        if ($external_id && $password && ($user_id = $modUser->login($external_id, $password, $autosignin))) {
-            apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
-        } else {
-            apiError(403, 'invalid_identity_or_password', ''); // 失败
+        // raw signin
+        $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
+        if ($siResult) {
+            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token'], 'is_new_identity' => $isNewIdentity));
         }
+        apiError(403, 'failed', '');
     }
 
 
