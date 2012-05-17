@@ -193,17 +193,6 @@ class UsersActions extends ActionController {
     }
 
 
-    //@todo: merge with new sign out
-    public function doWebSignout() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if ($modUser->signout()) {
-            apiResponse(array('success' => true));
-        } else {
-            apiError(400, 'failed', ''); // 失败
-        }
-    }
-
-
     public function doRegdevicetoken()
     {
         // check if this token allow
