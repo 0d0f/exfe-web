@@ -12,23 +12,23 @@ class AvatarActions extends ActionController {
 		$config = array(
 			'width'         => 40,
 			'height'        => 40,
-			'host-left'     => 29,
-			'host-top'      => 0,
+			'host-right'    => 1,
+			'host-top'      => 1,
 			'host-width'    => 10,
 			'host-height'   => 10,
 			'host-color'    => array(17, 117, 165),
-			'host-font'     => "{$resDir}/HelveticaNeueDeskUI.ttc",
+			'host-font'     => "{$resDir}/Arial Bold.ttf",
 			'host-fSize'    => 9,
 			'host-fColor'   => array(230, 230, 230),
-			'host-left-fix' => 1,
+			'host-left-fix' => 2,
 			'host-top-fix'  => 1,
 			'host-string'   => 'H',
 			'with-left'     => 1,
-			'with-top'      => 0,
+			'with-top'      => 1,
 			'with-width'    => 10,
 			'with-height'   => 10,
 			'with-color'    => array(17, 117, 165),
-			'with-font'     => "{$resDir}/HelveticaNeueDeskUI.ttc",
+			'with-font'     => "{$resDir}/Arial Bold.ttf",
 			'with-fSize'    => 9,
 			'with-fColor'   => array(230, 230, 230),
 			'with-left-fix' => 2,
@@ -64,6 +64,10 @@ class AvatarActions extends ActionController {
 			$image = ImageCreateFromPNG("{$curDir}/../../../eimgs/web/80_80_default.png");
 		}
 		// resize source image
+		$rqs_width  = (int)$params['width'];
+		$rqs_height = (int)$params['height'];
+		$config['width']  = $rqs_width  > 0 ? $rqs_width  : $config['width'];
+		$config['height'] = $rqs_height > 0 ? $rqs_height : $config['height'];
 		$image = $objLibImage->rawResizeImage($image, $config['width'], $config['height']);
 		// draw alpha overlay
 		$alpha = (float)$params['alpha'];
@@ -81,18 +85,19 @@ class AvatarActions extends ActionController {
 		}
 		// draw host icon
 		if (strtolower($params['host']) === 'true') {
+			$host_left = $config['width'] - $config['host-width'] - $config['host-right'] - 1;
 			$image = $objLibImage->drawDrectangle(
-				$image, $config['host-left'], $config['host-top'],
-				$config['host-width'], $config['host-height'], $config['host-color']
+				$image, $host_left, $config['host-top'], $config['host-width'],
+				$config['host-height'], $config['host-color']
 			);
 			$image = $objLibImage->drawString(
-				$image, $config['host-left'] + $config['host-left-fix'], $config['host-top'] + $config['host-top-fix'],
+				$image, $host_left + $config['host-left-fix'], $config['host-top'] + $config['host-top-fix'],
 				$config['host-string'], $config['host-font'], $config['host-fSize'], $config['host-fColor']
 			);
 		}
 		$with = (int)$params['with'];
 		// draw with-someone icon
-		if ($with) {
+		if ($with > 0) {
 			$image = $objLibImage->drawDrectangle(
 				$image, $config['with-left'], $config['with-top'],
 				$config['with-width'], $config['with-height'], $config['with-color']
