@@ -17,8 +17,8 @@ class UpgradeIdentityAvatar extends DataModel {
         // loop
         foreach ($ids as $id) {
             $name = $id['name'] ?: $id['external_username'];
-            if (strtolower($id['avatar_file_name'])
-            !== strtolower('http://www.gravatar.com/avatar/d53755f5056b8ff2be7a2b662e5583bf?d=http%3A%2F%2Fimg.exfe.com%2Fweb%2F80_80_default.png')) {
+
+            if (preg_match('80_80_default.png', strtolower($id['avatar_file_name']))) {
                 echo ":) Identity {$id['id']} : {$id['external_identity']} : {$name} is already having an avatar.\r\n";
                 continue;
             }
