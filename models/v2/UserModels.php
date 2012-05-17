@@ -167,6 +167,7 @@ class UserModels extends DataModel {
         return null;
     }
 
+
     public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id)
     {
         if(intval($identity_id)>0 && intval($user_id)>0)
