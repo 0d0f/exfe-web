@@ -49,7 +49,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     ns.timerBaseInfo     = {};
 
     ns.idsBuilt          = {};
-    
+
     ns.left              = false;
 
 
@@ -457,7 +457,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             this.diffCallback[domId]();
         }
         if (!noIdentity) {
-            this.ajaxIdentity(exfees);
+            setTimeout(function() {
+                ns.ajaxIdentity(exfees);
+            }, 1000);
         }
     };
 
@@ -613,8 +615,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 objItem.children('.exfee_extrainfo').fadeIn(100);
         }
     };
-    
-    
+
+
     ns.cancelLeavingCross = function(event) {
         var domTarget = $(event.target)[0];
         do {
@@ -631,8 +633,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             objLeave.removeClass('ready');
         }
     };
-    
-    
+
+
     ns.showBaseInfo = function(domId, identity, display) {
         var objBsInfo = $(
                 '#' + domId + '_exfeegadget_avatararea > ol > li[identity="'

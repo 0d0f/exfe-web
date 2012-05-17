@@ -2,7 +2,7 @@
 
 class RelationModels extends DataModel {
 
-    public function saveRelations($userid,$r_identityid)
+    public function saveRelations($userid, $r_identityid)
     {
 //,$name,$external_identity
         if(intval($userid)>0 && intval($r_identityid)>0)
@@ -31,7 +31,7 @@ class RelationModels extends DataModel {
     }
 
 
-    public function saveRelationsWithIds($userid,$identityid_list,$my_identity_id)
+    public function saveRelationsWithIds($userid, $identityid_list, $my_identity_id)
     {
         $redis = new Redis();
         $redis->connect('127.0.0.1', 6379);

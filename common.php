@@ -165,7 +165,7 @@ function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
     if ($withTime && !$timeType) {
         switch (strlen($timeoffset)) {
             case 5:
-                $offset = (intval($timeoffset[1]) * 60 
+                $offset = (intval($timeoffset[1]) * 60
                         +  intval($timeoffset[3]) * 10  + intval($timeoffset[4])) * 60;
                 break;
             case 6:
@@ -338,6 +338,7 @@ function randStr($len=5, $type="normal")
     return $string;
 }
 
+
 /**
  * 取得微秒时间
  * @param NULL
@@ -349,44 +350,45 @@ function getMicrotime()
     return ((float)$usec + (float)$sec);
 }
 
+
 function reverse_escape($str)
 {
   $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
   $replace=array("\\","\0","\n","\r","\x1a","'",'"');
   return str_replace($search,$replace,$str);
 }
+
+
 /**
  * 散列存储
- * @param NULL
+ * @param savePath string
+ * @param fileName string
  * @return array
  **/
-function hashFileSavePath($savePath, $fileName=''){
-    $hashFileName = md5(randStr(20).$fileName.getMicrotime().uniqid());
-    $savePath = strtok($savePath, "/");
-    $hashDir = $savePath."/".substr($hashFileName, 0, 1);
-    $hashSubDir = $hashDir."/".substr($hashFileName, 1, 2);
-    $webpath= "/".substr($hashFileName, 0, 1)."/".substr($hashFileName, 1, 2);
-
-
-    $fileInfo = array(
-        "fpath"      =>$hashSubDir,
-        "fname"      =>$hashFileName,
-        "webpath"      =>$webpath,
-        "error"      =>0
-    );
-
-    if(is_dir($savePath)){
-        if(!is_dir($hashSubDir)){
-            $result = mkdir($hashSubDir, 0777, true);
-            if(!$result){
-                $fileInfo["error"] = 2;
-            }
-        }
-    }else{
-        $fileInfo["error"] = 1;
+function hashFileSavePath($savePath, $fileName = '') {
+    // basic check
+    if (!is_dir($savePath)) {
+        return array('error' => 1);
     }
-    return $fileInfo;
+    // do hash
+    $hash_name   = md5(randStr(20) . $fileName . getMicrotime() . uniqid());
+    $hash_folder = '/' . substr($hash_name, 0, 1) . '/' . substr($hash_name, 1, 2);
+    $hash_path   = strtok($savePath, '/') . $hash_folder;
+    // make dir
+    if(!is_dir($hash_path)){
+        if(!mkdir($hash_path, 0777, true)) {
+            return array('error' => 2);
+        }
+    }
+    // return
+    return array(
+        'fpath'   => $hash_path,
+        'fname'   => $hash_name,
+        'webpath' => $hash_folder,
+        'error'   => 0,
+    );
 }
+
 
 /**
  * 获取散列存储路径

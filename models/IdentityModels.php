@@ -9,6 +9,7 @@ class IdentityModels extends DataModel {
         return intval($dbResult['exfee_id']);
     }
 
+
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -128,8 +129,8 @@ class IdentityModels extends DataModel {
             }
         return $ids;
     }
-    
-    
+
+
     public function getIdentitiesByUser($userid)
     {
         $sql="select identityid,status,activecode from user_identity where userid=$userid";
@@ -148,7 +149,6 @@ class IdentityModels extends DataModel {
             }
         }
         return $userIdentityInfo;
-
     }
 
 
@@ -439,7 +439,7 @@ class IdentityModels extends DataModel {
             //one value
         }
     }
-    
+
 
     public function ifIdentitiesEqualWithIdentity($identities,$identity_id)
     {
@@ -456,6 +456,14 @@ class IdentityModels extends DataModel {
         $identity_name = mysql_real_escape_string($identity_name);
         $external_identity = mysql_real_escape_string($identity);
         $identity_provider = mysql_real_escape_string($identity_provider);
+
+///////////////////////////
+
+
+
+
+
+
         $sql="UPDATE identities SET name='{$identity_name}' WHERE external_identity='{$external_identity}' AND provider='{$identity_provider}'";
         $result = $this->query($sql);
         return $result;
@@ -504,12 +512,12 @@ class IdentityModels extends DataModel {
             $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
         }
     }
-    
-    
+
+
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
-    
-    
+
+
     // upgraded
     public function checkUserIdentityRelation($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
@@ -543,11 +551,12 @@ class IdentityModels extends DataModel {
 
         $external_identity=mysql_real_escape_string($external_identity);
 
-        //set identity avatar as Gravatar img
-        if($provider == "email" && $avatar_file_name == ""){
-            $avatar_file_name = "http://www.gravatar.com/avatar/";
+        // make default avatar
+        if ($provider == "email" && $avatar_file_name == '') {
+            $default_avatar    = $this->makeDefaultAvatar($external_identity, $name) ?: DEFAULT_AVATAR_URL;
+            $avatar_file_name  = "http://www.gravatar.com/avatar/";
             $avatar_file_name .= md5(strtolower(trim($external_identity)));
-            $avatar_file_name .= "?d=".urlencode(DEFAULT_AVATAR_URL);
+            $avatar_file_name .= "?d=".urlencode($default_avatar);
         }
 
         if($external_username == ""){
@@ -586,12 +595,12 @@ class IdentityModels extends DataModel {
             $verifyToken = packArray($verifyTokenArray);
 
             $args = array(
-                     'identityid'           =>$identityid,
-                     'external_identity'    =>$external_identity,
-                     'name'                 =>$name,
-                     'avatar_file_name'     =>$avatar_file_name,
-                     'activecode'           =>$activecode,
-                     'token'                =>$verifyToken
+                'identityid'        => $identityid,
+                'external_identity' => $external_identity,
+                'name'              => $name,
+                'avatar_file_name'  => $avatar_file_name,
+                'activecode'        => $activecode,
+                'token'             => $verifyToken
             );
             /*
             if($provider=="email")
@@ -609,7 +618,47 @@ class IdentityModels extends DataModel {
             return $identityid;
         }
     }
-    
+
+
+    // upgraded
+    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
+        // collecting new identity informations
+        $name                = mysql_real_escape_string($identityDetail["name"]);
+        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
+        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
+        $avatar_content_type = $identityDetail["avatar_content_type"];
+        $avatar_file_size    = $identityDetail["avatar_file_size"];
+        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
+        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
+        $external_identity   = mysql_real_escape_string($external_identity);
+        $time = time();
+        switch ($provider) {
+            case 'email':
+                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
+                break;
+            default:
+                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
+                $external_identity = null;
+        }
+        $row = $this->getRow($sql);
+        if (intval($row['id']) > 0) {
+            return intval($row['id']);
+        }
+        // make default avatar
+        if ($avatar_file_name === 'default.png') {
+            $default_avatar    = $this->makeDefaultAvatar($external_identity, $name) ?: DEFAULT_AVATAR_URL;
+            $avatar_file_name  = "http://www.gravatar.com/avatar/";
+            $avatar_file_name .= md5(strtolower(trim($external_identity)));
+            $avatar_file_name .= "?d=".urlencode($default_avatar);
+        }
+
+        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
+        $result = $this->query($sql);
+        $identityid = intval($result["insert_id"]);
+        return $identityid;
+    }
+
+
     // upgraded
     public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
         //$password = md5($password.$this->salt);
@@ -665,7 +714,7 @@ class IdentityModels extends DataModel {
         }
         return 0;
     }
-    
+
     // upgraded
     public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
         if($userid==0) {
@@ -720,8 +769,8 @@ class IdentityModels extends DataModel {
         unset($_SESSION["tokenIdentity"]);
         return $userid;
     }
-    
-    
+
+
     // upgraded
     public function setLoginCookie($identity, $userid, $identity_id) {
         $time=time();
@@ -755,8 +804,8 @@ class IdentityModels extends DataModel {
         $last_identity_str = json_encode($last_identity);
         setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
     }
-    
-    
+
+
     // upgraded
     public function loginByCookie($source='') {
         $uid=intval($_COOKIE['uid']);
@@ -809,40 +858,8 @@ class IdentityModels extends DataModel {
         $row=$this->getRow($sql);
         return $row;
     }
-    
-    
-    // upgraded
-    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
-        // collecting new identity informations
-        $name                = mysql_real_escape_string($identityDetail["name"]);
-        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
-        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
-        $avatar_content_type = $identityDetail["avatar_content_type"];
-        $avatar_file_size    = $identityDetail["avatar_file_size"];
-        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
-        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
-        $external_identity   = mysql_real_escape_string($external_identity);
-        $time = time();
-        switch ($provider) {
-            case 'email':
-                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
-                break;
-            default:
-                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
-                $external_identity = null;
-        }
-        $row = $this->getRow($sql);
-        if (intval($row['id']) > 0) {
-            return intval($row['id']);
-        }
 
-        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
-        $result = $this->query($sql);
-        $identityid = intval($result["insert_id"]);
-        return $identityid;
-    }
-    
-    
+
     // upgraded
     public function ifIdentityExist($external_identity, $provider = '') {
         $external_identity = mysql_real_escape_string($external_identity);
@@ -885,8 +902,8 @@ class IdentityModels extends DataModel {
             return false;
         }
     }
-    
-    
+
+
     // upgraded
     public function deleteIdentity($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
@@ -918,5 +935,57 @@ class IdentityModels extends DataModel {
         $this->query($sql);
     }
 
-}
 
+    // copied from identity models v2
+    public function makeDefaultAvatar($external_id, $name = '') {
+        // image config
+        $specification = array(
+            'width'  => 80,
+            'height' => 80,
+        );
+        $colors = array(
+            array(138,  59, 197),
+            array(189,  53,  55),
+            array(219,  98,  11),
+            array( 66, 163,  36),
+            array( 41,  95, 204),
+        );
+        $ftSize = 36;
+        // init path
+        $curDir = dirname(__FILE__);
+        $resDir = "{$curDir}/../default_avatar_portrait/";
+        $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
+        // get image
+        $bgIdx  = rand(1, 3);
+        $image  = ImageCreateFromPNG("{$resDir}/bg_{$bgIdx}.png");
+        // get color
+        $clIdx  = rand(0, count($colors) - 1);
+        $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
+        // get name
+        $name   = substr($name ?: $external_id, 0, 3);
+        // calcular font size
+        do {
+            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
+            $fWidth = $posArr[2] - $posArr[0];
+            $ftSize--;
+        } while ($fWidth > (80 - 2));
+        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 70, $fColor, $ftFile, $name);
+        // show image
+        // header('Pragma: no-cache');
+        // header('Cache-Control: no-cache');
+        // header('Content-Transfer-Encoding: binary');
+        // header('Content-type: image/png');
+        // imagepng($image);
+        // save image
+        $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$external_id}");
+        $filename = "{$hashed_path_info['fname']}.png";
+        if ($hashed_path_info['error'] || !imagepng($image, "{$hashed_path_info['fpath']}/{$filename}")) {
+            return null;
+        }
+        // release memory
+        imagedestroy($image);
+        // return
+        return IMG_URL . "{$hashed_path_info['webpath']}/{$filename}";
+    }
+
+}
