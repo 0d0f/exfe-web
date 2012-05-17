@@ -41,8 +41,8 @@ class UserModels extends DataModel {
 
        return;
     }
-    
-    
+
+
     public function saveUser($name,$userid)
     {
         $sql="update users set name='$name' where id=$userid";
@@ -185,7 +185,7 @@ class UserModels extends DataModel {
     }
 
 
-    //todo for huoju
+    //todo for huoju, upgrade and move it to user model v2
     public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
     {
         $sql="SELECT *,u.userid FROM `identities` i, user_identity u WHERE external_identity='$devicetoken' and provider='$provider' and i.id=u.identityid;";
@@ -270,7 +270,7 @@ class UserModels extends DataModel {
         }
         return false;
     }
-    
+
 
     public function doResetUserPassword($userPwd, $userName, $userID, $identityID, $userToken){
         $ts = time();
@@ -302,8 +302,8 @@ class UserModels extends DataModel {
         }
         return array("result"=>$result,"newuser"=>$newUser);
     }
-    
-    
+
+
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
 
@@ -324,8 +324,8 @@ class UserModels extends DataModel {
         setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
         setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
     }
-    
-    
+
+
     // upgraded
     public function updateUserPassword($userid, $password){
         //$password=md5($password.$this->salt);
@@ -348,7 +348,7 @@ class UserModels extends DataModel {
             return intval($result["insert_id"]);
     }
 
-    
+
     // upgraded
     public function getUser($userid)
     {
@@ -356,7 +356,7 @@ class UserModels extends DataModel {
         $row=$this->getRow($sql);
         return $row;
     }
-    
+
     // upgraded
     public function getUserWithPasswd($userid)
     {
@@ -365,7 +365,7 @@ class UserModels extends DataModel {
         return $row;
     }
 
-    
+
     // upgraded
     public function loginForAuthToken($user,$password)
     {
@@ -402,8 +402,8 @@ class UserModels extends DataModel {
         }
         return $result;
     }
-    
-    
+
+
     // upgraded
     public function checkUserPassword($userid, $password){
         //$password = md5($password.$this->salt);
@@ -422,8 +422,8 @@ class UserModels extends DataModel {
         }
         return false;
     }
-    
-    
+
+
     // upgraded
     public function getResetPasswordToken($external_identity)
     {
@@ -469,8 +469,8 @@ class UserModels extends DataModel {
         }
         return "";
     }
-    
-    
+
+
     // upgraded
     public function getUserProfileByIdentityId($identity_id)
     {
@@ -497,8 +497,8 @@ class UserModels extends DataModel {
             return intval($result["userid"]);
         }
     }
-    
-    
+
+
     // upgraded
     public function getUserByIdentityId($identity_id)
     {
@@ -512,8 +512,8 @@ class UserModels extends DataModel {
             return $user;
         }
     }
-    
-    
+
+
     // upgraded
     public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
     {

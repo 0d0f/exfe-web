@@ -33,6 +33,7 @@ class libImage {
         $draftImage  = imagecreatetruecolor($draftWidth, $draftHeight);
         imagecopyresampled($draftImage, $curImage, 0, 0, 0, 0, $draftWidth,
                            $draftHeight, $curWidth, $curHeight);
+        ImageDestroy($curImage);
 
         $newImage    = imagecreatetruecolor($toWidth, $toHeight);
         imagecopyresampled($newImage, $draftImage, 0, 0,
@@ -71,8 +72,79 @@ class libImage {
 
         return true;
     }
-    
-    
+
+
+    public function rawResizeImage($curImage, $toWidth, $toHeight) {
+        $curWidth    = imagesx($curImage);
+        $curHeight   = imagesy($curImage);
+
+        $ratioWidth  = $toWidth  / $curWidth;
+        $ratioHeight = $toHeight / $curHeight;
+
+        $ratioX = $ratioWidth < $ratioHeight ? $ratioHeight : $ratioWidth;
+
+        $draftWidth  = $curWidth  * $ratioX;
+        $draftHeight = $curHeight * $ratioX;
+        $draftImage  = imagecreatetruecolor($draftWidth, $draftHeight);
+        // for alpha editing {
+        imagealphablending($draftImage, true);
+        imagesavealpha($draftImage, true);
+        imagefill($draftImage, 0, 0, imagecolorallocatealpha($draftImage, 0, 0, 0, 127));
+        // }
+        imagecopyresampled($draftImage, $curImage, 0, 0, 0, 0, $draftWidth,
+                           $draftHeight, $curWidth, $curHeight);
+        ImageDestroy($curImage);
+
+        $newImage    = imagecreatetruecolor($toWidth, $toHeight);
+        // for alpha editing {
+        imagealphablending($newImage, true);
+        imagesavealpha($newImage, true);
+        imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0, 0, 0, 127));
+        // }
+        imagecopyresampled($newImage, $draftImage, 0, 0,
+                           ($draftWidth  - $toWidth)/2,
+                           ($draftHeight - $toHeight)/2,
+                           $toWidth, $toHeight, $toWidth, $toHeight);
+        ImageDestroy($draftImage);
+
+        return $newImage;
+    }
+
+
+    public function drawDrectangle($image, $left, $top, $width, $height, $rgbColor) {
+        imagefilledrectangle(
+            $image, $left, $top, $left + $width, $top + $height,
+            imagecolorallocate(
+                $image, $crgbColor[0], $rgbColor[1], $rgbColor[2]
+            )
+        );
+        return $image;
+    }
+
+
+    public function drawString($image, $left, $top, $string, $fontfile, $fontsize, $rgbColor, $bold = false) {
+        $top += $fontsize;
+        if ($bold) {
+            $bold_x = array(1,  0,  1, 0, -1, -1, 1, 0, -1);
+            $bold_y = array(0, -1, -1, 0,  0, -1, 1, 1,  1);
+            for ($i = 0; $i <= 8; $i++) {
+                imagettftext(
+                    $image, $fontsize, 0, $left + $bold_x[$i], $top,
+                    imagecolorallocate($image, $rgbColor[0], $rgbColor[1], $rgbColor[2]),
+                    $fontfile, $string
+                );
+            }
+        } else {
+            imagettftext(
+                $image, $fontsize, 0, $left, $top,
+                imagecolorallocate($image, $rgbColor[0], $rgbColor[1], $rgbColor[2]),
+                $fontfile, $string
+            );
+        }
+        return $image;
+    }
+
+
     public function imagetextouter(&$im, $size, $x, $y, $color, $fontfile, $text, $outer) {
         if (!function_exists('ImageColorAllocateHEX'))
         {

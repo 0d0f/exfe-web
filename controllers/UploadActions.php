@@ -35,6 +35,7 @@ class UploadActions extends ActionController {
         echo json_encode($result);
     }
 
+
     //截剪头像。
     public function doSaveAvatarFile() {
         $identity_id = $_POST["identityID"];
