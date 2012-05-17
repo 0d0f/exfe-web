@@ -142,7 +142,7 @@ class IdentityModels extends DataModel {
         $name              = trim(mysql_real_escape_string($identityDetail['name']));
         $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
         $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
-        $provider          = trim(mysql_real_escape_string(strtolower($identityDetail['provider'])));
+        $provider          = trim(mysql_real_escape_string(strtolower($provider)));
         $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
         $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
         $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
@@ -179,21 +179,22 @@ class IdentityModels extends DataModel {
                 // create new token
                 $activecode = createToken();
                 // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name']             = $userInfo['name']             === '' ? $name            : $userInfo['name'];
-                $userInfo['bio']              = $userInfo['bio']              === '' ? $bio             : $userInfo['bio'];
-                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] === '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
+                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
+                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] == '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : 0;
                 // @todo: commit these two query as a transaction
                 $this->query(
                     "UPDATE `users` SET
                      `name`             = '{$userInfo['name']}',
-                     `bio`              = '{$userInfo["bio"]}',
+                     `bio`              = '{$userInfo['bio']}',
                      `avatar_file_name` = '{$userInfo['avatar_file_name']}',
-                     `default_identity` =  {$id}
+                     `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
                 $this->query(
-                    "INSERT INFO `user_identity` SET
+                    "INSERT INTO `user_identity` SET
                      `identityid` =  {$id},
                      `userid`     =  {$user_id},
                      `created_at` = NOW(),
