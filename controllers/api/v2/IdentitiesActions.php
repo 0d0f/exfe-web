@@ -118,10 +118,4 @@ class IdentitiesActions extends ActionController {
         echo json_encode(array('identity_id' => $id));
     }
 
-
-    public function doMakeDefaultAvatar() {
-        $objIdentity = $this->getModelByName('identity', 'v2');
-        $objIdentity->makeDefaultAvatar('vir');
-    }
-
 }

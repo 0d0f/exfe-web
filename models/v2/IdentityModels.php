@@ -1,10 +1,10 @@
 <?php
 
 class IdentityModels extends DataModel {
-    
+
     private $salt = '_4f9g18t9VEdi2if';
-    
-    
+
+
     protected function packageIdentity($rawIdentity) {
         if ($rawIdentity) {
             $rawUserIdentity = $this->getRow(
@@ -35,7 +35,7 @@ class IdentityModels extends DataModel {
             "SELECT * FROM `identities` WHERE `id` = {$id}"
         ));
     }
-    
+
 
     public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
         return $this->packageIdentity($this->getRow(
@@ -62,15 +62,15 @@ class IdentityModels extends DataModel {
             return true;
         return false;
     }
-    
-    
+
+
     public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
         return preg_replace(
             '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $strUrl
         );
     }
-    
-    
+
+
     public function updateIdentityById($id, $identityDetail = array()) {
         $id = intval($id);
         if (!$id || !$identityDetail['provider'] || !$identityDetail['external_id']) {
@@ -142,7 +142,7 @@ class IdentityModels extends DataModel {
         $name              = trim(mysql_real_escape_string($identityDetail['name']));
         $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
         $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
-        $provider          = trim(mysql_real_escape_string(strtolower($identityDetail['provider'])));
+        $provider          = trim(mysql_real_escape_string(strtolower($provider)));
         $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
         $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
         $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
@@ -157,7 +157,8 @@ class IdentityModels extends DataModel {
         }
         // set identity default avatar as Gravatar
         if ($provider === 'email' && !$avatar_filename) {
-            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode(DEFAULT_AVATAR_URL);
+            $default_avatar  = $this->makeDefaultAvatar($external_id, $name) ?: DEFAULT_AVATAR_URL;
+            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($default_avatar);
         }
         // insert new identity into database
         $dbResult = $this->query(
@@ -178,21 +179,22 @@ class IdentityModels extends DataModel {
                 // create new token
                 $activecode = createToken();
                 // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name']             = $userInfo['name']             === '' ? $name            : $userInfo['name'];
-                $userInfo['bio']              = $userInfo['bio']              === '' ? $bio             : $userInfo['bio'];
-                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] === '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
+                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
+                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] == '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : 0;
                 // @todo: commit these two query as a transaction
                 $this->query(
                     "UPDATE `users` SET
                      `name`             = '{$userInfo['name']}',
-                     `bio`              = '{$userInfo["bio"]}',
+                     `bio`              = '{$userInfo['bio']}',
                      `avatar_file_name` = '{$userInfo['avatar_file_name']}',
-                     `default_identity` =  {$id}
+                     `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
                 $this->query(
-                    "INSERT INFO `user_identity` SET
+                    "INSERT INTO `user_identity` SET
                      `identityid` =  {$id},
                      `userid`     =  {$user_id},
                      `created_at` = NOW(),
@@ -227,8 +229,8 @@ class IdentityModels extends DataModel {
             "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
         );
     }
-    
-    
+
+
     public function deleteIdentityFromUser($identity_id, $user_id) {
         if (!$identity_id || !$user_id) {
             return false;
@@ -253,9 +255,10 @@ class IdentityModels extends DataModel {
         }
         return false;
     }
-    
-    
-    public function makeDefaultAvatar($external_id) {
+
+
+    public function makeDefaultAvatar($external_id, $name = '') {
+        // image config
         $specification = array(
             'width'  => 80,
             'height' => 80,
@@ -267,46 +270,42 @@ class IdentityModels extends DataModel {
             array( 66, 163,  36),
             array( 41,  95, 204),
         );
-        
-        
+        $ftSize = 36;
+        // init path
         $curDir = dirname(__FILE__);
-        require_once "{$curDir}/../../xbgutilitie/libimage.php";
-        $objLibImage = new libImage;
-        
         $resDir = "{$curDir}/../../default_avatar_portrait/";
         $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
-        
-        $bi = rand(1, 3);
-        
-        $bgFile = "{$resDir}/bg_{$bi}.png";
-
-        $image = ImageCreateFromPNG($bgFile);
-        $foreColor = imagecolorallocate($image, 0xE6, 0xE6, 0xE6);
-
-        imageline($image,  0,  0, 79,  0, $foreColor);
-        imageline($image, 79,  0, 79, 79, $foreColor);
-        imageline($image, 79, 79,  0, 79, $foreColor);
-        imageline($image,  0, 79,  0,  0, $foreColor);
-
-        $ci = rand(0, count($colors) - 1);
-        
-        $foreColor = imagecolorallocate($image, $colors[$ci][0], $colors[$ci][1], $colors[$ci][2]);
-        $tsS = 36;
+        // get image
+        $bgIdx  = rand(1, 3);
+        $image  = ImageCreateFromPNG("{$resDir}/bg_{$bgIdx}.png");
+        // get color
+        $clIdx  = rand(0, count($colors) - 1);
+        $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
+        // get name
+        $name   = substr($name ?: $external_id, 0, 3);
+        // calcular font size
         do {
-            $tmpImg = imagecreate(80, 80);
-            $arr = imagettftext($tmpImg, $tsS, 0, 3, 65, $foreColor, $ftFile, $external_id);
-            $siz = $arr[2] - $arr[0];
-            $tsS--;
-        } while ($siz > (80 - 2));
-
-        imagettftext($image, $tsS, 0, (80 - $siz) / 2, 65, $foreColor, $ftFile, $external_id);
-        
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header("Content-type: image/png");
-        imagepng($image);
+            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
+            $fWidth = $posArr[2] - $posArr[0];
+            $ftSize--;
+        } while ($fWidth > (80 - 2));
+        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 70, $fColor, $ftFile, $name);
+        // show image
+        // header('Pragma: no-cache');
+        // header('Cache-Control: no-cache');
+        // header('Content-Transfer-Encoding: binary');
+        // header('Content-type: image/png');
+        // imagepng($image);
+        // save image
+        $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$external_id}");
+        $filename = "{$hashed_path_info['fname']}.png";
+        if ($hashed_path_info['error'] || !imagepng($image, "{$hashed_path_info['fpath']}/{$filename}")) {
+            return null;
+        }
+        // release memory
         imagedestroy($image);
+        // return
+        return IMG_URL . "{$hashed_path_info['webpath']}/{$filename}";
     }
 
 }
