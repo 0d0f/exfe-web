@@ -143,25 +143,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function signout() {
-        // unset seesion
-        unset($_SESSION['signin_user']);
-        unset($_SESSION['signin_token']);
-        session_destroy();
-        // unset cookie
-        unset($_COOKIE['user_id']);
-        unset($_COOKIE['identity_ids']);
-        unset($_COOKIE['signin_sequ']);
-        unset($_COOKIE['signin_token']);
-        setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
-        setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
-        // return
-        return true;
-    }
-
-
     public function signinForAuthToken($provider, $external_id, $password) {
         $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
@@ -205,29 +186,6 @@ class UserModels extends DataModel {
                 return $rtResult;
             }
 
-        }
-        return null;
-    }
-
-
-    /**
-     * @todo: removing
-     */
-    public function signinByCookie() {
-        // get vars
-        $user_id      = intval($_COOKIE['user_id']);
-        $signin_sequ  = $_COOKIE['signin_sequ'];
-        $signin_token = $_COOKIE['signin_token'];
-        // try sign in
-        if ($user_id) {
-            $userPasswd = $this->getUserPasswdByUserId($user_id);
-            $ipAddress  = getRealIpAddr();
-            if ($ipAddress    === $userPasswd['current_sign_in_ip']
-             && $signin_sequ  === $userPasswd['cookie_loginsequ']
-             && $signin_token === $userPasswd['cookie_logintoken']) {
-                return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-            }
-            $this->signout();
         }
         return null;
     }
