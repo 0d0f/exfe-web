@@ -18,7 +18,7 @@ exfee={
             "identity":{
                 "id": 237
             },
-            "rsvp_status":"ACCEPTED",
+            "rsvp_status":"DECLINED",
             "type":"Invitation"
         },
         {
