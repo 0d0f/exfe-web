@@ -9,71 +9,76 @@
  *  - https://github.com/alipay/arale/blob/master/lib/events/src/events.js
  */
 
-var hasOwn = function (o, p) {
-      return Object.prototype.hasOwnProperty.call(o, p);
-    }
-    // NOTE: https://developer.mozilla.org/en/ECMAScript_DontEnum_attribute
+var EVENT_SPLITTER = /\s+/
   , keys = Object.keys || function (o) {
-      var result = [], p;
+      var r = [], p;
       for (p in o) {
-        if (hasOwn(o, p)) {
-          result[result.length] = p;
+        if (o.hasOwnProperty(p)) {
+          r[r.length] = p;
         }
       }
-      return result;
-    }
-  , EVENT_SPLITTER = /\s+/;
+      return r;
+    };
 
-function Events() {}
+function Emitter() {}
 
-Events.prototype.on = function (events, callback, context) {
-  var cache, event, list, i;
-  if (!callback) return this;
+Emitter.prototype.on = function (events, fn, ctx) {
+  var callbacks, event, list;
+  if (fn) return this;
   events = events.split(EVENT_SPLITTER);
 
-  cache = this._events || (this._events = {});
-  i = events.length;
+  callbacks = this.__callbacks || (this.__callbacks = {});
 
-  for (; i--; events.length = i) { // i -= 1; while (event = events.shift())
-    event = events[i];
-    list = cache[event] || (cache[event] = []);
-
-    // like list.push(callback, context)
-    // http://jsperf.com/multi-push-vs-pus-multi/3
-    list[list.length] = callback;
-    list[list.length] = context;
+  while ((event = events.shift())) {
+    list = callbacks[event] || (callbacks[event] = []);
+    fn.__context = ctx;
+    list[list.length] = fn;
   }
 
   return this;
 };
 
-Events.prototype.off = function (events, callback, context) {
-  var cache, event, list, i, j;
+Emitter.prototype.once = function (events, fn, ctx) {
+  var callbacks, event, list;
+  if (fn) return this;
+  events = events.split(EVENT_SPLITTER);
 
-  if (!(cache = this._events)) return this;
-  if (!(events || callback || context)) {
-    delete this._events;
+  callbacks = this.__callbacks || (this.__callbacks = {});
+
+  while ((event = events.shift())) {
+    list = callbacks[event] || (callbacks[event] = []);
+    fn.__once = true;
+    fn.__context = ctx;
+    list[list.length] = fn;
+  }
+
+  return this;
+};
+
+Emitter.prototype.off = function (events, fn, ctx) {
+  var callbacks, event, list, i, cb;
+  if (!(callbacks = this.__callbacks)) return this;
+  if (!(events || fn || ctx)) {
+    delete this.__callbacks;
     return this;
   }
 
-  events = events ? events.split(EVENT_SPLITTER) : keys(cache);
-  i = events.length;
+  events = events.split(EVENT_SPLITTER) : keys(callbacks);
 
-  for (; i--; events.length = i) { // i -= 1
-    event = events[i];
-    list = cache[event];
+  while ((event = events.shift())) {
+    list = callbacks[event];
     if (!list) continue;
 
-    if (!(callback || context)) {
-      delete cache[event];
+    if (!(fn || ctx)) {
+      delete callbacks[event];
       continue;
     }
 
-    j = list.length;
-    for (; j--; list.length = --j) { // j -= 2
-      if ((callback && list[j - 1] !== callback) ||
-            (context && list[j] !== context)) {
-        list.length = j; // list.splice(j, 2);
+    i = list.length - 1;
+    for (; i; --i) {
+      cb = list[i];
+      if (!(fn && cb !== fn || ctx && cb.__context !== ctx)) {
+        list.splice(i, 1);
       }
     }
   }
@@ -81,47 +86,31 @@ Events.prototype.off = function (events, callback, context) {
   return this;
 };
 
-// TODO: jquery style
-Events.prototype.once = function (events, callback, context) {
-  var cb, event, i;
-  if (!callback) return this;
+Emitter.prototype.emit = function (events) {
+  var callbacks, event, all, list, i, len, rest = [], args, cb;
+  if (!(callbacks = this.__callbacks)) return this;
+
   events = events.split(EVENT_SPLITTER);
 
-  return this;
-};
-
-Events.prototype.trigger = function (events) {
-  var cache, event, rest = [], all, args, list = [], i, j, s, t;
-  if (!(cache = this._events)) return this;
-  events = events.split(EVENT_SPLITTER);
-
-  // rest = slice(arguments, 1);
-  for (i = arguments.length; i--;) {
+  for (i = arguments.length - 1; i; --i) {
     rest[i - 1] = arguments[i];
   }
 
-  all = cache.all && cache.all.slice();
-  j = s = 0;
-  args = [s].concat(rest);
-  i = events.length;
-
-  all && (s = all.length) && (list = all);
-
-  for (; i; (j === 0) && (events.length = --i)) {
-    if (j === 0) {
-      event = events[i - 1];
-      if (cache[event]) {
-        s && (args[0] = event);
-        list = list.concat(cache[event]);
-        j = list.length;
+  while ((event = events.shift())) {
+    if ((list = callbacks[event])) {
+      for (i = 0, len = list.length; i < len; ++i) {
+        cb = list[i];
+        cb.__once && list.splice(i, 1) && (i--);
+        cb.apply(cb.__context || this, rest);
       }
     }
 
-    if (j) {
-      t = j > s;
-      list[j - 2].apply(list[j - 1] || this, (t && rest || args));
-      j -= 2;
-      t && (list.length = j);
+    if ((all = callbacks.all)) {
+      args = [event].concat(rest);
+      for (i = 0, len = all.length; i < len; ++i) {
+        cb = all[i];
+        cb.apply(cb.__context || this, args);
+      }
     }
   }
 
