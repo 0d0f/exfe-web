@@ -738,6 +738,7 @@ function apiResponse($object) {
     exit(0);
 }
 
+
 function mgetUpdate($cross_ids)
 {
     $fields=implode($cross_ids," ");
@@ -750,6 +751,8 @@ function mgetUpdate($cross_ids)
         return $update;
     }
 }
+
+
 function getUpdate($cross_id){
     if(intval($cross_id)>0)
     {
@@ -760,6 +763,7 @@ function getUpdate($cross_id){
         return $update;
     }
 }
+
 
 function saveUpdate($cross_id,$updated) {
     if(intval($cross_id)>0)
@@ -774,4 +778,44 @@ function saveUpdate($cross_id,$updated) {
         $update_json=json_encode($update);
         $redis->HSET("cross:updated",$key,$update_json);
     }
+}
+
+
+/**
+ * Dictionary:
+ * http://plugins.svn.wordpress.org/sil-dictionary-webonary/trunk/include/dictionary-search.php
+ * http://stackoverflow.com/questions/5074161/what-is-the-most-efficient-way-to-whitelist-utf-8-characters-in-php
+ */
+function get_CJK_unicode_ranges() {
+    return array(
+        '[\x{2E80}-\x{2EFF}]',   # CJK Radicals Supplement
+        '[\x{2F00}-\x{2FDF}]',   # Kangxi Radicals
+        '[\x{2FF0}-\x{2FFF}]',   # Ideographic Description Characters
+        '[\x{3000}-\x{303F}]',   # CJK Symbols and Punctuation
+        '[\x{3040}-\x{309F}]',   # Hiragana
+        '[\x{30A0}-\x{30FF}]',   # Katakana
+        '[\x{3100}-\x{312F}]',   # Bopomofo
+        '[\x{3130}-\x{318F}]',   # Hangul Compatibility Jamo
+        '[\x{3190}-\x{319F}]',   # Kanbun
+        '[\x{31A0}-\x{31BF}]',   # Bopomofo Extended
+        '[\x{31F0}-\x{31FF}]',   # Katakana Phonetic Extensions
+        '[\x{3200}-\x{32FF}]',   # Enclosed CJK Letters and Months
+        '[\x{3300}-\x{33FF}]',   # CJK Compatibility
+        '[\x{3400}-\x{4DBF}]',   # CJK Unified Ideographs Extension A
+        '[\x{4DC0}-\x{4DFF}]',   # Yijing Hexagram Symbols
+        '[\x{4E00}-\x{9FFF}]',   # CJK Unified Ideographs
+        '[\x{A000}-\x{A48F}]',   # Yi Syllables
+        '[\x{A490}-\x{A4CF}]',   # Yi Radicals
+        '[\x{AC00}-\x{D7AF}]',   # Hangul Syllables
+        '[\x{F900}-\x{FAFF}]',   # CJK Compatibility Ideographs
+        '[\x{FE30}-\x{FE4F}]',   # CJK Compatibility Forms
+        '[\x{1D300}-\x{1D35F}]', # Tai Xuan Jing Symbols
+        '[\x{20000}-\x{2A6DF}]', # CJK Unified Ideographs Extension B
+        '[\x{2F800}-\x{2FA1F}]', # CJK Compatibility Ideographs Supplement
+    );
+}
+
+
+function checkCjk($string) {
+    return preg_match('/' . implode('|', get_CJK_unicode_ranges()) . '/u', $string);
 }
