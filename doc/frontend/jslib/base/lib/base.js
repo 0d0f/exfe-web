@@ -4,41 +4,17 @@ define('base', [], function (require) {
   // - https://github.com/mootools/mootools-core/blob/master/Source/Class/Class.Extras.js
   // - https://github.com/alipay/arale/blob/master/lib/base/src/options.js
 
-  var Class = require('class');
-  var Emitter = require('emitter');
-
-  return Class.create(Emitter, {
-    setOptions: function (customOptions) {
-      var key, value;
-
-      var options = this.options = merge({}, customOptions);
-
-      if (this.on) {
-        for (key in options) {
-          value = options[key];
-          if (isFunction(value) && EVENT_PREFIX.test(key)) {
-            this.on(getEventName(name), value);
-            delete options[key];
-          }
-        }
-      }
-    },
-    destory: function () {
-      var k;
-      for (k in this) {
-        if (this.hasOwnProperty(k)) {
-          delete this[p];
-        }
-      }
-    }
-  });
 
   // Helpers
   // -------
   var EVENT_PREFIX = /^on[A-Z]/;
 
+  var PROTO = Object.__proto__;
+
   var isArray = Array.isArray;
   if (!isArray) isArray = function (a) {return typeof a === 'array';}
+
+  var toString = Object.prototype.toString;
 
   function isPlainObject(o) {
     return o &&
@@ -76,5 +52,52 @@ define('base', [], function (require) {
   function getEventName(name) {
     return name[2].toLowerCase() + name.substring(3);
   }
+
+  var Class = require('class');
+  var Emitter = require('emitter');
+
+  return Class.create(Emitter, {
+
+    setOptions: function (custom) {
+      var key, value, options;
+      if (!this.hasOwnProperty('options')) {
+        this.options = {};
+      }
+
+      options = this.options;
+
+      // 父类 options
+      if (this.constructor.__super__.options) {
+        merge(options, this.constructor.__super__.options);
+      }
+
+      // 子类 options
+      if (this.constructor.prototype.options) merge(options, this.constructor.prototype.options);
+
+      // 实例 options
+      if (custom.options) merge(options, custom.options);
+
+      if (this.on) {
+        for (key in options) {
+          value = options[key];
+          if (isFunction(value) && EVENT_PREFIX.test(key)) {
+            this.on(getEventName(key), value);
+            delete options[key];
+          }
+        }
+      }
+    },
+
+    destory: function () {
+      var k;
+      for (k in this) {
+        if (this.hasOwnProperty(k)) {
+          delete this[k];
+        }
+      }
+
+      if (PROTO) this.__proto__ = PROTO;
+    }
+  });
 
 });
