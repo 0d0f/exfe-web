@@ -257,7 +257,7 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function makeDefaultAvatar($external_id, $name = '') {
+    public function makeDefaultAvatar($external_id, $name = '', $render = false) {
         // image config
         $specification = array(
             'width'  => 80,
@@ -274,15 +274,18 @@ class IdentityModels extends DataModel {
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../../default_avatar_portrait/";
-        $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
+        $fLatin = "{$resDir}HelveticaNeueDeskUI.ttc";
+        $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
         $bgIdx  = rand(1, 3);
-        $image  = ImageCreateFromPNG("{$resDir}/bg_{$bgIdx}.png");
+        $image  = ImageCreateFromPNG("{$resDir}bg_{$bgIdx}.png");
         // get color
         $clIdx  = rand(0, count($colors) - 1);
         $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
-        // get name
-        $name   = substr($name ?: $external_id, 0, 3);
+        // get name & check CJK
+        $ftFile = checkCjk($name = mb_substr($name ?: $external_id, 0, 3, 'UTF-8'))
+               && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8')) ? $fCjk : $fLatin;
+        $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
         do {
             $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
@@ -291,21 +294,22 @@ class IdentityModels extends DataModel {
         } while ($fWidth > (80 - 2));
         imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 70, $fColor, $ftFile, $name);
         // show image
-        // header('Pragma: no-cache');
-        // header('Cache-Control: no-cache');
-        // header('Content-Transfer-Encoding: binary');
-        // header('Content-type: image/png');
-        // imagepng($image);
+        if ($render) {
+            header('Pragma: no-cache');
+            header('Cache-Control: no-cache');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-type: image/png');
+            $actResult = imagepng($image);
+        } else {
         // save image
-        $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$external_id}");
-        $filename = "{$hashed_path_info['fname']}.png";
-        if ($hashed_path_info['error'] || !imagepng($image, "{$hashed_path_info['fpath']}/{$filename}")) {
-            return null;
+            $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$external_id}");
+            $filename  = "{$hashed_path_info['fname']}.png";
+            $actResult = !$hashed_path_info['error'] && imagepng($image, "{$hashed_path_info['fpath']}/{$filename}");
         }
         // release memory
         imagedestroy($image);
         // return
-        return IMG_URL . "{$hashed_path_info['webpath']}/{$filename}";
+        return $actResult ? ($render ? $actResult : (IMG_URL . "{$hashed_path_info['webpath']}/{$filename}")) : null;
     }
 
 }
