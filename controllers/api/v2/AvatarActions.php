@@ -2,6 +2,13 @@
 
 class AvatarActions extends ActionController {
 
+	public function doDefault() {
+		$params      = $this->params;
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modIdentity->makeDefaultAvatar('', $params['name'], true);
+	}
+
+
 	public function doGet() {
 		// init requirement
         $curDir = dirname(__FILE__);
