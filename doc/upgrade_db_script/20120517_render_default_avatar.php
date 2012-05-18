@@ -25,7 +25,7 @@ class IdentityModels extends DataModel {
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/default_avatar_portrait/";
-        $fLatin = "{$resDir}HelveticaNeueDeskUI.ttc";
+        $fLatin = "{$resDir}OpenSans-Regular.ttf";
         $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
         $bgIdx  = rand(1, 3);
