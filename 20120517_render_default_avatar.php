@@ -39,11 +39,11 @@ class IdentityModels extends DataModel {
         $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
         do {
-            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 70, $fColor, $ftFile, $name);
+            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
         } while ($fWidth > (80 - 2));
-        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 70, $fColor, $ftFile, $name);
+        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
         // show image
         if ($render) {
             header('Pragma: no-cache');
