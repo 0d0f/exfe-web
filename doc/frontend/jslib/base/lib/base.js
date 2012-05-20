@@ -75,7 +75,7 @@ define('base', [], function (require) {
       if (this.constructor.prototype.options) merge(options, this.constructor.prototype.options);
 
       // 实例 options
-      if (custom.options) merge(options, custom.options);
+      if (custom && custom.options) merge(options, custom.options);
 
       if (this.on) {
         for (key in options) {
