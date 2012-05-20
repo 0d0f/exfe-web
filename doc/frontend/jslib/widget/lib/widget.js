@@ -8,12 +8,21 @@ define('widget', [], function (require, exports, module) {
   var Base = require('base');
 
   var Widget = Base.extend({
+
     options: {
-      template: '<div></div>'
+      template: '<div />',
+
+      // 事件代理 格式：
+      //  {
+      //    'click .button': 'save',
+      //    'click .open': function (e) { ... }
+      //  }
+      events: null
     },
+
     // 初始化
     initialize: function (options) {
-      this.cid = uuid();
+      this.cid = guid();
       this.initOptions(options);
       this.parseElement();
 
@@ -51,13 +60,14 @@ define('widget', [], function (require, exports, module) {
     },
 
     delegateEvents: function (events) {
-      events || (events = getValue(this, 'events'));
+      events || (events = getValue(this.options, 'events'));
       if (!events) return;
       this.undelegateEvents();
 
       var key, method, match, eventName, selector;
       for (key in events) {
-        method = this[key];
+        method = this[key] || events[key];
+        console.log(events);
 
         if (!method) throw 'Method "' + events[key] + '" does not exist';
 
@@ -94,10 +104,10 @@ define('widget', [], function (require, exports, module) {
   // 事件代理参数中，'event selector' 的分隔符
   var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
-  var guid = 1;
+  var uuid = 1;
 
-  function uuid() {
-    return 'widget-' + guid++;
+  function guid() {
+    return 'widget-' + uuid++;
   }
 
   function isFunction(f) {
@@ -113,7 +123,7 @@ define('widget', [], function (require, exports, module) {
 
   function proxy(fn, context) {
     var f = function (event) {
-      return fn.call(this, event);
+      return fn.call(context, event);
     };
     return f;
   }

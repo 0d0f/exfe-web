@@ -143,7 +143,7 @@ define(function (require, exports, module) {
           var s = Handlebars.compile(jst_crosses.html());
           // 填充数据
           var h = s(data.response);
-          $('.crosses').append(h);
+          $('#profile .crosses').append(h);
         }
     });
 
