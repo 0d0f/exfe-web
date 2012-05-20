@@ -1,6 +1,20 @@
 .xbtn {
 }
 
+.xbtn-white {
+  .xButtonBackground(#fafafa, #e6e6e6);
+  border: 1px solid rgba(127,127,127,.15);
+  .box-shadow(0 1px 1px #fafafa);
+  .border-radius(3px);
+}
+
+.xbtn-blue {
+  .xButtonBackground(#fff, #cedde5);
+  border: 1px solid rgba(127,127,127,.15);
+  .box-shadow(0 1px 1px #fff);
+  .border-radius(3px);
+}
+
 .btn-leave {
   width: 55px;
   height: 16px;
@@ -19,10 +33,7 @@
   height: 16px;
   font-size: 12px;
   line-height: 12px;
-  .xButtonBackground(#fafafa, #e6e6e6);
-  border: 1px solid rgba(127,127,127,.15);
-  .box-shadow(0 1px 1px #fafafa);
-  .border-radius(3px);
+  .xbtn-white;
 }
 
 .xbtn-signin {
