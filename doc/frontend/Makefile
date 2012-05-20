@@ -4,7 +4,7 @@ JS_DIR = ${PREFIX}/js
 CSS_DIR = ${PREFIX}/css
 LESS_DIR = ${PREFIX}/less
 
-EXFE_LESS = ${LESS_DIR}/v2/lib/exfe.less
+EXFE_LESS = ${LESS_DIR}/exfe/lib/exfe.less
 EXFE_CSS = ${CSS_DIR}/exfe.css
 EXFE_MIN_CSS = ${CSS_DIR}/exfe.min.css
 

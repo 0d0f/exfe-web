@@ -1,11 +1,38 @@
-@import "../v2.less";
-
 // modal identification
 .modal-id {
   .authorize {
     display: table-cell;
     vertical-align: middle;
     height: 40px;
+  }
+
+  .orspliter {
+    position: relative;
+    margin: 0 auto 7px;
+    width: 60px;
+    height: 16px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+    color: #b2b2b2;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: -139px;
+      width: 150px;
+      border-top: 1px dashed #d5d5d5;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: -139px;
+      width: 150px;
+      border-top: 1px dashed #d5d5d5;
+    }
   }
 
   .signing {
