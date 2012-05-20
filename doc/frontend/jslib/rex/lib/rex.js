@@ -19,6 +19,7 @@ var NULL = null
   , ArrayProto = Array.prototype
   , ObjectProto = Object.prototype
   , hasOwn = ObjectProto.hasOwnProperty
+  , toString = ObjectProto.toString
   , slice = ArrayProto.slice
   , NForEach = ArrayProto.forEach
   , NMap = ArrayProto.map
@@ -327,12 +328,23 @@ R.tap = function (o, f) {
   return !r ? o : r;
 };
 
+R.nextTick = function (f) {
+  setTimeout(f, 0);
+};
+
+R.countDown = function (n, f) {
+  return cb;
+  function cb() {
+    if (--n === 0) f();
+  }
+};
+
 R.isFunction = function (f) {
   return typeof f === 'function';
 };
 
 R.isString = function (s) {
-  return typeof f === 'string';
+  return toString.call(s) === '[object String]';
 };
 
 R.isElement = function (el) {
@@ -376,7 +388,7 @@ R.isNull = function (o) {
 };
 
 R.isNumber = function (n) {
-  return typeof n === 'number';
+  return toString.call(n) === '[object Number]';
 };
 
 R.isBoolean = function (b) {
