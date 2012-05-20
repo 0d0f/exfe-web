@@ -1,11 +1,7 @@
 // v2 Theme
 @import "../../bootstrap/lib/bootstrap.less";
 
-@import "variables.less";
-@import "mixins.less";
-@import "utilities.less";
-@import "modals.less";
-@import "sprites.less";
+@import "overrides.less";
 
 .navbar {
   margin-bottom: 24px;
@@ -57,7 +53,7 @@
   .nav > li > a {
     padding: 15px 0;
     line-height: 20px;
-    font-weight: bold;
+    font-weight: 500;
     &:hover {
       color: #7f7f7f;
       font-style: normal;
@@ -315,3 +311,16 @@
   color: #1175a5;
   font-style: normal;
 }
+
+// ext
+@import "angle.less";
+@import "buttons.less";
+@import "xalert.less";
+
+// pages
+@import "pages/dialog.less";
+@import "pages/home.less";
+@import "pages/x.less";
+@import "pages/cross.less";
+@import "pages/gather.less";
+@import "pages/profile.less";
