@@ -1,0 +1,433 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" dir="ltr"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Dialog</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+
+  <link href="css/exfe.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body style="height: 5000px">
+  <div class="container">
+
+    <div role="main">
+      <a href="sample.html">Sample</a>
+
+      <div class="btn-group dialogs">
+        <button class="btn" data-dialog-type="identification" data-dialog-tab="d01" data-widget="dialog">Sign In</button>
+        <!--<button class="btn">Sign In</button>-->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Backdrop {{{-->
+  <!--<div class="modal-backdrop fade in"></div>-->
+  <!--}}}-->
+
+  <!-- Dialogs {{{1-->
+
+  <!--登陆 {{{2-->
+  <div class="modal modal-id" style="position: relative; top: 250px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Identification</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>
+        <div class="pull-right">
+          <a href="#twitter">
+            <img src="/img/twitter-logo.png" alt="" width="52" height="40" />
+          </a>
+          <a href="#qrcode">
+            <img src="/img/qrcode.png" alt="" width="40" height="40" />
+          </a>
+        </div>
+        <div class="authorize">Authorize account through:</div>
+        <form class="modal-form form-horizontal">
+          <fieldset>
+            <legend>Enter your identity information:</legend>
+            <div class="control-group">
+              <label class="control-label" for="input01">Identity:</label>
+              <div class="controls">
+                <img class="add-on avatar" src="/img/users/u1x20.png" alt="" width="20" height="20" />
+                <input type="text" class="input-large identity" id="input01" />
+                <div class="popmenu">
+                  <ul>
+                    <li>
+                     <img class="pull-right" src="/img/facebook-icon.jpeg" alt="" width="20" height="20" />
+                     <span>stevexfee@Facebook</span>
+                    </li>
+                    <li>
+                     <img class="pull-right" src="/img/twitter-icon.jpeg" alt="" width="20" height="20" />
+                     <span>@stevefee@Twitter</span>
+                    </li>
+                    <li>
+                     <img class="pull-right" src="/img/google-icon.jpeg" alt="" width="20" height="20" />
+                     <span>stevexfee@gmail.com</span>
+                    </li>
+                  </ul>
+                </div>
+                <p class="help-block">Set up this new identity.</p>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="input02">Password:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input02">
+              </div>
+            </div>
+
+            <!--
+            <div class="control-group">
+              <label class="control-label" for="input03">Display name:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input03" placeholder="Your name here" />
+              </div>
+            </div>
+            -->
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn">Forgot Password...</a>
+        <a href="#" class="pull-right btn btn-primary">Sign In</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+  <!--Sign Up {{{2-->
+  <div class="modal modal-id" style="position: relative; top: 650px;">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Identification</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Sign-Up-Free</div>
+        <div class="signing">Tired of signing up all around?</div>
+        <p>Just authorize through your existing accounts on other websites, such as Twitter, Facebook or Google. We hate spam, will NEVER disappoint your trust.</p>
+        <p>Otherwise, tell us your email as your identity, and display name that your friends know who you are, along with a password for sign-in.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="pull-right btn btn-primary">I See</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+
+  <!--登陆 {{{2-->
+  <div class="modal modal-identification" style="position: relative; top: 1000px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Identification</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>
+        <div class="pull-right">
+          <a href="#twitter"><img src="/img/twitter-logo.png" alt="" width="52" height="40" /></a>
+          <a href="#qrcode"><img src="/img/qrcode.png" alt="" width="40" height="40" /></a>
+        </div>
+        <div class="authorize">Authorize account through:</div>
+        <form class="modal-form form-horizontal">
+          <fieldset>
+            <legend>Enter your identity information:</legend>
+            <div class="control-group">
+              <label class="control-label" for="input01">Identity:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input01">
+                <p class="help-block">Set up this new identity.</p>
+              </div>
+            </div>
+
+            <!--
+            <div class="control-group">
+              <label class="control-label" for="input02">Password:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input02">
+              </div>
+            </div>
+            -->
+
+            <div class="control-group">
+              <label class="control-label" for="input03">Display name:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input03" placeholder="Your name here" />
+              </div>
+            </div>
+          </fieldset>
+        </form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="btn">Start Over</a>
+          <a href="#" class="pull-right btn btn-primary">Sign In</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+  <!--Welcome {{{2-->
+  <div class="modal modal-wc" style="position: relative; top: 1350px;">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Welcome</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Hi, SteveE.</div>
+        <div class="center shadow">Thanks for using <span class="x-sign">EXFE</span>.</div>
+        <p class="center">An utility for hanging out with friends.</p>
+        <p>A verification email has been sent.<br />Please check your mailbox.</p>
+        <p><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>
+        <p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="pull-right btn btn-primary">Go</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+
+  <!--Set Password {{{2-->
+  <div class="modal modal-sp" style="position: relative; top: 1650px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Set Password</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>
+        <form class="modal-form form-horizontal">
+          <fieldset>
+            <legend>Please set password to keep track of attendees update, and engage in.</legend>
+            <div class="control-group">
+              <label class="control-label" for="input01">Identity:</label>
+              <div class="controls">
+                <img class="add-on avatar" src="/img/users/u1x20.png" alt="" width="20" height="20" />
+                <input type="text" class="input-large disabled identity" id="input01" value="steve@0d0f.com" disabled />
+                <!--<p class="help-block">Set up this new identity.</p>-->
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="input03">Display name:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input03" placeholder="Your name here" />
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="input02">Password:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input02" placeholder="Type password">
+              </div>
+            </div>
+
+          </fieldset>
+        </form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="pull-right btn btn-primary">Done</a>
+          <a href="#" class="pull-right">Discard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+
+  <!--Change Password {{{2-->
+  <div class="modal modal-cp" style="position: relative; top: 2000px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Change Password</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Change Password</div>
+        <form class="modal-form form-horizontal">
+          <fieldset>
+            <legend style="white-space: nowrap;">Please enter current password and set new password.</legend>
+            <div class="control-group">
+              <label class="control-label" for="input01">Full name:</label>
+              <div class="controls">
+                <input type="text" class="input-large disabled" id="input01" value="Steve Exfe" disabled />
+                <!--<p class="help-block">Set up this new identity.</p>-->
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="input03">Password:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input03" placeholder="Type current password" />
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="input02">New Password:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input02" placeholder="Type new password">
+              </div>
+            </div>
+
+          </fieldset>
+        </form>
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="pull-left btn">Forgot Password...</a>
+          <a href="#" class="pull-right btn btn-primary">Done</a>
+          <a href="#" class="pull-right">Discard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+
+  <!--Forgot Password {{{2-->
+  <div class="modal modal-fp" style="position: relative; top: 2350px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Forgot Password</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Forgot Password</div>
+        <div>Identity to reset password:</div>
+        <div class="identity disabled">
+          <img class="pull-right avatar" src="/img/users/u1x20.png" width="20" height="20" />
+          <span>steve@0d0f.com</span>
+        </div>
+        <p>Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="pull-right btn btn-primary">Done</a>
+        <a href="#" class="pull-right">Discard</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+  <!--身份无法登陆时验证 {{{2-->
+  <div class="modal modal-id" style="position: relative; top: 2750px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Identification</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>
+        <div class="pull-right">
+          <a href="#twitter">
+            <img src="/img/twitter-logo.png" alt="" width="52" height="40" />
+          </a>
+          <a href="#qrcode">
+            <img src="/img/qrcode.png" alt="" width="40" height="40" />
+          </a>
+        </div>
+        <div class="authorize">Authorize with your existing identity:</div>
+        <form class="modal-form form-horizontal">
+          <fieldset>
+            <legend>Enter your identity information:</legend>
+            <div class="control-group">
+              <label class="control-label" for="input01">Identity:</label>
+              <div class="controls">
+                <img class="add-on avatar" src="/img/users/u1x20.png" alt="" width="20" height="20" />
+                <input type="text" class="input-large identity" id="input01" />
+              </div>
+              <p class="help-block">Set up this new identity.</p>
+            </div>
+
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn">Start Over</a>
+        <a href="#" class="pull-right btn btn-primary">Done</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+
+  <!--身份验证 Verificaion {{{2-->
+  <div class="modal modal-ve" style="position: relative; top: 3150px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Verification</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Identity Verification</div>
+        <div>Identity to verify:</div>
+        <div class="pull-right user-identity">
+          <img class="avatar" src="/img/users/u2x40.png" alt="" width="40" height="40" />
+          <i class="provider icon-user"></i>
+        </div>
+        <div class="identity disabled">steve@0d0f.com</div>
+        <p>Confirm sending verification to your mailbox? It should arrive in minutes.</p>
+        <p>Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam. Or try ‘Manual Verification’.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn">Manual Verification</a>
+        <a href="#" class="pull-right btn btn-primary">Verify</a>
+        <a href="#" class="pull-right">Cancel</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+  <!--身份验证 Verificaion {{{2-->
+  <div class="modal modal-ve" style="position: relative; top: 3550px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Verification</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Identity Verification</div>
+        <div>Identity to verify:</div>
+        <div class="pull-right user-identity">
+          <img class="avatar" src="/img/users/u2x40.png" alt="" width="40" height="40" />
+          <i class="provider icon-user"></i>
+        </div>
+        <div class="identity disabled">steve@0d0f.com</div>
+        <p>You will be directed to Twitter website to authorize EXFE. Don’t forget to follow @EXFE, it’s necessary for smooth service integration.</p>
+        <p>We hate spam, will NEVER disappoint your trust.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="pull-right btn btn-primary">Verify</a>
+        <a href="#" class="pull-right">Cancel</a>
+      </div>
+    </div>
+  </div>
+  <!--2}}}-->
+
+  <!--1}}}-->
+
+  <!-- JavaScript at the bottom for fast page loading -->
+  <script src="odof/lib/common.js"></script>
+  <script src="jslib/modernizr/lib/modernizr.js"></script>
+  <script src="jslib/jquery/lib/jquery.js"></script>
+  <script src="jslib/emitter/lib/emitter.js"></script>
+  <script src="jslib/class/lib/class.js"></script>
+  <script src="jslib/base/lib/base.js"></script>
+  <script src="jslib/widget/lib/widget.js"></script>
+  <script src="jslib/dialog/lib/dialog.js"></script>
+  <script src="jslib/xdialog/lib/xdialog.js"></script>
+
+</body>
+</html>
