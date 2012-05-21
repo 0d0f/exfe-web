@@ -57,6 +57,11 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     confirmed.push(data[i].exfee[j].name);
                 }
             }
+
+
+console.log(data[i]);
+
+
             if (confirmed.length) {
                 confirmed = confirmed.length + ' <em class="muted">of</em> ' + data[i].exfee.length
                           + ' <em class="muted">confirmed:</em> '   + confirmed.join(', ');
@@ -676,7 +681,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.newbie = function (n) {
       //console.log('Hello newbie!');
-      
+
       var s = '<div class="newbie_box">'
             + '<div class="con"></div>'
             + '<div class="close"><span>&times;</span></div>'
@@ -716,7 +721,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
           return false;
         });
       };
-    }; 
+    };
 
 })(ns);
 
