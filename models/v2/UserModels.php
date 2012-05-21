@@ -25,7 +25,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserById($id) {
+    public function getUserById($id, $withCrossQuantity = false) {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
@@ -38,6 +38,9 @@ class UserModels extends DataModel {
                 $rawUser['avatar_updated_at'],
                 $rawUser['timezone']
             );
+            if ($withCrossQuantity) {
+                $user->cross_quantity = 0;
+            }
             // get all identity ids connetced to the user
             $rawIdentityIds = $this->getAll(
                 "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND `status` = 3"
@@ -57,7 +60,7 @@ class UserModels extends DataModel {
                             new Identity(
                                 $item['id'],
                                 $item['name'],
-                                '', // $$item['nickname'], // @todo;
+                                '', // $item['nickname'], // @todo;
                                 $item['bio'],
                                 $item['provider'],
                                 $rawUser['id'],
@@ -73,6 +76,12 @@ class UserModels extends DataModel {
                         if (intval($item['id']) === intval($rawUser['id'])) {
                             $user->default_identity = $user->identities[$intLength];
                         }
+                    }
+                    if ($withCrossQuantity) {
+                        $cross_quantity = $this->getRow(
+                            "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` = {$identityIds}"
+                        );
+                        $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
                 }
             }
@@ -143,25 +152,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function signout() {
-        // unset seesion
-        unset($_SESSION['signin_user']);
-        unset($_SESSION['signin_token']);
-        session_destroy();
-        // unset cookie
-        unset($_COOKIE['user_id']);
-        unset($_COOKIE['identity_ids']);
-        unset($_COOKIE['signin_sequ']);
-        unset($_COOKIE['signin_token']);
-        setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
-        setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
-        // return
-        return true;
-    }
-
-
     public function signinForAuthToken($provider, $external_id, $password) {
         $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
@@ -186,6 +176,7 @@ class UserModels extends DataModel {
         return null;
     }
 
+
     public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id)
     {
         if(intval($identity_id)>0 && intval($user_id)>0)
@@ -205,29 +196,6 @@ class UserModels extends DataModel {
                 return $rtResult;
             }
 
-        }
-        return null;
-    }
-
-
-    /**
-     * @todo: removing
-     */
-    public function signinByCookie() {
-        // get vars
-        $user_id      = intval($_COOKIE['user_id']);
-        $signin_sequ  = $_COOKIE['signin_sequ'];
-        $signin_token = $_COOKIE['signin_token'];
-        // try sign in
-        if ($user_id) {
-            $userPasswd = $this->getUserPasswdByUserId($user_id);
-            $ipAddress  = getRealIpAddr();
-            if ($ipAddress    === $userPasswd['current_sign_in_ip']
-             && $signin_sequ  === $userPasswd['cookie_loginsequ']
-             && $signin_token === $userPasswd['cookie_logintoken']) {
-                return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-            }
-            $this->signout();
         }
         return null;
     }
@@ -391,12 +359,51 @@ class UserModels extends DataModel {
         }
         return null;
     }
+
+
     public function getIdentityIdByUserId($user_id){
         $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
         $identity_ids=$this->getColumn($sql);
         return $identity_ids;
+    }
 
 
+    public function getMobileIdentitiesByUserId($user_id) {
+        $rawIdentityIds = $this->getAll(
+            "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id} AND `status` = 3"
+        );
+        $objIdentities = array();
+        if ($rawIdentityIds) {
+            $identityIds = array();
+            foreach ($rawIdentityIds as $i => $item) {
+                $identityIds[] = $item['identityid'];
+            }
+            $identityIds = implode($identityIds, ' OR `id` = ');
+            $identities  = $this->getAll("SELECT * FROM `identities` WHERE (`id` = {$identityIds}) AND (`provider` = 'iOSAPN' OR `provider` = 'Android')");
+
+            if ($identities) {
+                foreach ($identities as $i => $item) {
+                    array_push(
+                        $objIdentities,
+                        new Identity(
+                            $item['id'],
+                            $item['name'],
+                            '', // $$item['nickname'], // @todo;
+                            $item['bio'],
+                            $item['provider'],
+                            $user_id,
+                            $item['external_identity'],
+                            $item['external_username'],
+                            $item['avatar_file_name'],
+                            $item['avatar_updated_at'],
+                            $item['created_at'],
+                            $item['updated_at']
+                        )
+                    );
+                }
+            }
+        }
+        return $objIdentities;
     }
 
 
