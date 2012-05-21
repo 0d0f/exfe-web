@@ -25,7 +25,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserById($id) {
+    public function getUserById($id, $withCrossQuantity = false) {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
@@ -38,6 +38,9 @@ class UserModels extends DataModel {
                 $rawUser['avatar_updated_at'],
                 $rawUser['timezone']
             );
+            if ($withCrossQuantity) {
+                $user->cross_quantity = 0;
+            }
             // get all identity ids connetced to the user
             $rawIdentityIds = $this->getAll(
                 "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND `status` = 3"
@@ -57,7 +60,7 @@ class UserModels extends DataModel {
                             new Identity(
                                 $item['id'],
                                 $item['name'],
-                                '', // $$item['nickname'], // @todo;
+                                '', // $item['nickname'], // @todo;
                                 $item['bio'],
                                 $item['provider'],
                                 $rawUser['id'],
@@ -73,6 +76,12 @@ class UserModels extends DataModel {
                         if (intval($item['id']) === intval($rawUser['id'])) {
                             $user->default_identity = $user->identities[$intLength];
                         }
+                    }
+                    if ($withCrossQuantity) {
+                        $cross_quantity = $this->getRow(
+                            "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` = {$identityIds}"
+                        );
+                        $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
                 }
             }
