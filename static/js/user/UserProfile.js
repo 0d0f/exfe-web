@@ -59,7 +59,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             }
 
 
-console.log(data[i]);
+// console.log(data[i]);
 
 
             if (confirmed.length) {
