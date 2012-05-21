@@ -1,76 +1,41 @@
-/**
- * @description: Exfee Editing Gadget
- * @author:      Leask Huang <leask@exfe.com>
- * @createDate:  May 10, 2012
- * @copyRights:  http://www.exfe.com
- */
+define('exfee', [], function (require, exports, module) {
+    /**
+     * Dependence:
+     *  - jQuery
+     */
 
+    var $ = require('jquery');
+    var Widget = require('widget');
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// 此类正在重构 暂时不能用！ //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+    var $BODY = document.body;
 
+    /*
+     * HTML
+     *
+     *    div.modal
+     */
 
-var moduleNameSpace = 'odof.exfee.gadget';
-var ns = odof.util.initNameSpace(moduleNameSpace);
+    var Exfee = Widget.extend({
 
+        options: {
+            dom_id        = '',
 
-(function(ns) {
+            input_tips    = 'Enter attendees’ information',
 
-    ns.exfeeAvailableIdK = 'exfee_available_for_id'
+            ns.arrStrRsvp = {
+                NORESPONSE   : 'No response',
+                ACCEPTED     : 'Accepted',
+                DECLINED     : 'Declined',
+                INTERESTED   : 'Interested',
+                REMOVED      : 'Removed',
+                NOTIFICATION : 'Notification'
+            },
 
-    ns.exfeeAvailableKey = 'exfee_available';
+            exfee         = {},
 
-    ns.strInputTips      = 'Enter attendees’ information';
+            editable      = false,
 
-    ns.arrStrRsvp        = { NORESPONSE   : 'No response',
-                             ACCEPTED     : 'Accepted',
-                             DECLINED     : 'Declined',
-                             INTERESTED   : 'Interested',
-                             REMOVED      : 'Removed',
-                             NOTIFICATION : 'Notification'};
-
-    ns.inputed           = {};
-
-    ns.editable          = {};
-
-    ns.exfeeInput        = {};
-
-    ns.exfeeAvailable    = [];
-
-    ns.completimer       = {};
-
-    ns.keyComplete       = {};
-
-    ns.curComplete       = {};
-
-    ns.completeRequest   = null;
-
-    ns.exfeeChecked      = {};
-
-    ns.exfeeIdentified   = {_fake_host_ : true};
-
-    ns.exfeeSelected     = {};
-
-    ns.completing        = {};
-
-    ns.diffCallback      = {};
-
-    ns.timerBaseInfo     = {};
-
-    ns.idsBuilt          = {};
-
-    ns.left              = false;
-
-
-    ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
-        var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" '
+            template      = '<div id="' + domId + '_exfeegadget_infoarea" '
                     +                 'class="exfeegadget_infoarea">'
                     +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
                     +                     'class="exfeegadget_info_totalarea">'
@@ -120,6 +85,72 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     +                 'class="exfeegadget_listarea">'
                     +     '<ol></ol>'
                     + '</div>';
+        },
+
+        init: function () {},
+
+        render: function () {},
+
+    });
+
+    return Exfee;
+});
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// 此类正在重构 暂时不能用！ //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+(function(ns) {
+
+    ns.exfeeAvailableIdK = 'exfee_available_for_id'
+
+    ns.exfeeAvailableKey = 'exfee_available';
+
+    ns.inputed           = {};
+
+    ns.editable          = {};
+
+    ns.exfeeInput        = {};
+
+    ns.exfeeAvailable    = [];
+
+    ns.completimer       = {};
+
+    ns.keyComplete       = {};
+
+    ns.curComplete       = {};
+
+    ns.completeRequest   = null;
+
+    ns.exfeeChecked      = {};
+
+    ns.exfeeIdentified   = {_fake_host_ : true};
+
+    ns.exfeeSelected     = {};
+
+    ns.completing        = {};
+
+    ns.diffCallback      = {};
+
+    ns.timerBaseInfo     = {};
+
+    ns.idsBuilt          = {};
+
+    ns.left              = false;
+
+
+    ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
         this.inputed[domId]       = '';
         this.editable[domId]      = curEditable;
         this.exfeeInput[domId]    = {};
