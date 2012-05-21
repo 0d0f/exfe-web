@@ -244,7 +244,6 @@ class XModels extends DataModel {
         } else {
             $sql  = "SELECT c.*, p.place_line1, p.place_line2, p.provider as place_provider, p.external_id as place_external_id, p.lng as place_lng, p.lat as place_lat FROM crosses c LEFT JOIN places p ON(c.place_id = p.id) WHERE ({$str}) {$strTime} {$order_by} {$limit};";
         }
-        // echo $sql;
         $crosses  = $this->getAll($sql);
 
         return $crosses;
