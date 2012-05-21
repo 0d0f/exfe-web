@@ -54,6 +54,8 @@ class XModels extends DataModel {
             $hlpExfee = $this->getHelperByName('exfee');
             $hlpExfee->addExfeeIdentify($cross_id, $exfee, $identityId);
             $hlpExfee->sendInvitation($cross_id, $identityId);
+            // update exfee_update_time for v1 v2 bridge
+            $this->updateExfeeTime($exfee_id);
             // log x
             $hlpX = $this->getHelperByName('x');
             $hlpX->logX($identityId, $cross_id, $cross['title']);
@@ -64,6 +66,14 @@ class XModels extends DataModel {
             // return
             return $cross_id;
         }
+    }
+
+
+    // v1 v2 bridge
+    public function updateExfeeTime($exfee_id)
+    {
+        $sql="update invitations set exfee_updated_at=NOW() where `cross_id`=$exfee_id;";
+        $this->query($sql);
     }
 
 
