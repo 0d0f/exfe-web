@@ -57,11 +57,6 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     confirmed.push(data[i].exfee[j].name);
                 }
             }
-
-
-// console.log(data[i]);
-
-
             if (confirmed.length) {
                 confirmed = confirmed.length + ' <em class="muted">of</em> ' + data[i].exfee.length
                           + ' <em class="muted">confirmed:</em> '   + confirmed.join(', ');
