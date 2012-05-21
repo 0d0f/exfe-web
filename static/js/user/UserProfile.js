@@ -298,8 +298,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['confirmed']) {
                         arrExfee = [];
                         for (j in data[i]['confirmed']) {
-                            if(data[i]['confirmed'][j]['to_identity'] != null){
-                                if (arrExfee.push( data[i]['confirmed'][j]['to_identity']['name']) === 3) {
+                            if (data[i]['confirmed'][j]['to_identity'] != null){
+                                if (arrExfee.push(data[i]['confirmed'][j]['to_identity']['name']) === 3) {
                                     break;
                                 }
                             }
