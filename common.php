@@ -165,7 +165,7 @@ function humanDateTime($strTime, $timeoffset = '+0:00', $lang = 'en') {
     if ($withTime && !$timeType) {
         switch (strlen($timeoffset)) {
             case 5:
-                $offset = (intval($timeoffset[1]) * 60 
+                $offset = (intval($timeoffset[1]) * 60
                         +  intval($timeoffset[3]) * 10  + intval($timeoffset[4])) * 60;
                 break;
             case 6:
@@ -338,6 +338,7 @@ function randStr($len=5, $type="normal")
     return $string;
 }
 
+
 /**
  * 取得微秒时间
  * @param NULL
@@ -349,44 +350,45 @@ function getMicrotime()
     return ((float)$usec + (float)$sec);
 }
 
+
 function reverse_escape($str)
 {
   $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
   $replace=array("\\","\0","\n","\r","\x1a","'",'"');
   return str_replace($search,$replace,$str);
 }
+
+
 /**
  * 散列存储
- * @param NULL
+ * @param savePath string
+ * @param fileName string
  * @return array
  **/
-function hashFileSavePath($savePath, $fileName=''){
-    $hashFileName = md5(randStr(20).$fileName.getMicrotime().uniqid());
-    $savePath = strtok($savePath, "/");
-    $hashDir = $savePath."/".substr($hashFileName, 0, 1);
-    $hashSubDir = $hashDir."/".substr($hashFileName, 1, 2);
-    $webpath= "/".substr($hashFileName, 0, 1)."/".substr($hashFileName, 1, 2);
-
-
-    $fileInfo = array(
-        "fpath"      =>$hashSubDir,
-        "fname"      =>$hashFileName,
-        "webpath"      =>$webpath,
-        "error"      =>0
-    );
-
-    if(is_dir($savePath)){
-        if(!is_dir($hashSubDir)){
-            $result = mkdir($hashSubDir, 0777, true);
-            if(!$result){
-                $fileInfo["error"] = 2;
-            }
-        }
-    }else{
-        $fileInfo["error"] = 1;
+function hashFileSavePath($savePath, $fileName = '') {
+    // basic check
+    if (!is_dir($savePath)) {
+        return array('error' => 1);
     }
-    return $fileInfo;
+    // do hash
+    $hash_name   = md5(randStr(20) . $fileName . getMicrotime() . uniqid());
+    $hash_folder = '/' . substr($hash_name, 0, 1) . '/' . substr($hash_name, 1, 2);
+    $hash_path   = strtok($savePath, '/') . $hash_folder;
+    // make dir
+    if(!is_dir($hash_path)){
+        if(!mkdir($hash_path, 0777, true)) {
+            return array('error' => 2);
+        }
+    }
+    // return
+    return array(
+        'fpath'   => $hash_path,
+        'fname'   => $hash_name,
+        'webpath' => $hash_folder,
+        'error'   => 0,
+    );
 }
+
 
 /**
  * 获取散列存储路径
@@ -736,6 +738,7 @@ function apiResponse($object) {
     exit(0);
 }
 
+
 function mgetUpdate($cross_ids)
 {
     $fields=implode($cross_ids," ");
@@ -748,6 +751,8 @@ function mgetUpdate($cross_ids)
         return $update;
     }
 }
+
+
 function getUpdate($cross_id){
     if(intval($cross_id)>0)
     {
@@ -758,6 +763,7 @@ function getUpdate($cross_id){
         return $update;
     }
 }
+
 
 function saveUpdate($cross_id,$updated) {
     if(intval($cross_id)>0)
@@ -772,4 +778,44 @@ function saveUpdate($cross_id,$updated) {
         $update_json=json_encode($update);
         $redis->HSET("cross:updated",$key,$update_json);
     }
+}
+
+
+/**
+ * Dictionary:
+ * http://plugins.svn.wordpress.org/sil-dictionary-webonary/trunk/include/dictionary-search.php
+ * http://stackoverflow.com/questions/5074161/what-is-the-most-efficient-way-to-whitelist-utf-8-characters-in-php
+ */
+function get_CJK_unicode_ranges() {
+    return array(
+        '[\x{2E80}-\x{2EFF}]',   # CJK Radicals Supplement
+        '[\x{2F00}-\x{2FDF}]',   # Kangxi Radicals
+        '[\x{2FF0}-\x{2FFF}]',   # Ideographic Description Characters
+        '[\x{3000}-\x{303F}]',   # CJK Symbols and Punctuation
+        '[\x{3040}-\x{309F}]',   # Hiragana
+        '[\x{30A0}-\x{30FF}]',   # Katakana
+        '[\x{3100}-\x{312F}]',   # Bopomofo
+        '[\x{3130}-\x{318F}]',   # Hangul Compatibility Jamo
+        '[\x{3190}-\x{319F}]',   # Kanbun
+        '[\x{31A0}-\x{31BF}]',   # Bopomofo Extended
+        '[\x{31F0}-\x{31FF}]',   # Katakana Phonetic Extensions
+        '[\x{3200}-\x{32FF}]',   # Enclosed CJK Letters and Months
+        '[\x{3300}-\x{33FF}]',   # CJK Compatibility
+        '[\x{3400}-\x{4DBF}]',   # CJK Unified Ideographs Extension A
+        '[\x{4DC0}-\x{4DFF}]',   # Yijing Hexagram Symbols
+        '[\x{4E00}-\x{9FFF}]',   # CJK Unified Ideographs
+        '[\x{A000}-\x{A48F}]',   # Yi Syllables
+        '[\x{A490}-\x{A4CF}]',   # Yi Radicals
+        '[\x{AC00}-\x{D7AF}]',   # Hangul Syllables
+        '[\x{F900}-\x{FAFF}]',   # CJK Compatibility Ideographs
+        '[\x{FE30}-\x{FE4F}]',   # CJK Compatibility Forms
+        '[\x{1D300}-\x{1D35F}]', # Tai Xuan Jing Symbols
+        '[\x{20000}-\x{2A6DF}]', # CJK Unified Ideographs Extension B
+        '[\x{2F800}-\x{2FA1F}]', # CJK Compatibility Ideographs Supplement
+    );
+}
+
+
+function checkCjk($string) {
+    return preg_match('/' . implode('|', get_CJK_unicode_ranges()) . '/u', $string);
 }

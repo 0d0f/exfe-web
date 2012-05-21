@@ -17,7 +17,7 @@ class UsersActions extends ActionController {
                 apiError(401, 'invalid_auth', '');
             }
         }
-        if ($objUser = $modUser->getUserById($params['id'])) {
+        if ($objUser = $modUser->getUserById($params['id'], true)) {
             apiResponse(array('user' => $objUser));
         }
         apiError(404, 'user_not_found', 'user not found');
@@ -95,49 +95,6 @@ class UsersActions extends ActionController {
     }
 
 
-    //@todo: merge with new sign in
-    public function doWebSignin() {
-        // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
-        // init
-        $rtResult      = array();
-        $isNewIdentity = false;
-        // collecting post data
-        $external_id   = $_POST['external_id'];
-        $provider      = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password      = $_POST['password'];
-        $name          = $_POST['name'];
-        $autoSignin    = intval($_POST['auto_signin']) === 1;
-        // adding new identity
-        if ($external_id && $password && $name) {
-            // @todo: 根据 $provider 检查 $external_identity 有效性
-            $user_id = $modUser->newUserByPassword($password);
-            // @todo: check returns
-            $modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id);
-            // @todo: check returns
-            $isNewIdentity = true;
-        }
-        // try to sign in
-        if ($external_id && $password && ($user_id = $modUser->login($external_id, $password, $autosignin))) {
-            apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
-        } else {
-            apiError(403, 'invalid_identity_or_password', ''); // 失败
-        }
-    }
-
-
-    //@todo: merge with new sign out
-    public function doWebSignout() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if ($modUser->signout()) {
-            apiResponse(array('success' => true));
-        } else {
-            apiError(400, 'failed', ''); // 失败
-        }
-    }
-
-
     public function doSetDefaultIdentity() {
         // check signin
         $checkHelper = $this->getHelperByName('check', 'v2');
@@ -175,16 +132,39 @@ class UsersActions extends ActionController {
 
 
     public function doSignin() {
-        $modUser     = $this->getModelByName('user', 'v2');
-        $external_id = $_POST['external_id'];
-        $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password    = $_POST['password'];
-        $siResult    = $modUser->signinForAuthToken($provider, $external_id, $password);
-        if ($external_id && $password && $siResult) {
-            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
-        } else {
-            apiError(403, 'failed', ''); // 失败
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        $isNewIdentity = false;
+        if (!$external_id = $_POST['external_id']) {
+            apiError(403, 'no_external_id', 'external_id must be provided');
         }
+        if (!$provider = $_POST['provider']) {
+            apiError(403, 'no_provider', 'provider must be provided');
+        }
+        if (!$password = $_POST['password']) {
+            apiError(403, 'no_password', 'password must be provided');
+        };
+        $name       = $_POST['name'];
+        $autoSignin = intval($_POST['auto_signin']) === 1;
+        // adding new identity
+        if ($name) {
+            // @todo: 根据 $provider 检查 $external_identity 有效性
+            $user_id = $modUser->newUserByPassword($password);
+            // @todo: check returns
+            $identity_id = $modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id);
+            $isNewIdentity = true;
+            if ($identity_id) {
+                apiResponse(array('is_new_identity' => $isNewIdentity));
+            }
+        }
+        // raw signin
+        $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
+        if ($siResult) {
+            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token'], 'is_new_identity' => $isNewIdentity));
+        }
+        apiError(403, 'failed', '');
     }
 
 
@@ -194,7 +174,6 @@ class UsersActions extends ActionController {
         $user_id      = intval($params['id']);
         $token        = $params['token'];
         $device_token = $_POST['device_token'];
-        $responobj    = array();
         if ($user_id && $token && $device_token) {
             $soResult = $modUser->disConnectiOSDeviceToken($user_id, $token, $device_token);
             if ($soResult) {
@@ -230,7 +209,7 @@ class UsersActions extends ActionController {
 
 
     public function doCrosses() {
-        $params   = $this->params;
+        $params = $this->params;
         $uid=$params["id"];
         $updated_at=$params["updated_at"];
 
@@ -247,6 +226,164 @@ class UsersActions extends ActionController {
         $crossHelper= $this->getHelperByName('cross', 'v2');
         $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
         apiResponse(array("crosses"=>$cross_list));
+    }
+
+
+    public function doCrossList() {
+        // init helpers
+        $hlpCheck  = $this->getHelperByName('check', 'v2');
+        $hlpExfee  = $this->getHelperByName('exfee', 'v2');
+        $hlpCross  = $this->getHelperByName('cross', 'v2');
+        // auth check
+        $params    = $this->params;
+        $user_id   = (int)$params['id'];
+        $result    = $hlpCheck->isAPIAllow('user_crosses', $params['token'], array('user_id' => $user_id));
+        if (!$result['check']) {
+            apiError(401, 'invalid_auth');
+        }
+        // collecting args
+        $today     = strtotime(date('Y-m-d'));
+        $upcoming  = $today + 60 * 60 * 24 * 3;
+        $sevenDays = $today + 60 * 60 * 24 * 7;
+        $fetchArgs = array(
+            'upcoming_included'  => strtolower($_GET['upcoming_included'])  === 'false' ? false : true,
+            'upcoming_folded'    => strtolower($_GET['upcoming_folded'])    === 'true'  ? true  : false,
+            'upcoming_more'      => strtolower($_GET['upcoming_more'])      === 'false' ? false : true,
+            'anytime_included'   => strtolower($_GET['anytime_included'])   === 'false' ? false : true,
+            'anytime_folded'     => strtolower($_GET['anytime_folded'])     === 'true'  ? true  : false,
+            'anytime_more'       => strtolower($_GET['anytime_more'])       === 'true'  ? true  : false,
+            'sevendays_included' => strtolower($_GET['sevendays_included']) === 'false' ? false : true,
+            'sevendays_folded'   => strtolower($_GET['sevendays_folded'])   === 'true'  ? true  : false,
+            'sevendays_more'     => strtolower($_GET['sevendays_more'])     === 'true'  ? true  : false,
+            'later_included'     => strtolower($_GET['later_included'])     === 'false' ? false : true,
+            'later_folded'       => strtolower($_GET['later_folded'])       === 'true'  ? true  : false,
+            'later_more'         => strtolower($_GET['later_more'])         === 'true'  ? true  : false,
+            'past_included'      => strtolower($_GET['past_included'])      === 'false' ? false : true,
+            'past_folded'        => strtolower($_GET['past_folded'])        === 'true'  ? true  : false,
+            'past_more'          => strtolower($_GET['past_more'])          === 'true'  ? true  : false,
+        );
+        $fetchArgs['past_quantity'] = 0;
+        if (isset($_GET['past_quantity'])) {
+            $fetchArgs['past_quantity'] = intval($_GET['past_quantity']);
+        }
+        // get exfee_ids
+        $exfee_ids  = $hlpExfee->getExfeeIdByUserid($user_id);
+        // get crosses
+        $rawCrosses = array();
+        if ($fetchArgs['upcoming_included'] || $fetchArgs['sevendays_included'] || $fetchArgs['later_included']) {
+            $rawCrosses['future']  = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future',  $today);
+        }
+        if ($fetchArgs['past_included']) {
+            $rawCrosses['past']    = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',    $today);
+        }
+        if ($fetchArgs['anytime_included']) {
+            $rawCrosses['anytime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'anytime', $today);
+        }
+        // sort crosses
+        $crosses   = array();
+        $more      = array();
+        $xShowing  = 0;
+        $maxCross  = 20;
+        $minCross  = 3;
+        // sort upcoming crosses
+        if ($rawCrosses['future']) {
+            foreach ($rawCrosses['future'] as $cI => $cItem) {
+                $rawCrosses['future'][$cI]->timestamp = strtotime($cItem->time->begin_at->date . ($cItem->time->begin_at->time ?: ''));
+                if ($fetchArgs['upcoming_included'] && $rawCrosses['future'][$cI]->timestamp < $upcoming) {
+                    $cItem->sort = 'upcoming';
+                    array_push($crosses, $cItem);
+                    $xShowing += !$fetchArgs['upcoming_folded'] ? 1 : 0;
+                    unset($rawCrosses['future'][$cI]);
+                }
+            }
+        }
+        // sort anytime crosses
+        if ($rawCrosses['anytime']) {
+            $xQuantity = !$fetchArgs['anytime_more'] && $xShowing >= $maxCross ? $minCross : 0;
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['anytime'] as $cItem) {
+                if ($enough) {
+                    $more[] = 'anytime';
+                    break;
+                }
+                $cItem->sort = 'anytime';
+                array_push($crosses, $cItem);
+                $xShowing += !$fetchArgs['anytime_folded'] ? 1 : 0;
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    $enough = true;
+                }
+            }
+            unset($rawCrosses['anytime']);
+        }
+        // sort next-seven-days crosses
+        if ($rawCrosses['future'] && $fetchArgs['sevendays_included']) {
+            $xQuantity = !$fetchArgs['sevendays_more'] && $xShowing >= $maxCross ? $minCross : 0;
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['future'] as $cI => $cItem) {
+                if ($cItem->timestamp >= $upcoming && $cItem->timestamp < $sevenDays) {
+                    if ($enough) {
+                        $more[] = 'sevendays';
+                        break;
+                    }
+                    $cItem->sort = 'sevendays';
+                    array_push($crosses, $cItem);
+                    $xShowing += !$fetchArgs['sevenDays_folded'] ? 1 : 0;
+                    unset($rawCrosses['future'][$cI]);
+                    if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                        $enough = true;
+                    }
+                }
+            }
+        }
+        // sort later crosses
+        if ($rawCrosses['future'] && $fetchArgs['later_included']) {
+            $xQuantity = !$fetchArgs['later_more'] && $xShowing >= $maxCross ? $minCross : 0;
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['future'] as $cI => $cItem) {
+                if ($cItem['timestamp'] >= $sevendays) {
+                    if ($enough) {
+                        $more[] = 'later';
+                        break;
+                    }
+                    $cItem->sort = 'later';
+                    array_push($crosses, $cItem);
+                    $xShowing += !$fetchArgs['later_folded'] ? 1 : 0;
+                    if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                        $enough = true;
+                    }
+                }
+            }
+        }
+        // release memory
+        unset($rawCrosses['future']);
+        // sort past cross
+        if ($rawCrosses['past']) {
+            $xQuantity = $fetchArgs['past_more'] ? $maxCross : ($xShowing >= $maxCross ? $minCross : 0);
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['past'] as $cItem) {
+                if ($fetchArgs['past_quantity']-- > 0) {
+                    continue;
+                }
+                if ($enough) {
+                    $more[] = 'past';
+                    break;
+                }
+                $cItem->sort = 'past';
+                array_push($crosses, $cItem);
+                $xShowing += !$fetchArgs['past_folded'] ? 1 : 0;
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    $enough = true;
+                }
+            }
+        }
+        // release memory
+        unset($rawCrosses);
+        // return
+        apiResponse(array('crosses' => $crosses, 'more' => $more));
     }
 
 
