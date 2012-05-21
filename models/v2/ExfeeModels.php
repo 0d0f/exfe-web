@@ -185,6 +185,7 @@ class ExfeeModels extends DataModel {
         foreach ($invitations as $iI => $iItem) {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
         }
+        $this->updateExfeeTime($exfee_id);
         // call Gobus
         $this->sendToGobus($exfee_id, $by_identity_id);
         //
