@@ -18,11 +18,12 @@ define('exfee', [], function (require, exports, module) {
     var Exfee = Widget.extend({
 
         options: {
-            dom_id        = '',
 
-            input_tips    = 'Enter attendees’ information',
+            dom_id      = '',
 
-            ns.arrStrRsvp = {
+            input_tips  = 'Enter attendees’ information',
+
+            arr_rsvp    = {
                 NORESPONSE   : 'No response',
                 ACCEPTED     : 'Accepted',
                 DECLINED     : 'Declined',
@@ -31,60 +32,60 @@ define('exfee', [], function (require, exports, module) {
                 NOTIFICATION : 'Notification'
             },
 
-            exfee         = {},
+            exfee       = {},
 
-            editable      = false,
+            editable    = false,
 
-            template      = '<div id="' + domId + '_exfeegadget_infoarea" '
-                    +                 'class="exfeegadget_infoarea">'
-                    +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
-                    +                     'class="exfeegadget_info_totalarea">'
-                    +     '</div>'
-                    +     '<div id="' + domId + '_exfeegadget_info_labelarea" '
-                    +                     'class="exfeegadget_info_labelarea">'
-                    +         'Exfee'
-                    +     '</div>'
-                    +     '<div id="' + domId + '_exfeegadget_info" '
-                    +                     'class="exfeegadget_info">'
-                    +         '<span id="' + domId + '_exfeegadget_num_accepted" '
-                    +                          'class="exfeegadget_num_accepted">'
-                    +         '</span>'
-                    +         '<span class="exfeegadget_num_of"> of '
-                    +             '<span id="' + domId + '_exfeegadget_num_summary" '
-                    +                              'class="exfeegadget_num_summary">'
-                    +             '</span>'
-                    +         '</span>'
-                    +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
-                    +     '</div>'
-                    + '</div>'
-                    + '<div id="' + domId + '_exfeegadget_avatararea" '
-                    +                 'class="exfeegadget_avatararea">'
-                    +     '<ol></ol>'
-                    //+     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
-                    + '</div>'
-                    +(curEditable
-                    ?('<div id="' + domId + '_exfeegadget_inputarea" '
-                    +                 'class="exfeegadget_inputarea">'
-                    +     '<div    id="' + domId + '_exfeegadget_inputbox_desc" '
-                    +                        'class="exfeegadget_inputbox '
-                    +                               'exfeegadget_inputbox_desc">'
-                    +         this.strInputTips
-                    +     '</div>'
-                    +     '<input  id="' + domId + '_exfeegadget_inputbox" '
-                    +                        'class="exfeegadget_inputbox_main '
-                    +                               'exfeegadget_inputbox" type="text">'
-                    +     '<button id="' + domId + '_exfeegadget_addbtn" '
-                    +                        'class="exfeegadget_addbtn">'
-                    +     '</button>'
-                    +     '<div id="' + domId + '_exfeegadget_autocomplete" '
-                    +                     'class="exfeegadget_autocomplete">'
-                    +         '<ol></ol>'
-                    +     '</div>'
-                    + '</div>') : '')
-                    + '<div id="' + domId + '_exfeegadget_listarea" '
-                    +                 'class="exfeegadget_listarea">'
-                    +     '<ol></ol>'
-                    + '</div>';
+            template    = '<div id="' + domId + '_exfeegadget_infoarea" '
+                        +                 'class="exfeegadget_infoarea">'
+                        +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
+                        +                     'class="exfeegadget_info_totalarea">'
+                        +     '</div>'
+                        +     '<div id="' + domId + '_exfeegadget_info_labelarea" '
+                        +                     'class="exfeegadget_info_labelarea">'
+                        +         'Exfee'
+                        +     '</div>'
+                        +     '<div id="' + domId + '_exfeegadget_info" '
+                        +                     'class="exfeegadget_info">'
+                        +         '<span id="' + domId + '_exfeegadget_num_accepted" '
+                        +                          'class="exfeegadget_num_accepted">'
+                        +         '</span>'
+                        +         '<span class="exfeegadget_num_of"> of '
+                        +             '<span id="' + domId + '_exfeegadget_num_summary" '
+                        +                              'class="exfeegadget_num_summary">'
+                        +             '</span>'
+                        +         '</span>'
+                        +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
+                        +     '</div>'
+                        + '</div>'
+                        + '<div id="' + domId + '_exfeegadget_avatararea" '
+                        +                 'class="exfeegadget_avatararea">'
+                        +     '<ol></ol>'
+                        //+     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
+                        + '</div>'
+                        +(curEditable
+                        ?('<div id="' + domId + '_exfeegadget_inputarea" '
+                        +                 'class="exfeegadget_inputarea">'
+                        +     '<div    id="' + domId + '_exfeegadget_inputbox_desc" '
+                        +                        'class="exfeegadget_inputbox '
+                        +                               'exfeegadget_inputbox_desc">'
+                        +         this.strInputTips
+                        +     '</div>'
+                        +     '<input  id="' + domId + '_exfeegadget_inputbox" '
+                        +                        'class="exfeegadget_inputbox_main '
+                        +                               'exfeegadget_inputbox" type="text">'
+                        +     '<button id="' + domId + '_exfeegadget_addbtn" '
+                        +                        'class="exfeegadget_addbtn">'
+                        +     '</button>'
+                        +     '<div id="' + domId + '_exfeegadget_autocomplete" '
+                        +                     'class="exfeegadget_autocomplete">'
+                        +         '<ol></ol>'
+                        +     '</div>'
+                        + '</div>') : '')
+                        + '<div id="' + domId + '_exfeegadget_listarea" '
+                        +                 'class="exfeegadget_listarea">'
+                        +     '<ol></ol>'
+                        + '</div>';
         },
 
         init: function () {},
