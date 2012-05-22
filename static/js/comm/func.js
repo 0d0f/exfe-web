@@ -268,10 +268,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
     };
 
     ns.getTimezone = function() {
-        var rawTimezone = Date().toString().replace(/^.+([a-z]{3}[+-]\d{4}).+$/i, '$1'),
-            tagTimezone = rawTimezone.replace(/^([a-z]{3}).+$/i, '$1'),
-            numTimezone = rawTimezone.replace(/^[a-z]{3}([+-])(\d{2})(\d{2})$/i, '$1$2:$3');
-        return numTimezone + (tagTimezone === 'UTC' ? '' : (' ' + tagTimezone));
+        // W3C : "Tue May 22 2012 15:35:16 GMT+0800 (CST)"
+        // IE  : "Tue May 22 15:23:12 UTC+0800 2012"
+        return odof.util.trim(Date().toString().replace(/^.+[a-z]{3}([+-]\d{2})(\d{2}).+\(([a-z]{1,5})\)$/i, '$1:$2 $3'));
     };
 
     /*
