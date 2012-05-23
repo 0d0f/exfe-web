@@ -48,7 +48,8 @@ define('typeahead', [], function (require, exports, module) {
       this.target
         .on('blur.delegateEvents', proxy(this.blur, this))
         .on('keypress.delegateEvents', proxy(this.keypress, this))
-        .on('keyup.delegateEvents', proxy(this.keyup, this));
+        .on('keyup.delegateEvents', proxy(this.keyup, this))
+        .on('focus.delegateEvents', proxy(this.focus, this));
 
       if ($.browser.webkit || $.browser.msie) {
         this.target.on('keydown.delegateEvents', proxy(this.keypress, this));
@@ -139,6 +140,8 @@ define('typeahead', [], function (require, exports, module) {
 
       prev.addClass('active');
     },
+
+    focus: function (e) {},
 
     keyup: function (e, keyCode) {
       keyCode = e.keyCode;
