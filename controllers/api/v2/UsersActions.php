@@ -136,33 +136,29 @@ class UsersActions extends ActionController {
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // collecting post data
-        $isNewIdentity = false;
         if (!$external_id = $_POST['external_id']) {
             apiError(403, 'no_external_id', 'external_id must be provided');
         }
         if (!$provider = $_POST['provider']) {
             apiError(403, 'no_provider', 'provider must be provided');
         }
+        // @todo: 需要根据 $provider 检查 $external_identity 有效性
         if (!$password = $_POST['password']) {
             apiError(403, 'no_password', 'password must be provided');
-        };
-        $name       = $_POST['name'];
-        $autoSignin = intval($_POST['auto_signin']) === 1;
+        }
+        // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
-        if ($name) {
-            // @todo: 根据 $provider 检查 $external_identity 有效性
-            $user_id = $modUser->newUserByPassword($password);
-            // @todo: check returns
-            $identity_id = $modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id);
-            $isNewIdentity = true;
-            if ($identity_id) {
-                apiResponse(array('is_new_identity' => $isNewIdentity));
+        if (($name = trim($_POST['name'])) !== ''
+        && !$modIdentity->getIdentityByProviderExternalId($provider, $external_id, true)) {
+            if (!($user_id = $modUser->newUserByPassword($password))
+             || !$modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id)) {
+                apiError(403, 'failed', 'failed while signing up new user');
             }
         }
         // raw signin
         $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
         if ($siResult) {
-            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token'], 'is_new_identity' => $isNewIdentity));
+            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
         }
         apiError(403, 'failed', '');
     }
