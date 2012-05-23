@@ -6,6 +6,9 @@ define('util', [], function (require, exports, module) {
 
   var Util = {
 
+    // Api http url
+    apiUrl: 'http://api.localexfe.me/v2',
+
     // 30个字符，并且删除中文字符
     cut30length: function (s) {
       return s.replace(zh_CN, '').substring(0, 30);
