@@ -1,5 +1,8 @@
 define(function (require, exports, module) {
   var $ = require('jquery');
+  var Bus = require('bus');
+  var Util = require('util');
+  var Store = require('store');
   var $BODY = $(document.body);
 
   var Dialog = require('dialog');
@@ -19,7 +22,47 @@ define(function (require, exports, module) {
         'click .xbtn-isee': function (e) {
           e.preventDefault();
           this.$('.modal-body').eq(0).css('opacity', 1);
+          this.switchTab('d03');
+        },
+        'click .xbtn-startover': function (e) {
+          e.preventDefault();
           this.switchTab('d01');
+        },
+        'click .x-signin': function (e) {
+          if ($(e.currentTarget).hasClass('disabled')) {
+            // signin disabled
+            return;
+          }
+          var t = this.switchTabType;
+          var od = this.getFormData(t);
+          if (t === 'd01' || t === 'd03') {
+            var dfd = $.ajax({
+              url: 'http://api.localexfe.me/v2/users/signin',
+              type: 'POST',
+              dataType: 'JSON',
+              xhrFields: {withCredentials: true},
+              data: {
+                external_id: od.external_identity,
+                provider: od.provider,
+                password: od.password,
+                name: od.name || ''
+              }
+            })
+              .done(function (data) {
+                if (data.meta.code === 200) {
+                  console.dir(data);
+                  var user_id = data.response.user_id;
+                  var token = data.response.token;
+                  Store.set('user_id', user_id);
+                  Store.set('token', token);
+                  //window.location = '/profile.html';
+                } else {
+                  alert('Sign In Fail.');
+                }
+              });
+
+          }
+
         }
       },
 
@@ -43,9 +86,9 @@ define(function (require, exports, module) {
                 + '<legend>Enter your identity information:</legend>'
                   + '<div class="control-group">'
                     + '<label class="control-label" for="identity">Identity:</label>'
-                    + '<div class="controls">'
-                      + '<img class="add-on avatar" src="/img/users/u1x20.png" alt="" width="20" height="20" />'
-                      + '<input type="text" class="input-large identity" id="identity" />'
+                    + '<div class="controls /*identity-avatar*/">'
+                      + '<img class="add-on avatar hide" src="" alt="" width="20" height="20" />'
+                      + '<input type="text" class="input-large identity" id="identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" />'
                       + '<p class="help-block hide">Set up this new identity.</p>'
                     + '</div>'
                   + '</div>'
@@ -53,14 +96,15 @@ define(function (require, exports, module) {
                   + '<div class="control-group d d03 hide">'
                     + '<label class="control-label" for="name">Display name:</label>'
                     + '<div class="controls">'
-                      + '<input type="text" class="input-large" id="name" placeholder="Your name here" />'
+                      + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Your name here" />'
                     + '</div>'
                   + '</div>'
 
                   + '<div class="control-group d d01 d03 hide">'
                     + '<label class="control-label" for="password">Password:</label>'
                     + '<div class="controls">'
-                      + '<input type="text" class="input-large" id="password" />'
+                      + '<input type="password" class="input-large" id="password" />'
+                      + '<input type="text" class="input-large hide" autocomplete="off" />'
                     + '</div>'
                   + '</div>'
 
@@ -70,10 +114,10 @@ define(function (require, exports, module) {
         // d01 登陆, d02 ISee, d03 注册, d14 验证
         footer: ''
           + '<a href="#" class="xbtn-setup d d01 hide">Set Up?</a>'
-          + '<button href="#" class="xbtn-white d hide">Forgot Password...</button>'
-          + '<button href="#" class="xbtn-white d d03 d14 hide">Start Over</button>'
+          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white d d03 d14 xbtn-startover hide">Start Over</button>'
           + '<button href="#" class="pull-right d d14 xbtn-blue hide">Verify</button>'
-          + '<button href="#" class="pull-right xbtn-blue d d01 d03 hide">Sign In</button>'
+          + '<button href="#" class="pull-right xbtn-blue d d01 d03 x-signin disabled hide">Sign In</button>'
           + '<button href="#" class="pull-right xbtn-white d d02 xbtn-isee hide">I See</button>',
 
         others: ''
@@ -112,6 +156,61 @@ define(function (require, exports, module) {
   // Identification 弹出窗口类
   var Identification = Dialog.extend({
 
+    // 用户有效身份标志位，默认 false
+    availability: false,
+
+    init: function () {
+      // 读取本地存储 user infos
+
+      var that = this;
+      Bus.on('widget-dialog-identification-auto', function (data) {
+        that.availability = false;
+        var t;
+        if (data.identities.length) {
+          t = 'd01';
+          that.availability = true;
+        } else if (Util.trim(that.$('#identity').val())) {
+          t = 'd03';
+          that.availability = true;
+        }
+
+        that.switchTab(t);
+      });
+
+      Bus.on('widget-dialog-identification-nothing', function () {
+        that.availability = false;
+        that.switchTab('d01');
+      });
+    },
+
+    d01: function (t) {
+      if (t === 'd01') {
+        var val = Util.trim(this.$('#identity').val())
+        this.$('.xbtn-setup')[(val ? 'add' : 'remove') + 'Class']('hide');
+        this.$('.xbtn-forgotpwd')[(val ? 'remove' : 'add') + 'Class']('hide');
+      }
+    },
+
+    d03: function (t) {
+      // new user
+      if (t === 'd03') {
+        this.$('#password')
+          .attr('placeholder', 'Set Password here');
+      }
+    },
+
+    getFormData: function (t) {
+      var val = Util.trim(this.$('#identity').val());
+      var identity = Util.parseId(val);
+      if (t === 'd01' || t === 'd03') {
+        identity.password = this.$('#password').val();
+      }
+      if (t === 'd03') {
+        identity.name = Util.trim(this.$('#name').val());
+      }
+      return identity;
+    },
+
     switchTab: function (t) {
       this.$('.d')
         .not('.hide')
@@ -120,11 +219,12 @@ define(function (require, exports, module) {
         .filter('.' + t)
         .removeClass('hide');
 
-      // new user
-      if (t === 'd03') {
-        this.$('#password')
-          .attr('placeholder', 'Set Password here');
-      }
+      this.$('.x-signin')[(this.availability ? 'remove' : 'add') + 'Class']('disabled');
+
+      this.switchTabType = t;
+
+      this.d01(t);
+      this.d03(t);
     }
 
   });
