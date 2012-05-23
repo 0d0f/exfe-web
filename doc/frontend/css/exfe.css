@@ -5268,8 +5268,32 @@ a.badge:hover {
   text-decoration: underline;
 }
 
+.modal-footer .xbtn-cancel,
+.modal-footer .xbtn-discard {
+  margin-right: 15px;
+  font-size: 12px;
+  line-height: 24px;
+  color: #797979;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .modal-footer .disabled {
   color: #e6e6e6;
+}
+
+.modal-footer .loading:before {
+  position: absolute;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: url(/img/loading.jpeg) center center no-repeat rgba(251, 251, 251, 0.8);
+  background-size: 20px 20px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  content: '';
 }
 
 .modal-form {
@@ -5751,13 +5775,14 @@ a.badge:hover {
 }
 
 .xbtn-blue {
+  position: relative;
   background-color: #ebf1f5;
+  background-image: -moz-linear-gradient(top, #ffffff, #cedde5);
   background-image: -ms-linear-gradient(top, #ffffff, #cedde5);
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#cedde5));
   background-image: -webkit-linear-gradient(top, #ffffff, #cedde5);
   background-image: -o-linear-gradient(top, #ffffff, #cedde5);
   background-image: linear-gradient(top, #ffffff, #cedde5);
-  background-image: -moz-linear-gradient(top, #ffffff, #cedde5);
   background-repeat: repeat-x;
   border: 1px solid rgba(127, 127, 127, 0.15);
   border-color: #cedde5 #cedde5 #9cbaca;
@@ -5968,7 +5993,7 @@ a.badge:hover {
 }
 
 .xalert-error {
-  color: #D84746;
+  color: #d44644;
 }
 
 .modal-id .authorize {
@@ -6020,7 +6045,7 @@ a.badge:hover {
 .modal-fp .identity {
   width: 320px;
   height: 26px;
-  margin: 0 auto;
+  margin: 5px auto 10px;
   font-size: 18px;
   line-height: 26px;
   text-align: center;
