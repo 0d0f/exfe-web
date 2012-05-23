@@ -11,3 +11,5 @@ https://github.com/cloudhead/less.js/issues/294
 http://validator.w3.org/
 git://github.com/imulus/retinajs.git
 http://www.blurjs.com/
+http://www.republicof3.com/border-image-builder-graphical-css-borders-made-easy/
+http://xing.github.com/wysihtml5/
