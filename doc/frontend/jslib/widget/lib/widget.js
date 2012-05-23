@@ -33,7 +33,7 @@ define('widget', [], function (require, exports, module) {
     initOptions: function (params) {
       this.setOptions(params);
 
-      delete params.options;
+      //delete params.options;
 
       setAttrOptions(this, params);
     },
@@ -95,7 +95,7 @@ define('widget', [], function (require, exports, module) {
     destory: function () {
       this.undelegateEvents();
       // remove `element`
-      this.element.remove();
+      //this.element.remove();
       Widget.__super__.destory.call(this);
     }
   });
@@ -127,7 +127,7 @@ define('widget', [], function (require, exports, module) {
   function setAttrOptions(r, s) {
     var k;
     for (k in s) {
-      r[k] = s[k];
+      if (k !== 'options') r[k] = s[k];
     }
   }
 
