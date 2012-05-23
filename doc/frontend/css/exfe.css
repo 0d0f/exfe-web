@@ -5093,7 +5093,7 @@ a.badge:hover {
 }
 
 .modal {
-  position: fixed;
+  position: absolute;
   top: 150px;
   left: 50%;
   z-index: 1050;
@@ -5194,7 +5194,6 @@ a.badge:hover {
 }
 
 .modal-body {
-  position: relative;
   max-height: none;
   padding: 0;
   overflow-y: visible;
@@ -5208,9 +5207,16 @@ a.badge:hover {
 }
 
 .modal-body .identity {
+  font-style: oblique;
+}
+
+.modal-body .identity-avatar .avatar {
+  display: block;
+}
+
+.modal-body .identity-avatar .identity {
   width: 186px;
   padding-right: 28px;
-  font-style: oblique;
 }
 
 .modal-body .disabled {
@@ -5230,42 +5236,6 @@ a.badge:hover {
 .modal-body p {
   padding-bottom: 10px;
   line-height: 20px;
-}
-
-.modal-body .popmenu {
-  position: absolute;
-  left: 1px;
-  z-index: 1051;
-  width: 216px;
-  line-height: 24px;
-  background-color: #f2f2f2;
-  background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -o-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
-  background-repeat: repeat-x;
-  border: 1px solid #fff;
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#e6e6e6', GradientType=0);
-  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.modal-body .popmenu ul {
-  margin: 0;
-  list-style: none;
-}
-
-.modal-body .popmenu li {
-  height: 24px;
-  padding: 0 3px;
-  cursor: pointer;
-}
-
-.modal-body .popmenu li:hover {
-  background-color: rgba(127, 127, 127, 0.08);
 }
 
 .modal-footer {
@@ -5296,6 +5266,10 @@ a.badge:hover {
   line-height: 24px;
   color: #a9a9a9;
   text-decoration: underline;
+}
+
+.modal-footer .disabled {
+  color: #e6e6e6;
 }
 
 .modal-form {
@@ -5367,6 +5341,42 @@ a.badge:hover {
 .modal-sandbox .feedback {
   font-style: oblique;
   color: #4c4c4c;
+}
+
+.popmenu {
+  position: absolute;
+  left: 1px;
+  z-index: 1051;
+  width: 216px;
+  line-height: 24px;
+  background-color: #f2f2f2;
+  background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -o-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #fff;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#e6e6e6', GradientType=0);
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.popmenu ul {
+  margin: 0;
+  list-style: none;
+}
+
+.popmenu li {
+  height: 24px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.popmenu li:hover {
+  background-color: rgba(127, 127, 127, 0.08);
 }
 
 [class^="icon-"],
