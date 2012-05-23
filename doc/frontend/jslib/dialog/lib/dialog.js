@@ -3,7 +3,7 @@ define('dialog', [], function (require, exports, module) {
    *
    * Dependence:
    *  - jQuery
-   *  - Emitter
+   *  - Widget
    *
    * Thanks to:
    *  - https://github.com/twitter/bootstrap/blob/master/js/bootstrap-modal.js
@@ -44,6 +44,7 @@ define('dialog', [], function (require, exports, module) {
       // 父节点，插入方式 appendTo
     , parentNode: $BODY
 
+    // source target node
     , srcNode: ''
 
       //
@@ -96,8 +97,8 @@ define('dialog', [], function (require, exports, module) {
       return this;
     },
 
-    show: function () {
-      this.emit('show');
+    show: function (data) {
+      this.emit('show', data);
       if (this.options.backdrop) {
         $('#js-modal-backdrop').removeClass('hide');
       }
@@ -105,16 +106,14 @@ define('dialog', [], function (require, exports, module) {
       return this;
     },
 
-    hide: function () {
+    hide: function (data) {
       if (this.options.backdrop) {
         $('#js-modal-backdrop').addClass('hide');
       }
       this.element.addClass('hide');
-      this.emit('hidden');
+      this.emit('hidden', data);
 
-      if (this.options.lifecycle) {
-
-      }
+      // if (this.options.lifecycle) {}
       return this;
     }
 
