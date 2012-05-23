@@ -54,6 +54,8 @@ class IdentityModels extends DataModel {
         );
         return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity);
     }
+
+
     public function isIdentityBelongsUser($identity_id,$user_id)
     {
         $sql="select identityid from user_identity where identityid=$identity_id and userid=$user_id;";
