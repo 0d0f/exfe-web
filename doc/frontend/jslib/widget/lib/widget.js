@@ -30,8 +30,12 @@ define('widget', [], function (require, exports, module) {
       this.init();
     },
 
-    initOptions: function (options) {
-      this.setOptions(options);
+    initOptions: function (params) {
+      this.setOptions(params);
+
+      delete params.options;
+
+      setAttrOptions(this, params);
     },
 
     // 获取元素
@@ -66,8 +70,7 @@ define('widget', [], function (require, exports, module) {
 
       var key, method, match, eventName, selector;
       for (key in events) {
-        method = this[key] || events[key];
-        console.log(events);
+        method = events[key] || this[key];
 
         if (!method) throw 'Method "' + events[key] + '" does not exist';
 
@@ -76,7 +79,7 @@ define('widget', [], function (require, exports, module) {
         selector = match[2] || null;
 
         eventName += '.delegateEvents' + this.cid;
-        this.element.on(eventName, selector, proxy(method, this));
+        this.element.on(eventName, selector, proxy(method, this)); // $.proxy
       }
     },
 
@@ -121,11 +124,19 @@ define('widget', [], function (require, exports, module) {
     }
   }
 
-  function proxy(fn, context) {
-    var f = function (event) {
-      return fn.call(context, event);
+  function setAttrOptions(r, s) {
+    var k;
+    for (k in s) {
+      r[k] = s[k];
+    }
+  }
+
+  function proxy(f, c) {
+    if (!f) return undefined;
+    return cb;
+    function cb(e) {
+      return f.call(c, e);
     };
-    return f;
   }
 
 
