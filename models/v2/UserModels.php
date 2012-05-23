@@ -140,7 +140,7 @@ class UserModels extends DataModel {
         $user_id = intval($rawStatus['userid']);
         $status  = intval($rawStatus['status']);
         if ($user_id) {
-            if ($user_id && $status === 3 && $withPasswdStatus) {
+            if ($status === 3 && $withPasswdStatus) {
                 $passwdInfo = $this->getUserPasswdByUserId($user_id);
                 if (!$passwdInfo['encrypted_password']) {
                     return 'NOPASSWORD';
