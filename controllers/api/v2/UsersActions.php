@@ -131,6 +131,33 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doGetRegistrationFlag() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $params = $this->params;
+        if (!$external_id = trim($params['external_id'])) {
+            apiError(400, 'no_external_id', 'external_id must be provided');
+        }
+        if (!$provider = trim($params['provider'])) {
+            apiError(400, 'no_provider', 'provider must be provided');
+        }
+
+        echo $external_id;
+        echo $provider;
+        //
+
+//////////////
+
+    }
+
+
+    public function doCheckAuthorization() {
+
+    }
+
+
     public function doSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
