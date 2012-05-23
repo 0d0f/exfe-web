@@ -1,7 +1,8 @@
 // Base modal
 .modal {
   clear: both;
-  position: fixed;
+  //position: fixed;
+  position: absolute;
   top: 150px;
   left: 50%;
   z-index: @zindexModal;
@@ -79,7 +80,6 @@
 }
 
 .modal-body {
-  position: relative;
   padding: 0;
   overflow-y: visible;
   max-height: none;
@@ -92,9 +92,18 @@
   }
 
   .identity {
-    width: 186px;
-    padding-right: 28px;
     font-style: oblique;
+  }
+
+  .identity-avatar {
+    .avatar {
+      .show;
+    }
+
+    .identity {
+      width: 186px;
+      padding-right: 28px;
+    }
   }
 
   .disabled {
@@ -114,32 +123,6 @@
   p {
     line-height: 20px;
     padding-bottom: 10px;
-  }
-
-  .popmenu {
-    position: absolute;
-    left: 1px;
-    z-index: @zindexModal + 1;
-    width: 216px;
-    #gradient > .vertical(#fafafa, #e6e6e6);
-    border: 1px solid #fff;
-    .box-shadow(0 1px 4px rgba(0,0,0,.25));
-    line-height: 24px;
-
-    ul {
-      margin: 0;
-      list-style: none;
-    }
-
-    li {
-      cursor: pointer;
-      padding: 0 3px;
-      height: 24px;
-    }
-
-    li:hover {
-      background-color: rgba(127,127,127,.08);
-    }
   }
 
 }
@@ -172,6 +155,11 @@
 
   .xbtn-cancel, .xbtn-discard {
   }
+
+  .disabled {
+    color: #e6e6e6;
+  }
+
 
 }
 
@@ -245,3 +233,29 @@
     color: #4c4c4c;
   }
 }
+
+  .popmenu {
+    position: absolute;
+    left: 1px;
+    z-index: @zindexModal + 1;
+    width: 216px;
+    #gradient > .vertical(#fafafa, #e6e6e6);
+    border: 1px solid #fff;
+    .box-shadow(0 1px 4px rgba(0,0,0,.25));
+    line-height: 24px;
+
+    ul {
+      margin: 0;
+      list-style: none;
+    }
+
+    li {
+      cursor: pointer;
+      padding: 0 3px;
+      height: 24px;
+    }
+
+    li:hover {
+      background-color: rgba(127,127,127,.08);
+    }
+  }
