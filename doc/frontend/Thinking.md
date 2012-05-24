@@ -13,3 +13,6 @@ git://github.com/imulus/retinajs.git
 http://www.blurjs.com/
 http://www.republicof3.com/border-image-builder-graphical-css-borders-made-easy/
 http://xing.github.com/wysihtml5/
+https://developer.mozilla.org/en/Writing_Efficient_CSS
+http://blog.csdn.net/hfahe/article/details/7581789  用非响应式设计构建跨端Web App
+https://github.com/visionmedia/uikit
