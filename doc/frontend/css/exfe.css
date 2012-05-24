@@ -5996,6 +5996,10 @@ a.badge:hover {
   color: #d44644;
 }
 
+.xalert-info {
+  color: #1175A5;
+}
+
 .modal-id .authorize {
   display: table-cell;
   height: 40px;
