@@ -165,24 +165,27 @@ class UserModels extends DataModel {
 
 
     public function signinForAuthToken($provider, $external_id, $password) {
-        $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
+        $sql = "SELECT `user_identity`.`userid`, `user_identity`.`status`
+                FROM   `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
                 AND    `identities`.`external_identity` = '{$external_id}'
                 AND    `identities`.`id` = `user_identity`.`identityid`";
         $rawUser = $this->getRow($sql);
-        $user_id = intval($rawUser['userid']);
-        if ($user_id) {
-            $rtResult   = array('user_id' => $user_id);
-            $passwdInDb = $this->getUserPasswdByUserId($user_id);
-            $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-            if ($password === $passwdInDb['encrypted_password']) {
+        if ($rawUser && ($user_id = intval($rawUser['userid']))) {
+            $status      = intval($rawUser['status']);
+            $passwdInDb  = $this->getUserPasswdByUserId($user_id);
+            $password    = $this->encryptPassword($password, $passwdInDb['password_salt']);
+            $id_quantity = count($this->getAll(
+                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
+            ));
+            if ((($status === 2 && $id_quantity === 1) || $status === 3)
+             && $password === $passwdInDb['encrypted_password']) {
                 if (!$passwdInDb['auth_token']) {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
                     $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
                     $this->query($sql);
                 }
-                $rtResult['token'] = $passwdInDb['auth_token'];
-                return $rtResult;
+                return array('user_id' => $user_id, 'token' => $passwdInDb['auth_token']);
             }
         }
         return null;
