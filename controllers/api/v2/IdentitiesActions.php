@@ -24,7 +24,6 @@ class IdentitiesActions extends ActionController {
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : array();
-        $bolWithUserIdentityStatus = intval($_POST['with_user_identity_status']);
         // ready
         $objIdentities = array();
         // get
@@ -37,11 +36,6 @@ class IdentitiesActions extends ActionController {
                     $identityItem->provider, $identityItem->external_id
                 );
                 if ($identity) {
-                    if ($bolWithUserIdentityStatus) {
-                        $identity->user_identity_status = $modUser->getUserIdentityStatusByUserIdAndIdentityId(
-                            0, $identity->id, true
-                        );
-                    }
                     $objIdentities[] = $identity;
                 } else {
                     switch ($identityItem->provider) {
@@ -60,7 +54,7 @@ class IdentitiesActions extends ActionController {
                                 );
                                 if ($responseCode === 200) {
                                     $twitterUser = (array)json_decode($twitterConn->response['response'], true);
-                                    $objIdentity = new Identity(
+                                    $objIdentities[] = new Identity(
                                         $twitterUser['name'],
                                         $twitterUser['description'],
                                         'twitter',
@@ -71,10 +65,6 @@ class IdentitiesActions extends ActionController {
                                             $twitterUser['profile_image_url']
                                         )
                                     );
-                                    if ($bolWithUserIdentityStatus) {
-                                        $objIdentity->user_identity_status = 'NEWIDENTITY';
-                                    }
-                                    $objIdentities[] = $objIdentity;
                                 }
                             }
                     }
