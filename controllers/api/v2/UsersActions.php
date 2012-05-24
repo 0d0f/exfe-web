@@ -159,19 +159,31 @@ class UsersActions extends ActionController {
         switch ($user_info['status']) {
             case 'CONNECTED':
                 if ($user_info['password']) {
-                    apiResponse(array('registration_flag' => 'SIGNIN'));
+                    apiResponse(array(
+                        'registration_flag' => 'SIGNIN',
+                        'identity'          => $identity,
+                    ));
                 }
-                apiResponse(array('registration_flag' => 'RESET_PASSWORD'));
+                apiResponse(array(
+                    'registration_flag' => 'RESET_PASSWORD',
+                    'identity'          => $identity,
+                ));
                 break;
             case 'RELATED':
-            case 'REVOKED':
-                apiResponse(array('registration_flag' => 'VERIFY'));
+            case 'REVOKED': // @todo: 存在疑问
+                apiResponse(array('registration_flag' => 'SIGNUP'));
                 break;
             case 'VERIFYING':
                 if ($user_info['password'] && $user_info['id_quantity'] === 1) {
-                    apiResponse(array('registration_flag' => 'SIGNIN'));
+                    apiResponse(array(
+                        'registration_flag' => 'SIGNIN',
+                        'identity'          => $identity,
+                    ));
                 }
-                apiResponse(array('registration_flag' => 'VERIFY'));
+                apiResponse(array(
+                    'registration_flag' => 'VERIFY',
+                    'identity'          => $identity,
+                ));
         }
         apiError(500, 'failed', '');
     }
