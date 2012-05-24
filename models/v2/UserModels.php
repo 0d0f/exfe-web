@@ -129,6 +129,27 @@ class UserModels extends DataModel {
     }
 
 
+    public function getUserIdentityInfoByUserId($user_id) {
+        if (!$user_id) {
+            return null;
+        }
+        $passwd  = $this->getUserPasswdByUserId($user_id);
+        $ids     = $this->getAll(
+            "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$user_id}"
+        );
+        $result  = array(
+            'user_id'           => $user_id,
+            'password'          => !!$passwd['encrypted_password'],
+            'identities_status' => array(),
+        );
+        foreach ($ids as $id) {
+            $result['identities_status'][$id['identityid']]
+          = $this->arrUserIdentityStatus[intval($id['status'])];
+        }
+        return $result;
+    }
+
+
     public function getUserIdentityInfoByIdentityId($identity_id) {
         if (!$identity_id) {
             return null;
