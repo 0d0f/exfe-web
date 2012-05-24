@@ -4,9 +4,19 @@ define(function (require) {
   var Util = require('util');
   var Bus = require('bus');
   var $BODY = $(document.body);
+  var Store = require('store');
   var Typeahead = require('typeahead');
 
   var IdentityPop = Typeahead.extend({
+
+    focus: function () {
+      var v = Util.trim(this.target.val());
+      if (v) {
+        //this.emit('search', v);
+      } else {
+        this.emit('nothing', v);
+      }
+    },
 
     options: {
 
@@ -35,15 +45,16 @@ define(function (require) {
 
       onSearch: function (q) {
         var that = this
-          , options = that.options;
+          , options = that.options
+          , res;
 
         that.cache || (that.cache = {});
 
         if ((res = Util.parseId(q)).provider) {
-          var identities = JSON.stringify([{
+          var identity = {
             provider: res.provider,
             external_id: res.external_identity
-          }]);
+          };
 
           clearTimeout(that.timer);
 
@@ -52,24 +63,26 @@ define(function (require) {
             search(q);
           }, options.delay);
 
+          // falg: SIGN_IN SIGIN_UP VERIFY RESET_PASSWORD
           function ajax(e) {
             that.ajaxDefer && that.ajaxDefer.readyState < 4 && that.ajaxDefer.abort();
             if (options.useCache && that.cache[e]) that.emit('autocomplete:finish', that.cache[e]);
             else {
               that.emit('autocomplete:beforesend');
               that.ajaxDefer = $.ajax({
-                url: 'http://api.localexfe.me/v2/identities/get',
-                type: 'POST',
+                url: Util.apiUrl + '/users/getRegistrationFlag',
+                type: 'GET',
                 dataType: 'JSON',
                 xhrFields: {withCredentials: true},
-                data: {
-                  identities: identities
-                }
+                data: identity
               })
                 .done(function (data) {
                   if (data.meta.code === 200) {
                     if (e === that.target.val()) {
                       options.useCache && (that.cache[e] = data.response);
+                      if (data.response.identity) {
+                        Store.set('user', data.response);
+                      }
                       that.emit('autocomplete:finish', data.response);
                     }
                   }
@@ -88,6 +101,8 @@ define(function (require) {
             }
           }
 
+        } else {
+          that.emit('autocomplete:finish', null);
         }
       }
 
@@ -109,18 +124,19 @@ define(function (require) {
           target: $this,
           // 当输入框没有值时，触发
           onNothing: function () {
+            this.target.parent().removeClass('identity-avatar');
             Bus.emit('widget-dialog-identification-nothing');
           },
 
           'onAutocomplete:finish': function (data) {
-            var identities = data.identities;
-            if (identities.length) {
-              if (identities[0]['avatar_filename'] === 'default.png') {
-                identities[0]['avatar_filename'] = '/img/default_portraituserface_20.png';
+            var identity;
+            if (data && (identity = data.identity)) {
+              if (identity['avatar_filename'] === 'default.png') {
+                identity['avatar_filename'] = '/img/default_portraituserface_20.png';
               }
               this.target
                 .prev()
-                .attr('src', identities[0]['avatar_filename'])
+                .attr('src', identity['avatar_filename'])
                 .parent()
                 .addClass('identity-avatar');
             } else {

@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+  define(function (require, exports, module) {
   var $ = require('jquery');
   var Bus = require('bus');
   var Util = require('util');
@@ -13,7 +13,45 @@ define(function (require, exports, module) {
   dialogs.identification = {
     options: {
 
+      errors: {
+        'failed': 'Wrong password, try again.',
+        'no_password': 'Identity password empty.',
+        'no_external_id': 'Set up this new identity.'
+      },
+
+      onCheckUser: function () {
+        var user = Store.get('user');
+        if (user) {
+          var external_identity = user.identity.external_id;
+          this.$('#identity').val(external_identity);
+          this.$('.x-signin').removeClass('disabled loading');
+          this.availability = true;
+          this.$('.xbtn-forgotpwd').data('source', user);
+          if (user.identity['avatar_filename'] === 'default.png') {
+            user.identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+          }
+          this.$('#identity')
+            .prev()
+            .attr('src', user.identity['avatar_filename'])
+            .parent()
+            .addClass('identity-avatar');
+        }
+      },
+
+      onShow: function () {
+        // 读取本地存储 user infos
+        this.emit('checkUser');
+        if (this.switchTabType === 'd02') {
+          this.$('.modal-body').eq(0).css('opacity', 1);
+          this.switchTab('d01');
+        }
+      },
+
       events: {
+        'click .xbtn-forgotpwd': function (e) {
+          e.preventDefault();
+          this.hide();
+        },
         'click .xbtn-setup': function (e) {
           e.preventDefault();
           this.$('.modal-body').eq(0).css('opacity', .2);
@@ -22,22 +60,27 @@ define(function (require, exports, module) {
         'click .xbtn-isee': function (e) {
           e.preventDefault();
           this.$('.modal-body').eq(0).css('opacity', 1);
+          this.$('#identity').val('');
           this.switchTab('d03');
         },
         'click .xbtn-startover': function (e) {
           e.preventDefault();
+          this.$('#identity').val('');
           this.switchTab('d01');
+          this.emit('checkUser');
         },
         'click .x-signin': function (e) {
-          if ($(e.currentTarget).hasClass('disabled')) {
+          var xsignin = $(e.currentTarget);
+          if (xsignin.hasClass('disabled')) {
             // signin disabled
             return;
           }
+          var that = this;
           var t = this.switchTabType;
           var od = this.getFormData(t);
           if (t === 'd01' || t === 'd03') {
             var dfd = $.ajax({
-              url: 'http://api.localexfe.me/v2/users/signin',
+              url: Util.apiUrl + '/users/signin',
               type: 'POST',
               dataType: 'JSON',
               xhrFields: {withCredentials: true},
@@ -45,21 +88,46 @@ define(function (require, exports, module) {
                 external_id: od.external_identity,
                 provider: od.provider,
                 password: od.password,
-                name: od.name || ''
+                name: od.name || '',
+                auto_signin: !!od.auto_signin
+              },
+              beforeSend: function (xhr) {
+                xsignin.addClass('disabled loading');
               }
             })
               .done(function (data) {
-                if (data.meta.code === 200) {
-                  console.dir(data);
+                xsignin.removeClass('disabled loading');
+                var meta = data.meta;
+                if (meta.code === 200) {
                   var user_id = data.response.user_id;
                   var token = data.response.token;
                   Store.set('user_id', user_id);
                   Store.set('token', token);
-                  //window.location = '/profile.html';
-                } else {
-                  alert('Sign In Fail.');
+                  if (t === 'd01') {
+                    window.location = '/profile.html';
+                  } else {
+                    that.hide();
+                    var d = new Dialog(dialogs.welcome);
+                    d.render();
+                    d.show();
+                  }
+                } else if (meta.code === 403) {
+                  var errorType = meta.errorType;
+                  if (errorType === 'no_password' || errorType === 'failed') {
+                    that.$('#password')
+                      .nextAll('.xalert-error')
+                      .html(that.options.errors[errorType])
+                      .removeClass('hide');
+                  } else if (errorType === 'no_external_id') {
+                    that.$('#name')
+                      .nextAll('.xalert-info')
+                      .removeClass('hide');
+                  }
                 }
-              });
+              })
+                .fail(function (data) {
+                  //alert();
+                });
 
           }
 
@@ -89,7 +157,7 @@ define(function (require, exports, module) {
                     + '<div class="controls /*identity-avatar*/">'
                       + '<img class="add-on avatar hide" src="" alt="" width="20" height="20" />'
                       + '<input type="text" class="input-large identity" id="identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" />'
-                      + '<p class="help-block hide">Set up this new identity.</p>'
+                      + '<div class="xalert-info hide">Set up this new identity.</div>'
                     + '</div>'
                   + '</div>'
 
@@ -105,6 +173,16 @@ define(function (require, exports, module) {
                     + '<div class="controls">'
                       + '<input type="password" class="input-large" id="password" />'
                       + '<input type="text" class="input-large hide" autocomplete="off" />'
+                      + '<div class="xalert-error hide"></div>'
+                    + '</div>'
+                  + '</div>'
+
+                  + '<div class="control-group d d01">'
+                    + '<div class="controls">'
+                      + '<label class="checkbox">'
+                        + '<input type="checkbox" id="auto-signin" value="1" checked>'
+                        + 'Sign in automatically'
+                      + '</label>'
                     + '</div>'
                   + '</div>'
 
@@ -114,10 +192,11 @@ define(function (require, exports, module) {
         // d01 登陆, d02 ISee, d03 注册, d14 验证
         footer: ''
           + '<a href="#" class="xbtn-setup d d01 hide">Set Up?</a>'
-          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button href="#" class="xbtn-white d d03 d14 xbtn-startover hide">Start Over</button>'
           + '<button href="#" class="pull-right d d14 xbtn-blue hide">Verify</button>'
           + '<button href="#" class="pull-right xbtn-blue d d01 d03 x-signin disabled hide">Sign In</button>'
+          + '<button href="#" class="pull-right xbtn-blue d xbtn-success hide">Done</button>'
           + '<button href="#" class="pull-right xbtn-white d d02 xbtn-isee hide">I See</button>',
 
         others: ''
@@ -132,6 +211,7 @@ define(function (require, exports, module) {
       }
 
     }
+
   };
 
   dialogs.sandbox = {
@@ -153,6 +233,93 @@ define(function (require, exports, module) {
     }
   };
 
+  dialogs.welcome = {
+
+    options: {
+      events: {
+        'click .xbtn-blue': function (e) {
+          window.location = '/profile.html';
+        }
+      },
+
+      onHidden: function () {
+        var e = this.element;
+        this.destory();
+        e.remove();
+      },
+
+      backdrop: false,
+
+      viewData: {
+        // class
+        cls: 'modal-wc',
+
+        title: 'Welcome',
+
+        body: ''
+          + '<div class="shadow title">Hi, SteveE.</div>'
+          + '<div class="center shadow">Thanks for using <span class="x-sign">EXFE</span>.</div>'
+          + '<p class="center">An utility for hanging out with friends.</p>'
+          + '<p>A verification email has been sent.<br>Please check your mailbox.</p>'
+          + '<p><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
+          + '<p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>',
+
+        footer: ''
+          + '<button href="#" class="pull-right xbtn-blue">GO</button>'
+      }
+    }
+  };
+
+
+  dialogs.forgotpassword = {
+
+    options: {
+
+      onHidden: function () {
+        $('.modal-id').removeClass('hide');
+      },
+
+      onShow: function (data) {
+        var identity = data.identity;
+        if (identity['avatar_filename'] === 'default.png') {
+          identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+        }
+        var external_id = data.identity.external_id;
+        var src = data.identity.avatar_filename;
+        var $identity = this.$('.identity');
+        $identity.find('img').attr('src', src);
+        $identity.find('span').html(external_id);
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        cls: 'modal-fp',
+
+        title: 'Forgot Password',
+
+        body: ''
+          + '<div class="shadow title">Forgot Password</div>'
+          + '<div>Identity to reset password:</div>'
+          + '<div class="identity disabled">'
+            + '<img class="pull-right avatar" src="" width="20" height="20">'
+            + '<span></span>'
+          + '</div>'
+          + '<div>Confirm sending reset token to your mailbox?</div>'
+          + '<div class="xalert-error hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam.</div>'
+          + '<div class="xalert-success hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.</div>',
+
+        footer: ''
+          + '<button class="pull-right xbtn-blue">Verify</button>'
+          + '<button class="pull-right xbtn-blue hide">Done</button>'
+          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+
+      }
+    }
+
+  };
+
   // Identification 弹出窗口类
   var Identification = Dialog.extend({
 
@@ -160,32 +327,33 @@ define(function (require, exports, module) {
     availability: false,
 
     init: function () {
-      // 读取本地存储 user infos
-
       var that = this;
       Bus.on('widget-dialog-identification-auto', function (data) {
         that.availability = false;
         var t;
-        if (data.identities.length) {
+        if (data && data.identity) {
           t = 'd01';
           that.availability = true;
         } else if (Util.trim(that.$('#identity').val())) {
           t = 'd03';
-          that.availability = true;
+          if (data) that.availability = true;
         }
 
         that.switchTab(t);
+        that.$('.xbtn-forgotpwd').data('source', data);
       });
 
       Bus.on('widget-dialog-identification-nothing', function () {
+        that.$('.xbtn-forgotpwd').data('source', null);
         that.availability = false;
-        that.switchTab('d01');
+        if (that.switchTabType !== 'd03') that.switchTab('d01');
+        that.$('.x-signin')[(that.availability ? 'remove' : 'add') + 'Class']('disabled');
       });
     },
 
     d01: function (t) {
       if (t === 'd01') {
-        var val = Util.trim(this.$('#identity').val())
+        var val = Util.trim(this.$('#identity').val());
         this.$('.xbtn-setup')[(val ? 'add' : 'remove') + 'Class']('hide');
         this.$('.xbtn-forgotpwd')[(val ? 'remove' : 'add') + 'Class']('hide');
       }
@@ -205,6 +373,9 @@ define(function (require, exports, module) {
       if (t === 'd01' || t === 'd03') {
         identity.password = this.$('#password').val();
       }
+      if (t === 'd01') {
+        identity.auto_signin = this.$('#auto-signin').prop('checked');
+      }
       if (t === 'd03') {
         identity.name = Util.trim(this.$('#name').val());
       }
@@ -220,11 +391,19 @@ define(function (require, exports, module) {
         .removeClass('hide');
 
       this.$('.x-signin')[(this.availability ? 'remove' : 'add') + 'Class']('disabled');
+      this.$('.xalert-error').addClass('hide');
+      this.$('.xalert-info').addClass('hide');
 
       this.switchTabType = t;
 
       this.d01(t);
       this.d03(t);
+
+      if (t === 'd01' || t === 'd03') {
+        var $identity = this.$('#identity');
+        $identity[0].focus();
+      }
+
     }
 
   });
@@ -238,7 +417,8 @@ define(function (require, exports, module) {
         , data = $this.data('dialog')
         , href
         , dialogType = $this.data('dialog-type')
-        , dialogTab = $this.data('dialog-tab');
+        , dialogTab = $this.data('dialog-tab')
+        , dataSource = $this.data('source');
 
       e.preventDefault();
 
@@ -247,13 +427,13 @@ define(function (require, exports, module) {
         if (dialogType) {
           data = new (dialogType === 'identification' ? Identification : Dialog)(dialogs[dialogType]);
           data.render();
-          if (dialogTab) data.switchTab(dialogTab);
           $this.data('dialog', data);
         }
 
       }
 
-      data.show();
+      data.show(dataSource);
+      if (dialogTab) data.switchTab(dialogTab);
 
     });
   });
