@@ -51,6 +51,7 @@ class CrossHelper extends ActionController {
                 $relative_id=0;
                 $relation="";
                 $cross->setRelation($relative_id,$relation);
+                $cross->updated_at=$exfee->updated_at;
                 $updated=json_decode($updated_crosses[$cross->id],true);
                 if($updated)
                     $cross->updated=$updated;
