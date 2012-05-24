@@ -131,6 +131,57 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doGetRegistrationFlag() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $params = $this->params;
+        if (!$external_id = trim($params['external_id'])) {
+            apiError(400, 'no_external_id', 'external_id must be provided');
+        }
+        if (!$provider = trim($params['provider'])) {
+            apiError(400, 'no_provider', 'provider must be provided');
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        // 身份不存在，提示注册
+        if (!$identity) {
+            apiResponse(array('registration_flag' => 'SIGNUP'));
+        }
+        // get user info
+        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
+        // 只有身份没有用户，需要身份
+        if (!$user_info) {
+            apiResponse(array('registration_flag' => 'VERIFY'));
+        }
+        // get flag
+        switch ($user_info['status']) {
+            case 'CONNECTED':
+                if ($user_info['password']) {
+                    apiResponse(array('registration_flag' => 'SIGNIN'));
+                }
+                apiResponse(array('registration_flag' => 'RESET_PASSWORD'));
+                break;
+            case 'RELATED':
+            case 'REVOKED':
+                apiResponse(array('registration_flag' => 'VERIFY'));
+                break;
+            case 'VERIFYING':
+                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
+                    apiResponse(array('registration_flag' => 'SIGNIN'));
+                }
+                apiResponse(array('registration_flag' => 'VERIFY'));
+        }
+        apiError(500, 'failed', '');
+    }
+
+
+    public function doCheckAuthorization() {
+
+    }
+
+
     public function doSignin() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
