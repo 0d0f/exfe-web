@@ -129,26 +129,38 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserIdentityStatusByUserIdAndIdentityId($user_id = 0, $identity_id = 0, $withPasswdStatus = false) {
+    public function getUserIdentityInfoByIdentityId($identity_id) {
         if (!$identity_id) {
             return null;
         }
         $rawStatus = $this->getRow(
             "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}"
-          . ($user_id ? " AND `userid` = {$user_id}" : '')
         );
-        $user_id = intval($rawStatus['userid']);
-        $status  = intval($rawStatus['status']);
-        if ($user_id) {
-            if ($status === 3 && $withPasswdStatus) {
-                $passwdInfo = $this->getUserPasswdByUserId($user_id);
-                if (!$passwdInfo['encrypted_password']) {
-                    return 'NOPASSWORD';
-                }
-            }
-            return $this->arrUserIdentityStatus[$status];
+        if (!$rawStatus) {
+            return null;
         }
-        return null;
+        $user_id = intval($rawStatus['userid']);
+        $passwd  = $this->getUserPasswdByUserId($user_id);
+        $ids     = $this->getAll(
+            "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
+        );
+        return array(
+            'user_id'     => intval($rawStatus['userid']),
+            'status'      => $this->arrUserIdentityStatus[intval($rawStatus['status'])],
+            'password'    => !!$passwd['encrypted_password'],
+            'id_quantity' => count($ids),
+        );
+    }
+
+
+    public function getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id) {
+        if (!$user_id || !$identity_id) {
+            return null;
+        }
+        $rawStatus = $this->getRow(
+            "SELECT `status` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `userid` = {$user_id}"
+        );
+        return $rawStatus ? $this->arrUserIdentityStatus[intval($rawStatus['status'])] : null;
     }
 
 
