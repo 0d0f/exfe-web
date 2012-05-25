@@ -22,6 +22,7 @@ class ConversationActions extends ActionController {
         apiResponse(array("conversation"=>$conversation));
     }
 
+
     public function doAdd()
     {
         $params=$this->params;
@@ -50,8 +51,35 @@ class ConversationActions extends ActionController {
         $identity=$identityHelper->getIdentityById($new_post["identity_id"]);
         $new_post_obj=new Post($new_post["id"],$identity,$new_post["content"], $new_post["postable_id"],$new_post["postable_type"],"");
         $new_post_obj->created_at=$new_post["created_at"];
+
+        // call Gobus {
+        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+        $hlpCross = $this->getHelperByName('cross', 'v2');
+        $modUser  = $this->getModelByName('user',   'v2');
+        $modExfee = $this->getModelByName('exfee',  'v2');
+        $cross_id = $modExfee->getCrossIdByExfeeId($new_post_obj->postable_id);
+        $cross    = $hlpCross->getCross($cross_id, true);
+        $msgArg   = array('cross' => $cross, 'to_identities' => array(), 'by_identity' => $identity);
+        $chkMobUs = array();
+        foreach ($cross->exfee->invitations as $invitation) {
+            $msgArg['to_identities'][] = $invitation->identity;
+            // get mobile identities
+            if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+                $mobIdentities = $modUser->getMobileIdentitiesByUserId(
+                    $invitation->identity->connected_user_id
+                );
+                foreach ($mobIdentities as $mI => $mItem) {
+                    $msgArg['to_identities'][] = $mItem;
+                }
+                $chkMobUs[$invitation->identity->connected_user_id] = true;
+            }
+        }
+        $hlpGobus->send('cross', 'Update', $msgArg);
+        // }
+
         apiResponse(array("post"=>$new_post_obj));
     }
+
 
     public function doDel()
     {
