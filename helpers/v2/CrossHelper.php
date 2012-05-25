@@ -47,10 +47,11 @@ class CrossHelper extends ActionController {
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
                 $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
                 $cross->by_identity=$by_identity;
-                $cross->created_at=$created_at;
+                $cross->created_at=$created_at." +0000";
                 $relative_id=0;
                 $relation="";
                 $cross->setRelation($relative_id,$relation);
+                $cross->updated_at=$exfee->updated_at." +0000";
                 $updated=json_decode($updated_crosses[$cross->id],true);
                 if($updated)
                     $cross->updated=$updated;

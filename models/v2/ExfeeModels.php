@@ -17,11 +17,13 @@ class ExfeeModels extends DataModel {
 
     public function getExfeeById($id, $withRemoved = false, $withToken = false) {
         // init
+        $exfee_updated_at="";
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // get invitations
         $withRemoved = $withRemoved ? '' : 'AND `state` <> 4' ;
         $rawExfee = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id} {$withRemoved}");
         $objExfee = new Exfee($id);
+        $exfee_updated_at=$rawExfee[0]['updated_at'];
         foreach ($rawExfee as $ei => $eItem) {
             $objIdentity   = $hlpIdentity->getIdentityById($eItem['identity_id']);
             $oByIdentity   = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
@@ -36,9 +38,11 @@ class ExfeeModels extends DataModel {
                 $eItem['via'],
                 $withToken ? $eItem['token'] : '',
                 $eItem['created_at'],
-                $eItem['updated_at']
+                $eItem['updated_at'],
+                !!intval($eItem['host'])
             );
         }
+        $objExfee->updated_at=$exfee_updated_at;
         return $objExfee;
     }
 
@@ -80,6 +84,8 @@ class ExfeeModels extends DataModel {
         $invToken    = $this->makeExfeeToken();
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        // get host boolean
+        $host        = intval($invitation->host);
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},
@@ -89,7 +95,8 @@ class ExfeeModels extends DataModel {
                 `updated_at`       = NOW(),
                 `exfee_updated_at` = NOW(),
                 `token`            = '{$invToken}',
-                `by_identity_id`   =  {$by_identity_id}";
+                `by_identity_id`   =  {$by_identity_id},
+                `host`             =  {$host}";
         $dbResult = $this->query($sql);
         return intval($dbResult['insert_id']);
     }
@@ -106,13 +113,16 @@ class ExfeeModels extends DataModel {
                   : '';
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        // get host boolean
+        $host        = intval($invitation->host);
         // update database
         return $this->query(
             "UPDATE `invitations` SET
              `state`            = {$rsvp_status},
              `updated_at`       = NOW(),
              `exfee_updated_at` = NOW(),
-             `by_identity_id`   = {$by_identity_id}{$sqlToken}
+             `by_identity_id`   = {$by_identity_id},
+             `host`             = {$host}{$sqlToken}
              WHERE `id`         = {$invitation->id}"
         );
     }
@@ -183,6 +193,9 @@ class ExfeeModels extends DataModel {
         }
         // add invitations
         foreach ($invitations as $iI => $iItem) {
+            if (intval($iItem->identity->id) === intval($by_identity_id)) {
+                $iItem->host = true;
+            }
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
         }
         $this->updateExfeeTime($exfee_id);
