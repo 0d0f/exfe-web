@@ -119,6 +119,12 @@ define('dialog', [], function (require, exports, module) {
 
       // if (this.options.lifecycle) {}
       return this;
+    },
+
+    offSrcNode: function () {
+      if (this.options.srcNode) {
+        this.options.srcNode.data('dialog', null);
+      }
     }
 
   });

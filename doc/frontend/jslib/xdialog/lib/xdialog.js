@@ -191,7 +191,7 @@
         // d01 登陆, d02 ISee, d03 注册, d14 验证
         footer: ''
           + '<a href="#" class="xbtn-setup d d01 hide">Set Up?</a>'
-          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from=".modal-id" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button href="#" class="xbtn-white d d03 d14 xbtn-startover hide">Start Over</button>'
           + '<button href="#" class="pull-right d d14 xbtn-blue hide">Verify</button>'
           + '<button href="#" class="pull-right xbtn-blue d d01 d03 x-signin disabled hide">Sign In</button>'
@@ -273,13 +273,22 @@
   dialogs.forgotpassword = {
 
     options: {
-
-      onHidden: function () {
-        $('.modal-id').removeClass('hide');
+      events: {
+        'click .xbtn-cancel': function (e) {
+          this.hide();
+          if (this.dialog_from) $(this.dialog_from).removeClass('hide');
+          var $e = this.element;
+          this.offSrcNode();
+          this.destory();
+          $e.remove();
+        },
+        'click .xbtn-blue': function (e) {
+          // Verify ajax
+        }
       },
 
-      onShow: function (data) {
-        data = data || Store.get('user');
+      onShow: function (e) {
+        var data = Store.get('user');
         if (data) {
           var identity = data.identities[0];
           if (identity['avatar_filename'] === 'default.png') {
@@ -315,7 +324,7 @@
         footer: ''
           + '<button class="pull-right xbtn-blue">Verify</button>'
           + '<button class="pull-right xbtn-blue hide">Done</button>'
-          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+          + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
       }
     }
@@ -365,6 +374,7 @@
               $e.removeClass('disabled loading');
               if (data.meta.code === 200) {
                 $e = that.element;
+                that.offSrcNode();
                 that.destory();
                 $e.remove();
               } else if (data.meta.code === 403) {
@@ -418,7 +428,7 @@
           + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from=".modal-cp" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
 
@@ -426,6 +436,101 @@
 
     }
 
+  };
+
+  dialogs.addidentity = {
+    options: {
+      events: {
+        'click .xbtn-success': function (e) {
+          var new_identity = Util.trim(this.$('#new-identity').val());
+          var password = this.$('#password').val();
+
+          if (!new_identity || !password) {
+            if (!new_identity) {
+              alert('Identity empty.');
+            } else {
+              alert('Identity password empty.');
+            }
+            return;
+          }
+
+          var $e = $(e.currentTarget);
+          var user_id = Store.get('user_id');
+          var token = Store.get('token');
+          var that = this;
+
+          var identity = Util.parseId(new_identity);
+
+          if (identity.provider) {
+
+            $.ajax({
+              url: Util.apiUrl + '/users/addIdentity?token=' + token,
+              type: 'POST',
+              data: {
+                external_id: identity.external_identity,
+                provider: identity.provider,
+                password: password
+              },
+              dataType: 'json',
+              xhrFields: { withCredentials: true },
+              beforeSend: function (xhr) {
+                $e.addClass('disabled loading');
+              }
+            })
+              .done(function (data) {
+                $e.removeClass('disabled loading');
+                if (data.meta.code === 200) {
+                  that.emit('hidden');
+                }
+              });;
+
+          }
+        }
+      },
+
+      onHidden: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
+      viewData: {
+        cls: 'modal-addidentity',
+
+        title: 'Identification',
+
+        body: ''
+          + '<div class="shadow title">Add Identity</div>'
+          + '<form class="modal-form form-horizontal">'
+            + '<fieldset>'
+              + '<legend style="white-space: nowrap;"></legend>'
+
+                + '<div class="control-group">'
+                  + '<label class="control-label" for="new-identity">New Identity:</label>'
+                  + '<div class="controls">'
+                    + '<input class="input-large" id="new-identity" value="" type="text">'
+                  + '</div>'
+                + '</div>'
+
+                + '<div class="control-group">'
+                  + '<label class="control-label" for="password">Password:</label>'
+                  + '<div class="controls">'
+                    + '<input type="password" class="input-large" id="password" />'
+                    + '<input type="text" class="input-large hide" autocomplete="off" />'
+                    + '<div class="xalert-error hide"></div>'
+                  + '</div>'
+
+                + '</div>'
+            + '</fieldset>'
+          + '</form>',
+
+        footer: ''
+          + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
+          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+      }
+
+    }
   };
 
   // Identification 弹出窗口类
@@ -523,9 +628,10 @@
    $BODY.on('click.dialog.data-api', '[data-widget="dialog"]', function (e) {
       var $this = $(this)
         , data = $this.data('dialog')
-        , href
+        , settings
         , dialogType = $this.data('dialog-type')
         , dialogTab = $this.data('dialog-tab')
+        , dialogFrom = $this.data('dialog-from')
         , dataSource = $this.data('source');
 
       e.preventDefault();
@@ -533,14 +639,17 @@
       if (!data)  {
 
         if (dialogType) {
-          data = new (dialogType === 'identification' ? Identification : Dialog)(dialogs[dialogType]);
+          settings = dialogs[dialogType];
+          data = new (dialogType === 'identification' ? Identification : Dialog)(settings);
+          data.options.srcNode = $this;
+          if (dialogFrom) data.dialog_from = dialogFrom;
           data.render();
           $this.data('dialog', data);
         }
 
       }
 
-      data.show(dataSource);
+      data.show(e);
       if (dialogTab) data.switchTab(dialogTab);
 
     });
