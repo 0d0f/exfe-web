@@ -9,6 +9,15 @@ class ConversationModels extends DataModel {
         return intval($dbResult['exfee_id']);
     }
 
+
+    // v1_v2_bridge
+    public function updateExfeeTime($exfee_id)
+    {
+        $sql="update invitations set exfee_updated_at=NOW() where `cross_id`=$exfee_id;";
+        $this->query($sql);
+    }
+
+
     public function addConversation($postable_id, $postable_type, $identity_id, $title, $content,$date="") {
         $cross_id=$postable_id;
         $postable_id = $this->getExfeeIdByCrossId($postable_id);
@@ -32,6 +41,11 @@ class ConversationModels extends DataModel {
                     $cross_updated=array();
                     $updated=array("updated_at"=>time(),"identity_id"=>$identity_id);
                     $cross_updated["conversation"]=$updated;
+                    // v1_v2_bridge {
+                    if (($exfee_id = $this->getExfeeIdByCrossId($cross_id))) {
+                        $this->updateExfeeTime($exfee_id);
+                    }
+                    // }
                     saveUpdate($cross_id,$cross_updated);
                     return intval($result["insert_id"]);
                 }
@@ -40,6 +54,7 @@ class ConversationModels extends DataModel {
         }
         return false;
     }
+
 
     public function getConversationById($post_id)
     {
@@ -57,6 +72,7 @@ class ConversationModels extends DataModel {
         }
         return $result;
     }
+
 
     public function getConversationByTimeStr($postable_id,$postable_type,$updated_since="",$limit=0)
     {
@@ -94,6 +110,7 @@ class ConversationModels extends DataModel {
         return $posts;
 
     }
+
 
     public function getConversation($postable_id,$postable_type,$updated_since=0,$limit=0)
     {
@@ -138,6 +155,5 @@ class ConversationModels extends DataModel {
         }
         return $posts;
     }
-
 
 }

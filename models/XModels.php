@@ -52,7 +52,7 @@ class XModels extends DataModel {
         if($cross_id > 0) {
             // invit exfee
             $hlpExfee = $this->getHelperByName('exfee');
-            $hlpExfee->addExfeeIdentify($cross_id, $exfee, $identityId);
+            $hlpExfee->addExfeeIdentify($cross_id, $exfee, $identityId, null, $identityId);
             $hlpExfee->sendInvitation($cross_id, $identityId);
             // update exfee_update_time for v1 v2 bridge
             $this->updateExfeeTime($exfee_id);
