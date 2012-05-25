@@ -17,7 +17,7 @@ class UsersActions extends ActionController {
                 apiError(401, 'invalid_auth', '');
             }
         }
-        if ($objUser = $modUser->getUserById($params['id'], true)) {
+        if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
             apiResponse(array('user' => $objUser));
         }
         apiError(404, 'user_not_found', 'user not found');
