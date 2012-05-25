@@ -84,6 +84,8 @@ class ExfeeModels extends DataModel {
         $invToken    = $this->makeExfeeToken();
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        // get host boolean
+        $host        = !!$invitation->host;
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},
@@ -93,7 +95,8 @@ class ExfeeModels extends DataModel {
                 `updated_at`       = NOW(),
                 `exfee_updated_at` = NOW(),
                 `token`            = '{$invToken}',
-                `by_identity_id`   =  {$by_identity_id}";
+                `by_identity_id`   =  {$by_identity_id},
+                `host`             =  {$host}";
         $dbResult = $this->query($sql);
         return intval($dbResult['insert_id']);
     }
@@ -110,13 +113,16 @@ class ExfeeModels extends DataModel {
                   : '';
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        // get host boolean
+        $host        = !!$invitation->host;
         // update database
         return $this->query(
             "UPDATE `invitations` SET
              `state`            = {$rsvp_status},
              `updated_at`       = NOW(),
              `exfee_updated_at` = NOW(),
-             `by_identity_id`   = {$by_identity_id}{$sqlToken}
+             `by_identity_id`   = {$by_identity_id},
+             `host`             = {$host}{$sqlToken}
              WHERE `id`         = {$invitation->id}"
         );
     }
@@ -187,6 +193,9 @@ class ExfeeModels extends DataModel {
         }
         // add invitations
         foreach ($invitations as $iI => $iItem) {
+            if (intval($iItem->identity->id) === intval($by_identity_id)) {
+                $iItem->host = true;
+            }
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
         }
         $this->updateExfeeTime($exfee_id);
