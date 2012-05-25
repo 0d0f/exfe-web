@@ -81,7 +81,7 @@ define(function (require) {
                     if (e === that.target.val()) {
                       options.useCache && (that.cache[e] = data.response);
                       if (data.response.identity) {
-                        Store.set('user', data.response);
+                        Store.set('user', {'identities': [data.response.identity], 'flag': data.response.registration_flag});
                       }
                       that.emit('autocomplete:finish', data.response);
                     }
