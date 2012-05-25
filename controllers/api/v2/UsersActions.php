@@ -362,7 +362,9 @@ class UsersActions extends ActionController {
         // sort upcoming crosses
         if ($rawCrosses['future']) {
             foreach ($rawCrosses['future'] as $cI => $cItem) {
-                $rawCrosses['future'][$cI]->timestamp = strtotime($cItem->time->begin_at->date . ($cItem->time->begin_at->time ?: ''));
+                $rawCrosses['future'][$cI]->timestamp = strtotime(
+                    $cItem->time->begin_at->date . ' ' . ($cItem->time->begin_at->time ?: '')
+                );
                 if ($fetchArgs['upcoming_included'] && $rawCrosses['future'][$cI]->timestamp < $upcoming) {
                     $cItem->sort = 'upcoming';
                     array_push($crosses, $cItem);
