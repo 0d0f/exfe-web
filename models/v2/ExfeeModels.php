@@ -38,7 +38,8 @@ class ExfeeModels extends DataModel {
                 $eItem['via'],
                 $withToken ? $eItem['token'] : '',
                 $eItem['created_at'],
-                $eItem['updated_at']
+                $eItem['updated_at'],
+                !!intval($eItem['host'])
             );
         }
         $objExfee->updated_at=$exfee_updated_at;
