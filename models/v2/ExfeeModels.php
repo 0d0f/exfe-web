@@ -85,7 +85,7 @@ class ExfeeModels extends DataModel {
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // get host boolean
-        $host        = !!$invitation->host;
+        $host        = intval($invitation->host);
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},
@@ -114,7 +114,7 @@ class ExfeeModels extends DataModel {
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // get host boolean
-        $host        = !!$invitation->host;
+        $host        = intval($invitation->host);
         // update database
         return $this->query(
             "UPDATE `invitations` SET
