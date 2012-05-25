@@ -25,7 +25,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserById($id, $withCrossQuantity = false) {
+    public function getUserById($id, $withCrossQuantity = false, $identityStatus = 3) {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
@@ -33,7 +33,7 @@ class UserModels extends DataModel {
                 $rawUser['id'],
                 $rawUser['name'],
                 $rawUser['bio'],
-                null, // $rawUser[''] default_identity
+                null, // default_identity
                 $rawUser['avatar_file_name'],
                 $rawUser['avatar_updated_at'],
                 $rawUser['timezone']
@@ -41,45 +41,47 @@ class UserModels extends DataModel {
             if ($withCrossQuantity) {
                 $user->cross_quantity = 0;
             }
-            // get all identity ids connetced to the user
+            // get all identity ids of user
+            $identityStatus = ($identityStatus = intval($identityStatus))
+                            ? "`status` = {$identityStatus}" : '(`status` > 1 AND `status` < 5)';
             $rawIdentityIds = $this->getAll(
-                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND `status` = 3"
+                "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
             );
             // insert identities into user
             if ($rawIdentityIds) {
-                $identityIds = array();
+                $identity_status = array();
                 foreach ($rawIdentityIds as $i => $item) {
-                    $identityIds[] = $item['identityid'];
+                    $identity_status[intval($item['identityid'])] = $this->arrUserIdentityStatus[intval($item['status'])];;
                 }
-                $identityIds = implode($identityIds, ' OR `id` = ');
-                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` = {$identityIds}");
+                $identityIds = implode(array_keys($identity_status), ', ');
+                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
-                        $intLength = array_push(
-                            $user->identities,
-                            new Identity(
-                                $item['id'],
-                                $item['name'],
-                                '', // $item['nickname'], // @todo;
-                                $item['bio'],
-                                $item['provider'],
-                                $rawUser['id'],
-                                $item['external_identity'],
-                                $item['external_username'],
-                                $item['avatar_file_name'],
-                                $item['avatar_updated_at'],
-                                $item['created_at'],
-                                $item['updated_at']
-                            )
+                        $identity = new Identity(
+                            $item['id'],
+                            $item['name'],
+                            '', // $item['nickname'], // @todo;
+                            $item['bio'],
+                            $item['provider'],
+                            $rawUser['id'],
+                            $item['external_identity'],
+                            $item['external_username'],
+                            $item['avatar_file_name'],
+                            $item['avatar_updated_at'],
+                            $item['created_at'],
+                            $item['updated_at']
                         );
+                        $identity->status = $identity_status[$identity->id];
+                        $intLength = array_push($user->identities, $identity);
                         // catch default identity
-                        if (intval($item['id']) === intval($rawUser['id'])) {
+                        if ($identity->id === intval($rawUser['default_identity'])) {
                             $user->default_identity = $user->identities[$intLength];
                         }
                     }
+                    $user->default_identity = $user->default_identity ?: $user->identities[0];
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
-                            "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` = {$identityIds}"
+                            "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
                         );
                         $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
