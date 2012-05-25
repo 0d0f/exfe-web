@@ -16,6 +16,7 @@ EXFE_MIN_CSS = ${CSS_DIR}/exfe.min.css
 all: build
 
 start:
+	@echo -e '\r'
 	@echo "Building Exfe JS/CSS ..."
 
 build: start CSS
