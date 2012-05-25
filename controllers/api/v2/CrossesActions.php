@@ -78,7 +78,7 @@ class CrossesActions extends ActionController {
         {
             $crossHelper=$this->getHelperByName("cross","v2");
             $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
-            // call Gobus
+            // call Gobus {
             $hlpGobus = $this->getHelperByName('gobus', 'v2');
             $modUser  = $this->getModelByName('user',   'v2');
             $chkMobUs = array();
@@ -102,7 +102,7 @@ class CrossesActions extends ActionController {
             foreach ($cross->exfee->invitations as $i => $invitation) {
                 $cross->exfee->invitations[$i]->token = '';
             }
-            //
+            // }
             apiResponse(array("cross"=>$cross));
         }
         else
