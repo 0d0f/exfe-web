@@ -22,17 +22,16 @@
       onCheckUser: function () {
         var user = Store.get('user');
         if (user) {
-          var external_identity = user.identity.external_id;
+          var external_identity = user.identities[0].external_id;
           this.$('#identity').val(external_identity);
           this.$('.x-signin').removeClass('disabled loading');
           this.availability = true;
-          this.$('.xbtn-forgotpwd').data('source', user);
-          if (user.identity['avatar_filename'] === 'default.png') {
-            user.identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+          if (user.identities[0]['avatar_filename'] === 'default.png') {
+            user.identities[0]['avatar_filename'] = '/img/default_portraituserface_20.png';
           }
           this.$('#identity')
             .prev()
-            .attr('src', user.identity['avatar_filename'])
+            .attr('src', user.identities[0]['avatar_filename'])
             .parent()
             .addClass('identity-avatar');
         }
@@ -280,15 +279,18 @@
       },
 
       onShow: function (data) {
-        var identity = data.identity;
-        if (identity['avatar_filename'] === 'default.png') {
-          identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+        data = data || Store.get('user');
+        if (data) {
+          var identity = data.identities[0];
+          if (identity['avatar_filename'] === 'default.png') {
+            identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+          }
+          var external_id = identity.external_id;
+          var src = identity.avatar_filename;
+          var $identity = this.$('.identity');
+          $identity.find('img').attr('src', src);
+          $identity.find('span').html(external_id);
         }
-        var external_id = data.identity.external_id;
-        var src = data.identity.avatar_filename;
-        var $identity = this.$('.identity');
-        $identity.find('img').attr('src', src);
-        $identity.find('span').html(external_id);
       },
 
       backdrop: false,
@@ -316,6 +318,112 @@
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
 
       }
+    }
+
+  };
+
+  dialogs.changepassword = {
+
+    options: {
+
+      events: {
+        'click .xbtn-success': function (e) {
+          var that = this;
+          var cppwd = that.$('#cppwd').val();
+          var cpnpwd = that.$('#cp-npwd').val();
+
+          // note: 暂时先用 alert
+          if (!cppwd || !cpnpwd) {
+            if (!cppwd) {
+              alert('Please input current password.');
+            } else {
+              alert('Please input new password.');
+            }
+            return;
+          }
+
+          e.preventDefault();
+
+          var $e = $(e.currentTarget);
+          var user_id = Store.get('user_id');
+          var token = Store.get('token');
+
+          $.ajax({
+            type: 'post',
+            data: {
+              current_password: cppwd,
+              new_password: cpnpwd
+            },
+            dataType: 'json',
+            url: Util.apiUrl + '/users/' + user_id + '/setpassword?token=' + token,
+            xhrFields: { withCredentials: true },
+            beforeSend: function (xhr) {
+              $e.addClass('disabled loading');
+            }
+          })
+            .done(function (data) {
+              $e.removeClass('disabled loading');
+              if (data.meta.code === 200) {
+                $e = that.element;
+                that.destory();
+                $e.remove();
+              } else if (data.meta.code === 403) {
+                var errorType = data.meta.errorType;
+                if (errorType === 'invalid_current_password') {
+                  alert('Invalid current password.');
+                }
+              }
+            });
+        },
+      },
+
+      onShow: function () {
+        var user = Store.get('user');
+        this.$('#cp-fullname').val(user.name);
+      },
+
+      viewData: {
+
+        cls: 'modal-cp mblack',
+
+        title: 'Change Password',
+
+        body: ''
+          + '<div class="shadow title">Change Password</div>'
+          + '<form class="modal-form form-horizontal">'
+            + '<fieldset>'
+              + '<legend style="white-space: nowrap;">Please enter current password and set new password.</legend>'
+              + '<div class="control-group">'
+                + '<label class="control-label" for="cp-fullname">Full name:</label>'
+                + '<div class="controls">'
+                  + '<input class="input-large disabled" tabIndex="-1" id="cp-fullname" value="" disabled="disabled" type="text">'
+                + '</div>'
+              + '</div>'
+
+              + '<div class="control-group">'
+                + '<label class="control-label" for="cppwd">Password:</label>'
+                + '<div class="controls">'
+                  + '<input class="input-large" id="cppwd" placeholder="Type current password" type="password">'
+                + '</div>'
+              + '</div>'
+
+              + '<div class="control-group">'
+                + '<label class="control-label" for="cp-npwd">New Password:</label>'
+                + '<div class="controls">'
+                  + '<input class="input-large" id="cp-npwd" placeholder="Type new password" type="password">'
+                + '</div>'
+              + '</div>'
+
+            + '</fieldset>'
+          + '</form>',
+
+        footer: ''
+          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
+          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+
+      }
+
     }
 
   };
