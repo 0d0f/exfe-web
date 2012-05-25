@@ -14,7 +14,7 @@ define('dialog', [], function (require, exports, module) {
   var $ = require('jquery');
   var Widget = require('widget');
 
-  var $BODY = document.body;
+  var $BODY = $(document.body);
 
   /*
    * HTML
@@ -98,6 +98,10 @@ define('dialog', [], function (require, exports, module) {
     },
 
     show: function (data) {
+
+      // 临时
+      $BODY.find('.modal').addClass('hide');
+
       this.emit('show', data);
       if (this.options.backdrop) {
         $('#js-modal-backdrop').removeClass('hide');
