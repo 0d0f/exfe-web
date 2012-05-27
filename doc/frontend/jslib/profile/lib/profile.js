@@ -1,9 +1,13 @@
 define(function (require, exports, module) {
+  // TODO: 临时解决 Router 问题
+  if (! /^\/profile\..*/.test(window.location.pathname)) return;
+
   var $ = require('jquery');
   var Store = require('store');
   var Handlebars = require('handlebars');
   var R = require('rex');
   var Util = require('util');
+  var Bus = require('bus');
 
   // 覆盖默认 `each` 添加 `__index__` 属性
   Handlebars.registerHelper('each', function (context, options) {
@@ -28,105 +32,45 @@ define(function (require, exports, module) {
     return Handlebars.helpers['if'].call(this, !context, options);
   });
 
-  var signin_defe = function () {
-    var user_id = Store.get('user_id')
-      , token = Store.get('token')
-      , dfd
-      , data;
-
-    if (user_id && token) {
-      data = {
-        user_id: user_id,
-        token: token
-      }
-    }
-
-    // 先检查下 本地缓存
-    //if (user_id && token) {
-      dfd = $.Deferred();
-      // 重新确定数据
-      dfd.resolve(data);
-    //} else {
-      /*
-      dfd = $.ajax({
-        url: 'http://api.localexfe.me/v2/users/signin',
-        type: 'POST',
-        dataType: 'JSON',
-        xhrFields: {withCredentials: true},
-        data: {
-          'external_id': 'cfd@demox.io',
-          'provder': 'email',
-          'password': 'd'
-        }
-      }).done(function (data) {
-        if (data.meta.code === 200) {
-          user_id = data.resolve.user_id;
-          token = data.resolve.token;
-          Store.set('user_id', user_id);
-          Store.set('token', token);
-          dfd.resolve({
-            user_id: user_id,
-            token: token
-          });
-        } else {
-          alert('Sign In Fail.');
-        }
-      });
-      */
-    //}
-    return dfd;
-  }();
-
   // 用户信息,包括多身份信息
   var identities_defe = function (data) {
     if (!data) return;
+    var user = data.user;
+    Store.set('user', data.user);
 
-    // 返回一个 promise 对象
-    return $.ajax({
-      url: Util.apiUrl + '/users/' + data.user_id + '?token=' + data.token,
-      type: 'GET',
-      dataType: 'JSON',
-      xhrFields: { withCredentials: true}
-    })
-      .done(function (data) {
-        if (data.meta.code === 200) {
-          var user = data.response.user;
-          Store.set('user', user);
+    $('.user-xstats .attended').html(user.cross_quantity);
+    $('#user-name > span').html(user.name);
 
-          $('.user-xstats .attended').html(user.cross_quantity);
-          $('#user-name > span').html(user.name);
+    var jst_user = $('#jst-user-avatar');
+    var s = Handlebars.compile(jst_user.html());
+    var h = s({avatar_filename: user.avatar_filename});
+    $('.user-avatar').append(h);
 
-          var jst_user = $('#jst-user-avatar');
-          var s = Handlebars.compile(jst_user.html());
-          var h = s({avatar_filename: user.avatar_filename});
-          $('.user-avatar').append(h);
+    $('.user-name').find('h3').html(user.name);
 
-          $('.user-name').find('h3').html(user.name);
+    Handlebars.registerHelper('avatarFilename', function (context) {
+      var s = context;
+      if (context === 'default.png') s = '/img/default_portraituserface_20.png';
+      return s;
+    });
 
-          Handlebars.registerHelper('avatarFilename', function (context) {
-            var s = context;
-            if (context === 'default.png') s = '/img/default_portraituserface_20.png';
-            return s;
-          });
+    Handlebars.registerHelper('atName', function (provder, external_id) {
+      var s = '';
+      if (provder === 'twitter') s = '@' + external_id;
+      else s = external_id;
+      return s;
+    });
 
-          Handlebars.registerHelper('atName', function (provder, external_id) {
-            var s = '';
-            if (provder === 'twitter') s = '@' + external_id;
-            else s = external_id;
-            return s;
-          });
-
-          var jst_identity_list = $('#jst-identity-list');
-          var s = Handlebars.compile(jst_identity_list.html());
-          var h = s({identities: user.identities});
-          $('.identity-list').append(h);
-        }
-      });
-
+    var jst_identity_list = $('#jst-identity-list');
+    var s = Handlebars.compile(jst_identity_list.html());
+    var h = s({identities: user.identities});
+    $('.identity-list').append(h);
   };
 
   // crossList 信息
   var crossList_defe = function (data) {
+    if (!data) return;
+    data = Store.get('signin');
     if (!data) return;
     var user_id = data.user_id;
     var token = data.token;
@@ -201,6 +145,8 @@ define(function (require, exports, module) {
 
   var crosses_defe = function (data) {
     if (!data) return;
+    data = Store.get('signin');
+    if (!data) return;
     var user_id = data.user_id;
     var token = data.token;
     var qdate = Store.get('qdate') || '';
@@ -214,6 +160,7 @@ define(function (require, exports, module) {
     })
       .done(function (data) {
         if (data.meta.code === 200) {
+
           var _date = new Date();
           Store.set('qdate', _date.getFullYear() + '-' + _date.getMonth() + '-' + _date.getDate());
           var crosses = data.response.crosses;
@@ -274,7 +221,15 @@ define(function (require, exports, module) {
   };
 
   // Defe Queue
-  signin_defe.then([identities_defe, crossList_defe, crosses_defe]);
+  // 可以登陆状态
+  var SIGN_IN_OTHERS = 'app:signinothers';
+  Bus.on(SIGN_IN_OTHERS, function (d) {
+    d.then([crossList_defe, crosses_defe]);
+  });
+  var SIGN_IN_SUCCESS = 'app:signinsuccess';
+  Bus.on(SIGN_IN_SUCCESS, function (data) {
+    identities_defe(data);
+  });
 
   var $BODY = $(document.body);
   $(function () {

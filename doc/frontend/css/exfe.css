@@ -5486,10 +5486,6 @@ a.badge:hover {
   overflow: hidden;
 }
 
-.navbar .nav > li > a.user-name {
-  background: url(/img/navbar-user-down.png) repeat-x transparent;
-}
-
 .navbar .nav > li > a.user-name:before {
   position: absolute;
   top: 0;
@@ -5497,7 +5493,6 @@ a.badge:hover {
   display: block;
   width: 12px;
   height: 56px;
-  background: url(/img/navbar-user-left.png) no-repeat transparent;
   content: '';
 }
 
@@ -5508,8 +5503,19 @@ a.badge:hover {
   display: block;
   width: 12px;
   height: 56px;
-  background: url(/img/navbar-user-right.png) no-repeat transparent;
   content: '';
+}
+
+.navbar .user .user-name:before {
+  background: url(/img/navbar-user-left.png) no-repeat transparent;
+}
+
+.navbar .user .user-name {
+  background: url(/img/navbar-user-down.png) repeat-x transparent;
+}
+
+.navbar .user .user-name:after {
+  background: url(/img/navbar-user-right.png) no-repeat transparent;
 }
 
 .navbar .nav > li.user {
@@ -5526,16 +5532,15 @@ a.badge:hover {
 
 .navbar .user-panel {
   position: absolute;
-  display: block;
   width: 198px;
   padding: 20px 15px 15px;
   margin-top: -6px;
   margin-right: 4px;
   color: #191919;
   background-color: #e6e6e6;
-  background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
   background-image: -o-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
   background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
   background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
   background-repeat: repeat-x;

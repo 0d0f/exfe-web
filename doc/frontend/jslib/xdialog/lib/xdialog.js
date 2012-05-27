@@ -98,10 +98,7 @@
                 xsignin.removeClass('disabled loading');
                 var meta = data.meta;
                 if (meta.code === 200) {
-                  var user_id = data.response.user_id;
-                  var token = data.response.token;
-                  Store.set('user_id', user_id);
-                  Store.set('token', token);
+                  Store.set('signin', data.response);
                   if (t === 'd01') {
                     window.location = '/profile.html';
                   } else {
@@ -217,6 +214,13 @@
 
     options: {
 
+      onHidden: function () {
+        var $e = this.element;
+        this.options.srcNode.data('dialog', null);
+        this.destory();
+        $e.remove();
+      },
+
       backdrop: false,
 
       viewData: {
@@ -242,9 +246,10 @@
       },
 
       onHidden: function () {
-        var e = this.element;
+        var $e = this.element;
+        this.options.srcNode.data('dialog', null);
         this.destory();
-        e.remove();
+        $e.remove();
       },
 
       backdrop: false,
@@ -354,8 +359,9 @@
           e.preventDefault();
 
           var $e = $(e.currentTarget);
-          var user_id = Store.get('user_id');
-          var token = Store.get('token');
+          var signinData = Store.get('signin');
+          var user_id = signinData.user_id;
+          var token = signinData.token;
 
           $.ajax({
             type: 'post',
@@ -455,8 +461,9 @@
           }
 
           var $e = $(e.currentTarget);
-          var user_id = Store.get('user_id');
-          var token = Store.get('token');
+          var signinData = Storting.get('signin');
+          var user_id = signinData.user_id;
+          var token = signinData.token;
           var that = this;
 
           var identity = Util.parseId(new_identity);
