@@ -23,6 +23,10 @@ define('exfee', [], function (require, exports, module) {
 
             input_tips  = 'Enter attendees’ information',
 
+            cache_key   = 'exfee_cache';
+
+            cache_uid   = 'exfee_cache_user_id'
+
             arr_rsvp    = {
                 NORESPONSE   : 'No response',
                 ACCEPTED     : 'Accepted',
@@ -36,54 +40,39 @@ define('exfee', [], function (require, exports, module) {
 
             editable    = false,
 
-            template    = '<div id="' + domId + '_exfeegadget_infoarea" '
-                        +                 'class="exfeegadget_infoarea">'
-                        +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
-                        +                     'class="exfeegadget_info_totalarea">'
+            template    = '<div id="' + dom_id + '_exfeegadget_infoarea" class="exfeegadget_infoarea">'
+                        +     '<div id="' + dom_id + '_exfeegadget_info_totalarea" class="exfeegadget_info_totalarea">'
                         +     '</div>'
-                        +     '<div id="' + domId + '_exfeegadget_info_labelarea" '
-                        +                     'class="exfeegadget_info_labelarea">'
+                        +     '<div id="' + dom_id + '_exfeegadget_info_labelarea" class="exfeegadget_info_labelarea">'
                         +         'Exfee'
                         +     '</div>'
-                        +     '<div id="' + domId + '_exfeegadget_info" '
-                        +                     'class="exfeegadget_info">'
-                        +         '<span id="' + domId + '_exfeegadget_num_accepted" '
-                        +                          'class="exfeegadget_num_accepted">'
+                        +     '<div id="' + dom_id + '_exfeegadget_info" class="exfeegadget_info">'
+                        +         '<span id="' + dom_id + '_exfeegadget_num_accepted" class="exfeegadget_num_accepted">'
                         +         '</span>'
                         +         '<span class="exfeegadget_num_of"> of '
-                        +             '<span id="' + domId + '_exfeegadget_num_summary" '
-                        +                              'class="exfeegadget_num_summary">'
+                        +             '<span id="' + dom_id + '_exfeegadget_num_summary" class="exfeegadget_num_summary">'
                         +             '</span>'
                         +         '</span>'
                         +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
                         +     '</div>'
                         + '</div>'
-                        + '<div id="' + domId + '_exfeegadget_avatararea" '
-                        +                 'class="exfeegadget_avatararea">'
+                        + '<div id="' + dom_id + '_exfeegadget_avatararea" class="exfeegadget_avatararea">'
                         +     '<ol></ol>'
-                        //+     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
+                        //+     '<button id="' + dom_id + '_exfeegadget_expandavatarbtn" />'
                         + '</div>'
                         +(curEditable
-                        ?('<div id="' + domId + '_exfeegadget_inputarea" '
-                        +                 'class="exfeegadget_inputarea">'
-                        +     '<div    id="' + domId + '_exfeegadget_inputbox_desc" '
-                        +                        'class="exfeegadget_inputbox '
-                        +                               'exfeegadget_inputbox_desc">'
-                        +         this.strInputTips
+                        ?('<div id="' + dom_id + '_exfeegadget_inputarea" class="exfeegadget_inputarea">'
+                        +     '<div    id="' + dom_id + '_exfeegadget_inputbox_desc" class="exfeegadget_inputbox exfeegadget_inputbox_desc">'
+                        +         'Enter attendees’ information' // this.strInputTips // @todo
                         +     '</div>'
-                        +     '<input  id="' + domId + '_exfeegadget_inputbox" '
-                        +                        'class="exfeegadget_inputbox_main '
-                        +                               'exfeegadget_inputbox" type="text">'
-                        +     '<button id="' + domId + '_exfeegadget_addbtn" '
-                        +                        'class="exfeegadget_addbtn">'
+                        +     '<input  id="' + dom_id + '_exfeegadget_inputbox" class="exfeegadget_inputbox_main exfeegadget_inputbox" type="text">'
+                        +     '<button id="' + dom_id + '_exfeegadget_addbtn" class="exfeegadget_addbtn">'
                         +     '</button>'
-                        +     '<div id="' + domId + '_exfeegadget_autocomplete" '
-                        +                     'class="exfeegadget_autocomplete">'
+                        +     '<div id="' + dom_id + '_exfeegadget_autocomplete" class="exfeegadget_autocomplete">'
                         +         '<ol></ol>'
                         +     '</div>'
                         + '</div>') : '')
-                        + '<div id="' + domId + '_exfeegadget_listarea" '
-                        +                 'class="exfeegadget_listarea">'
+                        + '<div id="' + dom_id + '_exfeegadget_listarea" class="exfeegadget_listarea">'
                         +     '<ol></ol>'
                         + '</div>';
         },
@@ -110,13 +99,8 @@ define('exfee', [], function (require, exports, module) {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+if (0) {
 
-
-(function(ns) {
-
-    ns.exfeeAvailableIdK = 'exfee_available_for_id'
-
-    ns.exfeeAvailableKey = 'exfee_available';
 
     ns.inputed           = {};
 
@@ -1047,4 +1031,5 @@ define('exfee', [], function (require, exports, module) {
         }
     };
 
-})(ns);
+
+}
