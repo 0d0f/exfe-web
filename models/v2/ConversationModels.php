@@ -2,8 +2,11 @@
 
 class ConversationModels extends DataModel {
 
-    public function getConversationByExfeeId($exfee_id) {
-        $sql="select * from posts where del=0 and postable_id=$exfee_id and (postable_type='exfee' or postable_type='cross') order by created_at;";
+    public function getConversationByExfeeId($exfee_id,$updated_at='') {
+        $update_cond="";
+        if($updated_at!='')
+            $update_cond="and updated_at>'$updated_at'";
+        $sql="select * from posts where postable_id=$exfee_id and (postable_type='exfee' or postable_type='cross') $update_cond order by created_at;";
         $posts=$this->getAll($sql);
         return $posts;
     }
