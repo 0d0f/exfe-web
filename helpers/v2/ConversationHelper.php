@@ -1,12 +1,12 @@
 <?php
 
 class ConversationHelper extends ActionController {
-    public function getConversationByExfeeId($exfee_id) {
+    public function getConversationByExfeeId($exfee_id,$updated_at='') {
 
         
         $identityHelper=$this->getHelperByName("identity","v2");
         $conversationData=$this->getModelByName("conversation","v2");
-        $posts=$conversationData->getConversationByExfeeId($exfee_id) ;
+        $posts=$conversationData->getConversationByExfeeId($exfee_id,$updated_at) ;
         $identities=array();
         $conversation=array();
         foreach($posts as $post)
