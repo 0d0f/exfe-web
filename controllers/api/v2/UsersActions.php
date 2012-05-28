@@ -357,7 +357,7 @@ class UsersActions extends ActionController {
             $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',     $today);
         }
         if ($fetchArgs['sometime_included']) {
-            $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime', $today);
+            $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime');
         }
         // sort crosses
         $crosses   = array();
