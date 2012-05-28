@@ -11,7 +11,7 @@ class CrossModels extends DataModel {
             case 'past':
                 $filter = "AND c.`date` <  FROM_UNIXTIME({$time_split}) AND c.`date` <> '' ORDER BY c.`date` DESC";
                 break;
-            case 'anytime':
+            case 'sometime':
                 $filter = "AND c.`date`  = '' ORDER BY c.`created_at` DESC";
                 break;
             default:
