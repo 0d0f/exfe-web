@@ -170,10 +170,10 @@ class UsersActions extends ActionController {
                 ));
                 break;
             case 'RELATED':
-            case 'REVOKED': // @todo: 存在疑问
                 apiResponse(array('registration_flag' => 'SIGN_UP'));
                 break;
             case 'VERIFYING':
+            case 'REVOKED': // @todo: 存在疑问
                 if ($user_info['password'] && $user_info['id_quantity'] === 1) {
                     apiResponse(array(
                         'registration_flag' => 'SIGN_IN',
@@ -186,6 +186,11 @@ class UsersActions extends ActionController {
                 ));
         }
         apiError(500, 'failed', '');
+    }
+
+
+    public function doVerifyIdentity() {
+
     }
 
 
@@ -258,8 +263,7 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doRegdevicetoken()
-    {
+    public function doRegdevicetoken() {
         // check if this token allow
         $params   = $this->params;
         $hlpCheck = $this->getHelperByName('check');
