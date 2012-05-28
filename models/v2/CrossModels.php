@@ -2,8 +2,7 @@
 
 class CrossModels extends DataModel {
 
-    public function getCrossesByExfeeids($exfee_id_list, $time_type = null, $time_split = null)
-    {
+    public function getCrossesByExfeeids($exfee_id_list, $time_type = null, $time_split = null) {
         switch ($time_type) {
             case 'future':
                 $filter = "AND c.`date` >= FROM_UNIXTIME({$time_split}) AND c.`date` <> '' ORDER BY c.`date` DESC";
