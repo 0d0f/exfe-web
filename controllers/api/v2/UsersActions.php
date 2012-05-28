@@ -290,7 +290,8 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $uid=$params["id"];
         $updated_at=$params["updated_at"];
-        $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
+        if($updated_at!='')
+            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
