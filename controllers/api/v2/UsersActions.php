@@ -329,9 +329,9 @@ class UsersActions extends ActionController {
             'upcoming_included'  => strtolower($_GET['upcoming_included'])  === 'false' ? false : true,
             'upcoming_folded'    => strtolower($_GET['upcoming_folded'])    === 'true'  ? true  : false,
             'upcoming_more'      => strtolower($_GET['upcoming_more'])      === 'false' ? false : true,
-            'anytime_included'   => strtolower($_GET['anytime_included'])   === 'false' ? false : true,
-            'anytime_folded'     => strtolower($_GET['anytime_folded'])     === 'true'  ? true  : false,
-            'anytime_more'       => strtolower($_GET['anytime_more'])       === 'true'  ? true  : false,
+            'sometime_included'  => strtolower($_GET['sometime_included'])  === 'false' ? false : true,
+            'sometime_folded'    => strtolower($_GET['sometime_folded'])    === 'true'  ? true  : false,
+            'sometime_more'      => strtolower($_GET['sometime_more'])      === 'true'  ? true  : false,
             'sevendays_included' => strtolower($_GET['sevendays_included']) === 'false' ? false : true,
             'sevendays_folded'   => strtolower($_GET['sevendays_folded'])   === 'true'  ? true  : false,
             'sevendays_more'     => strtolower($_GET['sevendays_more'])     === 'true'  ? true  : false,
@@ -351,13 +351,13 @@ class UsersActions extends ActionController {
         // get crosses
         $rawCrosses = array();
         if ($fetchArgs['upcoming_included'] || $fetchArgs['sevendays_included'] || $fetchArgs['later_included']) {
-            $rawCrosses['future']  = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future',  $today);
+            $rawCrosses['future']   = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future',   $today);
         }
         if ($fetchArgs['past_included']) {
-            $rawCrosses['past']    = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',    $today);
+            $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',     $today);
         }
-        if ($fetchArgs['anytime_included']) {
-            $rawCrosses['anytime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'anytime', $today);
+        if ($fetchArgs['sometime_included']) {
+            $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime', $today);
         }
         // sort crosses
         $crosses   = array();
@@ -379,24 +379,24 @@ class UsersActions extends ActionController {
                 }
             }
         }
-        // sort anytime crosses
-        if ($rawCrosses['anytime']) {
-            $xQuantity = !$fetchArgs['anytime_more'] && $xShowing >= $maxCross ? $minCross : 0;
+        // sort sometime crosses
+        if ($rawCrosses['sometime']) {
+            $xQuantity = !$fetchArgs['sometime_more'] && $xShowing >= $maxCross ? $minCross : 0;
             $iQuantity = 0;
             $enough    = false;
-            foreach ($rawCrosses['anytime'] as $cItem) {
+            foreach ($rawCrosses['sometime'] as $cItem) {
                 if ($enough) {
-                    $more[] = 'anytime';
+                    $more[] = 'sometime';
                     break;
                 }
-                $cItem->sort = 'anytime';
+                $cItem->sort = 'sometime';
                 array_push($crosses, $cItem);
-                $xShowing += !$fetchArgs['anytime_folded'] ? 1 : 0;
+                $xShowing += !$fetchArgs['sometime_folded'] ? 1 : 0;
                 if ($xQuantity && ++$iQuantity >= $xQuantity) {
                     $enough = true;
                 }
             }
-            unset($rawCrosses['anytime']);
+            unset($rawCrosses['sometime']);
         }
         // sort next-seven-days crosses
         if ($rawCrosses['future'] && $fetchArgs['sevendays_included']) {
