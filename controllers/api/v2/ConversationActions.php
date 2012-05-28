@@ -6,6 +6,9 @@ class ConversationActions extends ActionController {
     {
         $params=$this->params;
         $exfee_id=$params["id"];
+        $updated_at=$params["updated_at"];
+        if($updated_at!='')
+            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("conversation",$params["token"],array("user_id"=>$uid,"exfee_id"=>$exfee_id));
@@ -18,7 +21,7 @@ class ConversationActions extends ActionController {
         }
 
         $helperData=$this->getHelperByName("conversation","v2");
-        $conversation=$helperData->getConversationByExfeeId($exfee_id);
+        $conversation=$helperData->getConversationByExfeeId($exfee_id,$updated_at);
         apiResponse(array("conversation"=>$conversation));
     }
 
