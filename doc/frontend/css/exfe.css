@@ -5568,12 +5568,22 @@ a.badge:hover {
   cursor: pointer;
 }
 
+.navbar .user-panel .xbtn-gather {
+  line-height: 30px;
+  text-align: center;
+}
+
 .navbar .user-panel .header {
   color: #4c4c4c;
 }
 
 .navbar .user-panel .footer {
   margin-top: 12px;
+}
+
+.navbar .user-panel .actions a {
+  font-size: 12px;
+  color: #7f7f7f;
 }
 
 .navbar .user-panel .body .identity {
@@ -5889,13 +5899,15 @@ a.badge:hover {
   font-size: 22px;
   font-weight: 300;
   line-height: 26px;
+  line-height: 30px;
   color: #050505;
+  text-align: center;
   text-shadow: 0 1px 1px #fafafa;
   background-color: #d5e7f0;
   background-color: #8cbbd2;
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d5e7f0), to(#1f78a5));
-  background-image: -o-linear-gradient(top, #d5e7f0, #1f78a5);
   background-image: linear-gradient(top, #d5e7f0, #1f78a5);
+  background-image: -o-linear-gradient(top, #d5e7f0, #1f78a5);
   background-image: -ms-linear-gradient(top, #d5e7f0, #1f78a5);
   background-image: -moz-linear-gradient(top, #d5e7f0, #1f78a5);
   background-image: -webkit-linear-gradient(top, #d5e7f0, #1f78a5);
@@ -7196,6 +7208,17 @@ a.badge:hover {
   clear: right;
 }
 
+.crosses .more {
+  text-align: right;
+}
+
+.crosses .more a {
+  font-size: 12px;
+  line-height: 18px;
+  color: #7f7f7f;
+  text-decoration: underline;
+}
+
 .crosses .cross-box {
   margin-left: -9.5px;
 }
@@ -7205,6 +7228,7 @@ a.badge:hover {
   padding: 8px 10px;
   color: #424242;
   text-decoration: none;
+  cursor: pointer;
   border: 1px solid rgba(0, 0, 0, 0);
 }
 

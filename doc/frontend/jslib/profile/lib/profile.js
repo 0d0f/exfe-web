@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
   // TODO: 临时解决 Router 问题
-  if (! /^\/profile\..*/.test(window.location.pathname)) return;
+  if (! /^\/profile(_iframe)?\..*/.test(window.location.pathname)) return;
 
   var $ = require('jquery');
   var Store = require('store');
@@ -52,6 +52,23 @@ define(function (require, exports, module) {
       var s = context;
       if (context === 'default.png') s = '/img/default_portraituserface_20.png';
       return s;
+    });
+
+    Handlebars.registerHelper('printName', function (name, external_id) {
+      if (!name) {
+        name = external_id.match(/([^@]+)@[^@]+/)[1];
+      }
+      return name;
+    });
+
+    Handlebars.registerHelper('ifOauthVerifying', function (provider, status, options) {
+      var context = provider === 'twitter' && status === 'VERIFYING';
+      return Handlebars.helpers['if'].call(this, context, options, options);
+    });
+
+    Handlebars.registerHelper('ifVerifying', function (provider, status, options) {
+      var context = provider === 'email' && status === 'VERIFYING';
+      return Handlebars.helpers['if'].call(this, context, options, options);
     });
 
     Handlebars.registerHelper('atName', function (provder, external_id) {
@@ -118,7 +135,7 @@ define(function (require, exports, module) {
             //var h = s(data.response);
             var h = '';
 
-            var cates = 'upcoming<Upcoming> anytime<Anytime> sevendays<Next 7 days> later<Later> past<Past>';
+            var cates = 'upcoming<Upcoming> sometime<Sometime> sevendays<Next 7 days> later<Later> past<Past>';
             var crossList = {};
 
             R.map(data.response.crosses, function (v, i) {
@@ -149,11 +166,14 @@ define(function (require, exports, module) {
     if (!data) return;
     var user_id = data.user_id;
     var token = data.token;
-    var qdate = Store.get('qdate') || '';
-    qdate && (qdate = '&date=' + qdate);
+    //var qdate = Store.get('qdate') || '';
+    //qdate && (qdate = '&date=' + qdate);
+    var now = new Date();
+    now.setDate(now.getDate() - 3);
+    now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
 
     return $.ajax({
-      url: Util.apiUrl + '/users/' + user_id + '/crosses?token=' + token + qdate,
+      url: Util.apiUrl + '/users/' + user_id + '/crosses?token=' + token + '&date=' + now,
       type: 'GET',
       dataType: 'JSON',
       xhrFields: { withCredentials: true}
@@ -162,7 +182,7 @@ define(function (require, exports, module) {
         if (data.meta.code === 200) {
 
           var _date = new Date();
-          Store.set('qdate', _date.getFullYear() + '-' + _date.getMonth() + '-' + _date.getDate());
+          //Store.set('qdate', _date.getFullYear() + '-' + _date.getMonth() + '-' + _date.getDate());
           var crosses = data.response.crosses;
           var invitations = [];
           var updates = [];
@@ -198,8 +218,17 @@ define(function (require, exports, module) {
               }
 
               // conversation
-              if (updated.conversation && updated.conversation.length) {
-
+              if (updated.conversation) {
+                var a = identities_KV[updated.conversation.identity_id];
+                var exfee_id = crosses[a[0]].exfee.id;
+                $.ajax({
+                  url: Util.apiUrl + '/conversation/' + exfee_id + '?token=' + token + '&date=' + updated.conversation.updated_at,
+                  type: 'GET',
+                  dataType: 'JSON',
+                  xhrFields: { withCredentials: true}
+                })
+                  .done(function (data) {
+                  });
               }
             }
 
@@ -242,6 +271,11 @@ define(function (require, exports, module) {
       e.preventDefault();
       $(this).next().toggleClass('hide');
       $(this).find('span.arrow').toggleClass('lt rb');
+    });
+
+    $BODY.on('hover.profile', '.settings-panel', function (e) {
+      $(this).find('.xbtn-changepassword').toggleClass('hide');
+      $(this).find('.xlabel').toggleClass('hide');
     });
 
   });
