@@ -363,12 +363,36 @@ class UserModels extends DataModel {
 
 
     // upgraded
-    public function getUser($userid)
-    {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
-        $row=$this->getRow($sql);
+    public function getUser($userid) {
+        $sql = "select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,default_identity from users where id=$userid";
+        $row = $this->getRow($sql);
+        if ($row && !$row['avatar_file_name']) {
+            $rawIdentityIds = $this->getAll(
+                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid} AND `status` = 3"
+            );
+            if ($rawIdentityIds) {
+                $arrIdentityIds = array();
+                foreach ($rawIdentityIds as $item) {
+                    array_push($arrIdentityIds, $item['identityid']);
+                }
+                $strIdentityIds = implode($arrIdentityIds, ', ');
+                $identities = $this->getAll("SELECT `id`, `avatar_file_name` FROM `identities` WHERE `id` IN ({$strIdentityIds}) ORDER BY `id`");
+                if ($identities) {
+                    foreach ($identities as $item) {
+                        if ($row['default_identity'] === $item['id']) {
+                            $row['avatar_file_name'] = $item['avatar_file_name'];
+                            break;
+                        }
+                    }
+                    if (!$row['avatar_file_name']) {
+                        $row['avatar_file_name'] = $identities[0]['avatar_file_name'];
+                    }
+                }
+            }
+        }
         return $row;
     }
+
 
     // upgraded
     public function getUserWithPasswd($userid)
