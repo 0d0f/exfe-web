@@ -13,7 +13,7 @@ class IdentityModels extends DataModel {
             if ($rawUserIdentity && $rawUserIdentity['userid']) {
                 $rawUser = $this->getRow(
                     "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
-                )
+                );
                 if ($rawUser) {
                     $rawIdentity['bio'] = $rawIdentity['bio'] === '' ? $rawUser['bio'] : $rawIdentity['bio'];
                 }

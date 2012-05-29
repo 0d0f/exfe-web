@@ -85,6 +85,9 @@ class UserModels extends DataModel {
                         );
                         $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
+                    if (!$rawUser['avatar_file_name']) {
+                        $rawUser['avatar_file_name'] = $user->default_identity->avatar_filename;
+                    }
                 }
             }
             return $user;
@@ -426,7 +429,7 @@ class UserModels extends DataModel {
                         new Identity(
                             $item['id'],
                             $item['name'],
-                            '', // $$item['nickname'], // @todo;
+                            '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
                             $user_id,
