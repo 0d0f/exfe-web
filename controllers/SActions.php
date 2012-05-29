@@ -541,7 +541,7 @@ class SActions extends ActionController {
         exit();
     }
 
-    
+
     public function doDialogaddidentity()
     {
         $identity=$_POST["identity"];
@@ -594,6 +594,8 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
+
+
     public function doDialoglogin()
     {
         $identity=$_POST["identity"];
@@ -637,6 +639,8 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
+
+
     public function doSetpwd($userPassword, $userDisplayName, $crossID, $crossToken)
     {
         if(strlen($crossToken)>32){
@@ -668,6 +672,7 @@ class SActions extends ActionController {
 
         return false;
     }
+
 
     /**
      * 重新设置密码。
@@ -799,6 +804,7 @@ class SActions extends ActionController {
         }
     }
 
+
     public function doSetOAuthAccountPassword(){
         $returnData = array(
             "error"     => 0,
@@ -855,7 +861,7 @@ class SActions extends ActionController {
         exit();
     }
 
-    
+
     public function doVerifyIdentity(){
         $userToken = exGet("token");
         if($userToken == ""){
@@ -902,6 +908,7 @@ class SActions extends ActionController {
             }
         }
     }
+
 
     /**
      * 发送验证邮件。
@@ -963,7 +970,7 @@ class SActions extends ActionController {
         echo json_encode($returnData);
     }
 
-    
+
     public function doReportSpam() {
         $token = exGet("token");
         if($token == ""){
@@ -995,12 +1002,12 @@ class SActions extends ActionController {
         }
         $this->displayView();
     }
-    
-    
+
+
     // upgraded
     private $specialDomain = array("facebook", "twitter", "google");
 
-    
+
     // upgraded
     public function doIfIdentityExist() {
         //TODO: private API ,must check session
@@ -1054,8 +1061,8 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
-    
-    
+
+
     // upgraded
     public function doLogin()
     {
@@ -1121,8 +1128,8 @@ class SActions extends ActionController {
             $this->displayView();
         }
     }
-    
-    
+
+
     // upgraded
     public function doAdd() {
         $identity = $_GET["identity"];
@@ -1152,8 +1159,8 @@ class SActions extends ActionController {
     {
         $this->displayView();
     }
-    
-    
+
+
     // upgraded
     public function doDeleteIdentity(){
         $returnData = array(
@@ -1188,8 +1195,8 @@ class SActions extends ActionController {
         }
         echo json_encode($returnData);
     }
-    
-    
+
+
     // upgraded
     public function doChangeDefaultIdentity() {
         $returnData = array(
@@ -1223,8 +1230,8 @@ class SActions extends ActionController {
 
         echo json_encode($returnData);
     }
-    
-    
+
+
     // upgraded
     public function doChangePassword() {
         $returnData = array(
@@ -1278,8 +1285,8 @@ class SActions extends ActionController {
         echo json_encode($returnData);
         exit();
     }
-    
-    
+
+
     // upgraded
     public function doCheckLogin(){
         //header("Content-Type:application/json; charset=UTF-8");
@@ -1292,8 +1299,8 @@ class SActions extends ActionController {
             echo 0;
         }
     }
-    
-    
+
+
     // upgraded
     public function doGetUserProfile()
     {
@@ -1333,8 +1340,8 @@ class SActions extends ActionController {
         $userData->doDestroySessionAndCookies();
         header('location:/');
     }
-    
-    
+
+
     // upgraded
     public function doSendResetPasswordMail()
     {

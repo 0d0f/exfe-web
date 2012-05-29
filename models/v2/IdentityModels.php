@@ -10,13 +10,27 @@ class IdentityModels extends DataModel {
             $rawUserIdentity = $this->getRow(
                 "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
             );
+            if ($rawUserIdentity && $rawUserIdentity['userid']) {
+                $rawUser = $this->getRow(
+                    "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
+                );
+                if ($rawUser) {
+                    $rawIdentity['bio'] = $rawIdentity['bio'] === '' ? $rawUser['bio'] : $rawIdentity['bio'];
+                }
+            }
+            if (!$rawIdentity['avatar_file_name']) {
+                $rawIdentity['avatar_file_name'] = API_URL . "/v2/avatar/get?provider={$rawIdentity['provider']}&external_id={$rawIdentity['external_identity']}";
+                if ($rawIdentity['provider'] === 'email') {
+                    $rawIdentity['avatar_file_name'] = 'http://www.gravatar.com/avatar/' . md5($rawIdentity['external_identity']) . '?d=' . urlencode($rawIdentity['avatar_file_name']);
+                }
+            }
             return new Identity(
                 $rawIdentity['id'],
                 $rawIdentity['name'],
                 '', // $rawIdentity['nickname'], // @todo;
                 $rawIdentity['bio'],
                 $rawIdentity['provider'],
-                $rawUserIdentity ? $rawUserIdentity['userid'] : 0,
+                $rawUserIdentity && $rawUserIdentity['userid'] ? $rawUserIdentity['userid'] : 0,
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name'],
@@ -155,11 +169,6 @@ class IdentityModels extends DataModel {
         );
         if (intval($curIdentity['id']) > 0) {
             return intval($curIdentity['id']);
-        }
-        // set identity default avatar as Gravatar
-        if ($provider === 'email' && !$avatar_filename) {
-            $default_avatar  = $this->makeDefaultAvatar($external_id, $name) ?: DEFAULT_AVATAR_URL;
-            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($default_avatar);
         }
         // insert new identity into database
         $dbResult = $this->query(

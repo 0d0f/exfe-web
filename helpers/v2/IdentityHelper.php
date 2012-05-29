@@ -19,11 +19,6 @@ class IdentityHelper extends ActionController {
     }
 
 
-    public function makeDefaultAvatar($external_id, $name = '') {
-        return $this->modIdentity->makeDefaultAvatar($external_id, $name = '');
-    }
-
-
     public function getIdentityById($id) {
         return $this->modIdentity->getIdentityById($id);
     }
