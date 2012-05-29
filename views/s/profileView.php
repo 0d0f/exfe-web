@@ -23,7 +23,6 @@ function iframe_setup(o) {
   o.height = v2Frame.parent.document.body.scrollHeight;
 }
 </script>
-<iframe name="v2Frame" src="https://v2.localexfe.me/profile_iframe.html?domain=<?php echo DOMAIN; ?>&token=<?php echo $this->getVar('token'); ?>&time=<?php echo time(); ?>" width="100%" frameborder="0" onload="iframe_setup(this)">
-</iframe>
+<iframe name="v2Frame" src="https://v2.localexfe.me/profile_iframe.html?domain=<?php echo DOMAIN; ?>&token=<?php echo $this->getVar('token'); ?>&time=<?php echo time(); ?>" width="100%" frameborder="0" onload="iframe_setup(this)"></iframe>
 </body>
 </html>
