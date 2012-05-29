@@ -10,6 +10,14 @@ class IdentityModels extends DataModel {
             $rawUserIdentity = $this->getRow(
                 "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
             );
+            if ($rawUserIdentity && $rawUserIdentity['userid']) {
+                $rawUser = $this->getRow(
+                    "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
+                )
+                if ($rawUser) {
+                    $rawIdentity['bio'] = $rawIdentity['bio'] === '' ? $rawUser['bio'] : $rawIdentity['bio'];
+                }
+            }
             return new Identity(
                 $rawIdentity['id'],
                 $rawIdentity['name'],
@@ -158,7 +166,7 @@ class IdentityModels extends DataModel {
         }
         // set identity default avatar as Gravatar
         if ($provider === 'email' && !$avatar_filename) {
-            $default_avatar  = $this->makeDefaultAvatar($external_id, $name) ?: DEFAULT_AVATAR_URL;
+            $default_avatar  = API_URL . "/v2/avatar/get?provider={$provider}&external_id={$external_id}";
             $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($default_avatar);
         }
         // insert new identity into database
