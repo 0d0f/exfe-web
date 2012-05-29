@@ -85,6 +85,9 @@ class UserModels extends DataModel {
                         );
                         $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
+                    if (!$rawUser['avatar_file_name']) {
+                        $rawUser['avatar_file_name'] = $user->default_identity->avatar_filename;
+                    }
                 }
             }
             return $user;
@@ -426,7 +429,7 @@ class UserModels extends DataModel {
                         new Identity(
                             $item['id'],
                             $item['name'],
-                            '', // $$item['nickname'], // @todo;
+                            '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
                             $user_id,
@@ -456,7 +459,31 @@ class UserModels extends DataModel {
     }
 
 
-    public function makeDefaultAvatar($name, $render = false) {
+    public function getUserAvatarByProviderAndExternalId($provider, $external_id) {
+        $rawIdentity = $this->getRow(
+            "SELECT `id`, `name` FROM `identities`
+             WHERE  `provider`          = '{$provider}'
+             AND    `external_identity` = '{$external_id}'"
+        );
+        if ($rawIdentity && $rawIdentity['id']) {
+            $rawUser = $this->getRow(
+                "SELECT `users`.`avatar_file_name` FROM `users`, `user_identity`
+                 WHERE  `user_identity`.`userid`         = `users`.`id`
+                 AND    `user_identity`.`identityid`     = {$rawIdentity['id']}
+                 AND    `user_identity`.`status`         = 3"
+            );
+            if ($rawUser && $rawUser['avatar_file_name']) {
+                header("Location: {$rawUser['avatar_file_name']}");
+            } else {
+                $this->makeDefaultAvatar($rawIdentity['name']);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    public function makeDefaultAvatar($name) {
         // image config
         $specification = array(
             'width'  => 80,
@@ -493,22 +520,14 @@ class UserModels extends DataModel {
         } while ($fWidth > (80 - 2));
         imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
         // show image
-        if ($render) {
-            header('Pragma: no-cache');
-            header('Cache-Control: no-cache');
-            header('Content-Transfer-Encoding: binary');
-            header('Content-type: image/png');
-            $actResult = imagepng($image);
-        } else {
-        // save image
-            $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$name}");
-            $filename  = "{$hashed_path_info['fname']}.png";
-            $actResult = !$hashed_path_info['error'] && imagepng($image, "{$hashed_path_info['fpath']}/{$filename}");
-        }
-        // release memory
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        $actResult = imagepng($image);
         imagedestroy($image);
         // return
-        return $actResult ? ($render ? $actResult : (IMG_URL . "{$hashed_path_info['webpath']}/{$filename}")) : null;
+        return $actResult;
     }
 
 }

@@ -3,13 +3,33 @@
 class AvatarActions extends ActionController {
 
 	public function doDefault() {
-		$params      = $this->params;
-        $modIdentity = $this->getModelByName('identity', 'v2');
-        $modIdentity->makeDefaultAvatar('', $params['name'], true);
+		$params  = $this->params;
+        $modUser = $this->getModelByName('user', 'v2');
+        $modUser->makeDefaultAvatar($params['name']);
 	}
 
 
 	public function doGet() {
+		$params  = $this->params;
+        $modUser = $this->getModelByName('user', 'v2');
+        if ($params['provider'] && $params['external_id']
+         && $modUser->getUserAvatarByProviderAndExternalId($params['provider'], $params['external_id'])) {
+			return;
+        }
+        $curDir  = dirname(__FILE__);
+        $image   = ImageCreateFromPNG("{$curDir}/../../../eimgs/web/80_80_default.png");
+        imagealphablending($image, true);
+        imagesavealpha($image, true);
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        imagepng($image);
+        imagedestroy($image);
+	}
+
+
+	public function doRender() {
 		// init requirement
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../../../default_avatar_portrait/";
