@@ -551,14 +551,6 @@ class IdentityModels extends DataModel {
 
         $external_identity=mysql_real_escape_string($external_identity);
 
-        // make default avatar
-        if ($provider == "email" && $avatar_file_name == '') {
-            $default_avatar    = $this->makeDefaultAvatar($external_identity, $name) ?: DEFAULT_AVATAR_URL;
-            $avatar_file_name  = "http://www.gravatar.com/avatar/";
-            $avatar_file_name .= md5(strtolower(trim($external_identity)));
-            $avatar_file_name .= "?d=".urlencode($default_avatar);
-        }
-
         if($external_username == ""){
             $external_username = $external_identity;
         }
@@ -643,13 +635,6 @@ class IdentityModels extends DataModel {
         $row = $this->getRow($sql);
         if (intval($row['id']) > 0) {
             return intval($row['id']);
-        }
-        // make default avatar
-        if ($avatar_file_name === 'default.png') {
-            $default_avatar    = $this->makeDefaultAvatar($external_identity, $name) ?: DEFAULT_AVATAR_URL;
-            $avatar_file_name  = "http://www.gravatar.com/avatar/";
-            $avatar_file_name .= md5(strtolower(trim($external_identity)));
-            $avatar_file_name .= "?d=".urlencode($default_avatar);
         }
 
         $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
@@ -933,63 +918,6 @@ class IdentityModels extends DataModel {
     public function changeDefaultIdentity($user_id, $identity_id) {
         $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
         $this->query($sql);
-    }
-
-
-    // copied from identity models v2
-    public function makeDefaultAvatar($external_id, $name = '', $render = false) {
-        // image config
-        $specification = array(
-            'width'  => 80,
-            'height' => 80,
-        );
-        $colors = array(
-            array(138,  59, 197),
-            array(189,  53,  55),
-            array(219,  98,  11),
-            array( 66, 163,  36),
-            array( 41,  95, 204),
-        );
-        $ftSize = 36;
-        // init path
-        $curDir = dirname(__FILE__);
-        $resDir = "{$curDir}/../default_avatar_portrait/";
-        $fLatin = "{$resDir}OpenSans-Regular.ttf";
-        $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
-        // get image
-        $bgIdx  = rand(1, 3);
-        $image  = ImageCreateFromPNG("{$resDir}bg_{$bgIdx}.png");
-        // get color
-        $clIdx  = rand(0, count($colors) - 1);
-        $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
-        // get name & check CJK
-        $ftFile = checkCjk($name = mb_substr($name ?: $external_id, 0, 3, 'UTF-8'))
-               && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8')) ? $fCjk : $fLatin;
-        $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
-        // calcular font size
-        do {
-            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
-            $fWidth = $posArr[2] - $posArr[0];
-            $ftSize--;
-        } while ($fWidth > (80 - 2));
-        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
-        // show image
-        if ($render) {
-            header('Pragma: no-cache');
-            header('Cache-Control: no-cache');
-            header('Content-Transfer-Encoding: binary');
-            header('Content-type: image/png');
-            $actResult = imagepng($image);
-        } else {
-        // save image
-            $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$external_id}");
-            $filename  = "{$hashed_path_info['fname']}.png";
-            $actResult = !$hashed_path_info['error'] && imagepng($image, "{$hashed_path_info['fpath']}/{$filename}");
-        }
-        // release memory
-        imagedestroy($image);
-        // return
-        return $actResult ? ($render ? $actResult : (IMG_URL . "{$hashed_path_info['webpath']}/{$filename}")) : null;
     }
 
 }
