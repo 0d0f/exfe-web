@@ -319,12 +319,12 @@ define(function (require) {
     });
 
     var domain = 'http://localexfe.me';
+    var isIframe = !(parent === window);
     $BODY.on('click', '#js-xgather', function (e) {
       e.preventDefault();
       // 兼容 iframe
-      try {
+      if (isIframe) {
         parent.postMessage('gather', domain);
-      } catch (e) {
       }
     });
 
@@ -332,18 +332,17 @@ define(function (require) {
       var id_base62 = $(this).attr('href').substr(2);
       e.preventDefault();
       // 兼容 iframe
-      try {
+      if (isIframe) {
         parent.postMessage('cross:' + id_base62, domain);
-      } catch (e) {
       }
     });
 
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
       // 兼容 iframe
-      try {
+      if (isIframe) {
         parent.postMessage('logout', domain);
-      } catch (e) {
+      } else {
         Store.remove('signin');
         window.location = '/';
       }

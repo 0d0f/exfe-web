@@ -5183,8 +5183,8 @@ a.badge:hover {
 }
 
 .modal-main {
-  min-height: 295px;
-  padding: 30px 30px 25px;
+  min-height: 271px;
+  padding: 30px 30px 59px;
   border-right: 1px solid rgba(255, 255, 255, 0.8);
   border-bottom: 1px solid rgba(255, 255, 255, 0.8);
   border-left: 1px solid rgba(255, 255, 255, 0.8);
@@ -5401,6 +5401,20 @@ a.badge:hover {
 
 .popmenu li:hover {
   background-color: rgba(127, 127, 127, 0.08);
+}
+
+.help-inline {
+  display: block;
+  float: right;
+  padding-left: 0;
+  margin-top: 4px;
+  margin-right: -7px;
+}
+
+.small-loading {
+  width: 16px;
+  height: 16px;
+  background: url(/img/small-loading.gif) no-repeat;
 }
 
 [class^="icon-"],
@@ -6044,6 +6058,10 @@ a.badge:hover {
 
 .xalert-info {
   color: #1175A5;
+}
+
+.xalert-normal {
+  color: #191919;
 }
 
 .modal-id .authorize {
