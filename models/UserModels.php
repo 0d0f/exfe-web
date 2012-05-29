@@ -10,6 +10,21 @@ class UserModels extends DataModel {
     }
 
 
+    public function getAuthToken($user_id) {
+        if (!$user_id) {
+            return null;
+        }
+        $sql = "SELECT `auth_token` FROM `users` WHERE `id` = {$user_id}";
+        $row = $this->getRow($sql);
+        if (!$row['auth_token']) {
+            $row['auth_token'] = md5($time.uniqid());
+            $sql="UPDATE `users` SET `auth_token` = '{$row['auth_token']}' WHERE `id` = {$user_id}";
+            $this->query($sql);
+        }
+        return $row['auth_token'];
+    }
+
+
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
        $logout_identity_list=array();
