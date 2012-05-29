@@ -180,12 +180,12 @@
     <div class="cross-list">
       {{#updates}}
       <div class="cross-box">
-        <a href="/!{{id_base62}}" data-id={{id}} title="">
-          <time class="pull-right">Tomorrow</time>
-          <h5>Dinner in San Francisco</h5>
-          <div><span class="blue">dm.</span>:
-            My only missing food in US, dudes! yummy yummy</div>
-          <div><span class="blue">4</span>
+        <a href="/!{{crossItem "id_base62"}}" data-id="{{crossItem "id"}}" title="">
+        <time class="pull-right">{{humanTime updated_at}}</time>
+          <h5>{{crossItem "title"}}</h5>
+          <div data-postid="{{id}}"><span class="blue">{{by_identity.name}}</span>:
+            {{content}}</div>
+          <div><span class="blue">{{conversation_nums}}</span>
             new post in conversation.
           </div>
         </a>
