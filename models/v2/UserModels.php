@@ -472,7 +472,7 @@ class UserModels extends DataModel {
             if ($rawUser && $rawUser['avatar_file_name']) {
                 header("Location: {$rawUser['avatar_file_name']}");
             } else {
-                $this->makeDefaultAvatar($rawIdentity['name'], true);
+                $this->makeDefaultAvatar($rawIdentity['name']);
             }
             return true;
         }
@@ -480,7 +480,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function makeDefaultAvatar($name, $render = false) {
+    public function makeDefaultAvatar($name) {
         // image config
         $specification = array(
             'width'  => 80,
@@ -517,22 +517,14 @@ class UserModels extends DataModel {
         } while ($fWidth > (80 - 2));
         imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
         // show image
-        if ($render) {
-            header('Pragma: no-cache');
-            header('Cache-Control: no-cache');
-            header('Content-Transfer-Encoding: binary');
-            header('Content-type: image/png');
-            $actResult = imagepng($image);
-        } else {
-        // save image
-            $hashed_path_info = hashFileSavePath('eimgs', "default_avatar_{$name}");
-            $filename  = "{$hashed_path_info['fname']}.png";
-            $actResult = !$hashed_path_info['error'] && imagepng($image, "{$hashed_path_info['fpath']}/{$filename}");
-        }
-        // release memory
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        $actResult = imagepng($image);
         imagedestroy($image);
         // return
-        return $actResult ? ($render ? $actResult : (IMG_URL . "{$hashed_path_info['webpath']}/{$filename}")) : null;
+        return $actResult;
     }
 
 }

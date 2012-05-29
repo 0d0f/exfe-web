@@ -5,7 +5,7 @@ class AvatarActions extends ActionController {
 	public function doDefault() {
 		$params  = $this->params;
         $modUser = $this->getModelByName('user', 'v2');
-        $modUser->makeDefaultAvatar($params['name'], true);
+        $modUser->makeDefaultAvatar($params['name']);
 	}
 
 
