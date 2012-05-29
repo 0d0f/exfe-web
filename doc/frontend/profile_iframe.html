@@ -12,7 +12,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 
   <link href="css/exfe.css" rel="stylesheet" type="text/css" />
-
 </head>
 <body>
 
@@ -144,7 +143,7 @@
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
   <div class="cross-box">
-  <a href="/cross.html?id_base62={{id_base62}}" data-id={{id}} title="">
+  <a href="/!{{id_base62}}" data-id={{id}} title="">
     <h5>{{title}}</h5>
     <time>{{time.origin}}</time>
     <address>{{place.title}} 
@@ -166,7 +165,7 @@
     <div class="cross-list">
       {{#crosses}}
       <div class="cross-box">
-        <a href="/cross.html?id_base62={{crossItem "id_base62"}}" data-id={{crossItem "id"}} title="">
+        <a href="/!{{crossItem "id_base62"}}" data-id={{crossItem "id"}} title="">
         <h5>{{crossItem "title"}}</h5>
         <div>{{updated_at}} <span class="gray">by</span> {{by_identity.name}}</div>
         </a>
@@ -181,7 +180,7 @@
     <div class="cross-list">
       {{#updates}}
       <div class="cross-box">
-        <a href="/cross.html?id_base62={{id_base62}}" data-id={{id}} title="">
+        <a href="/!{{id_base62}}" data-id={{id}} title="">
           <time class="pull-right">Tomorrow</time>
           <h5>Dinner in San Francisco</h5>
           <div><span class="blue">dm.</span>:
