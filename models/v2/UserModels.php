@@ -456,6 +456,30 @@ class UserModels extends DataModel {
     }
 
 
+    public function getUserAvatarByProviderAndExternalId($provider, $external_id) {
+        $rawIdentity = $this->getRow(
+            "SELECT `id`, `name` FROM `identities`
+             WHERE  `provider`          = '{$provider}'
+             AND    `external_identity` = '{$external_id}'"
+        );
+        if ($rawIdentity && $rawIdentity['id']) {
+            $rawUser = $this->getRow(
+                "SELECT `users`.`avatar_file_name` FROM `users`, `user_identity`
+                 WHERE  `user_identity`.`userid`         = `users`.`id`
+                 AND    `user_identity`.`identityid`     = {$rawIdentity['id']}
+                 AND    `user_identity`.`status`         = 3"
+            );
+            if ($rawUser && $rawUser['avatar_file_name']) {
+                header("Location: {$rawUser['avatar_file_name']}");
+            } else {
+                $this->makeDefaultAvatar($rawIdentity['name'], true);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
     public function makeDefaultAvatar($name, $render = false) {
         // image config
         $specification = array(
