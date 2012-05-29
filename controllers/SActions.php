@@ -23,6 +23,10 @@ class SActions extends ActionController {
         $user = $modUser->getUser($_SESSION['userid']);
         $this->setVar('user', $user);
 
+        // Get token
+        $token = $modUser->getAuthToken($_SESSION['userid']);
+        $this->setVar('token', $token);
+
         // Get identities
         $identities = $modIdentity->getIdentitiesByUser($_SESSION['userid']);
         $this->setVar('identities', $identities);
@@ -479,6 +483,7 @@ class SActions extends ActionController {
         exit();
     }
 
+
     public function doEditUserProfile()
     {
         $returnData = array(
@@ -508,6 +513,7 @@ class SActions extends ActionController {
         echo json_encode($returnData);
         exit();
     }
+
 
     public function doEditUserIdentityName()
     {
