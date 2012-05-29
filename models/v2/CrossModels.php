@@ -2,8 +2,7 @@
 
 class CrossModels extends DataModel {
 
-    public function getCrossesByExfeeids($exfee_id_list, $time_type = null, $time_split = null)
-    {
+    public function getCrossesByExfeeids($exfee_id_list, $time_type = null, $time_split = null) {
         switch ($time_type) {
             case 'future':
                 $filter = "AND c.`date` >= FROM_UNIXTIME({$time_split}) AND c.`date` <> '' ORDER BY c.`date` DESC";
@@ -17,10 +16,10 @@ class CrossModels extends DataModel {
             default:
                 $filter = '';
         }
-        $exfee_ids=implode($exfee_id_list,",");
+        $exfee_ids = implode($exfee_id_list,",");
 
-        $sql="select c.*,p.place_line1,p.place_line2,p.provider,p.external_id,p.lng,p.lat from crosses c left join places p on p.id=c.place_id where c.exfee_id in ({$exfee_ids}) {$filter}";
-        $result=$this->getAll($sql);
+        $sql = "select c.*,p.place_line1,p.place_line2,p.provider,p.external_id,p.lng,p.lat from crosses c left join places p on p.id=c.place_id where c.exfee_id in ({$exfee_ids}) {$filter}";
+        $result = $this->getAll($sql);
         return $result;
     }
 
