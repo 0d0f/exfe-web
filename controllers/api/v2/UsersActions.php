@@ -304,7 +304,10 @@ class UsersActions extends ActionController {
         $exfeeHelper= $this->getHelperByName('exfee', 'v2');
         $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
         $crossHelper= $this->getHelperByName('cross', 'v2');
-        $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
+        if($updated_at!='')
+            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,true);
+        else
+            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,false);
         apiResponse(array("crosses"=>$cross_list));
     }
 
