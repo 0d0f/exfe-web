@@ -8,6 +8,7 @@ define(function (require, exports, module) {
   var R = require('rex');
   var Util = require('util');
   var Bus = require('bus');
+  var Moment = require('moment');
 
   // 覆盖默认 `each` 添加 `__index__` 属性
   Handlebars.registerHelper('each', function (context, options) {
@@ -189,6 +190,7 @@ define(function (require, exports, module) {
           var updated;
           var conversations = [];
           var identities_KV = {};
+          var updatesAjax = [];
           R.each(crosses, function (v, i) {
 
             // invitations
@@ -221,6 +223,7 @@ define(function (require, exports, module) {
               if (updated.conversation) {
                 var a = identities_KV[updated.conversation.identity_id];
                 var exfee_id = crosses[a[0]].exfee.id;
+                updatesAjax.push(
                 $.ajax({
                   url: Util.apiUrl + '/conversation/' + exfee_id + '?token=' + token + '&date=' + updated.conversation.updated_at,
                   type: 'GET',
@@ -228,7 +231,16 @@ define(function (require, exports, module) {
                   xhrFields: { withCredentials: true}
                 })
                   .done(function (data) {
-                  });
+                    if (data.meta.code === 200) {
+                      var conversation = data.response.conversation;
+                      if (conversation && conversation.length) {
+                        conversation[0].__crossIndex = a[0];
+                        conversation[0].__conversation_nums = conversation.length;
+                        updates.push(conversation[0]);
+                      }
+                    }
+                  })
+                );
               }
             }
 
@@ -239,12 +251,32 @@ define(function (require, exports, module) {
             return crosses[this.__crossIndex][prop];
           });
 
+          Handlebars.registerHelper('conversation_nums', function () {
+            return this.__conversation_nums;
+          });
+
+          Handlebars.registerHelper('humanTime', function (t) {
+            return Moment().from(t);
+          });
+
           if (invitations.length) {
             var jst_invitations = $('#jst-invitations');
             var s = Handlebars.compile(jst_invitations.html());
             var h = s({crosses: invitations});
             $('#profile .gr-b').append(h);
           }
+
+          if (updatesAjax.length) {
+            var dw = $.when;
+            dw = dw.apply(null, updatesAjax);
+            dw.then(function (data) {
+              var uh = $('#jst-updates').html();
+              var s = Handlebars.compile(uh);
+              var h = s({updates: updates});
+              $('#profile .gr-b').append(h);
+            });
+          }
+
         }
       });
   };
