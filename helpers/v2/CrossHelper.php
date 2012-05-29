@@ -2,7 +2,7 @@
 
 class CrossHelper extends ActionController {
 
-    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null)
+    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false)
     {
         $crossData=$this->getModelByName("cross","v2");
         $crosses=$crossData->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
@@ -15,7 +15,8 @@ class CrossHelper extends ActionController {
         if($crosses)
             foreach($crosses as $cross)
                 array_push($cross_ids,$cross["id"]);
-        $updated_crosses=mgetUpdate($cross_ids);
+        if($with_updated==true)
+            $updated_crosses=mgetUpdate($cross_ids);
 
         if($crosses)
             foreach($crosses as $cross)
@@ -52,9 +53,12 @@ class CrossHelper extends ActionController {
                 $relation="";
                 $cross->setRelation($relative_id,$relation);
                 $cross->updated_at=$exfee->updated_at." +0000";
-                $updated=json_decode($updated_crosses[$cross->id],true);
-                if($updated)
-                    $cross->updated=$updated;
+                if($with_updated==true)
+                {
+                    $updated=json_decode($updated_crosses[$cross->id],true);
+                    if($updated)
+                        $cross->updated=$updated;
+                }
                 array_push($cross_list,$cross);
             }
         return $cross_list;
