@@ -9,6 +9,7 @@ class UserModels extends DataModel {
         return intval($dbResult['exfee_id']);
     }
 
+
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
        $logout_identity_list=array();
@@ -92,18 +93,15 @@ class UserModels extends DataModel {
         $sql="INSERT INTO users (name,created_at) VALUES ('{$display_name}',FROM_UNIXTIME($time_stamp));";
         $result = $this->query($sql);
         $user_id = intval($result["insert_id"]);
-        if($user_id > 0)
-        {
+        if ($user_id > 0) {
             $sql = "INSERT INTO user_identity (identityid,userid,created_at)
                     VALUES ({$identity_id},{$user_id},FROM_UNIXTIME($time_stamp));";
             $this->query($sql);
         }
-
     }
 
 
-    public function addUserByToken($cross_id,$displayname,$token)
-    {
+    public function addUserByToken($cross_id,$displayname,$token) {
         $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql = "select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
