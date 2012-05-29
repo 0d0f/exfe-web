@@ -21,7 +21,7 @@ define('typeahead', [], function (require, exports, module) {
   var Typeahead = Widget.extend({
 
     options: {
-      template: '<div class="popmenu"></div>',
+      template: '<div class="popmenu hide"></div>',
 
       // input target
       target: null,

@@ -15,7 +15,7 @@
 
       errors: {
         'failed': 'Wrong password, try again.',
-        'no_password': 'Identity password empty.',
+        'no_password': 'Identity password empty. <span class="">Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.</span>',
         'no_external_id': 'Set up this new identity.'
       },
 
@@ -110,8 +110,7 @@
                 } else if (meta.code === 403) {
                   var errorType = meta.errorType;
                   if (errorType === 'no_password' || errorType === 'failed') {
-                    that.$('#password')
-                      .nextAll('.xalert-error')
+                      that.$('.xalert-password')
                       .html(that.options.errors[errorType])
                       .removeClass('hide');
                   } else if (errorType === 'no_external_id') {
@@ -121,9 +120,7 @@
                   }
                 }
               })
-                .fail(function (data) {
-                  //alert();
-                });
+                .fail(function (data) {});
 
           }
 
@@ -169,7 +166,6 @@
                     + '<div class="controls">'
                       + '<input type="password" class="input-large" id="password" />'
                       + '<input type="text" class="input-large hide" autocomplete="off" />'
-                      + '<div class="xalert-error hide"></div>'
                     + '</div>'
                   + '</div>'
 
@@ -181,6 +177,8 @@
                       + '</label>'
                     + '</div>'
                   + '</div>'
+
+                  + '<div class="xalert-error xalert-password hide"></div>'
 
               + '</fieldset>'
             + '</form>',
@@ -340,6 +338,13 @@
 
     options: {
 
+      onHidden: function () {
+        var $e = this.element;
+        this.options.srcNode.data('dialog', null);
+        this.destory();
+        $e.remove();
+      },
+
       events: {
         'click .xbtn-success': function (e) {
           var that = this;
@@ -461,12 +466,13 @@
           }
 
           var $e = $(e.currentTarget);
-          var signinData = Storting.get('signin');
+          var signinData = Store.get('signin');
           var user_id = signinData.user_id;
           var token = signinData.token;
           var that = this;
 
           var identity = Util.parseId(new_identity);
+          console.dir(identity);
 
           if (identity.provider) {
 
@@ -495,6 +501,11 @@
         }
       },
 
+      onShow: function () {
+        this.element.removeClass('hide');
+        this.$('#new-identity')[0].focus();
+      },
+
       onHidden: function () {
         var $e = this.element;
         this.offSrcNode();
@@ -503,42 +514,68 @@
       },
 
       viewData: {
-        cls: 'modal-addidentity',
+        // class
+        cls: 'modal-id',
 
         title: 'Identification',
 
         body: ''
-          + '<div class="shadow title">Add Identity</div>'
-          + '<form class="modal-form form-horizontal">'
-            + '<fieldset>'
-              + '<legend style="white-space: nowrap;"></legend>'
-
-                + '<div class="control-group">'
-                  + '<label class="control-label" for="new-identity">New Identity:</label>'
-                  + '<div class="controls">'
-                    + '<input class="input-large" id="new-identity" value="" type="text">'
-                  + '</div>'
-                + '</div>'
-
-                + '<div class="control-group">'
-                  + '<label class="control-label" for="password">Password:</label>'
-                  + '<div class="controls">'
-                    + '<input type="password" class="input-large" id="password" />'
-                    + '<input type="text" class="input-large hide" autocomplete="off" />'
-                    + '<div class="xalert-error hide"></div>'
+          + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
+            + '<div class="pull-right">'
+              + '<a href="#twitter"><img src="/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+            + '</div>'
+            + '<div class="authorize">Authorize account through:</div>'
+            + '<div class="orspliter">or</div>'
+            + '<form class="modal-form form-horizontal">'
+              + '<fieldset>'
+                + '<legend>Enter your identity information:</legend>'
+                  + '<div class="control-group">'
+                    + '<label class="control-label" for="new-identity">Identity:</label>'
+                    + '<div class="controls /*identity-avatar*/">'
+                      + '<img class="add-on avatar hide" src="" alt="" width="20" height="20" />'
+                      + '<input type="text" class="input-large identity" id="new-identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" />'
+                      + '<div class="xalert-info hide">Set up this new identity.</div>'
+                    + '</div>'
                   + '</div>'
 
-                + '</div>'
-            + '</fieldset>'
-          + '</form>',
+                  + '<div class="control-group">'
+                    + '<label class="control-label" for="password">Password:</label>'
+                    + '<div class="controls">'
+                      + '<input type="password" class="input-large" id="password" />'
+                      + '<input type="text" class="input-large hide" autocomplete="off" />'
+                      + '<div class="xalert-error hide"></div>'
+                    + '</div>'
+                  + '</div>'
+
+              + '</fieldset>'
+            + '</form>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
-          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from=".modal-id" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="pull-right xbtn-blue xbtn-success disabled">Add</button>'
       }
 
+    },
+
+    availability: false,
+
+    init: function () {
+      var that = this;
+      Bus.on('widget-dialog-identification-auto', function (data) {
+        /*
+        that.availability = false;
+        if (data && data.registration_flag === 'SIGN_UP') {
+          that.availability = true;
+        }
+        */
+      });
     }
+
   };
+
+  //
+  dialogs.verification_twitter = {
+  }
 
   // Identification 弹出窗口类
   var Identification = Dialog.extend({
@@ -551,15 +588,14 @@
       Bus.on('widget-dialog-identification-auto', function (data) {
         that.availability = false;
         var t;
-        if (data && data.identity) {
-          t = 'd01';
-          that.availability = true;
-        } else if (Util.trim(that.$('#identity').val())) {
-          t = 'd03';
-          if (data) that.availability = true;
+        if (data) {
+          // 新身份
+          if (data.registration_flag === 'SIGN_UP') {
+            t = 'd03';
+          }
         }
 
-        that.switchTab(t);
+        t && that.switchTab(t);
         that.$('.xbtn-forgotpwd').data('source', data);
       });
 
