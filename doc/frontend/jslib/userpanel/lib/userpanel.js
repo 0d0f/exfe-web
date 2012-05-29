@@ -57,7 +57,7 @@ define(function (require) {
           + '</div>'
           + '</div>'
         + '<div class="footer">'
-          + '<button class="xbtn xbtn-gather">Gather</button>'
+          + '<button class="xbtn xbtn-gather" id="js-xgather">Gather</button>'
         + '</div>'
       + '</div>',
 
@@ -75,26 +75,13 @@ define(function (require) {
           + '</div>'
         + '</div>'
         + '<div class="body">'
-          + '<div>Upcoming:</div>'
-          + '<ul class="crosses">'
-            + '<li class="tag">'
-              + '<span class="now">NOW</span>'
-              + '<a href="#">Dinner in San Francisco XXXXXX</a>'
-            + '</li>'
-            + '<li class="tag">'
-              + '<span class="hr24">24hr</span>'
-              + '<a href="#">Dinner in San Francisco XXXXXX</a>'
-            + '</li>'
-            + '<li>'
-              + '<a href="#">Dinner in San Francisco XXXXXX</a>'
-            + '</li>'
-          + '</ul>'
         + '</div>'
         + '<div class="footer">'
-          + '<button class="xbtn xbtn-gather">Gather</button>'
+          //+ '<button class="xbtn xbtn-gather">Gather</button>'
+          + '<a href="#" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
           + '<div class="spliterline"></div>'
           + '<div class="actions">'
-            + '<a href="#" class="pull-right" id="js-signout">Sign out</a>'
+            + '<a href="/s/logout" class="pull-right" id="js-signout">Sign out</a>'
             + '<a href="#">Settings</a>'
           + '</div>'
         + '</div>'
@@ -122,6 +109,59 @@ define(function (require) {
     var s = Handlebars.compile(userpanels[action_status]);
 
     $(s(d.d1.response.user)).appendTo($('#user-name').parent())
+
+    if (d.action_status === 3) {
+      var signin = Store.get('signin');
+      var user_id = signin.user_id;
+      var token = signin.token;
+      var qqqq = '&upcoming_included=true&anytime_included=false&sevendays_include=false&later_included=false&past_included=false';
+      $.ajax({
+        url: Util.apiUrl + '/users/' + user_id + '/crosslist?token=' + token + qqqq,
+        type: 'GET',
+        dataType: 'JSON',
+        xhrFields: { withCredentials: true}
+      })
+        .done(function (data) {
+          if (data.meta.code === 200) {
+            var crosses = data.response.crosses;
+            if (crosses.length) {
+              var now = new Date();
+              var ns = now.getTime();
+              var ne = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
+              var n24 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime();
+              Handlebars.registerHelper('alink', function (ctx) {
+                var s = '';
+                var beginAt = ctx.time.begin_at;
+                var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
+                if (dt >= ns) {
+                  s = '<li class="tag">'
+                        + '<span class="now">NOW</span>'
+                } else if (dt < ns && dt >= n24) {
+                  s = '<li class="tag">'
+                        + '<span class="hr24">24hr</span>'
+                } else {
+                  s = '<li>'
+                }
+                s += '<a data-id="' + this.id + '" href="/!' + this.id_base62 + '">' + this.title + '</a>'
+                    + '</li>';
+                return s;
+              });
+              var s = '<div>Upcoming:</div>'
+                + '<ul class="crosses">'
+                + '{{#each crosses}}'
+                  + '{{{alink this}}}'
+                + '{{/each}}'
+                + '</ul>';
+
+              var as = Handlebars.compile(s);
+              $('.user-panel .body').html(as({crosses: crosses}));
+            }
+
+          }
+
+        });
+    }
+
   });
 
   Bus.on(SIGN_IN, function (d) {
@@ -195,6 +235,14 @@ define(function (require) {
             var ds = [];
             if (tokens.length === 1) {
               var token = tokens[0];
+
+              if (token in data.response.statuses && !data.response.statuses[token]) {
+                // token失效, 暂时跳转到首页
+                window.location.href= '/';
+                Store.remove('signin');
+                return;
+              }
+
               var user_id = data.response.statuses[token].user_id;
               Store.set('signin', {token: token, user_id: user_id});
               //if (action_status === 1 || action_status === 3) {
@@ -270,12 +318,36 @@ define(function (require) {
       $(this).addClass('hide');
     });
 
-    $BODY.on('click', '#js-signout', function (e) {
+    var domain = 'http://localexfe.me';
+    $BODY.on('click', '#js-xgather', function (e) {
       e.preventDefault();
-      Store.set('signin', null);
-      window.location = '/';
+      // 兼容 iframe
+      try {
+        parent.postMessage('gather', domain);
+      } catch (e) {
+      }
     });
 
+    $BODY.on('click', 'a[data-id]', function (e) {
+      var id_base62 = $(this).attr('href').substr(2);
+      e.preventDefault();
+      // 兼容 iframe
+      try {
+        parent.postMessage('cross:' + id_base62, domain);
+      } catch (e) {
+      }
+    });
+
+    $BODY.on('click', '#js-signout', function (e) {
+      e.preventDefault();
+      // 兼容 iframe
+      try {
+        parent.postMessage('logout', domain);
+      } catch (e) {
+        Store.remove('signin');
+        window.location = '/';
+      }
+    });
   });
 
 });
