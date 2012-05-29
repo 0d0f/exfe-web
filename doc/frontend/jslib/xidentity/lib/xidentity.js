@@ -74,9 +74,16 @@ define(function (require) {
                 type: 'GET',
                 dataType: 'JSON',
                 xhrFields: {withCredentials: true},
-                data: identity
+                data: identity,
+                beforeSend: function (xhr) {
+                  // ajax loading
+                  that.target.next().removeClass('hide');;
+                }
               })
                 .done(function (data) {
+                  // ajax loading
+                  that.target.next().addClass('hide');;
+
                   if (data.meta.code === 200) {
                     if (e === that.target.val()) {
                       options.useCache && (that.cache[e] = data.response);

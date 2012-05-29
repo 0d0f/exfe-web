@@ -15,7 +15,7 @@
 
       errors: {
         'failed': 'Wrong password, try again.',
-        'no_password': 'Identity password empty. <span class="">Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.</span>',
+        'no_password': 'Identity password empty. <span class="xalert-normal">Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.</span>',
         'no_external_id': 'Set up this new identity.'
       },
 
@@ -47,6 +47,20 @@
       },
 
       events: {
+        'click #password-eye': function (e) {
+          var p = this.$('#password');
+          var pt = this.$('#password-text');
+          var $elem = $(e.currentTarget);
+          if ($elem.hasClass('icon-eye-close')) {
+            p.addClass('hide');
+            pt.val(p.val()).removeClass('hide');
+          } else {
+            pt.addClass('hide');
+            p.val(pt.val()).removeClass('hide');
+          }
+          $elem.toggleClass('icon-eye-close');
+          $elem.toggleClass('icon-eye-open');
+        },
         'click .xbtn-forgotpwd': function (e) {
           e.preventDefault();
           this.hide();
@@ -65,8 +79,8 @@
         'click .xbtn-startover': function (e) {
           e.preventDefault();
           this.$('#identity').val('');
-          this.switchTab('d01');
           this.emit('checkUser');
+          this.switchTab('d01');
         },
         'click .x-signin': function (e) {
           var xsignin = $(e.currentTarget);
@@ -127,7 +141,7 @@
         }
       },
 
-      backdrop: false,
+      backdrop: true,
 
       viewData: {
         // class
@@ -150,6 +164,7 @@
                     + '<div class="controls /*identity-avatar*/">'
                       + '<img class="add-on avatar hide" src="" alt="" width="20" height="20" />'
                       + '<input type="text" class="input-large identity" id="identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" />'
+                      + '<i class="help-inline small-loading hide"></i>'
                       + '<div class="xalert-info hide">Set up this new identity.</div>'
                     + '</div>'
                   + '</div>'
@@ -165,7 +180,8 @@
                     + '<label class="control-label" for="password">Password:</label>'
                     + '<div class="controls">'
                       + '<input type="password" class="input-large" id="password" />'
-                      + '<input type="text" class="input-large hide" autocomplete="off" />'
+                      + '<input type="text" class="input-large hide" autocomplete="off" id="password-text" />'
+                      + '<i class="help-inline icon-eye-close" id="password-eye"></i>'
                     + '</div>'
                   + '</div>'
 
@@ -219,7 +235,7 @@
         $e.remove();
       },
 
-      backdrop: false,
+      backdrop: true,
 
       viewData: {
         // class
@@ -250,7 +266,7 @@
         $e.remove();
       },
 
-      backdrop: false,
+      backdrop: true,
 
       viewData: {
         // class
@@ -279,7 +295,10 @@
       events: {
         'click .xbtn-cancel': function (e) {
           this.hide();
-          if (this.dialog_from) $(this.dialog_from).removeClass('hide');
+          if (this.dialog_from) {
+            $(this.dialog_from).removeClass('hide');
+            $('#js-modal-backdrop').removeClass('hide');
+          }
           var $e = this.element;
           this.offSrcNode();
           this.destory();
@@ -305,7 +324,7 @@
         }
       },
 
-      backdrop: false,
+      backdrop: true,
 
       viewData: {
 
@@ -403,6 +422,8 @@
         this.$('#cp-fullname').val(user.name);
       },
 
+      backdrop: true,
+
       viewData: {
 
         cls: 'modal-cp mblack',
@@ -451,6 +472,9 @@
 
   dialogs.addidentity = {
     options: {
+
+      backdrop: true,
+
       events: {
         'click .xbtn-success': function (e) {
           var new_identity = Util.trim(this.$('#new-identity').val());
@@ -472,7 +496,6 @@
           var that = this;
 
           var identity = Util.parseId(new_identity);
-          console.dir(identity);
 
           if (identity.provider) {
 
@@ -503,7 +526,7 @@
 
       onShow: function () {
         this.element.removeClass('hide');
-        this.$('#new-identity')[0].focus();
+        this.$('#new-identity').lastfocus();
       },
 
       onHidden: function () {
@@ -627,6 +650,10 @@
       var val = Util.trim(this.$('#identity').val());
       var identity = Util.parseId(val);
       if (t === 'd01' || t === 'd03') {
+        var pt = this.$('#password-text');
+        if (! pt.hasClass('hide')) {
+          this.$('#password').val(pt.val());
+        }
         identity.password = this.$('#password').val();
       }
       if (t === 'd01') {
@@ -657,9 +684,8 @@
 
       if (t === 'd01' || t === 'd03') {
         var $identity = this.$('#identity');
-        $identity[0].focus();
+        $identity.lastfocus();
       }
-
     }
 
   });
