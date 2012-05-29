@@ -82,7 +82,7 @@ define(function (require) {
           + '<div class="spliterline"></div>'
           + '<div class="actions">'
             + '<a href="/s/logout" class="pull-right" id="js-signout">Sign out</a>'
-            + '<a href="#">Settings</a>'
+            //+ '<a href="#">Settings</a>'
           + '</div>'
         + '</div>'
       + '</div>'
