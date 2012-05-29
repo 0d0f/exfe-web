@@ -16,6 +16,8 @@ define('dialog', [], function (require, exports, module) {
 
   var $BODY = $(document.body);
 
+  var hasBackDrop = false;
+
   /*
    * HTML
    *
@@ -76,9 +78,10 @@ define('dialog', [], function (require, exports, module) {
         if (others) this.element.find('div.modal-main').append(others);
       }
 
-      if (this.options.backdrop) {
+      if (this.options.backdrop && !hasBackDrop) {
         var backdropNode = $(this.options.backdropNode);
         backdropNode.appendTo(this.parentNode).addClass('in');
+        hasBackDrop = true;
       }
 
       this.element.appendTo(this.parentNode);

@@ -1,4 +1,5 @@
 define(function (require) {
+  // 解决 mozilla firefox input 聚焦是光标 focus 到前面的bug
 
   var $ = require('jquery');
   var isFF = $.browser.mozilla;
@@ -11,6 +12,10 @@ define(function (require) {
         this.setSelectionRange(l, l);
       });
     } :
-    $.fn.focus;
+    function () {
+      return this.each(function () {
+        this.focus();
+      });
+    };
 
 });
