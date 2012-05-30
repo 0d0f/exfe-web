@@ -298,6 +298,8 @@
           if (this.dialog_from) {
             $(this.dialog_from).removeClass('hide');
             $('#js-modal-backdrop').removeClass('hide');
+            // TODO: 先简单处理，后面是否要保存 target 元素
+            $('#identity').lastfocus();
           }
           var $e = this.element;
           this.offSrcNode();
