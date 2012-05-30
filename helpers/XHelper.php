@@ -62,6 +62,8 @@ class XHelper extends ActionController {
         $crossData->updateCrossUpdateTime($cross_id);
         saveUpdate($cross_id,$cross_updated);
     }
+
+
     public function sendXChangeMsg($new_cross,$host_identity_id,$changed,$old_title) {
 
         $identityData=$this->getModelByName("identity");
@@ -156,7 +158,7 @@ class XHelper extends ActionController {
                 }
             }
         }
-        
+
     }
 
 
@@ -165,10 +167,10 @@ class XHelper extends ActionController {
         $modLog->addLog('identity', $identity_id, 'gather', 'cross',
                         $cross_id, '', $cross_title, '');
     }
-    
-    
+
+
     public function getHistory($cross_id) {
-        
+
     }
 
 
