@@ -18,6 +18,8 @@ class Invitation extends EFObject {
 
     public $host             = null;
 
+    public $with             = null;
+
 
     public function __construct($id               = 0,
                                 $identity         = null,
@@ -27,7 +29,8 @@ class Invitation extends EFObject {
                                 $token            = '',
                                 $created_at       = '',
                                 $updated_at       = '',
-                                $host             = false) {
+                                $host             = false,
+                                $with             = 0) {
         parent::__construct($id, 'invitation');
 
         $this->identity         = $identity;
@@ -38,6 +41,7 @@ class Invitation extends EFObject {
         $this->created_at       = $created_at;
         $this->updated_at       = $updated_at;
         $this->host             = $host;
+        $this->with             = $with;
     }
 
 }
