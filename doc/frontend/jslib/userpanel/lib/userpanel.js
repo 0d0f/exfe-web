@@ -318,8 +318,10 @@ define(function (require) {
       $(this).addClass('hide');
     });
 
-    var domain = 'http://localexfe.me';
+    // 兼容 iframe
     var isIframe = !(parent === window);
+    var domain = /domain=([^&]+)/.exec(decodeURIComponent(window.location.search));
+    domain = (domain && domain[1]) || ''
     $BODY.on('click', '#js-xgather', function (e) {
       e.preventDefault();
       // 兼容 iframe
