@@ -303,6 +303,11 @@ class XActions extends ActionController
                 $this->setVar('token_expired', 'true');
             }
         }
+
+        // Get token
+        $user_token = $user && $user['id'] ? $modUser->getAuthToken($user['id']) : '';
+        $this->setVar('user_token', $user_token);
+
         $this->setVar('showlogin', $showlogin);
         $this->setVar('token', $_GET['token']);
 

@@ -46,6 +46,7 @@
        . "var token_expired='".$token_expired."'; \r\n"
     // . "var token_expired='true'; \r\n"
        . "var myrsvp=".$myrsvp."; \r\n"
+       . "var user_token='".$this->getVar('user_token')."'; \r\n"
        . "var token='".$_GET["token"]."'; \r\n"
        . "var id_name='".$global_name."'; \r\n"
        . "var location_uri='".SITE_URL."/!".int_to_base62($cross["id"])."';\r\n"
