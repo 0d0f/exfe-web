@@ -317,6 +317,7 @@ define(function (require) {
       if (e.type === 'mouseleave') {
         timer = setTimeout(function () {
           $userPanel
+            .stop()
             .animate({top: h}, 200, function () {
               self.prev().addClass('hide');
               self.parent().removeClass('user');
@@ -344,6 +345,7 @@ define(function (require) {
       self.prev().removeClass('hide');
       self.parent().addClass('user');
       $userPanel
+        .stop()
         .animate({top: 56}, 100);
     }
 
