@@ -2,13 +2,6 @@
 
 class SActions extends ActionController {
 
-    public function doTestUser() {
-        $identityData = $this->getModelByName("identity");
-        $identityData->setRelation($_GET["identity_id"]);
-
-    }
-
-
     public function doProfile() {
         if (intval($_SESSION['userid']) <= 0) {
             header('Location: /s/login') ;
