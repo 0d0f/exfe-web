@@ -59,14 +59,19 @@
       font-style: normal;
     }
 
-    &.user-name {
+
+  }
+    .user-name {
       float: right;
       position: relative;
+      z-index: @zindexDropdown + 1;
       height: 26px;
       padding: 15px 2px;
       margin: 0 12px;
       text-align: center;
       white-space: nowrap;
+      color: #7f7f7f;
+      text-decoration: none;
 
       > span {
         display: block;
@@ -76,7 +81,7 @@
       }
     }
 
-    &.user-name:before {
+     .user-name:before {
       content: '';
       position: absolute;
       display: block;
@@ -86,7 +91,7 @@
       left: -12px;
     }
 
-    &.user-name:after {
+     .user-name:after {
       content: '';
       position: absolute;
       display: block;
@@ -96,11 +101,9 @@
       right: -12px;
     }
 
-  }
     .user .user-name:before {
       background: url(/img/navbar-user-left.png) no-repeat transparent;
     }
-
 
     .user .user-name {
       background: url(/img/navbar-user-down.png) repeat-x transparent;
