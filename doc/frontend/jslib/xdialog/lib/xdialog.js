@@ -235,11 +235,11 @@
         $e.remove();
       },
 
-      backdrop: true,
+      backdrop: false,
 
       viewData: {
         // class
-        cls: 'modal-sandbox',
+        cls: 'mblack modal-sandbox',
 
         title: 'Sandbox',
 
