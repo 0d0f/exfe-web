@@ -109,7 +109,7 @@ class XModels extends DataModel {
     {
         // update place
         $placeHelper  = $this->getHelperByName('place');
-        $sql          = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
+        $sql          = "SELECT `place_id`, `exfee_id` FROM `crosses` WHERE `id` = {$cross['id']}";
         $place_id_arr = $this->getRow($sql);
         $place_id     = $place_id_arr['place_id'];
         if($place_id) {
@@ -133,7 +133,9 @@ class XModels extends DataModel {
                         `origin_begin_at` = '{$cross['origin_begin_at']}',
                         `place_id`        =  {$place_id}
                   WHERE `id`              =  {$cross['id']}";
-
+        // update exfee_update_time for v1 v2 bridge {
+        $this->updateExfeeTime($place_id_arr['exfee_id']);
+        // }
         return $this->query($sql);
     }
 

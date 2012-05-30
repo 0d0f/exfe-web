@@ -436,17 +436,12 @@ class SActions extends ActionController {
             $global_identity_id=$_SESSION["identity_id"];
         }
 
-        if(intval($_SESSION["userid"])>0)
-        {
+        if (intval($_SESSION["userid"]) > 0) {
             $userData = $this->getModelByName("user");
             $user=$userData->getUserWithPasswd($_SESSION["userid"]);
             //display user name.
             $global_name=$user["name"];
-            if($user["avatar_file_name"] == ""){
-                $global_avatar_file_name = "default.png";
-            }else{
-                $global_avatar_file_name=$user["avatar_file_name"];
-            }
+            $global_avatar_file_name=$user["avatar_file_name"];
 
             $returnData["no_password"] = !$user['encrypted_password'];
             $returnData["user_status"] = 1;
