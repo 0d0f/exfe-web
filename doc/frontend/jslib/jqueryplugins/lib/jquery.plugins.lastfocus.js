@@ -6,16 +6,13 @@ define(function (require) {
 
   $.fn.lastfocus = isFF ?
     function () {
-      return this.each(function () {
-        var l = this.value.length;
-        this.focus();
-        this.setSelectionRange(l, l);
-      });
+      var target = this[0]
+        , l = target.value.length;
+      target.focus();
+      target.setSelectionRange(l, l);
     } :
     function () {
-      return this.each(function () {
-        this.focus();
-      });
+      this[0].focus();
     };
 
 });
