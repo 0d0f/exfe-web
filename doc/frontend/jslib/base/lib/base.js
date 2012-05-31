@@ -102,6 +102,7 @@ define('base', [], function (require) {
 
       if (PROTO) this.__proto__ = PROTO;
     }
+
   });
 
 });

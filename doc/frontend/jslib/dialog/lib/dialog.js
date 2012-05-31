@@ -101,26 +101,33 @@ define('dialog', [], function (require, exports, module) {
     },
 
     show: function (data) {
-
       // 临时
       $BODY.find('.modal').addClass('hide');
 
-      this.emit('show', data);
+      this.emit('showBefore', data);
+
       if (this.options.backdrop) {
         $('#js-modal-backdrop').removeClass('hide');
       }
       this.element.removeClass('hide');
+
+      // after
+      this.emit('showAfter', data);
       return this;
     },
 
     hide: function (data) {
+      // before
+      this.emit('hideBefore', data);
+
       if (this.options.backdrop) {
         $('#js-modal-backdrop').addClass('hide');
       }
       this.element.addClass('hide');
-      this.emit('hidden', data);
 
       // if (this.options.lifecycle) {}
+      // after
+      this.emit('hideAfter', data);
       return this;
     },
 
