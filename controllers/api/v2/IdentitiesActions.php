@@ -79,6 +79,11 @@ class IdentitiesActions extends ActionController {
 
 
     public function doUpdate() {
+
+    }
+
+
+    public function doUpdateByGobus() {
         // get raw data
         $id                = isset($_POST['id'])                ? intval(htmlspecialchars($_POST['id']))                                  : null;
         $provider          = isset($_POST['provider'])          ? mysql_real_escape_string(htmlspecialchars($_POST['provider']))          : null;
