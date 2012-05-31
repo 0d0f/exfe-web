@@ -472,6 +472,35 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doUpdate() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modUser = $this->getModelByName('user', 'v2');
+        // collecting post data
+        $user = array();
+        if (isset($_POST['name'])) {
+            $user['name'] = trim($_POST['name']);
+        }
+        if ($user) {
+            if (!$modUser->updateUserById($user_id, $user)) {
+                apiError(500, 'update_failed');
+            }
+        }
+        if ($objUser = $modUser->getUserById($user_id, true, 0)) {
+            apiResponse(array('user' => $objUser));
+        }
+        apiError(404, 'user_not_found', 'user not found');
+    }
+
+
     public function doSetPassword() {
         // check signin
         $checkHelper = $this->getHelperByName('check', 'v2');

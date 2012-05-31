@@ -459,6 +459,17 @@ class UserModels extends DataModel {
     }
 
 
+    public function updateUserById($user_id, $user = array()) {
+        $update_sql = '';
+        if (isset($user['name'])) {
+            $update_sql .= " `name` = '{$user['name']}', ";
+        }
+        return $update_sql
+             ? $this->query("UPDATE `users` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$user_id}")
+             : true;
+    }
+
+
     public function getUserAvatarByProviderAndExternalId($provider, $external_id) {
         $rawIdentity = $this->getRow(
             "SELECT `id`, `name` FROM `identities`
