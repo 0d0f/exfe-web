@@ -489,15 +489,13 @@ class UsersActions extends ActionController {
         if (isset($_POST['name'])) {
             $user['name'] = trim($_POST['name']);
         }
-        if ($user) {
-            if (!$modUser->updateUserById($user_id, $user)) {
-                apiError(500, 'update_failed');
-            }
+        if ($user && !$modUser->updateUserById($user_id, $user)) {
+            apiError(500, 'update_failed');
         }
-        if ($objUser = $modUser->getUserById($user_id, true, 0)) {
+        if ($objUser = $modUser->getUserById($user_id, false, 0)) {
             apiResponse(array('user' => $objUser));
         }
-        apiError(404, 'user_not_found', 'user not found');
+        apiError(500, 'update_failed');
     }
 
 
