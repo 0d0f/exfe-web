@@ -57,7 +57,7 @@ class ExfeeActions extends ActionController {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
-                    array('exfee' => array('updated_at' => time(), 'identity_id' => $by_identity_id))
+                    array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
                 );
             }
             apiResponse(array('exfee' => $modExfee->getExfeeById($exfee_id)));
