@@ -11,10 +11,14 @@ define('base', [], function (require) {
 
   var PROTO = Object.__proto__;
 
-  var isArray = Array.isArray;
-  if (!isArray) isArray = function (a) {return typeof a === 'array';}
-
   var toString = Object.prototype.toString;
+
+  var isArray = Array.isArray;
+  if (!isArray) isArray = function (a) {return toString.call(a) === '[object Array]';}
+
+  function isFunction(f) {
+    return toString.call(f) === '[object Function]';
+  }
 
   function isPlainObject(o) {
     return o &&
@@ -67,8 +71,8 @@ define('base', [], function (require) {
       options = this.options;
 
       // 父类 options
-      if (this.constructor.__super__.options) {
-        merge(options, this.constructor.__super__.options);
+      if (this.constructor.superclass.options) {
+        merge(options, this.constructor.superclass.options);
       }
 
       // 子类 options
