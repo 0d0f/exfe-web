@@ -39,7 +39,7 @@ class ConversationModels extends DataModel {
 		        $result = $this->query($sql);
                 if (intval($result["insert_id"]) > 0) {
                     $cross_updated=array();
-                    $updated=array("updated_at"=>time(),"identity_id"=>$identity_id);
+                    $updated=array("updated_at"=>date('Y-m-d H:i:s',time()),"identity_id"=>$identity_id);
                     $cross_updated["conversation"]=$updated;
                     // v1_v2_bridge {
                     if (($exfee_id = $this->getExfeeIdByCrossId($cross_id))) {
