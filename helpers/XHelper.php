@@ -46,7 +46,7 @@ class XHelper extends ActionController {
     public function updateXChange($cross_id,$by_identity_id,$cross)
     {
         $cross_updated=array();
-        $updated=array("updated_at"=>time(),"identity_id"=>$by_identity_id);
+        $updated=array("updated_at"=>date('Y-m-d H:i:s',time()),"identity_id"=>$by_identity_id);
 
         if($cross["title"])
             $cross_updated["title"]=$updated;
