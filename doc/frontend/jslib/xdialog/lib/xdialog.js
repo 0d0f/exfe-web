@@ -199,12 +199,12 @@
               + '</fieldset>'
             + '</form>',
 
-        // d01 登陆, d02 ISee, d03 注册, d14 验证
+        // d01 登陆, d02 ISee, d03 注册, d24 验证
         footer: ''
           + '<a href="#" class="xbtn-setup d d01 hide">Set Up?</a>'
           + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from=".modal-id" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
-          + '<button href="#" class="xbtn-white d d03 d14 xbtn-startover hide">Start Over</button>'
-          + '<button href="#" class="pull-right d d14 xbtn-blue hide">Verify</button>'
+          + '<button href="#" class="xbtn-white d d03 d24 xbtn-startover hide">Start Over</button>'
+          + '<button href="#" class="pull-right d d24 xbtn-blue hide">Verify</button>'
           + '<button href="#" class="pull-right xbtn-blue d d01 d03 x-signin disabled hide">Sign In</button>'
           + '<button href="#" class="pull-right xbtn-blue d xbtn-success hide">Done</button>'
           + '<button href="#" class="pull-right xbtn-white d d02 xbtn-isee hide">I See</button>',
@@ -312,9 +312,9 @@
       },
 
       onShow: function (e) {
-        var data = Store.get('user');
+        var data = $(e.currentTarget).data('source');
         if (data) {
-          var identity = data.identities[0];
+          var identity = data.identity;
           if (identity['avatar_filename'] === 'default.png') {
             identity['avatar_filename'] = '/img/default_portraituserface_20.png';
           }
@@ -602,6 +602,48 @@
   dialogs.verification_twitter = {
   }
 
+  dialogs.setpassword = {
+
+    options: {
+
+      backdrop: false,
+
+      viewData: {
+
+        // class
+        cls: 'mblack modal-sp',
+
+        title: 'Set Password',
+
+        body: ''
+          + '<div class="shadow title">Set Password</div>'
+          + '<form class="modal-form form-horizontal">'
+            + '<fieldset>'
+              + '<legend>Please set a universal password for your account. You can sign in by any of your identities (if more than one), with the same password.</legend>'
+
+              + '<div class="control-group">'
+                + '<label class="control-label" for="setpassword">Password:</label>'
+                + '<div class="controls">'
+                  + '<input type="password" class="input-large" id="setpassword" />'
+                  + '<input type="text" class="input-large hide" autocomplete="off" id="setpassword-text" />'
+                  + '<i class="help-inline icon-eye-close" id="password-eye"></i>'
+                  + '<div class="xalert-error hide"></div>'
+                + '</div>'
+              + '</div>'
+
+            + '</fieldset>'
+          + '</form>'
+          + '<p>e.g.: To sign in with your Twitter account. Just use “@myTwitterID@Twitter” as your identity, along with your password above.</p>',
+
+        footer: ''
+          + '<button href="#" class="pull-right xbtn-blue xbtn-success">Done</button>'
+
+      }
+
+    }
+
+  };
+
   // Identification 弹出窗口类
   var Identification = Dialog.extend({
 
@@ -612,15 +654,37 @@
       var that = this;
       Bus.on('widget-dialog-identification-auto', function (data) {
         that.availability = false;
+
         var t;
-        if (data) {
-          // 新身份
-          if (data.registration_flag === 'SIGN_UP') {
-            t = 'd03';
-          }
+
+        if (that.switchTabType === 'd24') {
+          t = 'd01';
         }
 
-        t && that.switchTab(t);
+        if (data) {
+          // SIGN_IN
+          if (data.registration_flag === 'SIGN_IN') {
+            t = 'd01';
+            that.toggleSetupOrForgopwd(true);
+          }
+          // SIGN_UP 新身份
+          else if (data.registration_flag === 'SIGN_UP') {
+            //t = 'd03';
+            that.toggleSetupOrForgopwd(false);
+          }
+          // RESet Password
+          else if (data.registration_flag === 'RESET_PASSWORD') {
+            t = 'd24';
+            //that.toggleSetupOrForgopwd(false);
+          }
+          that.availability = true;
+        } else {
+          //that.toggleSetupOrForgopwd(false);
+        }
+
+        t && (that.switchTabType !== t) && that.switchTab(t);
+
+        that.$('.x-signin')[(that.availability ? 'remove' : 'add') + 'Class']('disabled');
         that.$('.xbtn-forgotpwd').data('source', data);
       });
 
@@ -632,12 +696,9 @@
       });
     },
 
-    d01: function (t) {
-      if (t === 'd01') {
-        var val = Util.trim(this.$('#identity').val());
-        this.$('.xbtn-setup')[(val ? 'add' : 'remove') + 'Class']('hide');
-        this.$('.xbtn-forgotpwd')[(val ? 'remove' : 'add') + 'Class']('hide');
-      }
+    toggleSetupOrForgopwd: function (b) {
+      this.$('.xbtn-setup')[(b ? 'add' : 'remove') + 'Class']('hide');
+      this.$('.xbtn-forgotpwd')[(b ? 'remove' : 'add') + 'Class']('hide');
     },
 
     d03: function (t) {
@@ -667,7 +728,7 @@
       return identity;
     },
 
-    switchTab: function (t) {
+    switchTab: function (t, b) {
       this.$('.d')
         .not('.hide')
         .addClass('hide')
@@ -681,7 +742,8 @@
 
       this.switchTabType = t;
 
-      this.d01(t);
+      if (t === 'd01') this.toggleSetupOrForgopwd(b);
+
       this.d03(t);
 
       if (t === 'd01' || t === 'd03') {
