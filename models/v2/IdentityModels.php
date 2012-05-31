@@ -86,7 +86,25 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function updateIdentityById($id, $identityDetail = array()) {
+    public function updateIdentityById($identity_id, $identity = array()) {
+        if (!$identity_id) {
+            return false;
+        }
+        $update_sql = '';
+        if (isset($identity['name'])) {
+            $update_sql .= " `name` = '{$identity['name']}', ";
+        }
+        if (isset($identity['bio'])) {
+            $update_sql .= " `bio`  = '{$identity['bio']}', ";
+        }
+        return $update_sql
+             ? $this->query("UPDATE `identities` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$identity_id}")
+             : true;
+
+    }
+
+
+    public function updateIdentityByGobus($id, $identityDetail = array()) {
         $id = intval($id);
         if (!$id || !$identityDetail['provider'] || !$identityDetail['external_id']) {
             return null;

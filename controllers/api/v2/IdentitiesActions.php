@@ -79,6 +79,56 @@ class IdentitiesActions extends ActionController {
 
 
     public function doUpdate() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', '');
+        }
+        // get models
+        $modUser     = $this->getModelByName('user', 'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // get user
+        if (!($objUser = $modUser->getUserById($user_id))) {
+            apiError(500, 'update_failed');
+        }
+        // collecting post data
+        if (!($identity_id = intval($params['id']))) {
+            apiError(400, 'no_identity_id', 'identity_id must be provided');
+        }
+        $identity = array();
+        if (isset($_POST['name'])) {
+            $identity['name'] = trim($_POST['name']);
+        }
+        if (isset($_POST['bio'])) {
+            $identity['bio']  = trim($_POST['bio']);
+        }
+        // check identity
+        foreach ($objUser->identities as $iItem) {
+            if ($iItem->id === $identity_id) {
+                switch ($iItem->provider) {
+                    case 'email':
+                        if ($identity && !$modIdentity->updateIdentityById($identity_id, $identity)) {
+                            apiError(500, 'update_failed');
+                        }
+                        if ($objIdentity = $modIdentity->getIdentityById($identity_id)) {
+                            apiResponse(array('identity' => $objIdentity));
+                        }
+                        apiError(500, 'update_failed');
+                        break;
+                    default:
+                        apiError(400, 'can_not_update', 'this identity can not be update');
+                }
+            }
+        }
+        apiError(400, 'invalid_relation', 'only your connected identities can be update');
+    }
+
+
+    public function doUpdateByGobus() {
         // get raw data
         $id                = isset($_POST['id'])                ? intval(htmlspecialchars($_POST['id']))                                  : null;
         $provider          = isset($_POST['provider'])          ? mysql_real_escape_string(htmlspecialchars($_POST['provider']))          : null;
@@ -95,7 +145,7 @@ class IdentitiesActions extends ActionController {
         }
         // do update
         $objIdentity = $this->getModelByName('Identity', 'v2');
-        $id = $objIdentity->updateIdentityById(
+        $id = $objIdentity->updateIdentityByGobus(
             $id,
             array('provider'          => $provider,
                   'external_id'       => $external_id,
