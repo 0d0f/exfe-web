@@ -64,7 +64,7 @@ class CrossModels extends DataModel {
             $updatefields=array();
             $cross_updated=array();
 
-            $updated=array("updated_at"=>time(),"identity_id"=>$by_identity_id);
+            $updated=array("updated_at"=>date('Y-m-d H:i:s',time()),"identity_id"=>$by_identity_id);
             if($place_id>0)
             {
                 array_push($updatefields,"place_id=$place_id");
