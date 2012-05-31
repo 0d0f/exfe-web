@@ -115,9 +115,10 @@ class ExfeeHelper extends ActionController {
 
         if ($nedUpdate) {
             $crossData->updateCrossUpdatedAt($cross_id);
+            
             saveUpdate(
                 $cross_id,
-                array('exfee' => array('updated_at' => time(), 'identity_id' => $my_identity_id))
+                array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $my_identity_id))
             );
         }
 
