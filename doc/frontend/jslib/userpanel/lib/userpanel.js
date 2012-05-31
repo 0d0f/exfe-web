@@ -108,7 +108,7 @@ define(function (require) {
 
     var s = Handlebars.compile(userpanels[action_status]);
 
-    $(s(d.d1.response.user)).appendTo($('#user-name').parent())
+    $(s(d.d1.response.user)).appendTo($('div.dropdown-wrapper'))
 
     if (d.action_status === 3) {
       var signin = Store.get('signin');
@@ -123,20 +123,23 @@ define(function (require) {
       })
         .done(function (data) {
           if (data.meta.code === 200) {
+            // NOTE:
+            // now: 当前时间～cross发生时间(3hr)
+            // 24hr: cross发生时间 ～ 当前时间(24hr)
+
             var crosses = data.response.crosses;
             if (crosses.length) {
-              var now = new Date();
-              var ns = now.getTime();
-              var ne = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
-              var n24 = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).getTime();
+              var now = +new Date();
+              var ne = now + 3 * 60 * 60 * 1000;
+              var n24 = now - 24 * 60 * 60 * 1000;
               Handlebars.registerHelper('alink', function (ctx) {
                 var s = '';
                 var beginAt = ctx.time.begin_at;
                 var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
-                if (dt >= ns) {
+                if (now <= dt && dt <= ne) {
                   s = '<li class="tag">'
                         + '<span class="now">NOW</span>'
-                } else if (dt < ns && dt >= n24) {
+                } else if (n24 <= dt && dt < now) {
                   s = '<li class="tag">'
                         + '<span class="hr24">24hr</span>'
                 } else {
@@ -297,26 +300,56 @@ define(function (require) {
   var $BODY = $(document.body);
   $(function () {
 
+    /**
+     *
+     * User-Panel 下拉菜单动画效果
+     */
+    // 初始化高度
+    var _i_ = false;
     function hover(e) {
+      var self = $(this)
+        , timer = self.data('timer')
+        , $userPanel = self.find('div.user-panel')
+        , h = -$userPanel.outerHeight();
+
       e.preventDefault();
-      if (e.type === 'mouseenter') {
-        $(this).find('.user-panel').addClass('show');
-        $(this).find('#user-name').next().removeClass('hide');
-        $(this).addClass('user');
-      } else {
-        $(this).removeClass('user');
-        $(this).find('#user-name').next().addClass('hide');
-        $(this).find('.user-panel').removeClass('show');
+
+      if (e.type === 'mouseleave') {
+        timer = setTimeout(function () {
+          $userPanel
+            .stop()
+            .animate({top: h}, 200, function () {
+              self.prev().addClass('hide');
+              self.parent().removeClass('user');
+            });
+          clearTimeout(timer);
+          self.data('timer', timer = null);
+        }, 500);
+
+        self.data('timer', timer);
+        return false;
       }
+
+      if (timer) {
+        clearTimeout(timer);
+        self.data('timer', timer = null);
+        return false;
+      }
+
+      if (!_i_) {
+        $userPanel.css('top', h);
+        self.find('.user-panel').addClass('show');
+        _i_ = true;
+      }
+
+      self.prev().removeClass('hide');
+      self.parent().addClass('user');
+      $userPanel
+        .stop()
+        .animate({top: 56}, 100);
     }
 
-    $BODY.on('mouseenter.dropdown mouseleave.dropdown', '.navbar .dropdown', hover);
-
-    $BODY.on('mouseenter.dropdown', '.navbar .fill-left', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $(this).addClass('hide');
-    });
+    $BODY.on('mouseenter.dropdown mouseleave.dropdown', '.navbar .dropdown-wrapper', hover);
 
     // 兼容 iframe
     var isIframe = !(parent === window);

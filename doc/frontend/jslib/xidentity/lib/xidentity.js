@@ -50,13 +50,17 @@ define(function (require) {
 
         that.cache || (that.cache = {});
 
+        if (that.timer) {
+          clearTimeout(that.timer);
+          // ajax loading
+          that.target.next().addClass('hide');;
+        }
+
         if ((res = Util.parseId(q)).provider) {
           var identity = {
             provider: res.provider,
             external_id: res.external_identity
           };
-
-          clearTimeout(that.timer);
 
           that.timer = setTimeout(function () {
             clearTimeout(that.timer);
@@ -66,9 +70,9 @@ define(function (require) {
           // falg: SIGN_IN SIGIN_UP VERIFY RESET_PASSWORD
           function ajax(e) {
             that.ajaxDefer && that.ajaxDefer.readyState < 4 && that.ajaxDefer.abort();
+            that.emit('autocomplete:beforesend');
             if (options.useCache && that.cache[e]) that.emit('autocomplete:finish', that.cache[e]);
             else {
-              that.emit('autocomplete:beforesend');
               that.ajaxDefer = $.ajax({
                 url: Util.apiUrl + '/users/getRegistrationFlag',
                 type: 'GET',
@@ -87,9 +91,6 @@ define(function (require) {
                   if (data.meta.code === 200) {
                     if (e === that.target.val()) {
                       options.useCache && (that.cache[e] = data.response);
-                      if (data.response.identity) {
-                        Store.set('user', {'identities': [data.response.identity], 'flag': data.response.registration_flag});
-                      }
                       that.emit('autocomplete:finish', data.response);
                     }
                   }
@@ -99,10 +100,8 @@ define(function (require) {
 
           function search(a) {
             if (a.length >= that.options.minLength) {
-              if (that.searchValue !== a) {
-                ajax(a);
-                that.searchValue = a;
-              }
+              ajax(a);
+              that.searchValue = a;
             } else {
               that.emit('autocomplete:clear');
             }

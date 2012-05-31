@@ -5143,14 +5143,14 @@ a.badge:hover {
   bottom: -10px;
   left: -10px;
   z-index: -1;
-  border: 11px solid rgba(0, 0, 0, 0.2);
+  border: 11px solid rgba(0, 0, 0, 0.3);
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
           border-radius: 3px;
   content: '';
-  -webkit-box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-     -moz-box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+     -moz-box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
@@ -5339,8 +5339,8 @@ a.badge:hover {
 }
 
 .modal-sandbox .modal-main {
-  height: 195px;
-  min-height: 195px;
+  height: 160px;
+  min-height: 160px;
   padding-top: 80px;
   background: url(/img/rome-sandbox.jpg) no-repeat;
   background-size: 400px 300px;
@@ -5407,7 +5407,7 @@ a.badge:hover {
   display: block;
   float: right;
   padding-left: 0;
-  margin-top: 4px;
+  margin-top: 5.5px;
   margin-right: -7px;
 }
 
@@ -5420,6 +5420,16 @@ a.badge:hover {
 [class^="icon-"],
 [class*=" icon-"] {
   background-image: url(/img/glyphicons-halflings.png);
+}
+
+.navbar .dropdown-menu:before {
+  display: none;
+  border: none;
+}
+
+.navbar .dropdown-menu:after {
+  display: none;
+  border: none;
 }
 
 .navbar {
@@ -5483,24 +5493,27 @@ a.badge:hover {
   color: #7f7f7f;
 }
 
-.navbar .nav > li > a.user-name {
+.navbar .user-name {
   position: relative;
+  z-index: 1001;
   float: right;
   height: 26px;
   padding: 15px 2px;
   margin: 0 12px;
+  color: #7f7f7f;
   text-align: center;
+  text-decoration: none;
   white-space: nowrap;
 }
 
-.navbar .nav > li > a.user-name > span {
+.navbar .user-name > span {
   display: block;
   max-width: 210px;
   min-width: 50px;
   overflow: hidden;
 }
 
-.navbar .nav > li > a.user-name:before {
+.navbar .user-name:before {
   position: absolute;
   top: 0;
   left: -12px;
@@ -5510,7 +5523,7 @@ a.badge:hover {
   content: '';
 }
 
-.navbar .nav > li > a.user-name:after {
+.navbar .user-name:after {
   position: absolute;
   top: 0;
   right: -12px;
