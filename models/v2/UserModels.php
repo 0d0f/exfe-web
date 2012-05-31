@@ -460,6 +460,9 @@ class UserModels extends DataModel {
 
 
     public function updateUserById($user_id, $user = array()) {
+        if (!$user_id) {
+            return false;
+        }
         $update_sql = '';
         if (isset($user['name'])) {
             $update_sql .= " `name` = '{$user['name']}', ";
