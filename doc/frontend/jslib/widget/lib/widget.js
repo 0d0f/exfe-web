@@ -96,7 +96,7 @@ define('widget', [], function (require, exports, module) {
       this.undelegateEvents();
       // remove `element`
       //this.element.remove();
-      Widget.__super__.destory.call(this);
+      Widget.superclass.destory.call(this);
     }
   });
 

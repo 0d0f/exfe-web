@@ -22,6 +22,7 @@
       onCheckUser: function () {
         var user = Store.get('user');
         if (user) {
+          // 暂时处理单用户，默认取第一个
           var external_identity = user.identities[0].external_id;
           this.$('#identity').val(external_identity);
           this.$('.x-signin').removeClass('disabled loading');
@@ -34,15 +35,26 @@
             .attr('src', user.identities[0]['avatar_filename'])
             .parent()
             .addClass('identity-avatar');
+
+          this.$('.xbtn-forgotpwd').data('source', {identity: user.identities[0]});
+          this.toggleSetupOrForgopwd(true);
         }
       },
 
-      onShow: function () {
-        // 读取本地存储 user infos
-        this.emit('checkUser');
+      onShowBefore: function () {
         if (this.switchTabType === 'd02') {
           this.$('.modal-body').eq(0).css('opacity', 1);
           this.switchTab('d01');
+        }
+        // 读取本地存储 user infos
+        this.emit('checkUser');
+
+      },
+
+      onShowAfter: function () {
+        if (this.switchTabType === 'd01' || this.switchTabType === 'd03') {
+          var $identity = this.$('#identity');
+          $identity.lastfocus();
         }
       },
 
@@ -311,7 +323,7 @@
         }
       },
 
-      onShow: function (e) {
+      onShowBefore: function (e) {
         var data = $(e.currentTarget).data('source');
         if (data) {
           var identity = data.identity;
@@ -326,11 +338,11 @@
         }
       },
 
-      backdrop: true,
+      backdrop: false,
 
       viewData: {
 
-        cls: 'modal-fp',
+        cls: 'mblack modal-fp',
 
         title: 'Forgot Password',
 
@@ -367,6 +379,10 @@
       },
 
       events: {
+        'click .xbtn-forgotpwd': function (e) {
+          var user = Store.get('user');
+          $(e.currentTarget).data('source', {identity: user.identities[0]});
+        },
         'click .xbtn-success': function (e) {
           var that = this;
           var cppwd = that.$('#cppwd').val();
@@ -419,12 +435,12 @@
         },
       },
 
-      onShow: function () {
+      onShowBefore: function () {
         var user = Store.get('user');
         this.$('#cp-fullname').val(user.name);
       },
 
-      backdrop: true,
+      backdrop: false,
 
       viewData: {
 
@@ -526,7 +542,7 @@
         }
       },
 
-      onShow: function () {
+      onShowBefore: function () {
         this.element.removeClass('hide');
         this.$('#new-identity').lastfocus();
       },
@@ -745,11 +761,6 @@
       if (t === 'd01') this.toggleSetupOrForgopwd(b);
 
       this.d03(t);
-
-      if (t === 'd01' || t === 'd03') {
-        var $identity = this.$('#identity');
-        $identity.lastfocus();
-      }
     }
 
   });
@@ -782,8 +793,8 @@
 
       }
 
-      data.show(e);
       if (dialogTab) data.switchTab(dialogTab);
+      data.show(e);
 
     });
   });
