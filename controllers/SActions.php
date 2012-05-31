@@ -2,13 +2,6 @@
 
 class SActions extends ActionController {
 
-    public function doTestUser() {
-        $identityData = $this->getModelByName("identity");
-        $identityData->setRelation($_GET["identity_id"]);
-
-    }
-
-
     public function doProfile() {
         if (intval($_SESSION['userid']) <= 0) {
             header('Location: /s/login') ;
@@ -474,37 +467,6 @@ class SActions extends ActionController {
         $returnData["crosses"] = $crosses;
 
         header("Content-Type:application/json; charset=UTF-8");
-        echo json_encode($returnData);
-        exit();
-    }
-
-
-    public function doEditUserProfile()
-    {
-        $returnData = array(
-            "error" => 0,
-            "msg"   =>"",
-            "response" => array()
-        );
-        header("Content-Type:application/json; charset=UTF-8");
-
-        //TODO: private API ,must check session
-        $userName = trim(exPost("user_name"));
-        if($userName == ""){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "user name empty.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $userID = intval($_SESSION["userid"]);
-        if ($userID > 0)
-        {
-            $userDataObj = $this->getModelByName("user");
-            $userInfo = $userDataObj->saveUser($userName,$userID);
-            $returnData["response"]["user"] = $userInfo;
-        }
-
         echo json_encode($returnData);
         exit();
     }
@@ -1398,6 +1360,38 @@ class SActions extends ActionController {
         //sleep(1);
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
+    }
+
+
+    // upgraded
+    public function doEditUserProfile()
+    {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>"",
+            "response" => array()
+        );
+        header("Content-Type:application/json; charset=UTF-8");
+
+        //TODO: private API ,must check session
+        $userName = trim(exPost("user_name"));
+        if($userName == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "user name empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $userID = intval($_SESSION["userid"]);
+        if ($userID > 0)
+        {
+            $userDataObj = $this->getModelByName("user");
+            $userInfo = $userDataObj->saveUser($userName,$userID);
+            $returnData["response"]["user"] = $userInfo;
+        }
+
+        echo json_encode($returnData);
+        exit();
     }
 
 }
