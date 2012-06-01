@@ -7138,9 +7138,13 @@ a.badge:hover {
   display: inline;
 }
 
-.settings-panel .user-infos .identity-list .default .username,
-.settings-panel .user-infos .identity-list .default .identity {
-  font-weight: bold;
+.settings-panel .user-infos .identity-list .default {
+  display: inline-block;
+  padding: 1px 3px;
+  font-size: 12px;
+  line-height: 14px;
+  color: #1175a5;
+  background: #e6e6e6;
 }
 
 .settings-panel .user-infos .identity-list .username {

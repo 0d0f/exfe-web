@@ -86,6 +86,13 @@ define(function (require, exports, module) {
 
     var jst_identity_list = $('#jst-identity-list');
     var s = Handlebars.compile(jst_identity_list.html());
+    var default_identity = user.default_identity;
+    R.each(user.identities, function (e, i) {
+      if (e.id === default_identity.id) {
+        e.__default__ = true;
+      }
+    });
+
     var h = s({identities: user.identities});
     $('.identity-list').append(h);
   };
@@ -199,7 +206,7 @@ define(function (require, exports, module) {
           R.each(crosses, function (v, i) {
 
             // NOTE: 测试数据
-            v.exfee = {"invitations":[{"identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":true,"with":0,"id":1,"type":"invitation"},{"identity":{"name":"c1","nickname":"","bio":"","provider":"email","connected_user_id":174,"external_id":"c1@demox.io","external_username":"c1@demox.io","avatar_filename":"http://www.gravatar.com/avatar/88a3f56d19c7e1a9bb62c15e2247b463?d=http%3A%2F%2Fimg.localexfe.me%2F7%2Fd2%2F7d271f607ba4f8219fd3315daf7b5708.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 23:18:52","updated_at":null,"id":2,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":false,"with":0,"id":2,"type":"invitation"}],"id":5,"type":"exfee","updated_at":"2012-05-29 17:29:05"};
+            //v.exfee = {"invitations":[{"identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":true,"with":0,"id":1,"type":"invitation"},{"identity":{"name":"c1","nickname":"","bio":"","provider":"email","connected_user_id":174,"external_id":"c1@demox.io","external_username":"c1@demox.io","avatar_filename":"http://www.gravatar.com/avatar/88a3f56d19c7e1a9bb62c15e2247b463?d=http%3A%2F%2Fimg.localexfe.me%2F7%2Fd2%2F7d271f607ba4f8219fd3315daf7b5708.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 23:18:52","updated_at":null,"id":2,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":false,"with":0,"id":2,"type":"invitation"}],"id":5,"type":"exfee","updated_at":"2012-05-29 17:29:05"};
 
             // invitations
             //if (user_id !== v.by_identity.connected_user_id) {
@@ -217,9 +224,9 @@ define(function (require, exports, module) {
             //
 
             // NOTE: 测试数据
-            v.updated = {
-              conversation: {identity_id: 1}
-            };
+            //v.updated = {
+            //  conversation: {identity_id: 1}
+            //};
 
             // updates
             if ((updated = v.updated)) {
@@ -408,9 +415,15 @@ define(function (require, exports, module) {
     });
 
     $BODY.on('hover.profile', '.settings-panel', function (e) {
-      $(this).data('hoverout', e.type === 'mouseleave');
-      $(this).find('.xbtn-changepassword').toggleClass('hide');
-      $(this).find('.xlabel').toggleClass('hide');
+      var t = e.type;
+      $(this).data('hoverout', t === 'mouseleave');
+      if (t === 'mouseenter') {
+        $(this).find('.xbtn-changepassword').removeClass('hide');
+        $(this).find('.xlabel').removeClass('hide');
+      } else {
+        $(this).find('.xbtn-changepassword').addClass('hide');
+        $(this).find('.xlabel').addClass('hide');
+      }
     });
 
   });

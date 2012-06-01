@@ -118,7 +118,7 @@
       <button class="xbtn xbtn-reverify">Re-Verify...</button>
     </span>
     {{/ifVerifying}}
-    {{#ifFalse __index__}}class="default"{{/ifFalse}}
+    {{#if __default__}}<span class="default">default</span>{{/if}}
   </li>
   {{/each}}
   </script>
