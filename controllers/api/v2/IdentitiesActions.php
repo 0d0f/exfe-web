@@ -76,7 +76,6 @@ class IdentitiesActions extends ActionController {
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name'],
-                $rawIdentity['avatar_updated_at'],
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at']
 
