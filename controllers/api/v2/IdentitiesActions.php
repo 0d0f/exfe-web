@@ -56,30 +56,17 @@ class IdentitiesActions extends ActionController {
                                     $twitterUser = (array)json_decode($twitterConn->response['response'], true);
                                     $objIdentities[] = new Identity(
                                         0,
-
                                         $twitterUser['name'],
+                                        '',
                                         $twitterUser['description'],
                                         'twitter',
                                         0,
-                                        "@{$twitterUser['screen_name']}@twitter",
+                                        $twitterUser['id']
                                         $twitterUser['screen_name'],
                                         $modIdentity->getTwitterLargeAvatarBySmallAvatar(
                                             $twitterUser['profile_image_url']
                                         )
                                     );
-                $rawIdentity['id'],
-                $rawIdentity['name'],
-                '', // $rawIdentity['nickname'], // @todo;
-                $rawIdentity['bio'],
-                $rawIdentity['provider'],
-                $rawUserIdentity && $rawUserIdentity['userid'] ? $rawUserIdentity['userid'] : 0,
-                $rawIdentity['external_identity'],
-                $rawIdentity['external_username'],
-                $rawIdentity['avatar_file_name'],
-                $rawIdentity['created_at'],
-                $rawIdentity['updated_at']
-
-
                                 }
                             }
                     }
