@@ -51,7 +51,7 @@ class UsersActions extends ActionController {
             apiError(403, 'invalid_password', ''); // 密码错误
         }
         if (($identity_id = $modIdentity->addIdentity($provider, $external_id, array(), $user_id))
-         && ($objIdentity = $modIdentity->getIdentityById($identity_id))) {
+         && ($objIdentity = $modIdentity->getIdentityById($identity_id, $user_id))) {
             apiResponse(array('identity' => $objIdentity));
         } else {
             apiError(400, 'failed', '');
