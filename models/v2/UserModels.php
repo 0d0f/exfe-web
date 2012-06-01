@@ -4,7 +4,7 @@ class UserModels extends DataModel {
 
     private $salt = '_4f9g18t9VEdi2if';
 
-    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
+    public  $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
     protected function getUserPasswdByUserId($user_id) {
