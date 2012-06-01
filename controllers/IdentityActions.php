@@ -113,8 +113,8 @@ class IdentityActions extends ActionController {
         echo $resultstr;
         #echo json_encode($resultidentities, JSON_FORCE_OBJECT);
     }
-    
-    
+
+
     // upgraded
     public function doGet() {
         $IdentityData  = $this->getModelByName('identity');
@@ -183,50 +183,6 @@ class IdentityActions extends ActionController {
         echo json_encode($responobj);
 
         exit();
-    }
-
-
-    // upgraded
-    public function doUpdate() {
-        /*--------------------+--------------+------+-----+---------+----------------+
-        | Field               | Type         | Null | Key | Default | Extra          |
-        +---------------------+--------------+------+-----+---------+----------------+
-        | id                  | bigint(11)   | NO   | PRI | NULL    | auto_increment |
-        | provider            | varchar(255) | YES  |     | NULL    |                |
-        | external_identity   | varchar(255) | YES  |     | NULL    |                |
-        | name                | varchar(255) | YES  |     | NULL    |                |
-        | bio                 | text         | YES  |     | NULL    |                |
-        | avatar_url          | varchar(255) | YES  |     | NULL    |                |
-        | external_username   | varchar(255) | YES  |     | NULL    |                |
-        +---------------------+--------------+------+-----+---------+---------------*/
-
-        // get raw data
-        $id                = !isset($_POST['id']) ? null
-                           : mysql_real_escape_string(htmlspecialchars($_POST['id']));
-        $provider          = !isset($_POST['provider']) ? null
-                           : mysql_real_escape_string(htmlspecialchars($_POST['provider']));
-        $external_identity = !isset($_POST['external_identity']) ? null
-                           : mysql_real_escape_string(htmlspecialchars($_POST['external_identity']));
-        $name              = !isset($_POST['name']) ? ''
-                           : mysql_real_escape_string(htmlspecialchars($_POST['name']));
-        $bio               = !isset($_POST['bio']) ? ''
-                           : mysql_real_escape_string(htmlspecialchars($_POST['bio']));
-        $avatar_file_name  = !isset($_POST['avatar_url']) ? ''
-                           : mysql_real_escape_string(htmlspecialchars($_POST['avatar_url']));
-        $external_username = !isset($_POST['external_username']) ? ''
-                           : mysql_real_escape_string(htmlspecialchars($_POST['external_username']));
-
-        // check data
-        if (!intval($id) || $provider === null || $external_identity === null) {
-            header('HTTP/1.1 500 Internal Server Error');
-            return;
-        }
-
-        $objIdentity = $this->getModelByName('Identity');
-        $objIdentity->updateIdentityInformation($id, $provider, $external_identity, $name, $bio, $avatar_file_name, $external_username);
-
-        // return
-        return $id;
     }
 
 }
