@@ -1,14 +1,14 @@
 <?php
 class Cross extends Metainfo {
 
-    public $id_base62    = null;
-    public $title        = null;
-    public $description  = null;
-    public $time         = null;
-    public $place        = null;
-    public $attribute    = null;
-    public $exfee        = null;
-    public $widget       = null;
+    public $id_base62     = null;
+    public $title         = null;
+    public $description   = null;
+    public $time          = null;
+    public $place         = null;
+    public $attribute     = null;
+    public $exfee         = null;
+    public $widget        = null;
     public $host_identity = null;
 
     public function setRelation($relative_id,$relation)
@@ -17,12 +17,12 @@ class Cross extends Metainfo {
         $relative["relation"]=$relation;
         array_push($this->relative,$relative);
     }
-    
+
     public function setExfee($exfee)
     {
         $this->exfee=$exfee;
     }
-    
+
     public function base62Id($id) {
         return int_to_base62($id);
     }
@@ -32,10 +32,10 @@ class Cross extends Metainfo {
         $this->setExfee($exfee);
         $this->id_base62 = $id ? $this->base62Id($id) : '';
         $this->host_identity=$host_identity;
-        
+
         $this->attribute = $attribute;
         $this->widget    =$widget;
-        
+
         $this->title       = $title;
         $this->description = $description;
 
