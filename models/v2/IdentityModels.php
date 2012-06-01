@@ -91,9 +91,6 @@ class IdentityModels extends DataModel {
             return null;
         }
         // improve data
-        if ($identityDetail['provider'] !== 'email') {
-            $identityDetail['external_id'] = "{$identityDetail['provider']}_{$identityDetail['external_id']}";
-        }
         switch ($identityDetail['provider']) {
             case 'twitter':
                 $identityDetail['avatar_filename'] = $this->getTwitterLargeAvatarBySmallAvatar(
