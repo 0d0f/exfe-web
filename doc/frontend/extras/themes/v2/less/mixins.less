@@ -1,0 +1,101 @@
+// Mixins.less
+// 自定义一些参数、方法
+// -----------------------------------------------------
+
+
+// Golden Ratio 黄金分割
+// http://en.wikipedia.org/wiki/Golden_ratio
+@PI: 3.14;
+
+@GOLDEN_RATIO: 0.618;
+
+// Golden Ratio Function
+//   a     b
+// ----- = - = 0.618 (a > b > 0)
+// a + b   a
+
+#glodenratio {
+  // real width
+  .a(@width: @gridRowWidth, @paddingLeft: 0, @paddingRight: 0) {
+    width: floor(@width * @GOLDEN_RATIO) - @paddingLeft - @paddingRight;
+    padding-left: @paddingLeft;
+  }
+
+  .b(@width: @gridRowWidth, @paddingLeft: 0, @paddingRight: 0) {
+    width: ceil(@width * (1- @GOLDEN_RATIO)) - @paddingLeft - @paddingRight;
+    padding-right: @paddingRight;
+  }
+
+  // per cent
+  .a-pc() {
+    width: percentage(@GOLDEN_RATIO);
+  }
+
+  .b-pc() {
+    width: percentage(1- @GOLDEN_RATIO);
+  }
+}
+
+/*
+.gr-a {
+  #glodenratio > .a(@gridRowWidth, 40, 20);
+}
+
+.gr-b {
+  #glodenratio > .b(@gridRowWidth, 20, 40);
+}
+
+.gr-apc {
+  #glodenratio > .a-pc;
+}
+
+.gr-bpc {
+  #glodenratio > .b-pc;
+}
+*/
+
+// TODO: 可以换成 pull-left / pull-right
+// 以 `gr-a` 开头的相左浮动
+[class^="gr-a"] {
+  float: left;
+}
+// 以 `gr-b` 开头的相左浮动
+[class^="gr-b"] {
+  float: right;
+}
+
+// Type
+// http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/
+// http://www.quirksmode.org/oddsandends/wbr.html
+// http://dev.davidnewton.ca/the-current-state-of-hyphenation-on-the-web
+// http://ejohn.org/blog/injecting-word-breaks-with-javascript/
+// http://blog.webcreativepark.net/sample/js/47/wordBreak.js
+// http://blog.sakurachiro.com/2010/06/control-break/
+.break-all {
+   -ms-word-break: break-all;
+       word-break: break-all;
+
+  // Non standard for webkit
+       word-break: break-word;
+
+  -webkit-hyphens: auto;
+     -moz-hyphens: auto;
+          hyphens: auto;
+}
+
+// text-overflow: clip
+.text-overflow-clip {
+  text-overflow: clip;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.xButtonBackground(@startColor, @endColor) {
+ // gradientBar will set the background to a pleasing blend of these, to support IE<=9
+  .gradientBar(@startColor, @endColor);
+  .reset-filter();
+}
+
+@import "./pages/partial/angle.less";
+@import "./pages/partial/buttons.less";
+@import "./pages/partial/xalert.less";
