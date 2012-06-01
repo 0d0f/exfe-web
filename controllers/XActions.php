@@ -390,18 +390,6 @@ class XActions extends ActionController
             $referer = urldecode($referer);
         }
         $cross_base62_id = exGet("x");
-        /*
-        if($cross_base62_id != "" && intval($_SESSION["userid"]) > 0){
-            $cross_id = base62_to_int($cross_base62_id);
-            $checkhelper=$this->getHelperByName("check");
-            $check=$checkhelper->isAllow("x","index",array("cross_id"=>$cross_id,"token"=>""));
-            if($check["allow"] != "false"){
-                header("location:/!".int_to_base62($cross_id));
-            }else{
-                header("location:/s/profile");
-            }
-        }
-         */
         $this->setVar('referer', $referer);
         $this->setVar('cross_id', $cross_id);
         $this->displayView();
