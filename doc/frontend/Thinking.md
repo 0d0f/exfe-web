@@ -17,3 +17,5 @@ https://developer.mozilla.org/en/Writing_Efficient_CSS
 http://blog.csdn.net/hfahe/article/details/7581789  用非响应式设计构建跨端Web App
 https://github.com/visionmedia/uikit
 http://neave.com/webcam/html5/face/
+http://digitalbush.com/projects/masked-input-plugin/
+http://www.giocc.com/sandbox/avaku/
