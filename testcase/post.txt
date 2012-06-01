@@ -1,8 +1,8 @@
-post={
-"by_identity_id": "174",
-"content": "中文的",
-"id": 711,
-"relative": [],
-"type": "Post",
-"via": ""
+post = {
+	"by_identity_id": "174",
+	"content": "中文的",
+	"id": 711,
+	"relative": [],
+	"type": "Post",
+	"via": ""
 }
