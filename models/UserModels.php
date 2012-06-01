@@ -345,7 +345,7 @@ class UserModels extends DataModel {
 
     // upgraded
     public function getUser($userid) {
-        $sql = "select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,default_identity from users where id=$userid";
+        $sql = "select name,bio,avatar_file_name,default_identity from users where id=$userid";
         $row = $this->getRow($sql);
         if ($row && !$row['avatar_file_name']) {
             $rawIdentityIds = $this->getAll(
@@ -378,7 +378,7 @@ class UserModels extends DataModel {
     // upgraded
     public function getUserWithPasswd($userid)
     {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,encrypted_password,default_identity from users where id=$userid";
+        $sql="select name,bio,avatar_file_name,encrypted_password,default_identity from users where id=$userid";
         $row=$this->getRow($sql);
         if ($row && !$row['avatar_file_name']) {
             $rawIdentityIds = $this->getAll(
