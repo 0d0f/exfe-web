@@ -528,18 +528,6 @@ class SActions extends ActionController {
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
-                    // sent welcome email
-                    /*
-                    if($provider=="email")
-                    {
-                        $msghelper=$this->getHelperByName("msg");
-                        $args=array("name"=>$displayname,"external_identity"=>$identity);
-                        if($displayname=="")
-                            $args["name"]=$identity;
-                        $msghelper->sentWelcomeEmail($args);
-                    }
-                     */
-
                     $responobj["response"]["success"]="true";
                     $responobj["response"]["userid"]=$userid;
                     $responobj["response"]["identity_id"]=$identity_id;
