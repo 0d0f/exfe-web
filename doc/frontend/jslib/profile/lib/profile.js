@@ -69,7 +69,7 @@ define(function (require, exports, module) {
 
     Handlebars.registerHelper('ifVerifying', function (provider, status, options) {
       var context = provider === 'email' && status === 'VERIFYING';
-      return Handlebars.helpers['if'].call(this, context, options, options);
+      return Handlebars.helpers['if'].call(this, context, options);
     });
 
     Handlebars.registerHelper('atName', function (provder, external_id) {
@@ -77,6 +77,11 @@ define(function (require, exports, module) {
       if (provder === 'twitter') s = '@' + external_id;
       else s = external_id;
       return s;
+    });
+
+    Handlebars.registerHelper('editable', function (provder, options) {
+      var context = provder === 'email';
+      return Handlebars.helpers['if'].call(this, context, options);
     });
 
     var jst_identity_list = $('#jst-identity-list');
@@ -193,6 +198,9 @@ define(function (require, exports, module) {
           var updatesAjax = [];
           R.each(crosses, function (v, i) {
 
+            // NOTE: 测试数据
+            v.exfee = {"invitations":[{"identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":true,"with":0,"id":1,"type":"invitation"},{"identity":{"name":"c1","nickname":"","bio":"","provider":"email","connected_user_id":174,"external_id":"c1@demox.io","external_username":"c1@demox.io","avatar_filename":"http://www.gravatar.com/avatar/88a3f56d19c7e1a9bb62c15e2247b463?d=http%3A%2F%2Fimg.localexfe.me%2F7%2Fd2%2F7d271f607ba4f8219fd3315daf7b5708.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 23:18:52","updated_at":null,"id":2,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":false,"with":0,"id":2,"type":"invitation"}],"id":5,"type":"exfee","updated_at":"2012-05-29 17:29:05"};
+
             // invitations
             //if (user_id !== v.by_identity.connected_user_id) {
               if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
@@ -206,7 +214,12 @@ define(function (require, exports, module) {
                 });
 
               }
-            //}
+            //
+
+            // NOTE: 测试数据
+            v.updated = {
+              conversation: {identity_id: 1}
+            };
 
             // updates
             if ((updated = v.updated)) {
@@ -295,6 +308,95 @@ define(function (require, exports, module) {
   var $BODY = $(document.body);
   $(function () {
 
+    // 暂时使用jQuery 简单实现功能
+    // 编辑 user/identity name etc.
+    $BODY.on('dblclick.profile', '.user-name h3', function (e) {
+      var value = $.trim($(this).html());
+      var $input = $('<input type="text" value="' + value + '" class="pull-left" />');
+      $input.data('oldValue', value);
+      $(this).after($input).hide();
+      $input.lastfocus();
+      $('.xbtn-changepassword').addClass('hide');
+    });
+
+    $BODY.on('focusout.profile keydown.profile', '.user-name input', function (e) {
+        var t = e.type, kc = e.keyCode;
+        if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+          var value = $.trim($(this).val());
+          var oldValue = $(this).data('oldValue');
+          $(this).hide().prev().html(value).show();
+          $(this).remove();
+          !$('.settings-panel').data('hoverout') && $('.xbtn-changepassword').removeClass('hide');
+
+          if (!value || value === oldValue) return;
+
+          var signin = Store.get('signin');
+          var token = signin.token;
+
+          $.ajax({
+            url: Util.apiUrl + '/users/update?token=' + token,
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+              name: value
+            }
+          })
+            .done(function (data) {
+              if (data.meta.code === 200) {
+                Store.set('user', data.response.user);
+                Bus.emit('app:changename', value);
+              }
+            });
+        }
+    });
+
+    $BODY.on('dblclick.profile', '.identity-list li.editable .username > em', function (e) {
+      var value = $.trim($(this).html());
+      var $input = $('<input type="text" value="' + value + '" class="username-input" />');
+      $input.data('oldValue', value);
+      $(this).after($input).hide();
+      $input.lastfocus();
+    });
+
+    $BODY.on('focusout.profile keydown.profile', '.identity-list .username-input', function (e) {
+        var t = e.type, kc = e.keyCode;
+        if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+          var value = $.trim($(this).val());
+          var oldValue = $(this).data('oldValue');
+          var identity_id = $(this).parent().parent().data('identity-id');
+          $(this).hide().prev().html(value).show();
+          $(this).remove();
+
+
+          if (!value || value === oldValue) return;
+
+          var signin = Store.get('signin');
+          var token = signin.token;
+
+          $.ajax({
+            url: Util.apiUrl + '/identities/' + identity_id + '/update?token=' + token,
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+              name: value
+            }
+          })
+            .done(function (data) {
+              if (data.meta.code === 200) {
+                var user = Store.get('user');
+                for (var i = 0, l = user.identities.length; i < l; ++i) {
+                  if (user.identities[i].id === identity_id) {
+                    user.identities[i] = data.response.identity;
+                    break;
+                  }
+                }
+
+                Store.set('user', user);
+              }
+            });
+        }
+    });
+
     // 添加身份
     $BODY.on('click.profile.identity', '.xbtn-addidentity', function (e) {
     });
@@ -306,6 +408,7 @@ define(function (require, exports, module) {
     });
 
     $BODY.on('hover.profile', '.settings-panel', function (e) {
+      $(this).data('hoverout', e.type === 'mouseleave');
       $(this).find('.xbtn-changepassword').toggleClass('hide');
       $(this).find('.xlabel').toggleClass('hide');
     });

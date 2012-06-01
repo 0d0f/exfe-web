@@ -103,6 +103,10 @@ define(function (require) {
     }
   });
 
+  Bus.on('app:changename', function (d) {
+    $('#user-name > span').html(d);
+  });
+
   Bus.on('app:userpanel', function (d) {
     var action_status = d.action_status;
 
