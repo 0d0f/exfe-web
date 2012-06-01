@@ -5,9 +5,21 @@ class IdentityModels extends DataModel {
     private $salt = '_4f9g18t9VEdi2if';
 
 
-    protected function packageIdentity($rawIdentity) {
+    protected function packageIdentity($rawIdentity, $user_id = null) {
+        $hlpUser = $this->getHelperByName('user', 'v2');
         if ($rawIdentity) {
-            $rawUserIdentity = $this->getRow(
+            $rawUserIdentity = null;
+            $status          = null;
+            if ($user_id) {
+                $chkUserIdentity = $this->getRow(
+                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = $user_id"
+                );
+                if (($chkUserIdentity['status'] = (int)$chkUserIdentity['status']) === 3) {
+                    $rawUserIdentity = $chkUserIdentity;
+                }
+                $status = $hlpUser->getUserIdentityStatus($chkUserIdentity['status']);
+            }
+            $rawUserIdentity = $rawUserIdentity ?: $this->getRow(
                 "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
             );
             if ($rawUserIdentity && $rawUserIdentity['userid']) {
@@ -24,7 +36,7 @@ class IdentityModels extends DataModel {
                     $rawIdentity['avatar_file_name'] = 'http://www.gravatar.com/avatar/' . md5($rawIdentity['external_identity']) . '?d=' . urlencode($rawIdentity['avatar_file_name']);
                 }
             }
-            return new Identity(
+            $objIdentity = new Identity(
                 $rawIdentity['id'],
                 $rawIdentity['name'],
                 '', // $rawIdentity['nickname'], // @todo;
@@ -37,16 +49,20 @@ class IdentityModels extends DataModel {
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at']
             );
+            if ($status !== null) {
+                $objIdentity->status = $status;
+            }
+            return $objIdentity;
         } else {
             return null;
         }
     }
 
 
-    public function getIdentityById($id) {
+    public function getIdentityById($id, $user_id = null) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `id` = {$id}"
-        ));
+        ), $user_id);
     }
 
 
