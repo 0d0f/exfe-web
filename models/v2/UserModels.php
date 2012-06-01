@@ -482,9 +482,9 @@ class UserModels extends DataModel {
         if ($rawIdentity && $rawIdentity['id']) {
             $rawUser = $this->getRow(
                 "SELECT `users`.`avatar_file_name` FROM `users`, `user_identity`
-                 WHERE  `user_identity`.`userid`         = `users`.`id`
-                 AND    `user_identity`.`identityid`     = {$rawIdentity['id']}
-                 AND    `user_identity`.`status`         = 3"
+                 WHERE  `user_identity`.`userid`     = `users`.`id`
+                 AND    `user_identity`.`identityid` = {$rawIdentity['id']}
+                 AND    `user_identity`.`status`     = 3"
             );
             if ($rawUser && $rawUser['avatar_file_name']) {
                 header("Location: {$rawUser['avatar_file_name']}");
