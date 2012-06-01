@@ -6,6 +6,7 @@ class UsersActions extends ActionController {
     {
     }
 
+
     public function doGetProfile()
     {
         $params=$this->params;
@@ -32,7 +33,7 @@ class UsersActions extends ActionController {
         exit(0);
     }
 
-    
+
     public function doGetUpdate()
     {
         $params=$this->params;
@@ -118,8 +119,8 @@ class UsersActions extends ActionController {
         //get x by id and updated_since
 
     }
-    
-    
+
+
     // upgraded
     public function doLogout()
     {
@@ -130,7 +131,6 @@ class UsersActions extends ActionController {
         $device_token=$_POST["device_token"];
         if($device_token!="" && $token!="" && intval($user_id)>0)
         {
-            //$result=$userData->($user_id,$token,$device_token);
             $result=$userData->disConnectiOSDeviceToken($user_id,$token,$device_token);
             if($result!=null)
             {
@@ -150,7 +150,6 @@ class UsersActions extends ActionController {
     // upgraded
     public function doRegdevicetoken()
     {
-
         //check if this token allow
         $params=$this->params;
         $checkhelper=$this->getHelperByName("check");
@@ -183,8 +182,8 @@ class UsersActions extends ActionController {
         exit(0);
         //add devicetoken with $check["uid"]
     }
-    
-    
+
+
     // upgraded
     public function doLogin()
     {
