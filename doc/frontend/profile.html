@@ -101,9 +101,9 @@
   <!-- JS Templates -->
   <script id="jst-identity-list" type="text/x-handlebars-template">
   {{#each identities}}
-  <li {{#ifFalse __index__}}class="default"{{/ifFalse}}>
+  <li data-identity-id="{{id}}" {{#editable provider}}class="editable"{{/editable}}>
     <i class="icon-minus-sign hide"></i><span class="avatar"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
-    </span><span class="username">{{printName name external_id}}</span><span class="identity">{{atName provider external_id}}</span>
+    </span><span class="username"><em>{{printName name external_id}}</em></span><span class="identity">{{atName provider external_id}}</span>
     {{#ifOauthVerifying provider status}}
     <span class="xlabel hide">
       <i class="icon-warning-sign"></i>
@@ -118,6 +118,7 @@
       <button class="xbtn xbtn-reverify">Re-Verify...</button>
     </span>
     {{/ifVerifying}}
+    {{#ifFalse __index__}}class="default"{{/ifFalse}}
   </li>
   {{/each}}
   </script>
@@ -199,7 +200,7 @@
   </script>
 
   <!-- JavaScript at the bottom for fast page loading -->
-  <script src="odof/lib/common.js"></script>
+  <script src="jslib/common/lib/common.js"></script>
   <script src="jslib/modernizr/lib/modernizr.js"></script>
   <script src="jslib/jquery/lib/jquery.js"></script>
   <script src="jslib/jqueryplugins/lib/jquery.plugins.lastfocus.js"></script>
@@ -218,6 +219,11 @@
 
   <script src="jslib/xidentity/lib/xidentity.js"></script>
   <script src="jslib/xdialog/lib/xdialog.js"></script>
+
+  <!--
+  <script src="jslib/editable/lib/editable.js"></script>
+  <script src="jslib/xeditable/lib/xeditable.js"></script>
+  -->
 
   <script src="jslib/profile/lib/profile.js"></script>
 
