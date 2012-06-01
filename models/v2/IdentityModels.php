@@ -34,7 +34,6 @@ class IdentityModels extends DataModel {
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name'],
-                $rawIdentity['avatar_updated_at'],
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at']
             );
@@ -135,9 +134,8 @@ class IdentityModels extends DataModel {
                  `bio`               = '{$identityDetail['bio']}',
                  `avatar_file_name`  = '{$identityDetail['avatar_filename']}',
                  `external_username` = '{$identityDetail['external_username']}',
-                 `updated_at`        = NOW(),
-                 `avatar_updated_at` = NOW()
-             WHERE `id` = {$chgId}"////////////$nickname pending and avatar_updated_at removing
+                 `updated_at`        = NOW()
+             WHERE `id` = {$chgId}"////////////$nickname pending
         );
         // merge identity
         if ($wasId > 0 && $wasId !== $id) {
@@ -197,7 +195,6 @@ class IdentityModels extends DataModel {
              `name`              = '{$name}',
              `bio`               = '{$bio}',
              `avatar_file_name`  = '{$avatar_filename}',
-             `avatar_updated_at` = NOW(),
              `external_username` = '{$external_username}'"
         );
         $id = intval($dbResult['insert_id']);

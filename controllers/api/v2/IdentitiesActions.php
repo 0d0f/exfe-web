@@ -46,7 +46,7 @@ class IdentitiesActions extends ActionController {
                                     'consumer_secret' => TWITTER_CONSUMER_SECRET,
                                     'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
                                     'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
-                                ));
+                                )); 
                                 $responseCode = $twitterConn->request(
                                     'GET',
                                     $twitterConn->url('1/users/show'),
@@ -55,6 +55,8 @@ class IdentitiesActions extends ActionController {
                                 if ($responseCode === 200) {
                                     $twitterUser = (array)json_decode($twitterConn->response['response'], true);
                                     $objIdentities[] = new Identity(
+                                        0,
+
                                         $twitterUser['name'],
                                         $twitterUser['description'],
                                         'twitter',
@@ -65,6 +67,19 @@ class IdentitiesActions extends ActionController {
                                             $twitterUser['profile_image_url']
                                         )
                                     );
+                $rawIdentity['id'],
+                $rawIdentity['name'],
+                '', // $rawIdentity['nickname'], // @todo;
+                $rawIdentity['bio'],
+                $rawIdentity['provider'],
+                $rawUserIdentity && $rawUserIdentity['userid'] ? $rawUserIdentity['userid'] : 0,
+                $rawIdentity['external_identity'],
+                $rawIdentity['external_username'],
+                $rawIdentity['avatar_file_name'],
+                $rawIdentity['created_at'],
+                $rawIdentity['updated_at']
+
+
                                 }
                             }
                     }

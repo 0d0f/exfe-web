@@ -35,7 +35,6 @@ class UserModels extends DataModel {
                 $rawUser['bio'],
                 null, // default_identity
                 $rawUser['avatar_file_name'],
-                $rawUser['avatar_updated_at'],
                 $rawUser['timezone']
             );
             if ($withCrossQuantity) {
@@ -67,7 +66,6 @@ class UserModels extends DataModel {
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
-                            $item['avatar_updated_at'],
                             $item['created_at'],
                             $item['updated_at']
                         );
@@ -436,7 +434,6 @@ class UserModels extends DataModel {
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
-                            $item['avatar_updated_at'],
                             $item['created_at'],
                             $item['updated_at']
                         )
