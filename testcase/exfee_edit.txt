@@ -1,33 +1,28 @@
-exfee={
-    "invitations": [
-        {
-            "identity":{
-                "id": 174
-            },
-            "rsvp_status":"ACCEPTED",
-            "type":"Invitation"
+exfee = {
+    "invitations": [{
+        "identity": {
+            "id": 174
         },
-        {
-            "identity":{
-                "id": 233
-            },
-            "rsvp_status":"ACCEPTED",
-            "type":"Invitation"
+        "rsvp_status": "ACCEPTED",
+        "type": "Invitation"
+    }, {
+        "identity": {
+            "id": 233
         },
-        {
-            "identity":{
-                "id": 237
-            },
-            "rsvp_status":"DECLINED",
-            "type":"Invitation"
+        "rsvp_status": "ACCEPTED",
+        "type": "Invitation"
+    }, {
+        "identity": {
+            "id": 237
         },
-        {
-            "identity":{
-                "id": 239
-            },
-            "rsvp_status":"INTERESTED",
-            "type":"Invitation"
-        }
-    ],
+        "rsvp_status": "DECLINED",
+        "type": "Invitation"
+    }, {
+        "identity": {
+            "id": 239
+        },
+        "rsvp_status": "INTERESTED",
+        "type": "Invitation"
+    }],
     "type": "Exfee"
-}&by_identity_id=174
+} & by_identity_id = 174
