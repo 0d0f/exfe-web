@@ -2,7 +2,7 @@ define(function (require) {
   // 解决 mozilla firefox / opera input 聚焦是光标 focus 到前面的bug
 
   var $ = require('jquery');
-  var isFFOrOP = $.browser.mozilla || $.browser.opera;
+  var isFFOrOP = $.browser.mozilla | $.browser.opera;
 
   $.fn.lastfocus = isFFOrOP ?
     function () {
