@@ -9,6 +9,14 @@ define(function (require, exports, module) {
   var Util = require('util');
   var Bus = require('bus');
   var Moment = require('moment');
+  Moment.calendar = {
+    sameDay : 'ha, dddd MMMM D',
+    nextDay : 'h:ssA [Tomorrow], dddd MMMM D',
+    nextWeek : 'dddd [at] LT',
+    lastDay : 'hA, dddd MMMM D',
+    lastWeek : 'hA, dddd MMMM D',
+    sameElse : 'L'
+  };
 
   // 覆盖默认 `each` 添加 `__index__` 属性
   Handlebars.registerHelper('each', function (context, options) {
@@ -33,6 +41,102 @@ define(function (require, exports, module) {
     return Handlebars.helpers['if'].call(this, !context, options);
   });
 
+  Handlebars.registerHelper('avatarFilename', function (context, options) {
+    if (!context) context = 'http://www.gravatar.com/avatar/c778bccf875fc4b76c9072f95f2671de?d=API_URL%2Fv2%2Favatar%2Fget%3Fprovider%3Demail%26external_id%3Dc12%40demox.io';
+    return context;
+  });
+
+  Handlebars.registerHelper('printName', function (name, external_id) {
+    if (!name) {
+      name = external_id.match(/([^@]+)@[^@]+/)[1];
+    }
+    return name;
+  });
+
+  // 日期输出
+  Handlebars.registerHelper('printTime', function (time) {
+    // 终端时区
+    var c = Moment();
+    var cz = c.format('Z');
+    var b = time.begin_at;
+
+    // Cross 时区
+    var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
+    // 创建一个 moment date-object
+    var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
+
+    var s = '', f;
+
+    // 比对时区
+    var czEtz = cz === tz;
+
+    // 直接输出 origin 时间
+    if (time.outputformat) {
+      s = time.origin;
+      if (!czEtz) {
+        s += ' ' + tz;
+        return s;
+      }
+    } else {
+
+      if (b.time_word) {
+        s += b.time_word + ' (at) ';
+      }
+
+      s += b.time;
+
+      if (!czEtz) {
+        s += ' (' + tz + ') ';
+      }
+
+      if (b.date_word) {
+        s += b.date_word + ' (on) ';
+      }
+
+      s += ' ' + b.date;
+
+      if (d.year() !== c.year()) {
+        s += ' ' + y;
+      }
+    }
+
+    return d.calendar();
+    return s;
+  });
+
+  // Invitations print time
+  Handlebars.registerHelper('printTime2', function (time, options) {
+    time  = Handlebars.helpers['crossItem'].call(this, time, options);
+    return Handlebars.helpers['printTime'].call(this, time, options);
+  });
+
+  Handlebars.registerHelper('ifPlace', function (options) {
+    var title = Handlebars.helpers['crossItem'].call(this, 'place');
+    return Handlebars.helpers['if'].call(this, title.length, options);
+  });
+
+  Handlebars.registerHelper('ifOauthVerifying', function (provider, status, options) {
+    var context = provider === 'twitter' && status === 'VERIFYING';
+    return Handlebars.helpers['if'].call(this, context, options, options);
+  });
+
+  Handlebars.registerHelper('ifVerifying', function (provider, status, options) {
+    var context = provider === 'email' && status === 'VERIFYING';
+    return Handlebars.helpers['if'].call(this, context, options);
+  });
+
+  Handlebars.registerHelper('atName', function (provder, external_id) {
+    var s = '';
+    if (provder === 'twitter') s = '@' + external_id;
+    else s = external_id;
+    return s;
+  });
+
+  Handlebars.registerHelper('editable', function (provder, status, options) {
+    var context = provder === 'email' && status === 'CONNECTED';
+    return Handlebars.helpers['if'].call(this, context, options);
+  });
+
   // 用户信息,包括多身份信息
   var identities_defe = function (data) {
     if (!data) return;
@@ -49,40 +153,6 @@ define(function (require, exports, module) {
 
     $('.user-name').find('h3').html(user.name);
 
-    Handlebars.registerHelper('avatarFilename', function (context) {
-      var s = context;
-      if (context === 'default.png') s = '/img/default_portraituserface_20.png';
-      return s;
-    });
-
-    Handlebars.registerHelper('printName', function (name, external_id) {
-      if (!name) {
-        name = external_id.match(/([^@]+)@[^@]+/)[1];
-      }
-      return name;
-    });
-
-    Handlebars.registerHelper('ifOauthVerifying', function (provider, status, options) {
-      var context = provider === 'twitter' && status === 'VERIFYING';
-      return Handlebars.helpers['if'].call(this, context, options, options);
-    });
-
-    Handlebars.registerHelper('ifVerifying', function (provider, status, options) {
-      var context = provider === 'email' && status === 'VERIFYING';
-      return Handlebars.helpers['if'].call(this, context, options);
-    });
-
-    Handlebars.registerHelper('atName', function (provder, external_id) {
-      var s = '';
-      if (provder === 'twitter') s = '@' + external_id;
-      else s = external_id;
-      return s;
-    });
-
-    Handlebars.registerHelper('editable', function (provder, options) {
-      var context = provder === 'email';
-      return Handlebars.helpers['if'].call(this, context, options);
-    });
 
     var jst_identity_list = $('#jst-identity-list');
     var s = Handlebars.compile(jst_identity_list.html());
@@ -116,7 +186,6 @@ define(function (require, exports, module) {
         if (data.meta.code === 200) {
           var now = +new Date;
 
-
           if (data.response.crosses.length) {
 
             var jst_crosses = $('#jst-crosses-container');
@@ -135,7 +204,11 @@ define(function (require, exports, module) {
 
             // 注册帮助函数，列出 confirmed identities
             Handlebars.registerHelper('confirmed_identities', function (context) {
-              return R(context).map(function (v) {
+              var d = R(context).filter(function (v) {
+                if (v.rsvp_status === 'ACCEPTED') return true;
+              });
+              // limit 7
+              return R(d.slice(0, 7)).map(function (v, i) {
                 return v.identity.name;
               }).join(', ');
             });
@@ -158,7 +231,7 @@ define(function (require, exports, module) {
 
             var splitterReg = /<|>/;
             R.map(cates.split(' '), function (v, i) {
-              v = v.split(splitterReg)
+              v = v.split(splitterReg);
               var c = crossList[v[0]];
               if (c) {
                 c.cate_date = v[1];
@@ -205,9 +278,6 @@ define(function (require, exports, module) {
           var updatesAjax = [];
           R.each(crosses, function (v, i) {
 
-            // NOTE: 测试数据
-            //v.exfee = {"invitations":[{"identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":true,"with":0,"id":1,"type":"invitation"},{"identity":{"name":"c1","nickname":"","bio":"","provider":"email","connected_user_id":174,"external_id":"c1@demox.io","external_username":"c1@demox.io","avatar_filename":"http://www.gravatar.com/avatar/88a3f56d19c7e1a9bb62c15e2247b463?d=http%3A%2F%2Fimg.localexfe.me%2F7%2Fd2%2F7d271f607ba4f8219fd3315daf7b5708.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 23:18:52","updated_at":null,"id":2,"type":"identity"},"by_identity":{"name":"cfddream","nickname":"","bio":"","provider":"email","connected_user_id":173,"external_id":"cfd@demox.io","external_username":"cfd@demox.io","avatar_filename":"http://www.gravatar.com/avatar/012fc0e42d6f94cb035f3842b026139c?d=http%3A%2F%2Fimg.localexfe.me%2Ff%2F3c%2Ff3c81951998320d5825e28295bd66e9c.png","avatar_updated_at":"0000-00-00 00:00:00","created_at":"2012-05-28 22:57:35","updated_at":null,"id":1,"type":"identity"},"rsvp_status":"NORESPONSE","via":"","created_at":"2012-05-29 16:03:26","updated_at":"2012-05-29 16:03:26","token":"","host":false,"with":0,"id":2,"type":"invitation"}],"id":5,"type":"exfee","updated_at":"2012-05-29 17:29:05"};
-
             // invitations
             //if (user_id !== v.by_identity.connected_user_id) {
               if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
@@ -216,17 +286,13 @@ define(function (require, exports, module) {
                   identities_KV[e.identity.id] = [i,j];
                   if (user_id == e.identity.connected_user_id && e.rsvp_status === 'NORESPONSE') {
                     e.__crossIndex = i;
+                    e.__identityIndex = j;
                     invitations.push(e);
                   }
                 });
 
               }
             //
-
-            // NOTE: 测试数据
-            //v.updated = {
-            //  conversation: {identity_id: 1}
-            //};
 
             // updates
             if ((updated = v.updated)) {
@@ -264,10 +330,14 @@ define(function (require, exports, module) {
               }
             }
 
-
           });
 
           Handlebars.registerHelper('crossItem', function (prop) {
+            if (prop === 'place') {
+              return crosses[this.__crossIndex][prop].title;
+            } else if (prop === 'invitationid') {
+              return crosses[this.__crossIndex]['exfee'].invitations[this.__identityIndex].id;
+            }
             return crosses[this.__crossIndex][prop];
           });
 
@@ -311,9 +381,50 @@ define(function (require, exports, module) {
   Bus.on(SIGN_IN_SUCCESS, function (data) {
     identities_defe(data);
   });
+  // 添加身份
+  Bus.on('app:addidentity', function (data) {
+    var jst_identity_list = $('#jst-identity-list');
+    var s = Handlebars.compile(jst_identity_list.html());
+    var h = s({identities: [data.identity]});
+    $('.identity-list').append(h);
+  });
 
   var $BODY = $(document.body);
   $(function () {
+
+    $BODY.on('hover.profile', '.identity-list > li', function (e) {
+      $(this).find('i.icon-minus-sign').toggleClass('hide');
+    });
+
+    // removed identity
+    $BODY.on('click.profile', 'i.icon-minus-sign', function (e) {
+      var identity_id = $(this).parent().data('identity-id');
+      var signinData = Store.get('signin');
+      var token = signinData.token;
+
+      //
+      return;
+      if (password) {
+
+        $.ajax({
+          url: Util.apiUrl + '/users/deleteIdentity?token=' + token,
+          type: 'POST',
+          dataType: 'JSON',
+          data: {
+            identity_id: identity_id,
+            password: password
+          }
+        })
+          .done(function (data) {
+            if (data.meta.code === 200) {
+              return;
+            }
+            if (data.meta.code === 403) {
+              alert('Please input password.');
+            }
+          });
+      }
+    });
 
     // 暂时使用jQuery 简单实现功能
     // 编辑 user/identity name etc.
@@ -402,6 +513,46 @@ define(function (require, exports, module) {
               }
             });
         }
+    });
+
+    // RSVP Accpet
+    $BODY.on('click.profile', '.xbtn-accept', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var signin = Store.get('signin');
+      var identity = Store.get('last_identity');
+      var token = signin.token;
+      var p = $(this).parent();
+      var crossid = p.data('id');
+      var invitationid = p.data('invitationid');
+      var cross_box = $('.gr-a [data-id="' + crossid + '"]');
+      var exfeeid = cross_box.data('exfeeid');
+      $.ajax({
+        url: Util.apiUrl + '/exfee/edit?id=' + exfeeid + '&token=' + token,
+        type: 'POST',
+        dataType: 'JSON',
+        data: {
+          by_identity_id: identity.id,
+          exfee: '{"invitations": [{"id": ' + invitationid + ', "rsvp_status": "ACCEPTED", "identity": {"id": ' + identity.id + '}}]}'
+        }
+      })
+        .done(function (data) {
+          if (data.meta.code === 200) {
+            var fs = cross_box.find('>div :first-child');
+            var i = +fs.text();
+            fs.text(i + 1);
+            var ls = cross_box.find('>div :last-child');
+            var s = ls.text();
+            var identity = Store.get('last_identity');
+            ls.text(s + ', ' + identity.name);
+            var inv;
+            if (!p.parent().prev().length && !p.parent().next().length) {
+              inv = p.parents('.invitations');
+            }
+            p.parent().remove();
+            inv && inv.remove();
+          }
+        });
     });
 
     // 添加身份

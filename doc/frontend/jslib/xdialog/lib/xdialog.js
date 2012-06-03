@@ -48,7 +48,6 @@
         }
         // 读取本地存储 user infos
         this.emit('checkUser');
-
       },
 
       onShowAfter: function () {
@@ -75,7 +74,7 @@
         },
         'click .xbtn-forgotpwd': function (e) {
           e.preventDefault();
-          this.hide();
+          this.switchTab('d24');
         },
         'click .xbtn-setup': function (e) {
           e.preventDefault();
@@ -92,7 +91,7 @@
           e.preventDefault();
           this.$('#identity').val('');
           this.emit('checkUser');
-          this.switchTab('d01');
+          this.switchTab('d01', true);
         },
         'click .x-signin': function (e) {
           var xsignin = $(e.currentTarget);
@@ -125,6 +124,8 @@
                 var meta = data.meta;
                 if (meta.code === 200) {
                   Store.set('signin', data.response);
+                  // 最后登陆的 external_identity
+                  Store.set('last_identity', od.external_identity);
                   if (t === 'd01') {
                     window.location = '/profile.html';
                   } else {
@@ -214,7 +215,7 @@
         // d01 登陆, d02 ISee, d03 注册, d24 验证
         footer: ''
           + '<a href="#" class="xbtn-setup d d01 hide">Set Up?</a>'
-          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from=".modal-id" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide">Forgot Password...</button>'
           + '<button href="#" class="xbtn-white d d03 d24 xbtn-startover hide">Start Over</button>'
           + '<button href="#" class="pull-right d d24 xbtn-blue hide">Verify</button>'
           + '<button href="#" class="pull-right xbtn-blue d d01 d03 x-signin disabled hide">Sign In</button>'
@@ -534,7 +535,8 @@
               .done(function (data) {
                 $e.removeClass('disabled loading');
                 if (data.meta.code === 200) {
-                  that.emit('hidden');
+                  that.hide();
+                  Bus.emit('app:addidentity', data.response);
                 }
               });;
 
@@ -547,7 +549,7 @@
         this.$('#new-identity').lastfocus();
       },
 
-      onHidden: function () {
+      onHideAfter: function () {
         var $e = this.element;
         this.offSrcNode();
         this.destory();
@@ -575,6 +577,7 @@
                     + '<div class="controls /*identity-avatar*/">'
                       + '<img class="add-on avatar hide" src="" alt="" width="20" height="20" />'
                       + '<input type="text" class="input-large identity" id="new-identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" />'
+                      + '<i class="help-inline small-loading hide"></i>'
                       + '<div class="xalert-info hide">Set up this new identity.</div>'
                     + '</div>'
                   + '</div>'
@@ -604,12 +607,22 @@
     init: function () {
       var that = this;
       Bus.on('widget-dialog-identification-auto', function (data) {
-        /*
         that.availability = false;
-        if (data && data.registration_flag === 'SIGN_UP') {
-          that.availability = true;
+        if (data) {
+          if (data.registration_flag === 'SIGN_IN') {
+            that.$('.xalert-info').removeClass('hide');
+          }
+          else if (data.registration_flag === 'SIGN_UP') {
+            that.availability = true;
+          }
+          that.$('.xbtn-success').removeClass('disabled');
+        } else {
+          that.$('.xbtn-success').addClass('disabled');
         }
-        */
+
+      });
+
+      Bus.on('widget-dialog-identification-nothing', function () {
       });
     }
 
@@ -757,6 +770,11 @@
       this.$('.xalert-info').addClass('hide');
 
       this.switchTabType = t;
+
+      if (this.isShown && (this.switchTabType === 'd01' || this.switchTabType === 'd03')) {
+        var $identity = this.$('#identity');
+        $identity.lastfocus();
+      }
 
       if (t === 'd01') this.toggleSetupOrForgopwd(b);
 
