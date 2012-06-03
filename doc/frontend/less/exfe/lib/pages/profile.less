@@ -260,8 +260,9 @@
       > a {
         display: block;
         padding: 8px 10px;
-        border: 1px solid rgba(0,0,0,0);
+        font-size: 12px;
         color: #424242;
+        border: 1px solid rgba(0,0,0,0);
         text-decoration: none;
         cursor: pointer;
       }
@@ -272,7 +273,6 @@
     }
 
     //.cross-box:hover {}
-
   }
 
   .siderbar {
@@ -315,6 +315,13 @@
     }
   }
 
+  .cross-box > a {
+    > h5, > time, > address, > div {
+      display: block;
+      .text-overflow-clip();
+    }
+   }
+
   .invitations {
     #gradient > .directional(#fafafa, #fff9f9, 101deg);
     h3 {
@@ -322,9 +329,32 @@
     }
 
     .cross-box {
+      position: relative;
       h5 {
         color: #1175A5;
         .text-overflow;
+      }
+
+      > a:hover {
+        padding-right: 80px;
+
+        .xbtn-accept {
+          .show;
+        }
+      }
+
+      .xbtn-accept {
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        margin-top: -12px;
+        .hide;
+
+        &:before {
+          content: '';
+          position: absolute;
+          left: 20px;
+        }
       }
     }
   }

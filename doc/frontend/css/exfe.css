@@ -5794,6 +5794,10 @@ a.badge:hover {
   color: #1175a5;
 }
 
+.xbtn {
+  cursor: pointer;
+}
+
 .xbtn-white {
   background-color: #f2f2f2;
   background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
@@ -6060,6 +6064,33 @@ a.badge:hover {
           border-radius: 3px;
   filter: progid:dximagetransform.microsoft.gradient(enabled=false);
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#e6e6e6', GradientType=0);
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.xbtn-accept {
+  height: 20px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 20px;
+  text-shadow: 0 1px 1px #fff;
+  background-color: #d5e7f0;
+  background-color: #8cbbd2;
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d5e7f0), to(#1f78a5));
+  background-image: linear-gradient(top, #d5e7f0, #1f78a5);
+  background-image: -ms-linear-gradient(top, #d5e7f0, #1f78a5);
+  background-image: -o-linear-gradient(top, #d5e7f0, #1f78a5);
+  background-image: -webkit-linear-gradient(top, #d5e7f0, #1f78a5);
+  background-image: -moz-linear-gradient(top, #d5e7f0, #1f78a5);
+  background-repeat: repeat-x;
+  border-color: #1f78a5 #1f78a5 #134965;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#d5e7f0', endColorstr='#1f78a5', GradientType=0);
+  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
      -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
@@ -7262,6 +7293,7 @@ a.badge:hover {
 .crosses .cross-box > a {
   display: block;
   padding: 8px 10px;
+  font-size: 12px;
   color: #424242;
   text-decoration: none;
   cursor: pointer;
@@ -7308,6 +7340,16 @@ a.badge:hover {
   color: #a9a9a9;
 }
 
+.cross-box > a > h5,
+.cross-box > a > time,
+.cross-box > a > address,
+.cross-box > a > div {
+  display: block;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
 .invitations {
   background-color: #fff9f9;
   background-image: -moz-linear-gradient(101deg, #fafafa, #fff9f9);
@@ -7322,11 +7364,37 @@ a.badge:hover {
   color: #1175A5;
 }
 
+.invitations .cross-box {
+  position: relative;
+}
+
 .invitations .cross-box h5 {
   overflow: hidden;
   color: #1175A5;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.invitations .cross-box > a:hover {
+  padding-right: 80px;
+}
+
+.invitations .cross-box > a:hover .xbtn-accept {
+  display: block;
+}
+
+.invitations .cross-box .xbtn-accept {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: none;
+  margin-top: -12px;
+}
+
+.invitations .cross-box .xbtn-accept:before {
+  position: absolute;
+  left: 20px;
+  content: '';
 }
 
 .updates {
