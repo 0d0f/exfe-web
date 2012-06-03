@@ -1,6 +1,7 @@
 define(function (require) {
 
   var $ = require('jquery');
+  var R = require('rex');
   var Bus = require('bus');
   var Util = require('util');
   var Store = require('store');
@@ -65,10 +66,10 @@ define(function (require) {
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
           + '<div class="meta">'
-            + '<a class="pull-right avatar">'
+            + '<a class="pull-right avatar" href="/s/profile">'
               + '<img width="40" height="40" alt="" src="{{avatar_filename}}" />'
             + '</a>'
-            + '<a class="attended">'
+            + '<a class="attended" href="/s/profile">'
               + '<span class="attended-nums">{{cross_quantity}}</span>'
               + '<span class="attended-x"><em class="x-sign">X</em> attended</span>'
             + '</a>'
@@ -263,6 +264,11 @@ define(function (require) {
                     .done(function (data) {
                       if (data.meta.code === 200) {
                         //Store.set('user', data.response.user);
+                        var last_identity = Store.get('last_identity');
+                        var identity = R.filter(data.response.user.identities, function (v) {
+                          if (last_identity === v.external_id) return true;
+                        })[0] || data.response.user.default_identity;
+                        Store.set('last_identity', identity);
                       }
                     })
                 );
@@ -364,6 +370,15 @@ define(function (require) {
       // 兼容 iframe
       if (isIframe) {
         parent.postMessage('gather', domain);
+      }
+    });
+
+    $BODY.on('click', '.meta > a', function (e) {
+      var p = $(this).attr('href');
+      e.preventDefault();
+      // 兼容 iframe
+      if (isIframe) {
+        parent.postMessage('profile:' + p, domain);
       }
     });
 

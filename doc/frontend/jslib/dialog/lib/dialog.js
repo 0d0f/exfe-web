@@ -16,8 +16,6 @@ define('dialog', [], function (require, exports, module) {
 
   var $BODY = $(document.body);
 
-  var hasBackDrop = false;
-
   /*
    * HTML
    *
@@ -34,8 +32,8 @@ define('dialog', [], function (require, exports, module) {
 
     options: {
 
-      // 遮罩层结构
-      backdropNode: '<div id="js-modal-backdrop" class="modal-backdrop" />'
+      // keyboard
+      keyboard: true
 
       // 开/关 遮罩
     , backdrop: false
@@ -78,12 +76,6 @@ define('dialog', [], function (require, exports, module) {
         if (others) this.element.find('div.modal-main').append(others);
       }
 
-      if (this.options.backdrop && !hasBackDrop) {
-        var backdropNode = $(this.options.backdropNode);
-        backdropNode.appendTo(this.parentNode).addClass('in');
-        hasBackDrop = true;
-      }
-
       this.element.appendTo(this.parentNode);
 
       this.element.on('click.dismiss.dialog', '[data-dismiss="dialog"]', $.proxy(this.hide, this));
@@ -106,13 +98,17 @@ define('dialog', [], function (require, exports, module) {
 
       this.emit('showBefore', data);
 
-      if (this.options.backdrop) {
-        $('#js-modal-backdrop').removeClass('hide');
-      }
       this.element.removeClass('hide');
+
+      this.isShown = true;
+      escape.call(this);
+      backdrop.call(this);
+
+      this.element.addClass('in');
 
       // after
       this.emit('showAfter', data);
+
       return this;
     },
 
@@ -120,14 +116,18 @@ define('dialog', [], function (require, exports, module) {
       // before
       this.emit('hideBefore', data);
 
-      if (this.options.backdrop) {
-        $('#js-modal-backdrop').addClass('hide');
-      }
       this.element.addClass('hide');
+
+      this.isShown = false;
+      escape.call(this);
+      backdrop.call(this);
+
+      this.element.removeClass('in');
 
       // if (this.options.lifecycle) {}
       // after
       this.emit('hideAfter', data);
+
       return this;
     },
 
@@ -141,6 +141,39 @@ define('dialog', [], function (require, exports, module) {
 
   // Helper
   // ------
+
+  var backdropNode = '<div id="js-modal-backdrop" class="modal-backdrop" />'
+  function backdrop(callback) {
+    // 遮罩层结构
+    var that = this;
+
+    if (this.isShown && this.options.backdrop) {
+      this.$backdrop = $(backdropNode).appendTo(this.parentNode);
+
+      this.$backdrop.click($.proxy(this.hide, this));
+
+      this.$backdrop.addClass('in');
+    } else if (!this.isShown && this.$backdrop) {
+      this.$backdrop.removeClass('in');
+      removeBackdrop.call(this);
+    }
+  }
+
+  function removeBackdrop() {
+    this.$backdrop.remove();
+    this.$backdrop = null;
+  }
+
+  function escape() {
+    var that = this;
+    if (this.isShown && this.options.keyboard) {
+      $BODY.on('keyup.dismiss.modal', function (e) {
+        e.which === 27 && that.hide();
+      });
+    } else if (!this.isShown) {
+      $BODY.off('keyip.dismiss.modal');
+    }
+  }
 
   return Dialog;
 });
