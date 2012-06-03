@@ -101,8 +101,8 @@
   <!-- JS Templates -->
   <script id="jst-identity-list" type="text/x-handlebars-template">
   {{#each identities}}
-  <li data-identity-id="{{id}}" {{#editable provider}}class="editable"{{/editable}}>
-    <i class="icon-minus-sign hide"></i><span class="avatar"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
+  <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}}>
+    <i class="icon-minus-sign hide"></i><span class="avatar"><img src="{{avatarFilename avatar_filenamee}}" alt="" width="20" height="20" />
     </span><span class="username"><em>{{printName name external_id}}</em></span><span class="identity">{{atName provider external_id}}</span>
     {{#ifOauthVerifying provider status}}
     <span class="xlabel hide">
@@ -147,18 +147,18 @@
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
   <div class="cross-box">
-  <a href="/cross.html?id_base62={{id_base62}}" data-id={{id}} title="">
+  <a href="/cross.html?id_base62={{id_base62}}" data-id={{id}} data-exfeeid={{exfee.id}} title="">
     <h5>{{title}}</h5>
-    <time>{{time.origin}}</time>
+    <time>{{printTime time}}</time>
     <address>{{place.title}} 
     {{#if place.description}}
       <span class="gray">({{place.description}})</span>
     {{/if}}
     </address>
-    <div>{{{confirmed_nums exfee.invitations}}} 
+    <div><span>{{{confirmed_nums exfee.invitations}}}</span> 
       <span class="gray">of</span> 
       {{{total exfee.invitations}}} 
-      <span class="gray">confirmed</span>: {{{confirmed_identities exfee.invitations}}}
+      <span class="gray">accepted</span>: <span>{{{confirmed_identities exfee.invitations}}}</span>
     </div>
   </a>
   </div>
@@ -169,9 +169,10 @@
     <div class="cross-list">
       {{#crosses}}
       <div class="cross-box">
-        <a href="/cross.html?id_base62={{crossItem "id_base62"}}" data-id={{crossItem "id"}} title="">
-        <h5>{{crossItem "title"}}</h5>
-        <div>{{updated_at}} <span class="gray">by</span> {{by_identity.name}}</div>
+        <a href="/cross.html?id_base62={{crossItem "id_base62"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}" title="">
+          <h5>{{crossItem "title"}}</h5>
+          <div>{{printTime2 "time"}}{{#ifPlace}} <span class="gray">at</span> {{crossItem "place"}}{{/ifPlace}} <span class="gray">by</span> {{by_identity.name}}</div>
+          <div class="xbtn xbtn-accept">Accept</div>
         </a>
       </div>
       {{/crosses}}
