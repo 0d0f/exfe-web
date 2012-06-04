@@ -144,7 +144,12 @@ class ExfeeModels extends DataModel {
                  WHERE `cross_id`   = {$exfee_id}
                  AND `identity_id`  = {$identity_id}"
             ))) {
-                return true;
+                return array(
+                    'identity_id'    => $identity_id,
+                    'rsvp_status'    => $this->rsvp_status[$rsvp_status],
+                    'by_identity_id' => $by_identity_id,
+                    'type'           => 'rsvp',
+                );
             }
         }
         return false;
@@ -301,9 +306,13 @@ class ExfeeModels extends DataModel {
         $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
         $old_cross = $hlpCross->getCross($cross_id, false, true);
         // raw actions
+        $arrResult = array();
         $actResult = true;
         foreach ($rsvps as $rsvp) {
-            if (!$this->updateRsvpByExfeeIdAndIdentityId($exfee_id, $rsvp)) {
+            $itm = $this->updateRsvpByExfeeIdAndIdentityId($exfee_id, $rsvp);
+            if ($itm) {
+                $arrResult[] = $itm;
+            } else {
                 $actResult = false;
             }
         }
@@ -311,7 +320,7 @@ class ExfeeModels extends DataModel {
         // call Gobus
         $this->sendToGobus($exfee_id, $by_identity_id, $null, $old_cross);
         //
-        return $actResult ? $exfee_id : null;
+        return $actResult ? $arrResult : null;
     }
 
 
