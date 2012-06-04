@@ -90,14 +90,16 @@ class ExfeeActions extends ActionController {
         }
         // do it
         $rsvp = json_decode($_POST['rsvp']);
-        if ($rsvp && is_array($rsvp) && $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id)) {
-            if ($cross_id) {
-                saveUpdate(
-                    $cross_id,
-                    array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
-                );
+        if ($rsvp && is_array($rsvp)) {
+            if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id)) {
+                if ($cross_id) {
+                    saveUpdate(
+                        $cross_id,
+                        array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
+                    );
+                }
+                apiResponse(array('rsvp' => $actResult));
             }
-            apiResponse(array('rsvp' => $rsvp));
         }
         apiError(400, 'editing failed', '');
     }
