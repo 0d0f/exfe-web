@@ -128,6 +128,34 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function updateRsvpByExfeeIdAndIdentityId($exfee_id, $rsvp) {
+        // base check
+        $identity_id    = (int)$rsvp->identity_id;
+        $rsvp_status    = $this->getIndexOfRsvpStatus($rsvp->rsvp_status);
+        $by_identity_id = (int)$rsvp->by_identity_id;
+        // update database
+        if ($identity_id && $rsvp_status && $by_identity_id) {
+            if (intval($this->query(
+                "UPDATE `invitations` SET
+                 `state`            = {$rsvp_status},
+                 `updated_at`       = NOW(),
+                 `exfee_updated_at` = NOW(),
+                 `by_identity_id`   = {$by_identity_id}
+                 WHERE `cross_id`   = {$exfee_id}
+                 AND `identity_id`  = {$identity_id}"
+            ))) {
+                return array(
+                    'identity_id'    => $identity_id,
+                    'rsvp_status'    => $this->rsvp_status[$rsvp_status],
+                    'by_identity_id' => $by_identity_id,
+                    'type'           => 'rsvp',
+                );
+            }
+        }
+        return false;
+    }
+
+
     public function sendToGobus($exfee_id, $by_identity_id, $to_identities = null, $old_cross = null) {
         // get helpers
         $hlpCross = $this->getHelperByName('cross', 'v2');
@@ -265,6 +293,34 @@ class ExfeeModels extends DataModel {
         $this->sendToGobus($exfee_id, $by_identity_id, $delExfee, $old_cross);
         //
         return $exfee_id;
+    }
+
+
+    public function updateExfeeRsvpById($exfee_id, $rsvps, $by_identity_id) {
+        // base check
+        if (!$exfee_id || !is_array($rsvps) || !$by_identity_id) {
+            return null;
+        }
+        // get old cross
+        $hlpCross  = $this->getHelperByName('cross', 'v2');
+        $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
+        $old_cross = $hlpCross->getCross($cross_id, false, true);
+        // raw actions
+        $arrResult = array();
+        $actResult = true;
+        foreach ($rsvps as $rsvp) {
+            $itm = $this->updateRsvpByExfeeIdAndIdentityId($exfee_id, $rsvp);
+            if ($itm) {
+                $arrResult[] = $itm;
+            } else {
+                $actResult = false;
+            }
+        }
+        $this->updateExfeeTime($exfee_id);
+        // call Gobus
+        $this->sendToGobus($exfee_id, $by_identity_id, $null, $old_cross);
+        //
+        return $actResult ? $arrResult : null;
     }
 
 

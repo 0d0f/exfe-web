@@ -56,6 +56,11 @@ class UserModels extends DataModel {
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
+                        $item['external_username'] = getAvatarUrl(
+                            $item['provider'],
+                            $item['external_identity'],
+                            $item['avatar_file_name']
+                        );
                         $identity = new Identity(
                             $item['id'],
                             $item['name'],
