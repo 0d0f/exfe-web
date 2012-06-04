@@ -30,12 +30,11 @@ class IdentityModels extends DataModel {
                     $rawIdentity['bio'] = $rawIdentity['bio'] === '' ? $rawUser['bio'] : $rawIdentity['bio'];
                 }
             }
-            if (!$rawIdentity['avatar_file_name']) {
-                $rawIdentity['avatar_file_name'] = API_URL . "/v2/avatar/get?provider={$rawIdentity['provider']}&external_id={$rawIdentity['external_identity']}";
-                if ($rawIdentity['provider'] === 'email') {
-                    $rawIdentity['avatar_file_name'] = 'http://www.gravatar.com/avatar/' . md5($rawIdentity['external_identity']) . '?d=' . urlencode($rawIdentity['avatar_file_name']);
-                }
-            }
+            $rawIdentity['avatar_file_name'] = getAvatarUrl(
+                $rawIdentity['provider'],
+                $rawIdentity['external_identity'],
+                $rawIdentity['avatar_file_name']
+            );
             $objIdentity = new Identity(
                 $rawIdentity['id'],
                 $rawIdentity['name'],
