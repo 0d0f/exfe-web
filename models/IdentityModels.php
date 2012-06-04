@@ -71,12 +71,11 @@ class IdentityModels extends DataModel {
                 if (!$identityrow['name']) {
                     $identityrow['name'] = $user['name'];
                 }
-                if (!$identityrow['avatar_file_name']) {
-                    $identityrow['avatar_file_name'] = API_URL . "/v2/avatar/get?provider={$identityrow['provider']}&external_id={$identityrow['external_identity']}";
-                    if ($identityrow['provider'] === 'email') {
-                        $identityrow['avatar_file_name'] = 'http://www.gravatar.com/avatar/' . md5($identityrow['external_identity']) . '?d=' . urlencode($identityrow['avatar_file_name']);
-                    }
-                }
+                $identityrow['avatar_file_name'] = getAvatarUrl(
+                    $identityrow['provider'],
+                    $identityrow['external_identity'],
+                    $identityrow['avatar_file_name']
+                );
                 if (!$identityrow['bio']) {
                     $identityrow['bio'] = $user['bio'];
                 }
@@ -263,14 +262,11 @@ class IdentityModels extends DataModel {
         $identityInfo = $this->getRow($sql);
         $returnData["identity"] = $identityInfo["external_identity"];
         $returnData["display_name"] = $identityInfo["name"];
-        if (!$identityInfo['avatar_file_name']) {
-            $identityInfo['avatar_file_name'] = API_URL . "/v2/avatar/get?provider={$identityInfo['provider']}&external_id={$identityInfo['external_identity']}";
-            if ($identityInfo['provider'] === 'email') {
-                $identityInfo['avatar_file_name'] = 'http://www.gravatar.com/avatar/' . md5($identityInfo['external_identity']) . '?d=' . urlencode($identityInfo['avatar_file_name']);
-            }
-        }
-        $returnData["avatar"] = $identityInfo["avatar_file_name"];
-
+        $returnData["avatar"] = getAvatarUrl(
+            $identityInfo['provider'],
+            $identityInfo['external_identity'],
+            $identityInfo['avatar_file_name']
+        );
         if(is_array($row)){
             $user_id = $row["userid"];
             $sql = "SELECT encrypted_password FROM users WHERE id={$user_id}";
@@ -577,12 +573,11 @@ class IdentityModels extends DataModel {
             );
             $verifyToken = packArray($verifyTokenArray);
 
-            if (!$avatar_file_name) {
-                $avatar_file_name = API_URL . "/v2/avatar/get?provider={$provider}&external_id={$avatar_file_name}";
-                if ($provider === 'email') {
-                    $avatar_file_name = 'http://www.gravatar.com/avatar/' . md5($external_identity) . '?d=' . urlencode($avatar_file_name);
-                }
-            }
+            $avatar_file_name = getAvatarUrl(
+                $provider,
+                $external_identity,
+                $avatar_file_name
+            );
 
             $args = array(
                 'identityid'        => $identityid,
@@ -680,12 +675,11 @@ class IdentityModels extends DataModel {
                     $returnData["identity_bio"] = $identityRow["bio"];
                     $returnData["user_name"] = $userInfo["name"];
 
-                    if (!$identityRow["avatar_file_name"]) {
-                        $identityRow["avatar_file_name"] = API_URL . "/v2/avatar/get?provider={$identityRow['provider']}&external_id={$identityRow['external_identity']}";
-                        if ($identityRow['provider'] === 'email') {
-                            $identityRow["avatar_file_name"] = 'http://www.gravatar.com/avatar/' . md5($identityRow['external_identity']) . '?d=' . urlencode($identityRow["avatar_file_name"]);
-                        }
-                    }
+                    $identityRow['avatar_file_name'] = getAvatarUrl(
+                        $identityRow['provider'],
+                        $identityRow['external_identity'],
+                        $identityRow['avatar_file_name']
+                    );
 
                     $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
                     $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"] ?: $identityRow["avatar_file_name"];
@@ -754,14 +748,11 @@ class IdentityModels extends DataModel {
 
         $identity["bio"]=$identityrow["bio"];
 
-        if (!$identityrow["avatar_file_name"]) {
-            $identityrow["avatar_file_name"] = API_URL . "/v2/avatar/get?provider={$identityrow['provider']}&external_id={$identityrow['external_identity']}";
-            if ($identityrow['provider'] === 'email') {
-                $identityrow["avatar_file_name"] = 'http://www.gravatar.com/avatar/' . md5($identityrow['external_identity']) . '?d=' . urlencode($identityrow["avatar_file_name"]);
-            }
-        }
-
-        $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
+        $identity['avatar_file_name'] = getAvatarUrl(
+            $identityrow['provider'],
+            $identityrow['external_identity'],
+            $identityrow['avatar_file_name']
+        );
 
         $_SESSION["identity"]=$identity;
 
@@ -856,12 +847,11 @@ class IdentityModels extends DataModel {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
         $row=$this->getRow($sql);
 
-        if (!$row['avatar_file_name']) {
-            $row['avatar_file_name'] = API_URL . "/v2/avatar/get?provider={$row['provider']}&external_id={$row['external_identity']}";
-            if ($row['provider'] === 'email') {
-                $row['avatar_file_name'] = 'http://www.gravatar.com/avatar/' . md5($row['external_identity']) . '?d=' . urlencode($row['avatar_file_name']);
-            }
-        }
+        $row['avatar_file_name'] = getAvatarUrl(
+            $row['provider'],
+            $row['external_identity'],
+            $row['avatar_file_name']
+        );
 
         return $row;
     }

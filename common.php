@@ -391,6 +391,7 @@ function hashFileSavePath($savePath, $fileName = '') {
 
 
 /**
+ * @todo: removing by Leask replacing by function getAvatarUrl
  * 获取散列存储路径
  * @param $fileName, $specialFilePath
  * @return string
@@ -409,6 +410,7 @@ function getHashFilePath($fileName='', $specialFilePath=''){
 }
 
 /**
+ * @todo: removeing by Leask, replacing by function getAvatarUrl
  * 获取用户头像
  * @param $fileName, $avatarSize
  * @return string
@@ -424,6 +426,26 @@ function getUserAvatar($fileName, $avatarSize=80){
         return IMG_URL."/".getHashFilePath($fileName)."/".$avatarSize."_".$avatarSize."_".$fileName;
     }
 }
+
+
+function getAvatarUrl($provider, $external_id, $raw_avatar, $size = 80) {
+    if ($raw_avatar) {
+        $raw_avatar
+      = preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
+      ? $raw_avatar
+      : (IMG_URL
+      . '/' . substr($raw_avatar, 0, 1)
+      . '/' . substr($raw_avatar, 1, 2)
+      . '/' . "{$size}_{$size}_{$raw_avatar}");
+    } else {
+        $raw_avatar = API_URL . "/v2/avatar/get?provider={$provider}&external_id={$external_id}";
+        if ($provider === 'email') {
+            $raw_avatar = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($raw_avatar);
+        }
+    }
+    return $raw_avatar;
+}
+
 
 function autoLink($text) {
    $pattern = "/(((http[s]?:\/\/)|(www\.))(([a-z][-a-z0-9]+\.)?[a-z][-a-z0-9]+\.[a-z]+(\.[a-z]{2,2})?)\/?[a-z0-9._\/~#&=;%+?-]+[a-z0-9\/#=?]{1,1})/is";
