@@ -39,6 +39,28 @@ class IdentitiesActions extends ActionController {
                     $objIdentities[] = $identity;
                 } else {
                     switch ($identityItem->provider) {
+                        case 'email':
+                            $objEmail = $modIdentity->parseEmail($identityItem->external_id);
+                            if ($objEmail) {
+                                $objIdentities[] = new Identity(
+                                    0,
+                                    $identityItem->name ?: $objEmail['name'],
+                                    '',
+                                    '',
+                                    'email',
+                                    0,
+                                    $objEmail['email'],
+                                    $objEmail['email'],
+                                    getAvatarUrl(
+                                        'email',
+                                        $objEmail['email'],
+                                        '',
+                                        80,
+                                        API_URL . "/v2/avatar/default?name={$objEmail['email']}"
+                                    )
+                                );
+                            }
+                            break;
                         case 'twitter':
                             if ($identityItem->external_username) {
                                 $twitterConn = new tmhOAuth(array(
@@ -46,7 +68,7 @@ class IdentitiesActions extends ActionController {
                                     'consumer_secret' => TWITTER_CONSUMER_SECRET,
                                     'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
                                     'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
-                                )); 
+                                ));
                                 $responseCode = $twitterConn->request(
                                     'GET',
                                     $twitterConn->url('1/users/show'),
@@ -61,7 +83,7 @@ class IdentitiesActions extends ActionController {
                                         $twitterUser['description'],
                                         'twitter',
                                         0,
-                                        $twitterUser['id']
+                                        $twitterUser['id'],
                                         $twitterUser['screen_name'],
                                         $modIdentity->getTwitterLargeAvatarBySmallAvatar(
                                             $twitterUser['profile_image_url']

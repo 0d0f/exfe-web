@@ -428,7 +428,7 @@ function getUserAvatar($fileName, $avatarSize=80){
 }
 
 
-function getAvatarUrl($provider, $external_id, $raw_avatar, $size = 80) {
+function getAvatarUrl($provider, $external_id, $raw_avatar, $size = 80, $spec_fallback = '') {
     if ($raw_avatar) {
         $raw_avatar
       = preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
@@ -438,7 +438,7 @@ function getAvatarUrl($provider, $external_id, $raw_avatar, $size = 80) {
       . '/' . substr($raw_avatar, 1, 2)
       . '/' . "{$size}_{$size}_{$raw_avatar}");
     } else {
-        $raw_avatar = API_URL . "/v2/avatar/get?provider={$provider}&external_id={$external_id}";
+        $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_id={$external_id}");
         if ($provider === 'email') {
             $raw_avatar = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($raw_avatar);
         }
