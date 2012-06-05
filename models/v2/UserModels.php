@@ -502,8 +502,9 @@ class UserModels extends DataModel {
     public function makeDefaultAvatar($name) {
         // image config
         $specification = array(
-            'width'  => 80,
-            'height' => 80,
+            'width'       => 80,
+            'height'      => 80,
+            'bg_quantity' => 3,
         );
         $colors = array(
             array(138,  59, 197),
@@ -513,16 +514,17 @@ class UserModels extends DataModel {
             array( 41,  95, 204),
         );
         $ftSize = 36;
+        $intHsh = base62_to_int(substr(md5($name), 0, 3));
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../../default_avatar_portrait/";
         $fLatin = "{$resDir}OpenSans-Regular.ttf";
         $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
-        $bgIdx  = rand(1, 3);
+        $bgIdx  = fmod($intHsh, $specification['bg_quantity']);
         $image  = ImageCreateFromPNG("{$resDir}bg_{$bgIdx}.png");
         // get color
-        $clIdx  = rand(0, count($colors) - 1);
+        $clIdx  = fmod($intHsh, count($colors));
         $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
         // get name & check CJK
         $ftFile = checkCjk($name = mb_substr($name, 0, 3, 'UTF-8'))
@@ -530,11 +532,11 @@ class UserModels extends DataModel {
         $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
         do {
-            $posArr = imagettftext(imagecreatetruecolor(80, 80), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
+            $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
         } while ($fWidth > (80 - 2));
-        imagettftext($image, $ftSize, 0, (80 - $fWidth) / 2, 65, $fColor, $ftFile, $name);
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, 65, $fColor, $ftFile, $name);
         // show image
         header('Pragma: no-cache');
         header('Cache-Control: no-cache');
