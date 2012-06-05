@@ -333,10 +333,10 @@ class UsersActions extends ActionController {
         $fetchIncl  = array();
         $fetchFold  = array();
         foreach ($categories as $cItem) {
-            $fetchFold[$cItem] = !!intval($_GET["{$cItem}_folded"]);
+            $fetchFold[$cItem] = !!intval($params["{$cItem}_folded"]);
         }
-        if (($more_cat = strtolower($_GET['more_category']))
-         && ($more_pos = intval($_GET['more_position'])) > 0) {
+        if (($more_cat = strtolower($params['more_category']))
+         && ($more_pos = intval($params['more_position'])) > 0) {
             foreach ($categories as $cItem) {
                 $fetchIncl[$cItem] = $cItem === $more_cat;
             }
@@ -346,6 +346,7 @@ class UsersActions extends ActionController {
                 $fetchIncl[$cItem] = true;
             }
         }
+        print_r($params);return;
         // get exfee_ids
         $exfee_ids  = $hlpExfee->getExfeeIdByUserid($user_id);
         // get crosses
