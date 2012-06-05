@@ -275,4 +275,19 @@ class IdentityModels extends DataModel {
         return false;
     }
 
+
+    public function parseEmail($email) {
+        $email = trim($email);
+        if (preg_match('/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/', $email)) {
+            $name  = preg_replace('/^[\s\"\']*|[\s\"\']*$/', '', preg_replace('/^([^<]*).*$/', '$1', $email));
+            $email = trim(preg_replace('/^.*<([^<^>]*).*>$/', '$1', $email));
+        } else if (preg_match('/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/', $email)) {
+            $name  = trim(preg_replace('/^([^@]*).*$/', '$1', $email));
+        } else {
+            return null;
+        }
+        return array('name' => $name, 'email' => $email);
+    }
+
+
 }
