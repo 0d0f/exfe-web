@@ -8,7 +8,9 @@ define(function (require, exports, module) {
   var R = require('rex');
   var Util = require('util');
   var Bus = require('bus');
+  var Api = require('api');
   var Moment = require('moment');
+
   Moment.calendar = {
     sameDay : 'ha, dddd MMMM D',
     nextDay : 'h:ssA [Tomorrow], dddd MMMM D',
@@ -117,6 +119,11 @@ define(function (require, exports, module) {
 
   Handlebars.registerHelper('ifOauthVerifying', function (provider, status, options) {
     var context = provider === 'twitter' && status === 'VERIFYING';
+    return Handlebars.helpers['if'].call(this, context, options, options);
+  });
+
+  Handlebars.registerHelper('makeDefault', function (def, status, options) {
+    var context = !def && status === 'CONNECTED';
     return Handlebars.helpers['if'].call(this, context, options, options);
   });
 
@@ -229,12 +236,16 @@ define(function (require, exports, module) {
               crossList[v.sort].crosses.push(v);
             });
 
+            var more = data.response.more.join(' ');
+
             var splitterReg = /<|>/;
             R.map(cates.split(' '), function (v, i) {
               v = v.split(splitterReg);
               var c = crossList[v[0]];
               if (c) {
+                c.cate = v[0];
                 c.cate_date = v[1];
+                c.hasMore = more.search(v[0]) > -1;
                 h += s(c);
               }
             });
@@ -255,7 +266,7 @@ define(function (require, exports, module) {
     //var qdate = Store.get('qdate') || '';
     //qdate && (qdate = '&date=' + qdate);
     var now = new Date();
-    now.setDate(now.getDate() - 3);
+    //now.setDate(now.getDate() - 3);
     now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
 
     return $.ajax({
@@ -337,6 +348,8 @@ define(function (require, exports, module) {
               return crosses[this.__crossIndex][prop].title;
             } else if (prop === 'invitationid') {
               return crosses[this.__crossIndex]['exfee'].invitations[this.__identityIndex].id;
+            } else if (prop === 'exfeeid') {
+              return crosses[this.__crossIndex]['exfee'].id;
             }
             return crosses[this.__crossIndex][prop];
           });
@@ -526,14 +539,15 @@ define(function (require, exports, module) {
       var crossid = p.data('id');
       var invitationid = p.data('invitationid');
       var cross_box = $('.gr-a [data-id="' + crossid + '"]');
-      var exfeeid = cross_box.data('exfeeid');
+      var exfeeid = p.data('exfeeid');
       $.ajax({
-        url: Util.apiUrl + '/exfee/edit?id=' + exfeeid + '&token=' + token,
+        url: Util.apiUrl + '/exfee/' + exfeeid + '/rsvp?token=' + token,
         type: 'POST',
         dataType: 'JSON',
         data: {
-          by_identity_id: identity.id,
-          exfee: '{"invitations": [{"id": ' + invitationid + ', "rsvp_status": "ACCEPTED", "identity": {"id": ' + identity.id + '}}]}'
+          rsvp: '[{"identity_id":' + identity.id + ', "rsvp_status": "ACCEPTED", "by_identity_id": ' + identity.id + '}]',
+          by_identity_id: identity.id
+          //exfee: '{"invitations": [{"id": ' + invitationid + ', "rsvp_status": "ACCEPTED", "identity": {"id": ' + identity.id + '}}]}'
         }
       })
         .done(function (data) {
@@ -575,6 +589,37 @@ define(function (require, exports, module) {
         $(this).find('.xbtn-changepassword').addClass('hide');
         $(this).find('.xlabel').addClass('hide');
       }
+    });
+
+    // more
+    $BODY.on('click.profile', '.more > a', function (e) {
+      e.preventDefault();
+      var p = $(this).parent();
+      var cate = p.data('cate');
+      var data = Store.get('signin');
+      var token = data.token;
+      var user_id = data.user_id;
+      var more_position = p.prev().find(' .cross-box').length;
+      var more_category = cate;
+
+      Api.request('crosslist', {
+        resources: {
+          user_id: user_id
+        },
+        data: {
+          more_category: more_category,
+          more_position: more_position
+        }
+      }, function (data) {
+          console.dir(data);
+          if (data.crosses.length) {
+            var h = '{{#crosses}}'
+                + '{{> jst-cross-box}}'
+              + '{{/crosses}}';
+            var s = Handlebars.compile(h);
+            //p.prev().append(s(data.response.crosses))
+          }
+        });
     });
 
   });
