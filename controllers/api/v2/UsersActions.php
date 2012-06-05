@@ -346,7 +346,6 @@ class UsersActions extends ActionController {
                 $fetchIncl[$cItem] = true;
             }
         }
-        print_r($params);return;
         // get exfee_ids
         $exfee_ids  = $hlpExfee->getExfeeIdByUserid($user_id);
         // get crosses
