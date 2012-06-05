@@ -75,7 +75,21 @@ class ExfeeActions extends ActionController {
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
-        if (!($by_identity_id = intval($_POST['by_identity_id']))) {
+        $rsvp = json_decode($_POST['rsvp']);
+        if (!$rsvp || !is_array($rsvp)) {
+            apiError(400, 'input_error', 'rsvp input error');
+        }
+        $by_identity_id = '';
+        foreach ($rsvp as $rItem) {
+            if ($by_identity_id) {
+                if ($by_identity_id !== $rItem->by_identity_id) {
+                    apiError(400, 'input_error', 'by_identity_id input error');
+                }
+            } else {
+                $by_identity_id = $rItem->by_identity_id;
+            }
+        }
+        if (!$by_identity_id) {
             apiError(400, 'no_by_identity_id', 'by_identity_id must be provided');
         }
         // get cross id
@@ -89,17 +103,14 @@ class ExfeeActions extends ActionController {
             apiError(401, 'invalid_auth', '');
         }
         // do it
-        $rsvp = json_decode($_POST['rsvp']);
-        if ($rsvp && is_array($rsvp)) {
-            if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id)) {
-                if ($cross_id) {
-                    saveUpdate(
-                        $cross_id,
-                        array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
-                    );
-                }
-                apiResponse(array('rsvp' => $actResult));
+        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id)) {
+            if ($cross_id) {
+                saveUpdate(
+                    $cross_id,
+                    array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
+                );
             }
+            apiResponse(array('rsvp' => $actResult));
         }
         apiError(400, 'editing failed', '');
     }

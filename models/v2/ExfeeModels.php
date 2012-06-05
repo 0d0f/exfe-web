@@ -128,7 +128,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateRsvpByExfeeIdAndIdentityId($exfee_id, $rsvp) {
+    public function updateRsvpByExfeeId($exfee_id, $rsvp) {
         // base check
         $identity_id    = (int)$rsvp->identity_id;
         $rsvp_status    = $this->getIndexOfRsvpStatus($rsvp->rsvp_status);
@@ -309,7 +309,7 @@ class ExfeeModels extends DataModel {
         $arrResult = array();
         $actResult = true;
         foreach ($rsvps as $rsvp) {
-            $itm = $this->updateRsvpByExfeeIdAndIdentityId($exfee_id, $rsvp);
+            $itm = $this->updateRsvpByExfeeId($exfee_id, $rsvp);
             if ($itm) {
                 $arrResult[] = $itm;
             } else {
