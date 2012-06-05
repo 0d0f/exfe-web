@@ -6,6 +6,9 @@ class CrossesActions extends ActionController {
     {
         $params=$this->params;
         $checkHelper=$this->getHelperByName("check","v2");
+        if (intval($params['by_base62_id'])) {
+            $params['id'] = base62_to_int($params['id']);
+        }
         $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
         if($result["check"]!==true)
         {
