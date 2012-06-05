@@ -3,6 +3,7 @@ define(function (require) {
   var $ = require('jquery');
   var R = require('rex');
   var Bus = require('bus');
+  var Api = require('api');
   var Util = require('util');
   var Store = require('store');
   var Handlebars = require('handlebars');
@@ -118,56 +119,50 @@ define(function (require) {
     if (d.action_status === 3) {
       var signin = Store.get('signin');
       var user_id = signin.user_id;
-      var token = signin.token;
-      var qqqq = '&upcoming_included=true&anytime_included=false&sevendays_include=false&later_included=false&past_included=false';
-      $.ajax({
-        url: Util.apiUrl + '/users/' + user_id + '/crosslist?token=' + token + qqqq,
-        type: 'GET',
-        dataType: 'JSON',
-        xhrFields: { withCredentials: true}
-      })
-        .done(function (data) {
-          if (data.meta.code === 200) {
-            // NOTE:
-            // now: 当前时间～cross发生时间(3hr)
-            // 24hr: cross发生时间 ～ 当前时间(24hr)
+      Api.request('crosslist'
+        , {
+          resources: {user_id: user_id}
+        }
+        , function (data) {
+          // NOTE:
+          // now: 当前时间～cross发生时间(3hr)
+          // 24hr: cross发生时间 ～ 当前时间(24hr)
 
-            var crosses = data.response.crosses;
-            if (crosses.length) {
-              var now = +new Date();
-              var ne = now + 3 * 60 * 60 * 1000;
-              var n24 = now - 24 * 60 * 60 * 1000;
-              Handlebars.registerHelper('alink', function (ctx) {
-                var s = '';
-                var beginAt = ctx.time.begin_at;
-                var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
-                if (now <= dt && dt <= ne) {
-                  s = '<li class="tag">'
-                        + '<span class="now">NOW</span>'
-                } else if (n24 <= dt && dt < now) {
-                  s = '<li class="tag">'
-                        + '<span class="hr24">24hr</span>'
-                } else {
-                  s = '<li>'
-                }
-                s += '<a data-id="' + this.id + '" href="/!' + this.id_base62 + '">' + this.title + '</a>'
-                    + '</li>';
-                return s;
-              });
-              var s = '<div>Upcoming:</div>'
-                + '<ul class="crosses">'
-                + '{{#each crosses}}'
-                  + '{{{alink this}}}'
-                + '{{/each}}'
-                + '</ul>';
+          var crosses = data.crosses;
+          if (crosses.length) {
+            var now = +new Date();
+            var ne = now + 3 * 60 * 60 * 1000;
+            var n24 = now - 24 * 60 * 60 * 1000;
+            Handlebars.registerHelper('alink', function (ctx) {
+              var s = '';
+              var beginAt = ctx.time.begin_at;
+              var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
+              if (now <= dt && dt <= ne) {
+                s = '<li class="tag">'
+                      + '<span class="now">NOW</span>'
+              } else if (n24 <= dt && dt < now) {
+                s = '<li class="tag">'
+                      + '<span class="hr24">24hr</span>'
+              } else {
+                s = '<li>'
+              }
+              s += '<a data-id="' + this.id + '" href="/!' + this.id_base62 + '">' + this.title + '</a>'
+                  + '</li>';
+              return s;
+            });
+            var s = '<div>Upcoming:</div>'
+              + '<ul class="crosses">'
+              + '{{#each crosses}}'
+                + '{{{alink this}}}'
+              + '{{/each}}'
+              + '</ul>';
 
-              var as = Handlebars.compile(s);
-              $('.user-panel .body').html(as({crosses: crosses}));
-            }
-
+            var as = Handlebars.compile(s);
+            $('.user-panel .body').html(as({crosses: crosses}));
           }
 
-        });
+        }
+      );
     }
 
   });
@@ -229,73 +224,65 @@ define(function (require) {
     var channel = SIGN_IN;
 
     if (action_status) {
-      $.ajax({
-        url: Util.apiUrl + '/users/checkauthorization',
-        type: 'POST',
-        dataType: 'json',
-        xhrFields: {withCredentials: true},
-        data: {
-          tokens: JSON.stringify(tokens)
+      Api.request('checkAuthorization'
+        , {
+          type: 'POST',
+          data: {
+            tokens: JSON.stringify(tokens)
+          }
         }
-      })
-        .done(function (data) {
-          if (data.meta.code === 200) {
-            var ds = [];
-            if (tokens.length === 1) {
-              var token = tokens[0];
+        , function (data) {
+          var ds = [];
+          if (tokens.length === 1) {
+            var token = tokens[0];
 
-              if (token in data.response.statuses && !data.response.statuses[token]) {
-                // token失效, 暂时跳转到首页
-                window.location.href= '/';
-                Store.remove('signin');
-                return;
-              }
-
-              var user_id = data.response.statuses[token].user_id;
-              Store.set('signin', {token: token, user_id: user_id});
-              //if (action_status === 1 || action_status === 3) {
-              ds.push(
-                  $.ajax({
-                    url: Util.apiUrl + '/users/' + user_id + '?token=' + token,
-                    type: 'GET',
-                    dataType: 'JSON',
-                    xhrFields: { withCredentials: true}
-                  })
-                    .done(function (data) {
-                      if (data.meta.code === 200) {
-                        //Store.set('user', data.response.user);
-                        var last_identity = Store.get('last_identity');
-                        var identity = R.filter(data.response.user.identities, function (v) {
-                          if (last_identity === v.external_id) return true;
-                        })[0] || data.response.user.default_identity;
-                        Store.set('last_identity', identity);
-                      }
-                    })
-                );
-              //}
-
-              if (action_status === 2) {
-                token = tokens[1];
-                user_id = data.response.statuses[token].user_id;
-                Store.set('osignin', {token: token, user_id: user_id});
-                ds.push(
-                  $.ajax({
-                    url: Util.apiUrl + '/users/' + user_id + '?token=' + token,
-                    type: 'GET',
-                    dataType: 'JSON',
-                    xhrFields: { withCredentials: true}
-                  })
-                );
-              }
+            if (token in data.statuses && !data.statuses[token]) {
+              // token失效, 暂时跳转到首页
+              window.location.href= '/';
+              Store.remove('signin');
+              return;
             }
 
-            dfd = dfd.apply(null, ds);
-            dfd.done(function (a1, a2) {
-              Bus.emit(channel, {dfd: dfd, action_status: action_status});
-            });
+            var user_id = data.statuses[token].user_id;
+            Api.setToken(token);
+            Store.set('signin', {token: token, user_id: user_id});
+            //if (action_status === 1 || action_status === 3) {
+            ds.push(
+              Api.request('getUser'
+                , {
+                  resources: {user_id: user_id}
+                }
+                , function (data) {
+                  //Store.set('user', data.response.user);
+                  var last_identity = Store.get('last_identity');
+                  var identity = R.filter(data.user.identities, function (v) {
+                    if (last_identity === v.external_id) return true;
+                  })[0] || data.user.default_identity;
+                  Store.set('last_identity', identity);
+                })
+              );
+            //}
+
+            if (action_status === 2) {
+              token = tokens[1];
+              user_id = data.statuses[token].user_id;
+              Store.set('osignin', {token: token, user_id: user_id});
+              ds.push(
+                Api.request('getUser'
+                  , {
+                    resources: {user_id: user_id}
+                  }
+                )
+              );
+            }
           }
 
+        dfd = dfd.apply(null, ds);
+        dfd.done(function (a1, a2) {
+          Bus.emit(channel, {dfd: dfd, action_status: action_status});
         });
+      });
+
     } else {
       channel = NO_SIGN_IN;
       dfd().then(function () {
