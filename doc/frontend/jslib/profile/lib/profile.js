@@ -120,7 +120,6 @@ define(function (require, exports, module) {
     var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
     // 创建一个 moment date-object
     var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
-    console.dir(d);
     return d.fromNow();
   });
 
