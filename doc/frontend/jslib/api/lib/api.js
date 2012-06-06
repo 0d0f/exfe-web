@@ -44,8 +44,8 @@ define('api', [], function (require, exports, module) {
     updateIdentity: '/identities/:identity_id/update',
 
 
-    // Cross
-    cross: '/cross/:cross_id',
+    // Cross base62 id
+    getCross: '/crosses/:cross_id',
 
     addCross: '/cross/add',
 
