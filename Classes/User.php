@@ -1,7 +1,7 @@
 <?php
 
 class User extends EFObject {
-    
+
     public $name              = null;
 
     public $bio               = null;
@@ -9,8 +9,6 @@ class User extends EFObject {
     public $default_identity  = null;
 
     public $avatar_filename   = null;
-
-    public $avatar_updated_at = null;
 
     public $timezone          = null;
 
@@ -21,16 +19,14 @@ class User extends EFObject {
                                 $bio               = '',
                                 $default_identity  = null,
                                 $avatar_filename   = '',
-                                $avatar_updated_at = '',
                                 $timezone          = '',
                                 $identities        = array()) {
         parent::__construct($id, 'user');
-        
+
         $this->name              = $name;
         $this->bio               = $bio;
         $this->default_identity  = $default_identity;
         $this->avatar_filename   = $avatar_filename;
-        $this->avatar_updated_at = $avatar_updated_at;
         $this->timezone          = $timezone;
         $this->identities        = $identities;
     }

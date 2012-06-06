@@ -88,6 +88,7 @@ class InvitationModels extends DataModel
 
     public function getInvitatedIdentityByUseridAndCrossList($userid,$cross_ids)
     {
+        $exfee_cross_ids=array();
         $sql="select identityid from user_identity where userid=$userid;";
         $identity_id_list=$this->getColumn($sql);
         for($i=0;$i<sizeof($identity_id_list);$i++)
@@ -98,18 +99,30 @@ class InvitationModels extends DataModel
 
         $crossstr="";
         if(sizeof($cross_ids)==1)
-            $crossstr='cross_id=' . $this->getExfeeIdByCrossId($cross_ids[0]);
+        {
+            $exfee_id=$this->getExfeeIdByCrossId($cross_ids[0]);
+            $crossstr='cross_id=' . $exfee_id;
+            $exfee_cross_ids[$exfee_id]=$cross_ids[0];
+        }
         else if(sizeof($cross_ids)>1)
         {
             for($i=0;$i<sizeof($cross_ids);$i++)
             {
+                $exfee_id=$this->getExfeeIdByCrossId($cross_ids[0]);
                 $cross_ids[$i]= "cross_id=" . $this->getExfeeIdByCrossId($cross_ids[$i]);
+                $exfee_cross_ids[$exfee_id]=$cross_ids[i];
             }
             $crossstr=implode(" or ",$cross_ids);
         }
         //SELECT * FROM `invitations` WHERE (cross_id=1 or cross_id=2 or cross_id=3) and (identity_id=1 or identity_id=3)
-        $sql="select cross_id,identity_id from invitations where ($crossstr) and ($str);";
+        $sql="select cross_id as exfee_id,identity_id from invitations where ($crossstr) and ($str);";
         $identity_id_list=$this->getAll($sql);
+        for($i=0;$i<sizeof($identity_id_list);$i++)
+        {
+            $exfee_id=$identity_id_list[$i]["exfee_id"];
+            $identity_id_list[$i]["cross_id"]=$exfee_cross_ids[$exfee_id];
+        }
+
         return $identity_id_list;
     }
 
@@ -253,7 +266,7 @@ class InvitationModels extends DataModel
         $returnResult = false;
         $sql = "SELECT identityid FROM user_identity WHERE userid={$user_id}";
         $identityArr = $this->getAll($sql);
-        
+
         $sql = "SELECT exfee_id FROM crosses WHERE id={$cross_id}";
         $cross=$this->getRow($sql);
         if(intval($cross["exfee_id"])>0)
@@ -305,12 +318,21 @@ class InvitationModels extends DataModel
     public function getIdentitiesIdsByCrossIds($cross_ids)
     {
         if ($cross_ids) {
+            $hashId = array();
             foreach ($cross_ids as $i => $item) {
-                $cross_ids[$i] = $this->getExfeeIdByCrossId($item);
+                $exfee_id = $this->getExfeeIdByCrossId($item);
+                $cross_ids[$i] = $exfee_id;
+                $hashId[$exfee_id] = $item;
             }
             $cross_ids = implode(' OR `cross_id` = ', $cross_ids);
             $sql       = "SELECT `identity_id`, `cross_id`, `state` FROM `invitations` WHERE `cross_id` = {$cross_ids};";
-            return $this->getAll($sql);
+            $arrInvits = $this->getAll($sql);
+            if (is_array($arrInvits)) {
+                foreach ($arrInvits as $i => $item) {
+                    $arrInvits[$i]['cross_id'] = $hashId[$item['cross_id']];
+                }
+            }
+            return $arrInvits;
         } else {
             return array();
         }
@@ -336,17 +358,19 @@ class InvitationModels extends DataModel
         return $result;
 
     }
-    
-    
+
+
     // upgraded
-    public function addInvitation($cross_id,$identity_id,$state=0,$my_identity_id=0)
-    {
+    public function addInvitation($cross_id, $identity_id, $state = 0, $my_identity_id = 0, $host_identity_id = 0) {
         $cross_id = $this->getExfeeIdByCrossId($cross_id);
         //TODO: ADD token
         $time=time();
         $token=md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+        // check host
+        $host = intval(intval($identity_id) === intval($host_identity_id));
         //$state=INVITATION_MAYBE;
-        $sql="insert into invitations (identity_id,cross_id,state,by_identity_id,created_at,updated_at,token) values($identity_id,$cross_id,$state,$my_identity_id,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'$token');";
+        $sql="insert into invitations (identity_id,cross_id,state,by_identity_id,created_at,updated_at,token,host)
+              values($identity_id,$cross_id,$state,$my_identity_id,FROM_UNIXTIME($time),FROM_UNIXTIME($time),'$token',{$host});";
         $result=$this->query($sql);
         if(intval($result["insert_id"])>0)
             return intval($result["insert_id"]);

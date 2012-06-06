@@ -2,10 +2,10 @@
 
 class CrossHelper extends ActionController {
 
-    public function getCrossesByExfeeIdList($exfee_id_list)
+    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false)
     {
         $crossData=$this->getModelByName("cross","v2");
-        $crosses=$crossData->getCrossesByExfeeids($exfee_id_list);
+        $crosses=$crossData->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
         //build and return a cross object array
         $exfeeData=$this->getModelByName("exfee","v2");
         $identityData=$this->getModelByName("identity","v2");
@@ -15,7 +15,8 @@ class CrossHelper extends ActionController {
         if($crosses)
             foreach($crosses as $cross)
                 array_push($cross_ids,$cross["id"]);
-        $updated_crosses=mgetUpdate($cross_ids);
+        if($with_updated==true)
+            $updated_crosses=mgetUpdate($cross_ids);
 
         if($crosses)
             foreach($crosses as $cross)
@@ -47,18 +48,24 @@ class CrossHelper extends ActionController {
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
                 $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
                 $cross->by_identity=$by_identity;
-                $cross->created_at=$created_at;
+                $cross->created_at=$created_at." +0000";
                 $relative_id=0;
                 $relation="";
                 $cross->setRelation($relative_id,$relation);
-                $updated=json_decode($updated_crosses[$cross->id],true);
-                if($updated)
-                    $cross->updated=$updated;
+                $cross->updated_at=$exfee->updated_at." +0000";
+                if($with_updated==true)
+                {
+                    $updated=json_decode($updated_crosses[$cross->id],true);
+                    if($updated)
+                        $cross->updated=$updated;
+                }
                 array_push($cross_list,$cross);
             }
         return $cross_list;
     }
-    public function getCross($cross_id, $withToken = false)
+
+
+    public function getCross($cross_id, $withToken = false, $withRemoved = false)
     {
         $crossData=$this->getModelByName("cross","v2");
         $cross=$crossData->getCross($cross_id);
@@ -92,7 +99,7 @@ class CrossHelper extends ActionController {
             $attribute["state"]="draft";
 
         $exfeeData=$this->getModelByName("exfee","v2");
-        $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), false, $withToken);
+        $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), $withRemoved, $withToken);
         $created_at=$cross["created_at"];
 
         $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
@@ -105,6 +112,8 @@ class CrossHelper extends ActionController {
         //$cross->setRelation($relative_id,$relation);
         return $cross;
     }
+
+
     public function gatherCross($cross,$by_identity_id)
     {
         $placeData=$this->getModelByName("place","v2");
@@ -124,6 +133,8 @@ class CrossHelper extends ActionController {
 
         return $cross_id;
     }
+
+
     public function editCross($cross,$by_identity_id)
     {
         $exfee_id=intval($cross->exfee_id);

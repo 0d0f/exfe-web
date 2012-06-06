@@ -298,8 +298,8 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                     if (data[i]['confirmed']) {
                         arrExfee = [];
                         for (j in data[i]['confirmed']) {
-                            if(data[i]['confirmed'][j]['to_identity'] != null){
-                                if (arrExfee.push( data[i]['confirmed'][j]['to_identity']['name']) === 3) {
+                            if (data[i]['confirmed'][j]['to_identity'] != null){
+                                if (arrExfee.push(data[i]['confirmed'][j]['to_identity']['name']) === 3) {
                                     break;
                                 }
                             }
@@ -676,7 +676,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
 
     ns.newbie = function (n) {
       //console.log('Hello newbie!');
-      
+
       var s = '<div class="newbie_box">'
             + '<div class="con"></div>'
             + '<div class="close"><span>&times;</span></div>'
@@ -716,7 +716,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
           return false;
         });
       };
-    }; 
+    };
 
 })(ns);
 

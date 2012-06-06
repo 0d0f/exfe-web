@@ -3,12 +3,12 @@
 class OAuthModels extends DataModel {
 
     public function verifyOAuthUser($oAuthUserInfo) {
-        $oAuthProvider = $oAuthUserInfo["provider"];
-        $oAuthUserID = $oAuthProvider."_".$oAuthUserInfo["id"];
-        $oAuthUserName = $oAuthUserInfo["name"];
-        $oAuthScreenName = $oAuthUserInfo["sname"];
-        $oAuthUserDesc = $oAuthUserInfo["desc"];
-        $oAuthUserAvatar= $oAuthUserInfo["avatar"];
+        $oAuthProvider    = $oAuthUserInfo["provider"];
+        $oAuthUserID      = $oAuthUserInfo["id"];
+        $oAuthUserName    = $oAuthUserInfo["name"];
+        $oAuthScreenName  = $oAuthUserInfo["sname"];
+        $oAuthUserDesc    = $oAuthUserInfo["desc"];
+        $oAuthUserAvatar  = $oAuthUserInfo["avatar"];
         $oAuthAccessToken = $oAuthUserInfo["oauth_token"];
 
         $currentTimeStamp = time();
@@ -94,12 +94,12 @@ class OAuthModels extends DataModel {
             $identityDetail = $redisHandler->HGET("identities",$identityDetailID);
             if($identityDetail == false) {
                 $identityDetail = array(
-                    "external_identity" =>$value["provider"]."_".$value["customer_id"],
-                    "name"              =>$value["display_name"],
-                    "bio"               =>$value["bio"],
-                    "avatar_file_name"  =>$value["avatar_img"],
-                    "external_username" =>$value["user_name"],
-                    "provider"          =>$value["provider"]
+                    "external_identity" => $value["customer_id"],
+                    "name"              => $value["display_name"],
+                    "bio"               => $value["bio"],
+                    "avatar_file_name"  => $value["avatar_img"],
+                    "external_username" => $value["user_name"],
+                    "provider"          => $value["provider"]
                 );
                 $identity = json_encode_nounicode($identityDetail);
                 $redisHandler->HSET("identities", $identityDetailID, $identity);

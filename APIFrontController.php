@@ -3,7 +3,7 @@ require_once dirname(__FILE__)."/ActionController.php";
 require_once dirname(__FILE__)."/DataModel.php";
 
 class FrontController {
-    
+
     public function __construct() {
         header('Content-Type: application/json; charset=UTF-8');
 

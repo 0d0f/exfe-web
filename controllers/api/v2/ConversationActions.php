@@ -6,6 +6,9 @@ class ConversationActions extends ActionController {
     {
         $params=$this->params;
         $exfee_id=$params["id"];
+        $updated_at=$params["updated_at"];
+        if($updated_at!='')
+            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("conversation",$params["token"],array("user_id"=>$uid,"exfee_id"=>$exfee_id));
@@ -18,9 +21,10 @@ class ConversationActions extends ActionController {
         }
 
         $helperData=$this->getHelperByName("conversation","v2");
-        $conversation=$helperData->getConversationByExfeeId($exfee_id);
+        $conversation=$helperData->getConversationByExfeeId($exfee_id,$updated_at);
         apiResponse(array("conversation"=>$conversation));
     }
+
 
     public function doAdd()
     {
@@ -41,12 +45,44 @@ class ConversationActions extends ActionController {
         $post->postable_type='exfee';
         $post->postable_id=$exfee_id;
 
+
         $modelData=$this->getModelByName("conversation","v2");
         $post_id=$modelData->addPost($post);
         $new_post=$modelData->getPostById($post_id);
-        unset($new_post["del"]);
-        apiResponse(array("post"=>$new_post));
+
+        $identityHelper=$this->getHelperByName("identity","v2");
+        $identity=$identityHelper->getIdentityById($new_post["identity_id"]);
+        $new_post_obj=new Post($new_post["id"],$identity,$new_post["content"], $new_post["postable_id"],$new_post["postable_type"],"");
+        $new_post_obj->created_at=$new_post["created_at"];
+
+        // call Gobus {
+        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+        $hlpCross = $this->getHelperByName('cross', 'v2');
+        $modUser  = $this->getModelByName('user',   'v2');
+        $modExfee = $this->getModelByName('exfee',  'v2');
+        $cross_id = $modExfee->getCrossIdByExfeeId($new_post_obj->postable_id);
+        $cross    = $hlpCross->getCross($cross_id, true);
+        $msgArg   = array('cross' => $cross, 'to_identities' => array(), 'by_identity' => $identity);
+        $chkMobUs = array();
+        foreach ($cross->exfee->invitations as $invitation) {
+            $msgArg['to_identities'][] = $invitation->identity;
+            // get mobile identities
+            if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+                $mobIdentities = $modUser->getMobileIdentitiesByUserId(
+                    $invitation->identity->connected_user_id
+                );
+                foreach ($mobIdentities as $mI => $mItem) {
+                    $msgArg['to_identities'][] = $mItem;
+                }
+                $chkMobUs[$invitation->identity->connected_user_id] = true;
+            }
+        }
+        $hlpGobus->send('cross', 'Update', $msgArg);
+        // }
+
+        apiResponse(array("post"=>$new_post_obj));
     }
+
 
     public function doDel()
     {

@@ -4,7 +4,7 @@ class UserModels extends DataModel {
 
     private $salt = '_4f9g18t9VEdi2if';
 
-    protected $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
+    public  $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
     protected function getUserPasswdByUserId($user_id) {
@@ -25,7 +25,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserById($id) {
+    public function getUserById($id, $withCrossQuantity = false, $identityStatus = 3) {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
@@ -33,46 +33,63 @@ class UserModels extends DataModel {
                 $rawUser['id'],
                 $rawUser['name'],
                 $rawUser['bio'],
-                null, // $rawUser[''] default_identity
+                null, // default_identity
                 $rawUser['avatar_file_name'],
-                $rawUser['avatar_updated_at'],
                 $rawUser['timezone']
             );
-            // get all identity ids connetced to the user
+            if ($withCrossQuantity) {
+                $user->cross_quantity = 0;
+            }
+            // get all identity ids of user
+            $identityStatus = ($identityStatus = intval($identityStatus))
+                            ? "`status` = {$identityStatus}" : '(`status` > 1 AND `status` < 5)';
             $rawIdentityIds = $this->getAll(
-                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND `status` = 3"
+                "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
             );
             // insert identities into user
             if ($rawIdentityIds) {
-                $identityIds = array();
+                $identity_status = array();
                 foreach ($rawIdentityIds as $i => $item) {
-                    $identityIds[] = $item['identityid'];
+                    $identity_status[intval($item['identityid'])] = $this->arrUserIdentityStatus[intval($item['status'])];
                 }
-                $identityIds = implode($identityIds, ' OR `id` = ');
-                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` = {$identityIds}");
+                $identityIds = implode(array_keys($identity_status), ', ');
+                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
-                        $intLength = array_push(
-                            $user->identities,
-                            new Identity(
-                                $item['id'],
-                                $item['name'],
-                                '', // $$item['nickname'], // @todo;
-                                $item['bio'],
-                                $item['provider'],
-                                $rawUser['id'],
-                                $item['external_identity'],
-                                $item['external_username'],
-                                $item['avatar_file_name'],
-                                $item['avatar_updated_at'],
-                                $item['created_at'],
-                                $item['updated_at']
-                            )
+                        $item['external_username'] = getAvatarUrl(
+                            $item['provider'],
+                            $item['external_identity'],
+                            $item['avatar_file_name']
                         );
+                        $identity = new Identity(
+                            $item['id'],
+                            $item['name'],
+                            '', // $item['nickname'], // @todo;
+                            $item['bio'],
+                            $item['provider'],
+                            $rawUser['id'],
+                            $item['external_identity'],
+                            $item['external_username'],
+                            $item['avatar_file_name'],
+                            $item['created_at'],
+                            $item['updated_at']
+                        );
+                        $identity->status = $identity_status[$identity->id];
+                        $intLength = array_push($user->identities, $identity);
                         // catch default identity
-                        if (intval($item['id']) === intval($rawUser['id'])) {
+                        if ($identity->id === intval($rawUser['default_identity'])) {
                             $user->default_identity = $user->identities[$intLength];
                         }
+                    }
+                    $user->default_identity = $user->default_identity ?: $user->identities[0];
+                    if ($withCrossQuantity) {
+                        $cross_quantity = $this->getRow(
+                            "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
+                        );
+                        $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
+                    }
+                    if (!$rawUser['avatar_file_name']) {
+                        $rawUser['avatar_file_name'] = $user->default_identity->avatar_filename;
                     }
                 }
             }
@@ -120,71 +137,89 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserIdentityStatusByUserIdAndIdentityId($user_id = 0, $identity_id = 0, $withPasswdStatus = false) {
+    public function getUserIdentityInfoByUserId($user_id) {
+        if (!$user_id) {
+            return null;
+        }
+        $passwd  = $this->getUserPasswdByUserId($user_id);
+        $ids     = $this->getAll(
+            "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$user_id}"
+        );
+        $result  = array(
+            'user_id'           => $user_id,
+            'password'          => !!$passwd['encrypted_password'],
+            'identities_status' => array(),
+        );
+        foreach ($ids as $id) {
+            $result['identities_status'][$id['identityid']]
+          = $this->arrUserIdentityStatus[intval($id['status'])];
+        }
+        return $result;
+    }
+
+
+    public function getUserIdentityInfoByIdentityId($identity_id) {
         if (!$identity_id) {
             return null;
         }
         $rawStatus = $this->getRow(
             "SELECT `userid`, `status` FROM `user_identity` WHERE `identityid` = {$identity_id}"
-          . ($user_id ? " AND `userid` = {$user_id}" : '')
         );
-        $user_id = intval($rawStatus['userid']);
-        $status  = intval($rawStatus['status']);
-        if ($user_id) {
-            if ($user_id && $status === 3 && $withPasswdStatus) {
-                $passwdInfo = $this->getUserPasswdByUserId($user_id);
-                if (!$passwdInfo['encrypted_password']) {
-                    return 'NOPASSWORD';
-                }
-            }
-            return $this->arrUserIdentityStatus[$status];
+        if (!$rawStatus) {
+            return null;
         }
-        return null;
+        $user_id = intval($rawStatus['userid']);
+        $passwd  = $this->getUserPasswdByUserId($user_id);
+        $ids     = $this->getAll(
+            "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
+        );
+        return array(
+            'user_id'     => intval($rawStatus['userid']),
+            'status'      => $this->arrUserIdentityStatus[intval($rawStatus['status'])],
+            'password'    => !!$passwd['encrypted_password'],
+            'id_quantity' => count($ids),
+        );
     }
 
 
-    public function signout() {
-        // unset seesion
-        unset($_SESSION['signin_user']);
-        unset($_SESSION['signin_token']);
-        session_destroy();
-        // unset cookie
-        unset($_COOKIE['user_id']);
-        unset($_COOKIE['identity_ids']);
-        unset($_COOKIE['signin_sequ']);
-        unset($_COOKIE['signin_token']);
-        setcookie('user_id',      null, -1, '/', COOKIES_DOMAIN);
-        setcookie('identity_ids', null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_sequ',  null, -1, '/', COOKIES_DOMAIN);
-        setcookie('signin_token', null, -1, '/', COOKIES_DOMAIN);
-        // return
-        return true;
+    public function getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id) {
+        if (!$user_id || !$identity_id) {
+            return null;
+        }
+        $rawStatus = $this->getRow(
+            "SELECT `status` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `userid` = {$user_id}"
+        );
+        return $rawStatus ? $this->arrUserIdentityStatus[intval($rawStatus['status'])] : null;
     }
 
 
     public function signinForAuthToken($provider, $external_id, $password) {
-        $sql = "SELECT `user_identity`.`userid` FROM `identities`, `user_identity`
+        $sql = "SELECT `user_identity`.`userid`, `user_identity`.`status`
+                FROM   `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
                 AND    `identities`.`external_identity` = '{$external_id}'
                 AND    `identities`.`id` = `user_identity`.`identityid`";
         $rawUser = $this->getRow($sql);
-        $user_id = intval($rawUser['userid']);
-        if ($user_id) {
-            $rtResult   = array('user_id' => $user_id);
-            $passwdInDb = $this->getUserPasswdByUserId($user_id);
-            $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-            if ($password === $passwdInDb['encrypted_password']) {
+        if ($rawUser && ($user_id = intval($rawUser['userid']))) {
+            $status      = intval($rawUser['status']);
+            $passwdInDb  = $this->getUserPasswdByUserId($user_id);
+            $password    = $this->encryptPassword($password, $passwdInDb['password_salt']);
+            $id_quantity = count($this->getAll(
+                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
+            ));
+            if ((($status === 2 && $id_quantity === 1) || $status === 3)
+             && $password === $passwdInDb['encrypted_password']) {
                 if (!$passwdInDb['auth_token']) {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
                     $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
                     $this->query($sql);
                 }
-                $rtResult['token'] = $passwdInDb['auth_token'];
-                return $rtResult;
+                return array('user_id' => $user_id, 'token' => $passwdInDb['auth_token']);
             }
         }
         return null;
     }
+
 
     public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id)
     {
@@ -205,29 +240,6 @@ class UserModels extends DataModel {
                 return $rtResult;
             }
 
-        }
-        return null;
-    }
-
-
-    /**
-     * @todo: removing
-     */
-    public function signinByCookie() {
-        // get vars
-        $user_id      = intval($_COOKIE['user_id']);
-        $signin_sequ  = $_COOKIE['signin_sequ'];
-        $signin_token = $_COOKIE['signin_token'];
-        // try sign in
-        if ($user_id) {
-            $userPasswd = $this->getUserPasswdByUserId($user_id);
-            $ipAddress  = getRealIpAddr();
-            if ($ipAddress    === $userPasswd['current_sign_in_ip']
-             && $signin_sequ  === $userPasswd['cookie_loginsequ']
-             && $signin_token === $userPasswd['cookie_logintoken']) {
-                return $this->loginByIdentityId( $identity_id,$uid,$identity ,NULL,NULL,"cookie",false);
-            }
-            $this->signout();
         }
         return null;
     }
@@ -391,12 +403,50 @@ class UserModels extends DataModel {
         }
         return null;
     }
+
+
     public function getIdentityIdByUserId($user_id){
         $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
         $identity_ids=$this->getColumn($sql);
         return $identity_ids;
+    }
 
 
+    public function getMobileIdentitiesByUserId($user_id) {
+        $rawIdentityIds = $this->getAll(
+            "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id} AND `status` = 3"
+        );
+        $objIdentities = array();
+        if ($rawIdentityIds) {
+            $identityIds = array();
+            foreach ($rawIdentityIds as $i => $item) {
+                $identityIds[] = $item['identityid'];
+            }
+            $identityIds = implode($identityIds, ' OR `id` = ');
+            $identities  = $this->getAll("SELECT * FROM `identities` WHERE (`id` = {$identityIds}) AND (`provider` = 'iOSAPN' OR `provider` = 'Android')");
+
+            if ($identities) {
+                foreach ($identities as $i => $item) {
+                    array_push(
+                        $objIdentities,
+                        new Identity(
+                            $item['id'],
+                            $item['name'],
+                            '', // $item['nickname'], // @todo;
+                            $item['bio'],
+                            $item['provider'],
+                            $user_id,
+                            $item['external_identity'],
+                            $item['external_username'],
+                            $item['avatar_file_name'],
+                            $item['created_at'],
+                            $item['updated_at']
+                        )
+                    );
+                }
+            }
+        }
+        return $objIdentities;
     }
 
 
@@ -408,6 +458,91 @@ class UserModels extends DataModel {
              `password_salt`      = '{$passwordSalt}'
              WHERE `id` = {$user_id}"
         );
+    }
+
+
+    public function updateUserById($user_id, $user = array()) {
+        $update_sql = '';
+        if (isset($user['name'])) {
+            $update_sql .= " `name` = '{$user['name']}', ";
+        }
+        return $update_sql
+             ? $this->query("UPDATE `users` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$user_id}")
+             : true;
+    }
+
+
+    public function getUserAvatarByProviderAndExternalId($provider, $external_id) {
+        $rawIdentity = $this->getRow(
+            "SELECT `id`, `name` FROM `identities`
+             WHERE  `provider`          = '{$provider}'
+             AND    `external_identity` = '{$external_id}'"
+        );
+        if ($rawIdentity && $rawIdentity['id']) {
+            $rawUser = $this->getRow(
+                "SELECT `users`.`avatar_file_name` FROM `users`, `user_identity`
+                 WHERE  `user_identity`.`userid`         = `users`.`id`
+                 AND    `user_identity`.`identityid`     = {$rawIdentity['id']}
+                 AND    `user_identity`.`status`         = 3"
+            );
+            if ($rawUser && $rawUser['avatar_file_name']) {
+                header("Location: {$rawUser['avatar_file_name']}");
+            } else {
+                $this->makeDefaultAvatar($rawIdentity['name']);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    public function makeDefaultAvatar($name) {
+        // image config
+        $specification = array(
+            'width'       => 80,
+            'height'      => 80,
+            'bg_quantity' => 3,
+        );
+        $colors = array(
+            array(138,  59, 197),
+            array(189,  53,  55),
+            array(219,  98,  11),
+            array( 66, 163,  36),
+            array( 41,  95, 204),
+        );
+        $ftSize = 36;
+        $intHsh = base62_to_int(substr(md5($name), 0, 3));
+        // init path
+        $curDir = dirname(__FILE__);
+        $resDir = "{$curDir}/../../default_avatar_portrait/";
+        $fLatin = "{$resDir}OpenSans-Regular.ttf";
+        $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
+        // get image
+        $bgIdx  = fmod($intHsh, $specification['bg_quantity']);
+        $image  = ImageCreateFromPNG("{$resDir}bg_{$bgIdx}.png");
+        // get color
+        $clIdx  = fmod($intHsh, count($colors));
+        $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
+        // get name & check CJK
+        $ftFile = checkCjk($name = mb_substr($name, 0, 3, 'UTF-8'))
+               && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8')) ? $fCjk : $fLatin;
+        $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
+        // calcular font size
+        do {
+            $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
+            $fWidth = $posArr[2] - $posArr[0];
+            $ftSize--;
+        } while ($fWidth > (80 - 2));
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, 65, $fColor, $ftFile, $name);
+        // show image
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        $actResult = imagepng($image);
+        imagedestroy($image);
+        // return
+        return $actResult;
     }
 
 }

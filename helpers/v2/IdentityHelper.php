@@ -7,28 +7,28 @@ Resque::setBackend(RESQUE_SERVER);
 class IdentityHelper extends ActionController {
 
     protected $modIdentity = null;
-    
-    
+
+
     public function __construct() {
         $this->modIdentity = $this->getModelByName('Identity', 'v2');
     }
-    
-    
+
+
     public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
         return $this->modIdentity->addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0);
     }
-    
+
 
     public function getIdentityById($id) {
         return $this->modIdentity->getIdentityById($id);
     }
-        
-        
+
+
     public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
         return $this->modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
     }
-    
-    
+
+
     public function getIdentityByProviderExternalId($provider, $external_id) {
         return $this->modIdentity->getIdentityByExternalId($provider, $external_id);
     }

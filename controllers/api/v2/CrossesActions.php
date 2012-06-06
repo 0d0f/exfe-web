@@ -6,6 +6,9 @@ class CrossesActions extends ActionController {
     {
         $params=$this->params;
         $checkHelper=$this->getHelperByName("check","v2");
+        if (intval($params['by_base62_id'])) {
+            $params['id'] = base62_to_int($params['id']);
+        }
         $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
         if($result["check"]!==true)
         {
@@ -72,26 +75,37 @@ class CrossesActions extends ActionController {
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
         $crossHelper=$this->getHelperByName("cross","v2");
-        $msgArg = array('event' => array('old_cross' => $crossHelper->getCross(intval($params["id"]))));
+        $msgArg = array('old_cross' => $crossHelper->getCross(intval($params["id"])), 'to_identities' => array());
         $cross_id=$crossHelper->editCross($cross,$by_identity_id);
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName("cross","v2");
             $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
-            // call Gobus
+            // call Gobus {
             $hlpGobus = $this->getHelperByName('gobus', 'v2');
+            $modUser  = $this->getModelByName('user',   'v2');
+            $chkMobUs = array();
             foreach ($cross->exfee->invitations as $invitation) {
                 if ($invitation->identity->id === $by_identity_id) {
                     $msgArg['by_identity'] = $invitation->identity;
-                    break;
+                }
+                $msgArg['to_identities'][] = $invitation->identity;
+                // get mobile identities
+                if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+                    $mobIdentities = $modUser->getMobileIdentitiesByUserId(
+                        $invitation->identity->connected_user_id
+                    );
+                    foreach ($mobIdentities as $mI => $mItem) {
+                        $msgArg['to_identities'][] = $mItem;
+                    }
+                    $chkMobUs[$invitation->identity->connected_user_id] = true;
                 }
             }
+            $hlpGobus->send('cross', 'Update', $msgArg);
             foreach ($cross->exfee->invitations as $i => $invitation) {
-                $msgArg['to_invitation'] = $invitation;
-                $hlpGobus->send("{$invitation->identity->provider}_job", 'Update_cross', $msgArg);
                 $cross->exfee->invitations[$i]->token = '';
             }
-            //
+            // }
             apiResponse(array("cross"=>$cross));
         }
         else
