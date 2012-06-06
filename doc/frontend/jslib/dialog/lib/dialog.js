@@ -171,7 +171,7 @@ define('dialog', [], function (require, exports, module) {
         e.which === 27 && that.hide();
       });
     } else if (!this.isShown) {
-      $BODY.off('keyip.dismiss.modal');
+      $BODY.off('keyup.dismiss.modal');
     }
   }
 
