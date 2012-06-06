@@ -168,7 +168,7 @@
     <div class="cross-list">
       {{#crosses}}
       <div class="cross-box">
-        <a href="/!{{crossItem "id_base62"}}" data-invitationid={{crossItem "invitationid"}} data-id={{crossItem "id"}} title="">
+        <a href="/!{{crossItem "id_base62"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid={{crossItem "invitationid"}} data-id={{crossItem "id"}} title="">
           <h5>{{crossItem "title"}}</h5>
           <div>{{printTime2 "time"}}{{#ifPlace}} <span class="gray">at</span> {{crossItem "place"}}{{/ifPlace}} <span class="gray">by</span> {{by_identity.name}}</div>
           <div class="xbtn xbtn-accept">Accept</div>

@@ -6,9 +6,6 @@ define('util', [], function (require, exports, module) {
 
   var Util = {
 
-    // Api http url
-    apiUrl: 'http://api.localexfe.me/v2',
-
     // 30个字符，并且删除中文字符
     cut30length: function (s) {
       return s.replace(zh_CN, '').substring(0, 30);
@@ -63,26 +60,35 @@ define('util', [], function (require, exports, module) {
       function p(strid) {
         var res = {}, m;
         strid = Util.trim(strid);
+
+        // facebook
         if ((m = strid.match(facebook))) {
           res.name = m[1];
           res.external_identity = m[1] + '@facebook';
           res.external_username = m[1];
           res.provider = 'fackbook';
+
+        // twitter
         } else if ((m = strid.match(twitter))) {
           res.name = m[1] || m[2];
           res.external_identity = '@' + res.name + '@twitter';
           res.external_username = res.name;
           res.provider = 'twitter';
+
+        // normal
         } else if (normal.test(strid)) {
           res.name = Util.cut30length(strid.split('@')[0]);
           res.external_identity = strid;
           res.provider = 'email';
+
+        // enormal
         } else if (enormal.test(strid)) {
           var iLt = strid.indexOf('<')
             , iGt = strid.indexOf('>');
           res.name = Util.cut30length(strid.substring(0, iLt).replace(/^"|^'|"$|'$/g, ''));
           res.external_identity = strid.substring(++iLt, iGt);
           res.provider = 'email';
+
         } else {
           res.name = strid;
           res.provider = null;
