@@ -1,6 +1,6 @@
 define(function (require, exports, module) {
   // TODO: 临时解决 Router 问题
-  if (! /^\/profile(_iframe)?\..*/.test(window.location.pathname)) return;
+  //if (! /^\/profile(_iframe)?\..*/.test(window.location.pathname)) return;
 
   var $ = require('jquery');
   var Store = require('store');
@@ -110,6 +110,18 @@ define(function (require, exports, module) {
   Handlebars.registerHelper('printTime2', function (time, options) {
     time  = Handlebars.helpers['crossItem'].call(this, time, options);
     return Handlebars.helpers['printTime'].call(this, time, options);
+  });
+
+  // Updates print time
+  Handlebars.registerHelper('printTime3', function (time, options) {
+    time  = Handlebars.helpers['crossItem'].call(this, time, options);
+    var b = time.begin_at;
+    // Cross 时区
+    var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
+    // 创建一个 moment date-object
+    var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
+    console.dir(d);
+    return d.fromNow();
   });
 
   Handlebars.registerHelper('ifPlace', function (options) {
@@ -269,9 +281,6 @@ define(function (require, exports, module) {
       , {
         resources: {
           user_id: user_id
-        },
-        params: {
-          date: now
         }
       }
       , function (data) {
@@ -291,7 +300,7 @@ define(function (require, exports, module) {
               if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
 
                 R.each(v.exfee.invitations, function (e, j) {
-                  identities_KV[e.identity.id] = [i,j];
+                  identities_KV[e.id] = [i,j];
                   if (user_id == e.identity.connected_user_id && e.rsvp_status === 'NORESPONSE') {
                     e.__crossIndex = i;
                     e.__identityIndex = j;
@@ -299,9 +308,34 @@ define(function (require, exports, module) {
                   }
                 });
 
+                updatesAjax.push(
+                  Api.request('conversation'
+                    , {
+                      resources: {exfee_id: v.exfee.id},
+                      params: {
+                        date: now
+                      }
+                    }
+                    , function (data) {
+                      var conversation = data.conversation;
+                      if (conversation && conversation.length) {
+                        var c = conversation[conversation.length - 1];
+                        var a = identities_KV[v.exfee.id];
+                        if (c.by_identity.connected_user_id === user_id) return;
+                        if (a) {
+                          c.__crossIndex = a[0];
+                          c.__conversation_nums = conversation.length;
+                          updates.push(c);
+                        }
+                      }
+                    }
+                  )
+                );
+
               }
             //
 
+            /* `updated` 已去掉，先直接遍历了
             // updates
             if ((updated = v.updated)) {
 
@@ -337,6 +371,7 @@ define(function (require, exports, module) {
                 )
               }
             }
+            */
 
           });
 
@@ -382,7 +417,7 @@ define(function (require, exports, module) {
 
   };
 
-  // Defe Queue
+  // Defer Queue
   // 可以登陆状态
   var SIGN_IN_OTHERS = 'app:signinothers';
   Bus.on(SIGN_IN_OTHERS, function (d) {
@@ -563,7 +598,7 @@ define(function (require, exports, module) {
 
     $BODY.on('click.profile', '#profile div.cross-type', function (e) {
       e.preventDefault();
-      $(this).next().toggleClass('hide');
+      $(this).next().toggleClass('hide').next().toggleClass('hide');
       $(this).find('span.arrow').toggleClass('lt rb');
     });
 
