@@ -2,13 +2,6 @@
 
 class SActions extends ActionController {
 
-    public function doTestUser() {
-        $identityData = $this->getModelByName("identity");
-        $identityData->setRelation($_GET["identity_id"]);
-
-    }
-
-
     public function doProfile() {
         if (intval($_SESSION['userid']) <= 0) {
             header('Location: /s/login') ;
@@ -432,17 +425,12 @@ class SActions extends ActionController {
             $global_identity_id=$_SESSION["identity_id"];
         }
 
-        if(intval($_SESSION["userid"])>0)
-        {
+        if (intval($_SESSION["userid"]) > 0) {
             $userData = $this->getModelByName("user");
             $user=$userData->getUserWithPasswd($_SESSION["userid"]);
             //display user name.
             $global_name=$user["name"];
-            if($user["avatar_file_name"] == ""){
-                $global_avatar_file_name = "default.png";
-            }else{
-                $global_avatar_file_name=$user["avatar_file_name"];
-            }
+            $global_avatar_file_name=$user["avatar_file_name"];
 
             $returnData["no_password"] = !$user['encrypted_password'];
             $returnData["user_status"] = 1;
@@ -479,35 +467,6 @@ class SActions extends ActionController {
         exit();
     }
 
-    public function doEditUserProfile()
-    {
-        $returnData = array(
-            "error" => 0,
-            "msg"   =>"",
-            "response" => array()
-        );
-        header("Content-Type:application/json; charset=UTF-8");
-
-        //TODO: private API ,must check session
-        $userName = trim(exPost("user_name"));
-        if($userName == ""){
-            $returnData["error"] = 1;
-            $returnData["msg"] = "user name empty.";
-            echo json_encode($returnData);
-            exit();
-        }
-
-        $userID = intval($_SESSION["userid"]);
-        if ($userID > 0)
-        {
-            $userDataObj = $this->getModelByName("user");
-            $userInfo = $userDataObj->saveUser($userName,$userID);
-            $returnData["response"]["user"] = $userInfo;
-        }
-
-        echo json_encode($returnData);
-        exit();
-    }
 
     public function doEditUserIdentityName()
     {
@@ -541,7 +500,7 @@ class SActions extends ActionController {
         exit();
     }
 
-    
+
     public function doDialogaddidentity()
     {
         $identity=$_POST["identity"];
@@ -569,18 +528,6 @@ class SActions extends ActionController {
                 $userid=$identityData->login($identity,$password,$autosignin);
                 if(intval($userid)>0)
                 {
-                    // sent welcome email
-                    /*
-                    if($provider=="email")
-                    {
-                        $msghelper=$this->getHelperByName("msg");
-                        $args=array("name"=>$displayname,"external_identity"=>$identity);
-                        if($displayname=="")
-                            $args["name"]=$identity;
-                        $msghelper->sentWelcomeEmail($args);
-                    }
-                     */
-
                     $responobj["response"]["success"]="true";
                     $responobj["response"]["userid"]=$userid;
                     $responobj["response"]["identity_id"]=$identity_id;
@@ -594,6 +541,8 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
+
+
     public function doDialoglogin()
     {
         $identity=$_POST["identity"];
@@ -637,6 +586,8 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
+
+
     public function doSetpwd($userPassword, $userDisplayName, $crossID, $crossToken)
     {
         if(strlen($crossToken)>32){
@@ -668,6 +619,7 @@ class SActions extends ActionController {
 
         return false;
     }
+
 
     /**
      * 重新设置密码。
@@ -799,6 +751,7 @@ class SActions extends ActionController {
         }
     }
 
+
     public function doSetOAuthAccountPassword(){
         $returnData = array(
             "error"     => 0,
@@ -855,7 +808,7 @@ class SActions extends ActionController {
         exit();
     }
 
-    
+
     public function doVerifyIdentity(){
         $userToken = exGet("token");
         if($userToken == ""){
@@ -902,6 +855,7 @@ class SActions extends ActionController {
             }
         }
     }
+
 
     /**
      * 发送验证邮件。
@@ -963,7 +917,7 @@ class SActions extends ActionController {
         echo json_encode($returnData);
     }
 
-    
+
     public function doReportSpam() {
         $token = exGet("token");
         if($token == ""){
@@ -995,12 +949,12 @@ class SActions extends ActionController {
         }
         $this->displayView();
     }
-    
-    
+
+
     // upgraded
     private $specialDomain = array("facebook", "twitter", "google");
 
-    
+
     // upgraded
     public function doIfIdentityExist() {
         //TODO: private API ,must check session
@@ -1054,8 +1008,8 @@ class SActions extends ActionController {
         echo json_encode($responobj);
         exit();
     }
-    
-    
+
+
     // upgraded
     public function doLogin()
     {
@@ -1121,8 +1075,8 @@ class SActions extends ActionController {
             $this->displayView();
         }
     }
-    
-    
+
+
     // upgraded
     public function doAdd() {
         $identity = $_GET["identity"];
@@ -1152,8 +1106,8 @@ class SActions extends ActionController {
     {
         $this->displayView();
     }
-    
-    
+
+
     // upgraded
     public function doDeleteIdentity(){
         $returnData = array(
@@ -1188,8 +1142,8 @@ class SActions extends ActionController {
         }
         echo json_encode($returnData);
     }
-    
-    
+
+
     // upgraded
     public function doChangeDefaultIdentity() {
         $returnData = array(
@@ -1223,8 +1177,8 @@ class SActions extends ActionController {
 
         echo json_encode($returnData);
     }
-    
-    
+
+
     // upgraded
     public function doChangePassword() {
         $returnData = array(
@@ -1278,8 +1232,8 @@ class SActions extends ActionController {
         echo json_encode($returnData);
         exit();
     }
-    
-    
+
+
     // upgraded
     public function doCheckLogin(){
         //header("Content-Type:application/json; charset=UTF-8");
@@ -1292,8 +1246,8 @@ class SActions extends ActionController {
             echo 0;
         }
     }
-    
-    
+
+
     // upgraded
     public function doGetUserProfile()
     {
@@ -1333,8 +1287,8 @@ class SActions extends ActionController {
         $userData->doDestroySessionAndCookies();
         header('location:/');
     }
-    
-    
+
+
     // upgraded
     public function doSendResetPasswordMail()
     {
@@ -1390,6 +1344,38 @@ class SActions extends ActionController {
         //sleep(1);
         header("Content-Type:application/json; charset=UTF-8");
         echo json_encode($returnData);
+    }
+
+
+    // upgraded
+    public function doEditUserProfile()
+    {
+        $returnData = array(
+            "error" => 0,
+            "msg"   =>"",
+            "response" => array()
+        );
+        header("Content-Type:application/json; charset=UTF-8");
+
+        //TODO: private API ,must check session
+        $userName = trim(exPost("user_name"));
+        if($userName == ""){
+            $returnData["error"] = 1;
+            $returnData["msg"] = "user name empty.";
+            echo json_encode($returnData);
+            exit();
+        }
+
+        $userID = intval($_SESSION["userid"]);
+        if ($userID > 0)
+        {
+            $userDataObj = $this->getModelByName("user");
+            $userInfo = $userDataObj->saveUser($userName,$userID);
+            $returnData["response"]["user"] = $userInfo;
+        }
+
+        echo json_encode($returnData);
+        exit();
     }
 
 }

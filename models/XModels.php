@@ -1,5 +1,6 @@
 <?php
 
+// upgraded
 class XModels extends DataModel {
 
     // v1_v2_bridge
@@ -8,12 +9,17 @@ class XModels extends DataModel {
         $dbResult = $this->getRow($sql);
         return intval($dbResult['id']);
     }
+
+
+    // upgraded
     public function updateCrossUpdateTime($cross_id)
     {
-        $sql="update crosses set updated_at=now() where `id`=$cross_id;";
+        $sql = "update crosses set updated_at=now() where `id`=$cross_id;";
         $result = $this->query($sql);
     }
 
+
+    // upgraded
     public function gatherCross($identityId, $cross, $exfee, $draft_id = 0) {
         // gather a empty cross, state=draft
         // state=1 draft
@@ -46,8 +52,10 @@ class XModels extends DataModel {
         if($cross_id > 0) {
             // invit exfee
             $hlpExfee = $this->getHelperByName('exfee');
-            $hlpExfee->addExfeeIdentify($cross_id, $exfee, $identityId);
+            $hlpExfee->addExfeeIdentify($cross_id, $exfee, $identityId, null, $identityId);
             $hlpExfee->sendInvitation($cross_id, $identityId);
+            // update exfee_update_time for v1 v2 bridge
+            $this->updateExfeeTime($exfee_id);
             // log x
             $hlpX = $this->getHelperByName('x');
             $hlpX->logX($identityId, $cross_id, $cross['title']);
@@ -61,6 +69,15 @@ class XModels extends DataModel {
     }
 
 
+    // v1 v2 bridge
+    public function updateExfeeTime($exfee_id)
+    {
+        $sql="update invitations set exfee_updated_at=NOW() where `cross_id`=$exfee_id;";
+        $this->query($sql);
+    }
+
+
+    // upgraded
     public function getCross($crossid)
     {
         $sql="select * from crosses where id=$crossid";
@@ -69,12 +86,30 @@ class XModels extends DataModel {
     }
 
 
-    //update cross
+    // upgraded
+    public function updateCrossUpdatedAt($crossId)
+    {
+        $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
+
+        return $this->query($sql);
+    }
+
+
+    // upgraded
+    public function checkCrossExists($cross_id)
+    {
+        $sql = "SELECT * FROM crosses WHERE id={$cross_id}";
+        $result = $this->getRow($sql);
+        return $result;
+    }
+
+
+    // upgraded
     public function updateCross($cross)
     {
         // update place
         $placeHelper  = $this->getHelperByName('place');
-        $sql          = "SELECT `place_id` FROM `crosses` WHERE `id` = {$cross['id']}";
+        $sql          = "SELECT `place_id`, `exfee_id` FROM `crosses` WHERE `id` = {$cross['id']}";
         $place_id_arr = $this->getRow($sql);
         $place_id     = $place_id_arr['place_id'];
         if($place_id) {
@@ -98,26 +133,14 @@ class XModels extends DataModel {
                         `origin_begin_at` = '{$cross['origin_begin_at']}',
                         `place_id`        =  {$place_id}
                   WHERE `id`              =  {$cross['id']}";
-
+        // update exfee_update_time for v1 v2 bridge {
+        $this->updateExfeeTime($place_id_arr['exfee_id']);
+        // }
         return $this->query($sql);
     }
-    
-    
-    public function updateCrossUpdatedAt($crossId)
-    {
-        $sql  = "UPDATE `crosses` SET `updated_at` = NOW() WHERE `id` =  {$crossId}";
 
-        return $this->query($sql);
-    }
-    
 
-    public function checkCrossExists($cross_id)
-    {
-        $sql = "SELECT * FROM crosses WHERE id={$cross_id}";
-        $result = $this->getRow($sql);
-        return $result;
-    }
-
+    // upgraded
     public function getCrossesByIds($cross_id_list)
     {
         if(sizeof($cross_id_list)>0)
@@ -133,6 +156,8 @@ class XModels extends DataModel {
         }
     }
 
+
+    // upgraded
     public function getCrossByUserId($userid, $updated_since="")
     {
         //get all identityid
@@ -167,6 +192,8 @@ class XModels extends DataModel {
         //now, if a cross related with you, you must have a invitation.
     }
 
+
+    // upgraded
     public function fetchCross($userid, $begin_at = 0, $opening = 'yes',
                                $order_by = '`begin_at`', $limit = null,
                                $actions  = '')

@@ -1,41 +1,69 @@
 <?php
 
 class IdentityModels extends DataModel {
-    
+
     private $salt = '_4f9g18t9VEdi2if';
-    
-    
-    protected function packageIdentity($rawIdentity) {
+
+
+    protected function packageIdentity($rawIdentity, $user_id = null) {
+        $hlpUser = $this->getHelperByName('user', 'v2');
         if ($rawIdentity) {
-            $rawUserIdentity = $this->getRow(
+            $rawUserIdentity = null;
+            $status          = null;
+            if ($user_id) {
+                $chkUserIdentity = $this->getRow(
+                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = $user_id"
+                );
+                if (($chkUserIdentity['status'] = (int)$chkUserIdentity['status']) === 3) {
+                    $rawUserIdentity = $chkUserIdentity;
+                }
+                $status = $hlpUser->getUserIdentityStatus($chkUserIdentity['status']);
+            }
+            $rawUserIdentity = $rawUserIdentity ?: $this->getRow(
                 "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
             );
-            return new Identity(
+            if ($rawUserIdentity && $rawUserIdentity['userid']) {
+                $rawUser = $this->getRow(
+                    "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
+                );
+                if ($rawUser) {
+                    $rawIdentity['bio'] = $rawIdentity['bio'] === '' ? $rawUser['bio'] : $rawIdentity['bio'];
+                }
+            }
+            $rawIdentity['avatar_file_name'] = getAvatarUrl(
+                $rawIdentity['provider'],
+                $rawIdentity['external_identity'],
+                $rawIdentity['avatar_file_name']
+            );
+            $objIdentity = new Identity(
                 $rawIdentity['id'],
                 $rawIdentity['name'],
                 '', // $rawIdentity['nickname'], // @todo;
                 $rawIdentity['bio'],
                 $rawIdentity['provider'],
-                $rawUserIdentity ? $rawUserIdentity['userid'] : 0,
+                $rawUserIdentity && $rawUserIdentity['userid'] ? $rawUserIdentity['userid'] : 0,
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name'],
-                $rawIdentity['avatar_updated_at'],
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at']
             );
+            if ($status !== null) {
+                $objIdentity->status = $status;
+            }
+            return $objIdentity;
         } else {
             return null;
         }
     }
 
 
-    public function getIdentityById($id) {
+    public function getIdentityById($id, $user_id = null) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `id` = {$id}"
-        ));
+        ), $user_id);
     }
-    
+
 
     public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
         return $this->packageIdentity($this->getRow(
@@ -54,32 +82,30 @@ class IdentityModels extends DataModel {
         );
         return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity);
     }
-    public function isIdentityBelongsUser($identity_id,$user_id)
-    {
+
+
+    public function isIdentityBelongsUser($identity_id,$user_id) {
         $sql="select identityid from user_identity where identityid=$identity_id and userid=$user_id;";
         $row = $this->getRow($sql);
         if(intval($row["identityid"])>0)
             return true;
         return false;
     }
-    
-    
+
+
     public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
         return preg_replace(
             '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $strUrl
         );
     }
-    
-    
+
+
     public function updateIdentityById($id, $identityDetail = array()) {
         $id = intval($id);
         if (!$id || !$identityDetail['provider'] || !$identityDetail['external_id']) {
             return null;
         }
         // improve data
-        if ($identityDetail['provider'] !== 'email') {
-            $identityDetail['external_id'] = "{$identityDetail['provider']}_{$identityDetail['external_id']}";
-        }
         switch ($identityDetail['provider']) {
             case 'twitter':
                 $identityDetail['avatar_filename'] = $this->getTwitterLargeAvatarBySmallAvatar(
@@ -102,9 +128,8 @@ class IdentityModels extends DataModel {
                  `bio`               = '{$identityDetail['bio']}',
                  `avatar_file_name`  = '{$identityDetail['avatar_filename']}',
                  `external_username` = '{$identityDetail['external_username']}',
-                 `updated_at`        = NOW(),
-                 `avatar_updated_at` = NOW()
-             WHERE `id` = {$chgId}"////////////$nickname pending and avatar_updated_at removing
+                 `updated_at`        = NOW()
+             WHERE `id` = {$chgId}"////////////$nickname pending
         );
         // merge identity
         if ($wasId > 0 && $wasId !== $id) {
@@ -142,7 +167,7 @@ class IdentityModels extends DataModel {
         $name              = trim(mysql_real_escape_string($identityDetail['name']));
         $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
         $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
-        $provider          = trim(mysql_real_escape_string(strtolower($identityDetail['provider'])));
+        $provider          = trim(mysql_real_escape_string(strtolower($provider)));
         $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
         $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
         $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
@@ -155,10 +180,6 @@ class IdentityModels extends DataModel {
         if (intval($curIdentity['id']) > 0) {
             return intval($curIdentity['id']);
         }
-        // set identity default avatar as Gravatar
-        if ($provider === 'email' && !$avatar_filename) {
-            $avatar_filename = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode(DEFAULT_AVATAR_URL);
-        }
         // insert new identity into database
         $dbResult = $this->query(
             "INSERT INTO `identities` SET
@@ -168,7 +189,6 @@ class IdentityModels extends DataModel {
              `name`              = '{$name}',
              `bio`               = '{$bio}',
              `avatar_file_name`  = '{$avatar_filename}',
-             `avatar_updated_at` = NOW(),
              `external_username` = '{$external_username}'"
         );
         $id = intval($dbResult['insert_id']);
@@ -178,21 +198,22 @@ class IdentityModels extends DataModel {
                 // create new token
                 $activecode = createToken();
                 // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name']             = $userInfo['name']             === '' ? $name            : $userInfo['name'];
-                $userInfo['bio']              = $userInfo['bio']              === '' ? $bio             : $userInfo['bio'];
-                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] === '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
+                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
+                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] == '' ? $avatar_filename : $userInfo['avatar_file_name'];
+                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : 0;
                 // @todo: commit these two query as a transaction
                 $this->query(
                     "UPDATE `users` SET
                      `name`             = '{$userInfo['name']}',
-                     `bio`              = '{$userInfo["bio"]}',
+                     `bio`              = '{$userInfo['bio']}',
                      `avatar_file_name` = '{$userInfo['avatar_file_name']}',
-                     `default_identity` =  {$id}
+                     `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
                 $this->query(
-                    "INSERT INFO `user_identity` SET
+                    "INSERT INTO `user_identity` SET
                      `identityid` =  {$id},
                      `userid`     =  {$user_id},
                      `created_at` = NOW(),
@@ -227,8 +248,8 @@ class IdentityModels extends DataModel {
             "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
         );
     }
-    
-    
+
+
     public function deleteIdentityFromUser($identity_id, $user_id) {
         if (!$identity_id || !$user_id) {
             return false;
@@ -253,60 +274,20 @@ class IdentityModels extends DataModel {
         }
         return false;
     }
-    
-    
-    public function makeDefaultAvatar($external_id) {
-        $specification = array(
-            'width'  => 80,
-            'height' => 80,
-        );
-        $colors = array(
-            array(138,  59, 197),
-            array(189,  53,  55),
-            array(219,  98,  11),
-            array( 66, 163,  36),
-            array( 41,  95, 204),
-        );
-        
-        
-        $curDir = dirname(__FILE__);
-        require_once "{$curDir}/../../xbgutilitie/libimage.php";
-        $objLibImage = new libImage;
-        
-        $resDir = "{$curDir}/../../default_avatar_portrait/";
-        $ftFile = "{$resDir}/HelveticaNeueDeskUI.ttc";
-        
-        $bi = rand(1, 3);
-        
-        $bgFile = "{$resDir}/bg_{$bi}.png";
 
-        $image = ImageCreateFromPNG($bgFile);
-        $foreColor = imagecolorallocate($image, 0xE6, 0xE6, 0xE6);
 
-        imageline($image,  0,  0, 79,  0, $foreColor);
-        imageline($image, 79,  0, 79, 79, $foreColor);
-        imageline($image, 79, 79,  0, 79, $foreColor);
-        imageline($image,  0, 79,  0,  0, $foreColor);
-
-        $ci = rand(0, count($colors) - 1);
-        
-        $foreColor = imagecolorallocate($image, $colors[$ci][0], $colors[$ci][1], $colors[$ci][2]);
-        $tsS = 36;
-        do {
-            $tmpImg = imagecreate(80, 80);
-            $arr = imagettftext($tmpImg, $tsS, 0, 3, 65, $foreColor, $ftFile, $external_id);
-            $siz = $arr[2] - $arr[0];
-            $tsS--;
-        } while ($siz > (80 - 2));
-
-        imagettftext($image, $tsS, 0, (80 - $siz) / 2, 65, $foreColor, $ftFile, $external_id);
-        
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header("Content-type: image/png");
-        imagepng($image);
-        imagedestroy($image);
+    public function parseEmail($email) {
+        $email = trim($email);
+        if (preg_match('/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/', $email)) {
+            $name  = preg_replace('/^[\s\"\']*|[\s\"\']*$/', '', preg_replace('/^([^<]*).*$/', '$1', $email));
+            $email = trim(preg_replace('/^.*<([^<^>]*).*>$/', '$1', $email));
+        } else if (preg_match('/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/', $email)) {
+            $name  = trim(preg_replace('/^([^@]*).*$/', '$1', $email));
+        } else {
+            return null;
+        }
+        return array('name' => $name, 'email' => $email);
     }
+
 
 }

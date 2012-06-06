@@ -2,7 +2,7 @@
 require_once 'Background.php';
 
 abstract class Widget extends EFObject{
-    
+
     public $widget_id;
 
     public function __construct($widget_id) {
@@ -11,4 +11,3 @@ abstract class Widget extends EFObject{
     }
 
 }
-

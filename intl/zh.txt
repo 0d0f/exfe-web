@@ -1,7 +1,0 @@
-zh{
-      gather {
-        Title {"标题"}
-        Description {"描述"}
-        Write_some_words_about_this_X {"关于这个X的具体内容"}
-      }
-  }

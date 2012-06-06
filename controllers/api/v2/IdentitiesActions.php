@@ -24,7 +24,6 @@ class IdentitiesActions extends ActionController {
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : array();
-        $bolWithUserIdentityStatus = intval($_POST['with_user_identity_status']);
         // ready
         $objIdentities = array();
         // get
@@ -37,14 +36,31 @@ class IdentitiesActions extends ActionController {
                     $identityItem->provider, $identityItem->external_id
                 );
                 if ($identity) {
-                    if ($bolWithUserIdentityStatus) {
-                        $identity->user_identity_status = $modUser->getUserIdentityStatusByUserIdAndIdentityId(
-                            0, $identity->id, true
-                        );
-                    }
                     $objIdentities[] = $identity;
                 } else {
                     switch ($identityItem->provider) {
+                        case 'email':
+                            $objEmail = $modIdentity->parseEmail($identityItem->external_id);
+                            if ($objEmail) {
+                                $objIdentities[] = new Identity(
+                                    0,
+                                    $identityItem->name ?: $objEmail['name'],
+                                    '',
+                                    '',
+                                    'email',
+                                    0,
+                                    $objEmail['email'],
+                                    $objEmail['email'],
+                                    getAvatarUrl(
+                                        'email',
+                                        $objEmail['email'],
+                                        '',
+                                        80,
+                                        API_URL . "/v2/avatar/default?name={$objEmail['email']}"
+                                    )
+                                );
+                            }
+                            break;
                         case 'twitter':
                             if ($identityItem->external_username) {
                                 $twitterConn = new tmhOAuth(array(
@@ -60,21 +76,19 @@ class IdentitiesActions extends ActionController {
                                 );
                                 if ($responseCode === 200) {
                                     $twitterUser = (array)json_decode($twitterConn->response['response'], true);
-                                    $objIdentity = new Identity(
+                                    $objIdentities[] = new Identity(
+                                        0,
                                         $twitterUser['name'],
+                                        '',
                                         $twitterUser['description'],
                                         'twitter',
                                         0,
-                                        "@{$twitterUser['screen_name']}@twitter",
+                                        $twitterUser['id'],
                                         $twitterUser['screen_name'],
                                         $modIdentity->getTwitterLargeAvatarBySmallAvatar(
                                             $twitterUser['profile_image_url']
                                         )
                                     );
-                                    if ($bolWithUserIdentityStatus) {
-                                        $objIdentity->user_identity_status = 'NEWIDENTITY';
-                                    }
-                                    $objIdentities[] = $objIdentity;
                                 }
                             }
                     }
@@ -116,12 +130,6 @@ class IdentitiesActions extends ActionController {
                   'external_username' => $external_username)
         );
         echo json_encode(array('identity_id' => $id));
-    }
-
-
-    public function doMakeDefaultAvatar() {
-        $objIdentity = $this->getModelByName('identity', 'v2');
-        $objIdentity->makeDefaultAvatar('vir');
     }
 
 }

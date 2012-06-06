@@ -1,19 +1,24 @@
 <?php
+
 class Invitation extends EFObject {
 
     public $identity         = null;
-    
+
     public $by_identity      = null;
-    
+
     public $rsvp_status      = null;
-        
+
     public $via              = null;
-    
+
     public $created_at       = null;
-    
+
     public $updated_at       = null;
-    
+
     public $token            = null;
+
+    public $host             = null;
+
+    public $with             = null;
 
 
     public function __construct($id               = 0,
@@ -23,9 +28,11 @@ class Invitation extends EFObject {
                                 $via              = '',
                                 $token            = '',
                                 $created_at       = '',
-                                $updated_at       = '') {
+                                $updated_at       = '',
+                                $host             = false,
+                                $with             = 0) {
         parent::__construct($id, 'invitation');
-        
+
         $this->identity         = $identity;
         $this->by_identity      = $by_identity;
         $this->rsvp_status      = $rsvp_status;
@@ -33,6 +40,8 @@ class Invitation extends EFObject {
         $this->token            = $token;
         $this->created_at       = $created_at;
         $this->updated_at       = $updated_at;
+        $this->host             = $host;
+        $this->with             = $with;
     }
 
 }
