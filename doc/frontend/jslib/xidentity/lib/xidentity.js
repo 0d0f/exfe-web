@@ -3,6 +3,7 @@ define(function (require) {
   var $ = require('jquery');
   var Util = require('util');
   var Bus = require('bus');
+  var Api = require('api');
   var $BODY = $(document.body);
   var Store = require('store');
   var Typeahead = require('typeahead');
@@ -73,28 +74,25 @@ define(function (require) {
             that.emit('autocomplete:beforesend');
             if (options.useCache && that.cache[e]) that.emit('autocomplete:finish', that.cache[e]);
             else {
-              that.ajaxDefer = $.ajax({
-                url: Util.apiUrl + '/users/getRegistrationFlag',
-                type: 'GET',
-                dataType: 'JSON',
-                xhrFields: {withCredentials: true},
-                data: identity,
-                beforeSend: function (xhr) {
-                  // ajax loading
-                  that.target.next().removeClass('hide');;
-                }
-              })
-                .done(function (data) {
-                  // ajax loading
-                  that.target.next().addClass('hide');;
-
-                  if (data.meta.code === 200) {
-                    if (e === that.target.val()) {
-                      options.useCache && (that.cache[e] = data.response);
-                      that.emit('autocomplete:finish', data.response);
-                    }
+              that.ajaxDefer = Api.request('getRegistrationFlag'
+                , {
+                  data: identity,
+                  beforesend: function (xhr) {
+                    // ajax loading
+                    that.target.next().removeClass('hide');;
+                  },
+                  complete: function (xhr) {
+                    // ajax loading
+                    that.target.next().addClass('hide');;
                   }
-                });
+                }
+                , function (data) {
+                  if (e === that.target.val()) {
+                    options.useCache && (that.cache[e] = data);
+                    that.emit('autocomplete:finish', data);
+                  }
+                }
+              );
             }
           }
 

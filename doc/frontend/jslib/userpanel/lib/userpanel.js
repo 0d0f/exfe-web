@@ -9,6 +9,7 @@ define(function (require) {
   var Handlebars = require('handlebars');
 
   var userpanels = {
+    // new identity
     '1': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
@@ -29,6 +30,7 @@ define(function (require) {
         + '</div>'
       + '</div>',
 
+    // new identity & merge
     '2': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
@@ -63,6 +65,7 @@ define(function (require) {
         + '</div>'
       + '</div>',
 
+    // signin
     '3': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
@@ -133,6 +136,24 @@ define(function (require) {
             var now = +new Date();
             var ne = now + 3 * 60 * 60 * 1000;
             var n24 = now - 24 * 60 * 60 * 1000;
+            var l = 5;
+            var cs = {
+              crosses: []
+            };
+
+            R.map(crosses, function (v, i) {
+              if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
+                var t = R.filter(v.exfee.invitations, function (v2, j) {
+                  if (v2.rsvp_status === 'ACCEPTED' && v2.identity.connected_user_id === user_id) return true;
+                });
+                if (t.length) {
+                  cs.crosses.push(v);
+                }
+              }
+            });
+
+            cs.crosses = cs.crosses.slice(0, l);
+
             Handlebars.registerHelper('alink', function (ctx) {
               var s = '';
               var beginAt = ctx.time.begin_at;
@@ -150,15 +171,18 @@ define(function (require) {
                   + '</li>';
               return s;
             });
-            var s = '<div>Upcoming:</div>'
-              + '<ul class="crosses">'
-              + '{{#each crosses}}'
-                + '{{{alink this}}}'
-              + '{{/each}}'
-              + '</ul>';
+
+            var s = '{{#if crosses}}'
+                + '<div>Upcoming:</div>'
+                + '<ul class="crosses">'
+                + '{{#each crosses}}'
+                  + '{{{alink this}}}'
+                + '{{/each}}'
+                + '</ul>'
+              + '{{/if}}';
 
             var as = Handlebars.compile(s);
-            $('.user-panel .body').html(as({crosses: crosses}));
+            $('.user-panel .body').html(as(cs));
           }
 
         }
@@ -277,11 +301,12 @@ define(function (require) {
             }
           }
 
-        dfd = dfd.apply(null, ds);
-        dfd.done(function (a1, a2) {
-          Bus.emit(channel, {dfd: dfd, action_status: action_status});
-        });
-      });
+          dfd = dfd.apply(null, ds);
+          dfd.done(function (a1, a2) {
+            Bus.emit(channel, {dfd: dfd, action_status: action_status});
+          });
+        }
+      );
 
     } else {
       channel = NO_SIGN_IN;

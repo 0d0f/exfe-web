@@ -25,6 +25,8 @@ define('api', [], function (require, exports, module) {
 
     updateUser: '/users/update',
 
+    setPassword: '/users/:user_id/setPassword',
+
     crosses: '/users/:user_id/crosses',
 
     crosslist: '/users/:user_id/crosslist',
@@ -51,7 +53,11 @@ define('api', [], function (require, exports, module) {
 
 
     // Exfee
-    rsvp: '/exfee/:exfee_id/rsvp'
+    rsvp: '/exfee/:exfee_id/rsvp',
+
+
+    // Conversation
+    conversation: '/conversation/:exfee_id'
   };
 
   // Not Use Token
@@ -104,7 +110,7 @@ define('api', [], function (require, exports, module) {
         url += '?token=' + Api._token;
 
         if ((params = options.params)) {
-          params = $.param(param);
+          params = $.param(params);
           url += '&' + params;
         }
 
@@ -121,13 +127,13 @@ define('api', [], function (require, exports, module) {
       delete options.params;
       delete options.resources;
 
-      return _ajax(options, doneCallback(done), fail);
+      return _ajax(options, doneCallback(done, fail), fail);
     }
   }
 
   // helper
 
-  function doneCallback(done) {
+  function doneCallback(done, fail) {
     return cb;
     function cb() {
       var args = _slice(arguments), data = args[0];
@@ -136,7 +142,7 @@ define('api', [], function (require, exports, module) {
         args[0] = data.response;
         done.apply(this, args);
       } else {
-        this.reject(arguments);
+        fail && fail.apply(this, args);
       }
       return this;
     }
@@ -166,23 +172,21 @@ define('api', [], function (require, exports, module) {
   };
 
   function _ajax(options, done, fail) {
-    var o = {}, x;
+    var o = {}, dfd;
 
     _extend(o, defaultOptions);
 
     _extend(o, options);
 
-    x = $.ajax(o);
-
-    // done callback
-    done && x.done(done)
-
-    // fail callback
-    fail && x.fail(fail);
+    x = $.ajax(o)
+      // done callback
+      .done(done)
+      // fail callback
+      .fail(fail);
 
     return x;
   }
 
   return Api;
 
-});
+});;
