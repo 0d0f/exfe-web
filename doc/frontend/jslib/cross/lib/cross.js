@@ -48,7 +48,7 @@ define(function (require, exports, module) {
   }();
 
   var cross_defe = function (data) {
-    var match = window.location.href.match(/id=([0-9a-z]+)/);
+    var match = window.location.search.match(/id=([0-9a-z]+)/);
     var cross_id;
 
     // 先简单处理

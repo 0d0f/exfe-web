@@ -1,6 +1,7 @@
   define(function (require, exports, module) {
   var $ = require('jquery');
   var Bus = require('bus');
+  var Api = require('api');
   var Util = require('util');
   var Store = require('store');
   var $BODY = $(document.body);
@@ -517,29 +518,23 @@
           var identity = Util.parseId(new_identity);
 
           if (identity.provider) {
-
-            $.ajax({
-              url: Util.apiUrl + '/users/addIdentity?token=' + token,
-              type: 'POST',
-              data: {
-                external_id: identity.external_identity,
-                provider: identity.provider,
-                password: password
-              },
-              dataType: 'json',
-              xhrFields: { withCredentials: true },
-              beforeSend: function (xhr) {
-                $e.addClass('disabled loading');
-              }
-            })
-              .done(function (data) {
-                $e.removeClass('disabled loading');
-                if (data.meta.code === 200) {
-                  that.hide();
-                  Bus.emit('app:addidentity', data.response);
+            Api.request('addIdentity', {
+                type: 'POST',
+                data: {
+                  external_id: identity.external_identity,
+                  provider: identity.provider,
+                  password: password
+                },
+                beforeSend: function (xhr) {
+                  $e.addClass('disabled loading');
+                },
+                complete: function (xhr) {
+                  $e.removeClass('disabled loading');
                 }
-              });;
-
+              }, function (data) {
+                that.hide();
+                Bus.emit('app:addidentity', data);
+              });
           }
         }
       },
