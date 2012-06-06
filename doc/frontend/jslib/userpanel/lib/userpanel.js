@@ -195,7 +195,7 @@ define(function (require) {
     // 不是 Profile 自动跳转
     // 暂时 从 index 调整到 profile.html
     if (/^\/$/.test(window.location.pathname)) {
-      window.location = '/profile.html';
+      window.location = '/profile';
       return;
     }
 
@@ -257,7 +257,7 @@ define(function (require) {
         }
         , function (data) {
           var ds = [];
-          if (tokens.length === 1) {
+          if (tokens.length) {
             var token = tokens[0];
 
             if (token in data.statuses && !data.statuses[token]) {
@@ -376,7 +376,7 @@ define(function (require) {
     // 兼容 iframe
     var isIframe = !(parent === window);
     var domain = /domain=([^&]+)/.exec(decodeURIComponent(window.location.search));
-    domain = (domain && domain[1]) || ''
+    domain = (domain && domain[1]) || '';
     $BODY.on('click', '#js-xgather', function (e) {
       e.preventDefault();
       // 兼容 iframe
