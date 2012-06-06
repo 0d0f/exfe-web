@@ -12,6 +12,8 @@ define("SITE_URL", "http://local.exfe.com");
 $img_url="http://images.exfe.com";
 define("IMG_URL", "http://images.exfe.com");
 
+define("API_URL", "http://api.local.exfe.com");
+
 define("DEFAULT_AVATAR_URL", "http://images.exfe.com/web/80_80_default.png");
 
 $resque_server="127.0.0.1:6379";

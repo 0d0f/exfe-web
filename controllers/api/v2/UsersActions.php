@@ -17,7 +17,7 @@ class UsersActions extends ActionController {
                 apiError(401, 'invalid_auth', '');
             }
         }
-        if ($objUser = $modUser->getUserById($params['id'])) {
+        if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
             apiResponse(array('user' => $objUser));
         }
         apiError(404, 'user_not_found', 'user not found');
@@ -50,8 +50,9 @@ class UsersActions extends ActionController {
         if (!$modUser->verifyUserPassword($user_id, $password)) {
             apiError(403, 'invalid_password', ''); // 密码错误
         }
-        if ($identity_id = $modIdentity->addIdentity($provider, $external_id, $user_id)) {
-            apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
+        if (($identity_id = $modIdentity->addIdentity($provider, $external_id, array(), $user_id))
+         && ($objIdentity = $modIdentity->getIdentityById($identity_id, $user_id))) {
+            apiResponse(array('identity' => $objIdentity));
         } else {
             apiError(400, 'failed', '');
         }
@@ -95,49 +96,6 @@ class UsersActions extends ActionController {
     }
 
 
-    //@todo: merge with new sign in
-    public function doWebSignin() {
-        // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
-        // init
-        $rtResult      = array();
-        $isNewIdentity = false;
-        // collecting post data
-        $external_id   = $_POST['external_id'];
-        $provider      = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password      = $_POST['password'];
-        $name          = $_POST['name'];
-        $autoSignin    = intval($_POST['auto_signin']) === 1;
-        // adding new identity
-        if ($external_id && $password && $name) {
-            // @todo: 根据 $provider 检查 $external_identity 有效性
-            $user_id = $modUser->newUserByPassword($password);
-            // @todo: check returns
-            $modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id);
-            // @todo: check returns
-            $isNewIdentity = true;
-        }
-        // try to sign in
-        if ($external_id && $password && ($user_id = $modUser->login($external_id, $password, $autosignin))) {
-            apiResponse(array('user_id' => $user_id, 'is_new_identity' => $isNewIdentity));
-        } else {
-            apiError(403, 'invalid_identity_or_password', ''); // 失败
-        }
-    }
-
-
-    //@todo: merge with new sign out
-    public function doWebSignout() {
-        $modUser = $this->getModelByName('user', 'v2');
-        if ($modUser->signout()) {
-            apiResponse(array('success' => true));
-        } else {
-            apiError(400, 'failed', ''); // 失败
-        }
-    }
-
-
     public function doSetDefaultIdentity() {
         // check signin
         $checkHelper = $this->getHelperByName('check', 'v2');
@@ -174,17 +132,119 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doSignin() {
-        $modUser     = $this->getModelByName('user', 'v2');
-        $external_id = $_POST['external_id'];
-        $provider    = $_POST['provider'] ? $_POST['provider'] : 'email';
-        $password    = $_POST['password'];
-        $siResult    = $modUser->signinForAuthToken($provider, $external_id, $password);
-        if ($external_id && $password && $siResult) {
-            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
-        } else {
-            apiError(403, 'failed', ''); // 失败
+    public function doGetRegistrationFlag() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $params = $this->params;
+        if (!$external_id = trim($params['external_id'])) {
+            apiError(400, 'no_external_id', 'external_id must be provided');
         }
+        if (!$provider = trim($params['provider'])) {
+            apiError(400, 'no_provider', 'provider must be provided');
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        // 身份不存在，提示注册
+        if (!$identity) {
+            apiResponse(array('registration_flag' => 'SIGN_UP'));
+        }
+        // get user info
+        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
+        // 只有身份没有用户，需要身份
+        if (!$user_info) {
+            apiResponse(array('registration_flag' => 'VERIFY'));
+        }
+        // get flag
+        switch ($user_info['status']) {
+            case 'CONNECTED':
+                if ($user_info['password']) {
+                    apiResponse(array(
+                        'registration_flag' => 'SIGN_IN',
+                        'identity'          => $identity,
+                    ));
+                }
+                apiResponse(array(
+                    'registration_flag' => 'RESET_PASSWORD',
+                    'identity'          => $identity,
+                ));
+                break;
+            case 'RELATED':
+                apiResponse(array('registration_flag' => 'SIGN_UP'));
+                break;
+            case 'VERIFYING':
+            case 'REVOKED': // @todo: 存在疑问
+                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
+                    apiResponse(array(
+                        'registration_flag' => 'SIGN_IN',
+                        'identity'          => $identity,
+                    ));
+                }
+                apiResponse(array(
+                    'registration_flag' => 'VERIFY',
+                    'identity'          => $identity,
+                ));
+        }
+        apiError(500, 'failed', '');
+    }
+
+
+    public function doVerifyIdentity() {
+
+    }
+
+
+    public function doCheckAuthorization() {
+        // get models
+        $checkHelper   = $this->getHelperByName('check', 'v2');
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $arrTokens     = trim($_POST['tokens']) ? json_decode($_POST['tokens']) : array();
+        $objStatuses   = array();
+        // get status
+        foreach ($arrTokens as $token) {
+            $result = $checkHelper->isAPIAllow('user_edit', $token);
+            $objStatuses[$token]
+          = $result['check']
+          ? $modUser->getUserIdentityInfoByUserId($result['uid'])
+          : null;
+        }
+        apiResponse(array('statuses' => $objStatuses));
+    }
+
+
+    public function doSignin() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!$external_id = $_POST['external_id']) {
+            apiError(403, 'no_external_id', 'external_id must be provided');
+        }
+        if (!$provider = $_POST['provider']) {
+            apiError(403, 'no_provider', 'provider must be provided');
+        }
+        // @todo: 需要根据 $provider 检查 $external_identity 有效性
+        if (!$password = $_POST['password']) {
+            apiError(403, 'no_password', 'password must be provided');
+        }
+        // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
+        // adding new identity
+        if (($name = trim($_POST['name'])) !== ''
+        && !$modIdentity->getIdentityByProviderExternalId($provider, $external_id, true)) {
+            if (!($user_id = $modUser->newUserByPassword($password))
+             || !$modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id)) {
+                apiError(403, 'failed', 'failed while signing up new user');
+            }
+        }
+        // raw signin
+        $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
+        if ($siResult) {
+            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
+        }
+        apiError(403, 'failed', '');
     }
 
 
@@ -194,7 +254,6 @@ class UsersActions extends ActionController {
         $user_id      = intval($params['id']);
         $token        = $params['token'];
         $device_token = $_POST['device_token'];
-        $responobj    = array();
         if ($user_id && $token && $device_token) {
             $soResult = $modUser->disConnectiOSDeviceToken($user_id, $token, $device_token);
             if ($soResult) {
@@ -205,8 +264,7 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doRegdevicetoken()
-    {
+    public function doRegdevicetoken() {
         // check if this token allow
         $params   = $this->params;
         $hlpCheck = $this->getHelperByName('check');
@@ -230,9 +288,11 @@ class UsersActions extends ActionController {
 
 
     public function doCrosses() {
-        $params   = $this->params;
+        $params = $this->params;
         $uid=$params["id"];
         $updated_at=$params["updated_at"];
+        if($updated_at!='')
+            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
@@ -245,8 +305,231 @@ class UsersActions extends ActionController {
         $exfeeHelper= $this->getHelperByName('exfee', 'v2');
         $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
         $crossHelper= $this->getHelperByName('cross', 'v2');
-        $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list);
+        if($updated_at!='')
+            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,true);
+        else
+            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,false);
         apiResponse(array("crosses"=>$cross_list));
+    }
+
+
+    public function doCrossList() {
+        // init helpers
+        $hlpCheck   = $this->getHelperByName('check', 'v2');
+        $hlpExfee   = $this->getHelperByName('exfee', 'v2');
+        $hlpCross   = $this->getHelperByName('cross', 'v2');
+        // auth check
+        $params     = $this->params;
+        $user_id    = (int)$params['id'];
+        $result     = $hlpCheck->isAPIAllow('user_crosses', $params['token'], array('user_id' => $user_id));
+        if (!$result['check']) {
+            apiError(401, 'invalid_auth');
+        }
+        // collecting args
+        $today      = strtotime(date('Y-m-d'));
+        $upcoming   = $today + 60 * 60 * 24 * 3;
+        $sevenDays  = $today + 60 * 60 * 24 * 7;
+        $categories = array('upcoming', 'sometime', 'sevendays', 'later', 'past');
+        $fetchIncl  = array();
+        $fetchFold  = array();
+        $more_pos   = 0;
+        foreach ($categories as $cItem) {
+            $fetchFold[$cItem] = !!intval($params["{$cItem}_folded"]);
+        }
+        if ($more_cat = strtolower($params['more_category'])) {
+            $more_pos = intval($params['more_position']) > 0
+                      ? intval($params['more_position']) : $more_pos;
+            foreach ($categories as $cItem) {
+                $fetchIncl[$cItem] = $cItem === $more_cat;
+            }
+            $fetchFold[$more_cat] = false;
+        } else {
+            foreach ($categories as $cItem) {
+                $fetchIncl[$cItem] = true;
+            }
+        }
+        // get exfee_ids
+        $exfee_ids  = $hlpExfee->getExfeeIdByUserid($user_id);
+        // get crosses
+        $rawCrosses = array();
+        if ($fetchIncl['upcoming'] || $fetchIncl['sevendays'] || $fetchIncl['later']) {
+            $rawCrosses['future']   = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future',   $today);
+        }
+        if ($fetchIncl['past']) {
+            $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',     $today);
+        }
+        if ($fetchIncl['sometime']) {
+            $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime', $today);
+        }
+        // sort crosses
+        $crosses   = array();
+        $more      = array();
+        $fetched   = 0;
+        $maxCross  = 20;
+        $minCross  = 3;
+        // sort upcoming crosses
+        if ($rawCrosses['future']) {
+            foreach ($rawCrosses['future'] as $cI => $cItem) {
+                $rawCrosses['future'][$cI]->timestamp = strtotime(
+                    $cItem->time->begin_at->date . ' ' . ($cItem->time->begin_at->time ?: '')
+                );
+                if ($fetchIncl['upcoming'] && $rawCrosses['future'][$cI]->timestamp < $upcoming) {
+                    $cItem->sort = 'upcoming';
+                    array_push($crosses, $cItem);
+                    $fetched += $fetchFold['upcoming'] ? 0 : 1;
+                    unset($rawCrosses['future'][$cI]);
+                }
+            }
+        }
+        // sort sometime crosses
+        if ($rawCrosses['sometime']) {
+            if ($more_cat === 'sometime') {
+                $xQuantity = 0;
+            } else if ($fetched >= $maxCross) {
+                $xQuantity = $minCross;
+            } else {
+                $xQuantity = $maxCross;
+            }
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['sometime'] as $cItem) {
+                if ($more_pos-- > 0) {
+                    continue;
+                }
+                if ($enough) {
+                    $more[] = 'sometime';
+                    break;
+                }
+                $cItem->sort = 'sometime';
+                array_push($crosses, $cItem);
+                $fetched += $fetchFold['sometime'] ? 0 : 1;
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    $enough = true;
+                }
+            }
+            unset($rawCrosses['sometime']);
+        }
+        // sort next-seven-days crosses
+        if ($rawCrosses['future'] && $fetchIncl['sevendays']) {
+            if ($more_cat === 'sevendays') {
+                $xQuantity = 0;
+            } else if ($fetched >= $maxCross) {
+                $xQuantity = $minCross;
+            } else {
+                $xQuantity = $maxCross;
+            }
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['future'] as $cI => $cItem) {
+                if ($cItem->timestamp >= $upcoming && $cItem->timestamp < $sevenDays) {
+                    if ($more_pos-- > 0) {
+                        continue;
+                    }
+                    if ($enough) {
+                        $more[] = 'sevendays';
+                        break;
+                    }
+                    $cItem->sort = 'sevendays';
+                    array_push($crosses, $cItem);
+                    $fetched += $fetchFold['sevendays'] ? 0 : 1;
+                    unset($rawCrosses['future'][$cI]);
+                    if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                        $enough = true;
+                    }
+                }
+            }
+        }
+        // sort later crosses
+        if ($rawCrosses['future'] && $fetchIncl['later']) {
+            if ($more_cat === 'later') {
+                $xQuantity = 0;
+            } else if ($fetched >= $maxCross) {
+                $xQuantity = $minCross;
+            } else {
+                $xQuantity = $maxCross;
+            }
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['future'] as $cI => $cItem) {
+                if ($cItem['timestamp'] >= $sevendays) {
+                    if ($more_pos-- > 0) {
+                        continue;
+                    }
+                    if ($enough) {
+                        $more[] = 'later';
+                        break;
+                    }
+                    $cItem->sort = 'later';
+                    array_push($crosses, $cItem);
+                    $fetched += $fetchFold['later'] ? 0 : 1;
+                    if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                        $enough = true;
+                    }
+                }
+            }
+        }
+        // release memory
+        unset($rawCrosses['future']);
+        // sort past cross
+        if ($rawCrosses['past']) {
+            if ($more_cat === 'past') {
+                $xQuantity = $maxCross;
+            } else if ($fetched >= $maxCross) {
+                $xQuantity = $minCross;
+            } else {
+                $xQuantity = $maxCross;
+            }
+            $iQuantity = 0;
+            $enough    = false;
+            foreach ($rawCrosses['past'] as $cItem) {
+                if ($more_pos-- > 0) {
+                    continue;
+                }
+                if ($enough) {
+                    $more[] = 'past';
+                    break;
+                }
+                $cItem->sort = 'past';
+                array_push($crosses, $cItem);
+                $fetched += $fetchFold['past'] ? 0 : 1;
+                if ($xQuantity && ++$iQuantity >= $xQuantity) {
+                    $enough = true;
+                }
+            }
+        }
+        // release memory
+        unset($rawCrosses);
+        // return
+        apiResponse(array('crosses' => $crosses, 'more' => $more));
+    }
+
+
+    public function doUpdate() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modUser = $this->getModelByName('user', 'v2');
+        // collecting post data
+        $user = array();
+        if (isset($_POST['name'])) {
+            $user['name'] = trim($_POST['name']);
+        }
+        if ($user) {
+            if (!$modUser->updateUserById($user_id, $user)) {
+                apiError(500, 'update_failed');
+            }
+        }
+        if ($objUser = $modUser->getUserById($user_id, true, 0)) {
+            apiResponse(array('user' => $objUser));
+        }
+        apiError(404, 'user_not_found', 'user not found');
     }
 
 

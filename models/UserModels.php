@@ -9,6 +9,7 @@ class UserModels extends DataModel {
         return intval($dbResult['exfee_id']);
     }
 
+
     public function disConnectiOSDeviceToken($user_id,$token,$device_token)
     {
        $logout_identity_list=array();
@@ -41,8 +42,8 @@ class UserModels extends DataModel {
 
        return;
     }
-    
-    
+
+
     public function saveUser($name,$userid)
     {
         $sql="update users set name='$name' where id=$userid";
@@ -55,25 +56,6 @@ class UserModels extends DataModel {
     public function saveUserAvatar($avatar,$userid) {
         $sql="UPDATE users SET avatar_file_name='$avatar' WHERE id={$userid}";
         $this->query($sql);
-
-        //如果Identity的头像为空，则更新Identity的头像。
-        $sql = "SELECT identityid FROM user_identity WHERE userid={$userid}";
-        $result = $this->getAll($sql);
-        if(count($result) != 0){
-            foreach($result as $v){
-                $sql = "SELECT provider, external_identity, avatar_file_name FROM identities WHERE id=".$v["identityid"];
-                $re = $this->getRow($sql);
-                $avatar_file_name = $re["avatar_file_name"];
-                $pattern = "/(http[s]?:\/\/www\.gravatar\.com)/is";
-                if(preg_match($pattern, $avatar_file_name) && $re["provider"] == "email"){
-                    $gravatar_file = 'http://www.gravatar.com/avatar/';
-                    $gravatar_file .= md5(strtolower(trim($re["external_identity"])));
-                    $gravatar_file .= "?d=".urlencode(getUserAvatar($avatar));
-                    $sql = "UPDATE identities SET avatar_file_name='{$gravatar_file}' WHERE id=".$v["identityid"];
-                    $this->query($sql);
-                }
-            }
-        }
         return $this->getUser($userid);
     }
 
@@ -92,18 +74,15 @@ class UserModels extends DataModel {
         $sql="INSERT INTO users (name,created_at) VALUES ('{$display_name}',FROM_UNIXTIME($time_stamp));";
         $result = $this->query($sql);
         $user_id = intval($result["insert_id"]);
-        if($user_id > 0)
-        {
+        if ($user_id > 0) {
             $sql = "INSERT INTO user_identity (identityid,userid,created_at)
                     VALUES ({$identity_id},{$user_id},FROM_UNIXTIME($time_stamp));";
             $this->query($sql);
         }
-
     }
 
 
-    public function addUserByToken($cross_id,$displayname,$token)
-    {
+    public function addUserByToken($cross_id,$displayname,$token) {
         $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql = "select identity_id,tokenexpired from invitations where cross_id=$cross_id and token='$token';";
         $row=$this->getRow($sql);
@@ -185,7 +164,7 @@ class UserModels extends DataModel {
     }
 
 
-    //todo for huoju
+    //todo for huoju, upgrade and move it to user model v2
     public function regDeviceToken($devicetoken,$devicename="",$provider,$uid)
     {
         $sql="SELECT *,u.userid FROM `identities` i, user_identity u WHERE external_identity='$devicetoken' and provider='$provider' and i.id=u.identityid;";
@@ -270,7 +249,7 @@ class UserModels extends DataModel {
         }
         return false;
     }
-    
+
 
     public function doResetUserPassword($userPwd, $userName, $userID, $identityID, $userToken){
         $ts = time();
@@ -302,8 +281,8 @@ class UserModels extends DataModel {
         }
         return array("result"=>$result,"newuser"=>$newUser);
     }
-    
-    
+
+
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
 
@@ -324,8 +303,8 @@ class UserModels extends DataModel {
         setcookie('loginsequ', NULL,-1,"/",COOKIES_DOMAIN);
         setcookie('logintoken',NULL,-1,"/",COOKIES_DOMAIN);
     }
-    
-    
+
+
     // upgraded
     public function updateUserPassword($userid, $password){
         //$password=md5($password.$this->salt);
@@ -348,24 +327,72 @@ class UserModels extends DataModel {
             return intval($result["insert_id"]);
     }
 
-    
+
     // upgraded
-    public function getUser($userid)
-    {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username from users where id=$userid";
-        $row=$this->getRow($sql);
-        return $row;
-    }
-    
-    // upgraded
-    public function getUserWithPasswd($userid)
-    {
-        $sql="select name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username,encrypted_password from users where id=$userid";
-        $row=$this->getRow($sql);
+    public function getUser($userid) {
+        $sql = "select name,bio,avatar_file_name,default_identity from users where id=$userid";
+        $row = $this->getRow($sql);
+        if ($row && !$row['avatar_file_name']) {
+            $rawIdentityIds = $this->getAll(
+                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid} AND `status` = 3"
+            );
+            if ($rawIdentityIds) {
+                $arrIdentityIds = array();
+                foreach ($rawIdentityIds as $item) {
+                    array_push($arrIdentityIds, $item['identityid']);
+                }
+                $strIdentityIds = implode($arrIdentityIds, ', ');
+                $identities = $this->getAll("SELECT `id`, `avatar_file_name` FROM `identities` WHERE `id` IN ({$strIdentityIds}) ORDER BY `id`");
+                if ($identities) {
+                    foreach ($identities as $item) {
+                        if ($row['default_identity'] === $item['id']) {
+                            $row['avatar_file_name'] = $item['avatar_file_name'];
+                            break;
+                        }
+                    }
+                    if (!$row['avatar_file_name']) {
+                        $row['avatar_file_name'] = $identities[0]['avatar_file_name'];
+                    }
+                }
+            }
+        }
         return $row;
     }
 
-    
+
+    // upgraded
+    public function getUserWithPasswd($userid)
+    {
+        $sql="select name,bio,avatar_file_name,encrypted_password,default_identity from users where id=$userid";
+        $row=$this->getRow($sql);
+        if ($row && !$row['avatar_file_name']) {
+            $rawIdentityIds = $this->getAll(
+                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid} AND `status` = 3"
+            );
+            if ($rawIdentityIds) {
+                $arrIdentityIds = array();
+                foreach ($rawIdentityIds as $item) {
+                    array_push($arrIdentityIds, $item['identityid']);
+                }
+                $strIdentityIds = implode($arrIdentityIds, ', ');
+                $identities = $this->getAll("SELECT `id`, `avatar_file_name` FROM `identities` WHERE `id` IN ({$strIdentityIds}) ORDER BY `id`");
+                if ($identities) {
+                    foreach ($identities as $item) {
+                        if ($row['default_identity'] === $item['id']) {
+                            $row['avatar_file_name'] = $item['avatar_file_name'];
+                            break;
+                        }
+                    }
+                    if (!$row['avatar_file_name']) {
+                        $row['avatar_file_name'] = $identities[0]['avatar_file_name'];
+                    }
+                }
+            }
+        }
+        return $row;
+    }
+
+
     // upgraded
     public function loginForAuthToken($user,$password)
     {
@@ -402,8 +429,8 @@ class UserModels extends DataModel {
         }
         return $result;
     }
-    
-    
+
+
     // upgraded
     public function checkUserPassword($userid, $password){
         //$password = md5($password.$this->salt);
@@ -422,8 +449,8 @@ class UserModels extends DataModel {
         }
         return false;
     }
-    
-    
+
+
     // upgraded
     public function getResetPasswordToken($external_identity)
     {
@@ -469,8 +496,8 @@ class UserModels extends DataModel {
         }
         return "";
     }
-    
-    
+
+
     // upgraded
     public function getUserProfileByIdentityId($identity_id)
     {
@@ -497,8 +524,8 @@ class UserModels extends DataModel {
             return intval($result["userid"]);
         }
     }
-    
-    
+
+
     // upgraded
     public function getUserByIdentityId($identity_id)
     {
@@ -512,8 +539,8 @@ class UserModels extends DataModel {
             return $user;
         }
     }
-    
-    
+
+
     // upgraded
     public function addUserAndSetRelation($password,$displayname,$identity_id=0,$external_identity="")//$external_identity,
     {

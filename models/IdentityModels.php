@@ -9,6 +9,7 @@ class IdentityModels extends DataModel {
         return intval($dbResult['exfee_id']);
     }
 
+
     public function getUserNameByIdentityId($identity_id) {
         $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
                 WHERE a.identityid={$identity_id} LIMIT 1";
@@ -61,19 +62,21 @@ class IdentityModels extends DataModel {
             }
             $userid = intval($row['userid']);
 
-            $sql = "SELECT `name`, `avatar_file_name`, `bio` FROM `identities` WHERE `id` = {$identity_id} LIMIT 1";
+            $sql = "SELECT `name`, `avatar_file_name`, `bio`, `provider`, `external_identity` FROM `identities` WHERE `id` = {$identity_id} LIMIT 1";
             $identityrow = $this->getRow($sql);
 
             if (($identityrow['name'] == '' || $identityrow['avatar_file_name'] == '' || $identityrow['bio'] == '') && $userid) {
-                $sql  = "SELECT `name`, `avatar_file_name`, `bio` FROM `users` WHERE `id` = {$userid}";
+                $sql  = "SELECT `name`, `bio` FROM `users` WHERE `id` = {$userid}";
                 $user = $this->getRow($sql);
-                if ($identityrow['name'] == '') {
+                if (!$identityrow['name']) {
                     $identityrow['name'] = $user['name'];
                 }
-                if ($identityrow['avatar_file_name'] == '') {
-                    $identityrow['avatar_file_name'] = $user['avatar_file_name'];
-                }
-                if ($identityrow['bio'] == '') {
+                $identityrow['avatar_file_name'] = getAvatarUrl(
+                    $identityrow['provider'],
+                    $identityrow['external_identity'],
+                    $identityrow['avatar_file_name']
+                );
+                if (!$identityrow['bio']) {
                     $identityrow['bio'] = $user['bio'];
                 }
             }
@@ -128,8 +131,8 @@ class IdentityModels extends DataModel {
             }
         return $ids;
     }
-    
-    
+
+
     public function getIdentitiesByUser($userid)
     {
         $sql="select identityid,status,activecode from user_identity where userid=$userid";
@@ -148,7 +151,6 @@ class IdentityModels extends DataModel {
             }
         }
         return $userIdentityInfo;
-
     }
 
 
@@ -169,12 +171,11 @@ class IdentityModels extends DataModel {
             $user=$this->getRow($sql);
             if(intval($user["userid"])==0)
             {
-                $sql="select name,bio,avatar_file_name from identities where id=$identity_id;";
+                $sql="select name,bio from identities where id=$identity_id;";
                 $identity=$this->getRow($sql);
                 $name=$identity["name"];
                 $bio=$identity["bio"];
-                $avatar_file_name=$identity["avatar_file_name"];
-                $sql="insert into users (name,bio,avatar_file_name) values ('$name','$bio','$avatar_file_name');";
+                $sql="insert into users (name,bio) values ('$name','$bio');";
                 $result=$this->query($sql);
                 if(intval($result["insert_id"])>0)
                 {
@@ -257,12 +258,15 @@ class IdentityModels extends DataModel {
         $activecode = mysql_real_escape_string($activecode);
         $sql = "SELECT identityid,userid FROM user_identity WHERE identityid={$identity_id} AND activecode='{$active_code}'";
         $row = $this->getRow($sql);
-        $sql = "SELECT external_identity,name,avatar_file_name FROM identities WHERE id={$identity_id}";
+        $sql = "SELECT external_identity,name,avatar_file_name,provider FROM identities WHERE id={$identity_id}";
         $identityInfo = $this->getRow($sql);
         $returnData["identity"] = $identityInfo["external_identity"];
         $returnData["display_name"] = $identityInfo["name"];
-        $returnData["avatar"] = $identityInfo["avatar_file_name"];
-
+        $returnData["avatar"] = getAvatarUrl(
+            $identityInfo['provider'],
+            $identityInfo['external_identity'],
+            $identityInfo['avatar_file_name']
+        );
         if(is_array($row)){
             $user_id = $row["userid"];
             $sql = "SELECT encrypted_password FROM users WHERE id={$user_id}";
@@ -439,7 +443,7 @@ class IdentityModels extends DataModel {
             //one value
         }
     }
-    
+
 
     public function ifIdentitiesEqualWithIdentity($identities,$identity_id)
     {
@@ -471,7 +475,6 @@ class IdentityModels extends DataModel {
     // upgraded
     public function updateIdentityInformation($id, $provider, $external_identity, $name, $bio, $avatar_file_name, $external_username) {
         // improve data
-        $external_identity = "{$provider}_{$external_identity}";
         $avatar_file_name  = preg_replace('/normal(\.[a-z]{1,5})$/i',
                                           'reasonably_small$1',
                                           $userInfo['profile_image_url']);
@@ -490,8 +493,7 @@ class IdentityModels extends DataModel {
                           `bio`               = '{$bio}',
                           `avatar_file_name`  = '{$avatar_file_name}',
                           `external_username` = '{$external_username}',
-                          `updated_at`        = NOW(),
-                          `avatar_updated_at` = NOW()
+                          `updated_at`        = NOW()
                       WHERE `id` = {$chId};"
         );
 
@@ -504,12 +506,12 @@ class IdentityModels extends DataModel {
             $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
         }
     }
-    
-    
+
+
     // upgraded
     private $salt="_4f9g18t9VEdi2if";
-    
-    
+
+
     // upgraded
     public function checkUserIdentityRelation($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id} AND userid={$user_id}";
@@ -529,9 +531,6 @@ class IdentityModels extends DataModel {
         $bio=mysql_real_escape_string($identityDetail["bio"]);
         $avatar_file_name=mysql_real_escape_string($identityDetail["avatar_file_name"]);
 
-        $avatar_content_type=$identityDetail["avatar_content_type"];
-        $avatar_file_size=$identityDetail["avatar_file_size"];
-        $avatar_updated_at=$identityDetail["avatar_updated_at"];
         $external_username = trim(mysql_real_escape_string($identityDetail["external_username"]));
 
         $time=time();
@@ -543,23 +542,15 @@ class IdentityModels extends DataModel {
 
         $external_identity=mysql_real_escape_string($external_identity);
 
-        //set identity avatar as Gravatar img
-        if($provider == "email" && $avatar_file_name == ""){
-            $avatar_file_name = "http://www.gravatar.com/avatar/";
-            $avatar_file_name .= md5(strtolower(trim($external_identity)));
-            $avatar_file_name .= "?d=".urlencode(DEFAULT_AVATAR_URL);
-        }
-
         if($external_username == ""){
             $external_username = $external_identity;
         }
-
-        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,avatar_content_type,avatar_file_size,avatar_updated_at,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$avatar_content_type','$avatar_file_size','$avatar_updated_at','$external_username')";
+        $sql="insert into identities (provider,external_identity,created_at,name,bio,avatar_file_name,external_username) values ('$provider','$external_identity',FROM_UNIXTIME($time),'$name','$bio','$avatar_file_name','$external_username')";
         $result=$this->query($sql);
         $identityid=intval($result["insert_id"]);
         if($identityid > 0)
         {
-            $sql="select name,bio,avatar_file_name from users where id=$user_id;";
+            $sql="select name,bio from users where id=$user_id;";
             $userrow=$this->getRow($sql);
             if($userrow["name"]==""){
                 $userrow["name"]=$name;
@@ -567,11 +558,8 @@ class IdentityModels extends DataModel {
             if($userrow["bio"]==""){
                 $userrow["bio"]=$bio;
             }
-            if($userrow["avatar_file_name"]==""){
-                $userrow["avatar_file_name"]=$avatar_file_name;
-            }
 
-            $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', avatar_file_name='".$userrow["avatar_file_name"]."', default_identity=".$identityid." where id=$user_id;";
+            $sql="update users set name='".$userrow["name"]."', bio='".$userrow["bio"]."', default_identity=".$identityid." where id=$user_id;";
             $this->query($sql);
 
             //TOdO: commit as a transaction
@@ -585,13 +573,19 @@ class IdentityModels extends DataModel {
             );
             $verifyToken = packArray($verifyTokenArray);
 
+            $avatar_file_name = getAvatarUrl(
+                $provider,
+                $external_identity,
+                $avatar_file_name
+            );
+
             $args = array(
-                     'identityid'           =>$identityid,
-                     'external_identity'    =>$external_identity,
-                     'name'                 =>$name,
-                     'avatar_file_name'     =>$avatar_file_name,
-                     'activecode'           =>$activecode,
-                     'token'                =>$verifyToken
+                'identityid'        => $identityid,
+                'external_identity' => $external_identity,
+                'name'              => $name,
+                'avatar_file_name'  => $avatar_file_name,
+                'activecode'        => $activecode,
+                'token'             => $verifyToken
             );
             /*
             if($provider=="email")
@@ -609,7 +603,37 @@ class IdentityModels extends DataModel {
             return $identityid;
         }
     }
-    
+
+
+    // upgraded
+    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
+        // collecting new identity informations
+        $name                = mysql_real_escape_string($identityDetail["name"]);
+        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
+        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
+        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
+        $external_identity   = mysql_real_escape_string($external_identity);
+        $time = time();
+        switch ($provider) {
+            case 'email':
+                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
+                break;
+            default:
+                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
+                $external_identity = null;
+        }
+        $row = $this->getRow($sql);
+        if (intval($row['id']) > 0) {
+            return intval($row['id']);
+        }
+
+        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name', '$external_username')";
+        $result = $this->query($sql);
+        $identityid = intval($result["insert_id"]);
+        return $identityid;
+    }
+
+
     // upgraded
     public function login($identityInfo,$password,$setcookie=false, $password_hashed=false, $oauth_login=false) {
         //$password = md5($password.$this->salt);
@@ -630,7 +654,7 @@ class IdentityModels extends DataModel {
             $userID = intval($userRow["userid"]);
 
             if($userID > 0) {
-                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name FROM users WHERE id=$userID";
+                $sql="SELECT encrypted_password, password_salt, name, bio, avatar_file_name, auth_token FROM users WHERE id=$userID";
                 $userInfo = $this->getRow($sql);
                 if(!$password_hashed){
                     $passwordSalt = $userInfo["password_salt"];
@@ -648,10 +672,20 @@ class IdentityModels extends DataModel {
                     $returnData = array_merge($identityRow,$userInfo);
                     $returnData["user_id"] = $userID;
                     $returnData["identity_name"] = $identityRow["name"];
-                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
                     $returnData["identity_bio"] = $identityRow["bio"];
                     $returnData["user_name"] = $userInfo["name"];
-                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"];
+
+                    $identityRow['avatar_file_name'] = getAvatarUrl(
+                        $identityRow['provider'],
+                        $identityRow['external_identity'],
+                        $identityRow['avatar_file_name']
+                    );
+
+                    $returnData["identity_avatar_file_name"] = $identityRow["avatar_file_name"];
+                    $returnData["user_avatar_file_name"] = $userInfo["avatar_file_name"] ?: $identityRow["avatar_file_name"];
+
+                    $returnData['token'] = $userInfo['auth_token'];
+
                     $returnData["user_bio"] = $userInfo["bio"];
                     unset($returnData["encrypted_password"]);
                     unset($returnData["password_salt"]);
@@ -665,7 +699,8 @@ class IdentityModels extends DataModel {
         }
         return 0;
     }
-    
+
+
     // upgraded
     public function loginByIdentityId($identity_id,$userid=0,$identity="", $userrow=NULL,$identityrow=NULL,$type="password",$setcookie=false) {
         if($userid==0) {
@@ -676,7 +711,7 @@ class IdentityModels extends DataModel {
             }
         }
         if($userrow==NULL) {
-            $sql="select name,bio,avatar_file_name from users where id=$userid";
+            $sql="select name,bio from users where id=$userid";
             $userrow=$this->getRow($sql);
         }
         if($identityrow==NULL) {
@@ -712,16 +747,20 @@ class IdentityModels extends DataModel {
             $identity["name"]=$identityrow["external_identity"];
 
         $identity["bio"]=$identityrow["bio"];
-        $identity["avatar_file_name"]=$identityrow["avatar_file_name"];
-        if(trim($identity["avatar_file_name"])=="")
-            $identity["avatar_file_name"]=$userrow["avatar_file_name"];
+
+        $identity['avatar_file_name'] = getAvatarUrl(
+            $identityrow['provider'],
+            $identityrow['external_identity'],
+            $identityrow['avatar_file_name']
+        );
+
         $_SESSION["identity"]=$identity;
 
         unset($_SESSION["tokenIdentity"]);
         return $userid;
     }
-    
-    
+
+
     // upgraded
     public function setLoginCookie($identity, $userid, $identity_id) {
         $time=time();
@@ -755,8 +794,8 @@ class IdentityModels extends DataModel {
         $last_identity_str = json_encode($last_identity);
         setcookie('last_identity', $last_identity_str, time()+31536000, "/", COOKIES_DOMAIN);//one year.
     }
-    
-    
+
+
     // upgraded
     public function loginByCookie($source='') {
         $uid=intval($_COOKIE['uid']);
@@ -807,42 +846,17 @@ class IdentityModels extends DataModel {
     public function getIdentityById($identity_id) {
         $sql="select id,external_identity,name,bio,avatar_file_name,external_username,provider from identities where id='$identity_id'";
         $row=$this->getRow($sql);
+
+        $row['avatar_file_name'] = getAvatarUrl(
+            $row['provider'],
+            $row['external_identity'],
+            $row['avatar_file_name']
+        );
+
         return $row;
     }
-    
-    
-    // upgraded
-    public function addIdentityWithoutUser($provider, $external_identity, $identityDetail = array()) {
-        // collecting new identity informations
-        $name                = mysql_real_escape_string($identityDetail["name"]);
-        $bio                 = mysql_real_escape_string($identityDetail["bio"]);
-        $avatar_file_name    = mysql_real_escape_string($identityDetail["avatar_file_name"]);
-        $avatar_content_type = $identityDetail["avatar_content_type"];
-        $avatar_file_size    = $identityDetail["avatar_file_size"];
-        $avatar_updated_at   = $identityDetail["avatar_updated_at"];
-        $external_username   = mysql_real_escape_string($identityDetail["external_username"]);
-        $external_identity   = mysql_real_escape_string($external_identity);
-        $time = time();
-        switch ($provider) {
-            case 'email':
-                $sql = "SELECT id FROM identities WHERE external_identity='{$external_identity}' LIMIT 1";
-                break;
-            default:
-                $sql = "SELECT id FROM identities WHERE provider='{$provider}' AND external_username='{$external_identity}' LIMIT 1";
-                $external_identity = null;
-        }
-        $row = $this->getRow($sql);
-        if (intval($row['id']) > 0) {
-            return intval($row['id']);
-        }
 
-        $sql = "insert into identities (provider, external_identity, created_at, name, bio, avatar_file_name, avatar_content_type, avatar_file_size,avatar_updated_at, external_username) values ('$provider', '$external_identity', FROM_UNIXTIME($time), '$name', '$bio', '$avatar_file_name','$avatar_content_type', '$avatar_file_size', '$avatar_updated_at', '$external_username')";
-        $result = $this->query($sql);
-        $identityid = intval($result["insert_id"]);
-        return $identityid;
-    }
-    
-    
+
     // upgraded
     public function ifIdentityExist($external_identity, $provider = '') {
         $external_identity = mysql_real_escape_string($external_identity);
@@ -877,6 +891,7 @@ class IdentityModels extends DataModel {
                 }
 
                 $returnData["user_avatar"] = $user_info["avatar_file_name"];
+                // @todo: v2 bridge!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 return $returnData;
             }
             return $returnData;
@@ -885,8 +900,8 @@ class IdentityModels extends DataModel {
             return false;
         }
     }
-    
-    
+
+
     // upgraded
     public function deleteIdentity($user_id, $identity_id){
         $sql = "SELECT * FROM user_identity WHERE userid={$user_id}";
@@ -919,4 +934,3 @@ class IdentityModels extends DataModel {
     }
 
 }
-

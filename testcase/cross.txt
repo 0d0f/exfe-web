@@ -1,4 +1,4 @@
-cross= {
+cross = {
     "attribute": {
         "state": "published"
     },
@@ -12,44 +12,39 @@ cross= {
         "provider": "",
         "title": "place title",
         "type": "Place"
-        },
+    },
     "exfee": {
-        "invitations": [
-            {
-                "identity":{
-                    "id": 174
-                },
-                "rsvp_status":"ACCEPTED",
-                "type":"Invitation"
+        "invitations": [{
+            "identity": {
+                "id": 174
             },
-            {
-                "identity":{
-                    "id": 233
-                },
-                "rsvp_status":"ACCEPTED",
-                "type":"Invitation"
+            "rsvp_status": "ACCEPTED",
+            "type": "Invitation"
+        }, {
+            "identity": {
+                "id": 233
             },
-            {
-                "identity":{
-                    "id": 237
-                },
-                "rsvp_status":"ACCEPTED",
-                "type":"Invitation"
+            "rsvp_status": "ACCEPTED",
+            "type": "Invitation"
+        }, {
+            "identity": {
+                "id": 237
             },
-            {
-                "identity":{
-                    "id": 239
-                },
-                "rsvp_status":"ACCEPTED",
-                "type":"Invitation"
-            }
-        ],
+            "rsvp_status": "ACCEPTED",
+            "type": "Invitation"
+        }, {
+            "identity": {
+                "id": 239
+            },
+            "rsvp_status": "ACCEPTED",
+            "type": "Invitation"
+        }],
         "type": "Exfee"
     },
     "relative": {
         "id": 0,
         "relation": ""
-        },
+    },
     "time": {
         "begin_at": {
             "date": "2012-03-22",
@@ -67,13 +62,10 @@ cross= {
     },
     "title": "post by curl",
     "type": "Cross",
-    "widget": [
-        {
-            "id": 0,
-            "image": "IMG_0111",
-            "type": "Background",
-            "widget_id": 0
-        }
-    ]
-}
-&by_identity_id=174
+    "widget": [{
+        "id": 0,
+        "image": "IMG_0111",
+        "type": "Background",
+        "widget_id": 0
+    }]
+} & by_identity_id = 174
