@@ -332,11 +332,13 @@ class UsersActions extends ActionController {
         $categories = array('upcoming', 'sometime', 'sevendays', 'later', 'past');
         $fetchIncl  = array();
         $fetchFold  = array();
+        $more_pos   = 0;
         foreach ($categories as $cItem) {
             $fetchFold[$cItem] = !!intval($params["{$cItem}_folded"]);
         }
-        if (($more_cat = strtolower($params['more_category']))
-         && ($more_pos = intval($params['more_position'])) > 0) {
+        if ($more_cat = strtolower($params['more_category'])) {
+            $more_pos = intval($params['more_position']) > 0
+                      ? intval($params['more_position']) : $more_pos;
             foreach ($categories as $cItem) {
                 $fetchIncl[$cItem] = $cItem === $more_cat;
             }
@@ -391,6 +393,9 @@ class UsersActions extends ActionController {
             $iQuantity = 0;
             $enough    = false;
             foreach ($rawCrosses['sometime'] as $cItem) {
+                if ($more_pos-- > 0) {
+                    continue;
+                }
                 if ($enough) {
                     $more[] = 'sometime';
                     break;
@@ -417,6 +422,9 @@ class UsersActions extends ActionController {
             $enough    = false;
             foreach ($rawCrosses['future'] as $cI => $cItem) {
                 if ($cItem->timestamp >= $upcoming && $cItem->timestamp < $sevenDays) {
+                    if ($more_pos-- > 0) {
+                        continue;
+                    }
                     if ($enough) {
                         $more[] = 'sevendays';
                         break;
@@ -444,6 +452,9 @@ class UsersActions extends ActionController {
             $enough    = false;
             foreach ($rawCrosses['future'] as $cI => $cItem) {
                 if ($cItem['timestamp'] >= $sevendays) {
+                    if ($more_pos-- > 0) {
+                        continue;
+                    }
                     if ($enough) {
                         $more[] = 'later';
                         break;
