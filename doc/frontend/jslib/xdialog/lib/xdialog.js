@@ -127,7 +127,7 @@
                 // 最后登陆的 external_identity
                 Store.set('last_identity', od.external_identity);
                 if (t === 'd01') {
-                  window.location = '/profile.html';
+                  window.location = '/profile';
                 } else {
                   that.hide();
                   var d = new Dialog(dialogs.welcome);
