@@ -49,6 +49,14 @@ define('typeahead', [], function (require, exports, module) {
         .on('blur.delegateEvents', proxy(this.blur, this))
         .on('keypress.delegateEvents', proxy(this.keypress, this))
         .on('keyup.delegateEvents', proxy(this.keyup, this))
+        /*
+        .on('drop', function (e) {
+          var notecard = e.originalEvent.dataTransfer.getData("text/plain");
+          console.log(notecard);
+          //e.preventDefault();
+          //console.log(1);
+        })
+        */
         .on('focus.delegateEvents', proxy(this.focus, this));
 
       if ($.browser.webkit || $.browser.msie) {

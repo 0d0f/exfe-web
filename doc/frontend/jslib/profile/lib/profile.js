@@ -180,20 +180,18 @@ define(function (require, exports, module) {
     data = Store.get('signin');
     if (!data) return;
     var user_id = data.user_id;
-    var token = data.token;
 
     // 返回一个 promise 对象
-    return $.ajax({
-      url: Util.apiUrl + '/users/' + user_id + '/crosslist?token=' + token,
-      type: 'GET',
-      dataType: 'JSON',
-      xhrFields: { withCredentials: true}
-    })
-      .done(function (data) {
-        if (data.meta.code === 200) {
+    return Api.request('crosslist'
+      , {
+        resources: {
+          user_id: user_id
+        }
+      }
+      , function (data) {
           var now = +new Date;
 
-          if (data.response.crosses.length) {
+          if (data.crosses.length) {
 
             var jst_crosses = $('#jst-crosses-container');
 
@@ -231,12 +229,12 @@ define(function (require, exports, module) {
             var cates = 'upcoming<Upcoming> sometime<Sometime> sevendays<Next 7 days> later<Later> past<Past>';
             var crossList = {};
 
-            R.map(data.response.crosses, function (v, i) {
+            R.map(data.crosses, function (v, i) {
               crossList[v.sort] || (crossList[v.sort] = {crosses: []});
               crossList[v.sort].crosses.push(v);
             });
 
-            var more = data.response.more.join(' ');
+            var more = data.more.join(' ');
 
             var splitterReg = /<|>/;
             R.map(cates.split(' '), function (v, i) {
@@ -252,9 +250,8 @@ define(function (require, exports, module) {
 
             $('#profile .crosses').append(h);
           }
-        }
-    });
-
+      }
+    );
   };
 
   var crosses_defe = function (data) {
@@ -262,25 +259,25 @@ define(function (require, exports, module) {
     data = Store.get('signin');
     if (!data) return;
     var user_id = data.user_id;
-    var token = data.token;
     //var qdate = Store.get('qdate') || '';
     //qdate && (qdate = '&date=' + qdate);
     var now = new Date();
     //now.setDate(now.getDate() - 3);
     now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
 
-    return $.ajax({
-      url: Util.apiUrl + '/users/' + user_id + '/crosses?token=' + token + '&date=' + now,
-      type: 'GET',
-      dataType: 'JSON',
-      xhrFields: { withCredentials: true}
-    })
-      .done(function (data) {
-        if (data.meta.code === 200) {
-
+    return Api.request('crosses'
+      , {
+        resources: {
+          user_id: user_id
+        },
+        params: {
+          date: now
+        }
+      }
+      , function (data) {
           var _date = new Date();
           //Store.set('qdate', _date.getFullYear() + '-' + _date.getMonth() + '-' + _date.getDate());
-          var crosses = data.response.crosses;
+          var crosses = data.crosses;
           var invitations = [];
           var updates = [];
           var updated;
@@ -321,23 +318,23 @@ define(function (require, exports, module) {
                 var a = identities_KV[updated.conversation.identity_id];
                 var exfee_id = crosses[a[0]].exfee.id;
                 updatesAjax.push(
-                $.ajax({
-                  url: Util.apiUrl + '/conversation/' + exfee_id + '?token=' + token + '&date=' + updated.conversation.updated_at,
-                  type: 'GET',
-                  dataType: 'JSON',
-                  xhrFields: { withCredentials: true}
-                })
-                  .done(function (data) {
-                    if (data.meta.code === 200) {
-                      var conversation = data.response.conversation;
+                  Api.request('conversation'
+                    , {
+                      resources: {exfee_id: exfee_id},
+                      params: {
+                        date: updated.conversation.updated_at
+                      }
+                    }
+                    , function (data) {
+                      var conversation = data.conversation;
                       if (conversation && conversation.length) {
                         conversation[0].__crossIndex = a[0];
                         conversation[0].__conversation_nums = conversation.length;
                         updates.push(conversation[0]);
                       }
                     }
-                  })
-                );
+                  )
+                )
               }
             }
 
@@ -380,8 +377,9 @@ define(function (require, exports, module) {
             });
           }
 
-        }
-      });
+      }
+    );
+
   };
 
   // Defe Queue
@@ -419,23 +417,23 @@ define(function (require, exports, module) {
       return;
       if (password) {
 
-        $.ajax({
-          url: Util.apiUrl + '/users/deleteIdentity?token=' + token,
-          type: 'POST',
-          dataType: 'JSON',
-          data: {
-            identity_id: identity_id,
-            password: password
-          }
-        })
-          .done(function (data) {
-            if (data.meta.code === 200) {
-              return;
+        Api.request('deleteIdentity'
+          , {
+            type: 'POST',
+            data: {
+              identity_id: identity_id,
+              password: password
             }
+          }
+          , function (data) {
+          }
+          , function (data) {
             if (data.meta.code === 403) {
               alert('Please input password.');
             }
-          });
+          }
+        );
+
       }
     });
 
@@ -461,23 +459,19 @@ define(function (require, exports, module) {
 
           if (!value || value === oldValue) return;
 
-          var signin = Store.get('signin');
-          var token = signin.token;
-
-          $.ajax({
-            url: Util.apiUrl + '/users/update?token=' + token,
-            type: 'POST',
-            dataType: 'JSON',
-            data: {
-              name: value
-            }
-          })
-            .done(function (data) {
-              if (data.meta.code === 200) {
-                Store.set('user', data.response.user);
-                Bus.emit('app:changename', value);
+          Api.request('updateUser'
+            , {
+              type: 'POST',
+              data: {
+                name: value
               }
-            });
+            }
+            , function (data) {
+              Store.set('user', data.user);
+              Bus.emit('app:changename', value);
+            }
+          );
+
         }
     });
 
@@ -501,30 +495,26 @@ define(function (require, exports, module) {
 
           if (!value || value === oldValue) return;
 
-          var signin = Store.get('signin');
-          var token = signin.token;
-
-          $.ajax({
-            url: Util.apiUrl + '/identities/' + identity_id + '/update?token=' + token,
-            type: 'POST',
-            dataType: 'JSON',
-            data: {
-              name: value
-            }
-          })
-            .done(function (data) {
-              if (data.meta.code === 200) {
-                var user = Store.get('user');
-                for (var i = 0, l = user.identities.length; i < l; ++i) {
-                  if (user.identities[i].id === identity_id) {
-                    user.identities[i] = data.response.identity;
-                    break;
-                  }
-                }
-
-                Store.set('user', user);
+          Api.request('updateIdentity'
+            , {
+              resources: {identity_id: identity_id},
+              type: 'POST',
+              data: {
+                name: value
               }
-            });
+            }
+            , function (data) {
+              var user = Store.get('user');
+              for (var i = 0, l = user.identities.length; i < l; ++i) {
+                if (user.identities[i].id === data.identity_id) {
+                  user.identities[i] = identity;
+                  break;
+                }
+              }
+
+              Store.set('user', user);
+            }
+          );
         }
     });
 
@@ -532,41 +522,39 @@ define(function (require, exports, module) {
     $BODY.on('click.profile', '.xbtn-accept', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var signin = Store.get('signin');
       var identity = Store.get('last_identity');
-      var token = signin.token;
       var p = $(this).parent();
       var crossid = p.data('id');
       var invitationid = p.data('invitationid');
       var cross_box = $('.gr-a [data-id="' + crossid + '"]');
-      var exfeeid = p.data('exfeeid');
-      $.ajax({
-        url: Util.apiUrl + '/exfee/' + exfeeid + '/rsvp?token=' + token,
-        type: 'POST',
-        dataType: 'JSON',
-        data: {
-          rsvp: '[{"identity_id":' + identity.id + ', "rsvp_status": "ACCEPTED", "by_identity_id": ' + identity.id + '}]',
-          by_identity_id: identity.id
-          //exfee: '{"invitations": [{"id": ' + invitationid + ', "rsvp_status": "ACCEPTED", "identity": {"id": ' + identity.id + '}}]}'
-        }
-      })
-        .done(function (data) {
-          if (data.meta.code === 200) {
-            var fs = cross_box.find('>div :first-child');
-            var i = +fs.text();
-            fs.text(i + 1);
-            var ls = cross_box.find('>div :last-child');
-            var s = ls.text();
-            var identity = Store.get('last_identity');
-            ls.text(s + ', ' + identity.name);
-            var inv;
-            if (!p.parent().prev().length && !p.parent().next().length) {
-              inv = p.parents('.invitations');
-            }
-            p.parent().remove();
-            inv && inv.remove();
+      var exfee_id = p.data('exfeeid');
+
+      Api.request('rsvp'
+        , {
+          resources: {exfee_id: exfee_id},
+          type: 'POST',
+          data: {
+            rsvp: '[{"identity_id":' + identity.id + ', "rsvp_status": "ACCEPTED", "by_identity_id": ' + identity.id + '}]',
+            by_identity_id: identity.id
           }
-        });
+        }
+        , function (data) {
+          var fs = cross_box.find('>div :first-child');
+          var i = +fs.text();
+          fs.text(i + 1);
+          var ls = cross_box.find('>div :last-child');
+          var s = ls.text();
+          var identity = Store.get('last_identity');
+          ls.text(s + (s ? ', ' : '') + identity.name);
+          var inv;
+          if (!p.parent().prev().length && !p.parent().next().length) {
+            inv = p.parents('.invitations');
+          }
+          p.parent().remove();
+          inv && inv.remove();
+        }
+      );
+
     });
 
     // 添加身份
@@ -594,7 +582,8 @@ define(function (require, exports, module) {
     // more
     $BODY.on('click.profile', '.more > a', function (e) {
       e.preventDefault();
-      var p = $(this).parent();
+      var $e = $(this);
+      var p = $e.parent();
       var cate = p.data('cate');
       var data = Store.get('signin');
       var token = data.token;
@@ -602,24 +591,33 @@ define(function (require, exports, module) {
       var more_position = p.prev().find(' .cross-box').length;
       var more_category = cate;
 
-      Api.request('crosslist', {
-        resources: {
-          user_id: user_id
-        },
-        data: {
-          more_category: more_category,
-          more_position: more_position
+      Api.request('crosslist'
+        , {
+          resources: {
+            user_id: user_id
+          },
+          data: {
+            more_category: more_category,
+            more_position: more_position
+          }
         }
-      }, function (data) {
-          console.dir(data);
+        , function (data) {
           if (data.crosses.length) {
             var h = '{{#crosses}}'
                 + '{{> jst-cross-box}}'
               + '{{/crosses}}';
             var s = Handlebars.compile(h);
-            //p.prev().append(s(data.response.crosses))
+            p.prev().append(s(data))
+            var l = R.filter(data.more, function (v) {
+              if (v === cate) return true;
+            });
+            if (!l.length) {
+              $e.remove();
+            }
           }
-        });
+        }
+      );
+
     });
 
   });

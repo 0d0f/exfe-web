@@ -142,6 +142,12 @@
       {{> jst-cross-box}}
       {{/crosses}}
     </div>
+
+    {{#if hasMore}}
+    <div class="more" data-cate="{{cate}}">
+      <a href="#">more...</a>
+    </div>
+    {{/if}}
   </div>
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
@@ -216,6 +222,7 @@
   <script src="jslib/dialog/lib/dialog.js"></script>
   <script src="jslib/typeahead/lib/typeahead.js"></script>
   <script src="jslib/bus/lib/bus.js"></script>
+  <script src="jslib/api/lib/api.js"></script>
 
   <script src="jslib/xidentity/lib/xidentity.js"></script>
   <script src="jslib/xdialog/lib/xdialog.js"></script>
