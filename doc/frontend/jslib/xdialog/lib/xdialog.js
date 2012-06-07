@@ -104,54 +104,51 @@
           var t = this.switchTabType;
           var od = this.getFormData(t);
           if (t === 'd01' || t === 'd03') {
-            var dfd = $.ajax({
-              url: Util.apiUrl + '/users/signin',
-              type: 'POST',
-              dataType: 'JSON',
-              xhrFields: {withCredentials: true},
-              data: {
-                external_id: od.external_identity,
-                provider: od.provider,
-                password: od.password,
-                name: od.name || '',
-                auto_signin: !!od.auto_signin
-              },
-              beforeSend: function (xhr) {
-                xsignin.addClass('disabled loading');
-              }
-            })
-              .done(function (data) {
-                xsignin.removeClass('disabled loading');
-                var meta = data.meta;
-                if (meta.code === 200) {
-                  Store.set('signin', data.response);
-                  // 最后登陆的 external_identity
-                  Store.set('last_identity', od.external_identity);
-                  if (t === 'd01') {
-                    window.location = '/profile.html';
-                  } else {
-                    that.hide();
-                    var d = new Dialog(dialogs.welcome);
-                    d.render();
-                    d.show();
-                  }
-                } else if (meta.code === 403) {
-                  var errorType = meta.errorType;
-                  if (errorType === 'no_password' || errorType === 'failed') {
-                      that.$('.xalert-password')
-                      .html(that.options.errors[errorType])
-                      .removeClass('hide');
-                  } else if (errorType === 'no_external_id') {
-                    that.$('#name')
-                      .nextAll('.xalert-info')
-                      .removeClass('hide');
-                  }
+
+            var dfd = Api.request('signin'
+              , {
+                type: 'POST',
+                data: {
+                  external_id: od.external_identity,
+                  provider: od.provider,
+                  password: od.password,
+                  name: od.name || '',
+                  auto_signin: !!od.auto_signin
+                },
+                beforeSend: function (xhr) {
+                  xsignin.addClass('disabled loading');
+                },
+                complete: function (xhr) {
+                  xsignin.removeClass('disabled loading');
                 }
-              })
-                .fail(function (data) {});
-
+              }
+              , function (data) {
+                Store.set('signin', data);
+                // 最后登陆的 external_identity
+                Store.set('last_identity', od.external_identity);
+                if (t === 'd01') {
+                  window.location = '/profile';
+                } else {
+                  that.hide();
+                  var d = new Dialog(dialogs.welcome);
+                  d.render();
+                  d.show();
+                }
+              }
+              , function (data) {
+                var errorType = data.meta.errorType;
+                if (errorType === 'no_password' || errorType === 'failed') {
+                    that.$('.xalert-password')
+                    .html(that.options.errors[errorType])
+                    .removeClass('hide');
+                } else if (errorType === 'no_external_id') {
+                  that.$('#name')
+                    .nextAll('.xalert-info')
+                    .removeClass('hide');
+                }
+              }
+            );
           }
-
         }
       },
 
@@ -407,38 +404,42 @@
           var user_id = signinData.user_id;
           var token = signinData.token;
 
-          $.ajax({
-            type: 'post',
-            data: {
-              current_password: cppwd,
-              new_password: cpnpwd
-            },
-            dataType: 'json',
-            url: Util.apiUrl + '/users/' + user_id + '/setpassword?token=' + token,
-            xhrFields: { withCredentials: true },
-            beforeSend: function (xhr) {
-              $e.addClass('disabled loading');
+          Api.request('setPassword'
+            , {
+              type: 'POST',
+              data: {
+                current_password: cppwd,
+                new_password: cpnpwd
+              },
+              beforeSend: function (xhr) {
+                $e.addClass('disabled loading');
+              },
+              complete: function (xhr) {
+                $e.removeClass('disabled loading');
+              }
             }
-          })
-            .done(function (data) {
-              $e.removeClass('disabled loading');
-              if (data.meta.code === 200) {
-                $e = that.element;
-                that.offSrcNode();
-                that.destory();
-                $e.remove();
-              } else if (data.meta.code === 403) {
+            , function (data) {
+              $e = that.element;
+              that.offSrcNode();
+              that.destory();
+              $e.remove();
+            }
+            , function (data) {
+              if (data.meta.code === 403) {
                 var errorType = data.meta.errorType;
                 if (errorType === 'invalid_current_password') {
                   alert('Invalid current password.');
                 }
               }
-            });
+            }
+          );
+
         },
       },
 
       onShowBefore: function () {
         var user = Store.get('user');
+        console.dir(user);
         this.$('#cp-fullname').val(user.name);
       },
 
@@ -496,6 +497,9 @@
       backdrop: true,
 
       events: {
+        'click .xbtn-forgotpwd': function (e) {
+          var new_identity = Util.trim(this.$('#new-identity').val());
+        },
         'click .xbtn-success': function (e) {
           var new_identity = Util.trim(this.$('#new-identity').val());
           var password = this.$('#password').val();
@@ -606,18 +610,22 @@
         if (data) {
           if (data.registration_flag === 'SIGN_IN') {
             that.$('.xalert-info').removeClass('hide');
+            that.$('.xbtn-forgotpwd').removeClass('hide').data('source', data);
           }
           else if (data.registration_flag === 'SIGN_UP') {
             that.availability = true;
+            that.$('.xbtn-forgotpwd').addClass('hide').data('source', null);
           }
           that.$('.xbtn-success').removeClass('disabled');
         } else {
           that.$('.xbtn-success').addClass('disabled');
+          that.$('.xbtn-forgotpwd').addClass('hide').data('source', null);
         }
 
       });
 
       Bus.on('widget-dialog-identification-nothing', function () {
+        that.$('.xbtn-forgotpwd').addClass('hide');
       });
     }
 

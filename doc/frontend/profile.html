@@ -154,7 +154,7 @@
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
   <div class="cross-box">
-  <a href="/cross.html?id_base62={{id_base62}}" data-id={{id}} title="">
+  <a href="/!{{id_base62}}" data-id={{id}} title="">
     <h5>{{title}}</h5>
     <time>{{printTime time}}</time>
     <address>{{place.title}} 
@@ -176,7 +176,7 @@
     <div class="cross-list">
       {{#crosses}}
       <div class="cross-box">
-        <a href="/cross.html?id_base62={{crossItem "id_base62"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}" title="">
+        <a href="/!{{crossItem "id_base62"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}" title="">
           <h5>{{crossItem "title"}}</h5>
           <div>{{printTime2 "time"}}{{#ifPlace}} <span class="gray">at</span> {{crossItem "place"}}{{/ifPlace}} <span class="gray">by</span> {{by_identity.name}}</div>
           <div class="xbtn xbtn-accept">Accept</div>
@@ -187,24 +187,26 @@
   </div>
   </script>
   <script id="jst-updates" type="text/x-handlebars-template">
+  {{#if updates}}
   <div class="siderbar updates">
     <h3><i class="icon-share"></i>Recent updates</h3>
     <div class="cross-list">
-      {{#updates}}
+      {{#each updates}}
       <div class="cross-box">
-        <a href="/cross.html?id_base62={{id_base62}}" data-id={{id}} title="">
-          <time class="pull-right">Tomorrow</time>
-          <h5>Dinner in San Francisco</h5>
-          <div><span class="blue">dm.</span>:
-            My only missing food in US, dudes! yummy yummy</div>
-          <div><span class="blue">4</span>
+        <a href="/!{{crossItem "id_base62"}}" data-id="{{crossItem "id"}}" title="">
+          <time class="pull-right">{{printTime3 "time"}}</time>
+          <h5>{{crossItem "title"}}</h5>
+          <div><span class="blue">{{by_identity.name}}</span>:
+            {{content}}</div>
+          <div><span class="blue">{{conversation_nums}}</span>
             new post in conversation.
           </div>
         </a>
       </div>
-      {{/updates}}
+      {{/each}}
     </div>
   </div>
+  {{/if}}
   </script>
 
   <!-- JavaScript at the bottom for fast page loading -->

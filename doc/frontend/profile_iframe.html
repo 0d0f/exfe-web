@@ -142,6 +142,12 @@
       {{> jst-cross-box}}
       {{/crosses}}
     </div>
+
+    {{#if hasMore}}
+    <div class="more" data-cate="{{cate}}">
+      <a href="#">more...</a>
+    </div>
+    {{/if}}
   </div>
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
@@ -179,12 +185,13 @@
   </div>
   </script>
   <script id="jst-updates" type="text/x-handlebars-template">
+  {{#if updates}}
   <div class="siderbar updates">
     <h3><i class="icon-share"></i>Recent updates</h3>
     <div class="cross-list">
       {{#updates}}
       <div class="cross-box">
-        <a href="/!{{crossItem "id_base62"}}" data-id="{{crossItem "id"}}" title="">
+          <a href="/!{{crossItem "id_base62"}}" data-id="{{crossItem "id"}}" title="">
         <time class="pull-right">{{humanTime updated_at}}</time>
           <h5>{{crossItem "title"}}</h5>
           <div data-postid="{{id}}"><span class="blue">{{by_identity.name}}</span>:
@@ -197,6 +204,7 @@
       {{/updates}}
     </div>
   </div>
+  {{/if}}
   </script>
 
   <!-- JavaScript at the bottom for fast page loading -->
@@ -216,6 +224,7 @@
   <script src="jslib/dialog/lib/dialog.js"></script>
   <script src="jslib/typeahead/lib/typeahead.js"></script>
   <script src="jslib/bus/lib/bus.js"></script>
+  <script src="jslib/api/lib/api.js"></script>
 
   <script src="jslib/xidentity/lib/xidentity.js"></script>
   <script src="jslib/xdialog/lib/xdialog.js"></script>
