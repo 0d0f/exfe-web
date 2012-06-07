@@ -12,19 +12,19 @@ class ConversationModels extends DataModel {
     }
 
 
-    public function addPost($post)
-    {
-        $sql="select id from crosses where exfee_id={$post->postable_id};";
-        $cross=$this->getRow($sql);
-        $cross_id=$cross["id"];
+    public function addPost($post, $timestamp = 0) {
+        $sql      = "select id from crosses where exfee_id={$post->postable_id};";
+        $cross    = $this->getRow($sql);
+        $cross_id = $cross["id"];
 
-        $updated=array("updated_at"=>date('Y-m-d H:i:s',time()),"identity_id"=>$post->by_identity_id);
+        $updated  = array("updated_at"=>date('Y-m-d H:i:s',time()),"identity_id"=>$post->by_identity_id);
         $cross_updated["conversation"]=$updated;
         saveUpdate($cross_id,$cross_updated);
 
-        $sql="insert into posts (identity_id,content,postable_id,postable_type,created_at) values ({$post->by_identity_id},'{$post->content}',{$post->postable_id},'{$post->postable_type}',NOW());";
+        $time     = $timestamp ? "FROM_UNIXTIME({$timestamp})" : 'NOW()';
+        $sql      = "insert into posts (identity_id,content,postable_id,postable_type,created_at) values ({$post->by_identity_id},'{$post->content}',{$post->postable_id},'{$post->postable_type}',{$time});";
         $result   = $this->query($sql);
-        $post_id = intval($result['insert_id']);
+        $post_id  = intval($result['insert_id']);
         return $post_id;
     }
 

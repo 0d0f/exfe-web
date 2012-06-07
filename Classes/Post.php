@@ -6,7 +6,7 @@ class Post extends Metainfo{
     public $postable_type = null;
     public $via           = null;
 
-    public function __construct($id,$identity,$content, $postable_id,$postable_type,$via) {
+    public function __construct($id, $identity, $content, $postable_id, $postable_type, $via = '') {
         parent::__construct($id,"Post");
 
         $this->by_identity = $identity;
