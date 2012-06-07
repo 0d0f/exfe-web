@@ -246,9 +246,8 @@ class XActions extends ActionController
         $hlpCheck      = $this->getHelperByName('check');
         $hlpLog        = $this->getHelperByName('log');
 
-        $identity_id = 0;
-        $base62_cross_id = $_GET['id'];
-        $cross_id = base62_to_int($base62_cross_id);
+        $identity_id   = 0;
+        $cross_id      = intval($_GET['id']);
         $token = exGet('token');
 
         //如果是通过Token进来，且已经登录，则Session要过期。
@@ -268,8 +267,8 @@ class XActions extends ActionController
 
         $check = $hlpCheck->isAllow('x', 'index', array('cross_id' => $cross_id, 'token' => $token));
         if ($check['allow'] === 'false') {
-            $referer_uri = SITE_URL . "/!{$base62_cross_id}";
-            header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$base62_cross_id}");
+            $referer_uri = SITE_URL . "/!{$cross_id}";
+            header('Location: /x/forbidden?s=' . urlencode($referer_uri) . "&x={$cross_id}");
             exit(0);
         }
         if ($check['type'] === 'token') {
