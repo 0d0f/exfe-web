@@ -627,6 +627,18 @@ define(function (require, exports, module) {
 
     });
 
+    // 身份验证
+    /*
+    $BODY.on('click.profile.identity', '.xbtn-reverify', function (e) {
+      var identity_id = $(this).parents('li').data('identity-id');
+      var user = Store.get('user');
+      var identity = R.filter(user.identities, function (v, i) {
+        if (v.id === identity_id) return true;
+      })[0];
+      $(this).data('source', identity);
+    });
+    */
+
     // 添加身份
     $BODY.on('click.profile.identity', '.xbtn-addidentity', function (e) {
     });

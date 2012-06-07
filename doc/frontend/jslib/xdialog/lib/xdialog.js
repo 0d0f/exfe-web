@@ -1,5 +1,6 @@
   define(function (require, exports, module) {
   var $ = require('jquery');
+  var R = require('rex');
   var Bus = require('bus');
   var Api = require('api');
   var Util = require('util');
@@ -439,7 +440,6 @@
 
       onShowBefore: function () {
         var user = Store.get('user');
-        console.dir(user);
         this.$('#cp-fullname').val(user.name);
       },
 
@@ -631,7 +631,66 @@
 
   };
 
-  //
+  // emial Verification
+  dialogs.verification_email = {
+
+    options: {
+
+      events: {
+
+        'click .xbtn-cancel': function (e) {
+          var $e = this.element;
+          this.offSrcNode();
+          this.destory();
+          $e.remove();
+        }
+
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        //class
+        cls: 'mblack modal-ve',
+
+        title: 'Verification',
+
+        body: ''
+          + '<div class="shadow title">Identity Verification</div>'
+          + '<div>Identity to verify:</div>'
+          + '<div class="pull-right user-identity">'
+            + '<img class="avatar" src="" alt="" width="40" height="40">'
+            + '<i class="provider icon-user"></i>'
+          + '</div>'
+          + '<div class="identity disabled"></div>'
+          + '<p class="hide">Confirm sending verification to your mailbox? It should arrive in minutes.</p>'
+          + '<p class="hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam. Or try ‘Manual Verification’.</p>',
+
+        footer: ''
+          + '<button href="#" class="xbtn-white">Manual Verification</button>'
+          + '<button class="pull-right xbtn-blue">Verify</button>'
+          + '<a class="pull-right xbtn-cancel">Cancel</a>'
+
+      },
+
+      onShowBefore: function (e) {
+        var $e = $(e.currentTarget);
+        var identity_id = $e.parents('li').data('identity-id');
+        var user = Store.get('user');
+        var identity = R.filter(user.identities, function (v, i) {
+          if (v.id === identity_id) return true;
+        })[0];
+
+        this.$('.identity').text(identity.external_id);
+        this.$('.avatar').attr('src', identity.avatar_filename);
+      }
+
+    }
+
+  };
+
+  // twitter Verification
   dialogs.verification_twitter = {
   }
 
