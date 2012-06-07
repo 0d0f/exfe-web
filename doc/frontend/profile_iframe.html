@@ -107,7 +107,7 @@
     <span class="xlabel hide">
       <i class="icon-warning-sign"></i>
       <span>Authorization failed.</span>
-      <button class="xbtn xbtn-reauthorize">Re-Authorize</button>
+      <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter">Re-Authorize</button>
     </span>
     {{/ifOauthVerifying}}
     {{#ifVerifying provider status}}
@@ -152,7 +152,7 @@
   </script>
   <script id="jst-cross-box" type="text/x-handlebars-template">
   <div class="cross-box">
-  <a href="/!{{id_base62}}" data-id={{id}} data-exfeeid="{{exfee.id}}" title="">
+  <a href="/!{{id}}" data-id={{id}} data-exfeeid="{{exfee.id}}">
     <h5>{{title}}</h5>
     <time>{{printTime time}}</time>
     <address>{{place.title}} 
@@ -174,7 +174,7 @@
     <div class="cross-list">
       {{#crosses}}
       <div class="cross-box">
-        <a href="/!{{crossItem "id_base62"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid={{crossItem "invitationid"}} data-id={{crossItem "id"}} title="">
+        <a href="/!{{crossItem "id"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}">
           <h5>{{crossItem "title"}}</h5>
           <div>{{printTime2 "time"}}{{#ifPlace}} <span class="gray">at</span> {{crossItem "place"}}{{/ifPlace}} <span class="gray">by</span> {{by_identity.name}}</div>
           <div class="xbtn xbtn-accept">Accept</div>
@@ -191,7 +191,7 @@
     <div class="cross-list">
       {{#updates}}
       <div class="cross-box">
-          <a href="/!{{crossItem "id_base62"}}" data-id="{{crossItem "id"}}" title="">
+          <a href="/!{{crossItem "id"}}" data-id="{{crossItem "id"}}">
         <time class="pull-right">{{humanTime updated_at}}</time>
           <h5>{{crossItem "title"}}</h5>
           <div data-postid="{{id}}"><span class="blue">{{by_identity.name}}</span>:

@@ -172,7 +172,7 @@ define(function (require) {
               } else {
                 s = '<li>'
               }
-              s += '<a data-id="' + this.id + '" href="/!' + this.id_base62 + '">' + this.title + '</a>'
+              s += '<a data-id="' + this.id + '" href="/!' + this.id + '">' + this.title + '</a>'
                   + '</li>';
               return s;
             });
