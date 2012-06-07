@@ -692,6 +692,61 @@
 
   // twitter Verification
   dialogs.verification_twitter = {
+
+    options: {
+
+      events: {
+
+        'click .xbtn-cancel': function (e) {
+          var $e = this.element;
+          this.offSrcNode();
+          this.destory();
+          $e.remove();
+        }
+
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        //class
+        cls: 'mblack modal-ve',
+
+        title: 'Verification',
+
+        body: ''
+          + '<div class="shadow title">Identity Verification</div>'
+          + '<div>Identity to verify:</div>'
+          + '<div class="pull-right user-identity">'
+            + '<img class="avatar" src="" alt="" width="40" height="40">'
+            + '<i class="provider icon-user"></i>'
+          + '</div>'
+          + '<div class="identity disabled"></div>'
+          + '<p>You will be directed to Twitter website to authorize <span class="x-sign">EXFE</span>. Don’t forget to follow @<span class="">EXFE</span>, it’s necessary for smooth service integration.</p>'
+          + '<p>We hate spam, will NEVER disappoint your trust.</p>',
+
+        footer: ''
+          + '<button href="#" class="xbtn-white">Manual Verification</button>'
+          + '<button class="pull-right xbtn-blue">Verify</button>'
+          + '<a class="pull-right xbtn-cancel">Cancel</a>'
+
+      },
+
+      onShowBefore: function (e) {
+        var $e = $(e.currentTarget);
+        var identity_id = $e.parents('li').data('identity-id');
+        var user = Store.get('user');
+        var identity = R.filter(user.identities, function (v, i) {
+          if (v.id === identity_id) return true;
+        })[0];
+
+        this.$('.identity').text(identity.external_id);
+        this.$('.avatar').attr('src', identity.avatar_filename);
+      }
+
+    }
+
   }
 
   dialogs.setpassword = {
