@@ -439,6 +439,7 @@
 
       onShowBefore: function () {
         var user = Store.get('user');
+        console.dir(user);
         this.$('#cp-fullname').val(user.name);
       },
 
