@@ -9,6 +9,7 @@ define(function (require) {
   var Handlebars = require('handlebars');
 
   var userpanels = {
+    // new identity
     '1': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
@@ -29,6 +30,7 @@ define(function (require) {
         + '</div>'
       + '</div>',
 
+    // new identity & merge
     '2': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
@@ -47,10 +49,10 @@ define(function (require) {
             + '<a href="#">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
           + '</div>'
           + '<div class="spliterline"></div>'
-          + '<div class="merge">'
+          + '<div class="merge hide">'
             + '<a href="#">Merge</a> with your currently signed in identities:'
           + '</div>'
-          + '<div class="identity">'
+          + '<div class="identity hide">'
             + '<span class="pull-right avatar">'
               + '<img width="20" height="20" alt="" src="/img/users/u1x20.png">'
             + '</span>'
@@ -63,6 +65,7 @@ define(function (require) {
         + '</div>'
       + '</div>',
 
+    // signin
     '3': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
@@ -112,11 +115,16 @@ define(function (require) {
   Bus.on('app:userpanel', function (d) {
     var action_status = d.action_status;
 
-    var s = Handlebars.compile(userpanels[action_status]);
+    var s = Handlebars.compile(userpanels[3]);
 
-    $(s(d.d1.response.user)).appendTo($('div.dropdown-wrapper'))
+    var duser;
 
-    if (d.action_status === 3) {
+    if (d.d1.response) duser = d.d1.response.user;
+    else if (d.d1 instanceof Array) duser = d.d1[0].response.user;
+
+    $(s(duser)).appendTo($('div.dropdown-wrapper'))
+
+    //if (d.action_status === 3) {
       var signin = Store.get('signin');
       var user_id = signin.user_id;
       Api.request('crosslist'
@@ -133,6 +141,24 @@ define(function (require) {
             var now = +new Date();
             var ne = now + 3 * 60 * 60 * 1000;
             var n24 = now - 24 * 60 * 60 * 1000;
+            var l = 5;
+            var cs = {
+              crosses: []
+            };
+
+            R.map(crosses, function (v, i) {
+              if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
+                var t = R.filter(v.exfee.invitations, function (v2, j) {
+                  if (v2.rsvp_status === 'ACCEPTED' && v2.identity.connected_user_id === user_id) return true;
+                });
+                if (t.length) {
+                  cs.crosses.push(v);
+                }
+              }
+            });
+
+            cs.crosses = cs.crosses.slice(0, l);
+
             Handlebars.registerHelper('alink', function (ctx) {
               var s = '';
               var beginAt = ctx.time.begin_at;
@@ -150,20 +176,23 @@ define(function (require) {
                   + '</li>';
               return s;
             });
-            var s = '<div>Upcoming:</div>'
-              + '<ul class="crosses">'
-              + '{{#each crosses}}'
-                + '{{{alink this}}}'
-              + '{{/each}}'
-              + '</ul>';
+
+            var s = '{{#if crosses}}'
+                + '<div>Upcoming:</div>'
+                + '<ul class="crosses">'
+                + '{{#each crosses}}'
+                  + '{{{alink this}}}'
+                + '{{/each}}'
+                + '</ul>'
+              + '{{/if}}';
 
             var as = Handlebars.compile(s);
-            $('.user-panel .body').html(as({crosses: crosses}));
+            $('.user-panel .body').html(as(cs));
           }
 
         }
       );
-    }
+    //}
 
   });
 
@@ -171,12 +200,12 @@ define(function (require) {
     // 不是 Profile 自动跳转
     // 暂时 从 index 调整到 profile.html
     if (/^\/$/.test(window.location.pathname)) {
-      window.location = '/profile.html';
+      window.location = '/profile';
       return;
     }
 
     d.dfd.then(function (a1, a2) {
-      Bus.emit('app:signinsuccess', a1.response);
+      Bus.emit('app:signinsuccess', a1);
       var SIGN_IN_OTHERS = 'app:signinothers';
       Bus.emit(SIGN_IN_OTHERS, d.dfd);
       Bus.emit('app:userpanel', {action_status: d.action_status, d1: a1, d2: a2});
@@ -233,7 +262,7 @@ define(function (require) {
         }
         , function (data) {
           var ds = [];
-          if (tokens.length === 1) {
+          if (tokens.length) {
             var token = tokens[0];
 
             if (token in data.statuses && !data.statuses[token]) {
@@ -277,11 +306,12 @@ define(function (require) {
             }
           }
 
-        dfd = dfd.apply(null, ds);
-        dfd.done(function (a1, a2) {
-          Bus.emit(channel, {dfd: dfd, action_status: action_status});
-        });
-      });
+          dfd = dfd.apply(null, ds);
+          dfd.done(function (a1, a2) {
+            Bus.emit(channel, {dfd: dfd, action_status: action_status});
+          });
+        }
+      );
 
     } else {
       channel = NO_SIGN_IN;
@@ -351,7 +381,7 @@ define(function (require) {
     // 兼容 iframe
     var isIframe = !(parent === window);
     var domain = /domain=([^&]+)/.exec(decodeURIComponent(window.location.search));
-    domain = (domain && domain[1]) || ''
+    domain = (domain && domain[1]) || '';
     $BODY.on('click', '#js-xgather', function (e) {
       e.preventDefault();
       // 兼容 iframe

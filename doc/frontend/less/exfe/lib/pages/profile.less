@@ -304,10 +304,10 @@
         border: 1px solid rgba(0,0,0,0);
         color: #424242;
         text-decoration: none;
-      }
 
-      > a:hover {
-        border: 1px dashed #d5d5d5;
+        &:hover {
+          border: 1px dashed #d5d5d5;
+        }
       }
     }
 
@@ -340,7 +340,10 @@
         .text-overflow;
       }
 
+      // http://stackoverflow.com/questions/9691416/css-link-hover-not-working-in-chrome-and-safari
       > a:hover {
+        display: block;
+        text-align: left;
         padding-right: 80px;
 
         .xbtn-accept {
