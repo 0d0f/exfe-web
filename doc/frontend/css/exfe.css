@@ -7381,7 +7381,9 @@ a.badge:hover {
 }
 
 .invitations .cross-box > a:hover {
+  display: block;
   padding-right: 80px;
+  text-align: left;
 }
 
 .invitations .cross-box > a:hover .xbtn-accept {
