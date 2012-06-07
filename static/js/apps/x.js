@@ -192,22 +192,28 @@ var moduleNameSpace = 'odof.x.render',
     ns.sortConversationAndHistory = function () {
         var tmpData = [].concat(crossData.history),
             i = 0, ccl = crossData.conversation.length,
-            j = 0, cco = null, cho = null, ccot, chot;
-        for (; i < ccl; i++) {
-            cco = crossData.conversation[i];
-            ccot = (+odof.util.getDateFromString(cco.created_at))/1000;
+            j = 0, cco = null, cho = null, ccot, chot,
+            tl = tmpData.length;
 
-            while ((cho = tmpData[j])) {
-                chot = (+odof.util.getDateFromString(cho.time || cho.created_at))/1000;
-                if (ccot >= chot) {
-                    tmpData.splice(j++, 0, cco);
-                    break;
-                }
-                if (++j === tmpData.length) {
-                    tmpData.splice(j, 0, cco);
-                    break;
-                }
-            }
+        if (tl) {
+          for (; i < ccl; i++) {
+              cco = crossData.conversation[i];
+              ccot = (+odof.util.getDateFromString(cco.created_at))/1000;
+
+              while ((cho = tmpData[j])) {
+                  chot = (+odof.util.getDateFromString(cho.time || cho.created_at))/1000;
+                  if (ccot >= chot) {
+                      tmpData.splice(j++, 0, cco);
+                      break;
+                  }
+                  if (++j === tmpData.length) {
+                      tmpData.splice(j, 0, cco);
+                      break;
+                  }
+              }
+          }
+        } else {
+          tmpData = crossData.conversation;
         }
         return tmpData;
     };

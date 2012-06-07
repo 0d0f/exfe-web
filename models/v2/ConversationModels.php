@@ -22,7 +22,7 @@ class ConversationModels extends DataModel {
         $cross_updated["conversation"]=$updated;
         saveUpdate($cross_id,$cross_updated);
 
-        $sql="insert into posts (identity_id,content,postable_id,postable_type,created_at) values ({$post->by_identity_id},'{$post->content}',{$post->postable_id},'{$post->postable_type}',NOW());";
+        $sql="insert into posts (identity_id,content,postable_id,postable_type,created_at,updated_at) values ({$post->by_identity_id},'{$post->content}',{$post->postable_id},'{$post->postable_type}',NOW(),NOW());";
         $result   = $this->query($sql);
         $post_id = intval($result['insert_id']);
         return $post_id;
