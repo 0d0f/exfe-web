@@ -63,7 +63,7 @@ define(function (require, exports, module) {
     var b = time.begin_at;
 
     // Cross 时区
-    var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
+    var tz = /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1];
     // 创建一个 moment date-object
     var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
 
@@ -77,8 +77,8 @@ define(function (require, exports, module) {
       s = time.origin;
       if (!czEtz) {
         s += ' ' + tz;
-        return s;
       }
+      return s;
     } else {
 
       if (b.time_word) {
@@ -103,13 +103,44 @@ define(function (require, exports, module) {
     }
 
     return d.calendar();
-    return s;
+    //return s;
   });
 
   // Invitations print time
   Handlebars.registerHelper('printTime2', function (time, options) {
     time  = Handlebars.helpers['crossItem'].call(this, time, options);
-    return Handlebars.helpers['printTime'].call(this, time, options);
+
+    // 终端时区
+    var c = Moment();
+    var cz = c.format('Z');
+    var b = time.begin_at;
+
+    // Cross 时区
+    var tz = /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1];
+    // 创建一个 moment date-object
+    var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
+
+    var s = '', f = '';
+
+    // 比对时区
+    var czEtz = cz === tz;
+
+    if (time.outputformat) {
+      s = time.origin;
+      if (!czEtz) {
+        s += ' ' + tz;
+      }
+      return s;
+    } else {
+      if (b.time !== '00:00:00') {
+        f += 'hA ';
+      }
+      if (b.date) {
+        f += 'ddd MMM D';
+      }
+
+      return d.format(f);
+    }
   });
 
   // Updates print time
@@ -158,8 +189,13 @@ define(function (require, exports, module) {
   // 用户信息,包括多身份信息
   var identities_defe = function (data) {
     if (!data) return;
-    var user = data.user;
-    Store.set('user', data.user);
+
+    var user;
+
+    if (data.response) user = data.response.user;
+    else if (data instanceof Array) user = data[0].response.user;
+
+    Store.set('user', user);
 
     $('.user-xstats .attended').html(user.cross_quantity);
     $('#user-name > span').html(user.name);
@@ -300,7 +336,7 @@ define(function (require, exports, module) {
 
                 R.each(v.exfee.invitations, function (e, j) {
                   identities_KV[e.id] = [i,j];
-                  if (user_id == e.identity.connected_user_id && e.rsvp_status === 'NORESPONSE') {
+                  if (user_id === e.identity.connected_user_id && e.rsvp_status === 'NORESPONSE') {
                     e.__crossIndex = i;
                     e.__identityIndex = j;
                     invitations.push(e);
@@ -438,7 +474,7 @@ define(function (require, exports, module) {
   $(function () {
 
     $BODY.on('hover.profile', '.identity-list > li', function (e) {
-      $(this).find('i.icon-minus-sign').toggleClass('hide');
+      //$(this).find('i.icon-minus-sign').toggleClass('hide');
     });
 
     // removed identity

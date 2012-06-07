@@ -49,10 +49,10 @@ define(function (require) {
             + '<a href="#">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
           + '</div>'
           + '<div class="spliterline"></div>'
-          + '<div class="merge">'
+          + '<div class="merge hide">'
             + '<a href="#">Merge</a> with your currently signed in identities:'
           + '</div>'
-          + '<div class="identity">'
+          + '<div class="identity hide">'
             + '<span class="pull-right avatar">'
               + '<img width="20" height="20" alt="" src="/img/users/u1x20.png">'
             + '</span>'
@@ -115,11 +115,16 @@ define(function (require) {
   Bus.on('app:userpanel', function (d) {
     var action_status = d.action_status;
 
-    var s = Handlebars.compile(userpanels[action_status]);
+    var s = Handlebars.compile(userpanels[3]);
 
-    $(s(d.d1.response.user)).appendTo($('div.dropdown-wrapper'))
+    var duser;
 
-    if (d.action_status === 3) {
+    if (d.d1.response) duser = d.d1.response.user;
+    else if (d.d1 instanceof Array) duser = d.d1[0].response.user;
+
+    $(s(duser)).appendTo($('div.dropdown-wrapper'))
+
+    //if (d.action_status === 3) {
       var signin = Store.get('signin');
       var user_id = signin.user_id;
       Api.request('crosslist'
@@ -187,7 +192,7 @@ define(function (require) {
 
         }
       );
-    }
+    //}
 
   });
 
@@ -200,7 +205,7 @@ define(function (require) {
     }
 
     d.dfd.then(function (a1, a2) {
-      Bus.emit('app:signinsuccess', a1.response);
+      Bus.emit('app:signinsuccess', a1);
       var SIGN_IN_OTHERS = 'app:signinothers';
       Bus.emit(SIGN_IN_OTHERS, d.dfd);
       Bus.emit('app:userpanel', {action_status: d.action_status, d1: a1, d2: a2});
