@@ -408,6 +408,9 @@
           Api.request('setPassword'
             , {
               type: 'POST',
+              resources: {
+                user_id: user_id
+              },
               data: {
                 current_password: cppwd,
                 new_password: cpnpwd
