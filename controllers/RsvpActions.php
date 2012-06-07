@@ -115,7 +115,6 @@ class RSVPActions extends ActionController {
     public function doYES()
     {
         $cross_id=intval($_GET["id"]);
-        $cross_id_base62=int_to_base62($cross_id);
         $token=$_GET["token"];
         $state=INVITATION_YES;
 
@@ -137,9 +136,9 @@ class RSVPActions extends ActionController {
         }
 
        if($token!="")
-           header( "Location: /!$cross_id_base62?token=$token" ) ;
+           header( "Location: /!$cross_id?token=$token" ) ;
        else
-           header( "Location: /!$cross_id_base62" ) ;
+           header( "Location: /!$cross_id" ) ;
 
        exit(0);
     }
@@ -148,7 +147,6 @@ class RSVPActions extends ActionController {
     {
 
         $cross_id=intval($_GET["id"]);
-        $cross_id_base62=int_to_base62($cross_id);
         $token=$_GET["token"];
         $state=INVITATION_NO;
 
@@ -165,9 +163,9 @@ class RSVPActions extends ActionController {
         }
 
         if ($token != '') {
-            header( "Location: /!$cross_id_base62?token=$token" ) ;
+            header( "Location: /!$cross_id?token=$token" ) ;
         } else {
-            header( "Location: /!$cross_id_base62" ) ;
+            header( "Location: /!$cross_id" ) ;
         }
 
         exit(0);
@@ -176,7 +174,6 @@ class RSVPActions extends ActionController {
     public function doMaybe()
     {
         $cross_id=intval($_GET["id"]);
-        $cross_id_base62=int_to_base62($cross_id);
         $token=$_GET["token"];
         $state=INVITATION_MAYBE;
 
@@ -197,30 +194,12 @@ class RSVPActions extends ActionController {
         }
 
         if ($token != '') {
-            header( "Location: /!$cross_id_base62?token=$token" ) ;
+            header( "Location: /!$cross_id?token=$token" ) ;
         } else {
-            header( "Location: /!$cross_id_base62" ) ;
+            header( "Location: /!$cross_id" ) ;
         }
 
         exit(0);
-
-        #$cross_id=intval($_GET["id"]);
-        #$token=$_GET["token"];
-
-        #$identity_id=$this->checkallow($cross_id,$token);
-
-        #if(intval($identity_id)>0)
-        #{
-        #    $state=INVITATION_MAYBE;
-        #    $invitationData=$this->getModelByName("Invitation");
-        #    $invitationData->rsvp($cross_id,$identity_id,$state);
-        #    $cross_id_base62=int_to_base62($cross_id);
-        #    if($token!="")
-        #        header( "Location: /!$cross_id_base62?token=$token" ) ;
-        #    else
-        #        header( "Location: /!$cross_id_base62" ) ;
-        #}
-        #exit(0);
     }
 
     public function doAccept()
@@ -229,7 +208,7 @@ class RSVPActions extends ActionController {
 
         if (intval($_SESSION['userid']) > 0
          && ($identity_id = intval($_SESSION['identity_id'])) > 0
-         && ($cross_id = base62_to_int($_GET['xid']))
+         && ($cross_id = intval($_GET['xid']))
          && ($result = $invitationData->rsvp($cross_id, $identity_id, INVITATION_YES))
          &&  $result['success']) {
             header('Location: /s/profile');
