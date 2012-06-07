@@ -152,7 +152,6 @@ class LogHelper extends ActionController {
             $rawLogs[$logI]['x_time_type']   = $allCross[$rawLogs[$logI]['x_id']]['time_type'];
             $rawLogs[$logI]['x_place']       = $allCross[$rawLogs[$logI]['x_id']]['place'];
             $rawLogs[$logI]['log_id']        = intval($rawLogs[$logI]['id']);
-            $rawLogs[$logI]['x_base62id']    = int_to_base62($rawLogs[$logI]['x_id']);
             array_push($relatedIdentityIds, $rawLogs[$logI]['x_host_id']      = intval($allCross[$rawLogs[$logI]['x_id']]['host_id']));
             array_push($relatedIdentityIds, $rawLogs[$logI]['by_identity_id'] = $logItem['from_id']);
             unset($rawLogs[$logI]['id']);

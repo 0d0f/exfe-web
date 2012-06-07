@@ -514,7 +514,11 @@ class UserModels extends DataModel {
             array( 41,  95, 204),
         );
         $ftSize = 36;
-        $intHsh = base62_to_int(substr(md5($name), 0, 3));
+        $strHsh = md5($name);
+        $intHsh = 0;
+        for ($i = 0; $i < 3; $i++) {
+            $intHsh += ord(substr($strHsh, $i, 1));
+        }
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../../default_avatar_portrait/";

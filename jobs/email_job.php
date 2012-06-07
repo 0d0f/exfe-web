@@ -55,7 +55,7 @@ class Email_Job
             $mail["rsvp_accept"] = "<a style=\"float: left; display: block; text-decoration: none; border: 1px solid #bebebe; background-color: #add1dc; color: #000000; padding: 5px 30px 5px 30px; margin-left: 25px;\" alt=\"Accept\" href=\"{$rsvpyeslink}\">Accept</a>";
             $mail['check_it_out_style'] = 'margin-left: 15px;';
         }
-        $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id_base62'].'?token='.$this->args['token'];
+        $mail["exfe_link"]=$site_url.'/!'.$this->args['cross_id'].'?token='.$this->args['token'];
         $mail["host_avatar"]=getUserAvatar($host_avatar, 80);
         $invitations=$this->args["invitations"];
         $exfee_list="";
@@ -163,7 +163,7 @@ class Email_Job
             $mail_mime = new Mail_mime(array('eol' => "\n"));
             $mail_mime->setHTMLBody($body);
             if($attachment!="")
-                $mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
+                $mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id'].".ics",false);
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$args['cross_id'].'@exfe.com', 'Subject' => "$title"));

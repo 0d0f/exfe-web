@@ -55,7 +55,7 @@ class Templatemail_Job
 
             $mail_mime = new Mail_mime(array('eol' => "\n"));
             $mail_mime->setHTMLBody($body);
-            #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
+            #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id'].".ics",false);
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com', 'Subject' => "$title"));

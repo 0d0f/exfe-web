@@ -2,8 +2,7 @@
 class MuteActions extends ActionController {
     public function doX()
     {
-        $cross_id_base62 = $_GET["id"];
-        $cross_id = base62_to_int($cross_id_base62);
+        $cross_id = intval($_GET["id"]);
 
         $success=FALSE;
         $identity_id=$_SESSION["identity_id"];
