@@ -1,7 +1,6 @@
 <?php
 class Cross extends Metainfo {
 
-    public $id_base62     = null;
     public $title         = null;
     public $description   = null;
     public $time          = null;
@@ -23,14 +22,9 @@ class Cross extends Metainfo {
         $this->exfee=$exfee;
     }
 
-    public function base62Id($id) {
-        return int_to_base62($id);
-    }
-
     public function __construct($id, $title, $description, $host_identity,$attribute, $exfee, $widget=array(),$time="", $place="" ) {
         parent::__construct($id,"Cross");
         $this->setExfee($exfee);
-        $this->id_base62 = $id ? $this->base62Id($id) : '';
         $this->host_identity=$host_identity;
 
         $this->attribute = $attribute;

@@ -80,9 +80,9 @@ class XHelper extends ActionController {
 
         $this->updateXChange($cross_id,$host_identity_id,$changed);
 
-        $link=SITE_URL.'/!'.int_to_base62($cross_id);
+        $link=SITE_URL.'/!'.$cross_id;
         $mail["link"]=$link;
-        $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
+        $mutelink=SITE_URL.'/mute/x?id='.$cross_id;
         $mail["id"]=$cross_id;
         $mail["action"]="changed";
         $mail["objtype"]="cross";
@@ -129,9 +129,9 @@ class XHelper extends ActionController {
         $exfee_identity=$identityData->getIdentityById($action_identity_id);
         $exfee_identity=humanIdentity($exfee_identity,NULL);
 
-        $link=SITE_URL.'/!'.int_to_base62($cross_id);
+        $link=SITE_URL.'/!'.$cross_id;
         $mail["link"]=$link;
-        $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
+        $mutelink=SITE_URL.'/mute/x?id='.$cross_id;
         $mail["id"]=$cross_id;
         $mail["action"]="changed";
         $mail["objtype"]="identity";
