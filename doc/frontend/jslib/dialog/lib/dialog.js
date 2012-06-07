@@ -62,6 +62,7 @@ define('dialog', [], function (require, exports, module) {
       var data;
 
       this.parentNode = this.options.parentNode;
+      this.srcNode = this.options.srcNode;
 
       if ((data = this.options.viewData)) {
         var title = data.title
