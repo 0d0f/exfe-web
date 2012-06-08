@@ -29,7 +29,7 @@ class UserModels extends DataModel {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
-            $rawUser['avatar_file_name'] = getAvatarUrl('', '', $rawUser['avatar_file_name']);
+            $rawUser['avatar_file_name'] = $rawUser['avatar_file_name'] ? getAvatarUrl('', '', $rawUser['avatar_file_name']) : '';
             $user = new User(
                 $rawUser['id'],
                 $rawUser['name'],
