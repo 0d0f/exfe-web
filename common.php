@@ -428,7 +428,7 @@ function getUserAvatar($fileName, $avatarSize=80){
 }
 
 
-function getAvatarUrl($provider, $external_id, $raw_avatar, $size = 80, $spec_fallback = '') {
+function getAvatarUrl($provider = '', $external_id = '', $raw_avatar = '', $size = 80, $spec_fallback = '') {
     if ($raw_avatar) {
         $raw_avatar
       = preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
@@ -456,6 +456,7 @@ function autoLink($text) {
    return $text;
 }
 
+
 function cleanText($content)
 {
     $content=htmlspecialchars($content);
@@ -464,28 +465,6 @@ function cleanText($content)
 
 }
 
-/**
- * 正则替换文本中的URL
- * @param: string.
- * @return: string.
- */
-function ParseURL($str)
-{
-    return preg_replace(
-        array(
-            "/(?<=[^\]A-Za-z0-9-=\"'\\/])(https?|ftp|gopher|news|telnet|mms){1}:\/\/([A-Za-z0-9\/\-_+=.~!%@?#%&;:$\\()|]+)/is",
-            //"/([\n\s])www\.([a-z0-9\-]+)\.([A-Za-z0-9\/\-_+=.~!%@?#%&;:$\[\]\\()|]+)((?:[^\x7f-\xff,\s]*)?)/is",
-            "/([^\/\/])www\.([a-z0-9\-]+)\.([A-Za-z0-9\/\-_+=.~!%@?#%&;:$\[\]\\()|]+)((?:[^\x7f-\xff,\s]*)?)/is",
-            "/(?<=[^\]A-Za-z0-9\/\-_.~?=:.])([_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,4}))/si"
-        ),
-        array(
-            "<a href=\"\\1://\\2\" target=\"_blank\">\\1://\\2</a>",
-            "\\1<a href=\"http://www.\\2.\\3\\4\">[url]www.\\2.\\3\\4[/url]</a>",
-            "<a href=\"mailto:\\0\">\\0</a>"
-        ),
-        ' '.$str
-    );
-}
 
 /**
  * 简单的打包Array数组
