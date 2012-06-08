@@ -330,11 +330,15 @@ class ExfeeHelper extends ActionController {
                 }
                 $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                 $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
-
+                if (isset($userprofile['timezone']) && $userprofile['timezone']) {
+                    $timezone = $userprofile['timezone'];
+                } else {
+                    $timezone = $cross['timezone'];
+                }
                 $args = array(
                     'title' => $cross["title"],
                     'description' => $cross["description"],
-                    'begin_at' => humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
+                    'begin_at' => humanDateTime($cross["begin_at"], $timezone),
                     'time_type' => $cross["time_type"],
                     'place_line1' => $cross["place"]["line1"],
                     'place_line2' => $cross["place"]["line2"],
@@ -351,7 +355,7 @@ class ExfeeHelper extends ActionController {
                     'rsvp_status' => $invitation["state"],
                     'by_identity' => $by_identity,
                     'to_identity' => $to_identity,
-                    'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
+                    'to_identity_time_zone' => $timezone,
                     'invitations' => $invitations
                  );
 
