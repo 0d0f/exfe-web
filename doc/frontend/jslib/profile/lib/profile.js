@@ -433,7 +433,7 @@ define(function (require, exports, module) {
             var jst_invitations = $('#jst-invitations');
             var s = Handlebars.compile(jst_invitations.html());
             var h = s({crosses: invitations});
-            $('#profile .gr-b').append(h);
+            $('#profile .gr-b .invitations').removeClass('hide').append(h);
           }
 
           if (updatesAjax.length) {
@@ -452,11 +452,29 @@ define(function (require, exports, module) {
 
   };
 
+  // 加载新手引导
+  var newbieGuide = function (data) {
+    var cross_nums = +$('.user-xstats > .attended').text();
+
+    // test
+    //Store.set('newbie_guide', 0);
+    var newbie_status = Store.get('newbie_guide');
+
+    if (!newbie_status && cross_nums <= 3) {
+      var s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.src = '/jslib/newbieguide/lib/newbieguide.js'
+      var body = document.body;
+      body.appendChild(s);
+    }
+  }
+
   // Defer Queue
   // 可以登陆状态
   var SIGN_IN_OTHERS = 'app:signinothers';
   Bus.on(SIGN_IN_OTHERS, function (d) {
-    d.then([crossList_defe, crosses_defe]);
+    d.then([crossList_defe, crosses_defe, newbieGuide]);
   });
   var SIGN_IN_SUCCESS = 'app:signinsuccess';
   Bus.on(SIGN_IN_SUCCESS, function (data) {

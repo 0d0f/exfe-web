@@ -7418,3 +7418,213 @@ a.badge:hover {
 .updates h3 {
   color: #797979;
 }
+
+.newbie {
+  position: relative;
+  z-index: 1000;
+  font-weight: 300;
+  word-spacing: -1px;
+  color: #b2b2b2;
+  background: #EFF6F9;
+  border: 1px dashed #b2b2b2;
+}
+
+.newbie.nbg-0 {
+  position: absolute;
+  z-index: 1001;
+  padding: 10px 20px 10px 10px;
+  margin-top: -6px;
+  margin-left: -200px;
+  font-size: 24px;
+  border-right: none;
+}
+
+.newbie.nbg-0 .keyframes-bounce 0% {
+  margin-left: -200px;
+}
+
+.newbie.nbg-0 .keyframes-bounce 50% {
+  margin-left: -206px;
+}
+
+.newbie.nbg-0 .keyframes-bounce 100% {
+  margin-left: -200px;
+}
+
+@-webkit-keyframes bounce {
+  0% {
+    margin-left: -200px;
+  }
+  50% {
+    margin-left: -206px;
+  }
+  100% {
+    margin-left: -200px;
+  }
+}
+
+@-moz-keyframes bounce {
+  0% {
+    margin-left: -200px;
+  }
+  50% {
+    margin-left: -206px;
+  }
+  100% {
+    margin-left: -200px;
+  }
+}
+
+@-ms-keyframes bounce {
+  0% {
+    margin-left: -200px;
+  }
+  50% {
+    margin-left: -206px;
+  }
+  100% {
+    margin-left: -200px;
+  }
+}
+
+@-o-keyframes bounce {
+  0% {
+    margin-left: -200px;
+  }
+  50% {
+    margin-left: -206px;
+  }
+  100% {
+    margin-left: -200px;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    margin-left: -200px;
+  }
+  50% {
+    margin-left: -206px;
+  }
+  100% {
+    margin-left: -200px;
+  }
+}
+
+.newbie.nbg-0.bouncey {
+  -webkit-animation-duration: 700ms;
+     -moz-animation-duration: 700ms;
+      -ms-animation-duration: 700ms;
+       -o-animation-duration: 700ms;
+          animation-duration: 700ms;
+  -webkit-animation-iteration-count: 3 /*infinite*/;
+     -moz-animation-iteration-count: 3 /*infinite*/;
+      -ms-animation-iteration-count: 3 /*infinite*/;
+       -o-animation-iteration-count: 3 /*infinite*/;
+          animation-iteration-count: 3 /*infinite*/;
+  -webkit-animation-name: bounce;
+     -moz-animation-name: bounce;
+      -ms-animation-name: bounce;
+       -o-animation-name: bounce;
+          animation-name: bounce;
+  -webkit-transition-timing-function: ease-in-out;
+     -moz-transition-timing-function: ease-in-out;
+      -ms-transition-timing-function: ease-in-out;
+       -o-transition-timing-function: ease-in-out;
+          transition-timing-function: ease-in-out;
+  -o-animation-direction: alternate;
+     animation-direction: alternate;
+  -webkit-animation-direction: alternate;
+      -ms-animation-direction: alternate;
+     -moz-animation-direction: alternate;
+}
+
+.newbie.nbg-0:before {
+  position: absolute;
+  top: 5px;
+  right: -18px;
+  width: 29.29px;
+  height: 29.29px;
+  padding-right: 0;
+  background: #EFF6F9;
+  border-right: 1px dashed #b2b2b2;
+  border-bottom: 1px dashed #b2b2b2;
+  content: '';
+  -webkit-transform: rotate(-45deg);
+     -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+       -o-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+
+.newbie.nbg-1 {
+  width: 564px;
+  padding: 10px;
+  margin-top: -70px;
+  margin-left: 135px;
+}
+
+.newbie.nbg-2 {
+  width: 300px;
+  padding: 15px 0 17px;
+  margin: 7px auto 0;
+  text-align: center;
+}
+
+.newbie.nbg-2 h4 {
+  padding-bottom: 15px;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.newbie.nbg-2 .gatherax {
+  cursor: pointer;
+}
+
+.newbie.nbg-2 .bb {
+  font-size: 24px;
+  text-decoration: underline;
+}
+
+.newbie.nbg-2 .bb.x-sign {
+  text-decoration: underline;
+}
+
+.newbie.nbg-3 {
+  width: 260px;
+  padding-top: 15px;
+  margin: 7px auto 15px;
+  text-align: center;
+}
+
+.newbie.nbg-3 p {
+  padding-bottom: 15px;
+  margin: 0;
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.newbie .rb {
+  width: 0;
+  height: 0;
+  margin-right: -8px;
+  cursor: pointer;
+  border-bottom: 8px solid #b2b2b2;
+  border-left: 8px solid transparent;
+}
+
+.newbie-close {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 14px;
+  font-size: 10px;
+  line-height: 14px;
+  color: #fbfbfb;
+  text-align: center;
+  cursor: pointer;
+  background: #e6e6e6;
+  -webkit-border-radius: 7px;
+     -moz-border-radius: 7px;
+          border-radius: 7px;
+}
