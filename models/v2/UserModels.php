@@ -29,6 +29,7 @@ class UserModels extends DataModel {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
+            $rawUser['avatar_file_name'] = $rawUser['avatar_file_name'] ? getAvatarUrl('', '', $rawUser['avatar_file_name']) : '';
             $user = new User(
                 $rawUser['id'],
                 $rawUser['name'],
@@ -88,8 +89,8 @@ class UserModels extends DataModel {
                         );
                         $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
-                    if (!$rawUser['avatar_file_name']) {
-                        $rawUser['avatar_file_name'] = $user->default_identity->avatar_filename;
+                    if (!$user->avatar_filename) {
+                        $user->avatar_filename = $user->default_identity->avatar_filename;
                     }
                 }
             }
@@ -514,7 +515,11 @@ class UserModels extends DataModel {
             array( 41,  95, 204),
         );
         $ftSize = 36;
-        $intHsh = base62_to_int(substr(md5($name), 0, 3));
+        $strHsh = md5($name);
+        $intHsh = 0;
+        for ($i = 0; $i < 3; $i++) {
+            $intHsh += ord(substr($strHsh, $i, 1));
+        }
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../../default_avatar_portrait/";
