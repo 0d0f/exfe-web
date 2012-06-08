@@ -16,16 +16,7 @@ class AvatarActions extends ActionController {
          && $modUser->getUserAvatarByProviderAndExternalId($params['provider'], $params['external_id'])) {
 			return;
         }
-        $curDir  = dirname(__FILE__);
-        $image   = ImageCreateFromPNG("{$curDir}/../../../eimgs/web/80_80_default.png");
-        imagealphablending($image, true);
-        imagesavealpha($image, true);
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
-        imagepng($image);
-        imagedestroy($image);
+        $modUser->makeDefaultAvatar($params['external_id']);
 	}
 
 
