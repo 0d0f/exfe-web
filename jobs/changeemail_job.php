@@ -149,7 +149,7 @@ class Changeemail_Job
                 $name="";
                 $mutelink="";
                 $link="";
-                $cross_id_base62="";
+                $cross_id="";
                 foreach($posts as $post)
                 {
                     if($post["identity"]["external_identity"]!=$external_identity)
@@ -164,7 +164,7 @@ class Changeemail_Job
                         $avartar=getUserAvatar($avatar_file_name, 80);
                   //      $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img  class='exfe_mail_avatar' src='".$avartar."'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
                         $html.="<tr> <td valign='top' width='50' height='60' align='left'> <img width='40' height='40' src='$avartar'> </td> <td valign='top'> <span class='exfe_mail_message'>$content</span> <br> <span class='exfe_mail_identity_name'>$name</span> <span class='exfe_mail_msg_at'>at</span> <span class='exfe_mail_msg_time'>$create_at</span> </td> </tr>";
-                        $cross_id_base62=$post["cross_id_base62"];
+                        $cross_id=$post["cross_id"];
                     }
                 }
                 $to_identity=$identity_post["to_identity"];
@@ -178,24 +178,24 @@ class Changeemail_Job
                 $mail["body"]=$mail_body;
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["to"]=$to_identity["external_identity"];
-                $mail["cross_id_base62"]=$cross_id_base62;
+                $mail["cross_id"]=$cross_id;
                 array_push($mails,$mail);
             }
         }
         return $mails;
     }
 
-    public function send($title,$body,$to,$cross_id_base62)
+    public function send($title,$body,$to,$cross_id)
     {
             global $email_connect;
             global $connect_count;
 
             $mail_mime = new Mail_mime(array('eol' => "\n"));
             $mail_mime->setHTMLBody($body);
-            #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
+            #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id'].".ics",false);
 
             $body = $mail_mime->get();
-            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id_base62.'@exfe.com', 'Subject' => "$title"));
+            $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id.'@exfe.com', 'Subject' => "$title"));
 
             $message = $headers . "\r\n" . $body;
 

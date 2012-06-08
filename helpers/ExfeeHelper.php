@@ -42,7 +42,7 @@ class ExfeeHelper extends ActionController {
                 $identity_id     = isset($exfeeItem['exfee_id'])         ? intval($exfeeItem['exfee_id'])  : null;
                 $identity_name   = isset($exfeeItem['exfee_name'])       ? $exfeeItem['exfee_name']        : null;
                 $identity_bio    = isset($exfeeItem['bio'])              ? $exfeeItem['bio']               : null;
-                $identity_avatar = isset($exfeeItem['avatar_file_name']) ? $exfeeItem['avatar_file_name']  : null;
+             // $identity_avatar = isset($exfeeItem['avatar_file_name']) ? $exfeeItem['avatar_file_name']  : null;
                 $confirmed       = isset($exfeeItem['confirmed'])        ? intval($exfeeItem['confirmed']) : 0;
                 $identity_type   = $exfeeItem['identity_type'];
 
@@ -182,7 +182,6 @@ class ExfeeHelper extends ActionController {
                     'place_line1' => $cross["place"]["line1"],
                     'place_line2' => $cross["place"]["line2"],
                     'cross_id' => $cross_id,
-                    'cross_id_base62' => int_to_base62($cross_id),
                     'invitation_id' => $invitation["invitation_id"],
                     'token' => $invitation["token"],
                     'identity_id' => $invitation["identity_id"],
@@ -216,8 +215,6 @@ class ExfeeHelper extends ActionController {
                                     'line1' => $args['place_line1'],
                                     'line2' => $args['place_line2'],
                                 ),
-                                'cross_id'        => intval($args['cross_id']),
-                                'cross_id_base62' => $args['cross_id_base62'],
                             ),
                             'invitation' => array(
                                 'invitation_id' => intval($args['invitation_id']),
@@ -333,16 +330,19 @@ class ExfeeHelper extends ActionController {
                 }
                 $to_identity=$identitydata->getIdentityById($invitation["identity_id"]);
                 $userprofile=$userData->getUserProfileByIdentityId($invitation["identity_id"]);
-
+                if (isset($userprofile['timezone']) && $userprofile['timezone']) {
+                    $timezone = $userprofile['timezone'];
+                } else {
+                    $timezone = $cross['timezone'];
+                }
                 $args = array(
                     'title' => $cross["title"],
                     'description' => $cross["description"],
-                    'begin_at' => humanDateTime($cross["begin_at"],$userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone']),
+                    'begin_at' => humanDateTime($cross["begin_at"], $timezone),
                     'time_type' => $cross["time_type"],
                     'place_line1' => $cross["place"]["line1"],
                     'place_line2' => $cross["place"]["line2"],
                     'cross_id' => $cross_id,
-                    'cross_id_base62' => int_to_base62($cross_id),
                     'invitation_id' => $invitation["invitation_id"],
                     'token' => $invitation["token"],
                     'identity_id' => $invitation["identity_id"],
@@ -355,7 +355,7 @@ class ExfeeHelper extends ActionController {
                     'rsvp_status' => $invitation["state"],
                     'by_identity' => $by_identity,
                     'to_identity' => $to_identity,
-                    'to_identity_time_zone' => $userprofile['timezone'] === '' ? $cross['timezone'] : $userprofile['timezone'],
+                    'to_identity_time_zone' => $timezone,
                     'invitations' => $invitations
                  );
 
@@ -377,7 +377,6 @@ class ExfeeHelper extends ActionController {
                                      'line2' => $args['place_line2'],
                                  ),
                                  'cross_id'        => intval($args['cross_id']),
-                                 'cross_id_base62' => $args['cross_id_base62'],
                              ),
                              'invitation' => array(
                                  'invitation_id' => intval($args['invitation_id']),
@@ -464,12 +463,11 @@ class ExfeeHelper extends ActionController {
         $mailargs=array();
         $apnargs=array();
 
-        $link=SITE_URL.'/!'.int_to_base62($cross_id);
-        $mutelink=SITE_URL.'/mute/x?id='.int_to_base62($cross_id);
+        $link=SITE_URL.'/!'.$cross_id;
+        $mutelink=SITE_URL.'/mute/x?id='.$cross_id;
         $mail["link"]=$link;
         $mail["cross_id"]=$cross_id;
         $mail["action"]="conversation";
-        $mail["cross_id_base62"]=int_to_base62($cross_id);
         $mail["mutelink"]=$mutelink;
         //$mail["template_name"]="conversation";
         $mail["action"]="post";
@@ -537,7 +535,6 @@ class ExfeeHelper extends ActionController {
                 'cross'         => array(
                     'title'           => $mail['title'],
                     'cross_id'        => $mail['cross_id'],
-                    'cross_id_base62' => $mail['cross_id_base62'],
                     'link'            => $mail['link'],
                     'mutelink'        => $mail['mutelink'],
                 ),

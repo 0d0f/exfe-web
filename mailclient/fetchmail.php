@@ -86,7 +86,6 @@ function dofetchandpost($obj)
             $date=$head["date"];
 
             $cross_id="";
-            #$cross_id_base62="";
             #$match_result=preg_match('/^x\+([0-9a-zA-Z]+)@exfe.com/',$to,$matches);
             #if($match_result==0)
             #    $match_result=preg_match('/<x\+([0-9a-zA-Z]+)@exfe.com>/',$to,$matches);

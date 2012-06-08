@@ -47,7 +47,7 @@ class XActions extends ActionController
                     );
 
                     if ($cross_id) {
-                        $result = array('success' => true, 'crossid' => int_to_base62($cross_id));
+                        $result = array('success' => true, 'crossid' => $cross_id);
                     } else {
                         $result = array('success' => false, 'error' => 'unknow');
                     }
@@ -101,7 +101,7 @@ class XActions extends ActionController
             $identity_id = $_SESSION["tokenIdentity"]["identity_id"];
         }
 
-        $cross_id = base62_to_int($_GET['id']);
+        $cross_id = intval($_GET['id']);
         $return_data = array('error' => 0, 'msg' => '');
 
         if (!$identity_id && !$_SESSION['tokenIdentity']) {
@@ -388,7 +388,6 @@ class XActions extends ActionController
         if($referer != ""){
             $referer = urldecode($referer);
         }
-        $cross_base62_id = exGet("x");
         $this->setVar('referer', $referer);
         $this->setVar('cross_id', $cross_id);
         $this->displayView();
