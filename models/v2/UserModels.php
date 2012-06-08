@@ -88,8 +88,8 @@ class UserModels extends DataModel {
                         );
                         $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
                     }
-                    if (!$user->avatar_file_name) {
-                        $user->avatar_file_name = $user->default_identity->avatar_filename;
+                    if (!$user->avatar_filename) {
+                        $user->avatar_filename = $user->default_identity->avatar_filename;
                     }
                 }
             }
