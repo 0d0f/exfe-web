@@ -12,8 +12,8 @@ window.addEventListener('message', function (e) {
   } else if (data === 'gather') {
     window.location.href = '/x/gather';
   } else if (/^cross/.test(data)) {
-    var id_base62 = data.substring(6);
-    window.location.href = '/!' + id_base62;
+    var id = data.substring(6);
+    window.location.href = '/!' + id;
   }
 });
 

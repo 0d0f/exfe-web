@@ -176,7 +176,6 @@ class Conversationemail_Job
             {
 
                 $cross_id = $changed_object["id"];
-                $cross_id_base62 = int_to_base62($cross_id);
 
                 $action_identities=$changed_object["action_identity"];
                 $updated_identity="";
@@ -274,7 +273,7 @@ class Conversationemail_Job
                 $update_part_body=str_replace("%date%",$date,$update_part_body);
                 $update_part_body=str_replace("%time%",$time,$update_part_body);
                 $update_part_body=str_replace("%update_title_info%",$update_title_info,$update_part_body);
-                $update_part_body=str_replace("%cross_link%",$site_url . "/!{$cross_id_base62}",$update_part_body);
+                $update_part_body=str_replace("%cross_link%",$site_url . "/!{$cross_id}",$update_part_body);
                 #$update_part_body=str_replace("%updated_identity%",$updated_identity,$update_part_body);
                 $update_part_body=str_replace("%place_line1%",$cross['place']['line1'],$update_part_body);
                 $update_part_body=str_replace("%place_line2%",$cross['place']['line2'],$update_part_body);
@@ -315,7 +314,6 @@ class Conversationemail_Job
                 $name="";
                 $mutelink="";
                 $link="";
-                $cross_id_base62="";
                 $cross_id="";
                 //if($changed_objects[""]
                 foreach($posts as $post)
@@ -343,7 +341,6 @@ class Conversationemail_Job
                                .     '</td>'
                                . '</tr>'
                                . '<tr><td colspan="2" height="20"></td></tr>';
-                        $cross_id_base62=$post["cross_id_base62"];
                         $cross_id=$post["cross_id"];
                     }
                 }
@@ -366,7 +363,6 @@ class Conversationemail_Job
                 $mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["to"]=$to_identity["external_identity"];
                 $mail["cross_id"]=$cross_id;
-                $mail["cross_id_base62"]=int_to_base62($cross_id);
                 if($update_array["id_".$cross_id]!="")
                 {
                     $change_object=$update_array["id_".$cross_id];
@@ -400,7 +396,6 @@ class Conversationemail_Job
                 $mutelink=$change_object["mutelink"];
                 $title=$cross["title"];
                 $cross_id=$cross["id"];
-                $cross_id_62=int_to_base62($cross["id"]);
 
                 $mail_body=str_replace("%exfe_title%",$title,$template_body);
                 $mail_body=str_replace("%mutelink%",$mutelink,$mail_body);
@@ -410,7 +405,6 @@ class Conversationemail_Job
 
                 #$mail["title"]=str_replace("%exfe_title%",$title,$template_title);
                 $mail["cross_id"]=$cross_id;
-                $mail["cross_id_base62"]=int_to_base62($cross_id);
 
                 $cross_id=$change_object["id"];
                 if($update_array["id_".$cross_id]!="")
@@ -458,7 +452,7 @@ class Conversationemail_Job
 
             $mail_mime = new Mail_mime(array('eol' => "\n"));
             $mail_mime->setHTMLBody($body);
-            #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id_base62'].".ics",false);
+            #$mail_mime->addAttachment($attachment , "text/calendar","x_".$args['cross_id'].".ics",false);
 
             $body = $mail_mime->get();
             $headers = $mail_mime->txtHeaders(array('From' => 'x@exfe.com','Reply-To'=>'x+'.$cross_id.'@exfe.com', 'Subject' => "$title"));

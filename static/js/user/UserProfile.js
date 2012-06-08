@@ -63,7 +63,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
             } else {
                 confirmed = '0 <em class="muted">of</em> ' + data[i].exfee.length + ' <em class="muted">confirmed</em>';
             }
-            var strCross = '<a id="past_cross_' + data[i]['id'] + '" class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['base62id'] + '">'
+            var strCross = '<a id="past_cross_' + data[i]['id'] + '" class="cross_link x_' + data[i]['sort'] + '" href="/!' + data[i]['id'] + '">'
                          +     '<div class="cross">'
                          +         '<h5>' + data[i]['title'] + '</h5>'
                          +         '<p>' + this.showXTime(data[i]['begin_at']) + '</p>'
@@ -222,9 +222,9 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#invitations').hide();
                 $('#invitations_shadow').hide();
                 for (var i in data) {
-                    strInvt += '<div id="cross_invitation_' + data[i]['base62id'] + '" class="invitation cross">'
-                             +     '<button type="button" id="accept_button_' + data[i]['base62id'] + '">Accept</button>'
-                             +     '<h5><a href="/!' + data[i]['base62id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
+                    strInvt += '<div id="cross_invitation_' + data[i]['id'] + '" class="invitation cross">'
+                             +     '<button type="button" id="accept_button_' + data[i]['id'] + '">Accept</button>'
+                             +     '<h5><a href="/!' + data[i]['id'] + '">' + data[i]['cross']['title'] + '</a></h5>'
                              +     '<p>' + odof.user.profile.showXTime(data[i]['cross']['begin_at']) + ' by ' + data[i]['sender']['name'] + '</p>'
                              + '</div>';
                 }
@@ -276,7 +276,7 @@ var ns = odof.util.initNameSpace(moduleNameSpace);
                 $('#recently_updates_shadow').hide();
                 for (var i in data) {
                     var j, arrExfee,
-                        strLogX = '<a class="cross_link" href="/!' + data[i]['base62id'] + '">'
+                        strLogX = '<a class="cross_link" href="/!' + data[i]['id'] + '">'
                                 +     '<div class="cross">'
                                 +         '<h5>' + data[i]['title'] + '</h5>',
                         numChgs = 0;

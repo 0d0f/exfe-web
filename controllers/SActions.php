@@ -54,8 +54,6 @@ class SActions extends ActionController {
         // Get invitations
         $newInvt = $modIvit->getNewInvitationsByIdentityIds($identityIds);
         foreach ($newInvt as $newInvtI => $newInvtItem) {
-            $newInvt[$newInvtI]['base62id']
-          = int_to_base62($newInvtItem['cross_id']);
             $newInvt[$newInvtI]['sender'] = humanIdentity(
                 $modIdentity->getIdentityById($newInvtItem['by_identity_id']),
                 $modUser->getUserByIdentityId($newInvtItem['by_identity_id'])
@@ -271,7 +269,6 @@ class SActions extends ActionController {
 
         // Add informations into crosses
         foreach ($crosses as $crossI => $crossItem) {
-            $crosses[$crossI]['base62id'] = int_to_base62($crossItem['id']);
             $crosses[$crossI]['begin_at'] = array(
                 'begin_at'        => $crosses[$crossI]['begin_at'],
                 'time_type'       => $crosses[$crossI]['time_type'],
@@ -352,7 +349,6 @@ class SActions extends ActionController {
                 $cleanLogs[$xId] = array(
                     'id'       => $xId,
                     'title'    => $logItem['x_title'],
-                    'base62id' => $logItem['x_base62id'],
                 );
             }
             $action = $logItem['action'];
@@ -360,7 +356,6 @@ class SActions extends ActionController {
             unset($logItem['change_dna']);
             unset($logItem['x_id']);
             unset($logItem['x_title']);
-            unset($logItem['x_base62id']);
             unset($logItem['x_description']);
             unset($logItem['x_begin_at']);
             unset($logItem['x_time_type']);
@@ -455,7 +450,6 @@ class SActions extends ActionController {
 
         foreach ($crosses as $k=>$v) {
             $crosses[$k]['timestamp'] = strtotime($v['begin_at']);
-            $crosses[$k]["id"] = int_to_base62($v["id"]);
             if ($crosses[$k]['timestamp'] < $tgnow) {
                 $crosses[$k]['sort'] = 'now';
             } else if ($crosses[$k]['timestamp'] < $tg24hr) {
@@ -747,7 +741,7 @@ class SActions extends ActionController {
                     $returnData["msg"] = "System Error.";
                 } else {
                     $returnData["uid"]=$result["uid"];
-                    $returnData["cross_id"]=int_to_base62($crossID);
+                    $returnData["cross_id"]=$crossID;
                 }
             }
             header("Content-Type:application/json; charset=UTF-8");
