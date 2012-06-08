@@ -110,23 +110,14 @@ function buildICS($args)
     return $str;
 }
 
-function humanIdentity($identity,$user)
-{
-    $provider=$identity["provider"];
 
-    if($identity["name"]=="")
-        $identity["name"]=$user["name"];
-    if($identity["avatar_file_name"]=="")
-        $identity["avatar_file_name"]=$user["avatar_file_name"];
-    if($provider=="email")
-    {
-        if($identity["name"]=="") {
-            $identity["name"]=$identity["external_identity"];
-        }
-        $identity["avatar_file_name"]=getUserAvatar($identity["avatar_file_name"]);
-    }
-    if($identity["avatar_file_name"]=="")
-        $identity["avatar_file_name"]="default.png";
+function humanIdentity($identity, $user) {
+    $identity['name'] = $identity['name'] ?: $user['name'];
+    $identity['avatar_file_name'] = getAvatarUrl(
+        $identity['provider'],
+        $identity['external_identity'],
+        $identity['avatar_file_name']
+    );
     return $identity;
 }
 
