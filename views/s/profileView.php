@@ -14,7 +14,15 @@ window.addEventListener('message', function (e) {
   } else if (/^cross/.test(data)) {
     var id = data.substring(6);
     window.location.href = '/!' + id;
+  } else if (/^profile/.test(data)) {
+    var p = data.substring(8);
+    window.location.href = p;
   }
+});
+
+window.addEventListener('resize', function (e) {
+  var o = document.getElementsByName('v2Frame')[0];
+  iframe_setup(o);
 });
 
 function iframe_setup(o) {
