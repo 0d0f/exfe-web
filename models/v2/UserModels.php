@@ -197,34 +197,36 @@ class UserModels extends DataModel {
                      WHERE `identity_id` =  {$identity->id}
                      AND   `action`      = '{$action}'"
                 );
+                // make new token
+                $token = md5(serialize(array(
+                    'action'      => $action,
+                    'identity_id' => $identity->id,
+                    'microtime'   => Microtime(),
+                    'random'      => Rand(0, Time()),
+                )));
                 // update database
                 $expiration_date = Time() + (60 * 60 * 24 * 3); // 3 days
-                if ($curToken
-                 && strtotime($curToken['expiration_date']) < Time()
-                 && strtotime($curToken['used_at']) <= 0) { // extension
-                    $token = $curToken['token'];
+                if ($curToken) {
+                    if (strtotime($curToken['expiration_date']) >= Time()
+                     && strtotime($curToken['used_at']) <= 0) { // extension
+                        $token = $curToken['token'];
+                    }
                     $actResult = $this->query(
                         "UPDATE `tokens` SET
-                         `expiration_date` = {$expiration_date},
-                         `used_at`         = 0
-                         WHERE `id`        = {$curToken['id']}"
+                         `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
+                         `used_at`         =  0,
+                         `token`           = '{$token}'
+                         WHERE `id`        =  {$curToken['id']}"
                     );
                 } else {
-                    // make token
-                    $token = md5(serialize(array(
-                        'action'      => $action,
-                        'identity_id' => $identity->id,
-                        'microtime'   => Microtime(),
-                        'random'      => Rand(0, Time()),
-                    )));
                     $actResult = $this->query(
                         "INSERT INTO `tokens` SET
-                         `token`           = {$token}
-                         `action`          = {$action},
-                         `identity_id`     = {$identity->id},
-                         `created_at`      = NOW(),
-                         `expiration_date` = {$expiration_date},
-                         `used_at`         = 0"
+                         `token`           = '{$token}',
+                         `action`          = '{$action}',
+                         `identity_id`     =  {$identity->id},
+                         `created_at`      =  NOW(),
+                         `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
+                         `used_at`         =  0"
                     );
                 }
                 // return
