@@ -196,10 +196,10 @@ class UsersActions extends ActionController {
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
         $params = $this->params;
-        if (!$external_id = trim($params['external_id'])) {
+        if (!$external_id = trim($_POST['external_id'])) {
             apiError(400, 'no_external_id', 'external_id must be provided');
         }
-        if (!$provider = trim($params['provider'])) {
+        if (!$provider = trim($_POST['provider'])) {
             apiError(400, 'no_provider', 'provider must be provided');
         }
         // get identity
