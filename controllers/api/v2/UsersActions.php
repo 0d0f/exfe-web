@@ -191,7 +191,59 @@ class UsersActions extends ActionController {
 
 
     public function doVerifyIdentity() {
-
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $params = $this->params;
+        if (!$external_id = trim($params['external_id'])) {
+            apiError(400, 'no_external_id', 'external_id must be provided');
+        }
+        if (!$provider = trim($params['provider'])) {
+            apiError(400, 'no_provider', 'provider must be provided');
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        // 身份不存在，提示注册
+        if (!$identity) {
+            apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+        }
+        // get user info
+        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
+        // 只有身份没有用户，需要身份
+        if (!$user_info) {
+            $token = $modUser->verifyIdentity($identity, 'VERIFY');
+            if ($token) {
+                apiResponse(array('identity' => $identity));
+            }
+            apiError(500, 'failed', '');
+        }
+        // get flag
+        switch ($user_info['status']) {
+            case 'CONNECTED':
+                if ($user_info['password']) {
+                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+                }
+                $token = $modUser->verifyIdentity($identity, 'RESET_PASSWORD');
+                if ($token) {
+                    apiResponse(array('identity' => $identity));
+                }
+                apiError(500, 'failed', '');
+                break;
+            case 'RELATED':
+                apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+                break;
+            case 'VERIFYING':
+            case 'REVOKED': // @todo: 存在疑问
+                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
+                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+                }
+                $token = $modUser->verifyIdentity($identity, 'VERIFY');
+                if ($token) {
+                    apiResponse(array('identity' => $identity));
+                }
+        }
+        apiError(500, 'failed', '');
     }
 
 
