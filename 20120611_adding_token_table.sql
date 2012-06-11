@@ -1,7 +1,7 @@
 CREATE TABLE `tokens` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
 	`token` varchar(255) NOT NULL,
-	`type` varchar(255) NOT NULL,
+	`action` varchar(255) NOT NULL,
 	`identity_id` bigint(20) NOT NULL,
 	`created_at` datetime NOT NULL,
 	`expiration_date` datetime NOT NULL,
