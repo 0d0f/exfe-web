@@ -204,6 +204,8 @@ class UsersActions extends ActionController {
         }
         // get identity
         $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        // init return value
+        $rtResult = array('identity' => $identity);
         // 身份不存在，提示注册
         if (!$identity) {
             apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
@@ -212,9 +214,12 @@ class UsersActions extends ActionController {
         $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
         // 只有身份没有用户，需要身份
         if (!$user_info) {
-            $token = $modUser->verifyIdentity($identity, 'VERIFY');
-            if ($token) {
-                apiResponse(array('identity' => $identity));
+            $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
+            if ($viResult) {
+                if (isset($viResult['url'])) {
+                    $rtResult['url'] = $viResult['url'];
+                }
+                apiResponse($rtResult);
             }
             apiError(500, 'failed', '');
         }
@@ -224,9 +229,12 @@ class UsersActions extends ActionController {
                 if ($user_info['password']) {
                     apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
                 }
-                $token = $modUser->verifyIdentity($identity, 'RESET_PASSWORD');
-                if ($token) {
-                    apiResponse(array('identity' => $identity));
+                $viResult = $modUser->verifyIdentity($identity, 'RESET_PASSWORD');
+                if ($viResult) {
+                    if (isset($viResult['url'])) {
+                        $rtResult['url'] = $viResult['url'];
+                    }
+                    apiResponse($rtResult);
                 }
                 apiError(500, 'failed', '');
                 break;
@@ -238,9 +246,12 @@ class UsersActions extends ActionController {
                 if ($user_info['password'] && $user_info['id_quantity'] === 1) {
                     apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
                 }
-                $token = $modUser->verifyIdentity($identity, 'VERIFY');
-                if ($token) {
-                    apiResponse(array('identity' => $identity));
+                $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
+                if ($viResult) {
+                    if (isset($viResult['url'])) {
+                        $rtResult['url'] = $viResult['url'];
+                    }
+                    apiResponse($rtResult);
                 }
         }
         apiError(500, 'failed', '');
