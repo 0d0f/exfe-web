@@ -228,7 +228,7 @@ class UserModels extends DataModel {
                     );
                 }
                 // return
-                return $actResult ? $token : null;
+                return $actResult ? array('token' => $token) : null;
             case 'twitter':
         }
         // return
