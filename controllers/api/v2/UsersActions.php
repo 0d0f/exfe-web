@@ -643,39 +643,4 @@ class UsersActions extends ActionController {
         apiError(500, 'failed', ''); // 操作失败
     }
 
-
-    public function doSendResetPasswordMail() {
-        $modUser = $this->getModelByName('user',  'v2');
-        $hlpUser = $this->getHelperByName('user', 'v2');
-        if (!($external_id = $_POST['external_id'])) {
-            apiError(401, 'no_signin', ''); // 需要输入external_id
-        }
-        if (!($identity_id = $modIdentity->getIdentityByProviderExternalId('email', $external_id))) {
-            apiError(400, 'identity_error', ''); // 无此身份
-        }
-        $tkResult = $userData->getResetPasswordTokenByIdentityId($identity_id);
-        if (!$tkResult) {
-            apiError(400, 'failed', ''); // 出错
-        }
-        $strArrPack = packArray(array(
-            'actions'     => 'reset_password',
-            'user_id'     => $tkResult['user_id'],
-            'identity_id' => $identity_id,
-            'provider'    => 'email',
-            'external_id' => $external_id,
-            'token'       => $tkResult['token'],
-        ));
-        $objUser = $userData->getUserById($tkResult['user_id']);
-        $idJob = $hlpUser->sendResetPasswordMail(array(
-            'user'        => $objUser,
-            'external_id' => $external_id,
-            'provider'    => 'email',
-            'token'       => $strArrPack,
-        ));
-        if ($idJob) {
-            apiResponse(array('user_id' => $tkResult['user_id'])); // 成功
-        }
-        apiError(500, 'failed', ''); // 出错
-    }
-
 }
