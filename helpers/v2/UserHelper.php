@@ -15,14 +15,6 @@ class UserHelper extends ActionController {
     }
 
 
-    public function sendResetPasswordMail($args) {
-        require 'lib/Resque.php';
-        date_default_timezone_set('GMT');
-        Resque::setBackend(RESQUE_SERVER);
-        return Resque::enqueue('email', 'emailresetpassword_job', $args, true);
-    }
-
-
     public function getMobileIdentitiesByUserId($user_id) {
         return $this->modUser->getMobileIdentitiesByUserId($user_id);
     }
