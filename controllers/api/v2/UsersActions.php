@@ -258,6 +258,28 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doResolveToken() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        if (!$token = trim($_POST['token'])) {
+            apiError(400, 'no_token', 'token must be provided');
+        }
+        $rsResult = $modUser->resolveToken($token);
+        if ($rsResult) {
+            $identity = $modIdentity->getIdentityById($rsResult['identity_id']);
+            if ($identity) {
+                apiResponse(array(
+                    'action'   => $rsResult['action'],
+                    'identity' => $identity,
+                ));
+            }
+        }
+        apiError(400, 'invalid_keys', 'Invalid Keys');
+    }
+
+
     public function doCheckAuthorization() {
         // get models
         $checkHelper   = $this->getHelperByName('check', 'v2');
