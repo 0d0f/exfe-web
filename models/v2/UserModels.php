@@ -260,8 +260,8 @@ class UserModels extends DataModel {
                  WHERE  `id`              = {$curToken['id']}"
             );
             return array(
-                'action'      = $curToken['action'],
-                'identity_id' = intval($curToken['identity_id']),
+                'action'      => $curToken['action'],
+                'identity_id' => intval($curToken['identity_id']),
             );
         }
         // return
