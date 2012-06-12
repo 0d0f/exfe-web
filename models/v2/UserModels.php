@@ -466,28 +466,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function getResetPasswordTokenByIdentityId($identity_id) {
-        $user_id = getUserIdByIdentityId($identity_id)
-                ?: $this->addUserAndSetRelation('', '', $identity_id);
-        if ($user_id) {
-            $passwdInfo = $this->getUserPasswdByUserId($user_id);
-            $reset_password_token = $passwdInfo['reset_password_token'];
-            if (!$reset_password_token
-             || (intval(substr($reset_password_token, 32)) + 5 * 24 * 60 * 60 < time())) { // token timeout
-                $reset_password_token = createToken();
-                $this->query(
-                    "UPDATE `users` SET `reset_password_token` = '{$reset_password_token}' WHERE `id` = $uid"
-                );
-            }
-            return array(
-                'user_id' => $user_id,
-                'token'   => $reset_password_token
-            );
-        }
-        return null;
-    }
-
-
     public function getIdentityIdByUserId($user_id){
         $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
         $identity_ids=$this->getColumn($sql);
