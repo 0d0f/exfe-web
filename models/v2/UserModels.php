@@ -198,7 +198,7 @@ class UserModels extends DataModel {
                      AND   `action`      = '{$action}'"
                 );
                 // make new token
-                $token = md5(serialize(array(
+                $token = md5(json_encode(array(
                     'action'      => $action,
                     'identity_id' => $identity->id,
                     'microtime'   => Microtime(),
@@ -232,6 +232,37 @@ class UserModels extends DataModel {
                 // return
                 return $actResult ? array('token' => $token) : null;
             case 'twitter':
+        }
+        // return
+        return null;
+    }
+
+
+    public function resolveToken($token) {
+        // base check
+        if (!$token) {
+            return null;
+        }
+        // get current token
+        $time = Time();
+        $curToken = $this->getRow(
+            "SELECT * FROM `tokens`
+             WHERE `token`            = '{$token}'
+             AND   `expiration_date` >=  FROM_UNIXTIME({$time})
+             AND   `used_at`          =  0"
+        );
+        // update database
+        if ($curToken) {
+            $expiration_date = Time() + (60 * 60); // 1 hour
+            $this->query(
+                "UPDATE `tokens`
+                 SET    `expiration_date` = FROM_UNIXTIME({$expiration_date})
+                 WHERE  `id`              = {$curToken['id']}"
+            );
+            return array(
+                'action'      = $curToken['action'],
+                'identity_id' = intval($curToken['identity_id']),
+            );
         }
         // return
         return null;
@@ -277,14 +308,11 @@ class UserModels extends DataModel {
     }
 
 
-    public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id)
-    {
-        if(intval($identity_id)>0 && intval($user_id)>0)
-        {
+    public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id) {
+        if (intval($identity_id)>0 && intval($user_id)>0) {
             $sql="select userid from user_identity where identityid={$identity_id} and userid={$user_id};";
             $rawUser = $this->getRow($sql);
-            if(intval($rawUser["userid"])>0)
-            {
+            if (intval($rawUser["userid"])>0) {
                 $rtResult   = array('user_id' => $user_id);
                 $passwdInDb = $this->getUserPasswdByUserId($user_id);
                 if (!$passwdInDb['auth_token']) {
@@ -295,7 +323,6 @@ class UserModels extends DataModel {
                 $rtResult['token'] = $passwdInDb['auth_token'];
                 return $rtResult;
             }
-
         }
         return null;
     }
