@@ -276,7 +276,7 @@ class UsersActions extends ActionController {
                 ));
             }
         }
-        apiError(400, 'invalid_keys', 'Invalid Keys');
+        apiError(400, 'invalid_token', 'Invalid Token');
     }
 
 
