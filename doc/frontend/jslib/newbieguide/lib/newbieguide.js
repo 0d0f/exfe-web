@@ -50,8 +50,6 @@ define(function (require) {
 
   $(newbieGuide[3]).appendTo($('.gr-b .invitations').removeClass('hide'));
 
-  //$('.navbar .dropdown-wrapper').trigger('mouseenter.dropdown');
-
   var $BODY = $(document.body);
 
   $BODY.on('hover.newbie', '.newbie', function (e) {
