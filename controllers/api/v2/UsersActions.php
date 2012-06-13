@@ -161,7 +161,6 @@ class UsersActions extends ActionController {
                     'registration_flag' => $raw_flag,
                     'identity'          => $identity,
                 ));
-                break;
             case 'SIGN_UP':
                 apiResponse(array(
                     'registration_flag' => $raw_flag,
@@ -191,42 +190,12 @@ class UsersActions extends ActionController {
         if (!$identity) {
             apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
         }
-        // get user info
-        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
-        // 只有身份没有用户，需要身份
-        if (!$user_info) {
-            $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
-            if ($viResult) {
-                if (isset($viResult['url'])) {
-                    $rtResult['url'] = $viResult['url'];
-                }
-                apiResponse($rtResult);
-            }
-            apiError(500, 'failed', '');
-        }
-        // get flag
-        switch ($user_info['status']) {
-            case 'CONNECTED':
-                if ($user_info['password']) {
-                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
-                }
-                $viResult = $modUser->verifyIdentity($identity, 'RESET_PASSWORD');
-                if ($viResult) {
-                    if (isset($viResult['url'])) {
-                        $rtResult['url'] = $viResult['url'];
-                    }
-                    apiResponse($rtResult);
-                }
-                apiError(500, 'failed', '');
-                break;
-            case 'RELATED':
-                apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
-                break;
-            case 'VERIFYING':
-            case 'REVOKED': // @todo: 存在疑问
-                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
-                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
-                }
+        // get registration flag
+        $raw_flag = $modUser->getRegistrationFlag($identity->id);
+        // return
+        switch ($raw_flag) {
+            case 'VERIFY':
+            case 'RESET_PASSWORD':
                 $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
                 if ($viResult) {
                     if (isset($viResult['url'])) {
@@ -234,6 +203,11 @@ class UsersActions extends ActionController {
                     }
                     apiResponse($rtResult);
                 }
+                apiError(500, 'failed', '');
+            case 'SIGN_IN':
+                apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+            case 'SIGN_UP':
+                apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
         }
         apiError(500, 'failed', '');
     }
