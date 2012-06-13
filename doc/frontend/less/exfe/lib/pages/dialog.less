@@ -79,17 +79,75 @@
   }
 
   .user-identity {
-    position: relative;
     margin-right: 20px;
-  }
-
-  .provider {
-    position: absolute;
-    right: -3px;
-    bottom: -3px;
   }
 }
 
 // set password
 .modal-sp {
+}
+
+// set password
+.modal-cp {
+  .identity {
+    display: table;
+    position: relative;
+    margin-left: 60px;
+    margin-bottom: 16px;
+    padding-top: 20px;
+    font-size: 18px;
+    line-height: 24px;
+    font-style: normal;
+    color: #797979;
+
+    .avatar {
+      position: relative;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      margin-right: 15px;
+    }
+
+    > span {
+      vertical-align: bottom;
+    }
+  }
+
+  .control-group {
+    padding-left: 10px;
+  }
+
+  .control-label {
+    padding-left: 6px;
+  }
+}
+
+// reset password
+.modal-rsp {
+  .identity-name {
+    display: inline-block;
+    width: 273px;
+    height: 26px;
+    margin-left: 10px;
+    margin-top: 12px;
+    line-height: 26px;
+    font-size: 18px;
+    font-style: oblique;
+    text-align: center;
+    text-decoration: none;
+    color: #4c4c4c;
+    border: 1px solid rgba(127, 127, 127, .15);
+    #gradient > .directional(#fafafa, #e6e6e6, 270deg);
+    .box-shadow(0 1px 1px rgba(255, 255, 255, 1));
+
+    &:hover,
+    &:active {
+      color: #191919;
+      #gradient > .directional(#fafafa, #d5e8f2, 270deg);
+    }
+  }
+
+  .user-identity {
+    margin-right: 5px;
+  }
 }
