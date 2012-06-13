@@ -443,7 +443,7 @@ define(function (require, exports, module) {
               var uh = $('#jst-updates').html();
               var s = Handlebars.compile(uh);
               var h = s({updates: updates});
-              $('#profile .gr-b').append(h);
+              $('#profile .ios-app').before(h);
             });
           }
 
@@ -470,11 +470,19 @@ define(function (require, exports, module) {
     }
   }
 
+  // ios-app
+  var iosapp = function (data) {
+    var dismiss = Store.get('iosapp_dismiss');
+    if (!dismiss) {
+      $('.ios-app').removeClass('hide');
+    }
+  };
+
   // Defer Queue
   // 可以登陆状态
   var SIGN_IN_OTHERS = 'app:signinothers';
   Bus.on(SIGN_IN_OTHERS, function (d) {
-    d.then([crossList_defe, crosses_defe, newbieGuide]);
+    d.then([crossList_defe, crosses_defe, iosapp, newbieGuide]);
   });
   var SIGN_IN_SUCCESS = 'app:signinsuccess';
   Bus.on(SIGN_IN_SUCCESS, function (data) {
@@ -721,5 +729,56 @@ define(function (require, exports, module) {
     });
 
   });
+
+  // iso-app dismiss link
+  $BODY.on('click.profile.iosapp', '.ios-app > .exfe-dismiss', function (e) {
+    e.preventDefault();
+    Store.set('iosapp_dismiss', true);
+    $BODY.off('click.profile.iosapp');
+    $(this).parent().fadeOut();
+  });
+
+  /*
+  // identity remote
+  $BODY.on('dragstart.profile', '.identity-list > li', function (e) {
+    e.stopPropagation();
+    $('.xbtn-addidentity').addClass('hide');
+    $('.identities-trash').removeClass('hide over');
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    e.originalEvent.dataTransfer.setData("text/plain", $(this).data('identity-id'));
+    return true;
+  });
+
+  $BODY.on('dragend.profile', '.identity-list > li', function (e) {
+    e.stopPropagation();
+    return false;
+  });
+
+  $BODY.on('dragenter.profile', '.trash-overlay', function (e) {
+    $(this).parent().addClass('over');
+    return false;
+  });
+
+  $BODY.on('dragover.profile', '.trash-overlay', function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    //e.originalEvent.dataTransfer.dropEffect = 'move';
+    return false;
+  });
+
+  $BODY.on('dragleave.profile', '.trash-overlay', function (e) {
+    $(this).parent().removeClass('over');
+    return false;
+  });
+
+  $BODY.on('drop.profile', '.trash-overlay', function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    var dt = e.originalEvent.dataTransfer;
+    var data = dt.getData('text/plain');
+
+    return false;
+  });
+  */
 
 });
