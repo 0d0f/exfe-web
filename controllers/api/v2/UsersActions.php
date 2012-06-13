@@ -150,40 +150,21 @@ class UsersActions extends ActionController {
         if (!$identity) {
             apiResponse(array('registration_flag' => 'SIGN_UP'));
         }
-        // get user info
-        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
-        // 只有身份没有用户，需要身份
-        if (!$user_info) {
-            apiResponse(array('registration_flag' => 'VERIFY'));
-        }
-        // get flag
-        switch ($user_info['status']) {
-            case 'CONNECTED':
-                if ($user_info['password']) {
-                    apiResponse(array(
-                        'registration_flag' => 'SIGN_IN',
-                        'identity'          => $identity,
-                    ));
-                }
+        // get registration flag
+        $raw_flag = $modUser->getRegistrationFlag($identity->id);
+        // return
+        switch ($raw_flag) {
+            case 'VERIFY':
+            case 'SIGN_IN':
+            case 'RESET_PASSWORD':
                 apiResponse(array(
-                    'registration_flag' => 'RESET_PASSWORD',
+                    'registration_flag' => $raw_flag,
                     'identity'          => $identity,
                 ));
                 break;
-            case 'RELATED':
-                apiResponse(array('registration_flag' => 'SIGN_UP'));
-                break;
-            case 'VERIFYING':
-            case 'REVOKED': // @todo: 存在疑问
-                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
-                    apiResponse(array(
-                        'registration_flag' => 'SIGN_IN',
-                        'identity'          => $identity,
-                    ));
-                }
+            case 'SIGN_UP':
                 apiResponse(array(
-                    'registration_flag' => 'VERIFY',
-                    'identity'          => $identity,
+                    'registration_flag' => $raw_flag,
                 ));
         }
         apiError(500, 'failed', '');
@@ -270,6 +251,12 @@ class UsersActions extends ActionController {
         if ($rsResult) {
             $identity = $modIdentity->getIdentityById($rsResult['identity_id']);
             if ($identity) {
+
+
+
+
+
+
                 apiResponse(array(
                     'action'   => $rsResult['action'],
                     'identity' => $identity,
