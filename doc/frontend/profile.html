@@ -77,6 +77,14 @@
 
           </div>
           <button class="pull-right xbtn xbtn-addidentity" data-widget="dialog" data-dialog-type="addidentity">Add Identity…</button>
+
+          <div class="pull-right identities-trash hide">
+            <i class="pull-left icon-trash"></i>
+            <span class="draged">Drop to remove identity</span>
+            <span class="removed">Remove Identity</span>
+            <div class="trash-overlay"></div>
+          </div>
+
         </div>
 
         <div class="row">
@@ -93,6 +101,13 @@
               <h3><i class="icon-check"></i>Invitations</h3>
             </div>
 
+            <div class="ios-app hide">
+              <a class="pull-right exfe-dismiss" href="#">Dismiss</a>
+              <div>
+                <a class="x-sign" href="http://itunes.apple.com/cn/app/exfe/id514026604?l=en&mt=8" target="_blank">EXFE</a> is ready for iPhone - instant, mobile.
+              </div>
+            </div>
+
           </div><!--}}}-->
 
         </div>
@@ -105,8 +120,8 @@
   <!-- JS Templates -->
   <script id="jst-identity-list" type="text/x-handlebars-template">
   {{#each identities}}
-  <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}}>
-    <i class="icon-minus-sign hide"></i><span class="avatar"><img src="{{avatarFilename avatar_filenamee}}" alt="" width="20" height="20" />
+  <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
+    <span class="avatar"><img src="{{avatarFilename avatar_filenamee}}" alt="" width="20" height="20" />
     </span><span class="username"><em>{{printName name external_id}}</em></span><span class="identity">{{atName provider external_id}}</span>
     {{#makeDefault __default__ status}}<a class="makedefault" href="#">Make default</a>{{/makeDefault}}
     {{#ifOauthVerifying provider status}}
@@ -214,7 +229,8 @@
   <script src="jslib/common/lib/common.js"></script>
   <script src="jslib/modernizr/lib/modernizr.js"></script>
   <script src="jslib/jquery/lib/jquery.js"></script>
-  <script src="jslib/jqueryplugins/lib/jquery.plugins.lastfocus.js"></script>
+  <script src="jslib/jqueryplugins/lib/jquery.plugins.focusend.js"></script>
+  <!--script src="jslib/jqueryplugins/lib/jquery.plugins.dragleave.js"></script-->
   <script src="jslib/handlebars/lib/handlebars.js"></script>
   <script src="jslib/util/lib/util.js"></script>
   <script src="jslib/rex/lib/rex.js"></script>
