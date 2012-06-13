@@ -183,6 +183,33 @@ class UserModels extends DataModel {
     }
 
 
+    public function getRegistrationFlag($identity_id) {
+        // get user info
+        $user_info = $this->getUserIdentityInfoByIdentityId($identity_id);
+        // 只有身份没有用户，需要验证身份
+        if (!$user_info) {
+            return 'VERIFY';
+        }
+        // get flag
+        switch ($user_info['status']) {
+            case 'CONNECTED':
+                if ($user_info['password']) {
+                    return 'SIGN_IN';
+                }
+                return 'RESET_PASSWORD';
+            case 'RELATED':
+                return 'SIGN_UP';
+            case 'VERIFYING':
+            case 'REVOKED': // @todo: 存在疑问
+                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
+                    return 'SIGN_IN';
+                }
+                return 'VERIFY';
+        }
+        return null;
+    }
+
+
     public function verifyIdentity($identity, $action) {
         // base check
         if (!$identity || !$action) {
