@@ -109,7 +109,10 @@ define(function (require, exports, module) {
   // Invitations print time
   Handlebars.registerHelper('printTime2', function (time, options) {
     time  = Handlebars.helpers['crossItem'].call(this, time, options);
+    return Handlebars.helpers['printTime4'].call(this, time);
+  });
 
+  Handlebars.registerHelper('printTime4', function (time) {
     // 终端时区
     var c = Moment();
     var cz = c.format('Z');
@@ -145,13 +148,33 @@ define(function (require, exports, module) {
 
   // Updates print time
   Handlebars.registerHelper('printTime3', function (time, options) {
-    time  = Handlebars.helpers['crossItem'].call(this, time, options);
+    //time  = Handlebars.helpers['crossItem'].call(this, time, options);
     var b = time.begin_at;
     // Cross 时区
     var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
     // 创建一个 moment date-object
     var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
     return d.fromNow();
+  });
+
+  Handlebars.registerHelper('rsvpAction', function (identities, identity_id) {
+    var i = R.filter(identities, function (v) {
+      if (v.identity.id === identity_id) return true;
+    })[0];
+    var html = '<div><i class="';
+    html += 'icon-' + i.rsvp_status.toLowerCase() + '"></i> ';
+    html += i.rsvp_status.charAt(0) + i.rsvp_status.substr(1).toLowerCase() + ': ' + i.identity.name + '</div>';
+
+    var is = R.map(identities, function (v) {
+      if (v.by_identity.id === identity_id && v.identity.id !== identity_id) return v.identity.name;
+    }).filter(function (v) {
+      if (v) return true;
+    }).join(' ,');
+
+    html += '<div><i class="icon-plus-sign"></i> ';
+    html += 'Invited: ' + is;
+    html += '</div>';
+    return html;
   });
 
   Handlebars.registerHelper('ifPlace', function (options) {
@@ -301,7 +324,7 @@ define(function (require, exports, module) {
     );
   };
 
-  var crosses_defe = function (data) {
+  var crosses_inversation_defe = function (data) {
     if (!data) return;
     data = Store.get('signin');
     if (!data) return;
@@ -343,29 +366,6 @@ define(function (require, exports, module) {
                   }
                 });
 
-                updatesAjax.push(
-                  Api.request('conversation'
-                    , {
-                      resources: {exfee_id: v.exfee.id},
-                      params: {
-                        date: now
-                      }
-                    }
-                    , function (data) {
-                      var conversation = data.conversation;
-                      if (conversation && conversation.length) {
-                        var c = conversation[conversation.length - 1];
-                        var a = identities_KV[v.exfee.id];
-                        if (c.by_identity.connected_user_id === user_id) return;
-                        if (a) {
-                          c.__crossIndex = a[0];
-                          c.__conversation_nums = conversation.length;
-                          updates.push(c);
-                        }
-                      }
-                    }
-                  )
-                );
 
               }
             //
@@ -436,6 +436,7 @@ define(function (require, exports, module) {
             $('#profile .gr-b .invitations').removeClass('hide').append(h);
           }
 
+          /*
           if (updatesAjax.length) {
             var dw = $.when;
             dw = dw.apply(null, updatesAjax);
@@ -446,10 +447,76 @@ define(function (require, exports, module) {
               $('#profile .ios-app').before(h);
             });
           }
+          */
 
       }
     );
 
+  };
+
+  var crosses_update_defe = function (data) {
+    if (!data) return;
+    data = Store.get('signin');
+    if (!data) return;
+    var user_id = data.user_id;
+    var now = new Date();
+    now.setDate(now.getDate() - 3);
+    now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+
+    return Api.request('crosses'
+      , {
+        resources: {
+          user_id: user_id
+        },
+        params: {
+          updated_at: now
+        }
+      }
+      , function (data) {
+        var crosses = data.crosses;
+        var updatesAjax = [];
+        var updates = [];
+        if (crosses.length) {
+          R.each(crosses, function (v, i) {
+            if (v.updated) {
+                v.updated.conversation && updatesAjax.push(
+                  Api.request('conversation'
+                    , {
+                      resources: {exfee_id: v.exfee.id},
+                      params: {
+                        date: now
+                      }
+                    }
+                    , function (data) {
+                      var conversation = data.conversation;
+                      if (conversation && conversation.length) {
+                        var c = conversation[conversation.length - 1];
+                        if (c.by_identity.connected_user_id === user_id) return;
+                        c.__conversation_nums = conversation.length;
+                        v.updated.conversation.item = c;
+                      }
+                    }
+                  )
+                );
+
+            }
+
+          });
+        }
+
+          if (updatesAjax.length) {
+            var dw = $.when;
+            dw = dw.apply(null, updatesAjax);
+            dw.then(function (data) {
+              var uh = $('#jst-updates').html();
+              var s = Handlebars.compile(uh);
+              var h = s({updates: crosses});
+              $('#profile .ios-app').before(h);
+            });
+          }
+
+      }
+    );
   };
 
   // 加载新手引导
@@ -464,7 +531,7 @@ define(function (require, exports, module) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
-      s.src = '/jslib/newbieguide/lib/newbieguide.js'
+      s.src = '/static2/js/newbieguide/0.0.1/newbieguide.min.js'
       var body = document.body;
       body.appendChild(s);
     }
@@ -482,7 +549,7 @@ define(function (require, exports, module) {
   // 可以登陆状态
   var SIGN_IN_OTHERS = 'app:signinothers';
   Bus.on(SIGN_IN_OTHERS, function (d) {
-    d.then([crossList_defe, crosses_defe, iosapp, newbieGuide]);
+    d.then([crossList_defe, crosses_inversation_defe, crosses_update_defe, iosapp, newbieGuide]);
   });
   var SIGN_IN_SUCCESS = 'app:signinsuccess';
   Bus.on(SIGN_IN_SUCCESS, function (data) {
