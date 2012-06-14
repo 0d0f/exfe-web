@@ -1,3 +1,6 @@
+define('jquery', [], function (require, exports, module) {
+
+
 /*!
  * jQuery JavaScript Library v1.7.2
  * http://jquery.com/
@@ -9402,3 +9405,8 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 
 })( window );
+
+
+
+  return jQuery;
+});
