@@ -206,13 +206,16 @@ class UserModels extends DataModel {
                 'reason' => 'NO_USER',
             );
         }
-        // get flag {
+        // get flag
         // try connected user
         if (isset($user_infos['CONNECTED']) {
             if ($user_infos['CONNECTED'][0]['password']) {
                 return array('flag' => 'SIGN_IN');
             }
-            return array('flag' => 'RESET_PASSWORD', 'reason' => 'NO_PASSWORD');
+            return array(
+                'flag'   => 'RESET_PASSWORD',
+                'reason' => 'NO_PASSWORD',
+            );
         }
         // try verifying user
         if (isset($user_infos['VERIFYING'])) { // @todo: REVOKED 存在疑问
@@ -224,19 +227,18 @@ class UserModels extends DataModel {
         }
         // try revoked user
         if (isset($user_infos['REVOKED'])) {
-            return array('flag' => 'VERIFY', 'reason' => 'REVOKED');
+            return array('flag' => 'VERIFY');
         }
         // try related user
         if (isset($user_infos['RELATED']) {
-            return array('flag' => 'VERIFY', 'reason' => 'RELATED'););
+            return array('flag' => 'VERIFY');
         }
-        // }
         // failed
         return null;
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0) {
+    public function verifyIdentity($identity, $action) {
         // base check
         if (!$identity || !$action) {
             return null;
