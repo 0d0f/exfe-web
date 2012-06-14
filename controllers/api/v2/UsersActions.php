@@ -38,10 +38,10 @@ class UsersActions extends ActionController {
         $modUser = $this->getModelByName('User', 'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!($external_id = $_POST['external_id'])) {
+        if (!($external_id = trim($_POST['external_id']))) {
             apiError(400, 'no_external_id', '');
         }
-        if (!($provider = $_POST['provider'])) {
+        if (!($provider = trim($_POST['provider']))) {
             apiError(400, 'no_provider', '');
         }
         if (!($password = $_POST['password'])) {
@@ -205,13 +205,10 @@ class UsersActions extends ActionController {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
                 case 'RESET_PASSWORD':
-                    $user_id = $raw_flag['flag'] === 'VERIFY'
-                            && isset($raw_flag['user_id'])
+                    $user_id = isset($raw_flag['user_id'])
                              ? $raw_flag['user_id'] : 0;
                     $viResult = $modUser->verifyIdentity(
-                        $identity,
-                        $raw_flag['flag'],
-                        $user_id
+                        $identity, $raw_flag['flag'], $user_id
                     );
                     if ($viResult) {
                         if (isset($viResult['url'])) {
@@ -230,6 +227,48 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doVerifyUserIdentity() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!($identity_id = intval($_POST['identity_id']))) {
+            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityById($identity_id, $user_id);
+        if (!$identity) {
+            apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+        }
+        //
+        switch ($identity->status) {
+            case 'CONNECTED':
+                apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+            case 'VERIFYING':
+            case 'REVOKED':
+                $viResult = $modUser->verifyIdentity(
+                    $identity, 'VERIFY', $user_id
+                );
+                if ($viResult) {
+                    if (isset($viResult['url'])) {
+                        $rtResult['url'] = $viResult['url'];
+                    }
+                    apiResponse($rtResult);
+                }
+        }
+        apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
+    }
+
+
     public function doResolveToken() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
@@ -240,23 +279,41 @@ class UsersActions extends ActionController {
         }
         $rsResult = $modUser->resolveToken($token);
         if ($rsResult) {
-            $identity = $modIdentity->getIdentityById($rsResult['identity_id']);
-            if ($identity) {
-                // get registration flag
-                $raw_flag = $modUser->getRegistrationFlag($identity->id);
-                if ($raw_flag && $raw_flag['flag'] === $rsResult['action']) {
-                    switch ($rsResult['action']) {
-                        case 'VERIFY':
-                            apiResponse(''
-                            );
-                        case 'RESET_PASSWORD':
-                            apiResponse(array(
-                                'action'    => 'RESET_PASSWORD',
-                                'next_step' => 'INPUT_NEW_PASSWORD',
-                            ));
-                    }
-                }
+            switch ($rsResult['action']) {
+                case 'VERIFY':
+                    apiResponse(array(
+                        'user_id' => $rsResult['user_id'],
+                        'token'   => $rsResult['token'],
+                        'action'  => 'VERIFIED',
+                    ));
+                case 'RESET_PASSWORD':
+                    apiResponse(array(
+                        'action'  => 'INPUT_NEW_PASSWORD',
+                    ));
             }
+        }
+        apiError(400, 'invalid_token', 'Invalid Token');
+    }
+
+
+    public function doResetPassword() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        if (!$token = trim($_POST['token'])) {
+            apiError(400, 'no_token', 'token must be provided');
+        }
+        if (!$password = $_POST['password']) {
+            apiError(400, 'no_password', 'password must be provided');
+        }
+        // set password
+        $stResult = $modUser->resetPasswordByToken($token, $password);
+        if ($stResult) {
+            apiResponse(array(
+                'user_id' => $stResult['user_id'],
+                'token'   => $stResult['token'],
+            ));
         }
         apiError(400, 'invalid_token', 'Invalid Token');
     }
