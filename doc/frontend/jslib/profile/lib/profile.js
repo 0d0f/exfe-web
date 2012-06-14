@@ -161,9 +161,12 @@ define(function (require, exports, module) {
     var i = R.filter(identities, function (v) {
       if (v.identity.id === identity_id) return true;
     })[0];
-    var html = '<div><i class="';
-    html += 'icon-' + i.rsvp_status.toLowerCase() + '"></i> ';
-    html += i.rsvp_status.charAt(0) + i.rsvp_status.substr(1).toLowerCase() + ': ' + i.identity.name + '</div>';
+    var html = '';
+    if (i.rsvp_status !== 'INTERESTED') {
+      var html = '<div><i class="';
+      html += 'icon-' + i.rsvp_status.toLowerCase() + '"></i> ';
+      html += i.rsvp_status.charAt(0) + i.rsvp_status.substr(1).toLowerCase() + ': ' + i.identity.name + '</div>';
+    }
 
     var is = R.map(identities, function (v) {
       if (v.by_identity.id === identity_id && v.identity.id !== identity_id) return v.identity.name;
@@ -368,46 +371,6 @@ define(function (require, exports, module) {
 
 
               }
-            //
-
-            /* `updated` 已去掉，先直接遍历了
-            // updates
-            if ((updated = v.updated)) {
-
-              // exfee
-              if (updated.exfee && updated.exfee.length) {
-                $.each(updated.exfee, function (e, j) {
-                  e.__crossIndex = i;
-                  updated.push(e);
-                });
-              }
-
-              // conversation
-              if (updated.conversation) {
-                var a = identities_KV[updated.conversation.identity_id];
-                var exfee_id = crosses[a[0]].exfee.id;
-                updatesAjax.push(
-                  Api.request('conversation'
-                    , {
-                      resources: {exfee_id: exfee_id},
-                      params: {
-                        date: updated.conversation.updated_at
-                      }
-                    }
-                    , function (data) {
-                      var conversation = data.conversation;
-                      if (conversation && conversation.length) {
-                        conversation[0].__crossIndex = a[0];
-                        conversation[0].__conversation_nums = conversation.length;
-                        updates.push(conversation[0]);
-                      }
-                    }
-                  )
-                )
-              }
-            }
-            */
-
           });
 
           Handlebars.registerHelper('crossItem', function (prop) {
@@ -435,19 +398,6 @@ define(function (require, exports, module) {
             var h = s({crosses: invitations});
             $('#profile .gr-b .invitations').removeClass('hide').append(h);
           }
-
-          /*
-          if (updatesAjax.length) {
-            var dw = $.when;
-            dw = dw.apply(null, updatesAjax);
-            dw.then(function (data) {
-              var uh = $('#jst-updates').html();
-              var s = Handlebars.compile(uh);
-              var h = s({updates: updates});
-              $('#profile .ios-app').before(h);
-            });
-          }
-          */
 
       }
     );

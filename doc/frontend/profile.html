@@ -18,7 +18,7 @@
 <body>
 
   <!-- NavBar -->
-  <div class="navbar">
+  <div class="navbar hide">
 
     <!-- navbar-bg -->
     <div class="navbar-bg"></div>
@@ -52,7 +52,7 @@
   <!-- /NavBar -->
 
   <!-- container -->
-  <div class="container">
+  <div class="container" style="margin-top: 10px;">
 
     <div role="main">
       <section id="profile" class="x-profile">
@@ -138,7 +138,7 @@
     <span class="xlabel hide">
       <i class="icon-warning-sign"></i>
       <span>Pending verification, 5 days left.</span>
-      <button class="xbtn xbtn-reverify" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
+      <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
     </span>
     {{/ifVerifying}}
     {{#if __default__}}<span class="default">default</span>{{/if}}
