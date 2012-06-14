@@ -1,4 +1,4 @@
-  define(function (require, exports, module) {
+define(function (require, exports, module) {
   var $ = require('jquery');
   var R = require('rex');
   var Bus = require('bus');
@@ -55,7 +55,7 @@
       onShowAfter: function () {
         if (this.switchTabType === 'd01' || this.switchTabType === 'd03') {
           var $identity = this.$('#identity');
-          $identity.lastfocus();
+          $identity.focusend();
         }
       },
 
@@ -166,11 +166,11 @@
             + '<div class="pull-right">'
               + '<a href="#twitter"><img src="/img/twitter-logo.png" alt="" width="52" height="40"></a>'
             + '</div>'
-            + '<div class="authorize">Authorize account through:</div>'
+            + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'
             + '<form class="modal-form form-horizontal">'
               + '<fieldset>'
-                + '<legend>Enter your identity information:</legend>'
+                + '<legend>Enter your identity:</legend>'
                   + '<div class="control-group">'
                     + '<label class="control-label" for="identity">Identity:</label>'
                     + '<div class="controls /*identity-avatar*/">'
@@ -240,9 +240,9 @@
 
     options: {
 
-      onHidden: function () {
+      onHideAfter: function () {
         var $e = this.element;
-        this.options.srcNode.data('dialog', null);
+        this.offSrcNode();
         this.destory();
         $e.remove();
       },
@@ -271,9 +271,9 @@
         }
       },
 
-      onHidden: function () {
+      onHideAfter: function () {
         var $e = this.element;
-        this.options.srcNode.data('dialog', null);
+        this.offSrcNode();
         this.destory();
         $e.remove();
       },
@@ -306,17 +306,17 @@
     options: {
       events: {
         'click .xbtn-cancel': function (e) {
+          var dialog_from = this.dialog_from;
           this.hide();
-          if (this.dialog_from) {
-            $(this.dialog_from).removeClass('hide');
-            $('#js-modal-backdrop').removeClass('hide');
-            // TODO: 先简单处理，后面是否要保存 target 元素
-            $('#identity').lastfocus();
-          }
           var $e = this.element;
           this.offSrcNode();
           this.destory();
           $e.remove();
+          if (dialog_from) {
+            $('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
+            // TODO: 先简单处理，后面是否要保存 target 元素
+            $('#identity').focusend();
+          }
         },
         'click .xbtn-blue': function (e) {
           // Verify ajax
@@ -371,14 +371,38 @@
 
     options: {
 
-      onHidden: function () {
+      onHideAfter: function () {
         var $e = this.element;
-        this.options.srcNode.data('dialog', null);
+        this.offSrcNode();
         this.destory();
         $e.remove();
       },
 
       events: {
+        'click .xbtn-resetpwd': function (e) {
+          var user = Store.get('user');
+          var identities = user.identities;
+          var is = R.filter(identities, function (v, i) {
+            if (v.status === 'CONNECTED') return true;
+          });
+          if (is.length === 1) {
+            e.stopPropagation();
+            this.hide();
+            var d = new Dialog(dialogs['verification_' + is[0].provider]);
+            d.dialog_from = 'changepassword';
+            d.render();
+            $(e.currentTarget).data('identity-id', is[0].id);
+            d.show(e);
+          }
+        },
+        'click .password-eye': function (e) {
+          var $e = $(e.currentTarget);
+          var $input = $e.prev();
+          $input.prop('type', function (i, val) {
+            return val === 'password' ? 'text' : 'password';
+          });
+          $e.toggleClass('icon-eye-close icon-eye-open');
+        },
         'click .xbtn-forgotpwd': function (e) {
           var user = Store.get('user');
           $(e.currentTarget).data('source', {identity: user.identities[0]});
@@ -443,40 +467,42 @@
 
       onShowBefore: function () {
         var user = Store.get('user');
-        this.$('#cp-fullname').val(user.name);
+        this.$('.identity > img').attr('src', user.avatar_filename);
+        this.$('.identity > span').text(user.name);
       },
 
       backdrop: false,
 
       viewData: {
 
-        cls: 'modal-cp mblack',
+        cls: 'modal-cp mblack modal-large',
 
         title: 'Change Password',
 
         body: ''
           + '<div class="shadow title">Change Password</div>'
-          + '<form class="modal-form form-horizontal">'
+          + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend style="white-space: nowrap;">Please enter current password and set new password.</legend>'
-              + '<div class="control-group">'
-                + '<label class="control-label" for="cp-fullname">Full name:</label>'
-                + '<div class="controls">'
-                  + '<input class="input-large disabled" tabIndex="-1" id="cp-fullname" value="" disabled="disabled" type="text">'
-                + '</div>'
+              + '<legend>Please enter current password and set new one.</legend>'
+
+              + '<div class="identity">'
+                + '<img class="avatar" src="" width="40" height="40" />'
+                + '<span></span>'
               + '</div>'
 
               + '<div class="control-group">'
                 + '<label class="control-label" for="cppwd">Password:</label>'
                 + '<div class="controls">'
-                  + '<input class="input-large" id="cppwd" placeholder="Type current password" type="password">'
+                  + '<input class="input-large" id="cppwd" placeholder="Current password" type="password" autocomplete="off" />'
+                  + '<i class="help-inline password-eye icon-eye-close"></i>'
                 + '</div>'
               + '</div>'
 
               + '<div class="control-group">'
                 + '<label class="control-label" for="cp-npwd">New Password:</label>'
                 + '<div class="controls">'
-                  + '<input class="input-large" id="cp-npwd" placeholder="Type new password" type="password">'
+                  + '<input class="input-large" id="cp-npwd" placeholder="Set new EXFE password" type="password" autocomplete="off" />'
+                  + '<i class="help-inline password-eye icon-eye-close"></i>'
                 + '</div>'
               + '</div>'
 
@@ -484,7 +510,7 @@
           + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from=".modal-cp" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white xbtn-resetpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="resetpassword">Reset Password...</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
 
@@ -492,6 +518,85 @@
 
     }
 
+  };
+
+  dialogs.resetpassword = {
+    options: {
+
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
+      events: {
+        'click .xbtn-cancel': function (e) {
+          var dialog_from = this.dialog_from;
+          this.hide();
+          if (dialog_from) {
+            $('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
+            // TODO: 先简单处理，后面是否要保存 target 元素
+          }
+        },
+      },
+
+      liItem: ''
+        + '<li>'
+          + '<div class="pull-right user-identity">'
+            + '<img class="avatar" src="" width="40" height="40" />'
+            + '<i class="provider"></i>'
+          + '</div>'
+          + '<a class="identity-name" href="#"></a>'
+        + '</li>',
+
+      backdrop: false,
+
+      viewData: {
+
+        cls: 'modal-rsp mblack',
+
+        title: 'Forgot Password',
+
+        footer: ''
+          + '<a class="pull-right xbtn-cancel">Cancel</a>',
+
+        body: ''
+          + '<div class="shadow title">Reset Password</div>'
+          + '<div>Reset password by verifying identity:</div>'
+          + '<ul class="unstyled">'
+          +'</ul>'
+
+      },
+
+      onShowBefore: function () {
+        var self = this;
+        var user = Store.get('user');
+        var item = self.options.liItem;
+        var identities = user.identities;
+        var $ul = self.$('ul');
+        var providers = {
+          email: 'email',
+          twitter: 'twitter',
+          phone: 'phone'
+        };
+        $ul.html('');
+        R.each(identities, function (v, i) {
+          if (v.status === 'CONNECTED') {
+            var $item = $(item);
+            $item.find('a').text(v.provider === 'twitter' ? v.name : v.external_id);
+            $item.find('a').attr('data-dialog-from', 'resetpassword');
+            $item.find('a').attr('data-dialog-type', 'verification_' + v.provider);
+            $item.find('a').attr('data-widget', 'dialog');
+            $item.find('a').attr('data-identity-id', v.id);
+            $item.find('img').attr('src', v.avatar_filename);
+            $item.find('i').addClass('icon-' + providers[v.provider]);
+            $ul.append($item);
+          }
+        });
+      }
+
+    }
   };
 
   dialogs.addidentity = {
@@ -548,7 +653,7 @@
 
       onShowBefore: function () {
         this.element.removeClass('hide');
-        this.$('#new-identity').lastfocus();
+        this.$('#new-identity').focusend();
       },
 
       onHideAfter: function () {
@@ -598,7 +703,7 @@
             + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from=".modal-id" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button href="#" class="pull-right xbtn-blue xbtn-success disabled">Add</button>'
       }
 
@@ -639,13 +744,23 @@
 
     options: {
 
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
       events: {
 
         'click .xbtn-cancel': function (e) {
-          var $e = this.element;
-          this.offSrcNode();
-          this.destory();
-          $e.remove();
+          var dialog_from = this.dialog_from;
+          this.hide();
+          if (dialog_from) {
+            $('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
+            // TODO: 先简单处理，后面是否要保存 target 元素
+            $('#identity').focusend();
+          }
         }
 
       },
@@ -679,7 +794,7 @@
 
       onShowBefore: function (e) {
         var $e = $(e.currentTarget);
-        var identity_id = $e.parents('li').data('identity-id');
+        var identity_id = $e.data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
@@ -730,7 +845,6 @@
           + '<p>We hate spam, will NEVER disappoint your trust.</p>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white">Manual Verification</button>'
           + '<button class="pull-right xbtn-blue">Verify</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
@@ -738,7 +852,7 @@
 
       onShowBefore: function (e) {
         var $e = $(e.currentTarget);
-        var identity_id = $e.parents('li').data('identity-id');
+        var identity_id = $e.data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
@@ -750,7 +864,33 @@
 
     }
 
-  }
+  };
+
+  dialogs.verification_phone = {
+
+    options: {
+
+      events: {
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        cls: 'mblack modal-ve',
+
+        title: 'Verification',
+
+        body: ''
+          + '<div class="shadow title">Identity Verification</div>'
+          + '<div>Identity to verify:</div>'
+          + ''
+
+      }
+
+    }
+
+  };
 
   dialogs.setpassword = {
 
@@ -893,7 +1033,7 @@
 
       if (this.isShown && (this.switchTabType === 'd01' || this.switchTabType === 'd03')) {
         var $identity = this.$('#identity');
-        $identity.lastfocus();
+        $identity.focusend();
       }
 
       if (t === 'd01') this.toggleSetupOrForgopwd(b);
