@@ -324,7 +324,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0) {
+    public function verifyIdentity($identity_id, $action, $user_id = 0) {
         // basic check
         if (!$identity || !$action) {
             return null;

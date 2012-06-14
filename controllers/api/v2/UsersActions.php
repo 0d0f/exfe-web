@@ -227,6 +227,48 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doVerifyUserIdentity() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        if (!($identity_id = intval($_POST['identity_id']))) {
+            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityById($identity_id, $user_id);
+        if (!$identity) {
+            apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+        }
+        //
+        switch ($identity->status) {
+            case 'CONNECTED':
+                apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+            case 'VERIFYING':
+            case 'REVOKED':
+                $viResult = $modUser->verifyIdentity(
+                    $identity, 'VERIFY', $user_id
+                );
+                if ($viResult) {
+                    if (isset($viResult['url'])) {
+                        $rtResult['url'] = $viResult['url'];
+                    }
+                    apiResponse($rtResult);
+                }
+        }
+        apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
+    }
+
+
     public function doResolveToken() {
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
