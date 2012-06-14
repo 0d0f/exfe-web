@@ -8,12 +8,12 @@ class UserModels extends DataModel {
 
 
     protected function getUserPasswdByUserId($user_id) {
-        return $this->getRow(
+        return $user_id ? $this->getRow(
             "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
              `encrypted_password`, `password_salt`, `current_sign_in_ip`,
              `reset_password_token`
              FROM   `users` WHERE `id` = {$user_id}"
-        );
+        ) : null;
     }
 
 
@@ -22,6 +22,86 @@ class UserModels extends DataModel {
             $password_salt === $this->salt ? $this->salt
           : (substr($password_salt, 3, 23) . EXFE_PASSWORD_SALT)
         ));
+    }
+
+
+    protected function getTokenInfo($token) {
+        $time  = Time();
+        return $token ? $this->getRow(
+            "SELECT * FROM `tokens`
+             WHERE `token`           = '{$token}'
+             AND   `expiration_date` >  FROM_UNIXTIME({$time})
+             AND   `used_at`         =  0"
+        ) : null;
+    }
+
+
+    protected function getSimilarTokenInfo($identity_id, $user_id, $action) {
+        return $identity_id && $user_id && $action ? $this->getRow(
+            "SELECT * FROM `tokens`
+             WHERE `identity_id` =  {$identity_id}
+             AND   `user_id`     =  {$user_id}
+             AND   `action`      = '{$action}'"
+        ) : null;
+    }
+
+
+    protected function destroySimilarTokens($identity_id, $action) {
+        return $identity_id && $action ? $this->query(
+            "UPDATE `tokens`
+             SET    `expiration_date` =  NOW()
+             WHERE  `identity_id`     =  {$identity_id}
+             AND    `action`          = '{$action}'"
+        ) : false;
+    }
+
+
+    protected function usedToken($token) {
+        $usResult = $token
+                 && $token['id']
+                 && $token['identity_id']
+                 && $token['action']
+                 && $this->query(
+            "UPDATE `tokens`
+             SET    `expiration_date` = NOW(),
+                    `used_at`         = NOW()
+             WHERE  `id`              = {$token['id']}"
+        );
+        if ($usResult) {
+            return $this->destroySimilarTokens(
+                $token['identity_id'], $token['action']
+            );
+        }
+        return false;
+    }
+
+
+    protected function insertNewToken($token, $action, $identity_id, $user_id, $expiration_date = 4320) { // exp in minutes: 60 * 24 * 3 = 3 days
+        if ($token && $action && $identity_id && $user_id && $expiration_date) {
+            $expiration_date += Time();
+            return $this->query(
+                "INSERT INTO `tokens` SET
+                 `token`           = '{$token}',
+                 `action`          = '{$action}',
+                 `identity_id`     =  {$identity_id},
+                 `user_id`         =  {$user_id},
+                 `created_at`      =  NOW(),
+                 `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
+                 `used_at`         =  0"
+            );
+        }
+        return false;
+    }
+
+
+    protected function extendTokenExpirationDate($id, $expiration_date = 60, $new_token = '') { // exp in minutes
+        $expiration_date = Time() + ($expiration_date * 60);                                    // for an hour by default
+        $sql_token       = $new_token ? ", `token` = '{$new_token}'" : '';
+        return $id ? $this->query(
+            "UPDATE `tokens` SET
+             `expiration_date` = FROM_UNIXTIME({$expiration_date}) {$sql_token}
+             WHERE  `id`       = {$id}"
+        ) : false;
     }
 
 
@@ -245,51 +325,49 @@ class UserModels extends DataModel {
 
 
     public function verifyIdentity($identity, $action, $user_id = 0) {
-        // base check
+        // basic check
         if (!$identity || !$action) {
             return null;
         }
+        // check action
+        switch ($action) {
+            case 'VERIFY':
+                if ($user_id) {
+                    $setResult = $this->setUserIdentityStatus(
+                        $user_id, $identity->id, 2
+                    );
+                    if (!$setResult) {
+                        return null;
+                    }
+                } else {
+                    // 创建新用户并设为验证状态
+                    $user_id = $this->addVerifyingEmptyUserByIdentityId(
+                        $identity->id
+                    );
+                    if (!$user_id) {
+                        return null;
+                    }
+                }
+                break;
+            case 'RESET_PASSWORD':
+                if (!$user_id) {
+                    return null;
+                }
+                break;
+            default:
+                return null;
+        }
+        // get ready
+        $result = array('user_id' => $user_id);
         // case provider
         switch ($identity->provider) {
             case 'email':
-                // check action
-                switch ($action) {
-                    case 'VERIFY':
-                        if ($user_id) {
-                            $setResult = $this->setUserIdentityStatus(
-                                $user_id,
-                                $identity->id,
-                                2
-                            );
-                            if (!$setResult) {
-                                return null;
-                            }
-                        } else {
-                            // 创建新用户并设为验证状态
-                            $user_id = $this->addVerifyingEmptyUserByIdentityId(
-                                $identity->id
-                            );
-                            if (!$user_id) {
-                                return null;
-                            }
-                        }
-                        break;
-                    case 'RESET_PASSWORD':
-                        if (!$user_id) {
-                            return null;
-                        }
-                        break;
-                    default:
-                        return null;
-                }
                 // get current token
-                $curToken = $this->getRow(
-                    "SELECT * FROM `tokens`
-                     WHERE `identity_id` =  {$identity->id}
-                     AND   `action`      = '{$action}'"
+                $curToken = $this->getSimilarTokenInfo(
+                    $identity->id, $user_id, $action
                 );
                 // make new token
-                $token = md5(json_encode(array(
+                $result['token'] = md5(json_encode(array(
                     'action'      => $action,
                     'identity_id' => $identity->id,
                     'user_id'     => $user_id,
@@ -297,33 +375,24 @@ class UserModels extends DataModel {
                     'random'      => Rand(0, Time()),
                 )));
                 // update database
-                $expiration_date = Time() + (60 * 60 * 24 * 3); // 3 days
                 if ($curToken) {
-                    if (strtotime($curToken['expiration_date']) >= Time()
+                    if (strtotime($curToken['expiration_date']) > Time()
                      && strtotime($curToken['used_at']) <= 0) { // extension
-                        $token = $curToken['token'];
+                        $result['token'] = $curToken['token'];
                     }
-                    $actResult = $this->query(
-                        "UPDATE `tokens` SET
-                         `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
-                         `used_at`         =  0,
-                         `token`           = '{$token}'
-                         WHERE `id`        =  {$curToken['id']}"
+                    $actResult = $this->extendTokenExpirationDate(
+                        $curToken['id'], 60 * 24 * 3, $result['token'] // 3 days
                     );
                 } else {
-                    $actResult = $this->query(
-                        "INSERT INTO `tokens` SET
-                         `token`           = '{$token}',
-                         `action`          = '{$action}',
-                         `identity_id`     =  {$identity->id},
-                         `user_id`         =  {$user_id},
-                         `created_at`      =  NOW(),
-                         `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
-                         `used_at`         =  0"
+                    $actResult = $this->insertNewToken(
+                        $result['token'], $action, $identity->id, $user_id
                     );
                 }
                 // return
-                return $actResult ? array('token' => $token) : null;
+                if ($actResult) {
+                    return $result;
+                }
+                break;
             case 'twitter':
         }
         // return
@@ -332,33 +401,63 @@ class UserModels extends DataModel {
 
 
     public function resolveToken($token) {
+        if (($curToken = $this->getTokenInfo($token))) {
+            $curToken['user_id']     = (int) $curToken['user_id'];
+            $curToken['identity_id'] = (int) $curToken['identity_id'];
+            switch ($curToken['action']) {
+                case 'VERIFY':
+                    $stResult = $this->setUserIdentityStatus(
+                        $curToken['user_id'], $curToken['identity_id'], 3
+                    );
+                    if ($stResult) {
+                        $siResult = $this->rawSiginin($curToken['user_id']);
+                        if ($siResult) {
+                            $this->usedToken($curToken);
+                            return array(
+                                'user_id'     => $siResult['user_id'],
+                                'token'       => $siResult['token'],
+                                'identity_id' => $curToken['identity_id'],
+                                'action'      => $curToken['action'],
+                            );
+                        }
+                    }
+                    break;
+                case 'RESET_PASSWORD':
+                    $seResult = $this->extendTokenExpirationDate(
+                        $curToken['id']
+                    );
+                    if ($seResult) {
+                        return array(
+                            'user_id'     => $curToken['user_id'],
+                            'identity_id' => $curToken['identity_id'],
+                            'action'      => $curToken['action'],
+                        );
+                    }
+            }
+        }
+        return null;
+    }
+
+
+    public function resetPasswordByToken($token, $password) {
         // basic check
-        if (!$token) {
+        if (!$token || !$password) {
             return null;
         }
-        // get current token
-        $time = Time();
-        $curToken = $this->getRow(
-            "SELECT * FROM `tokens`
-             WHERE `token`            = '{$token}'
-             AND   `expiration_date` >=  FROM_UNIXTIME({$time})
-             AND   `used_at`          =  0"
-        );
-        // update database
-        if ($curToken) {
-            $expiration_date = Time() + (60 * 60); // 1 hour
-            $this->query(
-                "UPDATE `tokens`
-                 SET    `expiration_date` = FROM_UNIXTIME({$expiration_date})
-                 WHERE  `id`              = {$curToken['id']}"
-            );
-            return array(
-                'action'      => $curToken['action'],
-                'identity_id' => intval($curToken['identity_id']),
-                'user_id'     => intval($curToken['user_id']),
-            );
+        // change password
+        if (($curToken = $thie->getTokenInfo($token))) {
+            $cpResult = $this->setUserPassword($curToken['user_id'], $password);
+            if ($cpResult) {
+                $siResult = $this->rawSiginin($curToken['user_id']);
+                $this->usedToken($curToken);
+                return array(
+                    'user_id'     => $siResult['user_id'],
+                    'token'       => $siResult['token'],
+                    'identity_id' => $curToken['identity_id'],
+                    'action'      => $curToken['action'],
+                );
+            }
         }
-        // return
         return null;
     }
 
@@ -390,12 +489,32 @@ class UserModels extends DataModel {
             ));
             if ((($status === 2 && $id_quantity === 1) || $status === 3)
              && $password === $passwdInDb['encrypted_password']) {
+                return $this->rawSiginin($user_id, $passwdInDb);
+            }
+        }
+        return null;
+    }
+
+
+    public function rawSiginin($user_id, $passwdInDb = null) {
+        if ($user_id) {
+            $passwdInDb = $passwdInDb ?: $this->getUserPasswdByUserId($user_id);
+            if ($passwdInDb) {
+                $siResult = true;
                 if (!$passwdInDb['auth_token']) {
                     $passwdInDb['auth_token'] = md5($time.uniqid());
-                    $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
-                    $this->query($sql);
+                    $siResult = $this->query(
+                        "UPDATE `users`
+                         SET    `auth_token` = '{$passwdInDb['auth_token']}'
+                         WHERE  `id`         =  {$user_id}"
+                    );
                 }
-                return array('user_id' => $user_id, 'token' => $passwdInDb['auth_token']);
+                if ($siResult) {
+                    return array(
+                        'user_id' => $user_id,
+                        'token'   => $passwdInDb['auth_token']
+                    );
+                }
             }
         }
         return null;
@@ -531,7 +650,8 @@ class UserModels extends DataModel {
             "INSERT INTO `users` SET `created_at` = NOW()"
         );
         // add verifying relation
-        if (($user_id = intval($isuResult))) {
+        if ($isuResult && isset($isuResult['insert_id'])) {
+            $user_id   = (int) $isuResult['insert_id'];
             $isrResult = $this->query(
                 "INSERT INTO `user_identity` SET
                  `identityid` = {$identity_id},
@@ -552,8 +672,8 @@ class UserModels extends DataModel {
         }
         $actResult = $this->query(
             "UPDATE `user_identity`
-             SET    `status`  = {$status},   `updated_at` = NOW()
-             WHERE  `user_id` = {$user_id} AND `identity` = {$identity_id}"
+             SET    `status` = {$status},     `updated_at` = NOW()
+             WHERE  `userid` = {$user_id} AND `identityid` = {$identity_id}"
         );
         return intval($actResult);
     }
@@ -605,12 +725,17 @@ class UserModels extends DataModel {
 
 
     public function setUserPassword($user_id, $password) {
-        $password = $this->encryptPassword($password, $passwordSalt = md5(createToken()));
+        if (!$user_id || !$password) {
+            return false;
+        }
+        $password = $this->encryptPassword(
+            $password, $passwordSalt = md5(createToken())
+        );
         return $this->query(
-            "UPDATE `users` SET
-             `encrypted_password` = '{$password}',
-             `password_salt`      = '{$passwordSalt}'
-             WHERE `id` = {$user_id}"
+            "UPDATE `users`
+             SET    `encrypted_password` = '{$password}',
+                    `password_salt`      = '{$passwordSalt}'
+             WHERE  `id`                 =  {$user_id}"
         );
     }
 
