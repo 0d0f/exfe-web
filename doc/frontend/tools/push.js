@@ -28,7 +28,7 @@ function main(args, argv) {
         if ('hint' in package) jscheck = package.hint;
         if (jscheck) {
           if (hint(source, jshintrc)) {
-            console.log('JSHint check passed.'); 
+            console.log('JSHint check passed.');
           } else {
             console.log('JSHint found errors.');
             hintErrors();

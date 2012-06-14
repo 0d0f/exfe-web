@@ -11,7 +11,8 @@
   <meta name="description" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 
-  <link href="css/exfe.css" rel="stylesheet" type="text/css" />
+  <link href="css/exfe_dev.css" rel="stylesheet" type="text/css" />
+  <script src="jslib/modernizr/lib/modernizr.js"></script>
 
 </head>
 <body>
@@ -76,7 +77,9 @@
             </ul>
 
           </div>
+          <!--
           <button class="pull-right xbtn xbtn-addidentity" data-widget="dialog" data-dialog-type="addidentity">Add Identity…</button>
+          -->
 
           <div class="pull-right identities-trash hide">
             <i class="pull-left icon-trash"></i>
@@ -208,17 +211,41 @@
     <h3><i class="icon-share"></i>Recent updates</h3>
     <div class="cross-list">
       {{#each updates}}
+      {{#if updated}}
       <div class="cross-box">
-        <a href="/!{{crossItem "id"}}" data-id="{{crossItem "id"}}">
-          <time class="pull-right">{{printTime3 "time"}}</time>
-          <h5>{{crossItem "title"}}</h5>
+        <a href="/!{{id}}" data-id="{{id}}">
+          <time class="pull-right">{{printTime3 time}}</time>
+          <h5>{{title}}</h5>
+
+          {{#if updated.time}}
+          <div><i class="icon-time"></i> {{printTime4 time}}</div>
+          {{/if}}
+
+          {{#if updated.place}}
+          <div><i class="icon-globe"></i> {{place.description}}</div>
+          {{/if}}
+
+          {{#if updated.title}}
+          <div><i class="icon-book"></i> {{title}}</div>
+          {{/if}}
+
+          {{#if updated.exfee}}
+          {{{rsvpAction exfee.invitations updated.exfee.identity_id}}}
+          {{/if}}
+
+          {{#if updated.conversation.item}}
+          {{#with updated.conversation.item}}
           <div><span class="blue">{{by_identity.name}}</span>:
-            {{content}}</div>
-          <div><span class="blue">{{conversation_nums}}</span>
+          {{content}}</div>
+          <div><i class="icon-comment"></i> <span class="blue">{{__conversation_nums}}</span>
             new post in conversation.
           </div>
+          {{/with}}
+          {{/if}}
+
         </a>
       </div>
+      {{/if}}
       {{/each}}
     </div>
   </div>
@@ -227,10 +254,8 @@
 
   <!-- JavaScript at the bottom for fast page loading -->
   <script src="jslib/common/lib/common.js"></script>
-  <script src="jslib/modernizr/lib/modernizr.js"></script>
   <script src="jslib/jquery/lib/jquery.js"></script>
-  <script src="jslib/jqueryplugins/lib/jquery.plugins.focusend.js"></script>
-  <!--script src="jslib/jqueryplugins/lib/jquery.plugins.dragleave.js"></script-->
+  <script src="jslib/jqfocusend/lib/jqfocusend.js"></script>
   <script src="jslib/handlebars/lib/handlebars.js"></script>
   <script src="jslib/util/lib/util.js"></script>
   <script src="jslib/rex/lib/rex.js"></script>

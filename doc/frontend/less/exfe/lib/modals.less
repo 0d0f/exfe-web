@@ -44,7 +44,7 @@
   height: 20px;
   padding: 0;
   border-bottom: none;
-  background: url(/img/modal-header-bg.png) repeat-x;
+  background: url("@{imgPath}/modal-header-bg.png") repeat-x;
   color: #b2b2b2;
 
   h3 {
@@ -186,7 +186,7 @@
     height: 100%;
     z-index: 2;
     left: 0;
-    background: url(/img/loading.jpeg) center center no-repeat rgba(251, 251, 251, .8);
+    background: url("@{imgPath}/loading.jpeg") center center no-repeat rgba(251, 251, 251, .8);
     background-size: 20px 20px;
     .border-radius(3px);
   }
@@ -243,7 +243,7 @@
     min-height: 160px;
     height: 160px;
     padding-top: 80px;
-    background: url(/img/rome-sandbox.jpg) no-repeat;
+    background: url("@{imgPath}/rome-sandbox.jpg") no-repeat;
     background-size: 400px 300px;
   }
 
@@ -306,5 +306,5 @@
   .small-loading {
     width: 16px;
     height: 16px;
-    background: ~'url(/img/small-loading.gif) no-repeat';
+    background: ~'url("@{imgPath}/small-loading.gif") no-repeat';
   }
