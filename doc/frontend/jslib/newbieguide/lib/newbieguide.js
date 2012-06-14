@@ -91,6 +91,7 @@ define(function (require) {
   $BODY.on('click.newbie', '.newbie .gatherax', function (e) {
     e.preventDefault();
     $('.navbar .dropdown-wrapper').trigger('mouseenter.dropdown');
+    $(window).scrollTop(0);
     $('.nbg-0')
       .stop(true, true)
       .addClass('bouncey')
