@@ -1,5 +1,5 @@
 /*!
- * Modernizr v2.5.3
+ * Modernizr v2.6pre
  * www.modernizr.com
  *
  * Copyright (c) Faruk Ates, Paul Irish, Alex Sexton
@@ -118,7 +118,7 @@ window.Modernizr = (function( window, document, undefined ) {
       // with a 'scoped' element, in our case the soft-hyphen entity as it won't mess with our measurements.
       // msdn.microsoft.com/en-us/library/ms533897%28VS.85%29.aspx
       // Documents served as xml will throw if using &shy; so use xml friendly encoded version. See issue #277
-      style = ['&#173;','<style>', rule, '</style>'].join('');
+      style = ['&#173;','<style id="s', mod, '">', rule, '</style>'].join('');
       div.id = mod;
       // IE6 will false positive on some tests due to the style element inside the test div somehow interfering offsetHeight, so insert it into body or fakebody.
       // Opera will act all quirky when injecting elements in documentElement when page is served as xml, needs fakebody too. #270
@@ -171,6 +171,7 @@ window.Modernizr = (function( window, document, undefined ) {
     //
     // The following results are known incorrects:
     //   Modernizr.hasEvent("webkitTransitionEnd", elem) // false negative
+    //   Modernizr.hasEvent("textInput") // in Webkit. github.com/Modernizr/Modernizr/issues/333
     //   ...
     isEventSupported = (function() {
 
@@ -228,49 +229,33 @@ window.Modernizr = (function( window, document, undefined ) {
       };
     }
 
-    // TODO :: Add function proto bind
-    // Taken from ES5-shim https://github.com/kriskowal/es5-shim/blob/master/es5-shim.js
-    // ES-5 15.3.4.5
-    // http://es5.github.com/#x15.3.4.5
+    // Adapted from ES5-shim https://github.com/kriskowal/es5-shim/blob/master/es5-shim.js
+    // es5.github.com/#x15.3.4.5
 
     if (!Function.prototype.bind) {
       Function.prototype.bind = function bind(that) {
 
         var target = this;
+        if (typeof target != "function") throw new TypeError();
 
-        if (typeof target != "function") {
-            throw new TypeError();
-        }
+        var
+        args = slice.call(arguments, 1),
+        bound = function () {
 
-        var args = slice.call(arguments, 1),
-            bound = function () {
+          if (this instanceof bound) {
 
-            if (this instanceof bound) {
+            var F = function(){};
+            F.prototype = target.prototype;
+            var self = new F();
+            var result = target.apply(self, args.concat(slice.call(arguments)));
 
-              var F = function(){};
-              F.prototype = target.prototype;
-              var self = new F;
+            if (Object(result) === result) return result;
+            return self;
 
-              var result = target.apply(
-                  self,
-                  args.concat(slice.call(arguments))
-              );
-              if (Object(result) === result) {
-                  return result;
-              }
-              return self;
-
-            } else {
-
-              return target.apply(
-                  that,
-                  args.concat(slice.call(arguments))
-              );
-
-            }
-
+          } else {
+            return target.apply( that, args.concat(slice.call(arguments)));
+          }
         };
-
         return bound;
       };
     }
@@ -304,11 +289,18 @@ window.Modernizr = (function( window, document, undefined ) {
     }
 
     /*>>testprop*/
-    /**
-     * testProps is a generic CSS / DOM property test; if a browser supports
-     *   a certain property, it won't return undefined for it.
-     *   A supported CSS property returns empty string when its not yet set.
-     */
+
+    // testProps is a generic CSS / DOM property test.
+
+    // In testing support for a given CSS property, it's legit to test:
+    //    `elem.style[styleName] !== undefined`
+    // If the property is supported it will return an empty string,
+    // if unsupported it will return undefined.
+
+    // We'll take advantage of this quick test and skip setting a style
+    // on our modernizr element, but instead just testing undefined vs
+    // empty string.
+
     function testProps( props, prefixed ) {
         for ( var i in props ) {
             if ( mStyle[ props[i] ] !== undefined ) {
@@ -369,54 +361,6 @@ window.Modernizr = (function( window, document, undefined ) {
     }
     /*>>testallprops*/
 
-    /*>>testBundle*/
-    /**
-     * testBundle tests a list of CSS features that require element and style injection.
-     *   By bundling them together we can reduce the need to touch the DOM multiple times.
-     */
-    var testBundle = (function( styles, tests ) {
-        var style = styles.join(''),
-            len = tests.length;
-
-        injectElementWithStyles(style, function( node, rule ) {
-            var style = document.styleSheets[document.styleSheets.length - 1],
-                // IE8 will bork if you create a custom build that excludes both fontface and generatedcontent tests.
-                // So we check for cssRules and that there is a rule available
-                // More here: github.com/Modernizr/Modernizr/issues/288 & github.com/Modernizr/Modernizr/issues/293
-                cssText = style ? (style.cssRules && style.cssRules[0] ? style.cssRules[0].cssText : style.cssText || '') : '',
-                children = node.childNodes, hash = {};
-
-            while ( len-- ) {
-                hash[children[len].id] = children[len];
-            }
-
-            /*>>touch*/           Modernizr['touch'] = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch || (hash['touch'] && hash['touch'].offsetTop) === 9; /*>>touch*/
-            /*>>csstransforms3d*/ Modernizr['csstransforms3d'] = (hash['csstransforms3d'] && hash['csstransforms3d'].offsetLeft) === 9 && hash['csstransforms3d'].offsetHeight === 3;          /*>>csstransforms3d*/
-            /*>>generatedcontent*/Modernizr['generatedcontent'] = (hash['generatedcontent'] && hash['generatedcontent'].offsetHeight) >= 1;       /*>>generatedcontent*/
-            /*>>fontface*/        Modernizr['fontface'] = /src/i.test(cssText) &&
-                                                                  cssText.indexOf(rule.split(' ')[0]) === 0;        /*>>fontface*/
-        }, len, tests);
-
-    })([
-        // Pass in styles to be injected into document
-        /*>>fontface*/        '@font-face {font-family:"font";src:url("https://")}'         /*>>fontface*/
-
-        /*>>touch*/           ,['@media (',prefixes.join('touch-enabled),('),mod,')',
-                                '{#touch{top:9px;position:absolute}}'].join('')           /*>>touch*/
-
-        /*>>csstransforms3d*/ ,['@media (',prefixes.join('transform-3d),('),mod,')',
-                                '{#csstransforms3d{left:9px;position:absolute;height:3px;}}'].join('')/*>>csstransforms3d*/
-
-        /*>>generatedcontent*/,['#generatedcontent:after{content:"',smile,'";visibility:hidden}'].join('')  /*>>generatedcontent*/
-    ],
-      [
-        /*>>fontface*/        'fontface'          /*>>fontface*/
-        /*>>touch*/           ,'touch'            /*>>touch*/
-        /*>>csstransforms3d*/ ,'csstransforms3d'  /*>>csstransforms3d*/
-        /*>>generatedcontent*/,'generatedcontent' /*>>generatedcontent*/
-
-    ]);/*>>testBundle*/
-
 
     /**
      * Tests
@@ -433,7 +377,7 @@ window.Modernizr = (function( window, document, undefined ) {
     // The *old* flexbox
     // www.w3.org/TR/2009/WD-css3-flexbox-20090723/
 
-    tests['flexboxlegacy'] = tests['flexbox-legacy'] = function() {
+    tests['flexboxlegacy'] = function() {
         return testPropsAll('boxDirection');
     };
 
@@ -474,7 +418,17 @@ window.Modernizr = (function( window, document, undefined ) {
      */
 
     tests['touch'] = function() {
-        return Modernizr['touch'];
+        var bool;
+
+        if(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+          bool = true;
+        } else {
+          injectElementWithStyles(['@media (',prefixes.join('touch-enabled),('),mod,')','{#modernizr{top:9px;position:absolute}}'].join(''), function( node ) {
+            bool = node.offsetTop === 9;
+          });
+        }
+
+        return bool;
     };
 
 
@@ -509,7 +463,7 @@ window.Modernizr = (function( window, document, undefined ) {
     // - Firefox shipped moz_indexedDB before FF4b9, but since then has been mozIndexedDB
     // For speed, we don't test the legacy (and beta-only) indexedDB
     tests['indexedDB'] = function() {
-      return !!testPropsAll("indexedDB",window);
+      return !!testPropsAll("indexedDB", window);
     };
 
     // documentMode logic from YUI to filter out IE8 Compat Mode
@@ -532,15 +486,12 @@ window.Modernizr = (function( window, document, undefined ) {
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     };
 
-    // FIXME: Once FF10 is sunsetted, we can drop prefixed MozWebSocket
-    // bugzil.la/695635
+    // FF3.6 was EOL'ed on 4/24/12, but the ESR version of FF10
+    // will be supported until FF19 (2/12/13), at which time, ESR becomes FF17.
+    // FF10 still uses prefixes, so check for it until then.
+    // for more ESR info, see: http://www.mozilla.org/en-US/firefox/organizations/faq/
     tests['websockets'] = function() {
-        for ( var i = -1, len = cssomPrefixes.length; ++i < len; ){
-          if ( window[cssomPrefixes[i] + 'WebSocket'] ){
-            return true;
-          }
-        }
-        return 'WebSocket' in window;
+        return 'WebSocket' in window || 'MozWebSocket' in window;
     };
 
 
@@ -576,15 +527,9 @@ window.Modernizr = (function( window, document, undefined ) {
     };
 
 
-    // In testing support for a given CSS property, it's legit to test:
-    //    `elem.style[styleName] !== undefined`
-    // If the property is supported it will return an empty string,
-    // if unsupported it will return undefined.
 
-    // We'll take advantage of this quick test and skip setting a style
-    // on our modernizr element, but instead just testing undefined vs
-    // empty string.
-
+    // this will false positive in Opera Mini
+    //   github.com/Modernizr/Modernizr/issues/396
 
     tests['backgroundsize'] = function() {
         return testPropsAll('backgroundSize');
@@ -685,8 +630,10 @@ window.Modernizr = (function( window, document, undefined ) {
         if ( ret && 'webkitPerspective' in docElement.style ) {
 
           // Webkit allows this media query to succeed only if the feature is enabled.
-          // `@media (transform-3d),(-o-transform-3d),(-moz-transform-3d),(-ms-transform-3d),(-webkit-transform-3d),(modernizr){ ... }`
-          ret = Modernizr['csstransforms3d'];
+          // `@media (transform-3d),(-webkit-transform-3d){ ... }`
+          injectElementWithStyles('@media (transform-3d),(-webkit-transform-3d){#modernizr{left:9px;position:absolute;height:3px;}}', function( node, rule ) {
+            ret = node.offsetLeft === 9 && node.offsetHeight === 3;
+          });
         }
         return ret;
     };
@@ -701,15 +648,33 @@ window.Modernizr = (function( window, document, undefined ) {
     // @font-face detection routine by Diego Perini
     // javascript.nwbox.com/CSSSupport/
 
-    // false positives in WebOS: github.com/Modernizr/Modernizr/issues/342
+    // false positives:
+    //   WebOS github.com/Modernizr/Modernizr/issues/342
+    //   WP7   github.com/Modernizr/Modernizr/issues/538
     tests['fontface'] = function() {
-        return Modernizr['fontface'];
+        var bool;
+
+        injectElementWithStyles('@font-face {font-family:"font";src:url("https://")}', function( node, rule ) {
+          var style = document.getElementById('smodernizr'),
+              sheet = style.sheet || style.styleSheet,
+              cssText = sheet ? (sheet.cssRules && sheet.cssRules[0] ? sheet.cssRules[0].cssText : sheet.cssText || '') : '';
+
+          bool = /src/i.test(cssText) && cssText.indexOf(rule.split(' ')[0]) === 0;
+        });
+
+        return bool;
     };
     /*>>fontface*/
 
     // CSS generated content detection
     tests['generatedcontent'] = function() {
-        return Modernizr['generatedcontent'];
+        var bool;
+
+        injectElementWithStyles(['#modernizr:after{content:"',smile,'";visibility:hidden}'].join(''), function( node ) {
+          bool = node.offsetHeight >= 1;
+        });
+
+        return bool;
     };
 
 
@@ -922,14 +887,6 @@ window.Modernizr = (function( window, document, undefined ) {
                       // Real url and email support comes with prebaked validation.
                       bool = inputElem.checkValidity && inputElem.checkValidity() === false;
 
-                    } else if ( /^color$/.test(inputElemType) ) {
-                        // chuck into DOM and force reflow for Opera bug in 11.00
-                        // github.com/Modernizr/Modernizr/issues#issue/159
-                        docElement.appendChild(inputElem);
-                        docElement.offsetWidth;
-                        bool = inputElem.value != smile;
-                        docElement.removeChild(inputElem);
-
                     } else {
                       // If the upgraded input compontent rejects the :) text, we got a winner
                       bool = inputElem.value != smile;
@@ -1001,7 +958,9 @@ window.Modernizr = (function( window, document, undefined ) {
 
          test = typeof test == 'function' ? test() : test;
 
-         docElement.className += ' ' + (test ? '' : 'no-') + feature;
+         if (enableClasses) {
+           docElement.className += ' ' + (test ? '' : 'no-') + feature;
+         }
          Modernizr[feature] = test;
 
        }

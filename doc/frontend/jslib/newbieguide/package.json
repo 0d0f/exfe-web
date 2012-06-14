@@ -1,9 +1,10 @@
 {
-  "name": "bus",
+  "name": "newbieguide",
   "version": "0.0.1",
-  "description": "App's 消息管理中心",
+  "description": "新手引导",
   "homepage": "https://exfe.com/",
   "author": "cfd",
-  "date": "17:04:27 05/11/2012",
+  "date": "01:39:38 06/14/2012",
   "hint": true
 }
+

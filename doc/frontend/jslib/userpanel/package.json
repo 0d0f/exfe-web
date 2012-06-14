@@ -1,9 +1,11 @@
 {
-  "name": "bus",
+  "name": "userpanel",
   "version": "0.0.1",
-  "description": "App's 消息管理中心",
+  "description": "user panel js",
   "homepage": "https://exfe.com/",
   "author": "cfd",
-  "date": "17:04:27 05/11/2012",
+  "date": "01:33:06 06/14/2012",
   "hint": true
 }
+
+

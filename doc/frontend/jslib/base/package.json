@@ -1,9 +1,9 @@
 {
-  "name": "bus",
+  "name": "base",
   "version": "0.0.1",
-  "description": "App's 消息管理中心",
+  "description": "Base 顶级类",
   "homepage": "https://exfe.com/",
   "author": "cfd",
-  "date": "17:04:27 05/11/2012",
+  "date": "01:23:37 06/14/2012",
   "hint": true
 }
