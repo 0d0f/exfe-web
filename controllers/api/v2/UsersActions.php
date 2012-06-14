@@ -153,18 +153,20 @@ class UsersActions extends ActionController {
         // get registration flag
         $raw_flag = $modUser->getRegistrationFlag($identity->id);
         // return
-        switch ($raw_flag) {
-            case 'VERIFY':
-            case 'SIGN_IN':
-            case 'RESET_PASSWORD':
-                apiResponse(array(
-                    'registration_flag' => $raw_flag,
-                    'identity'          => $identity,
-                ));
-            case 'SIGN_UP':
-                apiResponse(array(
-                    'registration_flag' => $raw_flag,
-                ));
+        if ($raw_flag) {
+            switch ($raw_flag['flag']) {
+                case 'VERIFY':
+                case 'SIGN_IN':
+                case 'RESET_PASSWORD':
+                    apiResponse(array(
+                        'registration_flag' => $raw_flag['flag'],
+                        'identity'          => $identity,
+                    ));
+                case 'SIGN_UP':
+                    apiResponse(array(
+                        'registration_flag' => $raw_flag['flag'],
+                    ));
+            }
         }
         apiError(500, 'failed', '');
     }
@@ -193,21 +195,23 @@ class UsersActions extends ActionController {
         // get registration flag
         $raw_flag = $modUser->getRegistrationFlag($identity->id);
         // return
-        switch ($raw_flag) {
-            case 'VERIFY':
-            case 'RESET_PASSWORD':
-                $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
-                if ($viResult) {
-                    if (isset($viResult['url'])) {
-                        $rtResult['url'] = $viResult['url'];
+        if ($raw_flag) {
+            switch ($raw_flag['flag']) {
+                case 'VERIFY':
+                case 'RESET_PASSWORD':
+                    $viResult = $modUser->verifyIdentity($identity, $raw_flag['flag']);
+                    if ($viResult) {
+                        if (isset($viResult['url'])) {
+                            $rtResult['url'] = $viResult['url'];
+                        }
+                        apiResponse($rtResult);
                     }
-                    apiResponse($rtResult);
-                }
-                apiError(500, 'failed', '');
-            case 'SIGN_IN':
-                apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
-            case 'SIGN_UP':
-                apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+                    apiError(500, 'failed', '');
+                case 'SIGN_IN':
+                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+                case 'SIGN_UP':
+                    apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+            }
         }
         apiError(500, 'failed', '');
     }
@@ -225,16 +229,20 @@ class UsersActions extends ActionController {
         if ($rsResult) {
             $identity = $modIdentity->getIdentityById($rsResult['identity_id']);
             if ($identity) {
-
-
-
-
-
-
-                apiResponse(array(
-                    'action'   => $rsResult['action'],
-                    'identity' => $identity,
-                ));
+                // get registration flag
+                $raw_flag = $modUser->getRegistrationFlag($identity->id);
+                if ($raw_flag && $raw_flag['flag'] === $rsResult['action']) {
+                    switch ($rsResult['action']) {
+                        case 'VERIFY':
+                            apiResponse(''
+                            );
+                        case 'RESET_PASSWORD':
+                            apiResponse(array(
+                                'action'    => 'RESET_PASSWORD',
+                                'next_step' => 'INPUT_NEW_PASSWORD',
+                            ));
+                    }
+                }
             }
         }
         apiError(400, 'invalid_token', 'Invalid Token');
@@ -243,7 +251,7 @@ class UsersActions extends ActionController {
 
     public function doCheckAuthorization() {
         // get models
-        $checkHelper   = $this->getHelperByName('check', 'v2');
+        $checkHelper   = $this->getHelperByName('check',   'v2');
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
