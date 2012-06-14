@@ -44,7 +44,7 @@
   height: 20px;
   padding: 0;
   border-bottom: none;
-  background: url(/img/modal-header-bg.png) repeat-x;
+  background: url("@{imgPath}/modal-header-bg.png") repeat-x;
   color: #b2b2b2;
 
   h3 {
@@ -77,6 +77,10 @@
   border-right: 1px solid rgba(255, 255, 255, .8);
   border-bottom: 1px solid rgba(255, 255, 255, .8);
   .border-radius(0 0 5px 5px);
+}
+
+.modal-large .modal-main {
+  min-height: 311px;
 }
 
 .modal-body {
@@ -121,6 +125,8 @@
 
   .disabled {
     color: #7f7f7f;
+    text-align: center;
+    border: 1px solid #d5d5d5;
   }
 
   .title {
@@ -186,7 +192,7 @@
     height: 100%;
     z-index: 2;
     left: 0;
-    background: url(/img/loading.jpeg) center center no-repeat rgba(251, 251, 251, .8);
+    background: url("@{imgPath}/loading.jpeg") center center no-repeat rgba(251, 251, 251, .8);
     background-size: 20px 20px;
     .border-radius(3px);
   }
@@ -230,7 +236,7 @@
 
   input {
     width: 224px;
-    padding: 2px 4px;
+    padding: 3px 4px;
     border: 1px solid #d5d5d5;
     font-size: 16px;
     margin-bottom: 0;
@@ -243,7 +249,7 @@
     min-height: 160px;
     height: 160px;
     padding-top: 80px;
-    background: url(/img/rome-sandbox.jpg) no-repeat;
+    background: url("@{imgPath}/rome-sandbox.jpg") no-repeat;
     background-size: 400px 300px;
   }
 
@@ -296,15 +302,12 @@
   }
 
   .help-inline {
-    display: block;
-    float: right;
-    padding-left: 0;
-    margin-right: 50px;
-    margin-top: 5.5px;
+    margin-top: 3px;
+    margin-left: 5px;
   }
 
   .small-loading {
     width: 16px;
     height: 16px;
-    background: ~'url(/img/small-loading.gif) no-repeat';
+    background: ~'url("@{imgPath}/small-loading.gif") no-repeat';
   }
