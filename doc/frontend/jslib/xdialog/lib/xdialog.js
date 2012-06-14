@@ -456,7 +456,7 @@
 
         body: ''
           + '<div class="shadow title">Change Password</div>'
-          + '<form class="modal-form form-horizontal">'
+          + '<form class="modal-form">'
             + '<fieldset>'
               + '<legend style="white-space: nowrap;">Please enter current password and set new password.</legend>'
               + '<div class="control-group">'
