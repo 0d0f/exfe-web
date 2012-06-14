@@ -208,17 +208,25 @@ class UserModels extends DataModel {
         }
         // get flag {
         // try connected user
-        if (isset($user_infos['CONNECTED']) {
+        if (isset($user_infos['CONNECTED'])) {
             if ($user_infos['CONNECTED'][0]['password']) {
                 return array('flag' => 'SIGN_IN');
             }
-            return array('flag' => 'RESET_PASSWORD', 'reason' => 'NO_PASSWORD');
+            return array(
+                'flag'    => 'RESET_PASSWORD',
+                'reason'  => 'NO_PASSWORD',
+                'user_id' => $user_infos['CONNECTED'][0]['user_id'],
+            );
         }
         // try verifying user
         if (isset($user_infos['VERIFYING'])) { // @todo: REVOKED 存在疑问
             foreach ($user_infos['VERIFYING'] as $uItem) {
                 if ($uItem['password'] && $uItem['id_quantity'] === 1) {
-                    return array('flag' => 'SIGN_IN');
+                    return array(
+                        'flag'    => 'SIGN_IN',
+                        'reason'  => 'NEW_USER',
+                        'user_id' => $uItem['user_id'],
+                    );
                 }
             }
         }
@@ -226,9 +234,9 @@ class UserModels extends DataModel {
         if (isset($user_infos['REVOKED'])) {
             return array('flag' => 'VERIFY', 'reason' => 'REVOKED');
         }
-        // try related user
-        if (isset($user_infos['RELATED']) {
-            return array('flag' => 'VERIFY', 'reason' => 'RELATED'););
+        // try verifying or related user
+        if (isset($user_infos['VERIFYING']) || isset($user_infos['RELATED'])) {
+            return array('flag' => 'VERIFY', 'reason' => 'RELATED');
         }
         // }
         // failed
@@ -244,6 +252,36 @@ class UserModels extends DataModel {
         // case provider
         switch ($identity->provider) {
             case 'email':
+                // check action
+                switch ($action) {
+                    case 'VERIFY':
+                        if ($user_id) {
+                            $setResult = $this->setUserIdentityStatus(
+                                $user_id,
+                                $identity->id,
+                                2
+                            );
+                            if (!$setResult) {
+                                return null;
+                            }
+                        } else {
+                            // 创建新用户并设为验证状态
+                            $user_id = $this->addVerifyingEmptyUserByIdentityId(
+                                $identity->id
+                            );
+                            if (!$user_id) {
+                                return null;
+                            }
+                        }
+                        break;
+                    case 'RESET_PASSWORD':
+                        if (!$user_id) {
+                            return null;
+                        }
+                        break;
+                    default:
+                        return null;
+                }
                 // get current token
                 $curToken = $this->getRow(
                     "SELECT * FROM `tokens`
@@ -254,6 +292,7 @@ class UserModels extends DataModel {
                 $token = md5(json_encode(array(
                     'action'      => $action,
                     'identity_id' => $identity->id,
+                    'user_id'     => $user_id,
                     'microtime'   => Microtime(),
                     'random'      => Rand(0, Time()),
                 )));
@@ -277,6 +316,7 @@ class UserModels extends DataModel {
                          `token`           = '{$token}',
                          `action`          = '{$action}',
                          `identity_id`     =  {$identity->id},
+                         `user_id`         =  {$user_id},
                          `created_at`      =  NOW(),
                          `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
                          `used_at`         =  0"
@@ -292,7 +332,7 @@ class UserModels extends DataModel {
 
 
     public function resolveToken($token) {
-        // base check
+        // basic check
         if (!$token) {
             return null;
         }
@@ -315,6 +355,7 @@ class UserModels extends DataModel {
             return array(
                 'action'      => $curToken['action'],
                 'identity_id' => intval($curToken['identity_id']),
+                'user_id'     => intval($curToken['user_id']),
             );
         }
         // return
@@ -480,42 +521,41 @@ class UserModels extends DataModel {
     }
 
 
-    public function addUserAndSetRelation($password, $name, $identity_id) {
-        $modIdentity = getModelByName('identity', 'v2');
-        $name        = mysql_real_escape_string($name);
-        $external_id = mysql_real_escape_string($external_id);
+    public function addVerifyingEmptyUserByIdentityId($identity_id) {
+        // basic check
         if (!$identity_id) {
-            return false;
+            return null;
         }
-        if (($user_id = $this->getUserIdByIdentityId($identity_id))) {
-            return $user_id;
-        } else {
-            $insResult = $this->query(
-                // @todo: need to add salt!!!
-                "INSERT INTO `users` SET
-                 `encrypted_password` = '{$password}',
-                 `name`               = '{$name}',
-                 `created_at`         = NOW()"
+        // add new user
+        $isuResult = $this->query(
+            "INSERT INTO `users` SET `created_at` = NOW()"
+        );
+        // add verifying relation
+        if (($user_id = intval($isuResult))) {
+            $isrResult = $this->query(
+                "INSERT INTO `user_identity` SET
+                 `identityid` = {$identity_id},
+                 `userid`     = {$user_id},
+                 `status`     = 2,
+                 `created_at` = NOW(),
+                 `updated_at` = NOW()"
             );
-            if (($user_id = intval($insResult))) {
-                $this->query(
-                    "INSERT INTO `user_identity` SET
-                     `identityid` = {$identity_id},
-                     `userid`     = {$user_id},
-                     `created_at` = NOW()"
-                );
-                if ($name) {
-                    $this->query(
-                        "UPDATE `identities` SET `name` = '{$displayname}' WHERE `id` = {$identity_id}"
-                    );
-                    $this->query(
-                        "UPDATE `user_identity` SET `status` = 3 WHERE `identityid` = {$identity_id}"
-                    );
-                }
-                return $user_id;
-            }
+            return intval($isrResult) ? $user_id : null;
         }
-        return false;
+        return null;
+    }
+
+
+    public function setUserIdentityStatus($user_id, $identity_id, $status) {
+        if (!$user_id || !$identity_id || !$status) {
+            return null;
+        }
+        $actResult = $this->query(
+            "UPDATE `user_identity`
+             SET    `status`  = {$status},   `updated_at` = NOW()
+             WHERE  `user_id` = {$user_id} AND `identity` = {$identity_id}"
+        );
+        return intval($actResult);
     }
 
 

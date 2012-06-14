@@ -133,6 +133,9 @@ class UsersActions extends ActionController {
 
 
     public function doGetRegistrationFlag() {
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modUser->addVerifyingEmptyUserByIdentityId(1234);
+        return;
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
@@ -185,7 +188,10 @@ class UsersActions extends ActionController {
             apiError(400, 'no_provider', 'provider must be provided');
         }
         // get identity
-        $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        $identity = $modIdentity->getIdentityByProviderExternalId(
+            $provider,
+            $external_id
+        );
         // init return value
         $rtResult = array('identity' => $identity);
         // 身份不存在，提示注册
@@ -199,7 +205,14 @@ class UsersActions extends ActionController {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
                 case 'RESET_PASSWORD':
-                    $viResult = $modUser->verifyIdentity($identity, $raw_flag['flag']);
+                    $user_id = $raw_flag['flag'] === 'VERIFY'
+                            && isset($raw_flag['user_id'])
+                             ? $raw_flag['user_id'] : 0;
+                    $viResult = $modUser->verifyIdentity(
+                        $identity,
+                        $raw_flag['flag'],
+                        $user_id
+                    );
                     if ($viResult) {
                         if (isset($viResult['url'])) {
                             $rtResult['url'] = $viResult['url'];
