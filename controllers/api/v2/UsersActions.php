@@ -133,6 +133,9 @@ class UsersActions extends ActionController {
 
 
     public function doGetRegistrationFlag() {
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modUser->addVerifyingEmptyUserByIdentityId(1234);
+        return;
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
@@ -150,41 +153,23 @@ class UsersActions extends ActionController {
         if (!$identity) {
             apiResponse(array('registration_flag' => 'SIGN_UP'));
         }
-        // get user info
-        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
-        // 只有身份没有用户，需要身份
-        if (!$user_info) {
-            apiResponse(array('registration_flag' => 'VERIFY'));
-        }
-        // get flag
-        switch ($user_info['status']) {
-            case 'CONNECTED':
-                if ($user_info['password']) {
+        // get registration flag
+        $raw_flag = $modUser->getRegistrationFlag($identity->id);
+        // return
+        if ($raw_flag) {
+            switch ($raw_flag['flag']) {
+                case 'VERIFY':
+                case 'SIGN_IN':
+                case 'RESET_PASSWORD':
                     apiResponse(array(
-                        'registration_flag' => 'SIGN_IN',
+                        'registration_flag' => $raw_flag['flag'],
                         'identity'          => $identity,
                     ));
-                }
-                apiResponse(array(
-                    'registration_flag' => 'RESET_PASSWORD',
-                    'identity'          => $identity,
-                ));
-                break;
-            case 'RELATED':
-                apiResponse(array('registration_flag' => 'SIGN_UP'));
-                break;
-            case 'VERIFYING':
-            case 'REVOKED': // @todo: 存在疑问
-                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
+                case 'SIGN_UP':
                     apiResponse(array(
-                        'registration_flag' => 'SIGN_IN',
-                        'identity'          => $identity,
+                        'registration_flag' => $raw_flag['flag'],
                     ));
-                }
-                apiResponse(array(
-                    'registration_flag' => 'VERIFY',
-                    'identity'          => $identity,
-                ));
+            }
         }
         apiError(500, 'failed', '');
     }
@@ -203,56 +188,43 @@ class UsersActions extends ActionController {
             apiError(400, 'no_provider', 'provider must be provided');
         }
         // get identity
-        $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        $identity = $modIdentity->getIdentityByProviderExternalId(
+            $provider,
+            $external_id
+        );
         // init return value
         $rtResult = array('identity' => $identity);
         // 身份不存在，提示注册
         if (!$identity) {
             apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
         }
-        // get user info
-        $user_info = $modUser->getUserIdentityInfoByIdentityId($identity->id);
-        // 只有身份没有用户，需要身份
-        if (!$user_info) {
-            $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
-            if ($viResult) {
-                if (isset($viResult['url'])) {
-                    $rtResult['url'] = $viResult['url'];
-                }
-                apiResponse($rtResult);
+        // get registration flag
+        $raw_flag = $modUser->getRegistrationFlag($identity->id);
+        // return
+        if ($raw_flag) {
+            switch ($raw_flag['flag']) {
+                case 'VERIFY':
+                case 'RESET_PASSWORD':
+                    $user_id = $raw_flag['flag'] === 'VERIFY'
+                            && isset($raw_flag['user_id'])
+                             ? $raw_flag['user_id'] : 0;
+                    $viResult = $modUser->verifyIdentity(
+                        $identity,
+                        $raw_flag['flag'],
+                        $user_id
+                    );
+                    if ($viResult) {
+                        if (isset($viResult['url'])) {
+                            $rtResult['url'] = $viResult['url'];
+                        }
+                        apiResponse($rtResult);
+                    }
+                    apiError(500, 'failed', '');
+                case 'SIGN_IN':
+                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
+                case 'SIGN_UP':
+                    apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
             }
-            apiError(500, 'failed', '');
-        }
-        // get flag
-        switch ($user_info['status']) {
-            case 'CONNECTED':
-                if ($user_info['password']) {
-                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
-                }
-                $viResult = $modUser->verifyIdentity($identity, 'RESET_PASSWORD');
-                if ($viResult) {
-                    if (isset($viResult['url'])) {
-                        $rtResult['url'] = $viResult['url'];
-                    }
-                    apiResponse($rtResult);
-                }
-                apiError(500, 'failed', '');
-                break;
-            case 'RELATED':
-                apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
-                break;
-            case 'VERIFYING':
-            case 'REVOKED': // @todo: 存在疑问
-                if ($user_info['password'] && $user_info['id_quantity'] === 1) {
-                    apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
-                }
-                $viResult = $modUser->verifyIdentity($identity, 'VERIFY');
-                if ($viResult) {
-                    if (isset($viResult['url'])) {
-                        $rtResult['url'] = $viResult['url'];
-                    }
-                    apiResponse($rtResult);
-                }
         }
         apiError(500, 'failed', '');
     }
@@ -270,10 +242,20 @@ class UsersActions extends ActionController {
         if ($rsResult) {
             $identity = $modIdentity->getIdentityById($rsResult['identity_id']);
             if ($identity) {
-                apiResponse(array(
-                    'action'   => $rsResult['action'],
-                    'identity' => $identity,
-                ));
+                // get registration flag
+                $raw_flag = $modUser->getRegistrationFlag($identity->id);
+                if ($raw_flag && $raw_flag['flag'] === $rsResult['action']) {
+                    switch ($rsResult['action']) {
+                        case 'VERIFY':
+                            apiResponse(''
+                            );
+                        case 'RESET_PASSWORD':
+                            apiResponse(array(
+                                'action'    => 'RESET_PASSWORD',
+                                'next_step' => 'INPUT_NEW_PASSWORD',
+                            ));
+                    }
+                }
             }
         }
         apiError(400, 'invalid_token', 'Invalid Token');
@@ -282,7 +264,7 @@ class UsersActions extends ActionController {
 
     public function doCheckAuthorization() {
         // get models
-        $checkHelper   = $this->getHelperByName('check', 'v2');
+        $checkHelper   = $this->getHelperByName('check',   'v2');
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
