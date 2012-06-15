@@ -317,23 +317,56 @@ define(function (require, exports, module) {
             $('#identity').focusend();
           }
         },
-        'click .xbtn-blue': function (e) {
-          // Verify ajax
+
+        'click .xbtn-verify': function (e) {
+          var $e = $(e.currentTarget);
+          if ($e.hasClass('disabled') || $e.hasClass('success')) return;
+          var i = $e.data('identity');
+          if (i) {
+            Api.request('forgotPassword'
+              , {
+                type: 'POST',
+                data: {
+                  provider: i.provider,
+                  external_id: i.external_id
+                },
+                beforeSend: function (xhr) {
+                  $e.addClass('disabled');
+                },
+                complete: function (xhr) {
+                  $e.removeClass('disabled');
+                }
+              }
+              , function (data) {
+                if (data.action === 'VERIFYING') {
+                  $e.text('Done').addClass('success');
+                }
+              }
+              , function (data) {
+              }
+            );
+          }
         }
       },
 
       onShowBefore: function (e) {
-        var data = $(e.currentTarget).data('source');
-        if (data) {
-          var identity = data.identity;
-          if (identity['avatar_filename'] === 'default.png') {
-            identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+        var identity_id = $(e.currentTarget).data('identity-id');
+        var user = Store.get('user');
+        var identities = user.identities;
+        var is = R.filter(identities, function (v, i) {
+          if (identity_id === v.id) return true;
+        })[0];
+        if (is) {
+          if (is['avatar_filename'] === 'default.png') {
+            is['avatar_filename'] = '/img/default_portraituserface_20.png';
           }
-          var external_id = identity.external_id;
-          var src = identity.avatar_filename;
-          var $identity = this.$('.identity');
-          $identity.find('img').attr('src', src);
-          $identity.find('span').html(external_id);
+          var external_id = is.external_id;
+          var src = is.avatar_filename;
+          var $identity = this.$('.user-identity');
+          $identity.find('img.avatar').attr('src', src);
+          $identity.find('i').addClass('icon16-identity-' + is.provider);
+          $identity.next().text(external_id);
+          this.$('.xbtn-verify').data('identity', is);
         }
       },
 
@@ -348,17 +381,17 @@ define(function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Forgot Password</div>'
           + '<div>Identity to reset password:</div>'
-          + '<div class="identity disabled">'
-            + '<img class="pull-right avatar" src="" width="20" height="20">'
-            + '<span></span>'
+          + '<div class="pull-right user-identity">'
+            + '<img class="avatar" src="" alt="" width="40" height="40" />'
+            + '<i class="provider"></i>'
           + '</div>'
-          + '<div>Confirm sending reset token to your mailbox?</div>'
+          + '<div class="identity disabled"></div>'
+          + '<div>Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
           + '<div class="xalert-error hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam.</div>'
           + '<div class="xalert-success hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue">Verify</button>'
-          + '<button class="pull-right xbtn-blue hide">Done</button>'
+          + '<button class="pull-right xbtn-blue xbtn-verify">Verify</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
       }
@@ -387,7 +420,7 @@ define(function (require, exports, module) {
           if (is.length === 1) {
             e.stopPropagation();
             this.hide();
-            var d = new Dialog(dialogs['verification_' + is[0].provider]);
+            var d = new Dialog(dialogs['forgotpassword']);
             d.dialog_from = 'changepassword';
             d.render();
             $(e.currentTarget).data('identity-id', is[0].id);
@@ -598,6 +631,7 @@ define(function (require, exports, module) {
     }
   };
 
+
   dialogs.addidentity = {
     options: {
 
@@ -751,6 +785,33 @@ define(function (require, exports, module) {
       },
 
       events: {
+        'click .xbtn-verify': function (e) {
+          var $e = $(e.currentTarget);
+          if ($e.hasClass('disabled') || $e.hasClass('success')) return;
+          var that = this;
+          var identity_id = $e.data('identity_id');
+          Api.request('verifyUserIdentity'
+            , {
+              type: 'POST',
+              data: {
+                identity_id: identity_id
+              },
+              beforeSend: function (data) {
+                $e.addClass('disabled');
+              },
+              complete: function () {
+                $e.removeClass('disabled');
+              }
+            }
+            , function (data) {
+              if (data.action === 'VERIFYING') {
+                $e.text('Done').addClass('success');
+              }
+            }
+            , function (data) {
+            }
+          );
+        },
 
         'click .xbtn-cancel': function (e) {
           var dialog_from = this.dialog_from;
@@ -781,12 +842,12 @@ define(function (require, exports, module) {
             + '<i class="provider icon16-identity-email"></i>'
           + '</div>'
           + '<div class="identity disabled"></div>'
-          + '<p class="hide">Confirm sending verification to your mailbox? It should arrive in minutes.</p>'
+          + '<p>Confirm sending verification to your mailbox?</p>'
           + '<p class="hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam. Or try ‘Manual Verification’.</p>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white">Manual Verification</button>'
-          + '<button class="pull-right xbtn-blue">Verify</button>'
+          //+ '<button href="#" class="xbtn-white">Manual Verification</button>'
+          + '<button class="pull-right xbtn-blue xbtn-verify">Verify</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
       },
@@ -798,7 +859,7 @@ define(function (require, exports, module) {
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
         })[0];
-
+        this.$('.xbtn-verify').data('identity_id', identity.id);
         this.$('.identity').text(identity.external_id);
         this.$('.avatar').attr('src', identity.avatar_filename);
       }
@@ -813,6 +874,34 @@ define(function (require, exports, module) {
     options: {
 
       events: {
+
+        'click .xbtn-verify': function (e) {
+          var $e = $(e.currentTarget);
+          var that = this;
+          if ($e.hasClass('disabled') || $e.hasClass('success')) return;
+          var identity_id = $e.data('identity_id');
+          Api.request('verifyUserIdentity'
+            , {
+              type: 'POST',
+              data: {
+                identity_id: identity_id
+              },
+              beforeSend: function (data) {
+                $e.addClass('disabled');
+              },
+              complete: function () {
+                $e.removeClass('disabled');
+              }
+            }
+            , function (data) {
+              if (data.action === 'VERIFYING') {
+                $e.text('Done').addClass('success');
+              }
+            }
+            , function (data) {
+            }
+          );
+        },
 
         'click .xbtn-cancel': function (e) {
           var $e = this.element;
@@ -844,7 +933,7 @@ define(function (require, exports, module) {
           + '<p>We hate spam, will NEVER disappoint your trust.</p>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue">Verify</button>'
+          + '<button class="pull-right xbtn-blue xbtn-verify">Verify</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
       },
@@ -856,7 +945,7 @@ define(function (require, exports, module) {
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
         })[0];
-
+        this.$('.xbtn-verify').data('identity_id', identity.id);
         this.$('.identity').text(identity.external_id);
         this.$('.avatar').attr('src', identity.avatar_filename);
       }
