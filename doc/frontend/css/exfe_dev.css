@@ -7098,7 +7098,7 @@ a.badge:hover {
 }
 
 .settings-panel .user-infos .identity-list > li > i {
-  padding-right: 4px;
+  margin-right: 4px;
   margin-left: -18px;
 }
 
