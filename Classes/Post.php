@@ -1,4 +1,5 @@
 <?php
+
 class Post extends Metainfo{
 
     public $content       = null;
@@ -11,7 +12,7 @@ class Post extends Metainfo{
 
         $this->by_identity = $identity;
         $this->content=$content;
-        $this->postable_id=$postable_id;
+        $this->postable_id=intval($postable_id);
         $this->postable_type=$postable_type;
         $this->via=$via;
     }
