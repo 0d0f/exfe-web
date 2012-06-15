@@ -517,6 +517,7 @@ define(function (require, exports, module) {
 
     $BODY.on('hover.profile', '.identity-list > li', function (e) {
       //$(this).find('i.icon-minus-sign').toggleClass('hide');
+      $(this).find('.xbtn-reverify, .xbtn-reauthorize').toggleClass('hide');
     });
 
     // removed identity
@@ -696,10 +697,10 @@ define(function (require, exports, module) {
       $(this).data('hoverout', t === 'mouseleave');
       if (t === 'mouseenter') {
         $(this).find('.xbtn-changepassword').removeClass('hide');
-        $(this).find('.xlabel').removeClass('hide');
+        //$(this).find('.xlabel').removeClass('hide');
       } else {
         $(this).find('.xbtn-changepassword').addClass('hide');
-        $(this).find('.xlabel').addClass('hide');
+        //$(this).find('.xlabel').addClass('hide');
       }
     });
 
