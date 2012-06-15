@@ -154,13 +154,14 @@ class UsersActions extends ActionController {
             apiResponse(array('registration_flag' => 'SIGN_UP'));
         }
         // get registration flag
-        $raw_flag = $modUser->getRegistrationFlag($identity->id);
+        $raw_flag = $modUser->getRegistrationFlag($identity);
         // return
         if ($raw_flag) {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
                 case 'SIGN_IN':
-                case 'RESET_PASSWORD':
+                case 'SET_PASSWORD':
+                case 'AUTHENTICATE':
                     apiResponse(array(
                         'registration_flag' => $raw_flag['flag'],
                         'identity'          => $identity,
@@ -189,8 +190,7 @@ class UsersActions extends ActionController {
         }
         // get identity
         $identity = $modIdentity->getIdentityByProviderExternalId(
-            $provider,
-            $external_id
+            $provider, $external_id
         );
         // init return value
         $rtResult = array('identity' => $identity);
@@ -199,14 +199,15 @@ class UsersActions extends ActionController {
             apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
         }
         // get registration flag
-        $raw_flag = $modUser->getRegistrationFlag($identity->id);
+        $raw_flag = $modUser->getRegistrationFlag($identity);
         // return
         if ($raw_flag) {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
-                case 'RESET_PASSWORD':
-                    $user_id = isset($raw_flag['user_id'])
-                             ? $raw_flag['user_id'] : 0;
+                case 'SET_PASSWORD':
+                case 'AUTHENTICATE':
+                    $user_id  = isset($raw_flag['user_id'])
+                              ? $raw_flag['user_id'] : 0;
                     $viResult = $modUser->verifyIdentity(
                         $identity, $raw_flag['flag'], $user_id
                     );
@@ -221,6 +222,53 @@ class UsersActions extends ActionController {
                     apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
                 case 'SIGN_UP':
                     apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
+            }
+        }
+        apiError(500, 'failed', '');
+    }
+
+
+    public function doForgotPassword() {
+        // get models
+        $modUser       = $this->getModelByName('user',     'v2');
+        $modIdentity   = $this->getModelByName('identity', 'v2');
+        // get inputs
+        $params = $this->params;
+        if (!$external_id = trim($_POST['external_id'])) {
+            apiError(400, 'no_external_id', 'external_id must be provided');
+        }
+        if (!$provider = trim($_POST['provider'])) {
+            apiError(400, 'no_provider', 'provider must be provided');
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityByProviderExternalId(
+            $provider, $external_id
+        );
+        // init return value
+        $rtResult = array('identity' => $identity);
+        // 身份不存在，提示注册
+        if (!$identity) {
+            apiError(400, 'identity_does_not_exist', 'Can not reset password, because identity does not exist.');
+        }
+        // get registration flag
+        $raw_flag = $modUser->getRegistrationFlag($identity);
+        // return
+        if ($raw_flag) {
+            switch ($raw_flag['flag']) {
+                case 'VERIFY':
+                case 'SET_PASSWORD':
+                case 'AUTHENTICATE':
+                    apiError(400, 'identity_is_being_verified', 'Can not reset password, because identity is being verified.');
+                case 'SIGN_IN':
+                    $viResult = $modUser->verifyIdentity(
+                        $identity, 'SET_PASSWORD', $raw_flag['user_id']
+                    );
+                    if ($viResult) {
+                        apiResponse($rtResult);
+                    }
+                    apiError(500, 'failed', '');
+                case 'SIGN_UP':
+                    apiError(400, 'identity_does_not_exist', 'Can not reset password, because identity does not exist.');
             }
         }
         apiError(500, 'failed', '');
@@ -286,7 +334,7 @@ class UsersActions extends ActionController {
                         'token'   => $rsResult['token'],
                         'action'  => 'VERIFIED',
                     ));
-                case 'RESET_PASSWORD':
+                case 'SET_PASSWORD':
                     apiResponse(array(
                         'action'  => 'INPUT_NEW_PASSWORD',
                     ));
