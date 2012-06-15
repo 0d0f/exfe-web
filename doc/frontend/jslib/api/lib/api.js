@@ -57,7 +57,13 @@ define('api', [], function (require, exports, module) {
 
 
     // Conversation
-    conversation: '/conversation/:exfee_id'
+    conversation: '/conversation/:exfee_id',
+
+
+    // Verify
+    verifyUserIdentity: '/users/verifyUserIdentity',
+
+    forgotPassword: '/users/forgotPassword'
   };
 
   // Not Use Token
