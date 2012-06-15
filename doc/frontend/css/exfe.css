@@ -4990,60 +4990,80 @@ a.badge:hover {
   background-position: 0      0;
 }
 
-.icon-cross {
+.icon-cross-blue {
   background-position: -12px 0;
 }
 
-.icon-time {
+.icon-cross {
   background-position: -24px 0;
 }
 
-.icon-place {
+.icon-time {
   background-position: -36px 0;
 }
 
-.icon-conversation {
+.icon-place {
   background-position: -48px 0;
 }
 
-.icon-plus {
+.icon-conversation {
   background-position: -60px 0;
 }
 
-.icon-minus {
+.icon-plus-blue {
   background-position: -72px 0;
 }
 
-.icon-rsvp-accepted {
+.icon-plus {
   background-position: -84px 0;
 }
 
-.icon-rsvp-declined {
+.icon-minus-red {
   background-position: -96px 0;
 }
 
-.icon-rsvo-interested {
+.icon-minus {
   background-position: -108px 0;
 }
 
-.icon-rsvp-noresponse {
+.icon-rsvp-accepted-blue {
   background-position: -120px 0;
 }
 
-.icon-rsvp-unreachable {
+.icon-rsvp-accepted {
   background-position: -132px 0;
 }
 
-.icon-rsvp-rejected {
+.icon-rsvp-declined-red {
   background-position: -144px 0;
 }
 
-.icon-invite {
+.icon-rsvp-declined {
   background-position: -156px 0;
 }
 
-.icon-calendar {
+.icon-rsvo-interested {
   background-position: -168px 0;
+}
+
+.icon-rsvp-noresponse {
+  background-position: -180px 0;
+}
+
+.icon-exclamation {
+  background-position: -192px 0;
+}
+
+.icon-rsvp-unreachable {
+  background-position: -204px 0;
+}
+
+.icon-invite {
+  background-position: -216px 0;
+}
+
+.icon-calendar {
+  background-position: -228px 0;
 }
 
 .icon-hot-tag {
@@ -5056,40 +5076,48 @@ a.badge:hover {
   background-position: -28px -42px;
 }
 
-.icon14-rsvp-accepted {
+.icon14-rsvp-accepted-blue {
   background-position: 0 -12px;
 }
 
-.icon14-rsvp-declined {
+.icon14-rsvp-accepted {
   background-position: -14px -12px;
 }
 
-.icon14-rsvo-interested {
+.icon14-rsvp-declined-red {
   background-position: -28px -12px;
 }
 
-.icon14-rsvp-noresponse {
+.icon14-rsvp-declined {
   background-position: -42px -12px;
 }
 
-.icon14-rsvp-unreachable {
+.icon14-rsvo-interested {
   background-position: -56px -12px;
 }
 
-.icon14-question {
+.icon14-rsvp-noresponse {
   background-position: -70px -12px;
 }
 
-.icon14-clear {
+.icon14-rsvp-unreachable {
   background-position: -84px -12px;
 }
 
-.icon14-mates-minus {
+.icon14-question {
   background-position: -98px -12px;
 }
 
-.icon14-mates-add {
+.icon14-clear {
   background-position: -112px -12px;
+}
+
+.icon14-mates-minus {
+  background-position: -126px -12px;
+}
+
+.icon14-mates-add {
+  background-position: -140px -12px;
 }
 
 .icon16-cross {
@@ -5104,36 +5132,44 @@ a.badge:hover {
   background-position: -32px -26px;
 }
 
-.icon16-bigcross {
+.icon16-bigcross-blue {
   background-position: -48px -26px;
 }
 
-.icon16-pass-show {
+.icon16-bigcross {
   background-position: -64px -26px;
 }
 
-.icon16-pass-hide {
+.icon16-pass-show {
   background-position: -80px -26px;
 }
 
-.icon16-identity-email {
+.icon16-pass-hide {
   background-position: -96px -26px;
 }
 
-.icon16-identity-twitter {
+.icon16-identity-email {
   background-position: -112px -26px;
 }
 
-.icon16-identity-phone {
+.icon16-identity-twitter {
   background-position: -128px -26px;
 }
 
-.icon16-warning {
+.icon16-identity-phone {
   background-position: -144px -26px;
 }
 
-.icon16-rsvp-unreachable {
+.icon16-notifiction {
   background-position: -160px -26px;
+}
+
+.icon16-warning {
+  background-position: -176px -26px;
+}
+
+.icon16-exclamation {
+  background-position: -192px -26px;
 }
 
 .icon40-twitter {
@@ -5953,13 +5989,13 @@ a.badge:hover {
 }
 
 .modal-fp .identity {
-  width: 320px;
+  width: 271px;
   height: 26px;
-  margin: 5px auto 10px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  margin-left: 10px;
   font-size: 18px;
   line-height: 26px;
-  text-align: center;
-  border: 1px solid #d5d5d5;
 }
 
 .modal-fp .identity .avatar {
