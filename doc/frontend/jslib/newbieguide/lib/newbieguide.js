@@ -32,7 +32,7 @@ define(function (require) {
       + '<p>parties, webinars, hangouts, trips, etc.</p>'
       + '<p><span class="x-sign">X</span> is private by default,</p><p>'
       + '</p><p>accessible to only attendees.</p>'
-      + '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x-sign">X</span></span> now!</p>'
+      //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x-sign">X</span></span> now!</p>'
     + '</div>',
 
     '<div class="newbie nbg-3">'
