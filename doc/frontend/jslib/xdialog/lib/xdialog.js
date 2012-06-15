@@ -64,15 +64,14 @@ define(function (require, exports, module) {
           var p = this.$('#password');
           var pt = this.$('#password-text');
           var $elem = $(e.currentTarget);
-          if ($elem.hasClass('icon-eye-close')) {
+          if ($elem.hasClass('icon16-pass-hide')) {
             p.addClass('hide');
             pt.val(p.val()).removeClass('hide');
           } else {
             pt.addClass('hide');
             p.val(pt.val()).removeClass('hide');
           }
-          $elem.toggleClass('icon-eye-close');
-          $elem.toggleClass('icon-eye-open');
+          $elem.toggleClass('icon16-pass-show icon16-pass-show');
         },
         'click .xbtn-forgotpwd': function (e) {
           e.preventDefault();
@@ -193,7 +192,7 @@ define(function (require, exports, module) {
                     + '<div class="controls">'
                       + '<input type="password" class="input-large" id="password" />'
                       + '<input type="text" class="input-large hide" autocomplete="off" id="password-text" />'
-                      + '<i class="help-inline icon-eye-close" id="password-eye"></i>'
+                      + '<i class="help-inline icon16-pass-hide" id="password-eye"></i>'
                     + '</div>'
                   + '</div>'
 
@@ -401,7 +400,7 @@ define(function (require, exports, module) {
           $input.prop('type', function (i, val) {
             return val === 'password' ? 'text' : 'password';
           });
-          $e.toggleClass('icon-eye-close icon-eye-open');
+          $e.toggleClass('icon16-pass-hide icon16-pass-show');
         },
         'click .xbtn-forgotpwd': function (e) {
           var user = Store.get('user');
@@ -494,7 +493,7 @@ define(function (require, exports, module) {
                 + '<label class="control-label" for="cppwd">Password:</label>'
                 + '<div class="controls">'
                   + '<input class="input-large" id="cppwd" placeholder="Current password" type="password" autocomplete="off" />'
-                  + '<i class="help-inline password-eye icon-eye-close"></i>'
+                  + '<i class="help-inline password-eye icon16-pass-hide"></i>'
                 + '</div>'
               + '</div>'
 
@@ -502,7 +501,7 @@ define(function (require, exports, module) {
                 + '<label class="control-label" for="cp-npwd">New Password:</label>'
                 + '<div class="controls">'
                   + '<input class="input-large" id="cp-npwd" placeholder="Set new EXFE password" type="password" autocomplete="off" />'
-                  + '<i class="help-inline password-eye icon-eye-close"></i>'
+                  + '<i class="help-inline password-eye icon16-pass-hide"></i>'
                 + '</div>'
               + '</div>'
 
@@ -590,7 +589,7 @@ define(function (require, exports, module) {
             $item.find('a').attr('data-widget', 'dialog');
             $item.find('a').attr('data-identity-id', v.id);
             $item.find('img').attr('src', v.avatar_filename);
-            $item.find('i').addClass('icon-' + providers[v.provider]);
+            $item.find('i').addClass('icon16-identity-' + providers[v.provider]);
             $ul.append($item);
           }
         });
@@ -694,7 +693,7 @@ define(function (require, exports, module) {
                     + '<div class="controls">'
                       + '<input type="password" class="input-large" id="password" />'
                       + '<input type="text" class="input-large hide" autocomplete="off" />'
-                      + '<i class="help-inline icon-eye-close" id="password-eye"></i>'
+                      + '<i class="help-inline icon16-pass-hide" id="password-eye"></i>'
                       + '<div class="xalert-error hide"></div>'
                     + '</div>'
                   + '</div>'
@@ -779,7 +778,7 @@ define(function (require, exports, module) {
           + '<div>Identity to verify:</div>'
           + '<div class="pull-right user-identity">'
             + '<img class="avatar" src="" alt="" width="40" height="40">'
-            + '<i class="provider icon-user"></i>'
+            + '<i class="provider icon16-identity-email"></i>'
           + '</div>'
           + '<div class="identity disabled"></div>'
           + '<p class="hide">Confirm sending verification to your mailbox? It should arrive in minutes.</p>'
@@ -838,7 +837,7 @@ define(function (require, exports, module) {
           + '<div>Identity to verify:</div>'
           + '<div class="pull-right user-identity">'
             + '<img class="avatar" src="" alt="" width="40" height="40">'
-            + '<i class="provider icon-user"></i>'
+            + '<i class="provider icon16-identity-twitter"></i>'
           + '</div>'
           + '<div class="identity disabled"></div>'
           + '<p>You will be directed to Twitter website to authorize <span class="x-sign">EXFE</span>. Don’t forget to follow @<span class="">EXFE</span>, it’s necessary for smooth service integration.</p>'
