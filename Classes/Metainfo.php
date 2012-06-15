@@ -13,7 +13,7 @@ abstract class Metainfo extends EFObject{
 
     public function __construct($id=0,$type="Metainfo") {
         parent::__construct($id, $type);
-        $this->relative = new stdClass;
+        $this->relative = array();
     }
 
 }
