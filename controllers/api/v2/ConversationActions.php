@@ -62,7 +62,12 @@ class ConversationActions extends ActionController {
         $modExfee = $this->getModelByName('exfee',  'v2');
         $cross_id = $modExfee->getCrossIdByExfeeId($new_post_obj->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
-        $msgArg   = array('cross' => $cross, 'to_identities' => array(), 'by_identity' => $identity);
+        $msgArg   = array(
+            'cross'         => $cross,
+            'post'          => $new_post_obj,
+            'to_identities' => array(),
+            'by_identity'   => $identity,
+        );
         $chkMobUs = array();
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
@@ -80,7 +85,7 @@ class ConversationActions extends ActionController {
         $hlpGobus->send('cross', 'Update', $msgArg);
         // }
 
-        apiResponse(array("post"=>$new_post_obj));
+        apiResponse(array("post" => $new_post_obj));
     }
 
 
