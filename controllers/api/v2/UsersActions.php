@@ -214,6 +214,15 @@ class UsersActions extends ActionController {
                     if ($viResult) {
                         if (isset($viResult['url'])) {
                             $rtResult['url'] = $viResult['url'];
+                        } else {
+                            // call Gobus {
+                            $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                            $hlpGobus->send('identity', 'Verify', array(
+                                'to_identity' => $identity,
+                                'action'      => $raw_flag['flag'],
+                                'token'       => $rtResult['token'],
+                            ));
+                            // }
                         }
                         apiResponse($rtResult);
                     }
