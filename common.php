@@ -689,15 +689,14 @@ function getUpdate($cross_id){
 }
 
 
-function saveUpdate($cross_id,$updated) {
-    if(intval($cross_id)>0)
-    {
-        $key=$cross_id;
+function saveUpdate($cross_id, $updated) {
+    if(intval($cross_id) > 0) {
+        $key = $cross_id;
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $update=json_decode($redis->HGET("cross:updated",$key),true);
-        foreach($updated as $k=>$v)
-            $update[$k]=$v;
+        $update = json_decode($redis->HGET("cross:updated",$key),true);
+        foreach($updated as $k => $v)
+            $update[$k] = $v;
 
         $update_json=json_encode($update);
         $redis->HSET("cross:updated",$key,$update_json);

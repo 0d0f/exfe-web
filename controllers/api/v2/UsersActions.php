@@ -331,9 +331,9 @@ class UsersActions extends ActionController {
                 if ($viResult) {
                     if (isset($viResult['url'])) {
                         $rtResult['url'] = $viResult['url'];
-                        $rtResult['action'] = 'AUTHENTICATE';
-                    } else {
                         $rtResult['action'] = 'REDIRECT';
+                    } else {
+                        $rtResult['action'] = 'VERIFYING';
                     }
                     apiResponse($rtResult);
                 }
