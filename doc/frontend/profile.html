@@ -101,7 +101,7 @@
           <div class="gr-b"><!--{{{-->
 
             <div class="siderbar invitations hide">
-              <h3><i class="icon-check"></i>Invitations</h3>
+              <h3><i class="icon16-invitation"></i>Invitations</h3>
             </div>
 
             <div class="ios-app hide">
@@ -129,14 +129,14 @@
     {{#makeDefault __default__ status}}<a class="makedefault" href="#">Make default</a>{{/makeDefault}}
     {{#ifOauthVerifying provider status}}
     <span class="xlabel hide">
-      <i class="icon-warning-sign"></i>
+      <i class="icon16-warning"></i>
       <span>Authorization failed.</span>
       <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter">Re-Authorize</button>
     </span>
     {{/ifOauthVerifying}}
     {{#ifVerifying provider status}}
     <span class="xlabel hide">
-      <i class="icon-warning-sign"></i>
+      <i class="icon16-warning"></i>
       <span>Pending verification, 5 days left.</span>
       <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
     </span>
@@ -208,7 +208,7 @@
   <script id="jst-updates" type="text/x-handlebars-template">
   {{#if updates}}
   <div class="siderbar updates">
-    <h3><i class="icon-share"></i>Recent updates</h3>
+    <h3><i class="icon16-updates"></i>Recent updates</h3>
     <div class="cross-list">
       {{#each updates}}
       {{#if updated}}
@@ -222,11 +222,11 @@
           {{/if}}
 
           {{#if updated.place}}
-          <div><i class="icon-globe"></i> {{place.description}}</div>
+          <div><i class="icon-place"></i> {{place.description}}</div>
           {{/if}}
 
           {{#if updated.title}}
-          <div><i class="icon-book"></i> {{title}}</div>
+          <div><i class="icon-cross"></i> {{title}}</div>
           {{/if}}
 
           {{#if updated.exfee}}
@@ -237,7 +237,7 @@
           {{#with updated.conversation.item}}
           <div><span class="blue">{{by_identity.name}}</span>:
           {{content}}</div>
-          <div><i class="icon-comment"></i> <span class="blue">{{__conversation_nums}}</span>
+          <div><i class="icon-conversation"></i> <span class="blue">{{__conversation_nums}}</span>
             new post in conversation.
           </div>
           {{/with}}

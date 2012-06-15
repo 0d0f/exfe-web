@@ -35,10 +35,24 @@
       margin-left: 0;
       list-style: none;
     }
+
+    .grey {
+      background: rgba(127, 127, 127, 1);
+    }
   </style>
 
   <!-- Include less.js -->
   <script src="../jslib/less/lib/less.js"></script>
+  <script>
+    function toggleGray() {
+      var icon_list = document.getElementById('icon-list');
+      if (icon_list.className === 'row') {
+        icon_list.className += ' grey';
+      } else {
+        icon_list.className = 'row';
+      }
+    }
+  </script>
 </head>
 <body>
 
@@ -50,12 +64,14 @@
       <section id="icons">
         <div class="page-header">
           <h1>Icons <small>Graciously provided by <a href="http://exfe.com" target="_blank">icons</a></small></h1>
+          <button class="btn" onclick="toggleGray()">Toggle Grey</button>
         </div>
 
-        <div class="row">
+        <div class="row" id="icon-list">
 
-          <div class="span3">
+          <div class="span4">
             <ul class="the-icons">
+              <li>12 x 12</li>
               <li><i class="icon-exfe"></i> icon-exfe</li>
               <li><i class="icon-cross"></i> icon-cross</li>
               <li><i class="icon-time"></i> icon-time</li>
@@ -76,8 +92,9 @@
             </ul>
           </div>
 
-          <div class="span3">
+          <div class="span4">
             <ul class="the-icons">
+              <li>14 x 14</li>
               <li><i class="icon14-rsvp-accepted"></i> icon14-rsvp-accepted</li>
               <li><i class="icon14-rsvp-declined"></i> icon14-rsvp-declined</li>
               <li><i class="icon14-rsvo-interested"></i> icon14-rsvp-interested</li>
@@ -90,15 +107,16 @@
             </ul>
           </div>
 
-          <div class="span3">
+          <div class="span4">
             <ul class="the-icons">
+              <li>16 x 16</li>
               <li><i class="icon16-cross"></i> icon16-cross</li>
               <li><i class="icon16-invitation"></i> icon16-invitation</li>
               <li><i class="icon16-updates"></i> icon16-updates</li>
               <li><i class="icon16-bigcross"></i> icon16-bigcross</li>
               <li><i class="icon16-pass-show"></i> icon16-pass-show</li>
               <li><i class="icon16-pass-hide"></i> icon16-pass-hide</li>
-              <li><i class="icon16-identity-mail"></i> icon16-identity-mail</li>
+              <li><i class="icon16-identity-email"></i> icon16-identity-email</li>
               <li><i class="icon16-identity-twitter"></i> icon16-identity-twitter</li>
               <li><i class="icon16-identity-phone"></i> icon16-identity-phone</li>
               <li><i class="icon16-warning"></i> icon16-warning</li>
@@ -106,38 +124,41 @@
             </ul>
           </div>
 
-          <div class="span3">
+          <div class="span4">
             <ul class="the-icons">
-              <li><i class="icon17x14-0"></i> icon17x14-0</li>
-              <li><i class="icon17x14-1"></i> icon17x14-1</li>
-              <li><i class="icon17x14-2"></i> icon17x14-2</li>
-              <li><i class="icon17x14-3"></i> icon17x14-3</li>
-              <li><i class="icon17x14-4"></i> icon17x14-4</li>
-              <li><i class="icon17x14-5"></i> icon17x14-5</li>
-              <li><i class="icon17x14-6"></i> icon17x14-6</li>
-              <li><i class="icon17x14-7"></i> icon17x14-7</li>
-              <li><i class="icon17x14-8"></i> icon17x14-8</li>
-              <li><i class="icon17x14-9"></i> icon17x14-9</li>
+              <li>17 x 14</li>
+              <li><i class="icon14-mates-0"></i> icon14-mates-0</li>
+              <li><i class="icon14-mates-1"></i> icon14-mates-1</li>
+              <li><i class="icon14-mates-2"></i> icon14-mates-2</li>
+              <li><i class="icon14-mates-3"></i> icon14-mates-3</li>
+              <li><i class="icon14-mates-4"></i> icon14-mates-4</li>
+              <li><i class="icon14-mates-5"></i> icon14-mates-5</li>
+              <li><i class="icon14-mates-6"></i> icon14-mates-6</li>
+              <li><i class="icon14-mates-7"></i> icon14-mates-7</li>
+              <li><i class="icon14-mates-8"></i> icon14-mates-8</li>
+              <li><i class="icon14-mates-9"></i> icon14-mates-9</li>
             </ul>
           </div>
 
-          <div class="span3">
+          <div class="span4">
             <ul class="the-icons">
+              <li>10 x 10</li>
               <li><i class="icon10-host-h"></i> icon10-host-h</li>
-              <li><i class="icon10-1"></i> icon10-1</li>
-              <li><i class="icon10-2"></i> icon10-2</li>
-              <li><i class="icon10-3"></i> icon10-3</li>
-              <li><i class="icon10-4"></i> icon10-4</li>
-              <li><i class="icon10-5"></i> icon10-5</li>
-              <li><i class="icon10-6"></i> icon10-6</li>
-              <li><i class="icon10-7"></i> icon10-7</li>
-              <li><i class="icon10-8"></i> icon10-8</li>
-              <li><i class="icon10-9"></i> icon10-9</li>
+              <li><i class="icon10-plus-1"></i> icon10-plus-1</li>
+              <li><i class="icon10-plus-2"></i> icon10-plus-2</li>
+              <li><i class="icon10-plus-3"></i> icon10-plus-3</li>
+              <li><i class="icon10-plus-4"></i> icon10-plus-4</li>
+              <li><i class="icon10-plus-5"></i> icon10-plus-5</li>
+              <li><i class="icon10-plus-6"></i> icon10-plus-6</li>
+              <li><i class="icon10-plus-7"></i> icon10-plus-7</li>
+              <li><i class="icon10-plus-8"></i> icon10-plus-8</li>
+              <li><i class="icon10-plus-9"></i> icon10-plus-9</li>
             </ul>
           </div>
 
-          <div class="span3">
+          <div class="span4">
             <ul class="the-icons">
+              <li>40 x 40</li>
               <li><i class="icon40-twitter"></i> icon40-twitter</li>
             </ul>
           </div>

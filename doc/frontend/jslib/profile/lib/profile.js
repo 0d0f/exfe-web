@@ -164,7 +164,7 @@ define(function (require, exports, module) {
     var html = '';
     if (i.rsvp_status !== 'INTERESTED') {
       var html = '<div><i class="';
-      html += 'icon-' + i.rsvp_status.toLowerCase() + '"></i> ';
+      html += 'icon-rsvp-' + i.rsvp_status.toLowerCase() + '"></i> ';
       html += i.rsvp_status.charAt(0) + i.rsvp_status.substr(1).toLowerCase() + ': ' + i.identity.name + '</div>';
     }
 
@@ -174,7 +174,7 @@ define(function (require, exports, module) {
       if (v) return true;
     }).join(' ,');
 
-    html += '<div><i class="icon-plus-sign"></i> ';
+    html += '<div><i class="icon-invite"></i> ';
     html += 'Invited: ' + is;
     html += '</div>';
     return html;
