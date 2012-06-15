@@ -26,7 +26,7 @@ class UserModels extends DataModel {
 
 
     protected function getTokenInfo($token) {
-        $time  = Time();
+        $time = Time();
         return $token ? $this->getRow(
             "SELECT * FROM `tokens`
              WHERE `token`           = '{$token}'
