@@ -8,7 +8,7 @@ define(function (require) {
     '<div class="newbie nbg-0">Gather a <span class="x-sign">X</span> here</div>',
 
     '<div class="newbie nbg-1">'
-      + '<div class="newbie-close">&times;</div>'
+      + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
       + '<p>Identities listed above are your representative online. Email,'
         + 'mobile #, web accounts from Twitter, <span>Facebook, Google and others</span>'
         + '(still working on these), any of these would be.</p>'
@@ -23,7 +23,7 @@ define(function (require) {
     + '</div>',
 
     '<div class="newbie nbg-2">'
-      + '<div class="newbie-close">×</div>'
+      + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
       + '<h4>Here lists all your <span class="x-sign">X</span>.</h4>'
       + '<p><span class="x-sign">X</span> (cross) is a gathering of people.</p>'
       + '<p>Too short list?</p>'
@@ -32,11 +32,11 @@ define(function (require) {
       + '<p>parties, webinars, hangouts, trips, etc.</p>'
       + '<p><span class="x-sign">X</span> is private by default,</p><p>'
       + '</p><p>accessible to only attendees.</p>'
-      + '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x-sign">X</span></span> now!</p>'
+      //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x-sign">X</span></span> now!</p>'
     + '</div>',
 
     '<div class="newbie nbg-3">'
-      + '<div class="newbie-close">×</div>'
+      + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
       + '<p>No invitation for you,<br /> yet.</p>'
     + '</div>'
 
