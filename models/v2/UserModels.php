@@ -276,9 +276,9 @@ class UserModels extends DataModel {
     }
 
 
-    public function getRegistrationFlag($identity_id) {
+    public function getRegistrationFlag($identity) {
         // get user info
-        $user_infos = $this->getUserIdentityInfoByIdentityId($identity_id);
+        $user_infos = $this->getUserIdentityInfoByIdentityId($identity->id);
         // no user
         if (!$user_infos) {
             return array(
@@ -289,17 +289,28 @@ class UserModels extends DataModel {
         // get flag {
         // try connected user
         if (isset($user_infos['CONNECTED'])) {
-            if ($user_infos['CONNECTED'][0]['password']) {
-                return array('flag' => 'SIGN_IN');
-            }
-            return array(
-                'flag'    => 'RESET_PASSWORD',
-                'reason'  => 'NO_PASSWORD',
+            $rtResult = array(
                 'user_id' => $user_infos['CONNECTED'][0]['user_id'],
             );
+            if ($user_infos['CONNECTED'][0]['password']) {
+                $rtResult['flag'] = 'SIGN_IN';
+                return $rtResult;
+            }
+            $rtResult['reason'] = 'NO_PASSWORD';
+            switch ($identity->provider) {
+                case 'email':
+                    $rtResult['flag'] = 'SET_PASSWORD';
+                    break;
+                case 'twitter':
+                    $rtResult['flag'] = 'AUTHENTICATE';
+                    break;
+                default:
+                    return null;
+            }
+            return $rtResult;
         }
         // try verifying user
-        if (isset($user_infos['VERIFYING'])) { // @todo: REVOKED 存在疑问
+        if (isset($user_infos['VERIFYING'])) {
             foreach ($user_infos['VERIFYING'] as $uItem) {
                 if ($uItem['password'] && $uItem['id_quantity'] === 1) {
                     return array(
@@ -312,7 +323,18 @@ class UserModels extends DataModel {
         }
         // try revoked user
         if (isset($user_infos['REVOKED'])) {
-            return array('flag' => 'VERIFY', 'reason' => 'REVOKED');
+            $rtResult = array('reason'  => 'REVOKED');
+            switch ($identity->provider) {
+                case 'email':
+                    $rtResult['flag'] = 'VERIFY';
+                    break;
+                case 'twitter':
+                    $rtResult['flag'] = 'AUTHENTICATE';
+                    break;
+                default:
+                    return null;
+            }
+            return $rtResult;
         }
         // try verifying or related user
         if (isset($user_infos['VERIFYING']) || isset($user_infos['RELATED'])) {
@@ -324,7 +346,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity_id, $action, $user_id = 0) {
+    public function verifyIdentity($identity, $action, $user_id = 0) {
         // basic check
         if (!$identity || !$action) {
             return null;
@@ -349,7 +371,7 @@ class UserModels extends DataModel {
                     }
                 }
                 break;
-            case 'RESET_PASSWORD':
+            case 'SET_PASSWORD':
                 if (!$user_id) {
                     return null;
                 }
@@ -422,7 +444,7 @@ class UserModels extends DataModel {
                         }
                     }
                     break;
-                case 'RESET_PASSWORD':
+                case 'SET_PASSWORD':
                     $seResult = $this->extendTokenExpirationDate(
                         $curToken['id']
                     );
