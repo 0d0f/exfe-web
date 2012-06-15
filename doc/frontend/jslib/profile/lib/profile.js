@@ -44,7 +44,6 @@ define(function (require, exports, module) {
   });
 
   Handlebars.registerHelper('avatarFilename', function (context, options) {
-    if (!context) context = 'http://www.gravatar.com/avatar/c778bccf875fc4b76c9072f95f2671de?d=API_URL%2Fv2%2Favatar%2Fget%3Fprovider%3Demail%26external_id%3Dc12%40demox.io';
     return context;
   });
 
