@@ -121,6 +121,9 @@
   </div>
 
   <!-- JS Templates -->
+  <!--
+  {{#if __default__}}<span class="default">default</span>{{/if}}
+  -->
   <script id="jst-identity-list" type="text/x-handlebars-template">
   {{#each identities}}
   <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
@@ -141,7 +144,6 @@
       <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
     </span>
     {{/ifVerifying}}
-    {{#if __default__}}<span class="default">default</span>{{/if}}
   </li>
   {{/each}}
   </script>
