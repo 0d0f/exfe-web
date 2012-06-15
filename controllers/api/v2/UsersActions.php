@@ -212,18 +212,30 @@ class UsersActions extends ActionController {
                         $identity, $raw_flag['flag'], $user_id
                     );
                     if ($viResult) {
-                        if (isset($viResult['url'])) {
-                            $rtResult['url'] = $viResult['url'];
-                        } else {
-                            // call Gobus {
+                        $gobusFlag = '';
+                        switch ($raw_flag['flag']) {
+                            case 'VERIFY':
+                                $gobusFlag = 'CONFIRM_IDENTITY';
+                                $rtResult['action'] = 'VERIFYING';
+                                break;
+                            case 'SET_PASSWORD':
+                                $gobusFlag = 'SET_PASSWORD';
+                                $rtResult['action'] = 'VERIFYING';
+                                break;
+                            case 'AUTHENTICATE':
+                                $rtResult['url'] = $viResult['url'];
+                                $rtResult['action'] = 'REDIRECT';
+                        }
+                        // call Gobus {
+                        if ($gobusFlag) {
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
                             $hlpGobus->send('identity', 'Verify', array(
                                 'to_identity' => $identity,
-                                'action'      => $raw_flag['flag'],
-                                'token'       => $rtResult['token'],
+                                'action'      => $gobusFlag,
+                                'token'       => $viResult['token'],
                             ));
-                            // }
                         }
+                        // }
                         apiResponse($rtResult);
                     }
                     apiError(500, 'failed', '');
@@ -273,6 +285,7 @@ class UsersActions extends ActionController {
                         $identity, 'SET_PASSWORD', $raw_flag['user_id']
                     );
                     if ($viResult) {
+                        $rtResult['action'] = 'VERIFYING';
                         apiResponse($rtResult);
                     }
                     apiError(500, 'failed', '');
@@ -318,6 +331,9 @@ class UsersActions extends ActionController {
                 if ($viResult) {
                     if (isset($viResult['url'])) {
                         $rtResult['url'] = $viResult['url'];
+                        $rtResult['action'] = 'AUTHENTICATE';
+                    } else {
+                        $rtResult['action'] = 'REDIRECT';
                     }
                     apiResponse($rtResult);
                 }
