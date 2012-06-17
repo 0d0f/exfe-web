@@ -165,10 +165,10 @@ define(function (require) {
               var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
               if (now <= dt && dt <= ne) {
                 s = '<li class="tag">'
-                      + '<span class="now">NOW</span>'
+                      + '<i class="icon10-now"></i>'
               } else if (n24 <= dt && dt < now) {
                 s = '<li class="tag">'
-                      + '<span class="hr24">24hr</span>'
+                      + '<i class="icon10-24hr"></i>'
               } else {
                 s = '<li>'
               }
@@ -179,7 +179,7 @@ define(function (require) {
 
             var s = '{{#if crosses}}'
                 + '<div>Upcoming:</div>'
-                + '<ul class="crosses">'
+                + '<ul class="unstyled crosses">'
                 + '{{#each crosses}}'
                   + '{{{alink this}}}'
                 + '{{/each}}'
