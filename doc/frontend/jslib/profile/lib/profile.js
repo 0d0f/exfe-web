@@ -557,7 +557,7 @@ define(function (require, exports, module) {
       var $input = $('<input type="text" value="' + value + '" class="pull-left" />');
       $input.data('oldValue', value);
       $(this).after($input).hide();
-      $input.lastfocus();
+      $input.focusend();
       $('.xbtn-changepassword').addClass('hide');
     });
 
@@ -593,7 +593,7 @@ define(function (require, exports, module) {
       var $input = $('<input type="text" value="' + value + '" class="username-input" />');
       $input.data('oldValue', value);
       $(this).after($input).hide();
-      $input.lastfocus();
+      $input.focusend();
     });
 
     $BODY.on('focusout.profile keydown.profile', '.identity-list .username-input', function (e) {
@@ -755,10 +755,10 @@ define(function (require, exports, module) {
     $(this).parent().fadeOut();
   });
 
-  /*
   // identity remote
   $BODY.on('dragstart.profile', '.identity-list > li', function (e) {
     e.stopPropagation();
+    $(this).addClass('dragme');
     $('.xbtn-addidentity').addClass('hide');
     $('.identities-trash').removeClass('hide over');
     e.originalEvent.dataTransfer.effectAllowed = 'move';
@@ -767,6 +767,7 @@ define(function (require, exports, module) {
   });
 
   $BODY.on('dragend.profile', '.identity-list > li', function (e) {
+    $(this).removeClass('dragme');
     e.stopPropagation();
     return false;
   });
@@ -796,6 +797,5 @@ define(function (require, exports, module) {
 
     return false;
   });
-  */
 
 });
