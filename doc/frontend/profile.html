@@ -73,7 +73,7 @@
               <button class="xbtn xbtn-changepassword hide" data-widget="dialog" data-dialog-type="changepassword">Change Password...</button>
               <h3 class="pull-left"></h3>
             </div>
-            <ul class="identity-list">
+            <ul class="unstyled identity-list">
             </ul>
 
           </div>
@@ -82,9 +82,11 @@
           -->
 
           <div class="pull-right identities-trash hide">
-            <i class="pull-left icon-trash"></i>
-            <span class="draged">Drop to remove identity</span>
-            <span class="removed">Remove Identity</span>
+            <div class="pull-right trash-message">
+              <span class="draged">Drop here to remove identity</span>
+              <span class="removed">Remove Identity</span>
+            </div>
+            <i class="icon-trash"></i>
             <div class="trash-overlay"></div>
           </div>
 
@@ -127,6 +129,7 @@
   <script id="jst-identity-list" type="text/x-handlebars-template">
   {{#each identities}}
   <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
+    <i class="icon-move"></i>
     <span class="avatar"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
     </span><span class="username"><em>{{printName name external_id}}</em></span><span class="identity">{{atName provider external_id}}</span> <i class="icon16-identity-{{provider}}"></i>
     {{#makeDefault __default__ status}}<a class="makedefault" href="#">Make default</a>{{/makeDefault}}

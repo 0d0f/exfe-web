@@ -25,7 +25,7 @@
     and change to name of desired theme. (See docs) -->
   <!--link type="text/css" rel="stylesheet" href="extras/css/amelia.css" /-->
 
-  <link rel="stylesheet/less" href="../less/exfe/lib/exfe.less" />
+  <link rel="stylesheet/less" href="../less/exfe/lib/exfe_dev.less" />
 
   <!-- Include less.js -->
   <script src="../jslib/less/lib/less.js"></script>
@@ -46,7 +46,9 @@
       <div class="container">
 
         <!--  EXFE LOGO -->
-        <a href="#" class="brand">EXFE</a>
+        <a href="#" class="brand">
+          <img width="140" height="50" alt="EXFE" src="/img/exfe-logo.png" />
+        </a>
 
         <a href="#" class="version">SANDBOX</a>
 
@@ -109,30 +111,40 @@
               <button class="xbtn xbtn-changepassword">Change Password...</button>
               <h3 class="pull-left">Steve Exfee</h3>
             </div>
-            <ul class="identity-list">
+            <ul class="unstyled identity-list">
               <li class="default">
-                <i class="icon-minus-sign">
+                <i class="icon14-clear icon-move">
                   </i><span class="avatar"><img src="/img/users/u1x20.png" alt="" width="20" height="20" />
-                </span><span class="username">SteveE</span><span class="identity">@stevexfee</span>
+                </span><span class="username">SteveE</span><span class="identity">@stevexfee</span><i class="icon16-identity-twitter"></i>
                 <span class="xlabel">
-                  <i class="icon-warning-sign"></i>
+                  <i class="icon16-warning"></i>
+                  <span>Authorization failed.</span>
+                  <button class="xbtn xbtn-reauthorize">Re-Authorize</button>
+                </span>
+              </li>
+              <li class="dragme">
+                <i class="icon14-clear icon-move">
+                  </i><span class="avatar"><img src="/img/users/u1x20.png" alt="" width="20" height="20" />
+                </span><span class="username">SteveE</span><span class="identity">@stevexfee</span><i class="icon16-identity-email"></i>
+                <span class="xlabel">
+                  <i class="icon16-warning"></i>
                   <span>Authorization failed.</span>
                   <button class="xbtn xbtn-reauthorize">Re-Authorize</button>
                 </span>
               </li>
               <li class="editing">
-                <i class="icon-minus-sign">
+                <i class="icon14-clear icon-move">
                 </i><span class="avatar"><img src="/img/users/u2x20.png" alt="" width="20" height="20" />
                 </span><span class="username"><input value="Steve Exfee"
                 type="text" /></span><span class="identity">steve@0d0f.com</span>
                 <span class="mkdef">Make Default</span>
               </li>
               <li>
-                <i class="icon-minus-sign">
+                <i class="icon14-clear icon-move">
                 </i><span class="avatar"><img src="/img/users/u2x20.png" alt="" width="20" height="20" />
                 </span><span class="username">SteveE</span><span class="identity">@stevexfee</span>
                 <span class="xlabel">
-                  <i class="icon-warning-sign"></i>
+                  <i class="icon16-warning"></i>
                   <span>Pending verification, 5 days left.</span>
                   <button class="xbtn xbtn-reverify">Re-Verify...</button>
                 </span>
@@ -187,9 +199,11 @@
             <button class="pull-right xbtn xbtn-addidentity">Add Identity…</button>
 
             <div class="pull-right identities-trash over">
+              <div class="pull-right trash-message">
+                <span class="draged">Drop here to remove identity</span>
+                <span class="removed">Remove Identity</span>
+              </div>
               <i class="icon-trash"></i>
-              <span class="draged">Drop to remove identity</span>
-              <span class="removed">Remove Identity</span>
               <div class="trash-overlay"></div>
             </div>
 
@@ -198,15 +212,15 @@
 
         <!-- newbiew guide -->
         <div class="newbie nbg-1">
-          <div class="newbie-close">&times;</div>
+          <div class="newbie-close"><i class="icon14-clear"></i></div>
           <p>Identities listed above are your representative online. Email,
             mobile #, web accounts from Twitter, <span>Facebook, Google and others</span>
             (still working on these), any of these would be.</p>
           <p>Please set up following items for easier use of <span class="x-sign">EXFE</span>:</p>
-          <ul class="unstyled">
-            <li>&radic; Set account password for security.</li>
-            <li>&radic; Set a portrait that your friends can recognize.</li>
-            <li>&radic; Add more frequently used identities that may use for gathering.</li>
+          <ul>
+            <li>Set account password for security.</li>
+            <li>Set a portrait that your friends can recognize.</li>
+            <li>Add more frequently used identities that may use for gathering.</li>
           </ul>
           <p><span class="x-sign">EXFE</span> is ready for your iPhone, and Android soon.</p>
           <div class="pull-right arrow rb"></div>
@@ -317,7 +331,7 @@
               </div>
 
               <div class="newbie nbg-2">
-                <div class="newbie-close">&times;</div>
+                <div class="newbie-close"><i class="icon14-clear"></i></div>
                 <h4>Here lists all your <span class="x-sign">X</span>.</h4>
                 <p><span class="x-sign">X</span> (cross) is a gathering of people.</p>
                 <p>Too short list?</p>
@@ -336,7 +350,7 @@
           <div class="gr-b"><!--{{{-->
 
             <div class="siderbar invitations">
-              <h3><i class="icon-check"></i>Invitations</h3>
+              <h3><i class="icon16-invitation"></i>Invitations</h3>
               <div class="cross-list">
                 <div class="cross-box">
                   <a href="#">
@@ -357,14 +371,14 @@
               </div>
 
               <div class="newbie nbg-3">
-                <div class="newbie-close">&times;</div>
+                <div class="newbie-close"><i class="icon14-clear"></i></div>
                 No invitation for you, yet.
               </div>
 
             </div>
 
             <div class="siderbar updates">
-              <h3><i class="icon-share"></i>Recent updates</h3>
+              <h3><i class="icon16-updates"></i>Recent updates</h3>
               <div class="cross-list">
                 <div class="cross-box">
                   <a href="#">
@@ -372,7 +386,7 @@
                     <h5>Dinner in San Francisco</h5>
                     <div><span class="blue">dm.</span>:
                       My only missing food in US, dudes! yummy yummy</div>
-                    <div><span class="blue">4</span>
+                    <div><i class="icon-conversation"></i> <span class="blue">4</span>
                       new post in conversation.
                     </div>
                   </a>
@@ -382,7 +396,7 @@
                   <a href="#">
                     <time class="pull-right">Sat</time>
                     <h5>Ferry famers market</h5>
-                    <div><i class="icon-user"></i>
+                    <div><i class="icon-rsvp-accepted-blue"></i>
                       <span class="blue">6</span>
                       confirmed:
                       <span class="blue">gkp</span>,
@@ -403,15 +417,15 @@
                       <span class="blue">11:30PM</span>
                       <span class="black21">Saturday, April 9</span>
                     </div>
-                    <div><i class="icon-globe"></i>
+                    <div><i class="icon-place"></i>
                       <span class="blue">Online</span>
                     </div>
-                    <div>Title changed from: team meeting</div>
-                    <div><i class="icon-remove"></i>
+                    <div><i class="icon-cross"></i> Title changed from: team meeting</div>
+                    <div><i class="icon-rsvp-declined"></i>
                       Declined:
                       <span class="blue">SteveE</span>
                     </div>
-                    <div><i class="icon-minus-sign"></i>
+                    <div><i class="icon-invite"></i>
                       Invited:
                       <span class="blue">Leask</span>,
                       <span class="blue">Han</span>
