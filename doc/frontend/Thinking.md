@@ -19,3 +19,6 @@ https://github.com/visionmedia/uikit
 http://neave.com/webcam/html5/face/
 http://digitalbush.com/projects/masked-input-plugin/
 http://www.giocc.com/sandbox/avaku/
+https://developers.google.com/webmasters/ajax-crawling/docs/getting-started
+http://beta.rallyinteractive.com/
+http://koalastothemax.com/?aHR0cDovL3d3dy5hbWlyaWdodC5jb20vYWxidW0tY292ZXItdGhlbWVzL2ltYWdlcy9hbGJ1bS1CcmFuZC1OZXctRGVqYS1FbnRlbmR1LmpwZw==
