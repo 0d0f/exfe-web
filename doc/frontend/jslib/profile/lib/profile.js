@@ -517,8 +517,8 @@ define(function (require, exports, module) {
 
     $BODY.on('hover.profile', '.identity-list > li', function (e) {
       //$(this).find('i.icon-minus-sign').toggleClass('hide');
-      if (e.type === 'mouseenter') $(this).addClass('over');
-      else $(this).removeClass('over');
+      //if (e.type === 'mouseenter') $(this).addClass('over');
+      //else $(this).removeClass('over');
       $(this).find('.xbtn-reverify, .xbtn-reauthorize').toggleClass('hide');
     });
 
@@ -757,6 +757,7 @@ define(function (require, exports, module) {
     $(this).parent().fadeOut();
   });
 
+  /*
   // identity remote
   $BODY.on('dragstart.profile', '.identity-list > li', function (e) {
     e.stopPropagation();
@@ -799,5 +800,6 @@ define(function (require, exports, module) {
 
     return false;
   });
+  */
 
 });
