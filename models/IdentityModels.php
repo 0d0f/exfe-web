@@ -349,39 +349,6 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function buildIndex($userid)
-    {
-        if(intval($userid)>0)
-        {
-            $sql="select name,external_identity,r_identityid from user_relations where userid=$userid;";
-            $identities =$this->getAll($sql);
-            $redis = new Redis();
-            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-            mb_internal_encoding("UTF-8");
-
-            foreach($identities as $identitymeta)
-            {
-                $identity_id=$identitymeta["r_identityid"];
-                $identity=mb_strtolower($identitymeta["name"]." ".$identitymeta["external_identity"]);
-                $identity_array=explode(" ",trim($identity));
-                if($identity_array>0)
-                {
-                    foreach($identity_array as $identity_a)
-                    {
-                        $identity_part="";
-                        for ($i=0;$i<mb_strlen($identity_a);$i++)
-                        {
-                            $identity_part .= mb_substr($identity_a, $i, 1);
-                            $redis->zAdd('u:'.$userid, 0, $identity_part);
-                        }
-                        $redis->zAdd('u:'.$userid, 0, $identity_part."|id:".$identity_id."*");
-                    }
-                }
-            }
-        }
-    }
-
-
     public function getIdentitiesByIdsFromCache($identity_id_list)
     {
         $redis = new Redis();
@@ -931,6 +898,40 @@ class IdentityModels extends DataModel {
     public function changeDefaultIdentity($user_id, $identity_id) {
         $sql = "UPDATE users SET default_identity={$identity_id} WHERE id={$user_id}";
         $this->query($sql);
+    }
+
+
+    // upgraded
+    public function buildIndex($userid)
+    {
+        if(intval($userid)>0)
+        {
+            $sql="select name,external_identity,r_identityid from user_relations where userid=$userid;";
+            $identities =$this->getAll($sql);
+            $redis = new Redis();
+            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+            mb_internal_encoding("UTF-8");
+
+            foreach($identities as $identitymeta)
+            {
+                $identity_id=$identitymeta["r_identityid"];
+                $identity=mb_strtolower($identitymeta["name"]." ".$identitymeta["external_identity"]);
+                $identity_array=explode(" ",trim($identity));
+                if($identity_array>0)
+                {
+                    foreach($identity_array as $identity_a)
+                    {
+                        $identity_part="";
+                        for ($i=0;$i<mb_strlen($identity_a);$i++)
+                        {
+                            $identity_part .= mb_substr($identity_a, $i, 1);
+                            $redis->zAdd('u:'.$userid, 0, $identity_part);
+                        }
+                        $redis->zAdd('u:'.$userid, 0, $identity_part."|id:".$identity_id."*");
+                    }
+                }
+            }
+        }
     }
 
 }

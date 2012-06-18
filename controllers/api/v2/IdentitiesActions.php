@@ -103,6 +103,9 @@ class IdentitiesActions extends ActionController {
 
 
     public function doComplete() {
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
         // check signin
         $checkHelper = $this->getHelperByName('check', 'v2');
         $params = $this->params;
@@ -116,56 +119,56 @@ class IdentitiesActions extends ActionController {
         $rangelen  = 50;
         $key       = mb_strtolower(trim($_GET['key']));
         $arrResult = array();
-        $identityData = $this->getModelByName('identity');
-        if(trim($key)!="" && intval($user_id)>0)
-        {
-            $redis = new Redis();
-            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-            $count=$redis->zCard('u:'.$user_id);
-            if($count==0)
-            {
-                $identities=$identityData->getIdentitiesByUser($user_id);
-                if(sizeof($identities)==0){
-                    return;
-                } else {
-                    $identityData->buildIndex($user_id);
-                }
-            }
-
-            $start=$redis->zRank('u:'.$user_id, $key);
-            if(is_numeric($start))
-            {
-                $endflag=FALSE;
-                $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
-                while(sizeof($result)>0)
-                {
-                    foreach($result as $r)
-                    {
-                        if($r[strlen($r)-1]=="*")
-                        {
-                            //根据返回的数据拆解Key和匹配的数据。
-                            $arr_explode=explode("|",$r);
-                            if(sizeof($arr_explode)==2) {
-                                $str=rtrim($arr_explode[1], "*");
-                                $arrResult[$str]=$arr_explode[0];
-                            }
-                        }
-
-                        if(strlen($r)==strlen($key))
-                        {
-                            $endflag=TRUE;
-                            break;
-                        }
-                    }
-                    if($result<$rangelen || $endflag===TRUE)
-                    {
-                        break;
-                    }
-                    $start=$start+$rangelen;
-                    $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
-                }
+        if ($key === '') {
+            apiError(400, 'empty_key_word', 'Keyword can not be empty.');
+        }
+        // get identities from redis
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $count=$redis->zCard("u:{$user_id}");
+        if (!$count) {
+            $identities = $identityData->getIdentitiesByUser($user_id);
+            if(sizeof($identities)==0){
+                return;
+            } else {
+                $identityData->buildIndex($user_id);
             }
         }
+
+        $start=$redis->zRank('u:'.$user_id, $key);
+        if(is_numeric($start))
+        {
+            $endflag=FALSE;
+            $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
+            while(sizeof($result)>0)
+            {
+                foreach($result as $r)
+                {
+                    if($r[strlen($r)-1]=="*")
+                    {
+                        //根据返回的数据拆解Key和匹配的数据。
+                        $arr_explode=explode("|",$r);
+                        if(sizeof($arr_explode)==2) {
+                            $str=rtrim($arr_explode[1], "*");
+                            $arrResult[$str]=$arr_explode[0];
+                        }
+                    }
+
+                    if(strlen($r)==strlen($key))
+                    {
+                        $endflag=TRUE;
+                        break;
+                    }
+                }
+                if($result<$rangelen || $endflag===TRUE)
+                {
+                    break;
+                }
+                $start=$start+$rangelen;
+                $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
+            }
+        }
+
         $keys=array_keys($arrResult);
         #$resultidentities=array();
         $resultstr="[";
