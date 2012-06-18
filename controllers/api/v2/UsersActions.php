@@ -133,9 +133,6 @@ class UsersActions extends ActionController {
 
 
     public function doGetRegistrationFlag() {
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modUser->addVerifyingEmptyUserByIdentityId(1234);
-        return;
         // get models
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
@@ -181,7 +178,6 @@ class UsersActions extends ActionController {
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
-        $params = $this->params;
         if (!$external_id = trim($_POST['external_id'])) {
             apiError(400, 'no_external_id', 'external_id must be provided');
         }
@@ -256,7 +252,6 @@ class UsersActions extends ActionController {
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
-        $params = $this->params;
         if (!$external_id = trim($_POST['external_id'])) {
             apiError(400, 'no_external_id', 'external_id must be provided');
         }
