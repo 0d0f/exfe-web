@@ -127,8 +127,8 @@ class IdentitiesActions extends ActionController {
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
         $count=$redis->zCard("u:{$user_id}");
         if (!$count) {
-            $identities = $identityData->getIdentitiesByUser($user_id);
-            if(sizeof($identities)==0){
+            $user = $modUser->getUserById($user_id);
+            if (sizeof($identities)==0) {
                 return;
             } else {
                 $identityData->buildIndex($user_id);
