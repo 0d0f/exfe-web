@@ -51,7 +51,7 @@ class IdentityActions extends ActionController {
                             break;
                         }
                     }
-                    if($result<$rangelen || $endflag===TRUE)
+                    if(count($result)<$rangelen || $endflag===TRUE)
                     {
                         break;
                     }
