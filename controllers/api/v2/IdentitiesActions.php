@@ -152,7 +152,7 @@ class IdentitiesActions extends ActionController {
                         break;
                     }
                 }
-                if ($result < $rangelen || $endflag === true) {
+                if (count($result) < $rangelen || $endflag === true) {
                     break;
                 }
                 $start += $rangelen;
@@ -161,34 +161,23 @@ class IdentitiesActions extends ActionController {
                 );
             }
         }
-        // get identity object
-        // @todo 此处逻辑能进一步简化。 by @leaskh
-        $keys = array_keys($arrResult);
-        $resultstr = '[';
-        if (sizeof($keys) > 0) {
-            $identity_id_list = array();
-            foreach ($keys as $k) {
-                // 为了保证取到正确的 Key，必须再拆解一次。
-                $key_explode = explode('|', $k);
-                // 默认 Key 是在最后一位的。这里需要约定一下。By：handaoliang
-                // 由于 Key 会包括字符，所以不能以 intval 该值是否大于 0 来判断是否存在。By：handaoliang
-                if ($key_explode[sizeof($key_explode) - 1] !== null) {
-                    $identity_id = $key_explode[sizeof($key_explode) - 1];
-                    array_push($identity_id_list, $identity_id);
-                }
-            }
-            if (sizeof($identity_id_list) > 0) {
-                $identities = $modIdentity->getIdentitiesByIdsFromCache(
-                    $identity_id_list
+        // get identity objects
+        $rtResult = array();
+        foreach ($arrResult as $arI => $arItem) {
+            // 为了保证取到正确的 Key，必须再拆解一次；
+            // 默认 Key 是在最后一位的，这里需要约定一下；
+            // 由于 Key 会包括字符，所以不能以 intval 该值是否大于 0 来判断是否存在。
+            // by @Handaoliang
+            $arIExp = explode('|', $arI);
+            $keyIdx = sizeof($arIExp) - 1;
+            if ($arIExp[$keyIdx]) {
+                $rtResult[] = $modIdentity->getIdentitiesByIdsFromCache(
+                    $arIExp[$keyIdx]
                 );
-                foreach ($identities as $identity_json) {
-                    $resultstr .= "{$identity_json},";
-                }
             }
         }
-        $resultstr  = rtrim($resultstr, ',');
-        $resultstr .= ']';
-        echo $resultstr;
+        // return
+        apiResponse(array('identities' => $rtResult));
     }
 
 
