@@ -118,7 +118,6 @@ class IdentitiesActions extends ActionController {
         // get inputs
         $rangelen  = 50;
         $key       = mb_strtolower(trim($_GET['key']));
-        $arrResult = array();
         if ($key === '') {
             apiError(400, 'empty_key_word', 'Keyword can not be empty.');
         }
@@ -131,6 +130,7 @@ class IdentitiesActions extends ActionController {
             $modUser->buildIndex($user_id);
         }
         // get identities from redis
+        $arrResult = array();
         $start = $redis->zRank("u:{$user_id}", $key);
         if(is_numeric($start)) {
             $endflag = false;
@@ -138,7 +138,7 @@ class IdentitiesActions extends ActionController {
                 "u:{$user_id}", $start + 1, $start + $rangelen
             );
             while (sizeof($result) > 0) {
-                foreach($result as $r) {
+                foreach ($result as $r) {
                     if ($r[strlen($r) - 1] === '*') {
                         // 根据返回的数据拆解 Key 和匹配的数据。
                         $arr_explode = explode('|', $r);
