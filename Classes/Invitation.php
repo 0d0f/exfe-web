@@ -18,7 +18,7 @@ class Invitation extends EFObject {
 
     public $host             = null;
 
-    public $with             = null;
+    public $mates            = null;
 
 
     public function __construct($id               = 0,
@@ -30,7 +30,7 @@ class Invitation extends EFObject {
                                 $created_at       = '',
                                 $updated_at       = '',
                                 $host             = false,
-                                $with             = 0) {
+                                $mates            = 0) {
         parent::__construct($id, 'invitation');
 
         $this->identity         = $identity;
@@ -41,7 +41,7 @@ class Invitation extends EFObject {
         $this->created_at       = $created_at;
         $this->updated_at       = $updated_at;
         $this->host             = $host;
-        $this->with             = $with;
+        $this->mates            = $mates;
     }
 
 }
