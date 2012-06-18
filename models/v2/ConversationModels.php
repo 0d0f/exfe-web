@@ -6,7 +6,7 @@ class ConversationModels extends DataModel {
         $update_cond="";
         if($updated_at!='')
             $update_cond="and updated_at>'$updated_at'";
-        $sql="select * from posts where postable_id=$exfee_id and (postable_type='exfee' or postable_type='cross') $update_cond order by created_at;";
+        $sql="select * from posts where postable_id=$exfee_id and (postable_type='exfee' or postable_type='cross') $update_cond order by updated_at desc;";
         $posts=$this->getAll($sql);
         return $posts;
     }

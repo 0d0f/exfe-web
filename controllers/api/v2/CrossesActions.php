@@ -22,10 +22,19 @@ class CrossesActions extends ActionController {
     }
 
 
-    public function doAdd()
+    public function doGather()
     {
         $params=$this->params;
-        $by_identity_id=$_POST["by_identity_id"];
+        $cross_str=@file_get_contents('php://input');
+        //var_dump($body);
+        //print_r($_POST);
+        //$by_identity_id=$_POST["by_identity_id"];
+        //$cross_str=$_POST["cross"];
+        $cross=json_decode($cross_str,true);
+        var_dump($cross);
+        $by_identity_id=$cross["by_identity"]["id"];
+        var_dump($by_identity_id);
+        var_dump($params["token"]);
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)
@@ -35,8 +44,6 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
-        $cross_str=$_POST["cross"];
-        $cross=json_decode($cross_str);
         $crossHelper=$this->getHelperByName("cross","v2");
         $cross_id=$crossHelper->gatherCross($cross,$by_identity_id);
 
