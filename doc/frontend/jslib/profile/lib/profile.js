@@ -44,7 +44,6 @@ define(function (require, exports, module) {
   });
 
   Handlebars.registerHelper('avatarFilename', function (context, options) {
-    if (!context) context = 'http://www.gravatar.com/avatar/c778bccf875fc4b76c9072f95f2671de?d=API_URL%2Fv2%2Favatar%2Fget%3Fprovider%3Demail%26external_id%3Dc12%40demox.io';
     return context;
   });
 
@@ -518,6 +517,9 @@ define(function (require, exports, module) {
 
     $BODY.on('hover.profile', '.identity-list > li', function (e) {
       //$(this).find('i.icon-minus-sign').toggleClass('hide');
+      //if (e.type === 'mouseenter') $(this).addClass('over');
+      //else $(this).removeClass('over');
+      $(this).find('.xbtn-reverify, .xbtn-reauthorize').toggleClass('hide');
     });
 
     // removed identity
@@ -557,7 +559,7 @@ define(function (require, exports, module) {
       var $input = $('<input type="text" value="' + value + '" class="pull-left" />');
       $input.data('oldValue', value);
       $(this).after($input).hide();
-      $input.lastfocus();
+      $input.focusend();
       $('.xbtn-changepassword').addClass('hide');
     });
 
@@ -593,7 +595,7 @@ define(function (require, exports, module) {
       var $input = $('<input type="text" value="' + value + '" class="username-input" />');
       $input.data('oldValue', value);
       $(this).after($input).hide();
-      $input.lastfocus();
+      $input.focusend();
     });
 
     $BODY.on('focusout.profile keydown.profile', '.identity-list .username-input', function (e) {
@@ -697,10 +699,10 @@ define(function (require, exports, module) {
       $(this).data('hoverout', t === 'mouseleave');
       if (t === 'mouseenter') {
         $(this).find('.xbtn-changepassword').removeClass('hide');
-        $(this).find('.xlabel').removeClass('hide');
+        //$(this).find('.xlabel').removeClass('hide');
       } else {
         $(this).find('.xbtn-changepassword').addClass('hide');
-        $(this).find('.xlabel').addClass('hide');
+        //$(this).find('.xlabel').addClass('hide');
       }
     });
 
@@ -759,6 +761,7 @@ define(function (require, exports, module) {
   // identity remote
   $BODY.on('dragstart.profile', '.identity-list > li', function (e) {
     e.stopPropagation();
+    $(this).addClass('dragme');
     $('.xbtn-addidentity').addClass('hide');
     $('.identities-trash').removeClass('hide over');
     e.originalEvent.dataTransfer.effectAllowed = 'move';
@@ -767,6 +770,7 @@ define(function (require, exports, module) {
   });
 
   $BODY.on('dragend.profile', '.identity-list > li', function (e) {
+    $(this).removeClass('dragme');
     e.stopPropagation();
     return false;
   });
