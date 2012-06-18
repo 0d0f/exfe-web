@@ -122,103 +122,72 @@ class IdentitiesActions extends ActionController {
         if ($key === '') {
             apiError(400, 'empty_key_word', 'Keyword can not be empty.');
         }
-        // get identities from redis
+        // rebuild identities indexes
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
         $count=$redis->zCard("u:{$user_id}");
         if (!$count) {
             $user = $modUser->getUserById($user_id);
-            if (sizeof($identities)==0) {
-                return;
-            } else {
-                $identityData->buildIndex($user_id);
-            }
+            $modUser->buildIndex($user_id);
         }
-
-        $start=$redis->zRank('u:'.$user_id, $key);
-        if(is_numeric($start))
-        {
-            $endflag=FALSE;
-            $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
-            while(sizeof($result)>0)
-            {
-                foreach($result as $r)
-                {
-                    if($r[strlen($r)-1]=="*")
-                    {
-                        //根据返回的数据拆解Key和匹配的数据。
-                        $arr_explode=explode("|",$r);
-                        if(sizeof($arr_explode)==2) {
-                            $str=rtrim($arr_explode[1], "*");
-                            $arrResult[$str]=$arr_explode[0];
+        // get identities from redis
+        $start = $redis->zRank("u:{$user_id}", $key);
+        if(is_numeric($start)) {
+            $endflag = false;
+            $result  = $redis->zRange(
+                "u:{$user_id}", $start + 1, $start + $rangelen
+            );
+            while (sizeof($result) > 0) {
+                foreach($result as $r) {
+                    if ($r[strlen($r) - 1] === '*') {
+                        // 根据返回的数据拆解 Key 和匹配的数据。
+                        $arr_explode = explode('|', $r);
+                        if (sizeof($arr_explode) ===2) {
+                            $str = rtrim($arr_explode[1], '*');
+                            $arrResult[$str] = $arr_explode[0];
                         }
                     }
-
-                    if(strlen($r)==strlen($key))
-                    {
-                        $endflag=TRUE;
+                    if (strlen($r) === strlen($key)) {
+                        $endflag = true;
                         break;
                     }
                 }
-                if($result<$rangelen || $endflag===TRUE)
-                {
+                if ($result < $rangelen || $endflag === true) {
                     break;
                 }
-                $start=$start+$rangelen;
-                $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
+                $start += $rangelen;
+                $result = $redis->zRange(
+                    "u:{$user_id}", $start + 1, $start + $rangelen
+                );
             }
         }
-
-        $keys=array_keys($arrResult);
-        #$resultidentities=array();
+        // get identity object
+        // @todo 此处逻辑能进一步简化。 by @leaskh
+        $keys = array_keys($arrResult);
         $resultstr="[";
-        if(sizeof($keys)>0)
-        {
-            $identity_id_list=array();
-            foreach($keys as $k)
-            {
-                //为了保证取到正确的Key，必须再拆解一次。
-                $key_explode=explode("|",$k);
-                //if(intval($key_explode[sizeof($key_explode)-1])>0)
-                //默认Key是在最后一位的。这里需要约定一下。By：handaoliang
-                //由于Key会包括字符，所以不能以intval该值是否大于0来判断是否存在。By：handaoliang
-                if($key_explode[sizeof($key_explode)-1] != NULL)
-                {
-                    $identity_id=$key_explode[sizeof($key_explode)-1];
-                    array_push($identity_id_list,$identity_id);
+        if (sizeof($keys) > 0) {
+            $identity_id_list = array();
+            foreach ($keys as $k) {
+                // 为了保证取到正确的 Key，必须再拆解一次。
+                $key_explode = explode('|', $k);
+                // 默认 Key 是在最后一位的。这里需要约定一下。By：handaoliang
+                // 由于 Key 会包括字符，所以不能以 intval 该值是否大于 0 来判断是否存在。By：handaoliang
+                if ($key_explode[sizeof($key_explode) - 1] !== null) {
+                    $identity_id = $key_explode[sizeof($key_explode) - 1];
+                    array_push($identity_id_list, $identity_id);
                 }
-
             }
-            if(sizeof($identity_id_list) > 0);
-            {
-                $identities=$identityData->getIdentitiesByIdsFromCache($identity_id_list);
-                foreach($identities as $identity_json)
-                {
-                    $resultstr.=$identity_json.",";
-                    #$iobj=json_decode($identity,true);
-                    #array_push($resultidentities,$iobj);
-                    #$arrResult[$iobj["id"]]=array("identity"=>$iobj);
+            if (sizeof($identity_id_list) > 0) {
+                $identities = $modIdentity->getIdentitiesByIdsFromCache(
+                    $identity_id_list
+                );
+                foreach ($identities as $identity_json) {
+                    $resultstr .= "{$identity_json},";
                 }
-                #print_r($iobj);
             }
-
         }
-        #foreach($arrResult as $k=>$v)
-        #{
-        #    if(!is_array($v["identity"]))
-        #    {
-        #        $key_explode=explode(" ",$k);
-        #        if(intval($key_explode[2])>0)
-        #        {
-        #            $identity_id=$key_explode[2];
-        #            $identity=$identityData->getIdentitiesByIdsFromCache($identity_id);
-        #            $iobj=json_decode($identity,true);
-        #            $arrResult[$k]=array("identity"=>$iobj);
-        #        }
-        #    }
-        #}
-        $resultstr=rtrim($resultstr,",");
-        $resultstr.="]";
+        $resultstr  = rtrim($resultstr, ',');
+        $resultstr .= ']';
         echo $resultstr;
         #echo json_encode($resultidentities, JSON_FORCE_OBJECT);
     }
