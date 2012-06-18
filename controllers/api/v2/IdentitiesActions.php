@@ -103,31 +103,40 @@ class IdentitiesActions extends ActionController {
 
 
     public function doComplete() {
-        $rangelen=50;
-        $key=mb_strtolower($_GET["key"]);
-        $userid=$_SESSION["userid"];
-        $resultarray=array();
+        // check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get inputs
+        $rangelen  = 50;
+        $key       = mb_strtolower(trim($_GET['key']));
+        $arrResult = array();
         $identityData = $this->getModelByName('identity');
-        if(trim($key)!="" && intval($userid)>0)
+        if(trim($key)!="" && intval($user_id)>0)
         {
             $redis = new Redis();
             $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-            $count=$redis->zCard('u:'.$userid);
+            $count=$redis->zCard('u:'.$user_id);
             if($count==0)
             {
-                $identities=$identityData->getIdentitiesByUser($userid);
+                $identities=$identityData->getIdentitiesByUser($user_id);
                 if(sizeof($identities)==0){
                     return;
                 } else {
-                    $identityData->buildIndex($userid);
+                    $identityData->buildIndex($user_id);
                 }
             }
 
-            $start=$redis->zRank('u:'.$userid, $key);
+            $start=$redis->zRank('u:'.$user_id, $key);
             if(is_numeric($start))
             {
                 $endflag=FALSE;
-                $result=$redis->zRange('u:'.$userid, $start+1, $start+$rangelen);
+                $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
                 while(sizeof($result)>0)
                 {
                     foreach($result as $r)
@@ -138,7 +147,7 @@ class IdentitiesActions extends ActionController {
                             $arr_explode=explode("|",$r);
                             if(sizeof($arr_explode)==2) {
                                 $str=rtrim($arr_explode[1], "*");
-                                $resultarray[$str]=$arr_explode[0];
+                                $arrResult[$str]=$arr_explode[0];
                             }
                         }
 
@@ -153,11 +162,11 @@ class IdentitiesActions extends ActionController {
                         break;
                     }
                     $start=$start+$rangelen;
-                    $result=$redis->zRange('u:'.$userid, $start+1, $start+$rangelen);
+                    $result=$redis->zRange('u:'.$user_id, $start+1, $start+$rangelen);
                 }
             }
         }
-        $keys=array_keys($resultarray);
+        $keys=array_keys($arrResult);
         #$resultidentities=array();
         $resultstr="[";
         if(sizeof($keys)>0)
@@ -185,13 +194,13 @@ class IdentitiesActions extends ActionController {
                     $resultstr.=$identity_json.",";
                     #$iobj=json_decode($identity,true);
                     #array_push($resultidentities,$iobj);
-                    #$resultarray[$iobj["id"]]=array("identity"=>$iobj);
+                    #$arrResult[$iobj["id"]]=array("identity"=>$iobj);
                 }
                 #print_r($iobj);
             }
 
         }
-        #foreach($resultarray as $k=>$v)
+        #foreach($arrResult as $k=>$v)
         #{
         #    if(!is_array($v["identity"]))
         #    {
@@ -201,7 +210,7 @@ class IdentitiesActions extends ActionController {
         #            $identity_id=$key_explode[2];
         #            $identity=$identityData->getIdentitiesByIdsFromCache($identity_id);
         #            $iobj=json_decode($identity,true);
-        #            $resultarray[$k]=array("identity"=>$iobj);
+        #            $arrResult[$k]=array("identity"=>$iobj);
         #        }
         #    }
         #}
