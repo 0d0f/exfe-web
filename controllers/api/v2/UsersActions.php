@@ -228,9 +228,11 @@ class UsersActions extends ActionController {
                         }
                         // call Gobus {
                         if ($gobusFlag) {
+                            $user = $modUser->getUserById($raw_flag['user_id']);
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
                             $hlpGobus->send('identity', 'Verify', array(
                                 'to_identity' => $identity,
+                                'user_name'   => $user->name,
                                 'action'      => $gobusFlag,
                                 'token'       => $viResult['token'],
                             ));
@@ -286,6 +288,16 @@ class UsersActions extends ActionController {
                     );
                     if ($viResult) {
                         $rtResult['action'] = 'VERIFYING';
+                        // call Gobus {
+                        $user = $modUser->getUserById($raw_flag['user_id']);
+                        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                        $hlpGobus->send('identity', 'Verify', array(
+                            'to_identity' => $identity,
+                            'user_name'   => $user->name,
+                            'action'      => $gobusFlag,
+                            'token'       => $viResult['token'],
+                        ));
+                        // }
                         apiResponse($rtResult);
                     }
                     apiError(500, 'failed', '');
