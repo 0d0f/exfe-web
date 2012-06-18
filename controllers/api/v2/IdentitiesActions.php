@@ -127,18 +127,18 @@ class IdentitiesActions extends ActionController {
         $count=$redis->zCard("u:{$user_id}");
         if (!$count) {
             $user = $modUser->getUserById($user_id);
-            $modUser->buildIndex($user_id);
+            $modUser->buildIdentitiesIndexes($user_id);
         }
         // get identities from redis
         $arrResult = array();
         $start = $redis->zRank("u:{$user_id}", $key);
         if(is_numeric($start)) {
             $endflag = false;
-            $result  = $redis->zRange(
+            $shResult  = $redis->zRange(
                 "u:{$user_id}", $start + 1, $start + $rangelen
             );
-            while (sizeof($result) > 0) {
-                foreach ($result as $r) {
+            while (sizeof($shResult) > 0) {
+                foreach ($shResult as $r) {
                     if ($r[strlen($r) - 1] === '*') {
                         // 根据返回的数据拆解 Key 和匹配的数据。
                         $arr_explode = explode('|', $r);
@@ -152,11 +152,11 @@ class IdentitiesActions extends ActionController {
                         break;
                     }
                 }
-                if (count($result) < $rangelen || $endflag === true) {
+                if (count($shResult) < $rangelen || $endflag === true) {
                     break;
                 }
                 $start += $rangelen;
-                $result = $redis->zRange(
+                $shResult = $redis->zRange(
                     "u:{$user_id}", $start + 1, $start + $rangelen
                 );
             }
@@ -164,15 +164,11 @@ class IdentitiesActions extends ActionController {
         // get identity objects
         $rtResult = array();
         foreach ($arrResult as $arI => $arItem) {
-            // 为了保证取到正确的 Key，必须再拆解一次；
-            // 默认 Key 是在最后一位的，这里需要约定一下；
-            // 由于 Key 会包括字符，所以不能以 intval 该值是否大于 0 来判断是否存在。
-            // by @Handaoliang
-            $arIExp = explode('|', $arI);
-            $keyIdx = sizeof($arIExp) - 1;
-            if ($arIExp[$keyIdx]) {
-                $rtResult[] = $modIdentity->getIdentitiesByIdsFromCache(
-                    $arIExp[$keyIdx]
+            $arrArI      = explode(':', $arI);
+            $identity_id = (int) array_pop($arrArI);
+            if ($identity_id) {
+                $rtResult[] = $modIdentity->getIdentityByIdFromCache(
+                    $identity_id
                 );
             }
         }
