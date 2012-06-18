@@ -313,7 +313,9 @@ class IdentityModels extends DataModel {
             $redis = new Redis();
             $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
             $identity = $redis->HGET('identities', "id:{$identity_id}");
-            if (!$identity) {
+            if ($identity) {
+                $identity = json_decode($identity);
+            } else {
                 $identity = $this->getIdentityById($identity_id);
                 if ($identity) {
                     $redis->HSET(
