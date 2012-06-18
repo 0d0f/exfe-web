@@ -164,7 +164,7 @@ class IdentitiesActions extends ActionController {
         // get identity object
         // @todo 此处逻辑能进一步简化。 by @leaskh
         $keys = array_keys($arrResult);
-        $resultstr="[";
+        $resultstr = '[';
         if (sizeof($keys) > 0) {
             $identity_id_list = array();
             foreach ($keys as $k) {
@@ -189,7 +189,6 @@ class IdentitiesActions extends ActionController {
         $resultstr  = rtrim($resultstr, ',');
         $resultstr .= ']';
         echo $resultstr;
-        #echo json_encode($resultidentities, JSON_FORCE_OBJECT);
     }
 
 
