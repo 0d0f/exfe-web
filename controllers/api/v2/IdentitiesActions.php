@@ -98,7 +98,7 @@ class IdentitiesActions extends ActionController {
         } else {
             apiError(400, 'no_identities', 'identities must be provided');
         }
-        apiError(500, "server_error", "Can't fetch identities.");
+        apiError(500, 'server_error', "Can't fetch identities.");
     }
 
 
