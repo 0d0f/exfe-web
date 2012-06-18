@@ -349,69 +349,6 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentitiesByIdsFromCache($identity_id_list)
-    {
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $identities=array();
-        if(is_array($identity_id_list))
-        {
-            foreach($identity_id_list as $identity_id_str)
-            {
-                $identity=$redis->HGET("identities",$identity_id_str);
-                //如果缓存里面没有，则要去取数据库数据并缓存。
-                if($identity==false)
-                {
-                    $identity_info_arr = explode(":",$identity_id_str);
-                    $identity_type = $identity_info_arr[0];
-                    $identity_id = $identity_info_arr[1];
-                    //如果是本地Identity的缓存。
-                    if($identity_type == "id"){
-                        $identity = $this->getIdentityById($identity_id);
-                        if($identity!=NULL)
-                        {
-                            $sql="select userid from user_identity where identityid=$identity_id";
-                            $result=$this->getRow($sql);
-                            if($result["userid"] > 0) {
-                                $identity["uid"]=$result["userid"];
-                            }
-                            $identity=json_encode_nounicode($identity);
-                            $redis->HSET("identities",$identity_id_str, $identity);
-                        }
-                    }
-
-                }
-                array_push($identities,$identity);
-            }
-            #$redismulti=$redis->multi();
-            #foreach($identity_id_list as $identity_id)
-            #{
-                #$identity=$redis->HGET("identities","id:".$identity_id);
-            #}
-            #$identities=$redismulti->exec();
-            return $identities;
-
-            //multi values
-        }
-        else if(is_numeric($identity_id_list))
-        {
-            $identity=$redis->HGET("identities","id:".$identity_id_list);
-            if($identity==false)
-            {
-                $identity=$this->getIdentityById($identity_id_list);
-                if($identity!=NULL)
-                {
-                    $identity=json_encode_nounicode($identity);
-                    $redis->HSET("identities","id:".$identity_id_list,$identity);
-                }
-
-            }
-            return $identity;
-            //one value
-        }
-    }
-
-
     public function ifIdentitiesEqualWithIdentity($identities,$identity_id)
     {
         foreach($identities as $identity)
@@ -931,6 +868,70 @@ class IdentityModels extends DataModel {
                     }
                 }
             }
+        }
+    }
+
+
+    // upgraded
+    public function getIdentitiesByIdsFromCache($identity_id_list)
+    {
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $identities=array();
+        if(is_array($identity_id_list))
+        {
+            foreach($identity_id_list as $identity_id_str)
+            {
+                $identity=$redis->HGET("identities",$identity_id_str);
+                //如果缓存里面没有，则要去取数据库数据并缓存。
+                if($identity==false)
+                {
+                    $identity_info_arr = explode(":",$identity_id_str);
+                    $identity_type = $identity_info_arr[0];
+                    $identity_id = $identity_info_arr[1];
+                    //如果是本地Identity的缓存。
+                    if($identity_type == "id"){
+                        $identity = $this->getIdentityById($identity_id);
+                        if($identity!=NULL)
+                        {
+                            $sql="select userid from user_identity where identityid=$identity_id";
+                            $result=$this->getRow($sql);
+                            if($result["userid"] > 0) {
+                                $identity["uid"]=$result["userid"];
+                            }
+                            $identity=json_encode_nounicode($identity);
+                            $redis->HSET("identities",$identity_id_str, $identity);
+                        }
+                    }
+
+                }
+                array_push($identities,$identity);
+            }
+            #$redismulti=$redis->multi();
+            #foreach($identity_id_list as $identity_id)
+            #{
+                #$identity=$redis->HGET("identities","id:".$identity_id);
+            #}
+            #$identities=$redismulti->exec();
+            return $identities;
+
+            //multi values
+        }
+        else if(is_numeric($identity_id_list))
+        {
+            $identity=$redis->HGET("identities","id:".$identity_id_list);
+            if($identity==false)
+            {
+                $identity=$this->getIdentityById($identity_id_list);
+                if($identity!=NULL)
+                {
+                    $identity=json_encode_nounicode($identity);
+                    $redis->HSET("identities","id:".$identity_id_list,$identity);
+                }
+
+            }
+            return $identity;
+            //one value
         }
     }
 
