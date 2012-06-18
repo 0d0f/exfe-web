@@ -800,6 +800,41 @@ class UserModels extends DataModel {
     }
 
 
+    public function buildIdentitiesIndexes($user_id) {
+        mb_internal_encoding('UTF-8');
+        if ($user_id) {
+            return;
+        }
+        $identities = $this->getAll(
+            "SELECT `name`, `external_identity`, `r_identityid`
+             FROM   `user_relations`
+             WHERE  `userid` = {$userid}"
+        );
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        foreach($identities as $identity) {
+            $identity_array = explode(' ', mb_strtolower(trim(
+                "{$identity['name']} {$identity['external_identity']}"
+            )));
+            if ($identity_array) {
+                foreach($identity_array as $iaI) {
+                    $identity_part = '';
+                    for ($i = 0; $i < mb_strlen($iaI); $i++) {
+                        $redis->zAdd(
+                            "u:{$userid}", 0,
+                            $identity_part .= mb_substr($iaI, $i, 1)
+                        );
+                    }
+                    $redis->zAdd(
+                        "u:{$userid}", 0,
+                        "{$identity_part}|id:{$identity['r_identityid']}*"
+                    );
+                }
+            }
+        }
+    }
+
+
     public function makeDefaultAvatar($name) {
         // image config
         $specification = array(
