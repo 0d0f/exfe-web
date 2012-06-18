@@ -319,6 +319,7 @@ define(function (require, exports, module) {
         },
 
         'click .xbtn-verify': function (e) {
+          var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('disabled') || $e.hasClass('success')) return;
           var i = $e.data('identity');
@@ -339,6 +340,7 @@ define(function (require, exports, module) {
               }
               , function (data) {
                 if (data.action === 'VERIFYING') {
+                  that.$('.identity').next().removeClass('hide');
                   $e.text('Done').addClass('success');
                 }
               }
@@ -386,7 +388,7 @@ define(function (require, exports, module) {
             + '<i class="provider"></i>'
           + '</div>'
           + '<div class="identity disabled"></div>'
-          + '<div>Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
+          + '<div class="hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
           + '<div class="xalert-error hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam.</div>'
           + '<div class="xalert-success hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.</div>',
 
