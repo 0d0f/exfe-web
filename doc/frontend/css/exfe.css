@@ -6444,11 +6444,13 @@ input[type="submit"].btn.btn-mini {
   display: inline;
 }
 
+.settings-panel .user-infos .identity-list .over,
 .settings-panel .user-infos .identity-list .dragme {
   margin-left: -15px;
   background: #eff6f9;
 }
 
+.settings-panel .user-infos .identity-list .over .icon-move,
 .settings-panel .user-infos .identity-list .dragme .icon-move {
   display: inline-block;
 }
