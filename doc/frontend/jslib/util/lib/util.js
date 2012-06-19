@@ -6,9 +6,12 @@ define('util', [], function (require, exports, module) {
 
   var Util = {
 
+    // Display Name: 0-9 a-zA-Z _ CJK字符 ' . 空格
+    zh_CN: zh_CN,
+
     // 30个字符，并且删除中文字符
     cut30length: function (s) {
-      return s.replace(zh_CN, '').substring(0, 30);
+      return s.replace(zh_CN, ' ').substring(0, 30);
     },
 
     // https://gist.github.com/2762686
