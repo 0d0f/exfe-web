@@ -41,7 +41,7 @@ class Invitation extends EFObject {
         $this->created_at       = $created_at;
         $this->updated_at       = $updated_at;
         $this->host             = $host;
-        $this->mates            = $mates;
+        $this->mates            = (int) $mates;
     }
 
 }
