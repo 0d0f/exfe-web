@@ -17,7 +17,11 @@ class ConversationModels extends DataModel {
         $cross    = $this->getRow($sql);
         $cross_id = $cross["id"];
 
-        $updated  = array("updated_at"=>date('Y-m-d H:i:s',time()),"identity_id"=>$post->by_identity_id);
+        $updated  = array(
+            'updated_at'  => date('Y-m-d H:i:s', time()),
+            'identity_id' => $post->by_identity_id,
+            'content'     => $post->content,
+        );
         $cross_updated["conversation"]=$updated;
         saveUpdate($cross_id,$cross_updated);
         $time     = $timestamp ? "FROM_UNIXTIME({$timestamp})" : 'NOW()';
