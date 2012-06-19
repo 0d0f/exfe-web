@@ -45,7 +45,7 @@ class CrossesActions extends ActionController {
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
         $crossHelper=$this->getHelperByName("cross","v2");
-        $cross_id=$crossHelper->gatherCross($cross,$by_identity_id);
+        $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
 
         if(intval($cross_id)>0)
         {
