@@ -4,7 +4,6 @@ class RelationModels extends DataModel {
 
     public function saveRelations($userid, $r_identityid)
     {
-//,$name,$external_identity
         if(intval($userid)>0 && intval($r_identityid)>0)
         {
             $sql="select userid from user_relations where userid=$userid and r_identityid=$r_identityid";
