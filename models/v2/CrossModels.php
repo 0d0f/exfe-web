@@ -48,9 +48,9 @@ class CrossModels extends DataModel {
 
         if(intval($cross->id)==0)
         {
-            $sql = "insert into crosses (host_id, created_at, time_type, updated_at,
+            $sql = "insert into crosses (created_at, time_type, updated_at,
                 state, title, description,exfee_id, begin_at, place_id,
-                timezone, origin_begin_at, background,date_word,time_word,`date`,`time`,outputformat,by_identity_id) values({$cross->host_id}, NOW(),
+                timezone, origin_begin_at, background,date_word,time_word,`date`,`time`,outputformat,by_identity_id) values( NOW(),
                 '{$time_type}', NOW(), '1', '{$cross->title}',
                 '{$cross->description}',{$exfee_id},'{$begin_at_time_in_old_format}',
                 {$place_id}, '{$cross_time->begin_at->timezone}',
