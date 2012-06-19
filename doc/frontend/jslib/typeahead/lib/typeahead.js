@@ -21,6 +21,7 @@ define('typeahead', [], function (require, exports, module) {
   var Typeahead = Widget.extend({
 
     options: {
+      source: [],
       template: '<div class="popmenu hide"></div>',
 
       // input target
@@ -29,16 +30,17 @@ define('typeahead', [], function (require, exports, module) {
       parentNode: $BODY,
 
       viewData: {
-        menu: '<ul class="typeahead dropdown-menu"></ul>',
+        menu: '<ul class="typeahead"></ul>',
         item: '<li></li>'
       }
 
     },
 
-    shown: false,
+    isShown: false,
 
     init: function () {
       this.parentNode = this.options.parentNode;
+      this.source = this.options.source;
       this.element.appendTo(this.parentNode);
       this.listen();
     },
@@ -46,9 +48,9 @@ define('typeahead', [], function (require, exports, module) {
     listen: function () {
       this.target = this.target || this.options.target;
       this.target
-        .on('blur.delegateEvents', proxy(this.blur, this))
-        .on('keypress.delegateEvents', proxy(this.keypress, this))
-        .on('keyup.delegateEvents', proxy(this.keyup, this))
+        .on('blur.typeahead', proxy(this.blur, this))
+        .on('keypress.typeahead', proxy(this.keypress, this))
+        .on('keyup.typeahead', proxy(this.keyup, this))
         /*
         .on('drop', function (e) {
           var notecard = e.originalEvent.dataTransfer.getData("text/plain");
@@ -57,23 +59,25 @@ define('typeahead', [], function (require, exports, module) {
           //console.log(1);
         })
         */
-        .on('focus.delegateEvents', proxy(this.focus, this));
+        .on('focus.typeahead', proxy(this.focus, this));
 
-      if ($.browser.webkit || $.browser.msie) {
-        this.target.on('keydown.delegateEvents', proxy(this.keypress, this));
+      if ($.browser.webkit | $.browser.msie | $.browser.mozilla) {
+        this.target.on('keydown.typeahead', proxy(this.keypress, this));
       }
 
       this.element
-        .on('click.delegateEvents', proxy(this.click, this))
-        .on('mouseenter', 'li', proxy(this.mouseenter, this));
+        .on('click.typeahead', proxy(this.click, this))
+        .on('mouseenter.typeahead', 'li', proxy(this.mouseenter, this));
     },
 
     select: function () {
-      var val = this.$('.active').attr('data-value');
+      var active = this.$('.active'),
+          val = active.attr('data-value');
       this.target
         .val(this.updater(val))
         .change();
 
+      this.emit('select', val);
       return this.hide();
     },
 
@@ -81,13 +85,19 @@ define('typeahead', [], function (require, exports, module) {
       return item;
     },
 
+    itemRender: function (item, i) {
+      return $(this.options.viewData.item).attr('data-value', item).html(item);
+    },
+
     render: function (items) {
       var that = this;
       items = $(items).map(function (i, item) {
+        return that.itemRender(item, i)[0];
       });
 
       items.first().addClass('active');
-      this.element.html(items);
+      var $ul = $(this.options.viewData.menu).html(items);
+      this.element.html($ul);
       return this;
     },
 
@@ -102,13 +112,13 @@ define('typeahead', [], function (require, exports, module) {
       });
 
       this.element.removeClass('hide');
-      this.shown = true;
+      this.isShown = true;
       return this;
     },
 
     hide: function () {
       this.element.addClass('hide');
-      this.shown = false;
+      this.isShown = false;
       return this;
     },
 
@@ -121,7 +131,7 @@ define('typeahead', [], function (require, exports, module) {
 
       if (!this.query) {
         this.emit('nothing');
-        return this.shown ? this.hide() : this;
+        return this.isShown ? this.hide() : this;
       }
 
       this.emit('search', this.query);
@@ -132,7 +142,7 @@ define('typeahead', [], function (require, exports, module) {
         , next = active.next();
 
       if (!next.length) {
-        next = this.element.find('li')[0];
+        next = this.element.find('li').first();
       }
 
       next.addClass('active');
@@ -160,12 +170,12 @@ define('typeahead', [], function (require, exports, module) {
 
         case 9: //tab
         case 13: //enter
-          if (!this.shown) return;
+          if (!this.isShown) return;
           this.select();
           break;
 
         case 27: // escape
-          if (!this.shown) return;
+          if (!this.isShown) return;
           this.hide();
           break;
 
@@ -178,12 +188,12 @@ define('typeahead', [], function (require, exports, module) {
     },
 
     keypress: function (e, keyCode) {
-      if (!this.shown) return;
+      if (!this.isShown) return;
 
       keyCode = e.keyCode;
       switch(keyCode) {
-        case 9: // tab
-        case 13: // neter
+        //case 9: // tab
+        case 13: // nete
         case 27: // escape
           e.preventDefault();
           break;
