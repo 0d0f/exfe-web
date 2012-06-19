@@ -116,15 +116,19 @@ class CrossHelper extends ActionController {
 
     public function gatherCross($cross,$by_identity_id)
     {
-        $placeData=$this->getModelByName("place","v2");
-        $place_id=$placeData->addPlace($cross->place);
+        
+        $place_id=0;
+        if($cross->place)
+        {
+            $placeData=$this->getModelByName("place","v2");
+            $place_id=$placeData->addPlace($cross->place);
+        }
 
         $exfeeData=$this->getModelByName("exfee","v2");
         $exfee_id=$exfeeData->getNewExfeeId();
 
-
         $crossData=$this->getModelByName("cross","v2");
-        if($place_id>0 && $exfee_id>0)
+        if($exfee_id>0)
         {
             $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
             $exfeeData->addExfee($exfee_id, $cross->exfee->invitations, $cross->host_id);

@@ -100,6 +100,16 @@ class FrontController {
             if($k!="v" && $k!="class" && $k!=$path)
                 $params[$k]=$v;
         }
+
+        foreach($_SERVER as $name=>$value)
+        {
+            if (substr($name, 0, 5) == 'HTTP_') 
+           { 
+               $name = str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5)))); 
+               $params[$name]=$value;
+           } 
+        }
+
         require_once $file;
 
         $controller = new $class();
