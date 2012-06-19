@@ -63,7 +63,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id) {
+    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id, $user_id = 0) {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // adding new identity
@@ -98,6 +98,12 @@ class ExfeeModels extends DataModel {
                 `by_identity_id`   =  {$by_identity_id},
                 `host`             =  {$host}";
         $dbResult = $this->query($sql);
+        // save relations
+        if ($user_id) {
+            $hlpRelation = getHelperByName('Relation', 'v2');
+            $hlpRelation->saveRelations($user_id, $invitation->identity->id);
+        }
+        // return
         return intval($dbResult['insert_id']);
     }
 
@@ -214,7 +220,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function addExfee($exfee_id, $invitations, $by_identity_id) {
+    public function addExfee($exfee_id, $invitations, $by_identity_id, $user_id = 0) {
         // basic check
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
@@ -224,7 +230,7 @@ class ExfeeModels extends DataModel {
             if (intval($iItem->identity->id) === intval($by_identity_id)) {
                 $iItem->host = true;
             }
-            $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id);
+            $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
         }
         $this->updateExfeeTime($exfee_id);
         // call Gobus
@@ -234,7 +240,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateExfeeById($exfee_id, $invitations, $by_identity_id) {
+    public function updateExfeeById($exfee_id, $invitations, $by_identity_id, $user_id = 0) {
         // get helper
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // base check
@@ -285,7 +291,7 @@ class ExfeeModels extends DataModel {
             }
             // add new invitation if it's a new invitation
             if (!$exists) {
-                $this->addInvitationIntoExfee($toItem, $exfee_id, $by_identity_id);
+                $this->addInvitationIntoExfee($toItem, $exfee_id, $by_identity_id, $user_id);
             }
         }
         $this->updateExfeeTime($exfee_id);
