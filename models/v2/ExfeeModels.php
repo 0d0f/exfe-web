@@ -23,7 +23,7 @@ class ExfeeModels extends DataModel {
         $withRemoved = $withRemoved ? '' : 'AND `state` <> 4' ;
         $rawExfee = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id} {$withRemoved}");
         $objExfee = new Exfee($id);
-        $exfee_updated_at=$rawExfee[0]['exfee_updated_at'];
+        $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
         foreach ($rawExfee as $ei => $eItem) {
             $objIdentity   = $hlpIdentity->getIdentityById($eItem['identity_id']);
             $oByIdentity   = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
@@ -42,7 +42,9 @@ class ExfeeModels extends DataModel {
                 !!intval($eItem['host'])
             );
         }
-        $objExfee->updated_at=$exfee_updated_at;
+        $objExfee->updated_at = $exfee_updated_at;
+        $objExfee->countExfee();
+        // return
         return $objExfee;
     }
 

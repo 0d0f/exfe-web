@@ -9,17 +9,23 @@ class Exfee extends EFObject {
     public $accepted    = 0;
 
 
-    protected function countExfee() {
-    	// foreach ($this-> as $key => $value) {
-    	// 	# code...
-    	// }
-    }
-
-
     public function __construct($id = 0, $invitations = array()) {
         parent::__construct($id, 'exfee');
 
         $this->invitations = $invitations;
+    }
+
+
+    public function countExfee() {
+    	foreach ($this->invitations as $invI => $invItem) {
+    		if ($invItem->rsvp_status === 'REMOVED'
+    		 || $invItem->rsvp_status === 'NOTIFICATION') {
+    			continue;
+    		}
+    		// @todo: 需要处理身份冲突时的 fallback。
+			$this->total    += ($num = 1 + $invItem->mates);
+			$this->accepted += $invItem->rsvp_status === 'ACCEPTED' ? $num : 0;
+		}
     }
 
 }
