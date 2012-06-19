@@ -53,7 +53,7 @@ class ExfeeActions extends ActionController {
         // do it
         $exfee = json_decode($_POST['exfee']);
         if ($exfee && isset($exfee->invitations) && is_array($exfee->invitations)
-         && $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id)) {
+         && $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id, $result['uid'])) {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
