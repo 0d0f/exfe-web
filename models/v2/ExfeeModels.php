@@ -100,7 +100,7 @@ class ExfeeModels extends DataModel {
         $dbResult = $this->query($sql);
         // save relations
         if ($user_id) {
-            $hlpRelation = getHelperByName('Relation', 'v2');
+            $hlpRelation = $this->getHelperByName('Relation', 'v2');
             $hlpRelation->saveRelations($user_id, $invitation->identity->id);
         }
         // return
