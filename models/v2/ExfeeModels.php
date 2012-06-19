@@ -227,9 +227,6 @@ class ExfeeModels extends DataModel {
         }
         // add invitations
         foreach ($invitations as $iI => $iItem) {
-            if (intval($iItem->identity->id) === intval($by_identity_id)) {
-                $iItem->host = true;
-            }
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
         }
         $this->updateExfeeTime($exfee_id);
