@@ -28,38 +28,40 @@ class AvatarActions extends ActionController {
         $objLibImage = new libImage;
 		// config
 		$config = array(
-			'width'         => 40,
-			'height'        => 40,
-			'host-right'    => 1,
-			'host-top'      => 1,
-			'host-width'    => 10,
-			'host-height'   => 10,
-			'host-color'    => array(17, 117, 165),
-			'host-font'     => "{$resDir}/Arial Bold.ttf",
-			'host-fSize'    => 9,
-			'host-fColor'   => array(230, 230, 230),
-			'host-left-fix' => 2,
-			'host-top-fix'  => 1,
-			'host-string'   => 'H',
-			'with-left'     => 1,
-			'with-top'      => 1,
-			'with-width'    => 10,
-			'with-height'   => 10,
-			'with-color'    => array(17, 117, 165),
-			'with-font'     => "{$resDir}/Arial Bold.ttf",
-			'with-fSize'    => 9,
-			'with-fColor'   => array(230, 230, 230),
-			'with-left-fix' => 2,
-			'with-top-fix'  => 1,
-			'with-max'      => 9,
+			'width'          => 40,
+			'height'         => 40,
+			'host-right'     => 1,
+			'host-top'       => 1,
+			'host-width'     => 10,
+			'host-height'    => 10,
+			'host-color'     => array(17, 117, 165),
+			'host-font'      => "{$resDir}/Arial Bold.ttf",
+			'host-fSize'     => 9,
+			'host-fColor'    => array(230, 230, 230),
+			'host-left-fix'  => 2,
+			'host-top-fix'   => 1,
+			'host-string'    => 'H',
+			'mates-left'     => 1,
+			'mates-top'      => 1,
+			'mates-width'    => 10,
+			'mates-height'   => 10,
+			'mates-color'    => array(17, 117, 165),
+			'mates-font'     => "{$resDir}/Arial Bold.ttf",
+			'mates-fSize'    => 9,
+			'mates-fColor'   => array(230, 230, 230),
+			'mates-left-fix' => 2,
+			'mates-top-fix'  => 1,
+			'mates-max'      => 9,
 		);
 		// get source image
 		$params = $this->params;
 		try {
 			if (!$params['url']) {
-				throw new Exception('Image url must be given.');
+				$error = new Exception('Image url must be given.');
+				throw $error;
 			}
-			$type = strtolower(array_pop(explode('.', $params['url'])));
+			$arrUrl = explode('.', $params['url']);
+			$type   = strtolower(array_pop($arrUrl));
 			switch ($type) {
 				case 'png':
 					@$image = ImageCreateFromPNG($params['url']);
@@ -72,10 +74,12 @@ class AvatarActions extends ActionController {
 					@$image = ImageCreateFromGif($params['url']);
 					break;
 				default:
-					throw new Exception('Error image type.');
+					$error  = new Exception('Error image type.');
+					throw $error;
 			}
 			if (!$image) {
-				throw new Exception('Error while fetching image.');
+				$error = new Exception('Error while fetching image.');
+				throw $error;
 			}
 		} catch (Exception $error) {
 			// get fall back image
@@ -113,17 +117,17 @@ class AvatarActions extends ActionController {
 				$config['host-string'], $config['host-font'], $config['host-fSize'], $config['host-fColor']
 			);
 		}
-		$with = (int)$params['with'];
-		// draw with-someone icon
-		if ($with > 0) {
+		$mates = (int)$params['mates'];
+		// draw mates-someone icon
+		if ($mates > 0) {
 			$image = $objLibImage->drawDrectangle(
-				$image, $config['with-left'], $config['with-top'],
-				$config['with-width'], $config['with-height'], $config['with-color']
+				$image, $config['mates-left'], $config['mates-top'],
+				$config['mates-width'], $config['mates-height'], $config['mates-color']
 			);
 			$image = $objLibImage->drawString(
-				$image, $config['with-left'] + $config['with-left-fix'], $config['with-top'] + $config['with-top-fix'],
-				$with > $config['with-max'] ? $config['with-max'] : $with,
-				$config['with-font'], $config['with-fSize'], $config['with-fColor']
+				$image, $config['mates-left'] + $config['mates-left-fix'], $config['mates-top'] + $config['mates-top-fix'],
+				$mates > $config['mates-max'] ? $config['mates-max'] : $mates,
+				$config['mates-font'], $config['mates-fSize'], $config['mates-fColor']
 			);
 		}
 		// render
