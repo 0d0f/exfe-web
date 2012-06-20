@@ -119,10 +119,9 @@ class CrossModels extends DataModel {
     }
 
 
-    public function getExfeeByCrossId($cross_id)
-    {
-        $sql="select exfee_id from crosses where `id`=$cross_id;";
-        $result=$this->getRow($sql);
+    public function getExfeeByCrossId($cross_id) {
+        $sql = "select exfee_id from crosses where `id`=$cross_id;";
+        $result = $this->getRow($sql);
         return $result["exfee_id"];
     }
 

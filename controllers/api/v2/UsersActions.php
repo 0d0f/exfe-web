@@ -402,18 +402,25 @@ class UsersActions extends ActionController {
     public function doCheckAuthorization() {
         // get models
         $checkHelper   = $this->getHelperByName('check',   'v2');
+        $hlpExfee      = $this->getHelperByName('exfee',   'v2');
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // get inputs
         $arrTokens     = trim($_POST['tokens']) ? json_decode($_POST['tokens']) : array();
-        $objStatuses   = array();
+        $objStatuses   = new stdClass;
         // get status
         foreach ($arrTokens as $token) {
             $result = $checkHelper->isAPIAllow('user_edit', $token);
-            $objStatuses[$token]
-          = $result['check']
-          ? $modUser->getUserIdentityInfoByUserId($result['uid'])
-          : null;
+            // @todo: needed to be upgrade, when making the new cross page by @Leaskh
+            if ($result['check']) {
+                $objStatuses->$token
+              = array('type' => 'USER_TOKEN')
+              + $modUser->getUserIdentityInfoByUserId($result['uid']);
+            } elseif (($invInfo = $hlpExfee->checkInvitationToken($token))) {
+                $objStatuses->$token
+              = array('type' => 'CROSS_TOKEN')
+              + $invInfo;
+            }
         }
         apiResponse(array('statuses' => $objStatuses));
     }
