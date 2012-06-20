@@ -61,13 +61,17 @@ define('api', [], function (require, exports, module) {
 
 
     // Verify
+    // 登陆前
+    verifyIdentity: '/users/verifyIdentity',
+
+    // 登陆后
     verifyUserIdentity: '/users/verifyUserIdentity',
 
     forgotPassword: '/users/forgotPassword'
   };
 
   // Not Use Token
-  var ignore = 'signin getRegistrationFlag checkAuthorization';
+  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity verifyUserIdentity forgotPassword';
 
   var Api = {
 
@@ -144,7 +148,7 @@ define('api', [], function (require, exports, module) {
     function cb() {
       var args = _slice(arguments), data = args[0];
       // status-code 200 success
-      if (data.meta.code === 200) {
+      if (data && data.meta.code === 200) {
         args[0] = data.response;
         done.apply(this, args);
       } else {

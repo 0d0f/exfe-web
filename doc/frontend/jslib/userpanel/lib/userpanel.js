@@ -287,7 +287,7 @@ define(function (require) {
                   var identity = R.filter(data.user.identities, function (v) {
                     if (last_identity === v.external_id) return true;
                   })[0] || data.user.default_identity;
-                  Store.set('last_identity', identity);
+                  Store.set('lastIdentity', identity);
                 })
               );
             //}
@@ -421,4 +421,3 @@ define(function (require) {
   });
 
 });
-

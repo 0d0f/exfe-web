@@ -16,7 +16,7 @@
   //*border: 1px solid #999; /* IE6-7 */
   .background-clip(padding-box);
   border: none;
-  color: #424242;
+  color: #4c4c4c;
   .box-shadow(0 1px 4px rgba(0, 0, 0, .25));
   .border-radius(0 0 5px 5px);
   #gradient > .vertical(#fafafa, #e6e6e6);
@@ -88,6 +88,9 @@
   overflow-y: visible;
   max-height: none;
 
+  .avatar-align {
+    margin-top: 12px;
+  }
 
   .user-identity {
     position: relative;
@@ -102,10 +105,7 @@
   }
 
   .shadow {
-    font-size: 18px;
-    font-weight: 300;
     text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
-    color: #000;
   }
 
   .identity {
@@ -130,8 +130,10 @@
   }
 
   .title {
-    margin-bottom: 20px;
-    height: 24px;
+    margin-bottom: 19px;
+    height: 26px;
+    font-size: 21px;
+    font-weight: 300;
     text-align: center;
   }
 
@@ -205,6 +207,40 @@
   font-size: 14px;
   line-height: 20px;
 
+  .form-title {
+    position: relative;
+    margin-bottom: 10px;
+    color: #1175a5;
+  }
+
+  .form-title-bd {
+    display: inline-block;
+    width: 55px;
+    height: 1px;
+    background: #b2b2b2;
+    margin-top: 9.5px;
+  }
+
+  .form-title:before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0px;
+    width: 1px;
+    height: 80px;
+    #gradient > .vertical-three-colors(#b2b2b2, #b2b2b2, 50%, #e6e6e6);
+  }
+
+  .form-title:after {
+    content: '';
+    position: absolute;
+    top: 10.5px;
+    right: 0;
+    width: 1px;
+    height: 89.5px;
+    #gradient > .vertical-three-colors(#b2b2b2, #b2b2b2, 45%, #e6e6e6);
+  }
+
   legend {
     padding-bottom: 5px;
     margin-bottom: 0;
@@ -215,11 +251,11 @@
 
   .control-group {
     position: relative;
-    margin: 0 0 9px 44px;
+    margin: 0 0 9px 34px;
   }
 
   .control-label {
-    width: 100px;
+    //width: 100px;
     margin-bottom: 0;
     color: #797979;
   }
@@ -228,13 +264,8 @@
     position: relative;
   }
 
-  .avatar {
-    position: absolute;
-    right: 27px;
-    bottom: 0;
-  }
-
-  input {
+  input[type="text"],
+  input[type="password"] {
     width: 224px;
     padding: 3px 4px;
     border: 1px solid #d5d5d5;
@@ -242,6 +273,11 @@
     margin-bottom: 0;
     .border-radius(0);
   }
+
+  .label-error {
+    color: #cb4747;
+  }
+
 }
 
 .modal-sandbox {
@@ -278,7 +314,7 @@
   .popmenu {
     position: absolute;
     left: 1px;
-    z-index: @zindexModal + 1;
+    z-index: @zindexModal * 10 + 1;
     width: 216px;
     #gradient > .vertical(#fafafa, #e6e6e6);
     border: 1px solid #fff;
@@ -296,9 +332,18 @@
       height: 24px;
     }
 
-    li:hover {
+    li:hover,
+    .active {
       background-color: rgba(127,127,127,.08);
     }
+
+  }
+
+  .help-subject {
+    position: absolute;
+    top: 7px;
+    left: 217px;
+    cursor: pointer;
   }
 
   .help-inline {
