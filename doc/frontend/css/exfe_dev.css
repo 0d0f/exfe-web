@@ -3863,6 +3863,10 @@ input[type="submit"].btn.btn-mini {
   display: inline-block;
 }
 
+.strike {
+  text-decoration: line-through;
+}
+
 .modal {
   position: absolute;
   top: 150px;
@@ -3872,7 +3876,7 @@ input[type="submit"].btn.btn-mini {
   margin: 0 0 0 -200px;
   overflow: visible;
   clear: both;
-  color: #424242;
+  color: #4c4c4c;
   background-color: #f2f2f2;
   background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
   background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
@@ -3974,6 +3978,10 @@ input[type="submit"].btn.btn-mini {
   overflow-y: visible;
 }
 
+.modal-body .avatar-align {
+  margin-top: 12px;
+}
+
 .modal-body .user-identity {
   position: relative;
   width: 40px;
@@ -3987,9 +3995,6 @@ input[type="submit"].btn.btn-mini {
 }
 
 .modal-body .shadow {
-  font-size: 18px;
-  font-weight: 300;
-  color: #000;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 }
 
@@ -4013,8 +4018,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .modal-body .title {
-  height: 24px;
-  margin-bottom: 20px;
+  height: 26px;
+  margin-bottom: 19px;
+  font-size: 21px;
+  font-weight: 300;
   text-align: center;
 }
 
@@ -4091,6 +4098,56 @@ input[type="submit"].btn.btn-mini {
   line-height: 20px;
 }
 
+.modal-form .form-title {
+  position: relative;
+  margin-bottom: 10px;
+  color: #1175a5;
+}
+
+.modal-form .form-title-bd {
+  display: inline-block;
+  width: 55px;
+  height: 1px;
+  margin-top: 9.5px;
+  background: #b2b2b2;
+}
+
+.modal-form .form-title:before {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  width: 1px;
+  height: 80px;
+  background-color: #bcbcbc;
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b2b2b2), color-stop(50%, #b2b2b2), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(#b2b2b2, #b2b2b2 50%, #e6e6e6);
+  background-image: -moz-linear-gradient(top, #b2b2b2, #b2b2b2 50%, #e6e6e6);
+  background-image: -ms-linear-gradient(#b2b2b2, #b2b2b2 50%, #e6e6e6);
+  background-image: -o-linear-gradient(#b2b2b2, #b2b2b2 50%, #e6e6e6);
+  background-image: linear-gradient(#b2b2b2, #b2b2b2 50%, #e6e6e6);
+  background-repeat: no-repeat;
+  content: '';
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#b2b2b2', endColorstr='#e6e6e6', GradientType=0);
+}
+
+.modal-form .form-title:after {
+  position: absolute;
+  top: 10.5px;
+  right: 0;
+  width: 1px;
+  height: 89.5px;
+  background-color: #bcbcbc;
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b2b2b2), color-stop(45%, #b2b2b2), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(#b2b2b2, #b2b2b2 45%, #e6e6e6);
+  background-image: -moz-linear-gradient(top, #b2b2b2, #b2b2b2 45%, #e6e6e6);
+  background-image: -ms-linear-gradient(#b2b2b2, #b2b2b2 45%, #e6e6e6);
+  background-image: -o-linear-gradient(#b2b2b2, #b2b2b2 45%, #e6e6e6);
+  background-image: linear-gradient(#b2b2b2, #b2b2b2 45%, #e6e6e6);
+  background-repeat: no-repeat;
+  content: '';
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#b2b2b2', endColorstr='#e6e6e6', GradientType=0);
+}
+
 .modal-form legend {
   padding-bottom: 5px;
   margin-bottom: 0;
@@ -4101,11 +4158,10 @@ input[type="submit"].btn.btn-mini {
 
 .modal-form .control-group {
   position: relative;
-  margin: 0 0 9px 44px;
+  margin: 0 0 9px 34px;
 }
 
 .modal-form .control-label {
-  width: 100px;
   margin-bottom: 0;
   color: #797979;
 }
@@ -4114,13 +4170,8 @@ input[type="submit"].btn.btn-mini {
   position: relative;
 }
 
-.modal-form .avatar {
-  position: absolute;
-  right: 27px;
-  bottom: 0;
-}
-
-.modal-form input {
+.modal-form input[type="text"],
+.modal-form input[type="password"] {
   width: 224px;
   padding: 3px 4px;
   margin-bottom: 0;
@@ -4129,6 +4180,10 @@ input[type="submit"].btn.btn-mini {
   -webkit-border-radius: 0;
      -moz-border-radius: 0;
           border-radius: 0;
+}
+
+.modal-form .label-error {
+  color: #cb4747;
 }
 
 .modal-sandbox .modal-main {
@@ -4163,7 +4218,7 @@ input[type="submit"].btn.btn-mini {
 .popmenu {
   position: absolute;
   left: 1px;
-  z-index: 1051;
+  z-index: 10501;
   width: 216px;
   line-height: 24px;
   background-color: #f2f2f2;
@@ -4192,8 +4247,16 @@ input[type="submit"].btn.btn-mini {
   cursor: pointer;
 }
 
-.popmenu li:hover {
+.popmenu li:hover,
+.popmenu .active {
   background-color: rgba(127, 127, 127, 0.08);
+}
+
+.help-subject {
+  position: absolute;
+  top: 7px;
+  left: 217px;
+  cursor: pointer;
 }
 
 .help-inline {
@@ -4921,7 +4984,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .xalert-error {
-  color: #d44644;
+  padding: 5px;
+  color: #cb4747;
+  background: rgba(255, 230, 230, 0.25);
+  border: 1px solid #ffe6e6;
 }
 
 .xalert-info {
@@ -5278,6 +5344,11 @@ input[type="submit"].btn.btn-mini {
   vertical-align: middle;
 }
 
+.modal-id .user-identity {
+  margin-top: -12px;
+  margin-right: 27px;
+}
+
 .modal-id .orspliter {
   position: relative;
   width: 60px;
@@ -5305,11 +5376,6 @@ input[type="submit"].btn.btn-mini {
   width: 150px;
   border-top: 1px dashed #d5d5d5;
   content: '';
-}
-
-.modal-id .signing {
-  padding-bottom: 20px;
-  text-align: center;
 }
 
 .modal-id .isee {
@@ -5347,7 +5413,6 @@ input[type="submit"].btn.btn-mini {
 }
 
 .modal-ve .mobilephone {
-  margin-top: 12px;
   margin-bottom: 8px;
 }
 

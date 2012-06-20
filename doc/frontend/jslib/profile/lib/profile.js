@@ -200,10 +200,10 @@ define(function (require, exports, module) {
   });
 
   Handlebars.registerHelper('atName', function (provder, external_id) {
-    var s = '';
-    if (provder === 'twitter') s = '@' + external_id;
-    else s = external_id;
-    return s;
+    //var s = '';
+    //if (provder === 'twitter') s = '@' + external_id;
+    //else s = external_id;
+    return external_id;
   });
 
   Handlebars.registerHelper('editable', function (provder, status, options) {
@@ -637,7 +637,7 @@ define(function (require, exports, module) {
     $BODY.on('click.profile', '.xbtn-accept', function (e) {
       e.preventDefault();
       e.stopPropagation();
-      var identity = Store.get('last_identity');
+      var identity = Store.get('lastIdentity');
       var p = $(this).parent();
       var crossid = p.data('id');
       var invitationid = p.data('invitationid');
@@ -659,7 +659,7 @@ define(function (require, exports, module) {
           fs.text(i + 1);
           var ls = cross_box.find('>div :last-child');
           var s = ls.text();
-          var identity = Store.get('last_identity');
+          var identity = Store.get('lastIdentity');
           ls.text(s + (s ? ', ' : '') + identity.name);
           var inv;
           if (!p.parent().prev().length && !p.parent().next().length) {
@@ -756,6 +756,40 @@ define(function (require, exports, module) {
     $BODY.off('click.profile.iosapp');
     $(this).parent().fadeOut();
   });
+
+  /*
+  $('.identity-list').dndsortable({
+    delay: 300,
+    wrap: true,
+    sort: function (dragging, dropzone) {
+      var c = this.data('timer');
+      if (c) {
+        clearTimeout(c);
+        c = null;
+      }
+      c = setTimeout(function () {
+        $(dropzone)[$(dragging).index() < $(dropzone).index() ? 'after' : 'before'](dragging);
+        console.log('dropzone', 1);
+      }, 300);
+      this.data('timer', c);
+    },
+    items: 'li',
+    setData: function (e) {
+      return $(e).data('identity-id');
+    },
+    start: function () {
+      $(this).addClass('dragme');
+      $('.xbtn-addidentity').addClass('hide');
+      $('.identities-trash').removeClass('hide over');
+    },
+    end: function () {
+      $(this).removeClass('dragme');
+    },
+    change: function (data) {
+      //console.log(data);
+    }
+  });
+  */
 
   /*
   // identity remote
