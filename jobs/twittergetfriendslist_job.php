@@ -1,9 +1,9 @@
 <?php
-require_once dirname(dirname(__FILE__))."/config.php";
-require_once dirname(dirname(__FILE__))."/common.php";
-require_once dirname(dirname(__FILE__))."/DataModel.php";
-require_once dirname(dirname(__FILE__))."/models/OAuthModels.php";
-require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
+require_once dirname(dirname(__FILE__)) . '/config.php';
+require_once dirname(dirname(__FILE__)) . '/common.php';
+require_once dirname(dirname(__FILE__)) . '/DataModel.php';
+require_once dirname(dirname(__FILE__)) . '/models/OAuthModels.php';
+require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
 define('TWITTER_FETCH_PAGESIZE', 100);
 
 class Twittergetfriendslist_Job
