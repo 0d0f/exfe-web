@@ -372,4 +372,21 @@ class ExfeeModels extends DataModel {
         return intval($result['id']);
     }
 
+
+    public function checkInvitationToken($token) {
+        if ($token) {
+            $invRow = $this->getRow(
+                "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
+            );
+            if ($invRow) {
+                return array(
+                    'identity_id' => (int) $invRow['identity_id'],
+                    'cross_id'    => (int) $invRow['cross_id'],
+                    'read_only'   => (boolean) $invRow['tokenexpired'],
+                );
+            }
+        }
+        return null;
+    }
+
 }
