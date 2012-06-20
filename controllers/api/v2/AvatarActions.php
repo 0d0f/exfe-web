@@ -22,36 +22,29 @@ class AvatarActions extends ActionController {
 
 	public function doRender() {
 		// init requirement
-        $curDir = dirname(__FILE__);
-        $resDir = "{$curDir}/../../../default_avatar_portrait/";
+        $curDir    = dirname(__FILE__);
+        $resDir    = "{$curDir}/../../../default_avatar_portrait/";
+        $defImg    = "{$curDir}/../../../eimgs/web/80_80_default.png";
+        $icoFile   = "{$curDir}/../../../static/images/icons_v2.png";
         require_once "{$curDir}/../../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
 		// config
-		$config = array(
+		$config    = array(
 			'width'          => 40,
 			'height'         => 40,
 			'host-right'     => 1,
 			'host-top'       => 1,
 			'host-width'     => 10,
 			'host-height'    => 10,
-			'host-color'     => array(17, 117, 165),
-			'host-font'      => "{$resDir}/Arial Bold.ttf",
-			'host-fSize'     => 9,
-			'host-fColor'    => array(230, 230, 230),
-			'host-left-fix'  => 2,
-			'host-top-fix'   => 1,
-			'host-string'    => 'H',
+			'host-sprite-x'  => 44,
+			'host-sprite-y'  => 44,
 			'mates-left'     => 1,
 			'mates-top'      => 1,
 			'mates-width'    => 10,
 			'mates-height'   => 10,
-			'mates-color'    => array(17, 117, 165),
-			'mates-font'     => "{$resDir}/Arial Bold.ttf",
-			'mates-fSize'    => 9,
-			'mates-fColor'   => array(230, 230, 230),
-			'mates-left-fix' => 2,
-			'mates-top-fix'  => 1,
 			'mates-max'      => 9,
+			'mates-sprite-x' => 44,
+			'mates-sprite-y' => 44,
 		);
 		// get source image
 		$params = $this->params;
@@ -83,16 +76,16 @@ class AvatarActions extends ActionController {
 			}
 		} catch (Exception $error) {
 			// get fall back image
-			$image = ImageCreateFromPNG("{$curDir}/../../../eimgs/web/80_80_default.png");
+			$image  = ImageCreateFromPNG($defImg);
 		}
 		// resize source image
-		$rqs_width  = (int)$params['width'];
-		$rqs_height = (int)$params['height'];
+		$rqs_width  = (int) $params['width'];
+		$rqs_height = (int) $params['height'];
 		$config['width']  = $rqs_width  > 0 ? $rqs_width  : $config['width'];
 		$config['height'] = $rqs_height > 0 ? $rqs_height : $config['height'];
 		$image = $objLibImage->rawResizeImage($image, $config['width'], $config['height']);
 		// draw alpha overlay
-		$alpha = (float)$params['alpha'];
+		$alpha = (float) $params['alpha'];
 		if ($alpha) {
 			$color = imagecolorallocatealpha($image, 255, 255, 255, 127 * $alpha);
 			for ($x = 0; $x <= $config['width'] - 1; $x++) {
@@ -105,29 +98,33 @@ class AvatarActions extends ActionController {
 				}
 			}
 		}
-		// draw host icon
-		if (strtolower($params['host']) === 'true') {
-			$host_left = $config['width'] - $config['host-width'] - $config['host-right'] - 1;
-			$image = $objLibImage->drawDrectangle(
-				$image, $host_left, $config['host-top'], $config['host-width'],
-				$config['host-height'], $config['host-color']
-			);
-			$image = $objLibImage->drawString(
-				$image, $host_left + $config['host-left-fix'], $config['host-top'] + $config['host-top-fix'],
-				$config['host-string'], $config['host-font'], $config['host-fSize'], $config['host-fColor']
+		// load icons image file
+		$imgIcons = ImageCreateFromPNG($icoFile);
+        imagealphablending($imgIcons, true);
+        imagesavealpha($imgIcons, true);
+        imagefill($imgIcons, 0, 0, imagecolorallocatealpha($imgIcons, 0, 0, 0, 127));
+        // draw host icon
+        if (strtolower($params['ishost']) === 'true') {
+        	$config['host-left'] = $config['width'] - $config['host-width'] - $config['host-right'];
+			imagecopyresampled(
+				$image, $imgIcons,
+				$config['host-left'],      $config['host-top'],
+				$config['host-sprite-x'],  $config['host-sprite-y'],
+				$config['host-width'],     $config['host-height'],
+				$config['host-width'],     $config['host-height']
 			);
 		}
-		$mates = (int)$params['mates'];
 		// draw mates-someone icon
+		$mates = (int) $params['mates'];
 		if ($mates > 0) {
-			$image = $objLibImage->drawDrectangle(
-				$image, $config['mates-left'], $config['mates-top'],
-				$config['mates-width'], $config['mates-height'], $config['mates-color']
-			);
-			$image = $objLibImage->drawString(
-				$image, $config['mates-left'] + $config['mates-left-fix'], $config['mates-top'] + $config['mates-top-fix'],
-				$mates > $config['mates-max'] ? $config['mates-max'] : $mates,
-				$config['mates-font'], $config['mates-fSize'], $config['mates-fColor']
+			$mates = $mates > $config['mates-max'] ? $config['mates-max'] : $mates;
+			$config['mates-sprite-x'] += $config['mates-width'] * $mates;
+			imagecopyresampled(
+				$image, $imgIcons,
+				$config['mates-left'],     $config['mates-top'],
+				$config['mates-sprite-x'], $config['mates-sprite-y'],
+				$config['mates-width'],    $config['mates-height'],
+				$config['mates-width'],    $config['mates-height']
 			);
 		}
 		// render
