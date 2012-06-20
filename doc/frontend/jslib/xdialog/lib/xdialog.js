@@ -16,83 +16,173 @@ define(function (require, exports, module) {
     options: {
 
       errors: {
-        'failed': 'Wrong password, try again.',
-        'no_password': 'Identity password empty. <span class="xalert-normal">Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.</span>',
+        'failed': 'Password incorrect.',
+        'no_password': 'Password incorrect.',
         'no_external_id': 'Set up this new identity.'
       },
 
       onCheckUser: function () {
-        var user = Store.get('user');
-        if (user) {
+        var lastIdentity = Store.get('lastIdentity');
+        if (lastIdentity) {
           // 暂时处理单用户，默认取第一个
-          var external_identity = user.identities[0].external_id;
-          this.$('#identity').val(external_identity);
+          this.$('#identity').val(lastIdentity.external_id);
           this.$('.x-signin').removeClass('disabled loading');
           this.availability = true;
-          if (user.identities[0]['avatar_filename'] === 'default.png') {
-            user.identities[0]['avatar_filename'] = '/img/default_portraituserface_20.png';
-          }
-          this.$('#identity')
-            .prev()
-            .attr('src', user.identities[0]['avatar_filename'])
-            .parent()
-            .addClass('identity-avatar');
 
-          this.$('.xbtn-forgotpwd').data('source', {identity: user.identities[0]});
-          this.toggleSetupOrForgopwd(true);
+          this.$('.help-subject').addClass('icon14-clear');
+          this.$('.user-identity')
+            .removeClass('hide')
+            .find('.avatar')
+            .attr('src', lastIdentity.avatar_filename)
+            .next()
+            .attr('class', 'provider icon16-identity-' + lastIdentity.provider);
+
+          this.$('.xbtn-forgotpwd').data('source', {identity: lastIdentity});
+        }
+
+        if (this.availability) {
+          this.switchTab('d01');
+          this.$('.help-subject')
+            .removeClass('icon14-question');
+        } else {
+          this.$('.help-subject').addClass('icon14-question');
         }
       },
 
       onShowBefore: function () {
-        if (this.switchTabType === 'd02') {
-          this.$('.modal-body').eq(0).css('opacity', 1);
-          this.switchTab('d01');
-        }
         // 读取本地存储 user infos
         this.emit('checkUser');
       },
 
       onShowAfter: function () {
-        if (this.switchTabType === 'd01' || this.switchTabType === 'd03') {
+        if (this.switchTabType === 'd00' || this.switchTabType === 'd01' || this.switchTabType === 'd02') {
           var $identity = this.$('#identity');
           $identity.focusend();
         }
       },
 
       events: {
-        'click #password-eye': function (e) {
-          var p = this.$('#password');
-          var pt = this.$('#password-text');
-          var $elem = $(e.currentTarget);
-          if ($elem.hasClass('icon16-pass-hide')) {
-            p.addClass('hide');
-            pt.val(p.val()).removeClass('hide');
-          } else {
-            pt.addClass('hide');
-            p.val(pt.val()).removeClass('hide');
+        'click .xbtn-verify': function (e) {
+          var that = this;
+          var $e = $(e.currentTarget);
+          if ($e.hasClass('xbtn-success')) {
+            that.hide();
+            that.$('.verify-messages').addClass('hide');
+            $e.removeClass('xbtn-success').text('Verify');
+            return;
           }
-          $elem.toggleClass('icon16-pass-show icon16-pass-show');
+          var provider = that._identity.provider;
+          var external_id = that._identity.external_id;
+          Api.request('verifyIdentity'
+            , {
+              type: 'POST',
+              data: {
+                provider: provider,
+                external_id: external_id
+              },
+              beforeSend: function (data) {
+              },
+              complete: function () {
+              }
+            }
+            , function (data) {
+              if (data.action === 'VERIFYING') {
+                that.$('.verify-messages').removeClass('hide');
+                $e.addClass('xbtn-success').text('Done');
+              } else if (data.action === 'REDIRECT') {
+              }
+            }
+            // fail
+            , function (data) {
+            }
+          );
+        },
+        'blur #name': function (e) {
+          var val = Util.trim($(e.currentTarget).val());
+          var $name = this.$('[for="name"]');
+          var $text = $name.find('span');
+          if (!val) {
+            $name.addClass('label-error');
+            $text.text('');
+          } else if (Util.utf8length(val) > 30) {
+            $name.addClass('label-error');
+            $text.text('Too long.');
+          } else if (Util.zh_CN.test(val)) {
+            $name.addClass('label-error');
+            $text.text('Invalid character.');
+          } else {
+            $name.removeClass('label-error');
+            $text.text('');
+          }
+        },
+        'blur #password': function (e) {
+          var val = Util.trim($(e.currentTarget).val());
+          var $pass = this.$('[for="password"]');
+          var $text = $pass.find('span');
+          if (!val) {
+            $pass.addClass('label-error');
+            $text.text('Password incorrect.');
+          } else {
+            $pass.removeClass('label-error');
+            $text.text('');
+          }
+        },
+        'click .help-subject': function (e) {
+          var $e = $(e.currentTarget), flag = this.identityFlag;
+
+          if ($e.hasClass('icon14-question')) {
+            if (flag && flag === 'SET_PASSWORD') {
+              var s = 'Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.'
+            } else {
+              var s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
+            }
+            $e.parent().find('.xalert-error').html(s).removeClass('hide');;
+          } else {
+            this.switchTab('d00');
+            this.resetInputs();
+
+            this.$('.user-identity').addClass('hide');
+
+            $e.toggleClass('icon14-question icon14-clear');
+
+            // 清楚user 缓存
+            Store.set('lastIdentity', null);
+            Store.set('last_identity', null);
+            Store.set('signin', null);
+            //Store.set('user', null);
+          }
+
+        },
+        'click #password-eye': function (e) {
+          var $e = $(e.currentTarget);
+          var $input = $e.prev();
+          $input.prop('type', function (i, val) {
+            return val === 'password' ? 'text' : 'password';
+          });
+          $e.toggleClass('icon16-pass-hide icon16-pass-show');
         },
         'click .xbtn-forgotpwd': function (e) {
           e.preventDefault();
-          this.switchTab('d24');
+          this.hide();
+          //this.switchTab('d04');
         },
         'click .xbtn-setup': function (e) {
           e.preventDefault();
           this.$('.modal-body').eq(0).css('opacity', .2);
-          this.switchTab('d02');
+          this.switchTab('d03');
         },
         'click .xbtn-isee': function (e) {
           e.preventDefault();
           this.$('.modal-body').eq(0).css('opacity', 1);
           this.$('#identity').val('');
-          this.switchTab('d03');
+          this.switchTab('d02');
         },
         'click .xbtn-startover': function (e) {
           e.preventDefault();
           this.$('#identity').val('');
-          this.emit('checkUser');
-          this.switchTab('d01', true);
+          //this.emit('checkUser');
+          this.resetInputs();
+          this.switchTab('d00', true);
         },
         'click .x-signin': function (e) {
           var xsignin = $(e.currentTarget);
@@ -100,10 +190,22 @@ define(function (require, exports, module) {
             // signin disabled
             return;
           }
+
           var that = this;
           var t = this.switchTabType;
+
           var od = this.getFormData(t);
-          if (t === 'd01' || t === 'd03') {
+
+          that.$('#password').trigger('blur');
+          if (t === 'd02') {
+            that.$('#name').trigger('blur');
+          }
+
+          if (!od.password || (t === 'd02' && !od.name)) {
+            return;
+          }
+
+          if (t === 'd01' || t === 'd02') {
 
             var dfd = Api.request('signin'
               , {
@@ -132,15 +234,16 @@ define(function (require, exports, module) {
                   that.hide();
                   var d = new Dialog(dialogs.welcome);
                   d.render();
-                  d.show();
+                  d.show(od);
                 }
               }
               , function (data) {
-                var errorType = data.meta.errorType;
+                var errorType = data.meta.errorType,
+                    errorDetail = data.meta.errorDetail;
                 if (errorType === 'no_password' || errorType === 'failed') {
-                    that.$('.xalert-password')
-                    .html(that.options.errors[errorType])
-                    .removeClass('hide');
+                  that.$('[for="password"]')
+                    .addClass('label-error')
+                    .find('span').text(errorDetail || that.options.errors[errorType]);
                 } else if (errorType === 'no_external_id') {
                   that.$('#name')
                     .nextAll('.xalert-info')
@@ -160,43 +263,49 @@ define(function (require, exports, module) {
 
         title: 'Identification',
 
+        // TODO: oAuth 地址设置
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
             + '<div class="pull-right">'
-              + '<a href="#twitter"><img src="/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+              + '<a href="http://localexfe.me/oAuth/twitterRedirect"><img src="/img/twitter-logo.png" alt="" width="52" height="40"></a>'
             + '</div>'
             + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'
-            + '<form class="modal-form form-horizontal">'
+            + '<form class="modal-form">'
               + '<fieldset>'
                 + '<legend>Enter your identity:</legend>'
-                  + '<div class="control-group">'
-                    + '<label class="control-label" for="identity">Identity:</label>'
-                    + '<div class="controls /*identity-avatar*/">'
-                      + '<img class="add-on avatar hide" src="" alt="" width="20" height="20" />'
-                      + '<input type="text" class="input-large identity" id="identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" />'
+
+                  + '<div class="clearfix control-group">'
+                    + '<label class="control-label" for="identity">Identity: <span class="xalert-message"></span></label>'
+                    + '<div class="pull-right user-identity hide">'
+                      + '<img class="avatar" src="" alt="" width="40" height="40" />'
+                      + '<i class="provider"></i>'
+                    + '</div>'
+                    + '<div class="controls">'
+                      + '<input type="text" class="input-large identity" id="identity" autocomplete="off" data-widget="typeahead" data-typeahead-type="identity" placeholder="Enter your email" />'
+                      + '<i class="help-subject"></i>'
                       + '<i class="help-inline small-loading hide"></i>'
-                      + '<div class="xalert-info hide">Set up this new identity.</div>'
+                      + '<div class="xalert xalert-error hide" style="margin-top: 5px;"></div>'
                     + '</div>'
                   + '</div>'
 
-                  + '<div class="control-group d d03 hide">'
-                    + '<label class="control-label" for="name">Display name:</label>'
+                  + '<div class="form-title d d02 hide">Welcome! Please set up your new account.<span class="pull-right form-title-bd"></span></div>'
+                  + '<div class="control-group d d02 hide">'
+                    + '<label class="control-label" for="name">Display name: <span></span></label>'
                     + '<div class="controls">'
-                      + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Your name here" />'
+                      + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Desired recognizable name" />'
                     + '</div>'
                   + '</div>'
 
-                  + '<div class="control-group d d01 d03 hide">'
-                    + '<label class="control-label" for="password">Password:</label>'
+                  + '<div class="control-group d d01 d02 hide">'
+                    + '<label class="control-label" for="password">Password: <span></span></label>'
                     + '<div class="controls">'
-                      + '<input type="password" class="input-large" id="password" />'
-                      + '<input type="text" class="input-large hide" autocomplete="off" id="password-text" />'
+                      + '<input type="password" class="input-large" id="password" autocomplete="off" />'
                       + '<i class="help-inline icon16-pass-hide" id="password-eye"></i>'
                     + '</div>'
                   + '</div>'
 
-                  + '<div class="control-group d d01">'
+                  + '<div class="control-group d d01 hide">'
                     + '<div class="controls">'
                       + '<label class="checkbox">'
                         + '<input type="checkbox" id="auto-signin" value="1" checked>'
@@ -205,28 +314,27 @@ define(function (require, exports, module) {
                     + '</div>'
                   + '</div>'
 
-                  + '<div class="xalert-error xalert-password hide"></div>'
+                  + '<p class="verify-message hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</p>'
 
               + '</fieldset>'
             + '</form>',
 
-        // d01 登陆, d02 ISee, d03 注册, d24 验证
         footer: ''
-          + '<a href="#" class="xbtn-setup d d01 hide">Set Up?</a>'
-          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide">Forgot Password...</button>'
-          + '<button href="#" class="xbtn-white d d03 d24 xbtn-startover hide">Start Over</button>'
-          + '<button href="#" class="pull-right d d24 xbtn-blue hide">Verify</button>'
-          + '<button href="#" class="pull-right xbtn-blue d d01 d03 x-signin disabled hide">Sign In</button>'
-          + '<button href="#" class="pull-right xbtn-blue d xbtn-success hide">Done</button>'
-          + '<button href="#" class="pull-right xbtn-white d d02 xbtn-isee hide">I See</button>',
+          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button href="#" class="xbtn-white d d02 d04 xbtn-startover hide">Start Over</button>'
+          + '<button href="#" class="pull-right d d04 xbtn-blue xbtn-verify hide">Verify</button>'
+          + '<a href="#" class="pull-right xbtn-setup d d00 hide">Set Up?</a>'
+          + '<button href="#" class="pull-right xbtn-blue d d01 d02 x-signin disabled hide">Sign In</button>'
+          //+ '<button href="#" class="pull-right xbtn-blue d d04 xbtn-success hide">Done</button>'
+          + '<button href="#" class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>',
 
         others: ''
-          + '<div class="isee d d02 hide">'
+          + '<div class="isee d d03 hide">'
             + '<div class="modal-body">'
               + '<div class="shadow title">Sign-Up-Free</div>'
-              + '<div class="signing">Tired of signing up all around?</div>'
-              + '<p>Just authorize through your existing accounts on other websites, such as Twitter, Facebook or Google. We hate spam, will NEVER disappoint your trust.</p>'
-              + '<p>Otherwise, tell us your email as your identity, and display name that your friends know who you are, along with a password for sign-in.</p>'
+              + '<p>Tired of signing up all around?</p>'
+              + '<p>Just authorize through your existing accounts on other websites, such as Twitter, <span class="strike">Facebook or Google</span>. We hate spam, will NEVER disappoint your trust.</p>'
+              + '<p>Otherwise, just enter your email and a recognizable  name, along with a password for sign-in in future.</p>'
             + '</div>'
           + '</div>'
       }
@@ -270,6 +378,15 @@ define(function (require, exports, module) {
         }
       },
 
+      onShowAfter: function (data) {
+        this.$('.title').eq(0).html('Hi, ' + data.name + '.');
+        if (data.provider === 'email') {
+          this.$('.provider-email').removeClass('hide');
+        } else {
+          this.$('.provider-other').removeClass('hide');
+        }
+      },
+
       onHideAfter: function () {
         var $e = this.element;
         this.offSrcNode();
@@ -281,17 +398,18 @@ define(function (require, exports, module) {
 
       viewData: {
         // class
-        cls: 'modal-wc',
+        cls: 'modal-large modal-wc',
 
         title: 'Welcome',
 
         body: ''
-          + '<div class="shadow title">Hi, SteveE.</div>'
-          + '<div class="center shadow">Thanks for using <span class="x-sign">EXFE</span>.</div>'
+          + '<div class="shadow title"></div>'
+          + '<div class="center shadow title" style="margin-bottom: 0;">Thanks for using <span class="x-sign">EXFE</span>.</div>'
           + '<p class="center">An utility for hanging out with friends.</p>'
-          + '<p>A verification email has been sent.<br>Please check your mailbox.</p>'
-          + '<p><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
-          + '<p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>',
+          + '<p class="provider-email hide"><span class="x-sign">X</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a X”.</p>'
+          + '<p class="provider-other hide"><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
+          + '<p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>'
+          + '<p class="provider-email hide" style="color: #191919;"><sup>*</sup>A welcome email has been sent to your mailbox. Please check to verify your new identity.<sup>*</sup></p>',
 
         footer: ''
           + '<button href="#" class="pull-right xbtn-blue">GO</button>'
@@ -314,14 +432,21 @@ define(function (require, exports, module) {
           if (dialog_from) {
             $('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
             // TODO: 先简单处理，后面是否要保存 target 元素
-            $('#identity').focusend();
           }
         },
 
         'click .xbtn-verify': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
-          if ($e.hasClass('disabled') || $e.hasClass('success')) return;
+          if ($e.hasClass('disabled')) return;
+          if ($e.hasClass('success')) {
+            this.hide();
+            var $t = this.element;
+            this.offSrcNode();
+            this.destory();
+            $t.remove();
+            return;
+          }
           var i = $e.data('identity');
           if (i) {
             Api.request('forgotPassword'
@@ -352,23 +477,21 @@ define(function (require, exports, module) {
       },
 
       onShowBefore: function (e) {
-        var identity_id = $(e.currentTarget).data('identity-id');
-        var user = Store.get('user');
-        var identities = user.identities;
-        var is = R.filter(identities, function (v, i) {
-          if (identity_id === v.id) return true;
-        })[0];
-        if (is) {
-          if (is['avatar_filename'] === 'default.png') {
-            is['avatar_filename'] = '/img/default_portraituserface_20.png';
+        var data = $(e.currentTarget).data('source');
+        if (data && data.identity) {
+          var is = data.identity;
+          if (is) {
+            if (is['avatar_filename'] === 'default.png') {
+              is['avatar_filename'] = '/img/default_portraituserface_20.png';
+            }
+            var external_id = is.external_id;
+            var src = is.avatar_filename;
+            var $identity = this.$('.user-identity');
+            $identity.find('img.avatar').attr('src', src);
+            $identity.find('i').addClass('icon16-identity-' + is.provider);
+            $identity.next().text(external_id);
+            this.$('.xbtn-verify').data('identity', is);
           }
-          var external_id = is.external_id;
-          var src = is.avatar_filename;
-          var $identity = this.$('.user-identity');
-          $identity.find('img.avatar').attr('src', src);
-          $identity.find('i').addClass('icon16-identity-' + is.provider);
-          $identity.next().text(external_id);
-          this.$('.xbtn-verify').data('identity', is);
         }
       },
 
@@ -711,7 +834,7 @@ define(function (require, exports, module) {
             + '</div>'
             + '<div class="authorize">Authorize account through:</div>'
             + '<div class="orspliter">or</div>'
-            + '<form class="modal-form form-horizontal">'
+            + '<form class="modal-form">'
               + '<fieldset>'
                 + '<legend>Enter your identity information:</legend>'
                   + '<div class="control-group">'
@@ -789,7 +912,12 @@ define(function (require, exports, module) {
       events: {
         'click .xbtn-verify': function (e) {
           var $e = $(e.currentTarget);
-          if ($e.hasClass('disabled') || $e.hasClass('success')) return;
+          if ($e.hasClass('disabled') || $e.hasClass('success')) {
+            if ($e.hasClass('success')) {
+              this.hide();
+            }
+            return;
+          }
           var that = this;
           var identity_id = $e.data('identity_id');
           Api.request('verifyUserIdentity'
@@ -856,7 +984,7 @@ define(function (require, exports, module) {
 
       onShowBefore: function (e) {
         var $e = $(e.currentTarget);
-        var identity_id = $e.data('identity-id');
+        var identity_id = $e.parents('li').data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
@@ -880,7 +1008,12 @@ define(function (require, exports, module) {
         'click .xbtn-verify': function (e) {
           var $e = $(e.currentTarget);
           var that = this;
-          if ($e.hasClass('disabled') || $e.hasClass('success')) return;
+          if ($e.hasClass('disabled') || $e.hasClass('success')) {
+            if ($e.hasClass('success')) {
+              this.hide();
+            }
+            return;
+          }
           var identity_id = $e.data('identity_id');
           Api.request('verifyUserIdentity'
             , {
@@ -942,7 +1075,7 @@ define(function (require, exports, module) {
 
       onShowBefore: function (e) {
         var $e = $(e.currentTarget);
-        var identity_id = $e.data('identity-id');
+        var identity_id = $e.parents('li').data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
@@ -1031,8 +1164,13 @@ define(function (require, exports, module) {
 
     init: function () {
       var that = this;
+
       Bus.on('widget-dialog-identification-auto', function (data) {
+        var $identityLabel = that.$('[for="identity"]'),
+            $identityLabelSpan = $identityLabel.find('span');
+
         that.availability = false;
+        that.identityFlag = null;
 
         var t;
 
@@ -1041,24 +1179,52 @@ define(function (require, exports, module) {
         }
 
         if (data) {
+
+          $identityLabel.removeClass('label-error');
+          $identityLabelSpan.text('');
+
+          that.$('.help-subject')
+            .removeClass('icon14-question')
+            .addClass('icon14-clear')
+            .parent()
+            .find('.xalert-error')
+            .addClass('hide');
+
+          if (data.identity) {
+            that._identity = data.identity;
+            that.$('.user-identity').removeClass('hide')
+              .find('.avatar').attr('src', data.identity.avatar_filename)
+              .next().attr('class', 'provider icon16-identity-' + data.identity.provider);
+          } else {
+            that._identity = null;
+            that.$('.user-identity').addClass('hide');
+          }
+
+          that.identityFlag = data.registration_flag;
           // SIGN_IN
           if (data.registration_flag === 'SIGN_IN') {
             t = 'd01';
-            that.toggleSetupOrForgopwd(true);
           }
           // SIGN_UP 新身份
           else if (data.registration_flag === 'SIGN_UP') {
-            //t = 'd03';
-            that.toggleSetupOrForgopwd(false);
+            t = 'd02';
           }
           // RESet Password
-          else if (data.registration_flag === 'RESET_PASSWORD') {
-            t = 'd24';
-            //that.toggleSetupOrForgopwd(false);
+          else if (data.registration_flag === 'SET_PASSWORD') {
+            t = 'd00';
+            $identityLabel.addClass('label-error')
+            $identityLabelSpan.text('Identity has no password set.');
+          }
+          else if (data.registration_flag === 'VERIFY') {
+            t = 'd04';
           }
           that.availability = true;
         } else {
-          //that.toggleSetupOrForgopwd(false);
+          that.$('.help-subject')
+            .removeClass('icon14-clear')
+            .addClass('icon14-question');
+          $identityLabel.addClass('label-error')
+          $identityLabelSpan.text('Invalid identity.');
         }
 
         t && (that.switchTabType !== t) && that.switchTab(t);
@@ -1068,40 +1234,44 @@ define(function (require, exports, module) {
       });
 
       Bus.on('widget-dialog-identification-nothing', function () {
+        that.$('.user-identity').addClass('hide');
+        that.$('[for="identity"]').removeClass('label-error')
+          .find('span').text('');
         that.$('.xbtn-forgotpwd').data('source', null);
         that.availability = false;
-        if (that.switchTabType !== 'd03') that.switchTab('d01');
+        //if (that.switchTabType !== 'd02') that.switchTab('d01');
         that.$('.x-signin')[(that.availability ? 'remove' : 'add') + 'Class']('disabled');
       });
     },
 
-    toggleSetupOrForgopwd: function (b) {
-      this.$('.xbtn-setup')[(b ? 'add' : 'remove') + 'Class']('hide');
-      this.$('.xbtn-forgotpwd')[(b ? 'remove' : 'add') + 'Class']('hide');
+    resetInputs: function () {
+      this.$('input').val('');
+      this.$('.label-error').removeClass('label-error').find('span').text('');
+      this.$('.icon16-pass-show').toggleClass('icon16-pass-show icon16-pass-hide').prev().prop('type', 'password');
+      this.$('#identity').focusend();
     },
 
-    d03: function (t) {
+    setPasswordPlaceHolder: function (t) {
       // new user
-      if (t === 'd03') {
+      if (t === 'd02') {
         this.$('#password')
-          .attr('placeholder', 'Set Password here');
+          .attr('placeholder', 'Set your EXFE Password');
+      } else if (t === 'd01') {
+        this.$('#password')
+          .attr('placeholder', 'Your EXFE Password');
       }
     },
 
     getFormData: function (t) {
       var val = Util.trim(this.$('#identity').val());
       var identity = Util.parseId(val);
-      if (t === 'd01' || t === 'd03') {
-        var pt = this.$('#password-text');
-        if (! pt.hasClass('hide')) {
-          this.$('#password').val(pt.val());
-        }
+      if (t === 'd01' || t === 'd02') {
         identity.password = this.$('#password').val();
       }
       if (t === 'd01') {
         identity.auto_signin = this.$('#auto-signin').prop('checked');
       }
-      if (t === 'd03') {
+      if (t === 'd02') {
         identity.name = Util.trim(this.$('#name').val());
       }
       return identity;
@@ -1117,18 +1287,16 @@ define(function (require, exports, module) {
 
       this.$('.x-signin')[(this.availability ? 'remove' : 'add') + 'Class']('disabled');
       this.$('.xalert-error').addClass('hide');
-      this.$('.xalert-info').addClass('hide');
+      //this.$('.xalert-info').addClass('hide');
 
       this.switchTabType = t;
 
-      if (this.isShown && (this.switchTabType === 'd01' || this.switchTabType === 'd03')) {
+      if (this.isShown && (this.switchTabType === 'd00' || this.switchTabType === 'd01' || this.switchTabType === 'd02')) {
         var $identity = this.$('#identity');
         $identity.focusend();
       }
 
-      if (t === 'd01') this.toggleSetupOrForgopwd(b);
-
-      this.d03(t);
+      this.setPasswordPlaceHolder(t);
     }
 
   });

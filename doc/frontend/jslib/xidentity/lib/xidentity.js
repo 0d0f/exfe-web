@@ -7,8 +7,19 @@ define(function (require) {
   var $BODY = $(document.body);
   var Store = require('store');
   var Typeahead = require('typeahead');
+  var Handlebars = require('handlebars');
 
   var IdentityPop = Typeahead.extend({
+
+    itemRender: function (item) {
+      var template = Handlebars.compile(this.options.viewData.item);
+      return $(template(item));
+    },
+
+    matcher: function (item) {
+      var eid = item.external_id;
+      return ~eid.toLowerCase().indexOf(this.query.toLowerCase());
+    },
 
     focus: function () {
       var v = Util.trim(this.target.val());
@@ -33,10 +44,14 @@ define(function (require) {
       viewData: {
 
         item: ''
-          + '<li>'
-            + '<img class="pull-right" src="{{avatar_filename}}" alt="" width="20" height="20" />'
+          + '<li data-value="{{external_id}}">'
+            + '<i class="pull-right icon16-identity-{{provider}}"></i>'
             + '<span>{{external_id}}</span>'
           + '</li>'
+      },
+
+      onSelect: function (val) {
+        this.emit('search', val);
       },
 
       // 清楚数据缓存
@@ -47,9 +62,23 @@ define(function (require) {
       onSearch: function (q) {
         var that = this
           , options = that.options
-          , res;
+          , res
+          , items;
 
         that.cache || (that.cache = {});
+
+        if (that.source.length) {
+          items = $.grep(that.source, function (item) {
+            return that.matcher(item);
+          });
+
+          if (!items.length) {
+            that.isShown ? that.hide() : that;
+          } else {
+            that.render(items.slice(0)).show();
+          }
+
+        }
 
         if (that.timer) {
           clearTimeout(that.timer);
@@ -68,7 +97,7 @@ define(function (require) {
             search(q);
           }, options.delay);
 
-          // falg: SIGN_IN SIGIN_UP VERIFY RESET_PASSWORD
+          // falg: SIGN_IN SIGIN_UP VERIFY SET_PASSWORD
           function ajax(e) {
             that.ajaxDefer && that.ajaxDefer.readyState < 4 && that.ajaxDefer.abort();
             that.emit('autocomplete:beforesend');
@@ -116,6 +145,9 @@ define(function (require) {
 
   $(function () {
 
+    var user = Store.get('user'), identities;
+    user && (identities = user.identities);
+
     $BODY.on('focus.typeahead.data-api', '[data-typeahead-type="identity"]', function (e) {
       var $this = $(this);
 
@@ -124,6 +156,7 @@ define(function (require) {
       $this.data('typeahead', new IdentityPop({
 
         options: {
+          source: identities,
           useCache: true,
           target: $this,
           // 当输入框没有值时，触发

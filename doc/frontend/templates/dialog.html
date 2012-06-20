@@ -80,13 +80,20 @@
         <div class="orspliter">or</div>
         <form class="modal-form">
           <fieldset>
-            <!--<legend>Enter your identity:</legend>-->
-            <div class="control-group">
-              <label class="control-label" for="input01">Identity:</label>
-              <img class="add-on avatar" src="/img/users/u1x40.png" alt="" width="40" height="40" />
+            <legend>Enter your identity:</legend>
+            <!--<div class="form-title">Enter your identity:</div>-->
+            <div class="clearfix control-group">
+              <label class="control-label" for="input01">Identity: <span>12321 31</span></label>
+              <div class="pull-right user-identity">
+                <img class="avatar" src="/img/users/u2x40.png" alt="" width="40" height="40">
+                <i class="provider icon16-identity-email"></i>
+              </div>
               <div class="controls">
                 <input type="text" class="input-large identity" id="input01" />
+                <i class="help-subject icon14-question"></i>
                 <i class="help-inline small-loading"></i>
+
+                <p class="help-block question-message hide">Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.</p>
                 <div class="popmenu">
                   <ul>
                     <li>
@@ -103,7 +110,17 @@
                     </li>
                   </ul>
                 </div>
-                <!--<p class="help-block">Set up this new identity.</p>-->
+
+              </div>
+
+            </div>
+
+
+            <div class="form-title">Welcome! Please set up your new account.<span class="pull-right form-title-bd"></span></div>
+            <div class="control-group">
+              <label class="control-label" for="input03">Display name:</label>
+              <div class="controls">
+                <input type="text" class="input-large" id="input03" placeholder="Your name here" />
               </div>
             </div>
 
@@ -115,14 +132,6 @@
               </div>
             </div>
 
-            <!--
-            <div class="control-group">
-              <label class="control-label" for="input03">Display name:</label>
-              <div class="controls">
-                <input type="text" class="input-large" id="input03" placeholder="Your name here" />
-              </div>
-            </div>
-            -->
           </fieldset>
         </form>
 
@@ -130,10 +139,10 @@
       </div>
 
       <!-- I See -->
-      <div class="isee">
+      <div class="isee hide">
         <div class="modal-body">
           <div class="shadow title">Sign-Up-Free</div>
-          <div class="signing">Tired of signing up all around?</div>
+          <p>Tired of signing up all around?</p>
           <p>Just authorize through your existing accounts on other websites, such as Twitter, Facebook or Google. We hate spam, will NEVER disappoint your trust.</p>
           <p>Otherwise, tell us your email as your identity, and display name that your friends know who you are, along with a password for sign-in.</p>
         </div>
@@ -157,8 +166,8 @@
     <div class="modal-main">
       <div class="modal-body">
         <div class="shadow title">Sign-Up-Free</div>
-        <div class="signing">Tired of signing up all around?</div>
-        <p>Just authorize through your existing accounts on other websites, such as Twitter, Facebook or Google. We hate spam, will NEVER disappoint your trust.</p>
+        <p>Tired of signing up all around?</p>
+        <p>Just authorize through your existing accounts on other websites, such as Twitter, <span class="strike">Facebook or Google</span>. We hate spam, will NEVER disappoint your trust.</p>
         <p>Otherwise, tell us your email as your identity, and display name that your friends know who you are, along with a password for sign-in.</p>
       </div>
       <div class="modal-footer">
@@ -183,14 +192,13 @@
           <a href="#qrcode"><img src="/img/qrcode.png" alt="" width="40" height="40" /></a>
         </div>
         <div class="authorize">Authorize account through:</div>
-        <form class="modal-form form-horizontal">
+        <form class="modal-form">
           <fieldset>
             <legend>Enter your identity information:</legend>
             <div class="control-group">
               <label class="control-label" for="input01">Identity:</label>
               <div class="controls">
                 <input type="text" class="input-large" id="input01">
-                <p class="help-block">Set up this new identity.</p>
               </div>
             </div>
 
@@ -252,7 +260,7 @@
     <div class="modal-main">
       <div class="modal-body">
         <div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>
-        <form class="modal-form form-horizontal">
+        <form class="modal-form">
           <fieldset>
             <legend>Please set password to keep track of attendees update, and engage in.</legend>
             <div class="control-group">
@@ -260,7 +268,6 @@
               <div class="controls">
                 <img class="add-on avatar" src="/img/users/u1x20.png" alt="" width="20" height="20" />
                 <input type="text" class="input-large disabled identity" id="input01" value="steve@0d0f.com" disabled />
-                <!--<p class="help-block">Set up this new identity.</p>-->
               </div>
             </div>
 
@@ -379,7 +386,7 @@
           </a>
         </div>
         <div class="authorize">Authorize with your existing identity:</div>
-        <form class="modal-form form-horizontal">
+        <form class="modal-form">
           <fieldset>
             <legend>Enter your identity information:</legend>
             <div class="control-group">
@@ -388,7 +395,6 @@
                 <img class="add-on avatar" src="/img/users/u1x20.png" alt="" width="20" height="20" />
                 <input type="text" class="input-large identity" id="input01" />
               </div>
-              <p class="help-block">Set up this new identity.</p>
             </div>
 
           </fieldset>
@@ -415,7 +421,7 @@
         <div>Identity to verify:</div>
         <div class="pull-right user-identity">
           <img class="avatar" src="/img/users/u2x40.png" alt="" width="40" height="40" />
-          <i class="provider icon-user"></i>
+          <i class="provider icon16-identity-email"></i>
         </div>
         <div class="identity disabled">steve@0d0f.com</div>
         <p>Confirm sending verification to your mailbox? It should arrive in minutes.</p>
@@ -442,7 +448,7 @@
         <div>Identity to verify:</div>
         <div class="pull-right user-identity">
           <img class="avatar" src="/img/users/u2x40.png" alt="" width="40" height="40" />
-          <i class="provider icon-user"></i>
+          <i class="provider icon16-identity-email"></i>
         </div>
         <div class="identity disabled">steve@0d0f.com</div>
         <p>You will be directed to Twitter website to authorize EXFE. Don’t forget to follow @EXFE, it’s necessary for smooth service integration.</p>
@@ -468,9 +474,9 @@
         <div>Identity to verify:</div>
         <div class="pull-right user-identity">
           <img class="avatar" src="/img/users/u2x40.png" alt="" width="40" height="40" />
-          <i class="provider icon-user"></i>
+          <i class="provider icon16-identity-email"></i>
         </div>
-        <div class="clearfix mobilephone">
+        <div class="clearfix avatar-align mobilephone">
           <!-- calling code -->
           <div class="pull-left ccplus">+</div>
           <div class="pull-left mobile-phone">
