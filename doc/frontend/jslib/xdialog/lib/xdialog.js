@@ -49,9 +49,14 @@ define(function (require, exports, module) {
         }
       },
 
-      onShowBefore: function () {
-        // 读取本地存储 user infos
-        this.emit('checkUser');
+      onShowBefore: function (e) {
+        var source = $(e.currentTarget).data('source');
+        if (source) {
+          this.$('#identity').val(source);
+        } else {
+          // 读取本地存储 user infos
+          this.emit('checkUser');
+        }
       },
 
       onShowAfter: function () {
@@ -229,7 +234,11 @@ define(function (require, exports, module) {
                 // 最后登陆的 external_identity
                 Store.set('last_identity', od.external_identity);
                 if (t === 'd01') {
-                  window.location = '/profile';
+                  if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
+                    window.location = window.location.pathname;
+                  } else {
+                    window.location = '/s/profile';
+                  }
                 } else {
                   that.hide();
                   var d = new Dialog(dialogs.welcome);

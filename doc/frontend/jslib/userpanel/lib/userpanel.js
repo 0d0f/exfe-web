@@ -2,13 +2,13 @@ define(function (require) {
 
   var $ = require('jquery');
   var R = require('rex');
-  var Bus = require('bus');
   var Api = require('api');
+  var Bus = require('bus');
   var Util = require('util');
   var Store = require('store');
   var Handlebars = require('handlebars');
 
-  var userpanels = {
+  var userpanelTmps = {
     // new identity
     '1': ''
       + '<div class="dropdown-menu user-panel">'
@@ -21,12 +21,12 @@ define(function (require) {
           + '<span class="pull-right avatar">'
             + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
           + '</span>'
-          + '<i class="icon-envelope"></i>'
+          + '<i class="icon16-identity-{{provider}}"></i>'
           + '<span>{{external_id}}</span>'
         + '</div>'
         + '</div>'
         + '<div class="footer">'
-          + '<button class="xbtn xbtn-signin">Sign In</button>'
+          + '<button class="xbtn xbtn-signin" data-widget="dialog" data-identity-id={{id}} data-dialog-tab="{{__tab__}}" data-dialog-type="{{__dialogtype__}}" data-source="{{external_id}}">Sign In</button>'
         + '</div>'
       + '</div>',
 
@@ -46,19 +46,19 @@ define(function (require) {
             + '<span>{{external_id}}</span>'
           + '</div>'
           + '<div class="set-up">'
-            + '<a href="#">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
+            + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{external_id}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
           + '</div>'
-          + '<div class="spliterline"></div>'
-          + '<div class="merge hide">'
-            + '<a href="#">Merge</a> with your currently signed in identities:'
-          + '</div>'
-          + '<div class="identity hide">'
-            + '<span class="pull-right avatar">'
-              + '<img width="20" height="20" alt="" src="/img/users/u1x20.png">'
-            + '</span>'
-            + '<i class="icon-envelope"></i>'
-            + '<span>steve@0d0f.com</span>'
-          + '</div>'
+          //+ '<div class="spliterline"></div>'
+          //+ '<div class="merge hide">'
+          //  + '<a href="#">Merge</a> with your currently signed in identities:'
+          //+ '</div>'
+          //+ '<div class="identity hide">'
+            //+ '<span class="pull-right avatar">'
+            //  + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
+            //+ '</span>'
+            //+ '<i class="icon16-identity-{{provider}}"></i>'
+            //+ '<span>{{external_id}}</span>'
+          //+ '</div>'
           + '</div>'
         + '<div class="footer">'
           + '<button class="xbtn xbtn-gather" id="js-xgather">Gather</button>'
@@ -83,7 +83,7 @@ define(function (require) {
         + '</div>'
         + '<div class="footer">'
           //+ '<button class="xbtn xbtn-gather">Gather</button>'
-          + '<a href="#" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
+          + '<a href="/x/gather" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
           + '<div class="spliterline"></div>'
           + '<div class="actions">'
             + '<a href="/s/logout" class="pull-right" id="js-signout">Sign out</a>'
@@ -102,27 +102,84 @@ define(function (require) {
 
   Bus.on(NO_SIGN_IN, function () {
     // rewrite login page
-    if (/^\/profile\..*/.test(window.location.pathname)) {
-      // 暂时先跳到首页
-      window.location = '/';
+    if (/^s\/profile.*$/.test(window.location.pathname)) {
+      //window.location = '/';
     }
+  });
+
+  Bus.on(SIGN_IN, function (dfd, type) {
+
+    dfd.then(function (data) {
+      Bus.emit('app:signinsuccess', data);
+      var SIGN_IN_OTHERS = 'app:signinothers';
+      Bus.emit(SIGN_IN_OTHERS, dfd);
+      Bus.emit('app:userpanel', {type: type, data: data});
+    });
+
   });
 
   Bus.on('app:changename', function (d) {
     $('#user-name > span').html(d);
   });
 
+  function createUserPanel(data, type) {
+    if (type) {
+      $('#js-signin').remove();
+      var $up = $('.nav li.dropdown').show();
+
+      var s = Handlebars.compile(userpanelTmps[type]);
+
+      $(s(data)).appendTo($up.find('.dropdown-wrapper'));
+    }
+  }
+
+  Bus.on('app:crosstoken', function (statuses, token, type) {
+    var status = statuses[token];
+    var identity_id = status.identity_id;
+    var dialogType, tab = '';
+    switch (status.identity_registration) {
+      case 'VERIFY':
+        //dialogType = 'verification';
+        dialogType = 'identification';
+        tab = 'd01';
+        break;
+      case 'SIGN_UP':
+        dialogType = 'identification';
+        tab = 'd02';
+        type = 2;
+        break;
+      case 'SIGN_IN':
+        dialogType = 'identification';
+        tab = 'd01';
+    }
+    var dfd = $.when(
+      Api.request('getIdentityById',
+        {
+          resources: {identity_id: identity_id}
+        },
+        function (data) {
+          var external_id = data.identity.external_id;
+          $('#user-name > span').html(data.identity.name || external_id.split('@')[0]);
+          if (dialogType === 'verification') {
+            dialogType += '_' + data.identity.provider;
+          }
+          data.identity.__dialogtype__ = dialogType;
+          data.identity.__tab__ = tab;
+          createUserPanel(data.identity, type);
+        }
+      )
+    );
+
+    dfd.done(function (data) {
+      Bus.emit('app:crossdata', token, status);
+    });
+  });
+
   Bus.on('app:userpanel', function (d) {
-    var action_status = d.action_status;
+    var type = d.type, data = d.data;
 
-    var s = Handlebars.compile(userpanels[3]);
-
-    var duser;
-
-    if (d.d1.response) duser = d.d1.response.user;
-    else if (d.d1 instanceof Array) duser = d.d1[0].response.user;
-
-    $(s(duser)).appendTo($('div.dropdown-wrapper'))
+    createUserPanel(data.response.user, type);
+    $('#user-name > span').html(data.response.user.name);
 
     //if (d.action_status === 3) {
       var signin = Store.get('signin');
@@ -196,132 +253,114 @@ define(function (require) {
 
   });
 
-  Bus.on(SIGN_IN, function (d) {
-    // 不是 Profile 自动跳转
-    // 暂时 从 index 调整到 profile.html
-    if (/^\/$/.test(window.location.pathname)) {
-      window.location = '/profile';
-      return;
-    }
+  Bus.on('app:usertoken', function (statuses, token, type) {
+    var status = statuses[token];
+    var user_id = status.user_id;
 
-    d.dfd.then(function (a1, a2) {
-      Bus.emit('app:signinsuccess', a1);
-      var SIGN_IN_OTHERS = 'app:signinothers';
-      Bus.emit(SIGN_IN_OTHERS, d.dfd);
-      Bus.emit('app:userpanel', {action_status: d.action_status, d1: a1, d2: a2});
+    Api.setToken(token);
+    Store.set('signin', {token: token, user_id: user_id});
+
+    var dfd = $.when(
+      Api.request('getUser'
+      , {
+        resources: {user_id: user_id}
+      }
+      , function (data) {
+        var last_identity = Store.get('last_identity');
+        var identity = R.filter(data.user.identities, function (v) {
+          if (last_identity === v.external_id) return true;
+        })[0] || data.user.default_identity;
+        Store.set('lastIdentity', identity);
+      })
+    );
+    dfd.done(function (d) {
+      Bus.emit(SIGN_IN, dfd, type);
     });
 
   });
 
-  Bus.once(START_UP, function () {
-    // get token
-    var search = decodeURIComponent(window.location.search)
-      , match = /token=([a-zA-Z0-9]{32})/.exec(search)
-      , ntoken = (match && match[1]) || false;
-
-    var userToken = Store.get('signin')
-      , otoken = false;
-    userToken && (otoken = userToken.token);
-    var tokens = [];
-    // `sign in`: 1, `set up or merge`: 2, `auto login`: 3, `fali`: 0
-    var action_status;
-
-    // new identity: sign in
-    if (ntoken && !otoken) {
-      action_status = 1;
-      tokens.push(ntoken);
-    // new identity: set up or merge
-    } else if (ntoken && otoken && ntoken !== otoken) {
-      action_status = 2;
-      tokens.push(ntoken);
-      tokens.push(otoken);
-    // auto login
-    } else if (ntoken && otoken && ntoken === otoken) {
-      action_status = 3;
-      tokens.push(ntoken);
-    // auto login
-    } else if (!ntoken && otoken) {
-      action_status = 3;
-      tokens.push(otoken);
-    } else {
-      action_status = 0;
-      // 跳转到登陆页
-      //return;
+  Bus.on('app:userstatus', function (d) {
+    var type= d.type, statuses = d.statuses, token = d.token;
+    switch (type) {
+      case 1:
+      case 2:
+        Bus.emit('app:crosstoken', statuses, token, type);
+        break;
+      case 3:
+        Bus.emit('app:usertoken', statuses, token, type);
+        break;
+      default:
+        //window.location.href = '/';
     }
-
-    var dfd = $.when;
-    var channel = SIGN_IN;
-
-    if (action_status) {
-      Api.request('checkAuthorization'
-        , {
-          type: 'POST',
-          data: {
-            tokens: JSON.stringify(tokens)
-          }
-        }
-        , function (data) {
-          var ds = [];
-          if (tokens.length) {
-            var token = tokens[0];
-
-            if (token in data.statuses && !data.statuses[token]) {
-              // token失效, 暂时跳转到首页
-              window.location.href= '/';
-              Store.remove('signin');
-              return;
-            }
-
-            var user_id = data.statuses[token].user_id;
-            Api.setToken(token);
-            Store.set('signin', {token: token, user_id: user_id});
-            //if (action_status === 1 || action_status === 3) {
-            ds.push(
-              Api.request('getUser'
-                , {
-                  resources: {user_id: user_id}
-                }
-                , function (data) {
-                  //Store.set('user', data.response.user);
-                  var last_identity = Store.get('last_identity');
-                  var identity = R.filter(data.user.identities, function (v) {
-                    if (last_identity === v.external_id) return true;
-                  })[0] || data.user.default_identity;
-                  Store.set('lastIdentity', identity);
-                })
-              );
-            //}
-
-            if (action_status === 2) {
-              token = tokens[1];
-              user_id = data.statuses[token].user_id;
-              Store.set('osignin', {token: token, user_id: user_id});
-              ds.push(
-                Api.request('getUser'
-                  , {
-                    resources: {user_id: user_id}
-                  }
-                )
-              );
-            }
-          }
-
-          dfd = dfd.apply(null, ds);
-          dfd.done(function (a1, a2) {
-            Bus.emit(channel, {dfd: dfd, action_status: action_status});
-          });
-        }
-      );
-
-    } else {
-      channel = NO_SIGN_IN;
-      dfd().then(function () {
-        Bus.emit(channel);
-      })
-    }
-
   });
 
+  // Start Up App
+  Bus.once(START_UP, function () {
+    // get token
+    var search = decodeURIComponent(window.location.search),
+      match = /token=([a-zA-Z0-9]{32})/.exec(search),
+      ntoken = (match && match[1]) || false,
+      signin = Store.get('signin'),
+      otoken = false,
+      tokens = [],
+      // type: 1 signin, 2 setup & merge, 3 auto login, 0 fail
+      type = 0,
+      channel,
+      tl;
+
+
+    signin && (otoken = signin.token);
+
+    if (ntoken) {
+      tokens.push(ntoken);
+    }
+
+    if (otoken && (ntoken !== otoken)) {
+      tokens.push(otoken);
+    }
+
+    if (!tokens.length) {
+      channel = NO_SIGN_IN;
+      $.when().then(function () {
+        Bus.emit(channel);
+      });
+      return;
+    }
+
+    Api.request('checkAuthorization'
+      , {
+        type: 'POST',
+        data: {
+          tokens: JSON.stringify(tokens)
+        }
+      }
+      , function (data) {
+        var statuses = data.statuses,
+            token = tokens[0],
+            status0 = statuses[token];
+
+        if (status0) {
+
+          if (status0.type === 'CROSS_TOKEN') {
+            type = 1;
+
+            if (tl === 2) {
+              type = 2;
+            }
+          } else if (status0.type === 'USER_TOKEN') {
+            type = 3;
+
+            if (tl === 2) {
+              delete statuses[tokens[1]];
+            }
+          }
+        }
+
+        Bus.emit('app:userstatus', {token: token, type: type, statuses: statuses});
+      }
+    );
+
+  });
   Bus.emit(START_UP);
 
   var $BODY = $(document.body);
@@ -378,6 +417,7 @@ define(function (require) {
 
     $BODY.on('mouseenter.dropdown mouseleave.dropdown', '.navbar .dropdown-wrapper', hover);
 
+    /*
     // 兼容 iframe
     var isIframe = !(parent === window);
     var domain = /domain=([^&]+)/.exec(decodeURIComponent(window.location.search));
@@ -407,17 +447,12 @@ define(function (require) {
         parent.postMessage('cross:' + id_base62, domain);
       }
     });
+    */
 
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
-      // 兼容 iframe
-      if (isIframe) {
-        parent.postMessage('logout', domain);
-      } else {
-        Store.remove('signin');
-        window.location = '/';
-      }
+      Store.remove('signin');
+      window.location = '/';
     });
   });
-
 });
