@@ -453,6 +453,34 @@ class UsersActions extends ActionController {
         // raw signin
         $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
         if ($siResult) {
+            // v1 v2 bridge {
+            // @todo: remember to remove this fucking UGLY codes!
+            // @todo: remember to remove this fucking UGLY codes!
+            // @todo: remember to remove this fucking UGLY codes!
+            // @todo: remember to remove this fucking UGLY codes!
+            // @todo: remember to remove this fucking UGLY codes!
+            // @todo: remember to remove this fucking UGLY codes!
+            // @todo: remember to remove this fucking UGLY codes!
+            setcookie('uid', $siResult['user_id'],     time()+31536000, "/", COOKIES_DOMAIN);
+            setcookie('id',  $siResult['identity_id'], time()+31536000, "/", COOKIES_DOMAIN);
+            $_SESSION['userid']         = $siResult['user_id'];
+            $_SESSION['identity_id']    = $siResult['identity_id'];
+            $_SESSION['user_time_zone'] = '+08:00';
+            $objIdentity = $modIdentity->getIdentityById($siResult['identity_id']);
+            $identity = array();
+            $identity["external_identity"] = $objIdentity->external_id;
+            $identity["external_username"] = $objIdentity->external_username;
+            $identity["provider"]          = $objIdentity->provider;
+            $identity["name"]              = $objIdentity->name;
+            $identity["bio"]               = $objIdentity->bio;
+            $identity['avatar_file_name']  = getAvatarUrl(
+                $objIdentity->provider,
+                $objIdentity->external_id,
+                $objIdentity->avatar_filename
+            );
+            $_SESSION['identity']       = $identity;
+            unset($_SESSION['tokenIdentity']);
+            // }
             apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
         }
         apiError(403, 'failed', '');
