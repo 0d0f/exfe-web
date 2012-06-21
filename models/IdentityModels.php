@@ -10,35 +10,6 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getUserNameByIdentityId($identity_id) {
-        $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
-                WHERE a.identityid={$identity_id} LIMIT 1";
-        $row = $this->getRow($sql);
-        if($row){
-            return $row["name"];
-        }else{
-            return "";
-        }
-    }
-
-
-    public function checkUserByIdentityID($identity_id) {
-        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id}";
-        $row = $this->getRow($sql);
-        if($row){
-            return true;
-        }
-        return false;
-    }
-
-
-    public function getIdentity($identity, $provider) {
-        $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_username='{$identity}' AND a.provider='{$provider}'";
-        $row=$this->getRow($sql);
-        return $row;
-    }
-
-
     public function loginWithXToken($cross_id,$token) {
         $cross_id = $this->getExfeeIdByCrossId($cross_id);
         $sql = "SELECT `identity_id`, `tokenexpired` FROM `invitations` WHERE `cross_id` = {$cross_id} AND `token` = '{$token}'";
@@ -370,6 +341,7 @@ class IdentityModels extends DataModel {
     }
 
 
+    // upgraded
     public function saveIdentityAvatar($avatar, $identityID){
         $sql = "UPDATE identities SET avatar_file_name='{$avatar}' WHERE id={$identityID}";
         $this->query($sql);
@@ -933,6 +905,38 @@ class IdentityModels extends DataModel {
             return $identity;
             //one value
         }
+    }
+
+
+    // upgraded
+    public function getUserNameByIdentityId($identity_id) {
+        $sql = "SELECT b.name FROM user_identity a LEFT JOIN users b ON (a.userid=b.id)
+                WHERE a.identityid={$identity_id} LIMIT 1";
+        $row = $this->getRow($sql);
+        if($row){
+            return $row["name"];
+        }else{
+            return "";
+        }
+    }
+
+
+    // upgraded
+    public function checkUserByIdentityID($identity_id) {
+        $sql = "SELECT * FROM user_identity WHERE identityid={$identity_id}";
+        $row = $this->getRow($sql);
+        if($row){
+            return true;
+        }
+        return false;
+    }
+
+
+    // upgraded
+    public function getIdentity($identity, $provider) {
+        $sql="SELECT a.*,b.* FROM identities a LEFT JOIN user_identity b ON (a.id=b.identityid) WHERE a.external_username='{$identity}' AND a.provider='{$provider}'";
+        $row=$this->getRow($sql);
+        return $row;
     }
 
 }

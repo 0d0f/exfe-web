@@ -67,14 +67,6 @@ class UserModels extends DataModel {
     }
 
 
-    //保存用户头像
-    public function saveUserAvatar($avatar,$userid) {
-        $sql="UPDATE users SET avatar_file_name='$avatar' WHERE id={$userid}";
-        $this->query($sql);
-        return $this->getUser($userid);
-    }
-
-
     public function getUserIdByToken($token)
     {
         $sql="select id from users where auth_token='$token';";
@@ -632,6 +624,14 @@ class UserModels extends DataModel {
         }
         return false;
         //$sql="update ";
+    }
+
+
+    // upgraded
+    public function saveUserAvatar($avatar,$userid) {
+        $sql="UPDATE users SET avatar_file_name='$avatar' WHERE id={$userid}";
+        $this->query($sql);
+        return $this->getUser($userid);
     }
 
 }
