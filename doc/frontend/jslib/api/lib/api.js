@@ -39,6 +39,8 @@ define('api', [], function (require, exports, module) {
 
 
     // Identity
+    getIdentityById: '/identities/:identity_id',
+
     getIdentity: '/identities/get',
 
     updateIdentity: '/identities/:identity_id/update',
@@ -71,7 +73,7 @@ define('api', [], function (require, exports, module) {
   };
 
   // Not Use Token
-  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity verifyUserIdentity forgotPassword';
+  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity verifyUserIdentity forgotPassword getIdentityById';
 
   var Api = {
 
@@ -118,18 +120,17 @@ define('api', [], function (require, exports, module) {
         if (!Api._token) return;
 
         url += '?token=' + Api._token;
+      }
 
-        if ((params = options.params)) {
-          params = $.param(params);
-          url += '&' + params;
+      if ((params = options.params)) {
+        params = $.param(params);
+        url += '&' + params;
+      }
+
+      if ((resources = options.resources)) {
+        for (k in resources) {
+          url = url.replace(':' + k, encodeURIComponent(resources[k]));
         }
-
-        if ((resources = options.resources)) {
-          for (k in resources) {
-            url =url.replace(':' + k, encodeURIComponent(resources[k]));
-          }
-        }
-
       }
 
       options.url = urls.base_url + url;
@@ -150,7 +151,7 @@ define('api', [], function (require, exports, module) {
       // status-code 200 success
       if (data && data.meta.code === 200) {
         args[0] = data.response;
-        done.apply(this, args);
+        done && done.apply(this, args);
       } else {
         fail && fail.apply(this, args);
       }
