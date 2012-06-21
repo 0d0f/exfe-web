@@ -67,7 +67,7 @@ define(function (require) {
 
         that.cache || (that.cache = {});
 
-        if (that.source.length) {
+        if (that.source && that.source.length) {
           items = $.grep(that.source, function (item) {
             return that.matcher(item);
           });
