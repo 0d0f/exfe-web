@@ -36,7 +36,7 @@ class AvatarActions extends ActionController {
         // collecting post data
         $identity_id = isset($_POST['identity_id'])
         			 ? (int) $_POST['identity_id'] : 0;
-
+        //
 	}
 
 
