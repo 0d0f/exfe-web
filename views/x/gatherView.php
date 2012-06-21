@@ -37,6 +37,17 @@
        .     "defaultPlace = 'Somewhere';"
        . '</script>';
 ?>
+
+<!-- 兼容性代码 -->
+<style>
+  #gather_form input[type="text"] {
+    margin-left: 0;
+  }
+  #gatherExfee_exfeegadget_inputbox_desc {
+    height: 20px; padding: 4px;
+  }
+</style>
+
 <div class="content">
     <div id="gather_form">
         <ul>
