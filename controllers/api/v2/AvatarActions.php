@@ -20,6 +20,26 @@ class AvatarActions extends ActionController {
 	}
 
 
+	public function doUpdate() {
+		// check signin
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        // collecting post data
+        $identity_id = isset($_POST['identity_id'])
+        			 ? (int) $_POST['identity_id'] : 0;
+
+	}
+
+
 	public function doRender() {
 		// init requirement
         $curDir    = dirname(__FILE__);
