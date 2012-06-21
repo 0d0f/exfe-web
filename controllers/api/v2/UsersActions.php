@@ -468,11 +468,11 @@ class UsersActions extends ActionController {
             $_SESSION['user_time_zone'] = '+08:00';
             $objIdentity = $modIdentity->getIdentityById($siResult['identity_id']);
             $identity = array();
-            $identity["external_identity"] = $objIdentity->external_id;
-            $identity["external_username"] = $objIdentity->external_username;
-            $identity["provider"]          = $objIdentity->provider;
-            $identity["name"]              = $objIdentity->name;
-            $identity["bio"]               = $objIdentity->bio;
+            $identity['external_identity'] = $objIdentity->external_id;
+            $identity['external_username'] = $objIdentity->external_username;
+            $identity['provider']          = $objIdentity->provider;
+            $identity['name']              = $objIdentity->name;
+            $identity['bio']               = $objIdentity->bio;
             $identity['avatar_file_name']  = getAvatarUrl(
                 $objIdentity->provider,
                 $objIdentity->external_id,
