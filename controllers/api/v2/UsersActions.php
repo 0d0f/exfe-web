@@ -417,8 +417,12 @@ class UsersActions extends ActionController {
               = array('type' => 'USER_TOKEN')
               + $modUser->getUserIdentityInfoByUserId($result['uid']);
             } elseif (($invInfo = $hlpExfee->checkInvitationToken($token))) {
+                // @todo: v1 v2 bridge by @Leaskh {
+                $identity = $modIdentity->getIdentityById($identity_id);
+                $raw_flag = $modUser->getRegistrationFlag($identity);
+                // }
                 $objStatuses->$token
-              = array('type' => 'CROSS_TOKEN')
+              = array('type' => 'CROSS_TOKEN', 'identity_registration' => $raw_flag['flag'])
               + $invInfo;
             }
         }
