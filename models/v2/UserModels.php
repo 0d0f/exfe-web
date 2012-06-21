@@ -496,7 +496,7 @@ class UserModels extends DataModel {
 
 
     public function signinForAuthToken($provider, $external_id, $password) {
-        $sql = "SELECT `user_identity`.`userid`, `user_identity`.`status`
+        $sql = "SELECT `user_identity`.`userid`, `user_identity`.`status`, `user_identity`.`identityid`
                 FROM   `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
                 AND    `identities`.`external_identity` = '{$external_id}'
@@ -511,7 +511,10 @@ class UserModels extends DataModel {
             ));
             if ((($status === 2 && $id_quantity === 1) || $status === 3)
              && $password === $passwdInDb['encrypted_password']) {
-                return $this->rawSiginin($user_id, $passwdInDb);
+                $rsResult = $this->rawSiginin($user_id, $passwdInDb);
+                if ($rsResult) {
+                    return $rsResult + array('identity_id' => $rawUser['identityid']);
+                }
             }
         }
         return null;
