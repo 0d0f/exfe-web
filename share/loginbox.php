@@ -1,8 +1,12 @@
-<div id="userLoginBox" class="identification_dialog idialog_inpage"></div>
 <script>
-    var showSpecialIdentityDialog = true;
-    var pageFlag = "login";
-    jQuery(document).ready(function(){
-        odof.user.status.doShowLoginDialog("userLoginBox");
-    });
+define(function (require) {
+  var $ = require('jquery');
+  $(function () {
+    $('a.sign-in').click();
+    $('#js-modal-backdrop').remove();
+    $('.modal-id').find('.close').hide();
+    $(document.body).off('click.dialog.data-api keyup.dismiss.modal');
+    document.title = 'EXFE - Login';
+  });
+});
 </script>
