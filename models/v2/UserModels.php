@@ -395,6 +395,7 @@ class UserModels extends DataModel {
                     'user_id'     => $user_id,
                     'microtime'   => Microtime(),
                     'random'      => Rand(0, Time()),
+                    'unique_id'   => Uniqid(),
                 )));
                 // update database
                 if ($curToken) {
@@ -835,6 +836,15 @@ class UserModels extends DataModel {
                 }
             }
         }
+    }
+
+
+    public function updateAvatarById($user_id, $avatar_filename) {
+        return $user_id && $avatar_filename && $this->query(
+            "UPDATE `users`
+             SET    `avatar_file_name` = '{$avatar_filename}'
+             WHERE  `id`               =  {$user_id}"
+        );
     }
 
 

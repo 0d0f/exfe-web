@@ -55,7 +55,7 @@ class IdentitiesActions extends ActionController {
                                         'email',
                                         $objEmail['email'],
                                         '',
-                                        80,
+                                        '80_80',
                                         API_URL . "/v2/avatar/default?name={$objEmail['email']}"
                                     )
                                 );
