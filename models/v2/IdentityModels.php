@@ -258,6 +258,15 @@ class IdentityModels extends DataModel {
     }
 
 
+    public function updateAvatarById($identity_id, $avatar_filename) {
+        return $identity_id && $avatar_filename && $this->query(
+            "UPDATE `identities`
+             SET    `avatar_file_name` = '{$avatar_filename}'
+             WHERE  `id`               =  {$identity_id}"
+        );
+    }
+
+
     public function setIdentityAsDefaultIdentityOfUser($identity_id, $user_id) {
         if (!$identity_id || !$user_id) {
             return false;

@@ -36,7 +36,71 @@ class AvatarActions extends ActionController {
         // collecting post data
         $identity_id = isset($_POST['identity_id'])
         			 ? (int) $_POST['identity_id'] : 0;
-        //
+		// check identity
+        if ($identity_id) {
+        	$identity = $modIdentity->getIdentityById($identity_id, $user_id);
+        	if (!$identity) {
+        		apiError(400, 'identity_does_not_exist', 'The identity you want to update does not exist.');
+        	}
+        	if ($identity->status !== 'CONNECTED') {
+        		apiError(401, 'not_allowed', 'The identity you want to update does not belong to you.');
+        	}
+        	switch ($identity->provider) {
+        		case 'email':
+        			break;
+        		default:
+        			apiError(400, 'provider_error', 'Can not update avatars of this kind of identities.');
+        	}
+        }
+		// check images
+        $sizes       = array('original', '240_240', '80_80');
+		$extensions  = array();
+        foreach ($sizes as $size) {
+        	if (!isset($_FILES[$size])) {
+	        	apiError(400, "no_{$size}_image",  "{$size} size image must be provided.");
+	        }
+	        $arrExpName = explode('.', $_FILES[$size]['name']);
+	        $extensions[$size] = strtolower(array_pop($arrExpName));
+			switch ($extensions[$size]) {
+				case 'png':
+				case 'gif':
+				case 'bmp':
+				case 'jpg':
+				case 'jpeg':
+					break;
+				default:
+					apiError(400, "error_{$size}_image_format",  "Error {$size} size image format.");
+			}
+        }
+	    // hash filename
+	    if (!($fnmHashed = getHashedFilePath(Uniqid()))) {
+	    	apiError(500, 'error_saving_image', 'Error while saving image.');
+	    }
+	   	// save file
+	    $apiResult = array('avatars' => array());
+	    foreach ($sizes as $size) {
+	    	$filename  = "{$fnmHashed['filename']}.{$extensions[$size]}";
+	    	$full_path = "{$fnmHashed['path']}/{$size}_{$filename}";
+    		$movResult = move_uploaded_file($_FILES[$size]['tmp_name'], $full_path);
+    		if ($movResult) {
+    			$apiResult['avatars'][$size] = getAvatarUrl('', '', $filename, $size);
+    			continue;
+    		}
+        }
+        // update database
+        if ($identity_id) {
+        	$apiResult['type'] 		  = 'identity';
+        	$apiResult['identity_id'] = $identity_id;
+        	$dbResult = $modIdentity->updateAvatarById($identity_id, $filename);
+        } else {
+        	$apiResult['type']        = 'user';
+        	$apiResult['user_id'] 	  = $user_id;
+        	$dbResult = $modUser->updateAvatarById($user_id, $filename);
+        }
+      	if ($dbResult) {
+      		apiResponse($apiResult);
+      	}
+      	apiError(500, 'error_saving_image', 'Error while saving image.');
 	}
 
 
