@@ -4221,13 +4221,14 @@ input[type="submit"].btn.btn-mini {
   z-index: 10501;
   width: 216px;
   line-height: 24px;
+  color: #4c4c4c;
   background-color: #f2f2f2;
-  background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -o-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: linear-gradient(top, #fafafa, #e6e6e6);
   background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -webkit-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -o-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#e6e6e6));
   background-repeat: repeat-x;
   border: 1px solid #fff;
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#e6e6e6', GradientType=0);
@@ -4244,11 +4245,13 @@ input[type="submit"].btn.btn-mini {
 .popmenu li {
   height: 24px;
   padding: 0 3px;
+  font-style: oblique;
   cursor: pointer;
 }
 
 .popmenu li:hover,
 .popmenu .active {
+  color: #191919;
   background-color: rgba(127, 127, 127, 0.08);
 }
 
@@ -4278,7 +4281,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 12px;
   vertical-align: text-top;
-  background-image: url("/static2/img/glyphicons-halflings.png");
+  background-image: url("/static2/img/icons.png");
   background-position: 12px 12px;
   background-repeat: no-repeat;
 }
@@ -4296,7 +4299,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/static2/img/glyphicons-halflings.png");
+  background-image: url("/static2/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4313,7 +4316,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 16px;
   vertical-align: text-top;
-  background-image: url("/static2/img/glyphicons-halflings.png");
+  background-image: url("/static2/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4330,7 +4333,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/static2/img/glyphicons-halflings.png");
+  background-image: url("/static2/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4347,7 +4350,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 10px;
   vertical-align: text-top;
-  background-image: url("/static2/img/glyphicons-halflings.png");
+  background-image: url("/static2/img/icons.png");
   background-position: 10px 10px;
   background-repeat: no-repeat;
 }
@@ -4365,7 +4368,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 40px;
   vertical-align: text-top;
-  background-image: url("/static2/img/glyphicons-halflings.png");
+  background-image: url("/static2/img/icons.png");
   background-position: 40px 40px;
   background-repeat: no-repeat;
 }
@@ -4376,7 +4379,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .icon-white {
-  background-image: url("/static2/img/glyphicons-halflings-white.png");
+  background-image: url("/static2/img/icons.png");
 }
 
 .icon-exfe {
@@ -5064,6 +5067,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1001;
   float: right;
   height: 26px;
+  min-width: 72px;
   padding: 15px 2px;
   margin: 0 12px;
   color: #7f7f7f;
