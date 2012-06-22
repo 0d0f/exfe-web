@@ -73,7 +73,10 @@ define(function (require) {
 
   $BODY.on('click.newbie', '.newbie > .newbie-close', function (e) {
     e.preventDefault();
-    Store.set('newbie_guide', 1);
+    data = Store.get('signin');
+    if (!data) return;
+    var user_id = data.user_id;
+    Store.set('newbie_guide:' + user_id, 1);
     var p = $(this).parent();
     p.fadeOut(function () {
 

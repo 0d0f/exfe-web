@@ -233,12 +233,12 @@ define(function (require, exports, module) {
                 Store.set('signin', data);
                 // 最后登陆的 external_identity
                 Store.set('last_identity', od.external_identity);
-                if (t === 'd01') {
-                  if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
+                if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
                     window.location = window.location.pathname;
-                  } else {
-                    window.location = '/s/profile';
-                  }
+                    return;
+                }
+                if (t === 'd01' || t === 'd02') {
+                  window.location = '/s/profile';
                 } else {
                   that.hide();
                   var d = new Dialog(dialogs.welcome);
@@ -276,7 +276,7 @@ define(function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
             + '<div class="pull-right">'
-              + '<a href="http://localexfe.me/oAuth/twitterRedirect"><img src="/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+              + '<a href="/oAuth/twitterRedirect"><img src="/static2/img/twitter-logo.png" alt="" width="52" height="40"></a>'
             + '</div>'
             + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'

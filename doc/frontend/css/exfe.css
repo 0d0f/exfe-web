@@ -5526,6 +5526,101 @@ input[type="submit"].btn.btn-mini {
   margin-right: 5px;
 }
 
+.modal-uploader .modal-main {
+  min-height: 240px;
+  padding: 30px 30px 29px;
+}
+
+.modal-uploader .photozone {
+  position: relative;
+  width: 240px;
+  height: 240px;
+}
+
+.modal-uploader .rotate {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 3;
+}
+
+.modal-uploader .back {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 3;
+}
+
+.modal-uploader .overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  background-color: rgba(108, 121, 127, 0.97);
+  background-image: -moz-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
+  background-image: -webkit-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
+  background-image: -o-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
+  background-image: linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
+  background-image: -ms-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
+  background-repeat: repeat-x;
+  border: 1px solid rgba(163, 163, 163, 0.5);
+}
+
+.modal-uploader .selected {
+  -webkit-box-shadow: 0 1px 6px #3f6b7f;
+     -moz-box-shadow: 0 1px 6px #3f6b7f;
+          box-shadow: 0 1px 6px #3f6b7f;
+}
+
+.modal-uploader .smallphoto {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.modal-uploader .smallphoto .overlay {
+  width: 78px;
+  height: 78px;
+}
+
+.modal-uploader .dropbox {
+  width: 238px;
+  height: 238px;
+  text-align: center;
+}
+
+.modal-uploader .droptips {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: #fafafa;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.modal-uploader .selectfile {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.modal-uploader .sider {
+  position: relative;
+  width: 98px;
+  height: 240px;
+}
+
+.modal-uploader .uploader-form {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.modal-uploader .help-portrait {
+  position: absolute;
+  top: 50px;
+  z-index: 4;
+  width: 340px;
+}
+
 .x-home {
   text-align: center;
 }
@@ -6871,7 +6966,7 @@ input[type="submit"].btn.btn-mini {
   font-weight: 300;
   word-spacing: -1px;
   color: #b2b2b2;
-  background: #fff;
+  background: #EFF6F9;
   border: 1px dashed #b2b2b2;
 }
 
