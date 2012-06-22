@@ -117,7 +117,7 @@ class IdentitiesActions extends ActionController {
         }
         // get inputs
         $rangelen  = 50;
-        $key       = mb_strtolower(trim($_GET['key']));
+        $key       = mb_strtolower(trim($params['key']));
         if ($key === '') {
             apiError(400, 'empty_key_word', 'Keyword can not be empty.');
         }
