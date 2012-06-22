@@ -2,13 +2,14 @@ define('api', [], function (require, exports, module) {
 
   // import $.ajax
   var $ = require('jquery');
+  var Config = require('config');
 
   // urls of API
   // 区分大小写
   var urls = {
 
     // base url
-    base_url: 'http://api.localexfe.me/v2',
+    base_url: Config.api_url,
 
 
     // Users
