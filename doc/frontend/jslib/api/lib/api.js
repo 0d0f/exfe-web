@@ -174,12 +174,6 @@ define('api', [], function (require, exports, module) {
     return r;
   }
 
-  $.ajaxSetup({
-    'beforeSend': function (xhr) {
-      xhr.setRequestHeader('Origin', 'http://localexfe.me');
-    }
-  });
-
   // See jQuery.ajax's settings
   // http://api.jquery.com/jQuery.ajax/
   var defaultOptions = {
