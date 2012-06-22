@@ -40,6 +40,11 @@
 
 <!-- 兼容性代码 -->
 <style>
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  #gatherExfee_exfeegadget_inputbox {
+    padding: 2px 0;
+  }
+}
 @-moz-document url-prefix() {
   #gather_form input[type="text"] {
     margin-left: 0;
