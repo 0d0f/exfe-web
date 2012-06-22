@@ -64,6 +64,9 @@
 
 <!-- 兼容代码 -->
 <style>
+#x_conversation_list {
+  margin: 10px 0 0;
+}
 #xExfeeArea .exfeegadget_inputbox {
   height: 20px;
   padding: 4px;
