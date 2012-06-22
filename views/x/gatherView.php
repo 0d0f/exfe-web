@@ -40,12 +40,14 @@
 
 <!-- 兼容性代码 -->
 <style>
+@-moz-document url-prefix() {
   #gather_form input[type="text"] {
     margin-left: 0;
   }
   #gatherExfee_exfeegadget_inputbox_desc {
     height: 20px; padding: 4px;
   }
+}
 </style>
 
 <div class="content">

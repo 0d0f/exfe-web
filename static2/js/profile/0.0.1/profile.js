@@ -757,6 +757,12 @@ define(function (require, exports, module) {
     $(this).parent().fadeOut();
   });
 
+  // uploader
+  $BODY.on('click.profile.uploader', '.user-avatar', function (e) {
+    var uploader = require('uploader')();
+    uploader.render();
+  });
+
   /*
   $('.identity-list').dndsortable({
     delay: 300,
