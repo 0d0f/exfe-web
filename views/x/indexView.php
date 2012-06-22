@@ -70,6 +70,13 @@
 }
 #x_conversation_input {padding: 0;}
 </style>
+<script>
+    define(function (require) {
+      var Bus = require('bus');
+      Bus.on('app:crossdata', function (token, status) {
+      });
+    });
+</script>
 
 <div class="content">
     <div id="edit_x_bar" style="display:none;">

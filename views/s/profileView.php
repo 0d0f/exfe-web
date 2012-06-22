@@ -257,6 +257,8 @@
 
   <!-- JavaScript at the bottom for fast page loading -->
   <script src="/static2/js/common/0.0.1/common.js"></script>
+  <script><?php include 'share/ftconfig.php'; ?></script>
+
   <script src="/static2/js/class/0.0.1/class.js"></script>
   <script src="/static2/js/emitter/0.0.1/emitter.js"></script>
   <script src="/static2/js/base/0.0.1/base.js"></script>
@@ -282,6 +284,8 @@
   <script src="/static2/js/xidentity/0.0.1/xidentity.js"></script>
   <script src="/static2/js/xdialog/0.0.1/xdialog.js"></script>
 
+  <script src="/static2/js/filehtml5/0.0.1/filehtml5.js"></script>
+  <script src="/static2/js/uploader/0.0.1/uploader.js"></script>
   <!--
   <script src="/static2/js/editable/0.0.1/editable.js"></script>
   <script src="/static2/js/xeditable/0.0.1/xeditable.js"></script>
