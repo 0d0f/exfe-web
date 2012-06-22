@@ -186,3 +186,100 @@
     margin-right: 5px;
   }
 }
+
+// avatar uploader
+.modal-uploader {
+
+  @index: 1;
+
+  .modal-main {
+    min-height: 240px;
+    padding: 30px 30px 29px;
+  }
+
+  .photozone {
+    position: relative;
+    width: 240px;
+    height: 240px;
+  }
+
+  .rotate {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    z-index: @index + 2;
+  }
+
+  .back {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    z-index: @index + 2;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    #gradient > .directional(rgba(233, 231, 235, .97), rgba(108, 121, 127,.97), 266deg);
+    border: 1px solid rgba(163, 163, 163, .5);
+    z-index: @index + 1;
+  }
+
+  .selected {
+    .box-shadow(0 1px 6px #3F6B7F);
+  }
+
+  .smallphoto {
+    position: relative;
+    width: 80px;
+    height: 80px;
+
+    .overlay {
+      width: 78px;
+      height: 78px;
+    }
+  }
+
+  .dropbox {
+    width: 238px;
+    height: 238px;
+    text-align: center;
+  }
+
+  .droptips {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: #fafafa;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+  }
+
+  .selectfile {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .sider {
+    position: relative;
+    width: 98px;
+    height: 240px;
+  }
+
+  .uploader-form {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .uploader-button {
+  }
+
+  .help-portrait {
+    width: 340px;
+    position: absolute;
+    top: 50px;
+    z-index: @index + 3;
+  }
+
+}
