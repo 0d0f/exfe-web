@@ -19,6 +19,8 @@ $dir  = new RecursiveDirectoryIterator($path);
 
 $arrFiles = get_files($dir);
 
+echo "Step 1:\r\n";
+
 foreach ($arrFiles as $filename) {
 	if (preg_match('/.*\/240_240_original_.*/', $filename)) {
 		$new_filename = preg_replace('/240_240_/', '', $filename);
@@ -27,6 +29,34 @@ foreach ($arrFiles as $filename) {
 			echo "😃 Successful rename file {$filename} as {$new_filename} .\r\n";
 		} else {
 			echo "😓 Error while renaming file {$filename} .\r\n";
+		}
+	}
+}
+
+echo "Step 2:\r\n";
+
+foreach ($arrFiles as $filename) {
+	if (preg_match('/.*\/300_300_.*/', $filename)) {
+		$new_filename = preg_replace('/300_300_/', '240_240_', $filename);
+		$mvResult = @rename($filename, $new_filename);
+		if ($mvResult) {
+			echo "😃 Successful rename file {$filename} as {$new_filename} .\r\n";
+		} else {
+			echo "😓 Error while renaming file {$filename} .\r\n";
+		}
+	}
+}
+
+echo "Step 3:\r\n";
+
+foreach ($arrFiles as $filename) {
+	if (preg_match('/\/.{32}\..*/', $filename)) {
+		$new_filename = preg_replace('/\/(.{32})(\..*)/', '/original_$1$2', $filename);
+		$mvResult = @rename($filename, $new_filename);
+		if ($mvResult) {
+		 	echo "😃 Successful rename file {$filename} as {$new_filename} .\r\n";
+		} else {
+		 	echo "😓 Error while renaming file {$filename} .\r\n";
 		}
 	}
 }
