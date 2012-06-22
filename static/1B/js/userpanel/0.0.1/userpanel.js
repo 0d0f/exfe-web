@@ -105,6 +105,8 @@ define(function (require) {
     if (/^s\/profile.*$/.test(window.location.pathname)) {
       //window.location = '/';
     }
+
+    $('#js-signin').show();
   });
 
   Bus.on(SIGN_IN, function (dfd, type) {
