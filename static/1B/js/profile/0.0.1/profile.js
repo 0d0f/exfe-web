@@ -470,11 +470,15 @@ define(function (require, exports, module) {
 
   // 加载新手引导
   var newbieGuide = function (data) {
+    if (!data) return;
+    data = Store.get('signin');
+    if (!data) return;
+    var user_id = data.user_id;
     var cross_nums = +$('.user-xstats > .attended').text();
 
     // test
     //Store.set('newbie_guide', 0);
-    var newbie_status = Store.get('newbie_guide');
+    var newbie_status = Store.get('newbie_guide:' + user_id);
 
     if (!newbie_status && cross_nums <= 3) {
       var s = document.createElement('script');
@@ -757,13 +761,13 @@ define(function (require, exports, module) {
     $(this).parent().fadeOut();
   });
 
+  /*
   // uploader
   $BODY.on('click.profile.uploader', '.user-avatar', function (e) {
-    var uploader = require('uploader')();
-    uploader.render();
+    var uploader = require('uploader')().render();
+    uploader.show();
   });
 
-  /*
   $('.identity-list').dndsortable({
     delay: 300,
     wrap: true,
