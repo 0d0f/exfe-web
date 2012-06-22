@@ -70,4 +70,18 @@
   <script src="/static/1B/js/profile/0.0.1/profile.js"></script>
   -->
 
+  <!-- cross -->
+  <script>
+    define(function (require) {
+      var Bus = require('bus');
+      Bus.on('app:crossdata', function (token, status) {
+        if (/![a-zA-Z0-9]+\?token=/.test(window.location.href)) {
+          odof.x.edit.setreadonly = function () {
+            $('.user-panel .xbtn-signin').trigger('click');
+          };
+        }
+      });
+    });
+  </script>
+
   <script src="/static/1B/js/userpanel/0.0.1/userpanel.js"></script>
