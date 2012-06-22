@@ -301,76 +301,32 @@ function reverse_escape($str)
 }
 
 
-/**
- * 散列存储
- * @param savePath string
- * @param fileName string
- * @return array
- **/
-function hashFileSavePath($savePath, $fileName = '') {
-    // basic check
-    if (!is_dir($savePath)) {
-        return array('error' => 1);
-    }
+function getHashedFilePath($filename = '') {
     // do hash
-    $hash_name   = md5(randStr(20) . $fileName . getMicrotime() . uniqid());
-    $hash_folder = '/' . substr($hash_name, 0, 1) . '/' . substr($hash_name, 1, 2);
-    $hash_path   = strtok($savePath, '/') . $hash_folder;
+    $hashed_name = md5(json_encode(array(
+        'action'    => 'save_file',
+        'file_name' => $filename,
+        'microtime' => Microtime(),
+        'random'    => Rand(0, Time()),
+        'unique_id' => Uniqid(),
+    )));
+    // get path
+    $hashed_path
+  = IMG_FOLDER
+  . '/' . substr($hashed_name, 0, 1)
+  . '/' . substr($hashed_name, 1, 2);
     // make dir
-    if(!is_dir($hash_path)){
-        if(!mkdir($hash_path, 0777, true)) {
-            return array('error' => 2);
+    if(!is_dir($hashed_path)){
+        if(!mkdir($hashed_path, 0777, true)) {
+            return null;
         }
     }
     // return
-    return array(
-        'fpath'   => $hash_path,
-        'fname'   => $hash_name,
-        'webpath' => $hash_folder,
-        'error'   => 0,
-    );
+    return array('path' => $hashed_path, 'filename' => $hashed_name);
 }
 
 
-/**
- * @todo: removing by Leask replacing by function getAvatarUrl
- * 获取散列存储路径
- * @param $fileName, $specialFilePath
- * @return string
- **/
-function getHashFilePath($fileName='', $specialFilePath=''){
-    if($fileName == ''){
-        return false;
-    }
-    if($fileName == "default.png"){
-        return "web";
-    }
-    if($specialFilePath != ""){
-        return $specialFilePath."/".substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
-    }
-    return substr($fileName, 0, 1)."/".substr($fileName, 1, 2);
-}
-
-/**
- * @todo: removeing by Leask, replacing by function getAvatarUrl
- * 获取用户头像
- * @param $fileName, $avatarSize
- * @return string
- **/
-function getUserAvatar($fileName, $avatarSize=80){
-    if(trim($fileName) == ""){
-        return DEFAULT_AVATAR_URL;
-    }
-    $pattern = "/(http[s]?:\/\/)/is";
-    if(preg_match($pattern, $fileName)){
-        return $fileName;
-    }else{
-        return IMG_URL."/".getHashFilePath($fileName)."/".$avatarSize."_".$avatarSize."_".$fileName;
-    }
-}
-
-
-function getAvatarUrl($provider = '', $external_id = '', $raw_avatar = '', $size = 80, $spec_fallback = '') {
+function getAvatarUrl($provider = '', $external_id = '', $raw_avatar = '', $size = '80_80', $spec_fallback = '') {
     if ($raw_avatar) {
         $raw_avatar
       = preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
@@ -378,7 +334,7 @@ function getAvatarUrl($provider = '', $external_id = '', $raw_avatar = '', $size
       : (IMG_URL
       . '/' . substr($raw_avatar, 0, 1)
       . '/' . substr($raw_avatar, 1, 2)
-      . '/' . "{$size}_{$size}_{$raw_avatar}");
+      . '/' . "{$size}_{$raw_avatar}");
     } else {
         $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_id={$external_id}");
         if ($provider === 'email') {
@@ -600,17 +556,25 @@ function exDecrypt($str, $key) {
  * 结束
  * ******************************************************
 **/
+
+
+/**
+ * @todo: removing!!!!!!!
+ * @by: @leaskh
+ */
 function createToken(){
     $randString = randStr(16);
     $hashString = md5(base64_encode(pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
     return md5($hashStr.$randString.getMicrotime().uniqid()).time();
 }
 
+
 function json_encode_nounicode($code)
 {
     $code = json_encode(urlencodeAry($code));
     return urldecode($code);
 }
+
 
 function urlencodeAry($data)
 {

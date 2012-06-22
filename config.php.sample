@@ -18,6 +18,8 @@ define("PUH_URL", "http://192.168.1.113:8080");
 
 define("DEFAULT_AVATAR_URL", "http://images.exfe.com/web/80_80_default.png");
 
+define("IMG_FOLDER", "eimgs");
+
 $resque_server="127.0.0.1:6379";
 define("RESQUE_SERVER", "127.0.0.1:6379");
 define("REDIS_SERVER_ADDRESS", "127.0.0.1");
