@@ -276,7 +276,7 @@ define(function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
             + '<div class="pull-right">'
-              + '<a href="/oAuth/twitterRedirect"><img src="/static2/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+              + '<a href="/oAuth/twitterRedirect"><img src="/static/1B/img/twitter-logo.png" alt="" width="52" height="40"></a>'
             + '</div>'
             + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'

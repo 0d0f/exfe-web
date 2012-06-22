@@ -237,7 +237,7 @@ define(function (require, exports, module) {
                     window.location = window.location.pathname;
                     return;
                 }
-                if (t === 'd01' || t === 'd02') {
+                if (t === 'd01') {
                   window.location = '/s/profile';
                 } else {
                   that.hide();
@@ -383,7 +383,11 @@ define(function (require, exports, module) {
     options: {
       events: {
         'click .xbtn-blue': function (e) {
-          window.location = '/profile.html';
+          if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
+            window.location = window.location.pathname;
+            return;
+          }
+          window.location = '/s/profile';
         }
       },
 
