@@ -37,6 +37,8 @@
 
   <!-- JavaScript at the bottom for fast page loading -->
   <script src="/static2/js/common/0.0.1/common.js"></script>
+  <script><?php include 'ftconfig.php'; ?></script>
+
   <script src="/static2/js/class/0.0.1/class.js"></script>
   <script src="/static2/js/emitter/0.0.1/emitter.js"></script>
   <script src="/static2/js/base/0.0.1/base.js"></script>
