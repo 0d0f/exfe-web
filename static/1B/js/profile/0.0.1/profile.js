@@ -761,13 +761,13 @@ define(function (require, exports, module) {
     $(this).parent().fadeOut();
   });
 
-  /*
   // uploader
   $BODY.on('click.profile.uploader', '.user-avatar', function (e) {
     var uploader = require('uploader')().render();
     uploader.show();
   });
 
+  /*
   $('.identity-list').dndsortable({
     delay: 300,
     wrap: true,
