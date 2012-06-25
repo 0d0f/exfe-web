@@ -3932,7 +3932,7 @@ input[type="submit"].btn.btn-mini {
   height: 20px;
   padding: 0;
   color: #b2b2b2;
-  background: url("/static/1B/img/modal-header-bg.png") repeat-x;
+  background: url("/static/1b/img/modal-header-bg.png") repeat-x;
   border-bottom: none;
 }
 
@@ -4084,7 +4084,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 2;
   width: 100%;
   height: 100%;
-  background: url("/static/1B/img/loading.jpeg") center center no-repeat rgba(251, 251, 251, 0.8);
+  background: url("/static/1b/img/loading.jpeg") center center no-repeat rgba(251, 251, 251, 0.8);
   background-size: 20px 20px;
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
@@ -4190,7 +4190,7 @@ input[type="submit"].btn.btn-mini {
   height: 160px;
   min-height: 160px;
   padding-top: 80px;
-  background: url("/static/1B/img/rome-sandbox.jpg") no-repeat;
+  background: url("/static/1b/img/rome-sandbox.jpg") no-repeat;
   background-size: 400px 300px;
 }
 
@@ -4270,7 +4270,7 @@ input[type="submit"].btn.btn-mini {
 .small-loading {
   width: 16px;
   height: 16px;
-  background: url("/static/1B/img/small-loading.gif") no-repeat;
+  background: url("/static/1b/img/small-loading.gif") no-repeat;
 }
 
 [class^="icon-"],
@@ -4281,7 +4281,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 12px;
   vertical-align: text-top;
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
   background-position: 12px 12px;
   background-repeat: no-repeat;
 }
@@ -4299,7 +4299,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4316,7 +4316,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 16px;
   vertical-align: text-top;
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4333,7 +4333,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4350,7 +4350,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 10px;
   vertical-align: text-top;
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
   background-position: 10px 10px;
   background-repeat: no-repeat;
 }
@@ -4368,7 +4368,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 40px;
   vertical-align: text-top;
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
   background-position: 40px 40px;
   background-repeat: no-repeat;
 }
@@ -4379,7 +4379,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .icon-white {
-  background-image: url("/static/1B/img/icons.png");
+  background-image: url("/static/1b/img/icons.png");
 }
 
 .icon-exfe {
@@ -5011,7 +5011,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1001;
   width: 100%;
   height: 56px;
-  background: url("/static/1B/img/navbar-bg.png") repeat-x transparent;
+  background: url("/static/1b/img/navbar-bg.png") repeat-x transparent;
 }
 
 .navbar .navbar-inner {
@@ -5104,15 +5104,15 @@ input[type="submit"].btn.btn-mini {
 }
 
 .navbar .user .user-name:before {
-  background: url("/static/1B/img/navbar-user-left.png") no-repeat transparent;
+  background: url("/static/1b/img/navbar-user-left.png") no-repeat transparent;
 }
 
 .navbar .user .user-name {
-  background: url("/static/1B/img/navbar-user-down.png") repeat-x transparent;
+  background: url("/static/1b/img/navbar-user-down.png") repeat-x transparent;
 }
 
 .navbar .user .user-name:after {
-  background: url("/static/1B/img/navbar-user-right.png") no-repeat transparent;
+  background: url("/static/1b/img/navbar-user-right.png") no-repeat transparent;
 }
 
 .navbar .nav > li.user {
@@ -5124,7 +5124,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1001;
   width: 158px;
   height: 56px;
-  background: url("/static/1B/img/navbar-bg.png") repeat-x;
+  background: url("/static/1b/img/navbar-bg.png") repeat-x;
 }
 
 .navbar .user-panel {
@@ -5702,7 +5702,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1;
   width: 100%;
   height: 680px;
-  background: url(/static/1B/img/xtb/westlake.jpg) left -198px no-repeat;
+  background: url(/static/1b/img/xtb/westlake.jpg) left -198px no-repeat;
   -webkit-border-radius: 4px 4px 0 0;
      -moz-border-radius: 4px 4px 0 0;
           border-radius: 4px 4px 0 0;
