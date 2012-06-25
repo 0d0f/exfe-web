@@ -14,8 +14,8 @@
   <title>EXFE.COM</title>
 
   <!-- V2 -->
-  <link href="/static/1B/css/exfe.min.css" rel="stylesheet" type="text/css" />
-  <script src="/static/1B/js/modernizr/2.5.3/modernizr.js"></script>
+  <link href="/static/1b/css/exfe.min.css" rel="stylesheet" type="text/css" />
+  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js"></script>
 
   <!-- V1 -->
   <link rel="stylesheet" type="text/css" href="/static/?g=css_global&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" />

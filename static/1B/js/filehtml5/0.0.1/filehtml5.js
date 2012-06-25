@@ -176,4 +176,6 @@ define('filehtml5', [], function (require, exports, module) {
     };
   }
 
+  return FileHTML5;
+
 });
