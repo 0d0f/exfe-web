@@ -102,6 +102,18 @@ define(function (require, exports, module) {
             }
           );
         },
+        'blur #identity': function (e) {
+          var val = Util.trim($(e.currentTarget).val());
+          var $identity = this.$('[for="identity"]');
+          var $text = $identity.find('span');
+          if (!val || !Util.parseId(val).provider) {
+            $identity.addClass('label-error');
+            $text.text('Invalid identity.');
+          } else {
+            $identity.removeClass('label-error');
+            $text.text('');
+          }
+        },
         'blur #name': function (e) {
           var val = Util.trim($(e.currentTarget).val());
           var $name = this.$('[for="name"]');
@@ -110,8 +122,8 @@ define(function (require, exports, module) {
             $name.addClass('label-error');
             $text.text('');
           } else if (Util.utf8length(val) > 30) {
-            $name.addClass('label-error');
             $text.text('Too long.');
+            $name.addClass('label-error');
           } else if (Util.zh_CN.test(val)) {
             $name.addClass('label-error');
             $text.text('Invalid character.');
@@ -1236,8 +1248,8 @@ define(function (require, exports, module) {
           that.$('.help-subject')
             .removeClass('icon14-clear')
             .addClass('icon14-question');
-          $identityLabel.addClass('label-error')
-          $identityLabelSpan.text('Invalid identity.');
+          //$identityLabel.addClass('label-error')
+          //$identityLabelSpan.text('Invalid identity.');
         }
 
         t && (that.switchTabType !== t) && that.switchTab(t);

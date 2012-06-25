@@ -12,7 +12,7 @@ EXFE_CSS_DEV = ${CSS_DIR}/exfe_dev.css
 EXFE_MIN_CSS = ${CSS_DIR}/exfe.min.css
 EXFE_MIN_CSS_DEV = ${CSS_DIR}/exfe_dev.min.css
 
-STATIC = ${PREFIX}/../../static/1B
+STATIC = ${PREFIX}/../../static/1b
 STATIC_IMG_DIR = ${STATIC}/img
 STATIC_CSS_DIR = ${STATIC}/css
 STATIC_JS_DIR = ${STATIC}/js
