@@ -1,7 +1,7 @@
 <?php
 
 class IdentityHelper extends ActionController {
-    
+
     public function sentVerifyingEmail($args)
     {
             require 'lib/Resque.php';
@@ -10,8 +10,8 @@ class IdentityHelper extends ActionController {
             $jobId = Resque::enqueue("email","emailverifying_job" , $args, true);
             return $jobId;
     }
-    
-    
+
+
     public function sentWelcomeAndActiveEmail($args)
     {
             require 'lib/Resque.php';
@@ -36,8 +36,8 @@ class IdentityHelper extends ActionController {
             $redis->HSET("iospush_badgenumber",$devicetoken,0);
         }
     }
-    
-    
+
+
     // upgraded
     public function sendResetPassword($args)
     {
