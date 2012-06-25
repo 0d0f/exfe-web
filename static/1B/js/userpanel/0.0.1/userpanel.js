@@ -454,7 +454,7 @@ define(function (require) {
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
       Store.remove('signin');
-      window.location = '/';
+      window.location = '/s/logout';
     });
   });
 });
