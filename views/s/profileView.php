@@ -27,7 +27,7 @@
       <div class="container">
 
         <!--  EXFE LOGO -->
-        <a href="/" class="brand"><img src="/static/1B/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
+        <a href="/" class="brand"><img src="/static/1b/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
 
         <a href="#" class="version" data-widget="dialog" data-dialog-type="sandbox">SANDBOX</a>
 
