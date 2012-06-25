@@ -10,8 +10,8 @@
   <meta name="description" content="" />
   <meta name="keywords" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <link href="/static/1B/css/exfe.min.css" rel="stylesheet" type="text/css" />
-  <script src="/static/1B/js/modernizr/2.5.3/modernizr.js"></script>
+  <link href="/static/1b/css/exfe.min.css" rel="stylesheet" type="text/css" />
+  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js"></script>
 </head>
 <body>
 
@@ -27,7 +27,7 @@
       <div class="container">
 
         <!--  EXFE LOGO -->
-        <a href="/" class="brand"><img src="/static/1B/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
+        <a href="/" class="brand"><img src="/static/1b/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
 
         <a href="#" class="version" data-widget="dialog" data-dialog-type="sandbox">SANDBOX</a>
 
@@ -256,43 +256,44 @@
   </script>
 
   <!-- JavaScript at the bottom for fast page loading -->
-  <script src="/static/1B/js/common/0.0.1/common.js"></script>
+  <script src="/static/1b/js/common/0.0.1/common.js"></script>
   <script><?php include 'share/ftconfig.php'; ?></script>
 
-  <script src="/static/1B/js/class/0.0.1/class.js"></script>
-  <script src="/static/1B/js/emitter/0.0.1/emitter.js"></script>
-  <script src="/static/1B/js/base/0.0.1/base.js"></script>
-  <script src="/static/1B/js/widget/0.0.1/widget.js"></script>
-  <script src="/static/1B/js/bus/0.0.1/bus.js"></script>
-  <script src="/static/1B/js/rex/0.0.1/rex.js"></script>
-  <script src="/static/1B/js/util/0.0.1/util.js"></script>
+  <script src="/static/1b/js/class/0.0.1/class.js"></script>
+  <script src="/static/1b/js/emitter/0.0.1/emitter.js"></script>
+  <script src="/static/1b/js/base/0.0.1/base.js"></script>
+  <script src="/static/1b/js/widget/0.0.1/widget.js"></script>
+  <script src="/static/1b/js/bus/0.0.1/bus.js"></script>
+  <script src="/static/1b/js/rex/0.0.1/rex.js"></script>
+  <script src="/static/1b/js/util/0.0.1/util.js"></script>
 
-  <script src="/static/1B/js/handlebars/1.0.0/handlebars.js"></script>
-  <script src="/static/1B/js/store/1.3.3/store.js"></script>
-  <script src="/static/1B/js/moment/1.6.2/moment.js"></script>
-  <script src="/static/1B/js/jquery/1.7.2/jquery.js"></script>
-  <script src="/static/1B/js/jqfocusend/0.0.1/jqfocusend.js"></script>
+  <script src="/static/1b/js/handlebars/1.0.0/handlebars.js"></script>
+  <script src="/static/1b/js/store/1.3.3/store.js"></script>
+  <script src="/static/1b/js/moment/1.6.2/moment.js"></script>
+  <script src="/static/1b/js/jquery/1.7.2/jquery.js"></script>
+  <script src="/static/1b/js/jqfocusend/0.0.1/jqfocusend.js"></script>
+  <script src="/static/1b/js/jqoffset/0.0.1/jqoffset.js"></script>
 
   <!--
-  <script src="/static/1B/js/jqdndsortable/0.0.1/jqdndsortable.js"></script>
+  <script src="/static/1b/js/jqdndsortable/0.0.1/jqdndsortable.js"></script>
   -->
 
-  <script src="/static/1B/js/api/0.0.1/api.js"></script>
-  <script src="/static/1B/js/dialog/0.0.1/dialog.js"></script>
-  <script src="/static/1B/js/typeahead/0.0.1/typeahead.js"></script>
+  <script src="/static/1b/js/api/0.0.1/api.js"></script>
+  <script src="/static/1b/js/dialog/0.0.1/dialog.js"></script>
+  <script src="/static/1b/js/typeahead/0.0.1/typeahead.js"></script>
 
-  <script src="/static/1B/js/xidentity/0.0.1/xidentity.js"></script>
-  <script src="/static/1B/js/xdialog/0.0.1/xdialog.js"></script>
+  <script src="/static/1b/js/xidentity/0.0.1/xidentity.js"></script>
+  <script src="/static/1b/js/xdialog/0.0.1/xdialog.js"></script>
 
-  <script src="/static/1B/js/filehtml5/0.0.1/filehtml5.js"></script>
-  <script src="/static/1B/js/uploader/0.0.1/uploader.js"></script>
+  <script src="/static/1b/js/filehtml5/0.0.1/filehtml5.js"></script>
+  <script src="/static/1b/js/uploader/0.0.1/uploader.js"></script>
   <!--
-  <script src="/static/1B/js/editable/0.0.1/editable.js"></script>
-  <script src="/static/1B/js/xeditable/0.0.1/xeditable.js"></script>
+  <script src="/static/1b/js/editable/0.0.1/editable.js"></script>
+  <script src="/static/1b/js/xeditable/0.0.1/xeditable.js"></script>
   -->
 
-  <script src="/static/1B/js/profile/0.0.1/profile.js"></script>
-  <script src="/static/1B/js/userpanel/0.0.1/userpanel.js"></script>
+  <script src="/static/1b/js/profile/0.0.1/profile.js"></script>
+  <script src="/static/1b/js/userpanel/0.0.1/userpanel.js"></script>
 
 </body>
 </html>
