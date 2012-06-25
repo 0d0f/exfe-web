@@ -29,18 +29,28 @@ class IdentitiesActions extends ActionController {
         // get
         if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
-                if (!$identityItem->provider) {
+                if ($identityItem->external_id) {
+                    $id_str   = $identityItem->external_id;
+                    $identity = $modIdentity->getIdentityByProviderExternalId(
+                        $identityItem->provider, $id_str
+                    );
+                } elseif ($identityItem->external_username) {
+                    $id_str   = $identityItem->external_username;
+                    $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+                        $identityItem->provider, $id_str
+                    );
+                } else {
+                    $id_str   = '';
+                }
+                if (!$identityItem->provider || !$id_str) {
                     continue;
                 }
-                $identity = $modIdentity->getIdentityByProviderExternalId(
-                    $identityItem->provider, $identityItem->external_id
-                );
                 if ($identity) {
                     $objIdentities[] = $identity;
                 } else {
                     switch ($identityItem->provider) {
                         case 'email':
-                            $objEmail = $modIdentity->parseEmail($identityItem->external_id);
+                            $objEmail = $modIdentity->parseEmail($id_str);
                             if ($objEmail) {
                                 $objIdentities[] = new Identity(
                                     0,
