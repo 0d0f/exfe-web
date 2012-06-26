@@ -53,7 +53,7 @@ class AvatarActions extends ActionController {
         	}
         }
 		// check images
-        $sizes       = array('original', '240_240', '80_80');
+        $sizes       = array('original', '80_80');
 		$extensions  = array();
         foreach ($sizes as $size) {
         	if (!isset($_FILES[$size])) {
