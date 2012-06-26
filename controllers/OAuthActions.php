@@ -1,11 +1,49 @@
 <?php
-require_once dirname(dirname(__FILE__))."/lib/OAuth.php";
-require_once dirname(dirname(__FILE__))."/lib/TwitterOAuth.php";
-require_once dirname(dirname(__FILE__))."/lib/FacebookOAuth.php";
-require_once dirname(dirname(__FILE__))."/lib/tmhOAuth.php";
-require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
+
+require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
+require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/lib/FacebookOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
+
 
 class OAuthActions extends ActionController {
+
+    public function doIndex() {
+        header('location: /s/login');
+    }
+
+
+    public function doTwitterRedirect() {
+        $_SESSION['oauth_device']          = $_GET['device'];
+        $_SESSION['oauth_device_callback'] = $_GET['device_callback'];
+        $twitterConn  = new TwitterOAuth(
+            TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
+        );
+        $requestToken = $twitterConn->getRequestToken(TWITTER_OAUTH_CALLBACK);
+        $_SESSION['oauth_token']        = $requestToken['oauth_token'];
+        $_SESSION['oauth_token_secret'] = $requestToken['oauth_token_secret'];
+        switch ($twitterConn->http_code) {
+            case 200:
+                $token           = $requestToken['oauth_token'];
+                $twitterOAuthURL = $twitterConn->getAuthorizeURL($token);
+                if ($_GET['json']) {
+                    apiResponse(array('redirect' => $twitterOAuthURL));
+                }
+                header("Location: {$twitterOAuthURL}");
+                break;
+            default:
+                if ($_GET['json']) {
+                    apiError(
+                        500, 'could_not_connect_to_twitter',
+                        'Could not connect to Twitter. Refresh the page or try again later.'
+                    );
+                }
+                header('HTTP/1.1 500 Internal Server Error');
+                echo 'Could not connect to Twitter. Refresh the page or try again later.';
+        }
+    }
+
 
 	public function doLoginWithTwitter() {
         if (empty($_SESSION['access_token'])
@@ -19,7 +57,6 @@ class OAuthActions extends ActionController {
         $accessTokenStr = packArray($accessToken);
 
         $twitterConn = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $accessToken['oauth_token'], $accessToken['oauth_token_secret']);
-
 
         $twitterUserInfo = $twitterConn->get('account/verify_credentials');
 
