@@ -1,10 +1,10 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/FacebookOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/OAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/TwitterOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/FacebookOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/tmhOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/FoursquareAPI.class.php';
 
 
 class OAuthModels extends DataModel {
@@ -41,13 +41,14 @@ class OAuthModels extends DataModel {
                 $requestToken['oauth_token'],
                 $requestToken['oauth_token_secret']
             );
-            if（$twitterConn->http_code === 200） {
+            print_r($twitterConn);
+            print_r($requestToken);
+            if ($twitterConn->http_code === 200) {
                 $accessToken = $twitterConn->getAccessToken($verifier);
                 $this->addtoSession([
-                    'access_token'        => $accessToken['oauth_token'],
-                    'access_token_secret' => $accessToken['oauth_token_secret'],
+                    'oauth_token'        => $accessToken['oauth_token'],
+                    'oauth_token_secret' => $accessToken['oauth_token_secret'],
                 ]);
-                $this->delfromSession(['oauth_token', 'oauth_token_secret']);
                 return true;
             }
         }
@@ -55,7 +56,7 @@ class OAuthModels extends DataModel {
     }
 
 
-    public verifyTwitterCredentials($accessToken, $accessTokenSecret) {
+    public function verifyTwitterCredentials($accessToken, $accessTokenSecret) {
         if ($accessToken && $accessTokenSecret) {
             $twitterConn = new TwitterOAuth(
                 TWITTER_CONSUMER_KEY,
@@ -65,6 +66,7 @@ class OAuthModels extends DataModel {
             );
             $rawTwitterUserInfo = $twitterConn->get('account/verify_credentials');
             if ($rawTwitterUserInfo) {
+                $hlpIdentity = $this->getHelperByName('Identity', 'v2');
                 $rawTwitterUserInfo
               = gettype($rawTwitterUserInfo) === 'object'
               ? (array) $rawTwitterUserInfo : $rawTwitterUserInfo;
@@ -77,17 +79,13 @@ class OAuthModels extends DataModel {
                     0,
                     $rawTwitterUserInfo["id"],
                     $rawTwitterUserInfo["screen_name"],
-                    str_replace(
-                        '_normal', '_reasonably_small',
+                    $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
                         $rawTwitterUserInfo['profile_image_url']
                     )
                 );
             }
         }
         return null;
-
-
-
     }
 
 
