@@ -222,14 +222,14 @@
     position: absolute;
     top: 3px;
     right: 3px;
-    z-index: @index + 2;
+    z-index: @index + 3;
   }
 
   .back {
     position: absolute;
     top: 3px;
     left: 3px;
-    z-index: @index + 2;
+    z-index: @index + 3;
   }
 
   .overlay {
@@ -254,6 +254,45 @@
       width: 80px;
       height: 80px;
     }
+  }
+
+  .resizeable {
+    position: absolute;
+    z-index: @index + 2;
+    background: transparent;
+    .opacity(50);
+  }
+
+  .bdt {
+    width: 250px;
+    height: 10px;
+    top: -5px;
+    left: -5px;
+    cursor: s-resize;
+  }
+
+  .bdr {
+    width: 10px;
+    height: 240px;
+    top: 0;
+    right: -5px;
+    cursor: w-resize;
+  }
+
+  .bdb {
+    width: 250px;
+    height: 10px;
+    bottom: -5px;
+    left: -5px;
+    cursor: n-resize;
+  }
+
+  .bdl {
+    width: 10px;
+    height: 240px;
+    top: 0;
+    left: -5px;
+    cursor: e-resize;
   }
 
   .dropbox {
