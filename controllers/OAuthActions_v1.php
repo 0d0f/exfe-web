@@ -7,29 +7,8 @@ require_once dirname(dirname(__FILE__))."/lib/FoursquareAPI.class.php";
 
 class OAuthActions extends ActionController {
 
-    public function doIndex() {
-        header("location:/s/login");
-    }
 
-    public function doTwitterRedirect(){
-        $_SESSION['oauth_device']=$_GET["device"];
-        $_SESSION['oauth_device_callback']=$_GET["device_callback"];
-        $twitterConn = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
-        $requestToken = $twitterConn->getRequestToken(TWITTER_OAUTH_CALLBACK);
-        $_SESSION['oauth_token'] = $requestToken['oauth_token'];
-        $_SESSION['oauth_token_secret'] = $requestToken['oauth_token_secret'];
-
-        switch ($twitterConn->http_code) {
-            case 200:
-                $token = $requestToken['oauth_token'];
-                $twitterOAuthURL = $twitterConn->getAuthorizeURL($token);
-                header('Location:'.$twitterOAuthURL);
-                break;
-            default:
-                echo 'Could not connect to Twitter. Refresh the page or try again later.';
-        }
-    }
-
+    ///////////////////// working on this ///////////////////////////////////////////
     public function doTwitterCallBack(){
         if (isset($_REQUEST['oauth_token']) && $_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
             $_SESSION['oauth_status'] = 'oldtoken';
@@ -147,7 +126,8 @@ class OAuthActions extends ActionController {
         header("location:/s/profile");
     }
 
-    public function doConfirmTwitterFollowing(){
+
+    public function doConfirmTwitterFollowing() {
         $userToken = exGet("token");
         $confirm = trim(exGet("confirm"));
         if($confirm == ""){
@@ -182,11 +162,6 @@ class OAuthActions extends ActionController {
         }
     }
 
-    public function doClearTwitterSessions(){
-        session_start();
-        session_destroy();
-        header('Location:/');
-    }
 
     public function doLoginWithFacebook(){
         $facebookHandler = new FacebookOauth(array(
@@ -237,8 +212,8 @@ class OAuthActions extends ActionController {
 
             header("location:/s/login");
         }
-
     }
+
 
     public function doLoginWithGoogle(){
         $scopeArray = array(
@@ -258,6 +233,7 @@ class OAuthActions extends ActionController {
 
         header("location:".$googleOAuthURL);
     }
+
 
     public function doGoogleOAuthCallback(){
         $googleAPIConf = array('code'           =>$_REQUEST['code'],
@@ -318,4 +294,5 @@ class OAuthActions extends ActionController {
             header("location:/s/login");
         }
     }
+
 }
