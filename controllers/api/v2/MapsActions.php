@@ -22,7 +22,7 @@ class MapsActions extends ActionController {
         $responseData = $foursquareHandler->GetPublic("venues/search",$queryParams);
 	    $data= json_decode($responseData,true);
         $result_response=array();
-        $result_response["venues"]=array();
+        $result_response["places"]=array();
         $result_response["meta"]=$data["meta"];
         
         if($data["meta"]["code"]=="200")
@@ -31,7 +31,7 @@ class MapsActions extends ActionController {
             foreach($venues as $venue)
             {
                 $place=new Place(0,$venue["name"],$venue["location"]["address"],$venue["location"]["lng"],$venue["location"]["lat"],"4sq",$venue["id"]);
-                array_push($result_response["venues"],$place);
+                array_push($result_response["places"],$place);
             }
         }
         echo json_encode($result_response);
