@@ -9,11 +9,6 @@ require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
 
 class OAuthActions extends ActionController {
 
-    public function doIndex() {
-        header('location: /s/login');
-    }
-
-
     public function doTwitterRedirect() {
         $_SESSION['oauth_device']          = $_GET['device'];
         $_SESSION['oauth_device_callback'] = $_GET['device_callback'];
@@ -43,6 +38,51 @@ class OAuthActions extends ActionController {
                 echo 'Could not connect to Twitter. Refresh the page or try again later.';
         }
     }
+
+
+    public function doTwitterCallBack() {
+        if (isset($_REQUEST['oauth_token'])
+         && $_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
+            // @todo: clean session
+            // @todo: redirect to home page
+            header('Location:/oAuth/clearTwitterSessions');
+        }
+        $twitterConn = new TwitterOAuth(
+            TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET,
+            $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']
+        );
+        $_SESSION['access_token'] = $twitterConn->getAccessToken(
+            $_REQUEST['oauth_verifier']
+        );
+        // {
+        unset($_SESSION['oauth_token']);
+        unset($_SESSION['oauth_token_secret']);
+        // }
+        if (200 == $twitterConn->http_code) {
+            $_SESSION['status'] = 'verified';
+            header('Location: /oAuth/loginWithTwitter');
+        } else {
+            header('Location: /oAuth/clearTwitterSessions');
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	public function doLoginWithTwitter() {
