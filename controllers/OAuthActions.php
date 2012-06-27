@@ -42,15 +42,15 @@ class OAuthActions extends ActionController {
         $rstAcsToken = $modOauth->getTwitterAccessToken(
             $_REQUEST['oauth_verifier']
         );
-        print_r($rstAcsToken);
         if ($rstAcsToken) {
+            $oauthIfo = $modOauth->getSession();
             $objTwitterIdentity = $modOauth->verifyTwitterCredentials(
                 $oauthIfo['oauth_token'],
                 $oauthIfo['oauth_token_secret']
             );
             if ($objTwitterIdentity) {
                 if ($oauthIfo['workflow']) {
-
+                    // @todo by @leask
                 } else {
                     $modIdentity = $this->getModelByName('Identity', 'v2');
                     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
