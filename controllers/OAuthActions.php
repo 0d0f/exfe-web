@@ -1,103 +1,62 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/FacebookOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
-
-
 class OAuthActions extends ActionController {
 
     public function doTwitterRedirect() {
         $_SESSION['oauth_device']          = $_GET['device'];
         $_SESSION['oauth_device_callback'] = $_GET['device_callback'];
-        $twitterConn  = new TwitterOAuth(
-            TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
-        );
-        $requestToken = $twitterConn->getRequestToken(TWITTER_OAUTH_CALLBACK);
-        $_SESSION['oauth_token']        = $requestToken['oauth_token'];
-        $_SESSION['oauth_token_secret'] = $requestToken['oauth_token_secret'];
-        switch ($twitterConn->http_code) {
-            case 200:
-                $token           = $requestToken['oauth_token'];
-                $twitterOAuthURL = $twitterConn->getAuthorizeURL($token);
-                if ($_GET['json']) {
-                    apiResponse(array('redirect' => $twitterOAuthURL));
-                }
-                header("Location: {$twitterOAuthURL}");
-                break;
-            default:
-                if ($_GET['json']) {
-                    apiError(
-                        500, 'could_not_connect_to_twitter',
-                        'Could not connect to Twitter. Refresh the page or try again later.'
-                    );
-                }
-                header('HTTP/1.1 500 Internal Server Error');
-                echo 'Could not connect to Twitter. Refresh the page or try again later.';
+        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $urlOauth = $modOauth->twitterOAuth();
+        if ($urlOauth) {
+            if ($_GET['json']) {
+                apiResponse(array('redirect' => $urlOauth));
+            }
+            header("Location: {$urlOauth}");
         }
+        if ($_GET['json']) {
+            apiError(
+                500, 'could_not_connect_to_twitter',
+                'Could not connect to Twitter. Refresh the page or try again later.'
+            );
+        }
+        header('HTTP/1.1 500 Internal Server Error');
+        echo 'Could not connect to Twitter. Refresh the page or try again later.';
     }
 
 
     public function doTwitterCallBack() {
-        if (isset($_REQUEST['oauth_token'])
-         && $_SESSION['oauth_token'] !== $_REQUEST['oauth_token']) {
-            // @todo: clean session
-            // @todo: redirect to home page
-            // header('Location:/oAuth/clearTwitterSessions');
+        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $oauthIfo = $modOauth->getSession();
+        if (!$oauthIfo || (isset($oauthIfo['oauth_token'])
+         && $oauthIfo['oauth']['token'] !== $_REQUEST['oauth_token'])) {
+            $modOauth->resetSession();
+            header('Location: /');
+            return;
         }
-        $twitterConn = new TwitterOAuth(
-            TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET,
-            $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']
-        );
-        $_SESSION['access_token'] = $twitterConn->getAccessToken(
+        $rstAcsToken = $modOauth->getTwitterAccessToken(
             $_REQUEST['oauth_verifier']
         );
-        // {
-        unset($_SESSION['oauth_token']);
-        unset($_SESSION['oauth_token_secret']);
-        // }
-        if (200 == $twitterConn->http_code) {
-            $_SESSION['status'] = 'verified';
-
-
-
-
-
-
-
-
-
-
-
-            if (empty($_SESSION['access_token'])
-                || empty($_SESSION['access_token']['oauth_token'])
-                || empty($_SESSION['access_token']['oauth_token_secret'])
-            ) {
-                header('Location: /oAuth/clearTwitterSessions');
-            }
-
-            $accessToken = $_SESSION['access_token'];
-            $accessTokenStr = packArray($accessToken);
-
-            $twitterConn = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $accessToken['oauth_token'], $accessToken['oauth_token_secret']);
-
-            $twitterUserInfo = $twitterConn->get('account/verify_credentials');
-
-            if(gettype($twitterUserInfo) == "object"){
-                $twitterUserInfo = (array)$twitterUserInfo;
-            }
-            $oAuthUserInfo = array(
-                "provider"      =>"twitter",
-                "id"            =>$twitterUserInfo["id"],
-                "name"          =>$twitterUserInfo["name"],
-                "sname"         =>$twitterUserInfo["screen_name"],
-                "desc"          =>$twitterUserInfo["description"],
-                "avatar"        =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"]),
-                "oauth_token"   =>$accessTokenStr
+        if ($rstAcsToken) {
+            $objTwitterIdentity = $modOauth->verifyTwitterCredentials(
+                $oauthIfo['access_token'],
+                $oauthIfo['access_token_secret']
             );
-            $external_identity=$oAuthUserInfo["id"];
+
+
+
+
+            // $accessToken = $_SESSION['access_token'];
+            // $accessTokenStr = packArray($accessToken);
+            // $oAuthUserInfo = array(
+            //     "provider"      =>"twitter",
+            //     "id"            =>$twitterUserInfo["id"],
+            //     "name"          =>$twitterUserInfo["name"],
+            //     "sname"         =>$twitterUserInfo["screen_name"],
+            //     "desc"          =>$twitterUserInfo["description"],
+            //     "avatar"        =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"]),
+            //     "oauth_token"   =>$accessTokenStr
+            // );
+            // $external_identity=$oAuthUserInfo["id"];
 
             $OAuthModel = $this->getModelByName("oAuth");
             $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
@@ -187,7 +146,7 @@ class OAuthActions extends ActionController {
 
 
 
-
+    /*
     public function doConfirmTwitterFollowing() {
         $userToken = exGet("token");
         $confirm = trim(exGet("confirm"));
@@ -222,6 +181,7 @@ class OAuthActions extends ActionController {
             header("location:/s/profile");
         }
     }
+    */
 
 
 
