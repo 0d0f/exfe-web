@@ -5556,14 +5556,14 @@ input[type="submit"].btn.btn-mini {
   position: absolute;
   top: 3px;
   right: 3px;
-  z-index: 3;
+  z-index: 4;
 }
 
 .modal-uploader .back {
   position: absolute;
   top: 3px;
   left: 3px;
-  z-index: 3;
+  z-index: 4;
 }
 
 .modal-uploader .overlay {
@@ -5596,6 +5596,46 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .smallphoto .overlay {
   width: 80px;
   height: 80px;
+}
+
+.modal-uploader .resizeable {
+  position: absolute;
+  z-index: 3;
+  background: transparent;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+.modal-uploader .bdt {
+  top: -5px;
+  left: -5px;
+  width: 250px;
+  height: 10px;
+  cursor: s-resize;
+}
+
+.modal-uploader .bdr {
+  top: 0;
+  right: -5px;
+  width: 10px;
+  height: 240px;
+  cursor: w-resize;
+}
+
+.modal-uploader .bdb {
+  bottom: -5px;
+  left: -5px;
+  width: 250px;
+  height: 10px;
+  cursor: n-resize;
+}
+
+.modal-uploader .bdl {
+  top: 0;
+  left: -5px;
+  width: 10px;
+  height: 240px;
+  cursor: e-resize;
 }
 
 .modal-uploader .dropbox {
