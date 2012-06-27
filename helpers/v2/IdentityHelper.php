@@ -34,18 +34,8 @@ class IdentityHelper extends ActionController {
     }
 
 
-    public function sentVerifyingEmail($args) {
-        return Resque::enqueue('email', 'emailverifying_job', $args, true);
-    }
-
-
-    public function sendResetPassword($args) {
-        return Resque::enqueue('email', 'emailresetpassword_job', $args, true);
-    }
-
-
-    public function sentWelcomeAndActiveEmail($args) {
-        return Resque::enqueue('email', 'welcomeandactivecode_job', $args, true);
+    public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
+        return $this->modIdentity->getTwitterLargeAvatarBySmallAvatar($strUrl);
     }
 
 
