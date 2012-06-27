@@ -70,7 +70,9 @@ define('api', [], function (require, exports, module) {
     // 登陆后
     verifyUserIdentity: '/users/verifyUserIdentity',
 
-    forgotPassword: '/users/forgotPassword'
+    forgotPassword: '/users/forgotPassword',
+
+    avatarUpdate: '/avatar/update'
   };
 
   // Not Use Token
