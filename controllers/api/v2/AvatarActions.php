@@ -56,11 +56,17 @@ class AvatarActions extends ActionController {
         $sizes       = array('original', '80_80');
 		$extensions  = array();
         foreach ($sizes as $size) {
-        	if (!isset($_FILES[$size])) {
-	        	apiError(400, "no_{$size}_image",  "{$size} size image must be provided.");
-	        }
-	        $arrExpName = explode('.', $_FILES[$size]['name']);
-	        $extensions[$size] = strtolower(array_pop($arrExpName));
+        	if (isset($_FILES[$size])) {
+        		$arrExpName = explode('.', $_FILES[$size]['name']);
+        		$extensions[$size] = strtolower(array_pop($arrExpName));
+        	} elseif (isset($_POST[$size])) {
+        		$strExpName = preg_replace(
+        			'/^data\:image\/([^\;]*)\;base64\,.*$/', '$1', $_POST[$size]
+        		);
+        		$extensions[$size] = strtolower($strExpName);
+        	} else {
+        		apiError(400, "no_{$size}_image",  "{$size} size image must be provided.");
+        	}
 			switch ($extensions[$size]) {
 				case 'png':
 				case 'gif':
@@ -81,7 +87,16 @@ class AvatarActions extends ActionController {
 	    foreach ($sizes as $size) {
 	    	$filename  = "{$fnmHashed['filename']}.{$extensions[$size]}";
 	    	$full_path = "{$fnmHashed['path']}/{$size}_{$filename}";
-    		$movResult = move_uploaded_file($_FILES[$size]['tmp_name'], $full_path);
+	    	if (isset($_FILES[$size])) {
+    			$movResult = move_uploaded_file($_FILES[$size]['tmp_name'], $full_path);
+    		} elseif (isset($_POST[$size])) {
+    			$strImage  = str_replace('data:image/png;base64,', '', $_POST[$size]);
+				$strImage  = str_replace(' ', '+', $strImage);
+				$binImage  = base64_decode($strImage);
+    			$movResult = file_put_contents($full_path, $binImage);
+    		} else {
+    			$movResult = false;
+    		}
     		if ($movResult) {
     			$apiResult['avatars'][$size] = getAvatarUrl('', '', $filename, $size);
     			continue;
