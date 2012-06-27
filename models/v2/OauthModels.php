@@ -41,10 +41,8 @@ class OAuthModels extends DataModel {
                 $requestToken['oauth_token'],
                 $requestToken['oauth_token_secret']
             );
-            print_r($twitterConn);
-            print_r($requestToken);
+            $accessToken = $twitterConn->getAccessToken($verifier);
             if ($twitterConn->http_code === 200) {
-                $accessToken = $twitterConn->getAccessToken($verifier);
                 $this->addtoSession([
                     'oauth_token'        => $accessToken['oauth_token'],
                     'oauth_token_secret' => $accessToken['oauth_token_secret'],
@@ -56,13 +54,13 @@ class OAuthModels extends DataModel {
     }
 
 
-    public function verifyTwitterCredentials($accessToken, $accessTokenSecret) {
-        if ($accessToken && $accessTokenSecret) {
+    public function verifyTwitterCredentials($oauthToken, $oauthTokenSecret) {
+        if ($oauthToken && $oauthTokenSecret) {
             $twitterConn = new TwitterOAuth(
                 TWITTER_CONSUMER_KEY,
                 TWITTER_CONSUMER_SECRET,
-                $accessToken,
-                $accessTokenSecret
+                $oauthToken,
+                $oauthTokenSecret
             );
             $rawTwitterUserInfo = $twitterConn->get('account/verify_credentials');
             if ($rawTwitterUserInfo) {
@@ -72,13 +70,13 @@ class OAuthModels extends DataModel {
               ? (array) $rawTwitterUserInfo : $rawTwitterUserInfo;
                 return new Identity(
                     0,
-                    $rawTwitterUserInfo["name"],
+                    $rawTwitterUserInfo['name'],
                     '',
-                    $rawTwitterUserInfo["description"],
+                    $rawTwitterUserInfo['description'],
                     'twitter',
                     0,
-                    $rawTwitterUserInfo["id"],
-                    $rawTwitterUserInfo["screen_name"],
+                    $rawTwitterUserInfo['id'],
+                    $rawTwitterUserInfo['screen_name'],
                     $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
                         $rawTwitterUserInfo['profile_image_url']
                     )
