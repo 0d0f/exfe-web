@@ -170,6 +170,17 @@
       {{/crosses}}
     </div>
 
+    {{#if hasGatherAX}}
+    <div class="gatherax-box">
+      <a href="/x/gather">
+        {{#unless totalCrosses}}
+        <span class="message">Oh~ Your list is empty. </span>
+        {{/unless}}
+        <span class="underline">Gather a <em class="x-sign">X</em></span>
+      </a>
+    </div>
+    {{/if}}
+
     {{#if hasMore}}
     <div class="more" data-cate="{{cate}}">
       <a href="#">more...</a>
