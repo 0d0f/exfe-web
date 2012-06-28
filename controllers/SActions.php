@@ -3,31 +3,12 @@
 class SActions extends ActionController {
 
     public function doProfile() {
-        if (intval($_SESSION['userid']) <= 0) {
-            header('Location: /s/login') ;
-            exit(0);
+        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $oauthIfo = $modOauth->getSession();
+        if ($oauthIfo && $oauthIfo['signin']) {
+            $this->setVar('user_id',    $oauthIfo['signin']['user_id']);
+            $this->setVar('user_token', $oauthIfo['signin']['new_user_token']);
         }
-
-        // init models
-        $modUser = $this->getModelByName('user');
-        $modIdentity = $this->getModelByName('identity');
-
-        // Get user informations
-        $user = $modUser->getUser($_SESSION['userid']);
-        $this->setVar('user', $user);
-
-        // Get token
-        $token = $modUser->getAuthToken($_SESSION['userid']);
-        $this->setVar('token', $token);
-
-        // Get identities
-        $identities = $modIdentity->getIdentitiesByUser($_SESSION['userid']);
-        $this->setVar('identities', $identities);
-
-        $crossData = $this->getModelByName('x');
-        $crossNumber = $crossData->fetchCross($_SESSION['userid'], 0, 'yes', 'begin_at', 1000, 'count');
-        $this->setVar('cross_num', $crossNumber);
-
         $this->displayView();
     }
 

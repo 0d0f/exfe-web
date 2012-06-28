@@ -138,26 +138,26 @@ class OAuthActions extends ActionController {
                         );
                         return;
                     }
-                    // // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
-                    // // true / false [String]
-                    // $twitterConn = new tmhOAuth([
-                    //   'consumer_key'    => TWITTER_CONSUMER_KEY,
-                    //   'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                    //   'user_token'      => $oauthIfo['oauth_token'],
-                    //   'user_secret'     => $oauthIfo['oauth_token_secret'],
-                    // ]);
-                    // $responseCode = $twitterConn->request(
-                    //     'GET',
-                    //     $twitterConn->url('1/friendships/exists'),
-                    //     ['screen_name_a' => $objIdentity->external_username,
-                    //      'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
-                    // );
-                    // if ($twitterConn->response['response'] === 'false') {
-                    //     header('location: /oAuth/confirmTwitterFollowing');
-                    //     return;
-                    // }
-                    var_dump($rstSignin);
-                    //header('location: /s/profile');
+                    // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
+                    // true / false [String]
+                    $twitterConn = new tmhOAuth([
+                      'consumer_key'    => TWITTER_CONSUMER_KEY,
+                      'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                      'user_token'      => $oauthIfo['oauth_token'],
+                      'user_secret'     => $oauthIfo['oauth_token_secret'],
+                    ]);
+                    $twitterConn->request(
+                        'GET',
+                        $twitterConn->url('1/friendships/exists'),
+                        ['screen_name_a' => $objIdentity->external_username,
+                         'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
+                    );
+                    if ($twitterConn->response['response'] === 'false') {
+                        header('location: /oAuth/confirmTwitterFollowing');
+                        return;
+                    }
+                    $modOauth->addtoSession(['signin' => $rstSignin]);
+                    header('location: /s/profile');
                     return;
                 }
                 echo 'Request error!';
@@ -168,45 +168,41 @@ class OAuthActions extends ActionController {
         header('location:' .(
             $oauthIfo['workflow']['callback']['oauth_device'] === 'iOS'
          ? "{$oauthIfo['workflow']['callback']['oauth_device_callback']}?err=OAuth error."
-         : '/'
+         : '/s/profile'
         ));
     }
 
 
     public function doConfirmTwitterFollowing() {
-
-        $userToken = exGet("token");
-        $confirm = trim(exGet("confirm"));
-        if($confirm == ""){
-            if($userToken == ""){
-                header("location:/s/profile");
-                exit;
-            }
-            $userInfo = unpackArray($userToken);
-            if(!is_array($userInfo)){
-                header("location:/s/profile");
-                exit;
-            }
-
-            $this->setVar("user_name", $userInfo["name"]);
-            $this->setVar("user_avatar", $userInfo["avatar"]);
-            $this->setVar("exfe_office_account", TWITTER_OFFICE_ACCOUNT);
-            $this->displayView();
-        }else{
-            if($confirm == "yes"){
-                $accessToken = $_SESSION['access_token'];
+        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $oauthIfo = $modOauth->getSession();
+        if ($oauthIfo['signin']) {
+            $confirm = trim(exGet('confirm'));
+            if ($confirm === 'yes') {
                 $twitterConn = new tmhOAuth(array(
                   'consumer_key'    => TWITTER_CONSUMER_KEY,
                   'consumer_secret' => TWITTER_CONSUMER_SECRET,
                   'user_token'      => $accessToken['oauth_token'],
                   'user_secret'     => $accessToken['oauth_token_secret']
                 ));
-                $responseCode = $twitterConn->request('POST', $twitterConn->url('1/friendships/create'), array(
-                    'screen_name'=>TWITTER_OFFICE_ACCOUNT
-                ));
+                $twitterConn->request(
+                    'POST',
+                    $twitterConn->url('1/friendships/create'),
+                    array('screen_name' => TWITTER_OFFICE_ACCOUNT)
+                );
+            } else {
+                $modIdentity = $this->getModelByName('Identity', 'v2');
+                $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
+                    'twitter', $objTwitterIdentity->external_username, true
+                );
+                $this->setVar('user_name',           $modIdentity->name);
+                $this->setVar('user_avatar',         $modIdentity->avatar_filename);
+                $this->setVar('exfe_office_account', TWITTER_OFFICE_ACCOUNT);
+                $this->displayView();
+                return;
             }
-            header("location:/s/profile");
         }
+        header('location: /s/profile');
     }
 
 
