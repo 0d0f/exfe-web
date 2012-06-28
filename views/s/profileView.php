@@ -175,9 +175,11 @@
     {{#if hasGatherAX}}
     <div class="gatherax-box">
       <a href="/x/gather">
-        {{#unless totalCrosses}}
-        <span class="message">Oh~ Your list is empty. </span>
-        {{/unless}}
+        {{#if totalCrosses}}
+        <i class="icon16-invitation"></i>
+        {{else}}
+        <span class="message">Oh~ Nothing upcoming. <em class="x-sign">EXFE</em> your friends, </span>
+        {{/if}}
         <span class="underline">Gather a <em class="x-sign">X</em></span>
       </a>
     </div>
