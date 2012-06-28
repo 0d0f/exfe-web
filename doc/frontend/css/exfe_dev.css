@@ -3867,6 +3867,10 @@ input[type="submit"].btn.btn-mini {
   text-decoration: line-through;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .modal {
   position: absolute;
   top: 150px;
@@ -6847,6 +6851,21 @@ input[type="submit"].btn.btn-mini {
   clear: right;
 }
 
+.crosses .gatherax-box {
+  margin-left: -9.5px;
+}
+
+.crosses .gatherax-box a {
+  display: block;
+  padding: 8px 11px;
+  margin: 10px 0;
+  color: #4c4c4c;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px dashed #d5d5d5;
+}
+
 .crosses .more {
   text-align: right;
 }
@@ -7223,13 +7242,30 @@ input[type="submit"].btn.btn-mini {
   line-height: 30px;
 }
 
+.newbie .arrow {
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-right: -10px;
+  cursor: pointer;
+}
+
 .newbie .rb {
   width: 0;
   height: 0;
-  margin-right: -8px;
-  cursor: pointer;
+  margin-top: 8px;
+  margin-left: 8px;
   border-bottom: 8px solid #b2b2b2;
   border-left: 8px solid transparent;
+}
+
+.newbie .lt {
+  width: 0;
+  height: 0;
+  margin-top: 8px;
+  margin-left: 8px;
+  border-top: 8px solid #b2b2b2;
+  border-right: 8px solid transparent;
 }
 
 .newbie-close {
