@@ -1,7 +1,143 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/../lib/OAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/TwitterOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/FacebookOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/tmhOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/FoursquareAPI.class.php';
+
+
 class OAuthModels extends DataModel {
 
+	public function getTwitterRequestToken() {
+		$twitterConn  = new TwitterOAuth(
+            TWITTER_CONSUMER_KEY,
+            TWITTER_CONSUMER_SECRET
+        );
+        $requestToken = $twitterConn->getRequestToken(TWITTER_OAUTH_CALLBACK);
+        if ($twitterConn->http_code === 200) {
+        	$this->setSession(
+        		'twitter',
+        		$requestToken['oauth_token'],
+        		$requestToken['oauth_token_secret']
+        	);
+        	return $twitterConn->getAuthorizeURL($requestToken['oauth_token']);
+        }
+        $this->resetSession();
+        return false;
+	}
+
+
+    public function getTwitterAccessToken($verifier) {
+        $requestToken = $this->getSession();
+        if ($verifier
+         && $requestToken
+         && $requestToken['external_service'] === 'twitter'
+         && $requestToken['oauth_token']
+         && $requestToken['oauth_token_secret']) {
+            $twitterConn = new TwitterOAuth(
+                TWITTER_CONSUMER_KEY,
+                TWITTER_CONSUMER_SECRET,
+                $requestToken['oauth_token'],
+                $requestToken['oauth_token_secret']
+            );
+            $accessToken = $twitterConn->getAccessToken($verifier);
+            if ($twitterConn->http_code === 200) {
+                $this->addtoSession([
+                    'oauth_token'        => $accessToken['oauth_token'],
+                    'oauth_token_secret' => $accessToken['oauth_token_secret'],
+                ]);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public function verifyTwitterCredentials($accessToken, $accessTokenSecret) {
+        if ($accessToken && $accessTokenSecret) {
+            $twitterConn = new TwitterOAuth(
+                TWITTER_CONSUMER_KEY,
+                TWITTER_CONSUMER_SECRET,
+                $accessToken,
+                $accessTokenSecret
+            );
+            $rawTwitterUserInfo = $twitterConn->get('account/verify_credentials');
+            if ($rawTwitterUserInfo) {
+                $hlpIdentity = $this->getHelperByName('Identity', 'v2');
+                $rawTwitterUserInfo
+              = gettype($rawTwitterUserInfo) === 'object'
+              ? (array) $rawTwitterUserInfo : $rawTwitterUserInfo;
+                return new Identity(
+                    0,
+                    $rawTwitterUserInfo["name"],
+                    '',
+                    $rawTwitterUserInfo["description"],
+                    'twitter',
+                    0,
+                    $rawTwitterUserInfo["id"],
+                    $rawTwitterUserInfo["screen_name"],
+                    $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
+                        $rawTwitterUserInfo['profile_image_url']
+                    )
+                );
+            }
+        }
+        return null;
+    }
+
+
+	public function setSession($service, $token, $token_secret, $workflow = []) {
+        if ($service && $token && $token_secret) {
+    		$_SESSION['oauth'] = [
+            	'external_service'   => $service,
+            	'oauth_token'        => $token,
+            	'oauth_token_secret' => $token_secret,
+            	'workflow'           => $workflow,
+            ];
+            return true;
+        }
+        $this->resetSession();
+        return false;
+	}
+
+
+    public function addtoSession($keyValues) {
+        if ($keyValues && is_array($keyValues)) {
+            foreach ($keyValues as $key => $value) {
+                $_SESSION['oauth'][$key] = $value;
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    public function delfromSession($keys = []) {
+        if ($keys && is_array($keys)) {
+            foreach ($keys as $key) {
+                unset($_SESSION['oauth'][$key]);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    public function getSession() {
+        return $_SESSION['oauth'];
+    }
+
+
+	public function resetSession() {
+		unset($_SESSION['oauth']);
+	}
+
+
+
+
+    /********************
+     ********************  WORKING ON by Leask Huang
     public function verifyOAuthUser($oAuthUserInfo) {
         $oAuthProvider    = $oAuthUserInfo["provider"];
         $oAuthUserID      = $oAuthUserInfo["id"];
@@ -107,5 +243,29 @@ class OAuthModels extends DataModel {
 
         }
     }
+    */
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
