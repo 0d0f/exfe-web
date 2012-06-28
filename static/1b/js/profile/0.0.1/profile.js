@@ -4,6 +4,7 @@ define(function (require, exports, module) {
 
   var $ = require('jquery');
   var Store = require('store');
+  var Config = require('config');
   var Handlebars = require('handlebars');
   var R = require('rex');
   var Util = require('util');
@@ -487,7 +488,7 @@ define(function (require, exports, module) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
-      s.src = '/static/1b/js/newbieguide/0.0.1/newbieguide.min.js'
+      s.src = '/static/1b/js/newbieguide/0.0.1/newbieguide.min.js?t=' + Config.timestamp;
       var body = document.body;
       body.appendChild(s);
     }
