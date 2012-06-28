@@ -8,6 +8,7 @@ class SActions extends ActionController {
         if ($oauthIfo && $oauthIfo['signin']) {
             $this->setVar('user_id',    $oauthIfo['signin']['user_id']);
             $this->setVar('user_token', $oauthIfo['signin']['new_user_token']);
+            $modOauth->resetSession();
         }
         $this->displayView();
     }
