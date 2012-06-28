@@ -4360,21 +4360,39 @@ input[type="submit"].btn.btn-mini {
   *margin-left: 0;
 }
 
-[class^="icon40-"],
-[class*=" icon40-"] {
+[class^="icon20-"],
+[class*=" icon20-"] {
   display: inline-block;
-  width: 40px;
-  height: 40px;
+  width: 20px;
+  height: 20px;
   *margin-right: .3em;
-  line-height: 40px;
+  line-height: 20px;
   vertical-align: text-top;
   background-image: url("/static/1b/img/icons.png");
-  background-position: 40px 40px;
+  background-position: 20px 20px;
   background-repeat: no-repeat;
 }
 
-[class^="icon40-"]:last-child,
-[class*=" icon40-"]:last-child {
+[class^="icon20-"]:last-child,
+[class*=" icon20-"]:last-child {
+  *margin-left: 0;
+}
+
+[class^="icon24-"],
+[class*=" icon24-"] {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  *margin-right: .3em;
+  line-height: 24px;
+  vertical-align: text-top;
+  background-image: url("/static/1b/img/icons.png");
+  background-position: 24px 24px;
+  background-repeat: no-repeat;
+}
+
+[class^="icon24-"]:last-child,
+[class*=" icon24-"]:last-child {
   *margin-left: 0;
 }
 
@@ -4383,7 +4401,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .icon-exfe {
-  background-position: 0      0;
+  background-position: 0 0;
 }
 
 .icon-cross-blue {
@@ -4446,20 +4464,24 @@ input[type="submit"].btn.btn-mini {
   background-position: -180px 0;
 }
 
-.icon-exclamation {
+.icon-rsvp-rejected {
   background-position: -192px 0;
 }
 
-.icon-rsvp-unreachable {
+.icon-exclamation {
   background-position: -204px 0;
 }
 
-.icon-invite {
+.icon-rsvp-unreachable {
   background-position: -216px 0;
 }
 
-.icon-calendar {
+.icon-invite {
   background-position: -228px 0;
+}
+
+.icon-calendar {
+  background-position: -240px 0;
 }
 
 .icon-hot-tag {
@@ -4508,12 +4530,16 @@ input[type="submit"].btn.btn-mini {
   background-position: -112px -12px;
 }
 
-.icon14-mates-minus {
+.icon14-mates-add {
   background-position: -126px -12px;
 }
 
-.icon14-mates-add {
+.icon14-mates-minus {
   background-position: -140px -12px;
+}
+
+.icon14-lock {
+  background-position: -154px -12px;
 }
 
 .icon16-cross {
@@ -4544,84 +4570,48 @@ input[type="submit"].btn.btn-mini {
   background-position: -96px -26px;
 }
 
-.icon16-identity-email {
+.icon16-identity-email-blue {
   background-position: -112px -26px;
 }
 
-.icon16-identity-twitter {
+.icon16-identity-email {
   background-position: -128px -26px;
 }
 
-.icon16-identity-phone {
+.icon16-identity-twitter-blue {
   background-position: -144px -26px;
 }
 
-.icon16-notifiction {
+.icon16-identity-twitter {
   background-position: -160px -26px;
 }
 
-.icon16-warning {
+.icon16-identity-phone-blue {
   background-position: -176px -26px;
 }
 
-.icon16-exclamation {
+.icon16-identity-phone {
   background-position: -192px -26px;
 }
 
-.icon16-identity-email-blue {
+.icon16-notifiction {
   background-position: -208px -26px;
 }
 
-.icon16-identity-twitter-blue {
+.icon16-warning {
   background-position: -224px -26px;
 }
 
-.icon16-identity-phone-blue {
+.icon16-rsvp-unreachable {
   background-position: -240px -26px;
+}
+
+.icon16-timezone {
+  background-position: -256px -26px;
 }
 
 .icon40-twitter {
   background-position: 0 -68px;
-}
-
-.icon14-mates-0 {
-  background-position: 0 -54px;
-}
-
-.icon14-mates-1 {
-  background-position: -17px -54px;
-}
-
-.icon14-mates-2 {
-  background-position: -34px -54px;
-}
-
-.icon14-mates-3 {
-  background-position: -51px -54px;
-}
-
-.icon14-mates-4 {
-  background-position: -68px -54px;
-}
-
-.icon14-mates-5 {
-  background-position: -85px -54px;
-}
-
-.icon14-mates-6 {
-  background-position: -102px -54px;
-}
-
-.icon14-mates-7 {
-  background-position: -119px -54px;
-}
-
-.icon14-mates-8 {
-  background-position: -136px -54px;
-}
-
-.icon14-mates-9 {
-  background-position: -153px -54px;
 }
 
 .icon10-host-h {
@@ -4672,6 +4662,38 @@ input[type="submit"].btn.btn-mini {
 .icon10-24hr {
   width: 23px;
   background-position: -167px -44px;
+}
+
+.icon20-upload {
+  background-position: -96px -58px;
+}
+
+.icon20-rotate {
+  background-position: -116px -58px;
+}
+
+.icon20-back {
+  background-position: -136px -58px;
+}
+
+.icon20-zoom {
+  background-position: -156px -58px;
+}
+
+.icon24-exfee {
+  background-position: 0 -54px;
+}
+
+.icon24-conversation {
+  background-position: -24px -54px;
+}
+
+.icon24-trash {
+  background-position: -48px -54px;
+}
+
+.icon24-trash-red {
+  background-position: -72px -54px;
 }
 
 .navbar .dropdown-menu:before {
