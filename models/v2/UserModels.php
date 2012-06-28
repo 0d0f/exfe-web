@@ -190,14 +190,16 @@ class UserModels extends DataModel {
     }
 
 
-    public function newUserByPassword($password) {
-        $passwordSalt = md5(createToken());
-        $passwordInDb = $this->encryptPassword($password, $passwordSalt);
+    public function addUser($password) {
+        $passwordSql = '';
+        if ($password) {
+            $passwordSalt = md5(createToken());
+            $passwordInDb = $this->encryptPassword($password, $passwordSalt);
+            $passwordSql  = "`encrypted_password` = '{$passwordInDb}',
+                             `password_salt`      = '{$passwordSalt}',";
+        }
         $dbResult = $this->query(
-            "INSERT INTO `users` SET
-             `encrypted_password` = '{$passwordInDb}',
-             `password_salt`      = '{$passwordSalt}',
-             `created_at`         = NOW()"
+            "INSERT INTO `users` SET {$passwordSql} `created_at` = NOW()"
         );
         return intval($dbResult['insert_id']);
     }
@@ -547,26 +549,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function signinForAuthTokenByOAuth($provider,$identity_id,$user_id) {
-        if (intval($identity_id)>0 && intval($user_id)>0) {
-            $sql="select userid from user_identity where identityid={$identity_id} and userid={$user_id};";
-            $rawUser = $this->getRow($sql);
-            if (intval($rawUser["userid"])>0) {
-                $rtResult   = array('user_id' => $user_id);
-                $passwdInDb = $this->getUserPasswdByUserId($user_id);
-                if (!$passwdInDb['auth_token']) {
-                    $passwdInDb['auth_token'] = md5($time.uniqid());
-                    $sql = "UPDATE `users` SET `auth_token` = '{$passwdInDb['auth_token']}' WHERE `id` = {$user_id}";
-                    $this->query($sql);
-                }
-                $rtResult['token'] = $passwdInDb['auth_token'];
-                return $rtResult;
-            }
-        }
-        return null;
-    }
-
-
     public function signinByIdentityId($identity_id, $user_id = 0, $user = null, $identity = null, $authBy = 'password', $setCookie = false) {
         // init
         $hlpIdentity = getHelperByName('identity', 'v2');
@@ -696,10 +678,24 @@ class UserModels extends DataModel {
         if (!$user_id || !$identity_id || !$status) {
             return null;
         }
+        $rawStatus = $this->getRow(
+            "SELECT * FROM `user_identity`
+             WHERE  `userid`     = {$user_id}
+             AND    `identityid` = {$identity_id}"
+        );
         $actResult = $this->query(
-            "UPDATE `user_identity`
-             SET    `status` = {$status},     `updated_at` = NOW()
-             WHERE  `userid` = {$user_id} AND `identityid` = {$identity_id}"
+            $rawStatus
+          ? "UPDATE `user_identity`
+             SET    `status`     = {$status},
+                    `updated_at` = NOW()
+             WHERE  `userid`     = {$user_id}
+             AND    `identityid` = {$identity_id}"
+          : "INSERT INTO `user_identity`
+             SET    `userid`     = {$user_id},
+                    `identityid` = {$identity_id},
+                    `status`     = {$status},
+                    `created_at` = NOW(),
+                    `updated_at` = NOW()"
         );
         return intval($actResult);
     }

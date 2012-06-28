@@ -449,7 +449,7 @@ class UsersActions extends ActionController {
         // adding new identity
         if (($name = trim($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderExternalId($provider, $external_id, true)) {
-            if (!($user_id = $modUser->newUserByPassword($password))
+            if (!($user_id = $modUser->addUser($password))
              || !$modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id)) {
                 apiError(403, 'failed', 'failed while signing up new user');
             }

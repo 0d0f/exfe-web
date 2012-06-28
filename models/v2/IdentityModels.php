@@ -5,11 +5,13 @@ class IdentityModels extends DataModel {
     private $salt = '_4f9g18t9VEdi2if';
 
 
-    protected function packageIdentity($rawIdentity, $user_id = null) {
+    protected function packageIdentity($rawIdentity, $user_id = null, $withRevoked = false) {
         $hlpUser = $this->getHelperByName('user', 'v2');
         if ($rawIdentity) {
-            $rawUserIdentity = null;
-            $status          = null;
+            $rawUserIdentity   = null;
+            $status            = null;
+            $connected_user_id = 0;
+            $revoked_user_id   = 0;
             if ($user_id) {
                 $chkUserIdentity = $this->getRow(
                     "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = $user_id"
@@ -27,8 +29,17 @@ class IdentityModels extends DataModel {
                     "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
                 );
                 if ($rawUser) {
-                    $rawIdentity['bio'] = $rawIdentity['bio'] === '' ? $rawUser['bio'] : $rawIdentity['bio'];
+                    $rawIdentity['bio']
+                  = $rawIdentity['bio'] === ''
+                  ? $rawUser['bio'] : $rawIdentity['bio'];
                 }
+                $connected_user_id = $rawUserIdentity['userid'];
+            } elseif ($withRevoke) {
+                $rawUserIdentity = $this->getRow(
+                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 4"
+                );
+                $revoked_user_id = $rawUserIdentity && $rawUserIdentity['userid']
+                                 ? $rawUserIdentity['userid'] : 0;
             }
             $rawIdentity['avatar_file_name'] = getAvatarUrl(
                 $rawIdentity['provider'],
@@ -41,7 +52,7 @@ class IdentityModels extends DataModel {
                 '', // $rawIdentity['nickname'], // @todo;
                 $rawIdentity['bio'],
                 $rawIdentity['provider'],
-                $rawUserIdentity && $rawUserIdentity['userid'] ? $rawUserIdentity['userid'] : 0,
+                $connected_user_id,
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name'],
@@ -51,6 +62,9 @@ class IdentityModels extends DataModel {
             if ($status !== null) {
                 $objIdentity->status = $status;
             }
+            if ($withRevoked) {
+                $objIdentity->revoked_user_id = $revoked_user_id;
+            }
             return $objIdentity;
         } else {
             return null;
@@ -58,19 +72,19 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityById($id, $user_id = null) {
+    public function getIdentityById($id, $user_id = null, $withRevoked = false) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `id` = {$id}"
-        ), $user_id);
+        ), $user_id, $withRevoked);
     }
 
 
-    public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
+    public function getIdentityByProviderAndExternalUsername($provider, $external_username, $withRevoked = false) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE
              `provider`          = '{$provider}' AND
              `external_username` = '{$external_username}'"
-        ));
+        ), null, $withRevoked);
     }
 
 
@@ -169,14 +183,12 @@ class IdentityModels extends DataModel {
      *     $name,
      *     $nickname,
      *     $bio,
-     *     $provider,
-     *     $external_id,
      *     $external_username,
      *     $avatar_filename,
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
+    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0, $status = 2) {
         // init
         if (!$provider || (!$external_id && !$identityDetail['external_username'])) {
             return null;
@@ -216,17 +228,15 @@ class IdentityModels extends DataModel {
                 // create new token
                 $activecode = createToken();
                 // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `avatar_file_name`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
                 $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
                 $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
-                $userInfo['avatar_file_name'] = $userInfo['avatar_file_name'] == '' ? $avatar_filename : $userInfo['avatar_file_name'];
                 $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : 0;
                 // @todo: commit these two query as a transaction
                 $this->query(
                     "UPDATE `users` SET
                      `name`             = '{$userInfo['name']}',
                      `bio`              = '{$userInfo['bio']}',
-                     `avatar_file_name` = '{$userInfo['avatar_file_name']}',
                      `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
@@ -234,6 +244,7 @@ class IdentityModels extends DataModel {
                     "INSERT INTO `user_identity` SET
                      `identityid` =  {$id},
                      `userid`     =  {$user_id},
+                     `status`     =  {$status},
                      `created_at` = NOW(),
                      `activecode` = '{$activecode}'"
                 );
@@ -255,6 +266,18 @@ class IdentityModels extends DataModel {
             return $id;
         }
         return null;
+    }
+
+
+    public function updateOAuthTokenById($identity_id, $tokens) {
+        if ($identity_id && $tokens) {
+            return $this->query(
+                "UPDATE `identities`
+                 SET    `oauth_token` = '" . json_encode($tokens)
+            . "' WHERE  `id`          = $identity_id"
+            );
+        }
+        return false;
     }
 
 
