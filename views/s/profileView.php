@@ -109,7 +109,7 @@
             <div class="ios-app hide">
               <a class="pull-right exfe-dismiss" href="#">Dismiss</a>
               <div>
-                <a class="x-sign" href="http://itunes.apple.com/cn/app/exfe/id514026604?l=en&mt=8" target="_blank">EXFE</a> is ready for iPhone - instant, mobile.
+                <a class="x-sign" href="http://itunes.apple.com/app/exfe/id514026604" target="_blank">EXFE</a> is ready for iPhone - instant, mobile.
               </div>
             </div>
 
