@@ -121,14 +121,15 @@ class OAuthActions extends ActionController {
                     $rstSignin = $modUser->rawSiginin(
                         $objIdentity->connected_user_id
                     );
-                    // 抓取好友
-                    // $args = array(
-                    //     "screen_name"   =>$twitterUserInfo["screen_name"],
-                    //     "user_id"       =>$userID,
-                    //     "user_token"    =>$accessToken['oauth_token'],
-                    //     "user_secret"   =>$accessToken['oauth_token_secret']
-                    // );
-                    // $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
+                    // call Gobus {
+                    $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                    $hlpGobus->send('User', 'TwitterFriends', [
+                        'ClientToken'  => TWITTER_CONSUMER_KEY,
+                        'ClientSecret' => TWITTER_CONSUMER_SECRET,
+                        'AccessToken'  => $oauthIfo['oauth_token'],
+                        'AccessSecret' => $oauthIfo['oauth_token_secret'],
+                    ]);
+                    // }
                     if ($oauthIfo['workflow']['callback']['oauth_device'] === 'iOS') {
                         header(
                             "location: {$oauthIfo['workflow']['callback']['oauth_device_callback']}"
