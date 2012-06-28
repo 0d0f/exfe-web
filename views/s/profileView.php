@@ -6,12 +6,14 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>Cross</title>
-  <meta name="description" content="" />
-  <meta name="keywords" content="" />
+  <meta name="author" content="EXFE Inc." />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="EXFE, X, cross, exfee, gather, Gather a X, hangout, gathering, invite, RSVP" />
+  <meta name="description" content="EXFE, an utility for hanging out with friends." />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <link href="/static/1b/css/exfe.min.css" rel="stylesheet" type="text/css" />
-  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js"></script>
+  <title>Cross</title>
+  <link href="/static/1b/css/exfe.min.css?t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet" type="text/css" />
+  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 </head>
 <body>
 
@@ -170,6 +172,19 @@
       {{/crosses}}
     </div>
 
+    {{#if hasGatherAX}}
+    <div class="gatherax-box">
+      <a href="/x/gather">
+        {{#if totalCrosses}}
+        <i class="icon16-invitation"></i>
+        {{else}}
+        <span class="message">Oh~ Nothing upcoming. <em class="x-sign">EXFE</em> your friends, </span>
+        {{/if}}
+        <span class="underline">Gather a <em class="x-sign">X</em></span>
+      </a>
+    </div>
+    {{/if}}
+
     {{#if hasMore}}
     <div class="more" data-cate="{{cate}}">
       <a href="#">more...</a>
@@ -256,44 +271,44 @@
   </script>
 
   <!-- JavaScript at the bottom for fast page loading -->
-  <script src="/static/1b/js/common/0.0.1/common.js"></script>
+  <script src="/static/1b/js/common/0.0.1/common.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script><?php include 'share/ftconfig.php'; ?></script>
 
-  <script src="/static/1b/js/class/0.0.1/class.js"></script>
-  <script src="/static/1b/js/emitter/0.0.1/emitter.js"></script>
-  <script src="/static/1b/js/base/0.0.1/base.js"></script>
-  <script src="/static/1b/js/widget/0.0.1/widget.js"></script>
-  <script src="/static/1b/js/bus/0.0.1/bus.js"></script>
-  <script src="/static/1b/js/rex/0.0.1/rex.js"></script>
-  <script src="/static/1b/js/util/0.0.1/util.js"></script>
+  <script src="/static/1b/js/class/0.0.1/class.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/emitter/0.0.1/emitter.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/base/0.0.1/base.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/widget/0.0.1/widget.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/bus/0.0.1/bus.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/rex/0.0.1/rex.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/util/0.0.1/util.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-  <script src="/static/1b/js/handlebars/1.0.0/handlebars.js"></script>
-  <script src="/static/1b/js/store/1.3.3/store.js"></script>
-  <script src="/static/1b/js/moment/1.6.2/moment.js"></script>
-  <script src="/static/1b/js/jquery/1.7.2/jquery.js"></script>
-  <script src="/static/1b/js/jqfocusend/0.0.1/jqfocusend.js"></script>
-  <script src="/static/1b/js/jqoffset/0.0.1/jqoffset.js"></script>
+  <script src="/static/1b/js/handlebars/1.0.0/handlebars.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/store/1.3.3/store.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/moment/1.6.2/moment.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/jquery/1.7.2/jquery.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/jqfocusend/0.0.1/jqfocusend.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/jqoffset/0.0.1/jqoffset.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <!--
-  <script src="/static/1b/js/jqdndsortable/0.0.1/jqdndsortable.js"></script>
+  <script src="/static/1b/js/jqdndsortable/0.0.1/jqdndsortable.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   -->
 
-  <script src="/static/1b/js/api/0.0.1/api.js"></script>
-  <script src="/static/1b/js/dialog/0.0.1/dialog.js"></script>
-  <script src="/static/1b/js/typeahead/0.0.1/typeahead.js"></script>
+  <script src="/static/1b/js/api/0.0.1/api.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/dialog/0.0.1/dialog.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/typeahead/0.0.1/typeahead.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-  <script src="/static/1b/js/xidentity/0.0.1/xidentity.js"></script>
-  <script src="/static/1b/js/xdialog/0.0.1/xdialog.js"></script>
+  <script src="/static/1b/js/xidentity/0.0.1/xidentity.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/xdialog/0.0.1/xdialog.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-  <script src="/static/1b/js/filehtml5/0.0.1/filehtml5.js"></script>
-  <script src="/static/1b/js/uploader/0.0.1/uploader.js"></script>
+  <script src="/static/1b/js/filehtml5/0.0.1/filehtml5.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/uploader/0.0.1/uploader.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <!--
   <script src="/static/1b/js/editable/0.0.1/editable.js"></script>
   <script src="/static/1b/js/xeditable/0.0.1/xeditable.js"></script>
   -->
 
-  <script src="/static/1b/js/profile/0.0.1/profile.js"></script>
-  <script src="/static/1b/js/userpanel/0.0.1/userpanel.js"></script>
+  <script src="/static/1b/js/profile/0.0.1/profile.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/1b/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
 </html>

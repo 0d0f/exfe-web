@@ -8,14 +8,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="EXFE, Gather" />
-  <meta name="description" content="EXFE.COM website" />
+  <meta name="keywords" content="EXFE, X, cross, exfee, gather, Gather a X, hangout, gathering, invite, RSVP" />
+  <meta name="description" content="EXFE, an utility for hanging out with friends." />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
   <title>EXFE.COM</title>
 
   <!-- V2 -->
-  <link href="/static/1b/css/exfe.min.css" rel="stylesheet" type="text/css" />
-  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js"></script>
+  <link href="/static/1b/css/exfe.min.css?t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet" type="text/css" />
+  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <!-- V1 -->
   <link rel="stylesheet" type="text/css" href="/static/?g=css_global&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" />

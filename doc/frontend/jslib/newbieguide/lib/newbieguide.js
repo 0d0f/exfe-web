@@ -12,14 +12,14 @@ define(function (require) {
       + '<p>Identities listed above are your representative online. Email,'
         + 'mobile #, web accounts from Twitter, <span>Facebook, Google and others</span>'
         + '(still working on these), any of these would be.</p>'
-      + '<p class="hide">Please set up following items for easier use of <span class="x-sign">EXFE</span>:</p>'
-      + '<ul class="unstyled hide">'
+      + '<p class="toggle hide">Please set up following items for easier use of <span class="x-sign">EXFE</span>:</p>'
+      + '<ul class="toggle unstyled hide">'
         + '<li>· Set account password for security.</li>'
         + '<li>· Set a portrait that your friends can recognize.</li>'
         + '<li>· Add more frequently used identities that may use for gathering.</li>'
         + '</ul>'
-      + '<p class="hide"><span class="x-sign">EXFE</span> is ready for your iPhone, and Android soon.</p>'
-      + '<div class="pull-right arrow rb"></div>'
+      + '<p class="toggle hide"><span class="x-sign">EXFE</span> is ready for your iPhone, and Android soon.</p>'
+      + '<div class="pull-right arrow"><div class="rb"></div></div>'
     + '</div>',
 
     '<div class="newbie nbg-2">'
@@ -62,13 +62,13 @@ define(function (require) {
     }
   });
 
-  $BODY.on('click.newbie', '.nbg-1 > .rb', function (e) {
+  $BODY.on('click.newbie', '.nbg-1 > .arrow', function (e) {
     e.preventDefault();
     var $e = $(this);
+    $e.find('div').toggleClass('rb lt');
     $e.parent()
-      .find('.hide')
-      .removeClass('hide');
-    $e.addClass('hide');
+      .find('.toggle')
+      .toggleClass('hide');
   });
 
   $BODY.on('click.newbie', '.newbie > .newbie-close', function (e) {
