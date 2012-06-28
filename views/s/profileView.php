@@ -38,7 +38,7 @@
             <li class="dropdown">
               <div class="pull-left fill-left hide"></div>
               <div class="pull-right dropdown-wrapper">
-                <a class="dropdown-toggle user-name" data-togge="dropdown" href="#" id="user-name"><span></span></a>
+                <a class="dropdown-toggle user-name" data-togge="dropdown" href="/s/profile" id="user-name"><span></span></a>
               </div>
             </li>
           </ul>
