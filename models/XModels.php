@@ -29,7 +29,7 @@ class XModels extends DataModel {
         // $duration=$cross["duration"];
         // time type
 
-        // get exfee id
+        // get exfee id {
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
         // }

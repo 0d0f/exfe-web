@@ -9,7 +9,7 @@ require_once dirname(dirname(__FILE__)) . '/../lib/FoursquareAPI.class.php';
 
 class OAuthModels extends DataModel {
 
-	public function getTwitterRequestToken() {
+	public function getTwitterRequestToken($workflow = []) {
 		$twitterConn  = new TwitterOAuth(
             TWITTER_CONSUMER_KEY,
             TWITTER_CONSUMER_SECRET
@@ -19,7 +19,8 @@ class OAuthModels extends DataModel {
         	$this->setSession(
         		'twitter',
         		$requestToken['oauth_token'],
-        		$requestToken['oauth_token_secret']
+        		$requestToken['oauth_token_secret'],
+                $workflow
         	);
         	return $twitterConn->getAuthorizeURL($requestToken['oauth_token']);
         }
@@ -139,71 +140,38 @@ class OAuthModels extends DataModel {
     /********************
      ********************  WORKING ON by Leask Huang
     public function verifyOAuthUser($oAuthUserInfo) {
-        $oAuthProvider    = $oAuthUserInfo["provider"];
-        $oAuthUserID      = $oAuthUserInfo["id"];
-        $oAuthUserName    = $oAuthUserInfo["name"];
-        $oAuthScreenName  = $oAuthUserInfo["sname"];
-        $oAuthUserDesc    = $oAuthUserInfo["desc"];
-        $oAuthUserAvatar  = $oAuthUserInfo["avatar"];
-        $oAuthAccessToken = $oAuthUserInfo["oauth_token"];
+        //如果当前OAuth用户已经存在。
+        $identityID = intval($rows["id"]);
+        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', bio='{$oAuthUserDesc}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$oAuthScreenName}', oauth_token='{$oAuthAccessToken}' WHERE id={$identityID}";
+        $this->query($sql);
 
-        $currentTimeStamp = time();
+        $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
+        $result = $this->getRow($sql);
 
-        $sql = "SELECT id FROM identities WHERE external_identity='{$oAuthUserID}'";
-        $rows = $this->getRow($sql);
-        //如果当前OAuth用户不存在。
-        if(!is_array($rows)){
-            $sql = "INSERT INTO identities (`provider`, `external_identity`, `created_at`, `updated_at`, `name`, `bio`, `avatar_file_name`, `external_username`, `oauth_token`) VALUES ('{$oAuthProvider}', '{$oAuthUserID}', FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserDesc}', '{$oAuthUserAvatar}', '{$oAuthScreenName}', '{$oAuthAccessToken}')";
-            $result = $this->query($sql);
-            $identityID = intval($result["insert_id"]);
-
-            $userID = intval($_SESSION['userid']);
-            //如果没有登录。则将当前OAuth用户看成是一个新的用户。
-            if($userID <= 0){
-                //create user for current identity
-                $sql = "INSERT INTO users (`created_at`, `updated_at` , `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), FROM_UNIXTIME({$currentTimeStamp}), '{$oAuthUserName}', '{$oAuthUserAvatar}')";
-                $result = $this->query($sql);
-                $userID = intval($result["insert_id"]);
-            }
-
-            if($identityID && $userID){
-                $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID}, {$userID}, FROM_UNIXTIME($currentTimeStamp), 3)";
+        //如果已经登录，则合并账户。
+        $userID = intval($_SESSION['userid']);
+        if($userID > 0){
+            if((int)$userID != intval($result["userid"])){
+                $oldUserID = intval($result["userid"]);
+                $sql = "UPDATE user_identity set `status`=1 WHERE `identityid`={$identityID} AND `userid`={$oldUserID}";
+                $this->query($sql);
+                $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID},{$userID}, FROM_UNIXTIME({$currentTimeStamp}), 3)";
                 $this->query($sql);
             }
         }else{
-            $identityID = intval($rows["id"]);
-            $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', bio='{$oAuthUserDesc}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$oAuthScreenName}', oauth_token='{$oAuthAccessToken}' WHERE id={$identityID}";
-            $this->query($sql);
-
-            $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
-            $result = $this->getRow($sql);
-
-            //如果已经登录，则合并账户。
-            $userID = intval($_SESSION['userid']);
-            if($userID > 0){
-                if((int)$userID != intval($result["userid"])){
-                    $oldUserID = intval($result["userid"]);
-                    $sql = "UPDATE user_identity set `status`=1 WHERE `identityid`={$identityID} AND `userid`={$oldUserID}";
-                    $this->query($sql);
-                    $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID},{$userID}, FROM_UNIXTIME({$currentTimeStamp}), 3)";
-                    $this->query($sql);
-                }
+            if(is_array($result)){
+                $userID = intval($result["userid"]);
+                $sql = "UPDATE users SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', avatar_file_name='{$oAuthUserAvatar}' WHERE id={$userID}";
+                $this->query($sql);
             }else{
-
-                if(is_array($result)){
-                    $userID = intval($result["userid"]);
-                    $sql = "UPDATE users SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', avatar_file_name='{$oAuthUserAvatar}' WHERE id={$userID}";
+                $sql = "SELECT name, avatar_file_name FROM identities WHERE id={$identityID}";
+                $identityInfo = $this->getRow($sql);
+                $sql = "INSERT INTO users (`created_at`, `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), '".$identityInfo["name"]."', '".$identityInfo["avatar_file_name"]."')";
+                $result = $this->query($sql);
+                $userID = intval($result["insert_id"]);
+                if($userID){
+                    $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID}, {$userID}, FROM_UNIXTIME($currentTimeStamp), 3)";
                     $this->query($sql);
-                }else{
-                    $sql = "SELECT name, avatar_file_name FROM identities WHERE id={$identityID}";
-                    $identityInfo = $this->getRow($sql);
-                    $sql = "INSERT INTO users (`created_at`, `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), '".$identityInfo["name"]."', '".$identityInfo["avatar_file_name"]."')";
-                    $result = $this->query($sql);
-                    $userID = intval($result["insert_id"]);
-                    if($userID){
-                        $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID}, {$userID}, FROM_UNIXTIME($currentTimeStamp), 3)";
-                        $this->query($sql);
-                    }
                 }
             }
         }
@@ -246,26 +214,3 @@ class OAuthModels extends DataModel {
     */
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,25 +3,33 @@
 class OAuthActions extends ActionController {
 
     public function doTwitterAuthenticate() {
-        $_SESSION['oauth_device']          = $_GET['device'];
-        $_SESSION['oauth_device_callback'] = $_GET['device_callback'];
+        $workflow    = [];
+        $webResponse = false;
+        if ($_GET['device'] && $_GET['device_callback']) {
+            $workflow    = ['callback' => [
+                'oauth_device'          => $_GET['device'],
+                'oauth_device_callback' => $_GET['device_callback'],
+            ]];
+            $webResponse = true;
+        }
         $modOauth = $this->getModelByName('OAuth', 'v2');
-        $urlOauth = $modOauth->getTwitterRequestToken();
+        $urlOauth = $modOauth->getTwitterRequestToken($workflow);
         if ($urlOauth) {
-            if ($_GET['json']) {
-                apiResponse(array('redirect' => $urlOauth));
+            if ($webResponse) {
+                header("Location: {$urlOauth}");
+                return;
             }
-            header("Location: {$urlOauth}");
+            apiResponse(array('redirect' => $urlOauth));
+        }
+        if ($webResponse) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'Could not connect to Twitter. Refresh the page or try again later.';
             return;
         }
-        if ($_GET['json']) {
-            apiError(
-                500, 'could_not_connect_to_twitter',
-                'Could not connect to Twitter. Refresh the page or try again later.'
-            );
-        }
-        header('HTTP/1.1 500 Internal Server Error');
-        echo 'Could not connect to Twitter. Refresh the page or try again later.';
+        apiError(
+            500, 'could_not_connect_to_twitter',
+            'Could not connect to Twitter. Refresh the page or try again later.'
+        );
     }
 
 
@@ -36,7 +44,7 @@ class OAuthActions extends ActionController {
         if (!$oauthIfo || (isset($oauthIfo['oauth_token'])
          && $oauthIfo['oauth_token'] !== $_REQUEST['oauth_token'])) {
             $modOauth->resetSession();
-            header('Location: /');
+            echo 'Error Session!';
             return;
         }
         $rstAcsToken = $modOauth->getTwitterAccessToken(
@@ -49,127 +57,124 @@ class OAuthActions extends ActionController {
                 $oauthIfo['oauth_token_secret']
             );
             if ($objTwitterIdentity) {
-                if ($oauthIfo['workflow']) {
-                    // @todo by @leask
-                } else {
+                if (!$oauthIfo['workflow'] || $oauthIfo['workflow']['callback']) {
+                    $modUser     = $this->getModelByName('User', 'v2');
                     $modIdentity = $this->getModelByName('Identity', 'v2');
                     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
-                        'twitter', $objTwitterIdentity->external_username
+                        'twitter', $objTwitterIdentity->external_username, true
                     );
-                    if ($objIdentity) {
-                        // 身份已经存在
-                    } else {
-                        // 身份不存在
+                    // 身份不存在，创建新身份并连接新用户
+                    if (!$objIdentity) {
+                        $user_id = $modUser->addUser();
+                        if (!$user_id) {
+                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            return;
+                        }
+                        $identity_id = $modIdentity->addIdentity(
+                            'twitter',
+                            $objTwitterIdentity->external_id,
+                            ['name'              => $objTwitterIdentity->name,
+                             'bio'               => $objTwitterIdentity->bio,
+                             'external_username' => $objTwitterIdentity->external_username,
+                             'avatar_filename'   => $objTwitterIdentity->avatar_filename],
+                            $user_id,
+                            3
+                        );
+                        if (!$identity_id) {
+                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            return;
+                        }
+                        $objIdentity = $modIdentity->getIdentityById($identity_id, null, true);
                     }
+                    if (!$objIdentity) {
+                        echo 'Can not signin with this Twitter identity, please retry later!';
+                        return;
+                    }
+                    // 身份未连接
+                    if (!$objIdentity->connected_user_id) {
+                        // 身份被 revoked，重新连接用户
+                        if ($objIdentity->revoked_user_id) {
+                            $user_id = $objIdentity->revoked_user_id;
+                        // 孤立身份，创建新用户并连接到该身份
+                        } else {
+                            $user_id = $modUser->addUser();
+                        }
+                        if (!$user_id) {
+                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            return;
+                        }
+                        $rstChangeStatus = $modUser->setUserIdentityStatus(
+                            $user_id, $objIdentity->id, 3
+                        );
+                        $objIdentity->connected_user_id = $user_id;
+                        if (!$rstChangeStatus) {
+                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            return;
+                        }
+                    }
+                    // 更新 OAuth Token
+                    $modIdentity->updateOAuthTokenById($objIdentity->id, [
+                        'oauth_token'        => $oauthIfo['oauth_token'],
+                        'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
+                    ]);
+                    // 使用该身份登录
+                    $rstSignin = $modUser->rawSiginin(
+                        $objIdentity->connected_user_id
+                    );
+                    // 抓取好友
+                    // $args = array(
+                    //     "screen_name"   =>$twitterUserInfo["screen_name"],
+                    //     "user_id"       =>$userID,
+                    //     "user_token"    =>$accessToken['oauth_token'],
+                    //     "user_secret"   =>$accessToken['oauth_token_secret']
+                    // );
+                    // $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
+                    if ($oauthIfo['workflow']['callback']['oauth_device'] === 'iOS') {
+                        header(
+                            "location: {$oauthIfo['workflow']['callback']['oauth_device_callback']}"
+                          . "?token={$rstSignin['token']}&name={$objTwitterIdentity->name}"
+                          . "&userid={$rstSignin['user_id']}&external_id="
+                          . "{$objTwitterIdentity->external_id}&provider=twitter"
+                        );
+                        return;
+                    }
+                    // // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
+                    // // true / false [String]
+                    // $twitterConn = new tmhOAuth([
+                    //   'consumer_key'    => TWITTER_CONSUMER_KEY,
+                    //   'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                    //   'user_token'      => $oauthIfo['oauth_token'],
+                    //   'user_secret'     => $oauthIfo['oauth_token_secret'],
+                    // ]);
+                    // $responseCode = $twitterConn->request(
+                    //     'GET',
+                    //     $twitterConn->url('1/friendships/exists'),
+                    //     ['screen_name_a' => $objIdentity->external_username,
+                    //      'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
+                    // );
+                    // if ($twitterConn->response['response'] === 'false') {
+                    //     header('location: /oAuth/confirmTwitterFollowing');
+                    //     return;
+                    // }
+                    var_dump($rstSignin);
+                    //header('location: /s/profile');
+                    return;
                 }
+                echo 'Request error!';
+                return;
             }
-            print_r($objTwitterIdentity);
-            return;
-
-            if (0) {
-                // $accessToken = $_SESSION['access_token'];
-                // $accessTokenStr = packArray($accessToken);
-                // $oAuthUserInfo = array(
-                //     "provider"      =>"twitter",
-                //     "id"            =>$twitterUserInfo["id"],
-                //     "name"          =>$twitterUserInfo["name"],
-                //     "sname"         =>$twitterUserInfo["screen_name"],
-                //     "desc"          =>$twitterUserInfo["description"],
-                //     "avatar"        =>str_replace('_normal', '_reasonably_small', $twitterUserInfo["profile_image_url"]),
-                //     "oauth_token"   =>$accessTokenStr
-                // );
-                // $external_identity=$oAuthUserInfo["id"];
-
-                $OAuthModel = $this->getModelByName("oAuth");
-                $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
-                $identityID = $result["identityID"];
-                $userID = $result["userID"];
-                if(!$identityID || !$userID){
-                    die("OAuth error.");
-                }
-
-                //扔一个任务到队列里，去取用户的好友列表。
-                $args = array(
-                    "screen_name"   =>$twitterUserInfo["screen_name"],
-                    "user_id"       =>$userID,
-                    "user_token"    =>$accessToken['oauth_token'],
-                    "user_secret"   =>$accessToken['oauth_token_secret']
-                );
-                $OAuthHelperHandler = $this->getHelperByName("oAuth");
-                $jobToken = $OAuthHelperHandler->twitterGetFriendsList($args);
-
-                $userData = $this->getModelByName("User","v2");
-
-                if($_SESSION['oauth_device']=='iOS')
-                {
-
-                    $signinResult=$userData->signinForAuthTokenByOAuth("twitter",$result["identityID"],$result["userID"]);
-                    if($signinResult["token"]!="" && intval($signinResult["user_id"]) == intval($result["userID"]))
-                    {
-
-                        header("location:".$_SESSION['oauth_device_callback']."?token=".$signinResult["token"]."&name=".$oAuthUserInfo["name"]."&userid=".$signinResult["user_id"]."&external_id=".$external_identity."&provider=twitter");
-                        exit(0);
-                    }
-                    header("location:".$_SESSION['oauth_device_callback']."?err=OAuth error.");
-                    exit(0);
-                }
-
-
-                $identityModels = $this->getModelByName("identity");
-                //===========
-
-                //先初始化一个对象。user_token和user_secret可以在数据库中找到，
-                //即identities表中的oauth_token字段的内容，一个加密串，拿出来之后用unpackArray解包可得到一个数组。
-                $twitterConn = new tmhOAuth(array(
-                  'consumer_key'    => TWITTER_CONSUMER_KEY,
-                  'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                  'user_token'      => $accessToken['oauth_token'],
-                  'user_secret'     => $accessToken['oauth_token_secret']
-                ));
-
-                //通过friendships/exists去判断当前用户screen_name_a是否Follow screen_name_b。
-                //如果已经Follow，会返回true，否则False。(String)
-                $responseCode = $twitterConn->request('GET', $twitterConn->url('1/friendships/exists'), array(
-                    'screen_name_a'=>$twitterUserInfo["screen_name"], 'screen_name_b'=>TWITTER_OFFICE_ACCOUNT
-                ));
-
-                $identityModels->loginByIdentityId($identityID, $userID);
-                if ($responseCode == 200) {
-                    if($twitterConn->response['response'] == 'false'){
-                        unset($oAuthUserInfo["oauth_token"]);
-                        $token = packArray($oAuthUserInfo);
-                        header("location:/oAuth/confirmTwitterFollowing?token=".$token);
-                        exit();
-                    }
-                }
-                header("location:/s/profile");
-
-            }
-
-
-        } else {
-            // @todo: clean session
-            // @todo: redirect to home page
-            // header('Location:/oAuth/clearTwitterSessions');
         }
+        $modOauth->resetSession();
+        header('location:' .(
+            $oauthIfo['workflow']['callback']['oauth_device'] === 'iOS'
+         ? "{$oauthIfo['workflow']['callback']['oauth_device_callback']}?err=OAuth error."
+         : '/'
+        ));
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
     public function doConfirmTwitterFollowing() {
+
         $userToken = exGet("token");
         $confirm = trim(exGet("confirm"));
         if($confirm == ""){
@@ -203,10 +208,6 @@ class OAuthActions extends ActionController {
             header("location:/s/profile");
         }
     }
-    */
-
-
-
 
 
 
