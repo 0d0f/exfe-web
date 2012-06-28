@@ -97,7 +97,7 @@ define(function (require, exports, module) {
       s += ' ' + b.date;
 
       if (d.year() !== c.year()) {
-        s += ' ' + y;
+        s += ' ' + d.year();
       }
     }
 
@@ -263,65 +263,68 @@ define(function (require, exports, module) {
       , function (data) {
           var now = +new Date;
 
-          if (data.crosses.length) {
+          var jst_crosses = $('#jst-crosses-container');
 
-            var jst_crosses = $('#jst-crosses-container');
+          // 注册帮助函数, 获取 `ACCEPTED` 人数
+          Handlebars.registerHelper('confirmed_nums', function (context) {
+            return R.filter(context, function (v) {
+              if (v.rsvp_status === 'ACCEPTED') return true;
+            }).length;
+          });
 
-            // 注册帮助函数, 获取 `ACCEPTED` 人数
-            Handlebars.registerHelper('confirmed_nums', function (context) {
-              return R.filter(context, function (v) {
-                if (v.rsvp_status === 'ACCEPTED') return true;
-              }).length;
+          // 注册帮助函数, 获取总人数
+          Handlebars.registerHelper('total', function (context) {
+            return context.length;
+          });
+
+          // 注册帮助函数，列出 confirmed identities
+          Handlebars.registerHelper('confirmed_identities', function (context) {
+            var d = R(context).filter(function (v) {
+              if (v.rsvp_status === 'ACCEPTED') return true;
             });
+            // limit 7
+            return R(d.slice(0, 7)).map(function (v, i) {
+              return v.identity.name;
+            }).join(', ');
+          });
 
-            // 注册帮助函数, 获取总人数
-            Handlebars.registerHelper('total', function (context) {
-              return context.length;
-            });
+          // 注册子模版
+          Handlebars.registerPartial('jst-cross-box', $('#jst-cross-box').html())
+          // 编译模版
+          var s = Handlebars.compile(jst_crosses.html());
+          // 填充数据
+          var h = '';
 
-            // 注册帮助函数，列出 confirmed identities
-            Handlebars.registerHelper('confirmed_identities', function (context) {
-              var d = R(context).filter(function (v) {
-                if (v.rsvp_status === 'ACCEPTED') return true;
-              });
-              // limit 7
-              return R(d.slice(0, 7)).map(function (v, i) {
-                return v.identity.name;
-              }).join(', ');
-            });
+          var cates = 'upcoming<Upcoming> sometime<Sometime> sevendays<Next 7 days> later<Later> past<Past>';
+          var crossList = {};
 
-            // 注册子模版
-            Handlebars.registerPartial('jst-cross-box', $('#jst-cross-box').html())
-            // 编译模版
-            var s = Handlebars.compile(jst_crosses.html());
-            // 填充数据
-            //var h = s(data.response);
-            var h = '';
+          R.map(data.crosses, function (v, i) {
+            crossList[v.sort] || (crossList[v.sort] = {crosses: []});
+            crossList[v.sort].crosses.push(v);
+          });
 
-            var cates = 'upcoming<Upcoming> sometime<Sometime> sevendays<Next 7 days> later<Later> past<Past>';
-            var crossList = {};
-
-            R.map(data.crosses, function (v, i) {
-              crossList[v.sort] || (crossList[v.sort] = {crosses: []});
-              crossList[v.sort].crosses.push(v);
-            });
-
-            var more = data.more.join(' ');
-
-            var splitterReg = /<|>/;
-            R.map(cates.split(' '), function (v, i) {
-              v = v.split(splitterReg);
-              var c = crossList[v[0]];
-              if (c) {
-                c.cate = v[0];
-                c.cate_date = v[1];
-                c.hasMore = more.search(v[0]) > -1;
-                h += s(c);
-              }
-            });
-
-            $('#profile .crosses').append(h);
+          if (!crossList['upcoming']) {
+            crossList['upcoming'] = {};
           }
+
+          crossList['upcoming'].hasGatherAX = true;
+          crossList['upcoming'].totalCrosses = data.crosses.length;
+
+          var more = data.more.join(' ');
+
+          var splitterReg = /<|>/;
+          R.map(cates.split(' '), function (v, i) {
+            v = v.split(splitterReg);
+            var c = crossList[v[0]];
+            if (c) {
+              c.cate = v[0];
+              c.cate_date = v[1];
+              c.hasMore = more.search(v[0]) > -1;
+              h += s(c);
+            }
+          });
+
+          $('#profile .crosses').append(h);
       }
     );
   };
