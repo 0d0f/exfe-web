@@ -1,7 +1,6 @@
 <?php
 
-class XActions extends ActionController
-{
+class XActions extends ActionController {
 
     public function doGather()
     {
@@ -230,9 +229,14 @@ class XActions extends ActionController
     }
 
 
+    public function doIndex() {
+        $this->displayView();
+    }
+
+
     // $_SESSION["tokenIdentity"]["token_expired"] 用来标记是否第一次打开token链接
     // 此参数setVar供view中使用
-    public function doIndex()
+    public function doIndexOld()
     {
         // init models
         $modIdentity   = $this->getModelByName('identity');

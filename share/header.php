@@ -17,18 +17,19 @@
   <link href="/static/1b/css/exfe.min.css?t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet" type="text/css" />
   <script src="/static/1b/js/modernizr/2.5.3/modernizr.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-  <!-- V1 -->
+  <!-- V1
   <link rel="stylesheet" type="text/css" href="/static/?g=css_global&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" />
   <script type="text/javascript" src="/static/?g=js_libs&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script type="text/javascript" src="/static/?g=js_util&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script type="text/javascript" src="/static/js/comm/func.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script type="text/javascript" src="/static/?g=js_user&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  -->
 
   <script>
-      var site_url = "<?php echo SITE_URL; ?>";
-      var img_url  = "<?php echo IMG_URL; ?>";
-      var cookies_domain = "<?php echo COOKIES_DOMAIN; ?>";
-      var utc      = <?php echo time(); ?>;
+      var site_url       = '<?php echo SITE_URL; ?>',
+          img_url        = '<?php echo IMG_URL; ?>',
+          cookies_domain = '<?php echo COOKIES_DOMAIN; ?>',
+          utc            =  <?php echo time(); ?>;
   </script>
 
   <?php
