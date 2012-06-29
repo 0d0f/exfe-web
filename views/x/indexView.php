@@ -24,7 +24,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="/static/?f=js/apps/maps.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-<script src="/static/maps.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+<script src="/static/js/cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 <!-- container -->
 <div class="container">
