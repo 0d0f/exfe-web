@@ -50,7 +50,6 @@
     $(function() {
       document.title = 'EXFE';
       var winHeight = $(document).outerHeight();
-      console.log(winHeight);
       var minH = 528, maxH = 704,
           imgminH = 450, imgmaxH = 600,
           minWh = 680, maxWh = 980,
