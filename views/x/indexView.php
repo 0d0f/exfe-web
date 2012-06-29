@@ -13,7 +13,7 @@
     var
 </script>
 
-<!--
+
 <script type="text/javascript" src="/static/?f=js/libs/showdown.js"></script>
 <script type="text/javascript" src="/static/?f=js/libs/jquery.ba-outside-events.js"></script>
 <!-- Exfee Widget -->
@@ -23,8 +23,8 @@
 <link type="text/css" rel="stylesheet" href="/static/?f=css/maps.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>">
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="/static/?f=js/apps/maps.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
--->
 
+<script src="/static/maps.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 <!-- container -->
 <div class="container">
@@ -203,7 +203,9 @@ fafafa
 </div>
 
 <!-- JavaScript at the bottom for fast page loading -->
-
+<!-- @todo -->
+<!-- @todo -->
+<!-- @todo -->
 
 </body>
 </html>
