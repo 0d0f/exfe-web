@@ -50,127 +50,24 @@ EXFE Maps
           <!-- .Cross-Form: Title -->
 
           <!-- Cross-Form: Exfee -->
-          <div class="control-group">
+          <div class="control-group cross-exfee">
             <label class="control-label" for="gather-exfee">Exfee</label>
             <div class="controls">
               <input type="text" class="input-xlarge" id="gather-exfee" placeholder="Enter attendees' information" />
             </div>
-          </div>
 
-          <div class="cross-exfee">
             <div class="pull-right cross-stats">
-              <span class="attended">0000</span>
+              <span class="attended">2</span>
               <div class="confirmed">
-                <div class="total">of 7890</div>
+                <div class="total">of 12</div>
                 <div>confirmed</div>
               </div>
             </div>
 
-            <h3>Exfee</h3>
-
             <div class="cross-identities">
               <ul class="thumbnails">
-                <li class="identity">
-                  <span class="avatar select">
-                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
-                    <span class="rt">H</span>
-                    <span class="rb"><i class="icon-time"></i></span>
-                  </span>
 
-                  <div class="identity-name">dm.</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar">
-                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
-                    <span class="lt">2</span>
-                    <span class="rb"><i class="icon-remove-sign"></i></span>
-                  </span>
-
-                  <div class="identity-name">HUO Ju</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar select">
-                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
-                    <span class="rb"><i class="icon-plus-sign"></i></span>
-                  </span>
-
-                  <div class="identity-name">Nan</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar select">
-                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">hang</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar">
-                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">Kissdry</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar">
-                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">Leask H</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar">
-                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">Googollee</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar unconfirmed">
-                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">Googollee</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar unconfirmed">
-                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">SteveE</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar unconfirmed select">
-                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
-                  </span>
-
-                  <div class="identity-name">Penny</div>
-                </li>
-
-                <li class="identity">
-                  <span class="avatar unconfirmed">
-                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
-                    <span class="rb"><i class="icon-plus-sign"></i></span>
-                  </span>
-
-                  <div class="identity-name">Hello World</div>
-                </li>
-
-                <li class="identity-more">
-                  <div>
-                    <i class="icon-align-justify"></i>
-                  </div>
-                </li>
               </ul>
-
             </div>
 
           </div>
