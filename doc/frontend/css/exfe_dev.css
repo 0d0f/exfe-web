@@ -6115,6 +6115,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .cross-identities .identity {
+  float: left;
   margin-right: 5px;
   margin-bottom: 5px;
 }

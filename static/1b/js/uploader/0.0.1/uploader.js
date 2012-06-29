@@ -229,7 +229,7 @@ define('uploader', [], function (require, exports, module) {
         this.original = filehtml5._file;
 
         this.$('.overlay').addClass('hide');
-        //this.$('.photozone').find('.back, .rotate').removeClass('hide');
+        this.$('.photozone').find('.back, .rotate').removeClass('hide');
         this.$('.resizeable').removeClass('hide');
         var c240 = document.getElementById('avatar240');
         var ctx240 = c240.getContext('2d');
@@ -324,10 +324,12 @@ define('uploader', [], function (require, exports, module) {
 
       // bind events
       events: {
-        'click .selectfile': function (e) {
+        'click .dropbox': function (e) {
+          console.log(1);
           e.stopPropagation();
           e.preventDefault();
           this._bindSelectFile(e);
+          return false;
         },
         'mousedown #avatar240': function (e) {
           e.preventDefault();
@@ -422,8 +424,8 @@ define('uploader', [], function (require, exports, module) {
           + '</div>'
 
           + '<div class="photozone">'
-            + '<i class="icon20-back back hide" style="width: 20px; height: 20px; background: red;"></i>'
-            + '<i class="icon20-rotate rotate hide" style="width: 20px; height: 20px; background: black;"></i>'
+            + '<i class="icon20-back back hide"></i>'
+            + '<i class="icon20-rotate rotate hide"></i>'
             + '<div class="bdt resizeable hide"></div>'
             + '<div class="bdr resizeable hide"></div>'
             + '<div class="bdb resizeable hide"></div>'
