@@ -1,5 +1,4 @@
 <?php
-    $page = 'cross';
     include 'share/header.php';
     global $exfe_res;
 ?>
@@ -10,21 +9,20 @@
     include 'share/nav.php';
 ?>
 <script>
-    var
+//    var
 </script>
 
-
+<!--
 <script type="text/javascript" src="/static/?f=js/libs/showdown.js"></script>
 <script type="text/javascript" src="/static/?f=js/libs/jquery.ba-outside-events.js"></script>
-<!-- Exfee Widget -->
+Exfee Widget
 <link type="text/css" href="/static/?f=css/exfee.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet">
 <script src="/static/?f=js/apps/exfee.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-<!-- EXFE Maps -->
+EXFE Maps
 <link type="text/css" rel="stylesheet" href="/static/?f=css/maps.css&t=<?php echo STATIC_CODE_TIMESTAMP; ?>">
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="/static/?f=js/apps/maps.js&t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-
-<script src="/static/js/cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+-->
 
 <!-- container -->
 <div class="container">
@@ -51,42 +49,6 @@
           </div>
           <!-- .Cross-Form: Title -->
 
-          <!-- Cross-Form: Description
-          <div class="control-group">
-            <label class="control-label" for="gather-description">Description</label>
-            <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-description" placeholder="Write some words about this X." />
-            </div>
-          </div>
-          .Cross-Form: Description -->
-
-          <!-- Cross-Form: Date & Time
-          <div class="control-group">
-            <label class="control-label" for="gather-time">Date & Time</label>
-            <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-time" placeholder="Sometime" />
-            </div>
-          </div>
-          .Cross-Form: Date & Time -->
-
-          <!-- Cross-Form: Location
-          <div class="control-group">
-            <label class="control-label" for="gather-place">Location</label>
-            <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-place" placeholder="Somewhere" />
-            </div>
-          </div>
-          .Cross-Form: Location -->
-
-          <!-- Cross-Form: Host By
-          <div class="control-group">
-            <label class="control-label" for="gather-hostby">Host By</label>
-            <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-hostby" />
-            </div>
-          </div>
-          .Cross-Form: Host By -->
-
           <!-- Cross-Form: Exfee -->
           <div class="control-group">
             <label class="control-label" for="gather-exfee">Exfee</label>
@@ -94,17 +56,125 @@
               <input type="text" class="input-xlarge" id="gather-exfee" placeholder="Enter attendees' information" />
             </div>
           </div>
-          <!-- .Cross-Form: Exfee -->
 
-          <!-- Cross-Form: Privacy
-          <div class="control-group">
-            <div class="control-label">Privacy</div>
-            <div class="controls">
-              <p>This is a private <span>X</span>. </p>
-              <p>Sorry, public X is not supported yet, we're still working on it.</p>
+          <div class="cross-exfee">
+            <div class="pull-right cross-stats">
+              <span class="attended">0000</span>
+              <div class="confirmed">
+                <div class="total">of 7890</div>
+                <div>confirmed</div>
+              </div>
             </div>
+
+            <h3>Exfee</h3>
+
+            <div class="cross-identities">
+              <ul class="thumbnails">
+                <li class="identity">
+                  <span class="avatar select">
+                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
+                    <span class="rt">H</span>
+                    <span class="rb"><i class="icon-time"></i></span>
+                  </span>
+
+                  <div class="identity-name">dm.</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar">
+                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
+                    <span class="lt">2</span>
+                    <span class="rb"><i class="icon-remove-sign"></i></span>
+                  </span>
+
+                  <div class="identity-name">HUO Ju</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar select">
+                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
+                    <span class="rb"><i class="icon-plus-sign"></i></span>
+                  </span>
+
+                  <div class="identity-name">Nan</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar select">
+                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">hang</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar">
+                    <img src="/img/users/u1x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">Kissdry</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar">
+                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">Leask H</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar">
+                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">Googollee</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar unconfirmed">
+                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">Googollee</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar unconfirmed">
+                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">SteveE</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar unconfirmed select">
+                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
+                  </span>
+
+                  <div class="identity-name">Penny</div>
+                </li>
+
+                <li class="identity">
+                  <span class="avatar unconfirmed">
+                    <img src="/img/users/u2x50.png" alt="" width="50" height="50" />
+                    <span class="rb"><i class="icon-plus-sign"></i></span>
+                  </span>
+
+                  <div class="identity-name">Hello World</div>
+                </li>
+
+                <li class="identity-more">
+                  <div>
+                    <i class="icon-align-justify"></i>
+                  </div>
+                </li>
+              </ul>
+
+            </div>
+
           </div>
-          .Cross-Form: Privacy -->
+          <!-- .Cross-Form: Exfee -->
 
           <div class="form-actions">
             <div class="pull-right control-buttos">
@@ -203,9 +273,8 @@ fafafa
 </div>
 
 <!-- JavaScript at the bottom for fast page loading -->
-<!-- @todo -->
-<!-- @todo -->
-<!-- @todo -->
+<?php include 'share/footer.php'; ?>
+<script src="/static/js/cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
 </html>
