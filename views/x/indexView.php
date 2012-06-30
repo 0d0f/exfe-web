@@ -50,7 +50,7 @@ EXFE Maps
           <!-- .Cross-Form: Title -->
 
           <!-- Cross-Form: Exfee -->
-          <div class="control-group cross-exfee">
+          <div class="control-group cross-exfee" id="gather-exfee">
             <label class="control-label" for="gather-exfee">Exfee</label>
             <div class="controls">
               <input type="text" class="input-xlarge" id="gather-exfee" placeholder="Enter attendees' information" />
