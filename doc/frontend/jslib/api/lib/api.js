@@ -3,8 +3,7 @@ define('api', [], function (require, exports, module) {
   // import $.ajax
   var $ = require('jquery');
   var Config = require('config');
-console.log(Config);
-console.log('xxx');
+
   // urls of API
   // 区分大小写
   var urls = {
@@ -48,12 +47,12 @@ console.log('xxx');
     updateIdentity: '/identities/:identity_id/update',
 
 
-    // Cross id
+    // Cross
     getCross: '/crosses/:cross_id',
 
-    addCross: '/cross/add',
+    gather: '/crosses/gather',
 
-    editCross: '/cross/:cross_id/edit',
+    editCross: '/crosses/:cross_id/edit',
 
 
     // Exfee

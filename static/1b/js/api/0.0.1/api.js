@@ -47,12 +47,12 @@ define('api', [], function (require, exports, module) {
     updateIdentity: '/identities/:identity_id/update',
 
 
-    // Cross base62 id
+    // Cross
     getCross: '/crosses/:cross_id',
 
-    addCross: '/cross/add',
+    gather: '/crosses/gather',
 
-    editCross: '/cross/:cross_id/edit',
+    editCross: '/crosses/:cross_id/edit',
 
 
     // Exfee
