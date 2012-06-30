@@ -11,4 +11,4 @@ case "`uname -s`" in
         sed -i "s/.*STATIC_CODE_TIMESTAMP.*/define\(\"STATIC_CODE_TIMESTAMP\", `date +%s`\)\;/" config.php
 esac
 
-echo 'done :)'
+echo '😃  done!';
