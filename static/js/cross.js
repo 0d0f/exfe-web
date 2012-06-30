@@ -73,6 +73,8 @@ ExfeeWidget = {
 
 
     show_one         : function(invitation) {
+        var strExfeeKey = 'provider_'    + invitation.identity.provider + '_'
+                        + 'external_id_' + invitation.identity.external_id;
         $('#' + this.dom_id + ' .thumbnails').append(
             '<li class="identity" exfee="">'
           +     '<span class="avatar">'
