@@ -74,7 +74,7 @@ ExfeeWidget = {
 
     show_one         : function(invitation) {
         $('#' + this.dom_id + ' .thumbnails').append(
-            '<li class="identity">'
+            '<li class="identity" exfee="">'
           +     '<span class="avatar">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<span class="rt">' + (invitation.host ? 'H' : '') + '</span>'
@@ -112,7 +112,8 @@ define(function (require, exports, module) {
     window.Cross = {
         title       : '',
         description : '',
-        time        : {
+        by_identity : {id : 0},
+        time           : {
             begin_at : {
                 date_word : '',
                 date      : '',
@@ -159,6 +160,30 @@ define(function (require, exports, module) {
     };
 
 
+    var ExfeeWidgestInit = function() {
+        window.GatherExfeeWidget = ExfeeWidget.make(
+            'gather-exfee', true, function() {
+
+            }
+        );
+        window.CrossExfeeWidget  = ExfeeWidget.make(
+            'cross-exfee', true, function() {
+
+            }
+        );
+    };
+
+
+    var ButtonsInit = function() {
+        $('#cross-form-discard').bind('click', function() {
+            window.location = '/';
+        });
+        $('#cross-form-gather').bind('click', function() {
+            Gather();
+        });
+    };
+
+
     var ShowTitle = function() {
         $('.cross-title > h1').html(Cross.title);
     };
@@ -180,17 +205,9 @@ define(function (require, exports, module) {
     };
 
 
-    var ExfeeWidgestInit = function() {
-        Window.GatherExfeeWidget = ExfeeWidget.make(
-            'gather-exfee',
-            true,
-            function() {}
-        );
-    };
-
-
     var ShowExfee = function() {
-        Window.GatherExfeeWidget.show_all();
+        window.GatherExfeeWidget.show_all();
+        window.CrossExfeeWidget.show_all();
     };
 
 
@@ -218,11 +235,34 @@ define(function (require, exports, module) {
         Cross.background  = objCross.background;
         Exfee             = objCross.exfee;
         ShowCross();
-    }
+    };
+
+
+    var Gather = function() {
+        Cross.time.begin_at.timezone='';
+        var strCross = JSON.stringify(Cross);
+        //strCross = strCross.substr(1, strCross.length - 2);
+        //console.log(strCross);
+        Api.request(
+            'gather',
+            {type : 'POST', data : strCross},
+            function(data) {
+                console.log(data);
+            },
+            function(data) {
+                // failed
+                console.log(data);
+            }
+        );
+    };
 
 
     // init exfee widgets
     ExfeeWidgestInit();
+
+
+    // init buttons
+    ButtonsInit();
 
 
     // get current user
@@ -230,6 +270,7 @@ define(function (require, exports, module) {
     var User    = Signin ? Store.get('user') : null;
     if (User) {
         Api.setToken(Signin.token);
+        Cross.by_identity.id = User.default_identity.id;
     }
 
     // get cross
@@ -279,66 +320,7 @@ define(function (require, exports, module) {
 ns = {};
 
 ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
-    var strHtml = '<div id="' + domId + '_exfeegadget_infoarea" '
-                +                 'class="exfeegadget_infoarea">'
-                +     '<div id="' + domId + '_exfeegadget_info_totalarea" '
-                +                     'class="exfeegadget_info_totalarea">'
-                +     '</div>'
-                +     '<div id="' + domId + '_exfeegadget_info_labelarea" '
-                +                     'class="exfeegadget_info_labelarea">'
-                +         'Exfee'
-                +     '</div>'
-                +     '<div id="' + domId + '_exfeegadget_info" '
-                +                     'class="exfeegadget_info">'
-                +         '<span id="' + domId + '_exfeegadget_num_accepted" '
-                +                          'class="exfeegadget_num_accepted">'
-                +         '</span>'
-                +         '<span class="exfeegadget_num_of"> of '
-                +             '<span id="' + domId + '_exfeegadget_num_summary" '
-                +                              'class="exfeegadget_num_summary">'
-                +             '</span>'
-                +         '</span>'
-                +         '<span class="exfeegadget_num_confirmed">confirmed</span>'
-                +     '</div>'
-                + '</div>'
-                + '<div id="' + domId + '_exfeegadget_avatararea" '
-                +                 'class="exfeegadget_avatararea">'
-                +     '<ol></ol>'
-                //+     '<button id="' + domId + '_exfeegadget_expandavatarbtn" />'
-                + '</div>'
-                +(curEditable
-                ?('<div id="' + domId + '_exfeegadget_inputarea" '
-                +                 'class="exfeegadget_inputarea">'
-                +     '<div    id="' + domId + '_exfeegadget_inputbox_desc" '
-                +                        'class="exfeegadget_inputbox '
-                +                               'exfeegadget_inputbox_desc">'
-                +         this.strInputTips
-                +     '</div>'
-                +     '<input  id="' + domId + '_exfeegadget_inputbox" '
-                +                        'class="exfeegadget_inputbox_main '
-                +                               'exfeegadget_inputbox" type="text">'
-                +     '<button id="' + domId + '_exfeegadget_addbtn" '
-                +                        'class="exfeegadget_addbtn">'
-                +     '</button>'
-                +     '<div id="' + domId + '_exfeegadget_autocomplete" '
-                +                     'class="exfeegadget_autocomplete">'
-                +         '<ol></ol>'
-                +     '</div>'
-                + '</div>') : '')
-                + '<div id="' + domId + '_exfeegadget_listarea" '
-                +                 'class="exfeegadget_listarea">'
-                +     '<ol></ol>'
-                + '</div>';
-    this.inputed[domId]       = '';
-    this.editable[domId]      = curEditable;
-    this.exfeeInput[domId]    = {};
-    this.keyComplete[domId]   = '';
-    this.curComplete[domId]   = [];
-    this.exfeeSelected[domId] = {};
-    this.completing[domId]    = false;
-    this.diffCallback[domId]  = curDiffCallback;
-    this.timerBaseInfo[domId] = {};
-    $('#' + domId).html(strHtml);
+
     if (typeof localStorage !== 'undefined') {
         var curIdentity = myIdentity && typeof myIdentity.external_identity !== 'undefined'
                         ? myIdentity.external_identity.toLowerCase() : null;

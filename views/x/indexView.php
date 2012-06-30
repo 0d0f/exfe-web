@@ -35,9 +35,8 @@ EXFE Maps
     <!-- Cross-Form -->
     <div class="cross-form">
 
-      <form class="form-horizontal">
+      <div class="form-horizontal">
 
-        <fieldset>
           <legend class="hide">Extending form controls</legend>
 
           <!-- Cross-Form: Title -->
@@ -66,7 +65,6 @@ EXFE Maps
 
             <div class="cross-identities">
               <ul class="thumbnails">
-
               </ul>
             </div>
 
@@ -75,17 +73,15 @@ EXFE Maps
 
           <div class="form-actions">
             <div class="pull-right control-buttos">
-              <button class="btn">Discard</button>
-              <button class="btn btn-primary" type="submit">Submit</button>
+              <button class="btn" id="cross-form-discard">Discard</button>
+              <button class="btn btn-primary" id="cross-form-gather">Gather</button>
             </div>
             <div>
               <p><span>EXFE</span> for iPhone, keep everything on track.</p>
             </div>
         </div>
 
-        </fieldset>
-
-      </form>
+      </div>
 
     </div>
 
@@ -154,6 +150,29 @@ fafafa
               <!--<img src="http://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&markers=size:mid%7Ccolor:blue%7C40.714728,-73.998672&zoom=13&size=280x140&maptype=road&sensor=false" alt="" />-->
               <img src="/img/google-staticmap.png" alt="" width="280px" height="140px" />
             </div>
+
+            <!-- Cross-Form: Exfee -->
+            <div class="control-group cross-exfee" id="cross-exfee">
+              <label class="control-label" for="gather-exfee">Exfee</label>
+              <div class="controls">
+                <input type="text" class="input-xlarge" id="gather-exfee" placeholder="Enter attendees' information" />
+              </div>
+
+              <div class="pull-right cross-stats">
+                <span class="attended">2</span>
+                <div class="confirmed">
+                  <div class="total">of 12</div>
+                  <div>confirmed</div>
+                </div>
+              </div>
+
+              <div class="cross-identities">
+                <ul class="thumbnails">
+                </ul>
+              </div>
+
+            </div>
+            <!-- .Cross-Form: Exfee -->
 
           </div>
         </div>
