@@ -351,6 +351,7 @@ define('uploader', [], function (require, exports, module) {
           this.$('.resizeable').addClass('hide');
           this.$('.back, .rotate').hide();
 
+          this._fileInputField.val(null);
           this.stage.clear();
           this.stage80.clear();
           delete this.bitmap;
