@@ -5552,6 +5552,14 @@ input[type="submit"].btn.btn-mini {
   margin-right: 5px;
 }
 
+.modal-uploader {
+  -webkit-user-select: none;
+   -khtml-user-select: none;
+     -moz-user-select: none;
+       -o-user-select: none;
+          user-select: none;
+}
+
 .modal-uploader .modal-main {
   min-height: 240px;
   padding: 30px 30px 29px;
@@ -5583,6 +5591,8 @@ input[type="submit"].btn.btn-mini {
   top: 3px;
   right: 3px;
   z-index: 4;
+  display: none;
+  cursor: pointer;
 }
 
 .modal-uploader .back {
@@ -5590,6 +5600,8 @@ input[type="submit"].btn.btn-mini {
   top: 3px;
   left: 3px;
   z-index: 4;
+  display: none;
+  cursor: pointer;
 }
 
 .modal-uploader .overlay {
@@ -5627,60 +5639,84 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .resizeable {
   position: absolute;
   z-index: 3;
+  width: 10px;
+  height: 10px;
   background: transparent;
+  background: #ddd;
+  border: 1px solid #666;
   opacity: 0.5;
   filter: alpha(opacity=50);
+  -webkit-user-select: none;
+   -khtml-user-select: none;
+     -moz-user-select: none;
+       -o-user-select: none;
+          user-select: none;
 }
 
-.modal-uploader .bdt {
-  top: -5px;
-  left: -5px;
-  width: 250px;
-  height: 10px;
-  cursor: s-resize;
+.modal-uploader .anchor-nw {
+  top: -5.5px;
+  left: -5.5px;
+  cursor: nw-resize;
 }
 
-.modal-uploader .bdr {
-  top: 0;
-  right: -5px;
-  width: 10px;
-  height: 240px;
-  cursor: w-resize;
-}
-
-.modal-uploader .bdb {
-  bottom: -5px;
-  left: -5px;
-  width: 250px;
-  height: 10px;
+.modal-uploader .anchor-n {
+  top: -5.5px;
+  left: 115.5px;
   cursor: n-resize;
 }
 
-.modal-uploader .bdl {
-  top: 0;
-  left: -5px;
-  width: 10px;
-  height: 240px;
+.modal-uploader .anchor-ne {
+  top: -5.5px;
+  right: -5.5px;
+  cursor: ne-resize;
+}
+
+.modal-uploader .anchor-w {
+  top: 115.5px;
+  left: -5.5px;
+  cursor: w-resize;
+}
+
+.modal-uploader .anchor-e {
+  top: 115.5px;
+  right: -5.5px;
   cursor: e-resize;
+}
+
+.modal-uploader .anchor-sw {
+  bottom: -5.5px;
+  left: -5.5px;
+  cursor: sw-resize;
+}
+
+.modal-uploader .anchor-s {
+  bottom: -5.5px;
+  left: 115.5px;
+  cursor: s-resize;
+}
+
+.modal-uploader .anchor-se {
+  right: -5.5px;
+  bottom: -5.5px;
+  cursor: se-resize;
 }
 
 .modal-uploader .dropbox {
   width: 240px;
   height: 240px;
   text-align: center;
+  cursor: pointer;
+  background-image: url("/img/upload_128.png");
+  background-position: 50% 25px;
+  background-repeat: no-repeat;
 }
 
 .modal-uploader .droptips {
   position: absolute;
-  bottom: 0;
-  width: 100%;
+  bottom: 13px;
+  padding: 0 25px;
   color: #fafafa;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
-}
-
-.modal-uploader .selectfile {
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 .modal-uploader .sider {
