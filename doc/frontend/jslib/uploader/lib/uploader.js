@@ -192,7 +192,6 @@ define('uploader', [], function (require, exports, module) {
             }
           });
 
-
           this.$('.overlay').addClass('hide');
           this.$('.resizeable').removeClass('hide');
           this.$('.back, .rotate').show();
