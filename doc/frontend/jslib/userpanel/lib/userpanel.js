@@ -451,6 +451,20 @@ define(function (require) {
     });
     */
 
+    //TODO:
+    // 阻止浏览器默认的拖拽行为, 暂时放这里
+    function _docddEventhandler(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      return false;
+    }
+
+    $(document.body)
+      .on('drop', _docddEventhandler)
+      .on('dragenter', _docddEventhandler)
+      .on('dragleave', _docddEventhandler)
+      .on('dragover', _docddEventhandler);
+
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
       Store.remove('signin');

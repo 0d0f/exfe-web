@@ -189,6 +189,11 @@
 
 // avatar uploader
 .modal-uploader {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
 
   @index: 1;
 
@@ -223,6 +228,8 @@
     top: 3px;
     right: 3px;
     z-index: @index + 3;
+    cursor: pointer;
+    display: none;
   }
 
   .back {
@@ -230,6 +237,8 @@
     top: 3px;
     left: 3px;
     z-index: @index + 3;
+    cursor: pointer;
+    display: none;
   }
 
   .overlay {
@@ -257,61 +266,87 @@
   }
 
   .resizeable {
+    width: 10px;
+    height: 10px;
     position: absolute;
     z-index: @index + 2;
     background: transparent;
+    background: #ddd;
+    border: 1px solid #666;
     .opacity(50);
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
   }
 
-  .bdt {
-    width: 250px;
-    height: 10px;
-    top: -5px;
-    left: -5px;
-    cursor: s-resize;
+  @resizeableBorder: 0.5px;
+
+  .anchor-nw {
+    top: -5px - @resizeableBorder;
+    left: -5px - @resizeableBorder;
+    cursor: nw-resize;
   }
 
-  .bdr {
-    width: 10px;
-    height: 240px;
-    top: 0;
-    right: -5px;
-    cursor: w-resize;
-  }
-
-  .bdb {
-    width: 250px;
-    height: 10px;
-    bottom: -5px;
-    left: -5px;
+  .anchor-n {
+    top: -5px - @resizeableBorder;
+    left: 115px + @resizeableBorder;
     cursor: n-resize;
   }
 
-  .bdl {
-    width: 10px;
-    height: 240px;
-    top: 0;
-    left: -5px;
+  .anchor-ne {
+    top: -5px - @resizeableBorder;
+    right: -5px - @resizeableBorder;
+    cursor: ne-resize;
+  }
+
+  .anchor-w {
+    top: 115px + @resizeableBorder;
+    left: -5px - @resizeableBorder;
+    cursor: w-resize;
+  }
+
+  .anchor-e {
+    top: 115px + @resizeableBorder;
+    right: -5px - @resizeableBorder;
     cursor: e-resize;
+  }
+
+  .anchor-sw {
+    bottom: -5px - @resizeableBorder;
+    left: -5px - @resizeableBorder;
+    cursor: sw-resize;
+  }
+
+  .anchor-s {
+    bottom: -5px - @resizeableBorder;
+    left: 115px + @resizeableBorder;
+    cursor: s-resize;
+  }
+
+  .anchor-se {
+    right: -5px - @resizeableBorder;
+    bottom: -5px - @resizeableBorder;
+    cursor: se-resize;
   }
 
   .dropbox {
     width: 240px;
     height: 240px;
     text-align: center;
+    background-image: ~'url("@{imgPath}/upload_128.png")';
+    background-position: 50% 25px;
+    background-repeat: no-repeat;
+    cursor: pointer;
   }
 
   .droptips {
     position: absolute;
-    bottom: 0;
-    width: 100%;
+    padding: 0 25px;
+    bottom: 13px;
     color: #fafafa;
     text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
-  }
-
-  .selectfile {
-    cursor: pointer;
-    text-decoration: underline;
   }
 
   .sider {
