@@ -1,0 +1,13 @@
+{
+  "name": "cross",
+  "version": "0.0.1",
+  "description": "cross 页面模块",
+  "homepage": "https://exfe.com/",
+  "author": "cfd",
+  "date": "18:01:10 05/10/2012",
+  "repository": {
+  },
+  "pull": {
+  },
+  "hint": true
+}

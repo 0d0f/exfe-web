@@ -1,0 +1,374 @@
+// modal identification
+.modal-id {
+  .authorize {
+    display: table-cell;
+    vertical-align: middle;
+    height: 40px;
+  }
+
+  .user-identity {
+    margin-top: -12px;
+    margin-right: 27px;
+  }
+
+  .orspliter {
+    position: relative;
+    margin: 0 auto 7px;
+    width: 60px;
+    height: 16px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+    color: #b2b2b2;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: -139px;
+      width: 150px;
+      border-top: 1px dashed #d5d5d5;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: -139px;
+      width: 150px;
+      border-top: 1px dashed #d5d5d5;
+    }
+  }
+
+  .isee {
+    width: 340px;
+    position: absolute;
+    top: 50px;
+  }
+}
+
+// modal forgot password
+.modal-fp {
+  .identity {
+    margin-left: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    width: 271px;
+    height: 26px;
+    font-size: 18px;
+    line-height: 26px;
+
+    .avatar {
+      margin: 3px 3px 0 0;
+    }
+  }
+}
+
+// modal verification
+.modal-ve {
+  .identity {
+    margin-left: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    width: 271px;
+    height: 26px;
+    font-size: 18px;
+    line-height: 26px;
+  }
+
+  .user-identity {
+    margin-right: 5px;
+  }
+
+  .mobilephone {
+    margin-bottom: 8px;
+  }
+
+  .ccplus {
+    margin-left: 10px;
+    margin-right: 7px;
+    line-height: 27px;
+    font-size: 18px;
+    font-style: oblique;
+    color: #797979;
+  }
+
+  .mobile-phone {
+    margin-right: 10px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+    color: #a9a9a9;
+  }
+
+  .calling-code {
+    width: 43px;
+    height: 26px;
+    font-size: 18px;
+    line-height: 26px;
+    font-style: oblique;
+  }
+
+  .phone-number {
+    width: 198px;
+    height: 26px;
+    font-size: 18px;
+    line-height: 26px;
+    font-style: oblique;
+  }
+}
+
+// set password
+.modal-sp {
+}
+
+// set password
+.modal-cp {
+  .identity {
+    display: table;
+    position: relative;
+    margin-left: 60px;
+    margin-bottom: 16px;
+    padding-top: 20px;
+    font-size: 18px;
+    line-height: 24px;
+    font-style: normal;
+    color: #797979;
+
+    .avatar {
+      position: relative;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      margin-right: 15px;
+    }
+
+    > span {
+      vertical-align: bottom;
+    }
+  }
+
+  .control-group {
+    padding-left: 10px;
+  }
+
+  .control-label {
+    padding-left: 6px;
+  }
+}
+
+// reset password
+.modal-rsp {
+  .identity-name {
+    display: inline-block;
+    width: 273px;
+    height: 26px;
+    margin-left: 10px;
+    margin-top: 12px;
+    line-height: 26px;
+    font-size: 18px;
+    font-style: oblique;
+    text-align: center;
+    text-decoration: none;
+    color: #4c4c4c;
+    border: 1px solid rgba(127, 127, 127, .15);
+    #gradient > .directional(#fafafa, #e6e6e6, 270deg);
+    .box-shadow(0 1px 1px rgba(255, 255, 255, 1));
+
+    &:hover,
+    &:active {
+      color: #191919;
+      #gradient > .directional(#fafafa, #d5e8f2, 270deg);
+    }
+  }
+
+  .user-identity {
+    margin-right: 5px;
+  }
+}
+
+// avatar uploader
+.modal-uploader {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+
+  @index: 1;
+
+  .modal-main {
+    min-height: 240px;
+    padding: 30px 30px 29px;
+  }
+
+  .photozone {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    border: 1px solid rgba(163, 163, 163, .5);
+  }
+
+  .avatar240 {
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    overflow: hidden;
+    cursor: move;
+  }
+
+  .avatar80 {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+  }
+
+  .rotate {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    z-index: @index + 3;
+    cursor: pointer;
+    display: none;
+  }
+
+  .back {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    z-index: @index + 3;
+    cursor: pointer;
+    display: none;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    #gradient > .directional(rgba(233, 231, 235, .97), rgba(108, 121, 127,.97), 266deg);
+    z-index: @index + 1;
+  }
+
+  .selected {
+    .box-shadow(0 1px 6px #3F6B7F);
+  }
+
+  .smallphoto {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 1px solid rgba(163, 163, 163, .5);
+
+    .overlay {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  .resizeable {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    z-index: @index + 2;
+    background: transparent;
+    background: #ddd;
+    border: 1px solid #666;
+    .opacity(50);
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  }
+
+  @resizeableBorder: 0.5px;
+
+  .anchor-nw {
+    top: -5px - @resizeableBorder;
+    left: -5px - @resizeableBorder;
+    cursor: nw-resize;
+  }
+
+  .anchor-n {
+    top: -5px - @resizeableBorder;
+    left: 115px + @resizeableBorder;
+    cursor: n-resize;
+  }
+
+  .anchor-ne {
+    top: -5px - @resizeableBorder;
+    right: -5px - @resizeableBorder;
+    cursor: ne-resize;
+  }
+
+  .anchor-w {
+    top: 115px + @resizeableBorder;
+    left: -5px - @resizeableBorder;
+    cursor: w-resize;
+  }
+
+  .anchor-e {
+    top: 115px + @resizeableBorder;
+    right: -5px - @resizeableBorder;
+    cursor: e-resize;
+  }
+
+  .anchor-sw {
+    bottom: -5px - @resizeableBorder;
+    left: -5px - @resizeableBorder;
+    cursor: sw-resize;
+  }
+
+  .anchor-s {
+    bottom: -5px - @resizeableBorder;
+    left: 115px + @resizeableBorder;
+    cursor: s-resize;
+  }
+
+  .anchor-se {
+    right: -5px - @resizeableBorder;
+    bottom: -5px - @resizeableBorder;
+    cursor: se-resize;
+  }
+
+  .dropbox {
+    width: 240px;
+    height: 240px;
+    text-align: center;
+    background-image: ~'url("@{imgPath}/upload_128.png")';
+    background-position: 50% 25px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  .droptips {
+    position: absolute;
+    padding: 0 25px;
+    bottom: 13px;
+    color: #fafafa;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+  }
+
+  .sider {
+    position: relative;
+    width: 98px;
+    height: 240px;
+  }
+
+  .uploader-form {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .uploader-button {
+  }
+
+  .help-portrait {
+    width: 340px;
+    position: absolute;
+    top: 50px;
+    z-index: @index + 3;
+  }
+
+}

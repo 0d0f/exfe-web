@@ -1,0 +1,518 @@
+.x-profile {
+  margin-bottom: 50px;
+
+  .gr-a {
+    #glodenratio > .a(@gridRowWidth, 40px, 10px);
+  }
+
+  .gr-b {
+    #glodenratio > .b(@gridRowWidth, 10px, 27px);
+  }
+}
+
+.avatar {
+  display: inline-block;
+  position: relative;
+  line-height: 0;
+
+  img {
+    .border-radius(3px);
+  }
+}
+
+.black21 {
+  color: #212121;
+}
+
+.gray {
+  color: #797979;
+}
+
+.blue {
+  color: #1175A5;
+}
+
+  .settings-panel {
+    position: relative;
+    min-height: 105px;
+    background: #fafafa;
+    margin: 0 20px 40px;
+    padding: 20px 20px 15px 115px;
+    .box-shadow(0 2px 8px rgba(20,24,26,.15));
+
+    .user-avatar {
+      margin-left: -95px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .user-xstats {
+      margin-top: -5px;
+      text-align: center;
+      color: #424242;
+
+      .attended {
+        font-size: 21px;
+        font-weight: @helveticaLight;
+        line-height: 26px;
+        color: #1175A5;
+        text-shadow: 0 1px 2px rgba(20,24,26,.25);
+      }
+    }
+
+    .add-avatar {
+      width: 78px;
+      height: 68px;
+      padding-top: 10px;
+      text-align: center;
+      //#gradient > .vertical(#fafafa, #e6e6e6);
+      #gradient > .directional(#fafafa, #e6e6e6, 270deg);
+      border: 1px solid #e6e6e6;
+      color: #797979;
+
+      .plus {
+        font-size: 36px;
+        line-height: 40px;
+      }
+
+      .portrait {
+        font-size: 18px;
+        line-height: 22px;
+        font-weight: 300;
+      }
+    }
+
+    .user-infos {
+      padding-bottom: 20px;
+      padding-left: 15px;
+
+      input[type="text"] {
+          padding: 0 1px;
+          margin-left: -3px;
+          margin-bottom: 0;
+          border: 1px solid #e6e6e6;
+          .box-shadow(none);
+          .border-radius(0);
+          color: #191919;
+      }
+
+      .user-name {
+        position: relative;
+        height: 30px;
+        line-height: 25px;
+        margin-bottom: 10px;
+
+        h3 {
+          font-size: 21px;
+          line-height: 25px;
+          font-weight: normal;
+          margin-right: 10px;
+        }
+
+        input[type="text"] {
+          height: 28px;
+          width: 278px;
+          font-size: 21px;
+          line-height: 25px;
+          font-weight: normal;
+        }
+      }
+
+      .changepassword {
+        display: inline-block;
+        padding: 1px 10px 1px 6px;
+        height: 16px;
+        font-size: 12px;
+        line-height: 18px;
+        color: #191919;
+
+        span {
+          margin-left: 10px;
+          display: none;
+        }
+
+        &.xbtn-changepassword span {
+          display: inline;
+        }
+      }
+
+      .identity-list {
+        font-size: 12px;
+
+        > li {
+          line-height: 20px;
+          margin-bottom: 2px;
+          padding: 4px 0;
+
+          i {
+            vertical-align: text-bottom;
+          }
+        }
+
+        .icon-move {
+          .hide();
+        }
+
+        .editing {
+          .mkdef {
+            .show-inline;
+          }
+        }
+
+        .over,
+        .dragme {
+          margin-left: -15px;
+          background: #eff6f9;
+
+          .icon-move {
+            .show-inline-block();
+          }
+        }
+
+        .default {
+          //display: inline-block;
+          color: #1175a5;
+        }
+
+        .makedefault {
+          color: #7f7f7f;
+          text-decoration: underline;
+        }
+
+        .identity {
+          display: inline-block;
+          margin-right: 15px;
+
+          &.textoverflow {
+            .text-overflow();
+          }
+        }
+
+        .identityname {
+          margin-left: 10px;
+          input[type="text"] {
+            height: 18px;
+            width: 120px;
+            font-size: 12px;
+          }
+        }
+
+        // make default
+        .mkdef {
+          color: #7f7f7f;
+          text-decoration: underline;
+          .hide-inline;
+        }
+
+        .external {
+          margin-left: 10px;
+          margin-right: 5px;
+          font-style: oblique;
+        }
+
+        .xlabel {
+          color: #cc4747;
+
+          .xbtn {
+            margin-left: 10px;
+          }
+        }
+
+      }
+
+      .devs {
+        color: #7f7f7f;
+      }
+
+      .devices {
+        margin: 0;
+        list-style: none;
+
+        > li {
+          .pull-left;
+          margin-right: 4px;
+        }
+
+        .device {
+          padding: 0 4px;
+          background-color: #e6e6e6;
+        }
+
+        .device-info {
+          color: #4c4c4c;
+        }
+
+        .revoke {
+          margin-right: 8px;
+          margin-left: 8px;
+          color: #b2b2b2;
+          text-decoration: underline;
+        }
+      }
+
+    }
+
+    .identities-trash {
+      position: relative;
+      width: 120px;
+      height: 28px;
+      font-size: 12px;
+      line-height: 12px;
+      font-weight: bold;
+      padding: 6px 15px;
+      text-align: center;
+      margin-right: -10px;
+      margin-bottom: -10px;
+      border: 1px solid transparent;
+
+      .trash-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        top: 0;
+        left: 0;
+      }
+
+      .removed {
+        .hide-inline;
+      }
+
+      .trash-message {
+        width: 95px;
+      }
+
+      &.over {
+        color: #CB4747;
+        background: rgba(255, 230, 230, .5);
+        border: 1px solid #ffe6e6;
+
+        .draged {
+          .hide-inline;
+        }
+
+        .removed {
+          .show-inline;
+        }
+      }
+    }
+  }
+
+  .crosses {
+    line-height: 18px;
+    .cross-type {
+      width: 330px;
+      text-align: right;
+      margin: 10px 0;
+      color: #797979;
+      border-bottom: 1px solid #d5d5d5;
+      cursor: pointer;
+    }
+
+    .rb {
+      #arrow > .rb(8px, #b2b2b2);
+      display: inline-block;
+    }
+
+    .lt {
+      #arrow > .lt(8px, #b2b2b2);
+      display: inline-block;
+    }
+
+    address {
+      margin: 0;
+    }
+
+    .cross-list {
+      clear: right;
+    }
+
+    .gatherax-box {
+      margin-left: -9.5px;
+      a {
+        margin: 10px 0;
+        display: block;
+        padding: 8px 11px;
+        color: #4c4c4c;
+        text-align: center;
+        cursor: pointer;
+        text-decoration: none;
+        border: 1px dashed #d5d5d5;
+      }
+    }
+
+    .more {
+      text-align: right;
+
+      a {
+        line-height: 18px;
+        font-size: 12px;
+        color: #7f7f7f;
+        text-decoration: underline;
+      }
+    }
+
+    .cross-box {
+      margin-left: -9.5px;
+
+      > a {
+        display: block;
+        padding: 8px 11px;
+        font-size: 12px;
+        color: #424242;
+        //border: 1px solid rgba(0,0,0,0);
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      > a:hover {
+        background: rgba(230, 230, 230, .25);
+        .box-shadow(0 1px 1px #fff);
+        //border: 1px dashed #d5d5d5;
+      }
+    }
+
+    //.cross-box:hover {}
+  }
+
+  .siderbar {
+    padding: 5px 2px;
+    border: 1px solid #e6e6e6;
+    margin-bottom: 10px;
+    font-size: 12px;
+    line-height: 18px;
+    color: #424242;
+
+    h3 {
+      position: relative;
+      padding-bottom: 5px;
+      margin-right: 8px;
+      text-align: right;
+      line-height: 16px;
+      font-size: 12px;
+      font-weight: normal;
+
+      i {
+        margin-right: 10px;
+      }
+    }
+
+    h3:before {
+      content: '';
+      position: absolute;
+      height: 1px;
+      width: 100%;
+      #gradient > .horizontal(rgba(230, 230, 230, 0), rgba(179, 179, 179, .5));
+      background-color: transparent;
+      bottom: 0;
+      left: 0;
+    }
+
+    .cross-box {
+      > a {
+        display: block;
+        padding: 5px 9px;
+        border: 1px solid rgba(0,0,0,0);
+        color: #424242;
+        text-decoration: none;
+
+        &:hover {
+          #gradient > .directional(rgba(250, 250, 250, .5), rgba(230, 230, 230, .25), 270deg);
+        }
+      }
+    }
+
+    //.cross-box:hover {}
+
+    time {
+      font-size: 10px;
+      font-style: oblique;
+      color: #a9a9a9;
+      margin-left: 5px;
+    }
+  }
+
+  .cross-box > a {
+    > h5, > time, > address, > div {
+      display: block;
+      .text-overflow-clip();
+    }
+   }
+
+  .invitations {
+    #gradient > .directional(#f7f9f9, #eff6f9, 255deg);
+    border: 1px solid rgba(245, 252, 255, .8);
+    .box-shadow(0 1px 4px rgba(0, 0, 0, .25));
+
+    h3 {
+      color: #1175A5;
+    }
+
+    .cross-box {
+      position: relative;
+      h5 {
+        color: #1175A5;
+        .text-overflow;
+      }
+
+      // http://stackoverflow.com/questions/9691416/css-link-hover-not-working-in-chrome-and-safari
+      > a:hover {
+        display: block;
+        text-align: left;
+        padding-right: 80px;
+        background: rgba(235, 245, 250, 1);
+        border: 1px solid rgba(250, 250, 250, .5);
+
+        .xbtn-accept {
+          .show;
+        }
+      }
+
+      .xbtn-accept {
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        margin-top: -12px;
+        .hide;
+
+        &:before {
+          content: '';
+          position: absolute;
+          left: 20px;
+        }
+      }
+    }
+  }
+
+  .updates {
+    //#gradient > .directional(#fafafa, #f9fa9ff, 101deg);
+    background: rgba(230, 230, 230, .25);
+    h3 {
+      color: #797979;
+    }
+
+    .cross-box {
+
+      > a {
+        border-bottom: 1px dashed rgba(179, 179, 179, .5)
+      }
+
+      &:last-child > a {
+        border-bottom: 1px dashed rgba(0, 0, 0, 0);
+      }
+    }
+
+  }
+
+  .ios-app {
+    padding: 0 11px;
+    font-size: 12px;
+    color: #7f7f7f;
+
+    .exfe-dismiss {
+      color: #b2b2b2;
+      text-decoration: underline;
+    }
+  }

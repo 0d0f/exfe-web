@@ -1,0 +1,14 @@
+{
+  "name": "modernizr",
+  "version": "2.5.3",
+  "homepage": "http://modernizr.com/",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Modernizr/Modernizr.git",
+    "main": "modernizr.js"
+  },
+  "pull": {
+    "url": "https://raw.github.com/Modernizr/Modernizr/master/modernizr.js"
+  },
+  "hint": false
+}

@@ -1,0 +1,209 @@
+// SPRITES
+// Glyphs and icons for buttons, nav, and more
+// -------------------------------------------
+
+
+// ICONS
+// -----
+
+// All icons receive the styles of the <i> tag with a base class
+// of .i and are then given a unique class to add width, height,
+// and background-position. Your resulting HTML will look like
+// <i class="icon-inbox"></i>.
+
+// For the white version of the icons, just add the .icon-white class:
+// <i class="icon-inbox icon-white"></i>
+
+[class^="icon-"],
+[class*=" icon-"] {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  .ie7-restore-right-whitespace();
+  line-height: 12px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-position: 12px 12px;
+  background-repeat: no-repeat;
+}
+
+[class^="icon14-"],
+[class*=" icon14-"] {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  .ie7-restore-right-whitespace();
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-repeat: no-repeat;
+}
+
+[class^="icon16-"],
+[class*=" icon16-"] {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  .ie7-restore-right-whitespace();
+  line-height: 16px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-repeat: no-repeat;
+}
+
+[class^="icon17x14-"],
+[class*=" icon17x14-"] {
+  display: inline-block;
+  width: 17px;
+  height: 14px;
+  .ie7-restore-right-whitespace();
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-repeat: no-repeat;
+}
+
+[class^="icon10-"],
+[class*=" icon10-"] {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  .ie7-restore-right-whitespace();
+  line-height: 10px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+}
+
+[class^="icon20-"],
+[class*=" icon20-"] {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  .ie7-restore-right-whitespace();
+  line-height: 20px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-position: 20px 20px;
+  background-repeat: no-repeat;
+}
+
+[class^="icon24-"],
+[class*=" icon24-"] {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  .ie7-restore-right-whitespace();
+  line-height: 24px;
+  vertical-align: text-top;
+  background-image: ~'url("@{iconSpritePath}")';
+  background-position: 24px 24px;
+  background-repeat: no-repeat;
+}
+
+.icon-white {
+  background-image: url("@{iconWhiteSpritePath}");
+}
+
+@c: 0;
+
+@w0: -12px;
+.icon-exfe                        { background-position: 0  * @w0 0; }
+.icon-cross-blue                  { background-position: 1  * @w0 0; }
+.icon-cross                       { background-position: 2  * @w0 0; }
+.icon-time                        { background-position: 3  * @w0 0; }
+.icon-place                       { background-position: 4  * @w0 0; }
+.icon-conversation                { background-position: 5  * @w0 0; }
+.icon-plus-blue                   { background-position: 6  * @w0 0; }
+.icon-plus                        { background-position: 7  * @w0 0; }
+.icon-minus-red                   { background-position: 8  * @w0 0; }
+.icon-minus                       { background-position: 9  * @w0 0; }
+.icon-rsvp-accepted-blue          { background-position: 10 * @w0 0; }
+.icon-rsvp-accepted               { background-position: 11 * @w0 0; }
+.icon-rsvp-declined-red           { background-position: 12 * @w0 0; }
+.icon-rsvp-declined               { background-position: 13 * @w0 0; }
+.icon-rsvo-interested             { background-position: 14 * @w0 0; }
+.icon-rsvp-noresponse             { background-position: 15 * @w0 0; }
+.icon-rsvp-rejected               { background-position: 16 * @w0 0; }
+.icon-exclamation                 { background-position: 17 * @w0 0; }
+.icon-rsvp-unreachable            { background-position: 18 * @w0 0; }
+.icon-invite                      { background-position: 19 * @w0 0; }
+.icon-calendar                    { background-position: 20 * @w0 0; }
+
+.icon-hot-tag                     { background-position: 0 -42px; width: 28px; }
+.icon-h                           { background-position: -28px -42px; width: 16px; }
+
+@w1: -14px;
+@h1: -12px;
+.icon14-rsvp-accepted-blue        { background-position: 0  * @w1 @h1 }
+.icon14-rsvp-accepted             { background-position: 1  * @w1 @h1 }
+.icon14-rsvp-declined-red         { background-position: 2  * @w1 @h1 }
+.icon14-rsvp-declined             { background-position: 3  * @w1 @h1 }
+.icon14-rsvo-interested           { background-position: 4  * @w1 @h1 }
+.icon14-rsvp-noresponse           { background-position: 5  * @w1 @h1 }
+.icon14-rsvp-unreachable          { background-position: 6  * @w1 @h1 }
+.icon14-question                  { background-position: 7  * @w1 @h1 }
+.icon14-clear                     { background-position: 8  * @w1 @h1 }
+.icon14-mates-add                 { background-position: 9  * @w1 @h1 }
+.icon14-mates-minus               { background-position: 10 * @w1 @h1 }
+.icon14-lock                      { background-position: 11 * @w1 @h1 }
+
+@w2: -16px;
+@h2: -26px;
+// 16 x 16
+.icon16-cross                     { background-position: 0  * @w2 @h2 }
+.icon16-invitation                { background-position: 1  * @w2 @h2 }
+.icon16-updates                   { background-position: 2  * @w2 @h2 }
+.icon16-bigcross-blue             { background-position: 3  * @w2 @h2 }
+.icon16-bigcross                  { background-position: 4  * @w2 @h2 }
+.icon16-pass-show                 { background-position: 5  * @w2 @h2 }
+.icon16-pass-hide                 { background-position: 6  * @w2 @h2 }
+.icon16-identity-email-blue       { background-position: 7  * @w2 @h2 }
+.icon16-identity-email            { background-position: 8  * @w2 @h2 }
+.icon16-identity-twitter-blue     { background-position: 9  * @w2 @h2 }
+.icon16-identity-twitter          { background-position: 10 * @w2 @h2 }
+.icon16-identity-phone-blue       { background-position: 11 * @w2 @h2 }
+.icon16-identity-phone            { background-position: 12 * @w2 @h2 }
+.icon16-notifiction               { background-position: 13 * @w2 @h2 }
+.icon16-warning                   { background-position: 14 * @w2 @h2 }
+.icon16-rsvp-unreachable          { background-position: 15 * @w2 @h2 }
+.icon16-timezone                  { background-position: 16 * @w2 @h2 }
+
+.icon40-twitter                   { background-position: 0 -68px; }
+
+@w3: -10px;
+@h3: -44px;
+._bp3 (@i: 0, @w3: 0, @h3: 0, @w3x: 0, @w3y: 0) {
+  background-position: @i * @w3 + @w3x @h3 + @w3y;
+}
+
+.icon10-host-h                    { ._bp3(0 , @w3, @h3, -44px); }
+.icon10-plus-1                    { ._bp3(1 , @w3, @h3, -44px); }
+.icon10-plus-2                    { ._bp3(2 , @w3, @h3, -44px); }
+.icon10-plus-3                    { ._bp3(3 , @w3, @h3, -44px); }
+.icon10-plus-4                    { ._bp3(4 , @w3, @h3, -44px); }
+.icon10-plus-5                    { ._bp3(5 , @w3, @h3, -44px); }
+.icon10-plus-6                    { ._bp3(6 , @w3, @h3, -44px); }
+.icon10-plus-7                    { ._bp3(7 , @w3, @h3, -44px); }
+.icon10-plus-8                    { ._bp3(8 , @w3, @h3, -44px); }
+.icon10-plus-9                    { ._bp3(9 , @w3, @h3, -44px); }
+.icon10-now                       { ._bp3(10, @w3, @h3, -44px); width: 23px; }
+.icon10-24hr                      { ._bp3(10, @w3, @h3, -67px); width: 23px; }
+
+// 20 x 20
+._bp4 (@i: 0, @w4_20: -20px, @h4_20: -58px, @w4x: -96px, @w4y: 0) {
+  background-position: @i * @w4_20 + @w4x @h4_20 + @w4y;
+}
+.icon20-upload                   { ._bp4(0); }
+.icon20-rotate                   { ._bp4(1); }
+.icon20-back                     { ._bp4(2); }
+.icon20-zoom                     { ._bp4(3); }
+
+// 24 x 24
+@w4_24: -24px;
+@h4_24: -54px;
+.icon24-exfee                    { background-position: 0 * @w4_24 @h4_24; }
+.icon24-conversation             { background-position: 1 * @w4_24 @h4_24; }
+.icon24-trash                    { background-position: 2 * @w4_24 @h4_24; }
+.icon24-trash-red                { background-position: 3 * @w4_24 @h4_24; }
