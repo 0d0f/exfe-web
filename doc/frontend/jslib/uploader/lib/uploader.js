@@ -733,6 +733,8 @@ define('uploader', [], function (require, exports, module) {
               bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
             } else if (i === 2) {
               bitmap.scaleX = psx + sbx;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
             } else {
               bitmap.scaleY = psy + sbx;
               if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
