@@ -1,0 +1,196 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" dir="ltr"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/i/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <!--<meta http-equiv="X-UA-Compatible" content="IE=9, IE=8, chrome=1" />-->
+  <title>Icons</title>
+  <meta name="description" content="" />
+  <!-- Mobile viewport optimized: h5bp.com/viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+  <!--<link rel="stylesheet" href="css/bootstrap.css" />-->
+  <!--<link rel="stylesheet/less" href="less/bootstrap.less" />-->
+  <!-- More ideas for your head here: h5bp.com/d/head-Tips -->
+
+  <!-- Want to try a different theme?
+    If not using LESS compiler: Uncomment below
+    and change to name of desired theme. (See docs) -->
+  <!--link type="text/css" rel="stylesheet" href="extras/css/amelia.css" /-->
+
+  <!-- All JavaScript at the bottom, except this Modernizr build.
+    Modernizr enables HTML5 elements & feature detects for optimal performance.
+    Create your own custom Modernizr build: www.modernizr.com/download/ -->
+
+  <link rel="stylesheet/less" href="../less/exfe/lib/exfe_dev.less" />
+
+  <style>
+    .the-icons {
+      margin-left: 0;
+      list-style: none;
+    }
+
+    .cate-icons {
+      font-size: 20px;
+    }
+
+    .grey {
+      background: rgba(127, 127, 127, 1);
+    }
+  </style>
+
+  <!-- Include less.js -->
+  <script src="../jslib/less/lib/less.js"></script>
+  <script>
+    function toggleGray() {
+      var icon_list = document.getElementById('icon-list');
+      if (icon_list.className === 'row') {
+        icon_list.className += ' grey';
+      } else {
+        icon_list.className = 'row';
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- container -->
+  <div class="container">
+
+    <div role="main">
+
+      <section id="icons">
+        <div class="page-header">
+          <h1>Icons <small>Graciously provided by <a href="http://exfe.com" target="_blank">icons</a></small></h1>
+          <button class="btn" onclick="toggleGray()">Toggle Grey</button>
+        </div>
+
+        <div class="row" id="icon-list">
+
+          <div class="span4">
+            <ul class="the-icons">
+              <li class="cate-icons">12 x 12</li>
+              <li><i class="icon-exfe"></i> icon-exfe</li>
+              <li><i class="icon-cross-blue"></i> icon-cross-blue</li>
+              <li><i class="icon-cross"></i> icon-cross</li>
+              <li><i class="icon-time"></i> icon-time</li>
+              <li><i class="icon-place"></i> icon-place</li>
+              <li><i class="icon-conversation"></i> icon-conversation</li>
+              <li><i class="icon-plus-blue"></i> icon-plus-blue</li>
+              <li><i class="icon-plus"></i> icon-plus</li>
+              <li><i class="icon-minus-red"></i> icon-minus-red</li>
+              <li><i class="icon-minus"></i> icon-minus</li>
+              <li><i class="icon-rsvp-accepted-blue"></i> icon-rsvp-accepted-blue</li>
+              <li><i class="icon-rsvp-accepted"></i> icon-rsvp-accepted</li>
+              <li><i class="icon-rsvp-declined-red"></i> icon-rsvp-declined-red</li>
+              <li><i class="icon-rsvp-declined"></i> icon-rsvp-declined</li>
+              <li><i class="icon-rsvo-interested"></i> icon-rsvp-interested</li>
+              <li><i class="icon-rsvp-noresponse"></i> icon-rsvp-noresponse</li>
+              <li><i class="icon-rsvp-rejected"></i> icon-rsvp-rejected</li>
+              <li><i class="icon-exclamation"></i> icon-exclamation</li>
+              <li><i class="icon-rsvp-unreachable"></i> icon-rsvp-unreachable</li>
+              <li><i class="icon-invite"></i> icon-invite</li>
+              <li><i class="icon-calendar"></i> icon-calendar</li>
+              <li class="cate-icons">12 x 28</li>
+              <li><i class="icon-hot-tag"></i> icon-hot-tag</li>
+              <li class="cate-icons">12 x 16</li>
+              <li><i class="icon-h"></i> icon-h</li>
+            </ul>
+          </div>
+
+          <div class="span4">
+            <ul class="the-icons">
+              <li class="cate-icons">14 x 14</li>
+              <li><i class="icon14-rsvp-accepted-blue"></i> icon14-rsvp-accepted-blue</li>
+              <li><i class="icon14-rsvp-accepted"></i> icon14-rsvp-accepted</li>
+              <li><i class="icon14-rsvp-declined-red"></i> icon14-rsvp-declined-red</li>
+              <li><i class="icon14-rsvp-declined"></i> icon14-rsvp-declined</li>
+              <li><i class="icon14-rsvo-interested"></i> icon14-rsvp-interested</li>
+              <li><i class="icon14-rsvp-noresponse"></i> icon14-rsvp-noresponse</li>
+              <li><i class="icon14-rsvp-unreachable"></i> icon14-rsvp-unreachable</li>
+              <li><i class="icon14-question"></i> icon14-question</li>
+              <li><i class="icon14-clear"></i> icon14-clear</li>
+              <li><i class="icon14-mates-add"></i> icon14-mates-add</li>
+              <li><i class="icon14-mates-minus"></i> icon14-mates-minus</li>
+              <li><i class="icon14-lock"></i> icon14-lock</li>
+            </ul>
+          </div>
+
+          <div class="span4">
+            <ul class="the-icons">
+              <li class="cate-icons">16 x 16</li>
+              <li><i class="icon16-cross"></i> icon16-cross</li>
+              <li><i class="icon16-invitation"></i> icon16-invitation</li>
+              <li><i class="icon16-updates"></i> icon16-updates</li>
+              <li><i class="icon16-bigcross-blue"></i> icon16-bigcross-blue</li>
+              <li><i class="icon16-bigcross"></i> icon16-bigcross</li>
+              <li><i class="icon16-pass-show"></i> icon16-pass-show</li>
+              <li><i class="icon16-pass-hide"></i> icon16-pass-hide</li>
+              <li><i class="icon16-identity-email-blue"></i> icon16-identity-email-blue</li>
+              <li><i class="icon16-identity-email"></i> icon16-identity-email</li>
+              <li><i class="icon16-identity-twitter-blue"></i> icon16-identity-twitter-blue</li>
+              <li><i class="icon16-identity-twitter"></i> icon16-identity-twitter</li>
+              <li><i class="icon16-identity-phone-blue"></i> icon16-identity-phone-blue</li>
+              <li><i class="icon16-identity-phone"></i> icon16-identity-phone</li>
+              <li><i class="icon16-notifiction"></i> icon16-notifiction</li>
+              <li><i class="icon16-warning"></i> icon16-warning</li>
+              <li><i class="icon16-rsvp-unreachable"></i> icon16-rsvp-unreachable</li>
+              <li><i class="icon16-timezone"></i> icon16-timezone</li>
+            </ul>
+          </div>
+
+          <div class="span4">
+            <ul class="the-icons">
+              <li class="cate-icons">10 x 10</li>
+              <li><i class="icon10-host-h"></i> icon10-host-h</li>
+              <li><i class="icon10-plus-1"></i> icon10-plus-1</li>
+              <li><i class="icon10-plus-2"></i> icon10-plus-2</li>
+              <li><i class="icon10-plus-3"></i> icon10-plus-3</li>
+              <li><i class="icon10-plus-4"></i> icon10-plus-4</li>
+              <li><i class="icon10-plus-5"></i> icon10-plus-5</li>
+              <li><i class="icon10-plus-6"></i> icon10-plus-6</li>
+              <li><i class="icon10-plus-7"></i> icon10-plus-7</li>
+              <li><i class="icon10-plus-8"></i> icon10-plus-8</li>
+              <li><i class="icon10-plus-9"></i> icon10-plus-9</li>
+              <li class="cate-icons">10 x 23</li>
+              <li><i class="icon10-now"></i> icon10-now</li>
+              <li><i class="icon10-24hr"></i> icon10-24hr</li>
+            </ul>
+          </div>
+
+          <div class="span4">
+            <ul class="the-icons">
+              <li class="cate-icons">24 x 24</li>
+              <li><i class="icon24-exfee"></i> icon24-exfee</li>
+              <li><i class="icon24-conversation"></i> icon24-conversation</li>
+              <li><i class="icon24-trash"></i> icon24-trash</li>
+              <li><i class="icon24-trash-red"></i> icon24-trash-red</li>
+            </ul>
+          </div>
+
+          <div class="span4">
+            <ul class="the-icons">
+              <li class="cate-icons">20 x 20</li>
+              <li><i class="icon20-upload"></i> icon20-upload</li>
+              <li><i class="icon20-rotate"></i> icon20-rotate</li>
+              <li><i class="icon20-back"></i> icon20-back</li>
+              <li><i class="icon20-zoom"></i> icon20-zoom</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
