@@ -76,7 +76,7 @@ ExfeeWidget = {
         var strExfeeKey = 'provider_'    + invitation.identity.provider + '_'
                         + 'external_id_' + invitation.identity.external_id;
         $('#' + this.dom_id + ' .thumbnails').append(
-            '<li class="identity" exfee="">'
+            '<li class="identity" exfee="' + strExfeeKey + '">'
           +     '<span class="avatar">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<span class="rt">' + (invitation.host ? 'H' : '') + '</span>'
