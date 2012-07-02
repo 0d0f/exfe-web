@@ -25,9 +25,9 @@ define('uploader', [], function (require, exports, module) {
     },
 
     sync: function () {
-      var selectFile = this.$('.selectfile');
+      var $dropbox = this.$('.dropbox');
       this._fileInputField = $(Uploader.HTML5FILEFIELD_TEMPLATE);
-      selectFile.after(this._fileInputField);
+      $dropbox.after(this._fileInputField);
 
       this._bindDropArea();
 
@@ -57,13 +57,6 @@ define('uploader', [], function (require, exports, module) {
       this.element.on('dragenter', '.dropbox', _ddEventhandler);
       this.element.on('dragover', '.dropbox', _ddEventhandler);
       this.element.on('dragleave', '.dropbox', _ddEventhandler);
-
-      var _docddEventhandler = $.proxy(this._docddEventhandler, this);
-      $(document)
-        .on('drop', _docddEventhandler)
-        .on('dragenter', _docddEventhandler)
-        .on('dragleave', _docddEventhandler)
-        .on('dragover', _docddEventhandler);
     },
 
     _ddEventhandler: function (e) {
@@ -96,31 +89,6 @@ define('uploader', [], function (require, exports, module) {
       }
 
       return false;
-    },
-
-    _docddEventhandler: function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-      //if (e.target !== this.find('#avatar240')[0]) return false;
-
-      switch (e.type) {
-        case 'dragenter':
-          this.emit('docdragenter', e);
-          break;
-
-        case 'dragover':
-          this.emit('docdragover', e);
-          break;
-
-        case 'dragleave':
-          this.emit('docdragleave', e);
-          break;
-
-        case 'drop':
-          this.emit('docdrop', e);
-          break;
-      }
-      //return false;
     },
 
     _fileselect: function (files) {
@@ -173,223 +141,259 @@ define('uploader', [], function (require, exports, module) {
 
   var uploadSettings = {
 
-    radian: Math.PI * 90 / 180,
+    //
+    aoffset: [0, 0],
 
-    ri: 0,
+    // 记录上传的缩放大小
+    psx: 1,
+    psy: 1,
 
-    coord: [0, 0],
+    // anchor
+    // 0  1  2
+    // 3     4
+    // 5  6  7
+    anchor: null,
 
-    // zoom 240
-    z240: 1,
-    // zoom 80
-    z80: 1,
+    // resize image
+    resizing: false,
 
-    // origin image.width
-    IW: 0,
-
-    // origin image.height
-    IH: 0,
+    // canvas dragging
+    dragging: false,
 
     SCALE: 80 / 240,
+
+    // 旋转角度计数器
+    ri: 0,
+
+    // 坐标旋转
+    R: [0, 0],
 
     options: {
       limit: 1,
 
       onDrop: function (e) {
-        //console.log('drop');
-      },
-
-      onImageRotate: function (c, ctx, img, ri, x, y, z, s) {
-        //s && ctx.scale(1/s, 1/s);
-        ctx.translate(-c.width / 2, -c.height / 2);
-
-        ctx.clearRect(0, 0, c.width, c.height);
-
-        ctx.translate(c.width / 2, c.height / 2);
-        //s && ctx.scale(s, s);
-
-        ctx.save();
-        ctx.rotate(ri * this.radian);
-        if (s) {
-          ctx.drawImage(img, x * s, y * s, this.IW * s * z, this.IH * s * z);
-        } else {
-          ctx.drawImage(img, x, y, this.IW * z, this.IH * z);
-        }
-        ctx.restore();
-        ctx.rotate(0);
       },
 
       onFileselect: function (data) {
-        var that = this;
-        var filehtml5 = this.filehtml5 = data.fileList[0];
+        var files = data.fileList, filehtml5;
+        if (files.length) {
+          filehtml5 = this.filehtml5 = files[0];
 
-        filehtml5.on('uploadcomplete', function (data) {
-        });
-
-        this.original = filehtml5._file;
-
-        this.$('.overlay').addClass('hide');
-        //this.$('.photozone').find('.back, .rotate').removeClass('hide');
-        this.$('.resizeable').removeClass('hide');
-        var c240 = document.getElementById('avatar240');
-        var ctx240 = c240.getContext('2d');
-
-        var c80 = document.getElementById('avatar80');
-        var ctx80 = c80.getContext('2d');
-
-        var img240 = this.img240 = document.createElement('img');
-        this.img240.onload = function () {
-          that.ri = 0;
-          that.IW = img240.width;
-          that.IH = img240.height;
-          that.coord = [-that.IW/2, -that.IH/2];
-          that.__dx = that.__dy = 0;
-          that.isDrag = false;
-          isResize = false;
-
-          ctx240.translate(c240.width / 2, c240.height / 2);
-          //ctx240.scale(1, 1);
-          ctx240.drawImage(img240, that.coord[0], that.coord[1]);
-          ctx240.save();
-
-          ctx80.translate(c80.width / 2, c80.height / 2);
-          //ctx80.scale(SCALE, SCALE);
-          //ctx80.drawImage(img, x, y);
-          ctx80.drawImage(img240, that.coord[0] * that.SCALE, that.coord[1] * that.SCALE, that.IW * that.SCALE, that.IH * that.SCALE);
-        };
-
-        if (window.URL && window.URL.createObjectURL) {
-          img240.src = window.URL.createObjectURL(filehtml5._file);
-        }
-        else if (window.webkitURL.createObjectURL) {
-          img240.src = window.webkitURL.createObjectURL(filehtml5._file);
-        }
-        else {
-          var reader = new FileReader();
-          reader.onload = function () {
-            img240.src = this.result;
+          this.filehtml5._xhrHeaders = {
+            'Accept': 'application/json, text/javascript, */*; q=0.01'
           };
-          reader.readAsDataURL(filehtml5._file);
-        }
 
-        that.timer && clearInterval(that.timer);
-        that.timer = setInterval(function () {
-          if (that.isDrag || isResize) {
-            if (isResize) {
-                gdz = Math.min(gmx - gsx, gmy - gsy);
-                gdz *= 0.0005 * arrow;
-                that.z240 += gdz;
-                that.z80 += gdz;
-                if (that.z240 < 0) {
-                  that.z240 = 0;
-                  that.z80 = 0;
-                }
-                that.emit('imageRotate', c240, ctx240, img240, that.ri, that.coord[0], that.coord[1], that.z240);
-                that.emit('imageRotate', c80, ctx80, img240, that.ri, that.coord[0], that.coord[1], that.z80, that.SCALE);
-                if (!that.z240) {
-                  that.z240  = 1;
-                  that.z80 = 1;
-                }
-              return;
-            }
-            var px, py;
-            that.__dx = that.__mx - that.__sx;
-            that.__dy = that.__my - that.__sy;
-            if (that.__dx || that.__dy) {
-              switch (that.ri) {
-                case 0:
-                  px = that.coord[0] + that.__dx; py = that.coord[1] + that.__dy;
-                  break;
-
-                case -1:
-                  px = that.coord[0] - that.__dy; py = that.coord[1] + that.__dx;
-                  break;
-
-                case -2:
-                  px = that.coord[0] - that.__dx; py = that.coord[1] - that.__dy;
-                  break;
-
-                case -3:
-                  px = that.coord[0] + that.__dy; py = that.coord[1] - that.__dx;
-                  break;
+          this.filehtml5.on('uploadcomplete', function (e) {
+            data = JSON.parse(e.data);
+            if (data && data.meta.code === 200) {
+              if (data.response.type === 'user') {
+                $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
               }
-              that.emit('imageRotate', c240, ctx240, img240, that.ri, px, py, that.z240);
-              that.emit('imageRotate', c80, ctx80, img240, that.ri, px, py, that.z80, that.SCALE);
             }
-          }
-        }, 20);
+          });
+
+          this.$('.overlay').addClass('hide');
+          this.$('.resizeable').removeClass('hide');
+          this.$('.back, .rotate').show();
+
+          var self = this;
+          self.ri = 0;
+          self.R = [0, 0];
+          var canvas = document.getElementById('avatar240')
+            , canvas80 = document.getElementById('avatar80')
+            , R = self.R
+            , stage = new Stage(canvas)
+            , bitmap
+            , stage80 = new Stage(canvas80)
+            , bitmap80
+            , originalImage = document.createElement('img');
+
+          // 记录画布相对于DOM坐标系中的位置
+          self.canvasOffset = $(canvas).offset();
+          self.canvasOffset.right = canvas.width + self.canvasOffset.left;
+          self.canvasOffset.bottom = canvas.height + self.canvasOffset.top;
+          self.canvasOffset.width = canvas.width;
+          self.canvasOffset.height = canvas.height;
+
+          readFileToImage(originalImage, filehtml5._file);
+
+          originalImage.onload = function () {
+
+            bitmap = new Bitmap(originalImage);
+
+            bitmap.setPosition(canvas.width / 2 - bitmap.regX, canvas.height / 2 - bitmap.regY);
+            bitmap.rotation = self.ri;
+
+            bitmap.updateContext = function (ctx) {
+              ctx.translate(canvas.width * self.R[0], canvas.height * self.R[1]);
+              ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+            };
+
+            // add to canvas
+            stage.addChild(bitmap);
+
+            // update canvas
+            stage.update();
+
+            self.bitmap = bitmap;
+            self.stage = stage;
+
+            // ---------------------- 80 * 80 --------------
+            bitmap80 = new Bitmap(canvas);
+            bitmap80.updateImage = function (canvas) {
+              bitmap80.originalImage = canvas;
+            };
+            bitmap80.updateContext = function (ctx) {
+              ctx.scale(self.SCALE, self.SCALE);
+            };
+            stage80.addChild(bitmap80);
+            stage80.update();
+
+            self.bitmap80 = bitmap80;
+            self.stage80 = stage80;
+          };
+
+          docBind(this);
+
+        }
       },
 
       backdrop: false,
 
       // bind events
       events: {
-        'click .selectfile': function (e) {
-          e.stopPropagation();
+
+        'click .dropbox': function (e) {
           e.preventDefault();
-          this._bindSelectFile(e);
+          this._bindSelectFile();
         },
+
         'mousedown #avatar240': function (e) {
-          e.preventDefault();
-          this.isDrag = true;
-          this.__mx = this.__sx = e.offsetX;
-          this.__my = this.__sy = e.offsetY;
+          this.dragging = true;
+          this.offset = [e.offsetX, e.offsetY];
+          return false;
         },
-        'mouseleave #avatar240': function (e) {
-          e.preventDefault();
-          this.isDrag = false;
-        },
+
         'mousemove #avatar240': function (e) {
           e.preventDefault();
-          if (this.isDrag) {
-            this.__mx = e.offsetX;
-            this.__my = e.offsetY;
-          }
-        },
-        'mouseup #avatar240': function (e) {
-          e.preventDefault();
-          if (this.isDrag) {
-            if (this.ri === -3) {
-              this.coord[0] += this.__dy; this.coord[1] -= this.__dx;
-            } else if (this.ri === -2) {
-              this.coord[0] -= this.__dx; this.coord[1] -= this.__dy;
-            } else if (this.ri === -1) {
-              this.coord[0] -= this.__dy; this.coord[1] += this.__dx;
-            } else {
-              this.coord[0] += this.__dx; this.coord[1] += this.__dy;
-            }
-            this.__dx = this.__dy = 0;
-            this.isDrag = false;
-          }
-        },
-        'click .rotate': function (e) {
-          e.preventDefault();
-          this.ri--;
-          (this.ri === -4) && (this.ri = 0);
-          var c240 = document.getElementById('avatar240');
-          var ctx240 = c240.getContext('2d');
-          this.emit('imageRotate', c240, ctx240, this.img240, this.ri, this.coord[0], this.coord[1], this.z240);
+          if (this.dragging) {
+            var dx = e.offsetX - this.offset[0];
+            var dy = e.offsetY - this.offset[1];
+            var bitmap = this.bitmap;
 
-          var c80 = document.getElementById('avatar80');
-          var ctx80 = c80.getContext('2d');
-          this.emit('imageRotate', c80, ctx80, this.img240, this.ri, this.coord[0], this.coord[1], this.z80, this.SCALE);
+            switch (this.ri) {
+              case 0:
+                bitmap.x += dx;
+                bitmap.y += dy;
+                break;
+
+              case 1:
+                bitmap.x += dy;
+                bitmap.y -= dx;
+                break;
+
+              case 2:
+                bitmap.x -= dx;
+                bitmap.y -= dy;
+                break;
+
+              case 3:
+                bitmap.x -= dy;
+                bitmap.y += dx;
+                break;
+            }
+
+            this.offset[0] = e.offsetX;
+            this.offset[1] = e.offsetY;
+
+            this.stage.update();
+            this.bitmap80.updateImage(this.stage.canvas);
+            this.stage80.update();
+          }
         },
+
+        'mouseup #avatar240': function (e) {
+          this.resizing = false;
+          this.dragging = false;
+          // 冒泡触发
+          //return false;
+        },
+
+        // Rotate
+        'click .rotate': function (e) {
+          this.ri++;
+          // 图片顶点在 canvs 坐标系中的相对位置
+          // 90
+          if (this.ri === 1) {
+            this.R = [1, 0];
+          }
+          // 180
+          else if (this.ri === 2) {
+            this.R = [1, 1];
+          // 270
+          } else if (this.ri === 3) {
+            this.R = [0, 1];
+          // 360 / 0
+          } else {
+            this.ri = 0;
+            this.R = [0, 0];
+          }
+          this.bitmap.rotation = 90 * this.ri;
+          this.stage.update();
+          this.bitmap80.updateImage(this.stage.canvas);
+          this.stage80.update();
+          return false;
+        },
+
+        // Back
+        'click .back': function (e) {
+          this.$('.overlay').removeClass('hide');
+          this.$('.resizeable').addClass('hide');
+          this.$('.back, .rotate').hide();
+
+          this._fileInputField.val(null);
+          this.stage.clear();
+          this.stage80.clear();
+          delete this.bitmap;
+          delete this.stage;
+          delete this.bitmap80;
+          delete this.stage80;
+          return false;
+        },
+
+        // Resize
+        'mousedown .resizeable': function (e) {
+          var $e = $(e.target);
+          this.anchor = $e.data('anchor');
+          this.resizing = true;
+          // 在拖拽点中，相对DOM的坐标
+          var o = $e.offset()
+            , w = $e.width() / 2
+            , h = $e.height() / 2;
+          this.aoffset = [o + w, o.top + h];
+        },
+
         'click .uploader-button': function (e) {
-          var c80 = document.getElementById('avatar80');
+          var bitmap = this.bitmap;
+          var originalImage = bitmap.originalImage;
+          var stage = this.stage;
+          var stage80 = this.stage80;
+
           var originalCanvas = document.createElement('canvas');
 
-          originalCanvas.width = originalCanvas.height = Math.min(this.img240.width, this.img240.height);
+          originalCanvas.width = originalCanvas.height = Math.min(originalImage.width, originalImage.height);
           var originalCtx = originalCanvas.getContext('2d');
           originalCtx.translate(originalCanvas.width / 2, originalCanvas.height / 2);
           originalCtx.save();
-          originalCtx.rotate(this.ri * this.radian);
-          originalCtx.drawImage(this.img240, -originalCanvas.width / 2, -originalCanvas.height / 2);
+          originalCtx.rotate(this.ri * Stage.DEG_TO_RAD);
+          originalCtx.drawImage(originalImage, -originalCanvas.width / 2, -originalCanvas.height / 2);
           originalCtx.restore();
           originalCtx.save();
 
+          // 头像上传
           this.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), {
             'original': saveCanvasAsFile(originalCanvas, 'original.png'),
-            '80_80': saveCanvasAsFile(c80, '80_80.png')
+            '80_80': saveCanvasAsFile(stage80.canvas, '80_80.png')
           });
         }
       },
@@ -399,6 +403,7 @@ define('uploader', [], function (require, exports, module) {
         this.offSrcNode();
         this.destory();
         $e.remove();
+        docUnBind();
       },
 
       viewData: {
@@ -422,20 +427,24 @@ define('uploader', [], function (require, exports, module) {
           + '</div>'
 
           + '<div class="photozone">'
-            + '<i class="icon20-back back hide" style="width: 20px; height: 20px; background: red;"></i>'
-            + '<i class="icon20-rotate rotate hide" style="width: 20px; height: 20px; background: black;"></i>'
-            + '<div class="bdt resizeable hide"></div>'
-            + '<div class="bdr resizeable hide"></div>'
-            + '<div class="bdb resizeable hide"></div>'
-            + '<div class="bdl resizeable hide"></div>'
+            + '<i class="icon20-back back"></i>'
+            + '<i class="icon20-rotate rotate"></i>'
+            + '<div class="anchor-nw resizeable hide" data-anchor="0"></div>'
+            + '<div class="anchor-n resizeable hide" data-anchor="1"></div>'
+            + '<div class="anchor-ne resizeable hide" data-anchor="2"></div>'
+            + '<div class="anchor-w resizeable hide" data-anchor="3"></div>'
+            + '<div class="anchor-e resizeable hide" data-anchor="4"></div>'
+            + '<div class="anchor-sw resizeable hide" data-anchor="5"></div>'
+            + '<div class="anchor-s resizeable hide" data-anchor="6"></div>'
+            + '<div class="anchor-se resizeable hide" data-anchor="7"></div>'
             + '<div class="avatar240">'
               + '<canvas id="avatar240" width="240" height="240"></canvas>'
             + '</div>'
 
             + '<div class="overlay dropbox">'
-              + '<div class="droptips">Drop your photo or URL here, <br /> or '
-                + '<span class="selectfile">open</span> '
-                + 'local file.'
+              + '<div class="droptips">Drop your photo <span class="hide">or URL</span> here.<br />'
+                + 'Alternatively, <span class="underline">open</span> local file, <br />'
+                + '<span class="underline">take</span> one from your camera.'
               + '</div>'
             + '</div>'
           + '</div>',
@@ -454,10 +463,28 @@ define('uploader', [], function (require, exports, module) {
           + '</div>'
 
       }
-
     }
-
   };
+
+  // Helper
+
+  function readFileToImage(image, file) {
+    // 读取图像
+    if (window.URL && window.URL.createObjectURL) {
+      image.src = window.URL.createObjectURL(file);
+    }
+    else if (window.webkitURL.createObjectURL) {
+      image.src = window.webkitURL.createObjectURL(file);
+    }
+    else {
+      var reader = new FileReader();
+      reader.onload = function () {
+        image.src = this.result;
+      };
+      reader.readAsDataURL(file);
+    }
+    return image;
+  }
 
   /**
    * http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata/5100158
@@ -505,38 +532,299 @@ define('uploader', [], function (require, exports, module) {
     return blob;
   }
 
-  var isResize = false, gmx, gmy, gsx, gsy, gdx, gdy, gdz, arrow = 1;
-  $(function () {
-    var $DOC = $(document);
-    $DOC.on('mousedown', '.resizeable', function (e) {
-      e.preventDefault();
-      if ($(this).is('.resizeable')) {
-        isResize = true;
-        gmx = gsx = e.pageX;
-        gmy = gsy = e.pageY;
-        if ($(e.target).hasClass('bdl') || $(e.target).hasClass('bdt')) {
-          arrow = -1;
-        } else {
-          arrow = 1;
+  // Point(x, y)
+  function Point(x, y) {
+    this.x = x || 0;
+    this.y = y || 0;
+  }
+
+  // Image
+  function Bitmap(image) {
+
+    // original image
+    this.originalImage = image;
+
+    // init width height
+    this.width = image.width;
+    this.height = image.height;
+
+    // reg
+    this.regX = image.width / 2;
+    this.regY = image.height / 2;
+
+    // left-top point
+    this.x = 0;
+    this.y = 0;
+
+    // opacity
+    this.alpha = 1;
+
+    this.visible = true;
+
+    // radius
+    this.rotation = 0;
+
+    // x-axis
+    this.scaleX = 1;
+    // y-axis
+    this.scaleY = 1;
+  }
+
+  Bitmap.prototype = {
+
+    // set (x, y)
+    setPosition: function (x, y) {
+      this.x = x || 0;
+      this.y = y || 0;
+    },
+
+    updateContext: function (ctx) {},
+
+    updateRect: function () {
+      this.width = this.originalImage.width * this.scaleX;
+      if (this.width < 0) {
+        this.width = 1;
+        this.scaleX = this.width / this.originalImage.width;
+      }
+
+      this.height = this.originalImage.height * this.scaleY;
+      if (this.height < 0) {
+        this.height = 1;
+        this.scaleY = this.height / this.originalImage.height;
+      }
+    },
+
+    draw: function (ctx) {
+      this.updateRect();
+      ctx.drawImage(this.originalImage, this.x, this.y, this.width, this.height);
+    }
+  };
+
+  // Stage
+  function Stage(canvas) {
+    this.id = ++Stage.UID;
+    this.canvas = (canvas instanceof HTMLCanvasElement) ? canvas : document.getElementById(canvas);
+  }
+
+  Stage.UID = 0;
+
+  Stage.DEG_TO_RAD = Math.PI / 180;
+
+  Stage.prototype = {
+
+    toDataURL: function () {},
+
+    clear: function () {
+      var ctx = this.canvas.getContext('2d');
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+
+    addChild: function (child) {
+      this._children || (this._children = []);
+      this.parent = this;
+      this._children.push(child);
+      return child;
+    },
+
+    draw: function () {
+      var i, l, ctx, list = this._children;
+
+      if (!list) { return; }
+
+      if ((l = this._children.length)) {
+        ctx = this.canvas.getContext('2d');
+
+        // clear canvas
+        this.clear();
+        // Y 轴向上，数学坐标系
+        //ctx.scale(1, -1);
+
+        for (i = 0; i < l; i++) {
+          var child = list[i];
+          ctx.save();
+          child.updateContext(ctx);
+          child.draw(ctx);
+          ctx.restore();
         }
       }
-    });
-    $DOC.mouseup(function (e) {
-      e.stopPropagation();
-      e.preventDefault();
-      if (isResize) {
-        isResize = false;
-        gmx = gsx = gmy = gsy = gdz = 0;
-      }
-    })
-    .mousemove(function (e) {
-      e.preventDefault();
-      if (isResize) {
-        gmx = e.pageX;
-        gmy = e.pageY;
-      }
-    });
-  });
+    },
+
+    update: function () {
+      this.draw();
+    }
+  };
+
+  function docUnBind() {
+    $(document)
+      .off('mousemove.photozone')
+      .off('mouseup.photozone');
+  }
+
+  function docBind(_uploader) {
+    $(document)
+      .on('mousemove.photozone', function (e) {
+        var _u_ = _uploader;
+        if (_u_ && _u_.resizing) {
+          var dx = e.pageX - _u_.aoffset[0]
+            , dy = e.pageY - _u_.aoffset[1]
+            , dzx, dzy, sbx, sby
+            , cos = _u_.canvasOffset
+            , w = _u_.stage.canvas.width
+            , h = _u_.stage.canvas.height
+            , bitmap = _u_.bitmap
+            , img = bitmap.originalImage
+            , psx = _u_.psx
+            , psy = _u_.psy
+            , i = _u_.ri;
+
+          function a1() {
+            dzy = cos.top - e.pageY;
+            sby = dzy / h;
+
+            if (i === 0) {
+              bitmap.scaleY = psy + sby;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
+            } else if (i === 1) {
+              bitmap.scaleX = psx + sby;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
+            } else if (i === 2) {
+              bitmap.scaleY = psy + sby;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+            } else {
+              bitmap.scaleX = psx + sby;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+            }
+          }
+
+          function a3() {
+            dzx = cos.left - e.pageX;
+            sbx = dzx / w;
+
+            if (i === 0) {
+              bitmap.scaleX = psx + sbx;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
+            } else if (i === 1) {
+              bitmap.scaleY = psy + sbx;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+            } else if (i === 2) {
+              bitmap.scaleX = psx + sbx;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+            } else {
+              bitmap.scaleY = psy + sbx;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
+            }
+          }
+
+          function a4() {
+            dzx = e.pageX - cos.right;
+            sbx = dzx / w;
+
+            if (i === 0) {
+              bitmap.scaleX = psx + sbx;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+            } else if (i === 1) {
+              bitmap.scaleY = psy + sbx;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
+            } else if (i === 2) {
+              bitmap.scaleX = psx + sbx;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
+            } else {
+              bitmap.scaleY = psy + sbx;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+            }
+          }
+
+          function a6() {
+            dzy = e.pageY - cos.bottom;
+            sby = dzy / h;
+
+            if (i === 0) {
+              bitmap.scaleY = psy + sby;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+            } else if (i === 1) {
+              bitmap.scaleX = psx + sby;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+            } else if (i === 2) {
+              bitmap.scaleY = psy + sby;
+              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
+            } else {
+              bitmap.scaleX = psx + sby;
+              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
+            }
+          }
+
+          if (dx || dy) {
+
+            switch (_u_.anchor) {
+              case 0:
+                a1();
+                a3();
+                break;
+
+              case 1:
+                a1();
+                break;
+
+              case 2:
+                a1();
+                a4();
+                break;
+
+              case 3:
+                a3();
+                break;
+
+              case 4:
+                a4();
+                break;
+
+              case 5:
+                a3();
+                a6();
+                break;
+
+              case 6:
+                a6();
+                break;
+
+              case 7:
+                a4();
+                a6();
+                break;
+            }
+
+            _u_.stage.update();
+            _u_.bitmap80.updateImage(_u_.stage.canvas);
+            _u_.stage80.update();
+
+          }
+
+          _u_.aoffset = [e.pageX, e.pageY];
+          return false;
+        }
+      })
+      .on('mouseup.photozone', function (e) {
+        if (_uploader) {
+          _uploader.resizing = false;
+          _uploader.dragging = false;
+          _uploader.anchor = null;
+          // 记录上次缩放大小
+          if (_uploader.bitmap) {
+            _uploader.psx = _uploader.bitmap.scaleX;
+            _uploader.psy = _uploader.bitmap.scaleY;
+          }
+        }
+      });
+  }
 
   return function () {
     return new Uploader(uploadSettings);

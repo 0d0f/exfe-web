@@ -73,5 +73,6 @@
     "plusplus"      : false,  // Prohibit use of `++` & `--`.
     "sub"           : false,  // Tolerate all forms of subscript notation besides dot notation e.g. `dict['key']` instead of `dict.key`.
     "trailing"      : false,  // Prohibit trailing whitespaces.
-    "white"         : false   // Check against strict whitespace and indentation rules.                                                                     空白
+    "white"         : false,  // Check against strict whitespace and indentation rules.                                                                     空白
+    "escape"        : true    // https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Functions#escape_and_unescape_functions
 }
