@@ -169,7 +169,12 @@ define('dialog', [], function (require, exports, module) {
     var that = this;
     if (this.isShown && this.options.keyboard) {
       $BODY.on('keyup.dismiss.modal', function (e) {
-        e.which === 27 && that.hide();
+        if (e.which === 27) {
+          e.stopPropagation();
+          e.preventDefault();
+          e.which === 27 && that.hide();
+          return false;
+        }
       });
     } else if (!this.isShown) {
       $BODY.off('keyup.dismiss.modal');
