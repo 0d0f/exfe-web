@@ -6717,7 +6717,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .settings-panel .user-infos .identity-list > li i {
-  vertical-align: middle;
+  vertical-align: text-bottom;
 }
 
 .settings-panel .user-infos .identity-list .icon-move {
