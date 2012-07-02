@@ -1,0 +1,87 @@
+  .cross-background {
+    position: absolute;
+    height: 680px;
+    width: 100%;
+    z-index: 1;
+    background: ~"url(@{xTitleBackgroundPath}/westlake.jpg)" left -198px no-repeat;
+    .border-radius(4px 4px 0 0);
+    @shadow: "0 -2px 0 0 @{bodyBackground}, 0 2px 0 0 @{bodyBackground}, 2px 0px 2px 0px rgba(0,0,0,.25)";
+    .box-shadow(~"@{shadow}");
+
+    .cross-background-blur {
+      height: 297px;
+      width: 100%;
+      #gradient > .vertical-three-colors(rgba(250,250,250,.7), rgba(250,250,250,.88), 50%, #fafafa);
+      background-color: transparent;
+      .border-radius(4px 4px 0 0);
+    }
+
+    .cross-background-side {
+      position: absolute;
+      width: 4px;
+      height: 383px;
+      z-index: 2;
+      right: -4px;
+      bottom: 0;
+      #gradient > .vertical(rgba(250,250,250,0),#fafafa);
+      background-color: transparent;
+    }
+  }
+
+    .cross-container {
+      position: relative;
+      z-index: 3;
+      padding-top: 80px;
+    }
+
+    .cross-title {
+      margin: 0 40px 20px;
+
+      h1 {
+        width: 630px;
+        font-size: 42px;
+        font-weight: @helveticaLight;
+        line-height: 50px;
+        text-shadow: 0 1px 1px #FEFFFE;
+      }
+    }
+
+    .cross-description {
+      max-height: 180px;
+      overflow: hidden;
+
+      p {
+        margin-bottom: 20px;
+      }
+    }
+
+    .cross-dp {
+      h2 {
+        font-size: 34px;
+        font-weight: @helveticaLight;
+        line-height: 40px;
+        color: #1175A5;
+        white-space: normal;
+            word-break: break-word;
+        -ms-word-break: break-all;
+            word-break: break-all;
+      }
+    }
+
+    .cross-time {
+      margin-bottom: 20px;
+    }
+
+    .cross-place {
+      h2 {
+        max-height: 80px;
+        overflow: hidden;
+        padding-top: 20px;
+      }
+
+      address {
+        margin-bottom: 10px;
+        max-height: 80px;
+        overflow: hidden;
+      }
+    }

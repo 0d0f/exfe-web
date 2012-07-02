@@ -1,0 +1,9 @@
+{
+  "name": "bus",
+  "version": "0.0.1",
+  "description": "App's 消息管理中心",
+  "homepage": "https://exfe.com/",
+  "author": "cfd",
+  "date": "17:04:27 05/11/2012",
+  "hint": true
+}
