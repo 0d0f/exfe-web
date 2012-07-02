@@ -38,8 +38,8 @@ ExfeeCache = {
 
 
     init : function() {
-        var Store          = require('store');
-        var cached_user_id = Store.get('exfee_cache_user_id');
+        var Store          = require('store'),
+            cached_user_id = Store.get('exfee_cache_user_id');
         if (User && User.id && cached_user_id && User.id === cached_user_id) {
             try {
                 ExfeeCache.identities = JSON.parse(
@@ -68,7 +68,7 @@ ExfeeCache = {
                 && identity.connected_user_id === User.id;
         }
         var arrCatched = [];
-        key = ExfeUtilities.trim(key.toLowerCase());
+        key = key.toLowerCase();
         for (var i = 0, i < this.identities.length, i++) {
             if (matchIdentity(this.identities[i])
             &&  !isMyIdentity(this.identities[i])
@@ -93,7 +93,9 @@ ExfeeWidget = {
 
     completimer      : 0,
 
-    complete_key     : '',
+    complete_key     : {},
+
+    complete_exfee   : {},
 
     complete_request : '',
 
@@ -250,65 +252,78 @@ ExfeeWidget = {
     },
 
 
-    checkComplete : function(domId, key) {
-        ExfeeCache.search(key);
-        this.showCompletePanel(domId, key, arrCatched);
+    checkComplete : function(objInput, key) {
+        this.showCompleteItems(
+            $(objInput[0].parentNode.parentNode).find('.autocomplete')[0],
+            key,
+            ExfeeCache.search(key)
+        );
         this.ajaxComplete(domId, key);
     },
 
 
-    showCompletePanel : function(domId, key, exfee) {
-        var objAutoComplete = $('#' + domId + '_exfeegadget_autocomplete > ol'),
-            strItems        = '';
-        if (this.keyComplete[domId] !== key) {
-            this.curComplete[domId] = [];
-            objAutoComplete.html('');
+    displayIdentity : function(identity) {
+        switch (identity ? identity.provider : '') {
+            case 'email':
+                return identity.external_id;
+            case 'twitter':
+                return '@' + identity.external_username + '@twitter';
+            case 'facebook':
+                return identity.external_username + '@facebook';
+            default:
+                return '';
         }
-        this.keyComplete[domId] = key;
-        if (exfee && exfee.length) {
-            for (var i in exfee) {
-                var curIdentity = '',
-                    shown       = false;
-                switch (exfee[i].provider) {
-                    case 'email':
-                        curIdentity = exfee[i].external_identity.toLowerCase();
-                        break;
-                    case 'twitter':
-                        curIdentity = '@' + exfee[i].external_username.toLowerCase() + '@twitter';
-                        break;
-                    default:
-                        continue;
+    },
+
+
+    displayCompletePanel : function(objPanel, display) {
+        if (display) {
+            objPanel.slideDown(50);
+        } else {
+            objPanel.slideUp(50);
+        }
+    };
+
+
+    showCompleteItems : function(objPanel, key, identities) {
+        var exfeeWidgetId    = objPanel.parentNode.id,
+            objCompleteList  = $(objPanel).find('ol'),
+            strCompleteItems = '';
+        key = key.toLowerCase();
+        if (ExfeeWidget.complete_key[exfeeWidgetId] !== key) {
+            ExfeeWidget.complete_exfee[exfeeWidgetId] = [];
+            objCompleteList.html();
+        }
+        ExfeeWidget.complete_key[exfeeWidgetId] = key;
+        for (var i = 0; i < identities.length; i++) {
+            var shown = false;
+            for (var j = 0; j < ExfeeWidget.complete_exfee[exfeeWidgetId].length; j++) {
+                if (this.compareIdentity(ExfeeWidget.complete_exfee[exfeeWidgetId][j], identities[i])) {
+                    shown = true;
+                    break;
                 }
-                for (var j in this.curComplete[domId]) {
-                    if (this.curComplete[domId][j] === curIdentity) {
-                        shown = true;
-                        break;
-                    }
-                }
-                if (shown) {
-                    continue;
-                }
-                this.curComplete[domId].push(curIdentity);
-                strItems += '<li identity="' + curIdentity + '" '
-                          +     'class="autocomplete_item">'
-                          +     '<img src="' + odof.comm.func.getUserAvatar(
-                                exfee[i].avatar_file_name, 80, img_url)
-                          +     '" class="exfee_avatar">'
-                          +     '<span class="exfee_info">'
-                          +         '<span class="exfee_name">'
-                          +             exfee[i].name
-                          +         '</span>'
-                          +         '<span class="exfee_identity">'
-                          +             this.displayIdentity(exfee[i])
-                          +         '</span>'
-                          +     '</span>'
-                          + '</li>';
             }
+            if (shown) {
+                continue;
+            }
+            var index = ExfeeWidget.complete_exfee[exfeeWidgetId].push(ExfeUtilities.clone(identities[i]));
+            strCompleteItems += '<li complete_index="' + index + '">'
+                              +     '<img src="' + identities[i].avatar_filename + '" class="exfee-avatar">'
+                              +     '<span class="exfee_info">'
+                              +         '<span class="exfee_name">'
+                              +             identities[i].name
+                              +         '</span>'
+                              +         '<span class="exfee_identity">'
+                              +             this.displayIdentity(identities[i])
+                              +         '</span>'
+                              +     '</span>'
+                              + '</li>';
         }
-        if (strItems) {
-            objAutoComplete.append(strItems)
-        }
-        this.displayComplete(domId, key && this.curComplete[domId].length);
+        objCompleteList.append(strCompleteItems);
+        this.displayCompletePanel(
+            objPanel,
+            key && ExfeeWidget.complete_exfee[exfeeWidgetId].length
+        );
     },
 
 
@@ -368,15 +383,7 @@ ns.ajaxComplete = function(domId, key) {
 };
 
 
-ns.displayComplete = function(domId, display) {
-    this.completing[domId] = display;
-    var objCompleteBox = $('#' + domId + '_exfeegadget_autocomplete');
-    if (display) {
-        objCompleteBox.slideDown(50);
-    } else {
-        objCompleteBox.slideUp(50);
-    }
-};
+
 
 
 
@@ -461,7 +468,7 @@ ns.ajaxIdentity = function(identities) {
 
 
 
-    check_input : function(objInput, force) {
+    checkInput : function(objInput, force) {
         var strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
             arrValid   = [],
@@ -904,23 +911,6 @@ ns.selectCompleteResult = function(domId, identity) {
 ns.getClassRsvp = function(rsvp) {
     return 'exfee_rsvp_'
          + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
-};
-
-
-ns.displayIdentity = function(identity) {
-    switch (identity ? identity.provider : '') {
-        case 'email':
-            return identity.external_identity;
-            break;
-        case 'twitter':
-            return '@' + identity.external_username + '@twitter';
-            break;
-        case 'facebook':
-            return identity.external_username + '@facebook';
-            break;
-        default:
-            return '';
-    }
 };
 
 
