@@ -1,0 +1,176 @@
+.newbie {
+  position: relative;
+  color: #b2b2b2;
+  font-weight: 300;
+  border: 1px dashed #b2b2b2;
+  background: #EFF6F9;
+  word-spacing: -1px;
+  z-index: @zindexDropdown;
+
+  &.nbg-0 {
+    position: absolute;
+    margin-left: -200px;
+    margin-top: -6px;
+    padding: 10px 20px 10px 10px;
+    font-size: 24px;
+    border-right: none;
+    z-index: @zindexDropdown + 1;
+
+    .keyframes-bounce {
+      0%{margin-left: -200px;}
+      50%{margin-left: -206px;}
+      100%{margin-left: -200px;}
+    }
+
+    @-webkit-keyframes bounce {
+      .keyframes-bounce;
+    }
+
+    @-moz-keyframes bounce {
+      .keyframes-bounce;
+    }
+
+    @-ms-keyframes bounce {
+      .keyframes-bounce;
+    }
+
+    @-o-keyframes bounce {
+      .keyframes-bounce;
+    }
+
+    @keyframes bounce {
+      .keyframes-bounce;
+    }
+
+    &.bouncey {
+      -webkit-animation-name: bounce;
+      -webkit-animation-duration: 700ms;
+      -webkit-animation-iteration-count: 3 /*infinite*/;
+      -webkit-animation-direction: alternate;
+      -webkit-transition-timing-function: ease-in-out;
+
+      -moz-animation-name: bounce;
+      -moz-animation-duration: 700ms;
+      -moz-animation-iteration-count: 3 /*infinite*/;
+      -moz-animation-direction: alternate;
+      -moz-transition-timing-function: ease-in-out;
+
+      -ms-animation-name: bounce;
+      -ms-animation-duration: 700ms;
+      -ms-animation-iteration-count: 3 /*infinite*/;
+      -ms-animation-direction: alternate;
+      -ms-transition-timing-function: ease-in-out;
+
+      -o-animation-name: bounce;
+      -o-animation-duration: 700ms;
+      -o-animation-iteration-count: 3 /*infinite*/;
+      -o-animation-direction: alternate;
+      -o-transition-timing-function: ease-in-out;
+
+      animation-name: bounce;
+      animation-duration: 700ms;
+      animation-iteration-count: 3 /*infinite*/;
+      animation-direction: alternate;
+      transition-timing-function: ease-in-out;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      padding-right: 0px;
+      width: 29.29px;
+      height: 29.29px;
+      top: 5px;
+      right: -18px;
+      border-right: 1px dashed #b2b2b2;
+      border-bottom: 1px dashed #b2b2b2;
+      background: #EFF6F9;
+      .rotate(-45deg);
+    }
+  }
+
+  &.nbg-1 {
+    width: 564px;
+    margin-top: -70px;
+    margin-left: 135px;
+    margin-bottom: 40px;
+    padding: 10px;
+  }
+
+  &.nbg-2 {
+    width: 300px;
+    margin: 7px auto 0;
+    padding: 15px 0 17px;
+    text-align: center;
+
+    h4 {
+      font-size: 24px;
+      font-weight: 300;
+      padding-bottom: 15px;
+    }
+
+    .gatherax {
+      cursor: pointer;
+    }
+
+    .bb {
+      font-size: 24px;
+      text-decoration: underline;
+      &.x-sign {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &.nbg-3 {
+    width: 260px;
+    margin: 7px auto 15px;
+    padding-top: 15px;
+    text-align: center;
+
+    p {
+      margin: 0;
+      font-size: 24px;
+      line-height: 30px;
+      padding-bottom: 15px;
+    }
+  }
+
+  .arrow {
+    margin-top: -10px;
+    margin-right: -10px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .rb {
+    #arrow > .rb(8px, #b2b2b2);
+    margin-top: 8px;
+    margin-left: 8px;
+  }
+
+  .lt {
+    #arrow > .lt(8px, #b2b2b2);
+    margin-top: 8px;
+    margin-left: 8px;
+  }
+}
+
+.newbie-close {
+  // http://www.evotech.net/blog/2007/04/named-html-entities-in-numeric-order/
+  // &time; &#215;
+  //content: '\D7';
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  background: #fff;
+  .border-radius(7px);
+
+  i {
+    display: block;
+  }
+}
