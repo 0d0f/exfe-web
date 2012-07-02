@@ -1,4 +1,10 @@
 ExfeUtilities = {
+
+    trim : function(string) {
+        return string ? string.replace(/^\s+|\s+$/g, '') : '';
+    },
+
+
     clone : function(variable) {
         switch (Object.prototype.toString.call(variable)) {
             case '[object Object]':       // Object instanceof Object
@@ -23,13 +29,27 @@ ExfeUtilities = {
 
 ExfeeCache = {
 
-    cached_user_id   : '',
-
     identities       : [],
 
     tried_key        : {},
 
     updated_identity : {},
+
+    init             : function() {
+        var Store          = require('store');
+        var cached_user_id = Store.get('exfee_cache_user_id');
+        if (User && User.id && cached_user_id && User.id === cached_user_id) {
+            try {
+                ExfeeCache.identities = JSON.parse(
+                    Store.get('exfee_cache_identities')
+                );
+            } catch (err) {
+                ExfeeCache.identities = [];
+            }
+        } else {
+            ExfeeCache.identities = [];
+        }
+    }
 
 };
 
@@ -86,7 +106,36 @@ ExfeeWidget = {
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
           + '</li>'
         );
-    }
+    },
+
+
+    compareIdentity  : function(identity_a, identity_b) {
+        if (identity_a.id && identity_b.id && identity_a.id === identity_b.id) {
+            return true;
+        }
+        if (ExfeUtilities.trim(identity_a.provider).toLowerCase()
+        === ExfeUtilities.trim(identity_b.provider).toLowerCase()
+         && ExfeUtilities.trim(identity_a.external_id).toLowerCase()
+        === ExfeUtilities.trim(identity_b.external_id).toLowerCase()) {
+            return true;
+        }
+        return false;
+    },
+
+
+    add_exfee        : function(identity) {
+        for (var i = 0; i < Cross.invitations; i++) {
+            if (compareIdentity(Cross.invitations[i].identity, identity)) {
+                return;
+            }
+        }
+        Cross.invitations.push({
+            identity    : identity,
+            rsvp_status : 'NORESPONSE',
+            host        : false;
+            mates       : 0
+        });
+    },
 
 };
 
@@ -181,9 +230,27 @@ define(function (require, exports, module) {
             window.location = '/';
         });
         $('#cross-form-gather').bind('click', function() {
-            Gather();
+            if (Cross.by_identity.id) {
+                Gather();
+            } else {
+                // 需要登录
+            }
         });
     };
+
+
+    var InputFormInit = function() {
+        var objGatherTitle = $('#gather-title');
+        objGatherTitle.bind('focus blur keyup', function() {
+            ChangeTitle(objGatherTitle.val());
+        });
+    }
+
+
+    var ChangeTitle = function(title) {
+        Cross.title = ExfeUtilities.trim(title);
+        ShowTitle();
+    }
 
 
     var ShowTitle = function() {
@@ -241,10 +308,7 @@ define(function (require, exports, module) {
 
 
     var Gather = function() {
-        Cross.time.begin_at.timezone='';
         var strCross = JSON.stringify(Cross);
-        //strCross = strCross.substr(1, strCross.length - 2);
-        //console.log(strCross);
         Api.request(
             'gather',
             {type : 'POST', data : strCross},
@@ -267,9 +331,13 @@ define(function (require, exports, module) {
     ButtonsInit();
 
 
+    // init input form
+    InputFormInit();
+
+
     // get current user
     var Signin  = Store.get('signin');
-    var User    = Signin ? Store.get('user') : null;
+    window.User = Signin ? Store.get('user') : null;
     if (User) {
         Api.setToken(Signin.token);
         Cross.by_identity.id = User.default_identity.id;
@@ -322,33 +390,6 @@ define(function (require, exports, module) {
 ns = {};
 
 ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
-
-    if (typeof localStorage !== 'undefined') {
-        var curIdentity = myIdentity && typeof myIdentity.external_identity !== 'undefined'
-                        ? myIdentity.external_identity.toLowerCase() : null;
-        this.exfeeAvailable = localStorage.getItem(this.exfeeAvailableKey);
-        if (localStorage.getItem(this.exfeeAvailableIdK) === curIdentity
-         && this.exfeeAvailable) {
-            try {
-                this.exfeeAvailable = JSON.parse(this.exfeeAvailable);
-            } catch (err) {
-                this.exfeeAvailable = [];
-            }
-        } else {
-            this.exfeeAvailable = [];
-        }
-    }
-    // this.cacheExfee(curExfee);
-    this.addExfee(domId, curExfee, true, true);
-    // TODO: 先隐藏此功能
-    // $('#' + domId + '_exfeegadget_avatararea > ol').append('<li class="last"><button class="exfeegadget_expandavatarbtn" /><li>')
-
-    if (this.diffCallback[domId] && !skipInitCallback) {
-        this.diffCallback[domId]();
-    }
-    if (typeof this.idsBuilt[domId] !== 'undefined') {
-        return;
-    }
     this.idsBuilt[domId] = true;
     $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock').live(
         'mouseover mouseout', this.eventAvatar
