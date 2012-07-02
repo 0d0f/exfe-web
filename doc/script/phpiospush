@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /www/exfe/current/jobs
-QUEUE=iOSPushMsg VERBOSE=1 INTERVAL=10 PIDFILE=/var/run/resque/worker_iospush.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php iOSPushMsg > /var/log/resque/worker_iospush.log
