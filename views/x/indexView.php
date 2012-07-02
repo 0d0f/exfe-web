@@ -50,9 +50,9 @@ EXFE Maps
 
           <!-- Cross-Form: Exfee -->
           <div class="control-group cross-exfee" id="gather-exfee">
-            <label class="control-label" for="gather-exfee">Exfee</label>
+            <label class="control-label" for="gather-exfee-input">Exfee</label>
             <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-exfee" placeholder="Enter attendees' information" />
+              <input type="text" class="input-xlarge" id="gather-exfee-input" placeholder="Enter attendees' information" />
             </div>
 
             <div class="pull-right cross-stats">
@@ -95,7 +95,7 @@ EXFE Maps
     <div class="cross-container">
       <!-- Cross-Title -->
       <div class="cross-title">
-        <h1>Team dinner in San Francisco with Bay Area friends</h1>
+        <h1></h1>
       </div>
 
       <div class="row">
@@ -104,22 +104,7 @@ EXFE Maps
         <div class="gr-a">
 
           <!-- Cross-Content -->
-          <div class="cross-description">
-<p>
-h: 680px;
-e6e6e6
-fafafa
-
-2 2 0.25
-
-315
-
-70 88 100
-0~1, h 377
-</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, set eiusmod tempor incidunt et labore et dolore magna aliquam. Ut enim ad minim veniam, quis nostrud exerc. Irure dolor in reprehend incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse molestaie cillum. Tia non ob ea soluad incom dereud facilis est er expedit distinct. Nam liber te conscient to factor tum poen legum odioque civiuda et tam. Neque pecun modut est neque nonor et imper ned libidig met, consectetur adipiscing elit, sed ut labore et dolore magna aliquam is nostrud exercitation ullam mmodo consequet.</p>
-          </div>
+          <div class="cross-description"></div>
 
           <!-- Cross-rsvp -->
           <div class="cross-rsvp">
@@ -153,9 +138,9 @@ fafafa
 
             <!-- Cross-Form: Exfee -->
             <div class="control-group cross-exfee" id="cross-exfee">
-              <label class="control-label" for="gather-exfee">Exfee</label>
+              <label class="control-label" for="cross-exfee-input">Exfee</label>
               <div class="controls">
-                <input type="text" class="input-xlarge" id="gather-exfee" placeholder="Enter attendees' information" />
+                <input type="text" class="input-xlarge" id="cross-exfee-input" placeholder="Enter attendees' information" />
               </div>
 
               <div class="pull-right cross-stats">
@@ -191,6 +176,7 @@ fafafa
 <!-- JavaScript at the bottom for fast page loading -->
 <?php include 'share/footer.php'; ?>
 <script src="/static/js/cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+<script src="/static/1b/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
 </html>
