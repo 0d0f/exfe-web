@@ -1,3 +1,0 @@
-!/bin/sh
-cd /www/exfe/current/jobs
-QUEUE=waitingqueue VERBOSE=1 INTERVAL=300 MULTI=true PIDFILE=/var/run/resque/worker_waiting.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php waiting> /var/log/resque/worker_waiting.log

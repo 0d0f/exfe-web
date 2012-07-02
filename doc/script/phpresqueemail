@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /www/exfe/current/jobs
-QUEUE=email VERBOSE=1 PIDFILE=/var/run/resque/worker_exfeemail.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php email > /var/log/resque/worker_exfeemail.log

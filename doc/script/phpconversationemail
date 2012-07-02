@@ -1,4 +1,0 @@
-!/bin/sh
-cd /www/exfe/current/jobs
-QUEUE=conversationemail VERBOSE=1 INTERVAL=300 MULTI=true PIDFILE=/var/run/resque/worker_exfeeconversationemail.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php conversationemail > /var/log/resque/worker_exfeconversationemail.log
-
