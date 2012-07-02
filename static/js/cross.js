@@ -85,20 +85,20 @@ ExfeeWidget = {
         this.editable = editable;
         this.callback = callback;
         $('#' + this.dom_id + ' .input-xlarge').bind(
-            'keydown blur', this.input_event
+            'keydown blur', this.inputEvent
         );
         return ExfeUtilities.clone(this);
     },
 
 
-    show_all : function() {
+    showAll : function() {
         for (var i = 0; i < Exfee.invitations.length; i++) {
-            this.show_one(Exfee.invitations[i]);
+            this.showOne(Exfee.invitations[i]);
         }
     },
 
 
-    show_one : function(invitation) {
+    showOne : function(invitation) {
         var strExfeeKey = 'provider_'    + invitation.identity.provider + '_'
                         + 'external_id_' + invitation.identity.external_id;
         $('#' + this.dom_id + ' .thumbnails').append(
@@ -120,16 +120,23 @@ ExfeeWidget = {
             return true;
         }
         if (ExfeUtilities.trim(identity_a.provider).toLowerCase()
-        === ExfeUtilities.trim(identity_b.provider).toLowerCase()
-         && ExfeUtilities.trim(identity_a.external_id).toLowerCase()
-        === ExfeUtilities.trim(identity_b.external_id).toLowerCase()) {
-            return true;
+        === ExfeUtilities.trim(identity_b.provider).toLowerCase()) {
+            if (identity_a.external_id && identity_b.external_id
+             && ExfeUtilities.trim(identity_a.external_id).toLowerCase()
+            === ExfeUtilities.trim(identity_b.external_id).toLowerCase()) {
+                return true;
+            }
+            if (identity_a.external_username && identity_b.external_username
+             && ExfeUtilities.trim(identity_a.external_username).toLowerCase()
+            === ExfeUtilities.trim(identity_b.external_username).toLowerCase()) {
+                return true;
+            }
         }
         return false;
     },
 
 
-    add_exfee : function(identity) {
+    addExfee : function(identity) {
         for (var i = 0; i < Cross.invitations; i++) {
             if (compareIdentity(Cross.invitations[i].identity, identity)) {
                 return;
@@ -144,34 +151,67 @@ ExfeeWidget = {
     },
 
 
-    parse_external_username : function(string) {
-        string = ExfeUtilities.trim(string);
-        if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(string)) {
-            var iLt = strId.indexOf('<'),
-                iGt = strId.indexOf('>');
-            return {name        : odof.util.trim(odof.util.cutLongName(odof.util.trim(strId.substring(0, iLt)).replace(/^"|^'|"$|'$/g, ''))),
-                    external_id : odof.util.trim(strId.substring(++iLt, iGt)),
-                    provider    : 'email'};
-        } else if (/^[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(string)) {
-            return {name              : odof.util.trim(odof.util.cutLongName(strId.split('@')[0])),
-                    external_identity : strId,
-                    provider          : 'email'};
-        } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(strId)) {
-            strId = strId.replace(/^@|@twitter$/ig, '');
-            return {name              : strId,
-                    external_identity : '@' + strId + '@twitter',
-                    external_username : strId,
-                    provider          : 'twitter'};
-        } else if (/^[a-z0-9_]{1,15}@facebook$/i.test(strId)) {
-            strId = strId.replace(/@facebook$/ig, '');
-            return {name              : strId,
-                    external_identity : strId + '@facebook',
-                    external_username : strId,
-                    provider          : 'facebook'};
-        } else {
-            return {external_identity : strId,
-                    provider          : null};
+    getUTF8Length : function(string) {
+        var length = 0;
+        if (string) {
+            for (var i = 0; i < string.length; i++) {
+                charCode = string.charCodeAt(i);
+                if (charCode < 0x007f) {
+                    length += 1;
+                } else if ((0x0080 <= charCode) && (charCode <= 0x07ff)) {
+                    length += 2;
+                } else if ((0x0800 <= charCode) && (charCode <= 0xffff)) {
+                    length += 3;
+                }
+            }
         }
+        return length;
+    },
+
+
+    cutLongName : function(string) {
+        string = string ? string.replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ') : '';
+        while (this.getUTF8Length(string) > 30) {
+            string = string.substring(0, string.length - 1);
+        }
+        return string;
+    };
+
+
+    parseExternalUsername : function(string) {
+        string = ExfeUtilities.trim(string);
+        var objIdentity = {
+            name              : '',
+            external_id       : '',
+            external_username : '',
+            provider          : ''
+        }
+        if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(string)) {
+            var iLt = string.indexOf('<'),
+                iGt = string.indexOf('>');
+            objIdentity.external_id       = ExfeUtilities.trim(string.substring(++iLt, iGt));
+            objIdentity.external_username = objIdentity.external_id;
+            objIdentity.name              = ExfeUtilities.trim(this.cutLongName(ExfeUtilities.trim(string.substring(0, iLt)).replace(/^"|^'|"$|'$/g, '')));
+            objIdentity.provider          = 'email';
+        } else if (/^[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(string)) {
+            objIdentity.external_id       = string;
+            objIdentity.external_username = string;
+            objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
+            objIdentity.provider          = 'email';
+        } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
+            objIdentity.external_id       = 0;
+            objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');
+            objIdentity.name              = objIdentity.external_username;
+            objIdentity.provider          = 'twitter';
+        } else if (/^[a-z0-9_]{1,15}@facebook$/i.test(string)) {
+            objIdentity.external_id       = 0;
+            objIdentity.external_username = string.replace(/@facebook$/ig, '');
+            objIdentity.name              = objIdentity.external_username;
+            objIdentity.provider          = 'facebook';
+        } else {
+            objIdentity = null;
+        }
+        return objIdentity;
     },
 
 
@@ -212,7 +252,7 @@ ExfeeWidget = {
     },
 
 
-    input_event : function(event) {
+    inputEvent : function(event) {
         var objInput = $(event.target);
 
         console.log(objInput);
@@ -432,8 +472,8 @@ define(function (require, exports, module) {
 
 
     var ShowExfee = function() {
-        window.GatherExfeeWidget.show_all();
-        window.CrossExfeeWidget.show_all();
+        window.GatherExfeeWidget.showAll();
+        window.CrossExfeeWidget.showAll();
     };
 
 
