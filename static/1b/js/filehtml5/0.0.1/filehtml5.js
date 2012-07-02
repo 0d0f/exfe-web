@@ -121,7 +121,12 @@ define('filehtml5', [], function (require, exports, module) {
           key;
 
       for (key in parameters) {
-        uploadData.append(key, parameters[key]);
+        if (typeof parameters[key] === 'Blob') {
+          uploadData.append(key, parameters[key], key);
+        }
+        else {
+          uploadData.append(key, parameters[key]);
+        }
       }
       fileField && uploadData.append(fileField, this._file);
 
