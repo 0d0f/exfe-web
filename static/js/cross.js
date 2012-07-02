@@ -36,6 +36,7 @@ ExfeeCache = {
 
     updated_identity : {},
 
+
     init : function() {
         var Store          = require('store');
         var cached_user_id = Store.get('exfee_cache_user_id');
@@ -50,7 +51,34 @@ ExfeeCache = {
         } else {
             ExfeeCache.identities = [];
         }
+    },
+
+
+    search : function(key) {
+        var matchString   = function(subject) {
+            return subject.toLowerCase().indexOf(key) !== -1;
+        };
+        var matchIdentity = function(identity) {
+            return matchString(key, identity.external_id)
+                || matchString(key, identity.external_username)
+                || matchString(key, identity.name);
+        };
+        var isMyIdentity  = function(identity) {
+            return identity.connected_user_id && User && User.id
+                && identity.connected_user_id === User.id;
+        }
+        var arrCatched = [];
+        key = ExfeUtilities.trim(key.toLowerCase());
+        for (var i = 0, i < this.identities.length, i++) {
+            if (matchIdentity(this.identities[i])
+            &&  !isMyIdentity(this.identities[i])
+            && checkExistence(this.identities[i])) {
+                arrCatched.push(ExfeUtilities.clone(this.identities[i]));
+            }
+        }
+        return arrCatched;
     }
+
 
 };
 
@@ -99,10 +127,10 @@ ExfeeWidget = {
 
 
     showOne : function(invitation) {
-        var strExfeeKey = 'provider_'    + invitation.identity.provider + '_'
-                        + 'external_id_' + invitation.identity.external_id;
         $('#' + this.dom_id + ' .thumbnails').append(
-            '<li class="identity" exfee="' + strExfeeKey + '">'
+            '<li class="identity" provider="' + invitation.identity.provider.toLowerCase()
+          +                 '" external_id="' + invitation.identity.external_id.toLowerCase()
+          +           '" external_username="' + invitation.identity.external_username.toLowerCase() + '">'
           +     '<span class="avatar">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<span class="rt">' + (invitation.host ? 'H' : '') + '</span>'
@@ -136,18 +164,25 @@ ExfeeWidget = {
     },
 
 
-    addExfee : function(identity) {
-        for (var i = 0; i < Cross.invitations; i++) {
-            if (compareIdentity(Cross.invitations[i].identity, identity)) {
-                return;
+    checkExistence : function(identity) {
+        for (var i = 0; i < Exfee.invitations; i++) {
+            if (compareIdentity(Exfee.invitations[i].identity, identity)) {
+                return true;
             }
         }
-        Cross.invitations.push({
-            identity    : identity,
-            rsvp_status : 'NORESPONSE',
-            host        : false,
-            mates       : 0
-        });
+        return false;
+    },
+
+
+    addExfee : function(identity) {
+        if (this.checkExistence(identity)) {
+            Cross.invitations.push({
+                identity    : ExfeUtilities.clone(identity),
+                rsvp_status : 'NORESPONSE',
+                host        : false,
+                mates       : 0
+            });
+        }
     },
 
 
@@ -175,10 +210,10 @@ ExfeeWidget = {
             string = string.substring(0, string.length - 1);
         }
         return string;
-    };
+    },
 
 
-    parseExternalUsername : function(string) {
+    parseAttendeeInfo : function(string) {
         string = ExfeUtilities.trim(string);
         var objIdentity = {
             name              : '',
@@ -215,11 +250,147 @@ ExfeeWidget = {
     },
 
 
+    checkComplete : function(domId, key) {
+        ExfeeCache.search(key);
+        this.showComplete(domId, key, arrCatched);
+        this.ajaxComplete(domId, key);
+    };
+
+
+    ns.showComplete = function(domId, key, exfee) {
+        var objAutoComplete = $('#' + domId + '_exfeegadget_autocomplete > ol'),
+            strItems        = '';
+        if (this.keyComplete[domId] !== key) {
+            this.curComplete[domId] = [];
+            objAutoComplete.html('');
+        }
+        this.keyComplete[domId] = key;
+        if (exfee && exfee.length) {
+            for (var i in exfee) {
+                var curIdentity = '',
+                    shown       = false;
+                switch (exfee[i].provider) {
+                    case 'email':
+                        curIdentity = exfee[i].external_identity.toLowerCase();
+                        break;
+                    case 'twitter':
+                        curIdentity = '@' + exfee[i].external_username.toLowerCase() + '@twitter';
+                        break;
+                    default:
+                        continue;
+                }
+                for (var j in this.curComplete[domId]) {
+                    if (this.curComplete[domId][j] === curIdentity) {
+                        shown = true;
+                        break;
+                    }
+                }
+                if (shown) {
+                    continue;
+                }
+                this.curComplete[domId].push(curIdentity);
+                strItems += '<li identity="' + curIdentity + '" '
+                          +     'class="autocomplete_item">'
+                          +     '<img src="' + odof.comm.func.getUserAvatar(
+                                exfee[i].avatar_file_name, 80, img_url)
+                          +     '" class="exfee_avatar">'
+                          +     '<span class="exfee_info">'
+                          +         '<span class="exfee_name">'
+                          +             exfee[i].name
+                          +         '</span>'
+                          +         '<span class="exfee_identity">'
+                          +             this.displayIdentity(exfee[i])
+                          +         '</span>'
+                          +     '</span>'
+                          + '</li>';
+            }
+        }
+        if (strItems) {
+            objAutoComplete.append(strItems)
+        }
+        this.displayComplete(domId, key && this.curComplete[domId].length);
+    };
+
+
+ns.ajaxIdentity = function(identities) {
+    for (var i in identities) {
+        if (typeof this.exfeeIdentified[
+                identities[i].external_identity.toLowerCase()
+            ] !== 'undefined') {
+            identities.splice(i, 1);
+        }
+    }
+    if (!identities.length) {
+        return;
+    }
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/get',
+        data     : {identities : JSON.stringify(identities)},
+        dataType : 'json',
+        success  : function(data) {
+            var arrExfee = [];
+            for (var i in data.response.identities) {
+                var arrCatch = ['avatar_file_name', 'external_identity', 'name',
+                                'external_username', 'identityid', 'bio', 'provider'],
+                    objExfee = {};
+                for (var j in arrCatch) {
+                    objExfee[arrCatch[j]] = data.response.identities[i][arrCatch[j]];
+                }
+                objExfee.identityid = parseInt(objExfee.identityid)
+                var curId    = objExfee.external_identity.toLowerCase(),
+                    domExfee = $(
+                        '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
+                    );
+                for (j in odof.exfee.gadget.exfeeInput) {
+                    if (typeof odof.exfee.gadget.exfeeInput[j][curId] === 'undefined' ) {
+                        continue;
+                    }
+                    for (var k in arrCatch) {
+                        if (typeof objExfee[arrCatch[k]] === 'undefined') {
+                            continue;
+                        }
+                        odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
+                      = objExfee[arrCatch[k]];
+                    }
+                }
+                if (domExfee.length) {
+                    domExfee.find('.exfee_avatar').attr(
+                        'src', odof.comm.func.getUserAvatar(
+                        objExfee.avatar_file_name,
+                        80, img_url)
+                    );
+                    domExfee.find('.exfee_name').html(objExfee.name);
+                    domExfee.find('.exfee_identity').html(objExfee.external_identity);
+                }
+                arrExfee.push(objExfee);
+            }
+            odof.exfee.gadget.cacheExfee(arrExfee);
+        }
+    });
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     check_input : function(objInput, force) {
         var strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
             arrValid   = [],
-            arrInValid = [];
+            arrInvalid = [];
         if (ExfeeWidget.last_inputed[objInput[0].id] === strInput && !force) {
             return;
         } else {
@@ -231,24 +402,21 @@ ExfeeWidget = {
             }
         }
         for (i = 0; i < arrInput.length; i++) {
-            var item = odof.comm.func.parseId(arrInput[i]);
-            if (item.provider && (parseInt(i) < arrInput.length - 1 || force)) {
+            var item = parseAttendeeInfo(arrInput[i]);
+            if (item && (parseInt(i) < arrInput.length - 1 || force)) {
                 arrValid.push(item);
             } else {
-                arrInValid.push(odof.util.trim(arrInput[i]));
+                arrInvalid.push(ExfeUtilities.trim(arrInput[i]));
             }
         }
-        var newInput = arrInValid.join('; ');
+        var newInput = arrInvalid.join('; ');
         if (newInput !== strInput) {
             objInput.val(newInput);
         }
-        $('#' + domId + '_exfeegadget_inputbox_desc').html(
-            objInput.val() === '' ? odof.exfee.gadget.strInputTips : ''
-        );
-        if (arrValid.length) {
-            odof.exfee.gadget.addExfee(domId, arrValid);
+        for (i = 0; i < arrValid.length; i++) {
+            this.addExfee(arrValid[i]);
         }
-        odof.exfee.gadget.chkComplete(domId, arrInValid.pop());
+        odof.exfee.gadget.chkComplete(domId, arrInvalid.pop());
     },
 
 
@@ -1074,137 +1242,6 @@ ns.getExfees = function(domId) {
         }
     }
     return arrExfees;
-};
-
-
-ns.chkComplete = function(domId, key) {
-    var arrCatched = [];
-    key = odof.util.trim(key).toLowerCase();
-    for (var i in this.exfeeAvailable) {
-        var curIdentity = this.exfeeAvailable[i].external_identity.toLowerCase();
-        if ((this.exfeeAvailable[i].name.toLowerCase().indexOf(key) !== -1
-          || curIdentity.indexOf(key) !== -1)
-          && curIdentity !== (myIdentity ? myIdentity.external_identity : '')
-          && typeof this.exfeeInput[domId][curIdentity] === 'undefined') {
-            arrCatched.push(odof.util.clone(this.exfeeAvailable[i]));
-        }
-    }
-    this.showComplete(domId, key, arrCatched);
-    this.ajaxComplete(domId, key);
-};
-
-
-ns.showComplete = function(domId, key, exfee) {
-    var objAutoComplete = $('#' + domId + '_exfeegadget_autocomplete > ol'),
-        strItems        = '';
-    if (this.keyComplete[domId] !== key) {
-        this.curComplete[domId] = [];
-        objAutoComplete.html('');
-    }
-    this.keyComplete[domId] = key;
-    if (exfee && exfee.length) {
-        for (var i in exfee) {
-            var curIdentity = '',
-                shown       = false;
-            switch (exfee[i].provider) {
-                case 'email':
-                    curIdentity = exfee[i].external_identity.toLowerCase();
-                    break;
-                case 'twitter':
-                    curIdentity = '@' + exfee[i].external_username.toLowerCase() + '@twitter';
-                    break;
-                default:
-                    continue;
-            }
-            for (var j in this.curComplete[domId]) {
-                if (this.curComplete[domId][j] === curIdentity) {
-                    shown = true;
-                    break;
-                }
-            }
-            if (shown) {
-                continue;
-            }
-            this.curComplete[domId].push(curIdentity);
-            strItems += '<li identity="' + curIdentity + '" '
-                      +     'class="autocomplete_item">'
-                      +     '<img src="' + odof.comm.func.getUserAvatar(
-                            exfee[i].avatar_file_name, 80, img_url)
-                      +     '" class="exfee_avatar">'
-                      +     '<span class="exfee_info">'
-                      +         '<span class="exfee_name">'
-                      +             exfee[i].name
-                      +         '</span>'
-                      +         '<span class="exfee_identity">'
-                      +             this.displayIdentity(exfee[i])
-                      +         '</span>'
-                      +     '</span>'
-                      + '</li>';
-        }
-    }
-    if (strItems) {
-        objAutoComplete.append(strItems)
-    }
-    this.displayComplete(domId, key && this.curComplete[domId].length);
-};
-
-
-ns.ajaxIdentity = function(identities) {
-    for (var i in identities) {
-        if (typeof this.exfeeIdentified[
-                identities[i].external_identity.toLowerCase()
-            ] !== 'undefined') {
-            identities.splice(i, 1);
-        }
-    }
-    if (!identities.length) {
-        return;
-    }
-    $.ajax({
-        type     : 'GET',
-        url      : site_url + '/identity/get',
-        data     : {identities : JSON.stringify(identities)},
-        dataType : 'json',
-        success  : function(data) {
-            var arrExfee = [];
-            for (var i in data.response.identities) {
-                var arrCatch = ['avatar_file_name', 'external_identity', 'name',
-                                'external_username', 'identityid', 'bio', 'provider'],
-                    objExfee = {};
-                for (var j in arrCatch) {
-                    objExfee[arrCatch[j]] = data.response.identities[i][arrCatch[j]];
-                }
-                objExfee.identityid = parseInt(objExfee.identityid)
-                var curId    = objExfee.external_identity.toLowerCase(),
-                    domExfee = $(
-                        '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
-                    );
-                for (j in odof.exfee.gadget.exfeeInput) {
-                    if (typeof odof.exfee.gadget.exfeeInput[j][curId] === 'undefined' ) {
-                        continue;
-                    }
-                    for (var k in arrCatch) {
-                        if (typeof objExfee[arrCatch[k]] === 'undefined') {
-                            continue;
-                        }
-                        odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
-                      = objExfee[arrCatch[k]];
-                    }
-                }
-                if (domExfee.length) {
-                    domExfee.find('.exfee_avatar').attr(
-                        'src', odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name,
-                        80, img_url)
-                    );
-                    domExfee.find('.exfee_name').html(objExfee.name);
-                    domExfee.find('.exfee_identity').html(objExfee.external_identity);
-                }
-                arrExfee.push(objExfee);
-            }
-            odof.exfee.gadget.cacheExfee(arrExfee);
-        }
-    });
 };
 
 
