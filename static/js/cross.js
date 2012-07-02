@@ -252,12 +252,12 @@ ExfeeWidget = {
 
     checkComplete : function(domId, key) {
         ExfeeCache.search(key);
-        this.showComplete(domId, key, arrCatched);
+        this.showCompletePanel(domId, key, arrCatched);
         this.ajaxComplete(domId, key);
-    };
+    },
 
 
-    ns.showComplete = function(domId, key, exfee) {
+    showCompletePanel : function(domId, key, exfee) {
         var objAutoComplete = $('#' + domId + '_exfeegadget_autocomplete > ol'),
             strItems        = '';
         if (this.keyComplete[domId] !== key) {
@@ -309,7 +309,77 @@ ExfeeWidget = {
             objAutoComplete.append(strItems)
         }
         this.displayComplete(domId, key && this.curComplete[domId].length);
-    };
+    },
+
+
+
+
+
+ns.ajaxComplete = function(domId, key) {
+    if (!key.length || typeof this.exfeeChecked[key] !== 'undefined') {
+        return;
+    }
+    if (this.completeRequest) {
+        this.completeRequest.abort();
+    }
+    this.completeRequest = $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/complete',
+        data     : {key : key},
+        info     : {domId : domId, key : key},
+        dataType : 'json',
+        success  : function(data) {
+            var gotExfee = [];
+            for (var i in data) {
+                var curIdentity = {
+                        identityid        : data[i].id,
+                        name              : data[i].name,
+                        avatar_file_name  : data[i].avatar_file_name
+                                          ? data[i].avatar_file_name
+                                          : 'default.png',
+                        bio               : data[i].bio,
+                        external_identity : data[i].external_identity,
+                        external_username : data[i].external_username,
+                        provider          : data[i].provider,
+                        userid            : data[i].uid
+                    },
+                    curId = curIdentity.external_identity.toLowerCase(),
+                    exist = false;
+                for (var j in odof.exfee.gadget.exfeeAvailable) {
+                    if (odof.exfee.gadget.exfeeAvailable[j]
+                            .external_identity.toLowerCase() === curId
+                     || curId === myIdentity.external_identity
+                     || typeof odof.exfee.gadget.exfeeInput[domId][curIdentity] !== 'undefined') {
+                        exist = true;
+                        break;
+                    }
+                }
+                if (!exist) {
+                    gotExfee.push(curIdentity);
+                }
+            }
+            odof.exfee.gadget.cacheExfee(gotExfee);
+            odof.exfee.gadget.exfeeChecked[this.info.key] = true;
+            if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
+                odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
+            }
+        }
+    });
+};
+
+
+ns.displayComplete = function(domId, display) {
+    this.completing[domId] = display;
+    var objCompleteBox = $('#' + domId + '_exfeegadget_autocomplete');
+    if (display) {
+        objCompleteBox.slideDown(50);
+    } else {
+        objCompleteBox.slideUp(50);
+    }
+};
+
+
+
 
 
 ns.ajaxIdentity = function(identities) {
@@ -369,6 +439,11 @@ ns.ajaxIdentity = function(identities) {
         }
     });
 };
+
+
+
+
+
 
 
 
@@ -755,7 +830,6 @@ define(function (require, exports, module) {
 ns = {};
 
 ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallback) {
-    this.idsBuilt[domId] = true;
     $('#' + domId + '_exfeegadget_avatararea > ol > li > .exfee_avatarblock').live(
         'mouseover mouseout', this.eventAvatar
     );
@@ -763,9 +837,7 @@ ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallba
         'click', this.eventAvatar
     );
     $('body').bind('click', this.cleanFloating);
-    if (!curEditable) {
-        return;
-    }
+
     this.completimer[domId] = setInterval(
         "odof.exfee.gadget.chkInput('" + domId + "')", 50
     );
@@ -1278,69 +1350,5 @@ ns.cacheExfee = function(exfees, unshift) {
         localStorage.setItem(this.exfeeAvailableIdK, curIdentity);
         localStorage.setItem(this.exfeeAvailableKey,
                              JSON.stringify(this.exfeeAvailable));
-    }
-};
-
-
-ns.ajaxComplete = function(domId, key) {
-    if (!key.length || typeof this.exfeeChecked[key] !== 'undefined') {
-        return;
-    }
-    if (this.completeRequest) {
-        this.completeRequest.abort();
-    }
-    this.completeRequest = $.ajax({
-        type     : 'GET',
-        url      : site_url + '/identity/complete',
-        data     : {key : key},
-        info     : {domId : domId, key : key},
-        dataType : 'json',
-        success  : function(data) {
-            var gotExfee = [];
-            for (var i in data) {
-                var curIdentity = {
-                        identityid        : data[i].id,
-                        name              : data[i].name,
-                        avatar_file_name  : data[i].avatar_file_name
-                                          ? data[i].avatar_file_name
-                                          : 'default.png',
-                        bio               : data[i].bio,
-                        external_identity : data[i].external_identity,
-                        external_username : data[i].external_username,
-                        provider          : data[i].provider,
-                        userid            : data[i].uid
-                    },
-                    curId = curIdentity.external_identity.toLowerCase(),
-                    exist = false;
-                for (var j in odof.exfee.gadget.exfeeAvailable) {
-                    if (odof.exfee.gadget.exfeeAvailable[j]
-                            .external_identity.toLowerCase() === curId
-                     || curId === myIdentity.external_identity
-                     || typeof odof.exfee.gadget.exfeeInput[domId][curIdentity] !== 'undefined') {
-                        exist = true;
-                        break;
-                    }
-                }
-                if (!exist) {
-                    gotExfee.push(curIdentity);
-                }
-            }
-            odof.exfee.gadget.cacheExfee(gotExfee);
-            odof.exfee.gadget.exfeeChecked[this.info.key] = true;
-            if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
-                odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
-            }
-        }
-    });
-};
-
-
-ns.displayComplete = function(domId, display) {
-    this.completing[domId] = display;
-    var objCompleteBox = $('#' + domId + '_exfeegadget_autocomplete');
-    if (display) {
-        objCompleteBox.slideDown(50);
-    } else {
-        objCompleteBox.slideUp(50);
     }
 };
