@@ -55,6 +55,8 @@ EXFE Maps
               <input type="text" class="input-xlarge" id="gather-exfee-input" placeholder="Enter attendees' information" />
             </div>
 
+            <div class="autocomplete"><ol></ol></div>
+
             <div class="pull-right cross-stats">
               <span class="attended">2</span>
               <div class="confirmed">
@@ -142,6 +144,8 @@ EXFE Maps
               <div class="controls">
                 <input type="text" class="input-xlarge" id="cross-exfee-input" placeholder="Enter attendees' information" />
               </div>
+
+              <div class="autocomplete"><ol></ol></div>
 
               <div class="pull-right cross-stats">
                 <span class="attended">2</span>
