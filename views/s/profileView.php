@@ -22,8 +22,8 @@
 
           <div class="user-infos">
             <div class="user-name">
-              <button class="xbtn xbtn-changepassword hide" data-widget="dialog" data-dialog-type="changepassword">Change Password...</button>
               <h3 class="pull-left"></h3>
+              <div class="xbtn changepassword" data-widget="dialog" data-dialog-type="changepassword"><i class="icon14-lock"></i><span>Change Password...</span></div>
             </div>
             <ul class="unstyled identity-list">
             </ul>
@@ -84,20 +84,20 @@
   <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
     <i class="icon-move"></i>
     <span class="avatar"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
-    </span><span class="username"><em>{{printName name external_id}}</em></span><span class="identity">{{atName provider external_id}}</span> <i class="icon16-identity-{{provider}}"></i>
+    </span><span class="identity"><span class="identityname"><em>{{printName name external_id}}</em></span><span class="external">{{atName provider external_id}}</span> <i class="icon16-identity-{{provider}}"></i></span>
     {{#makeDefault __default__ status}}<a class="makedefault" href="#">Make default</a>{{/makeDefault}}
     {{#ifOauthVerifying provider status}}
     <span class="xlabel">
       <i class="icon16-warning"></i>
       <span>Authorization failed.</span>
-      <button class="xbtn xbtn-reauthorize hide" data-widget="dialog" data-dialog-type="verification_twitter">Re-Authorize</button>
+      <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter">Re-Authorize</button>
     </span>
     {{/ifOauthVerifying}}
     {{#ifVerifying provider status}}
     <span class="xlabel">
       <i class="icon16-warning"></i>
       <span>Pending verification, 5 days left.</span>
-      <button class="xbtn xbtn-reverify hide" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
+      <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
     </span>
     {{/ifVerifying}}
   </li>
