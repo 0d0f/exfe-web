@@ -270,10 +270,12 @@ define('uploader', [], function (require, exports, module) {
 
         'mousedown #avatar240': function (e) {
           this.dragging = true;
-          this.offset = [e.offsetX, e.offsetY];
+          //this.offset = [e.offsetX, e.offsetY];
+          this.offset = [e.pageX, e.pageY];
           return false;
         },
 
+        /* 离开 `dropbox` 区域 也可以移动图片
         'mousemove #avatar240': function (e) {
           e.preventDefault();
           if (this.dragging) {
@@ -318,6 +320,7 @@ define('uploader', [], function (require, exports, module) {
           // 冒泡触发
           //return false;
         },
+        */
 
         // Rotate
         'click .rotate': function (e) {
@@ -664,7 +667,43 @@ define('uploader', [], function (require, exports, module) {
   function docBind(_uploader) {
     $(document)
       .on('mousemove.photozone', function (e) {
+        e.preventDefault();
         var _u_ = _uploader;
+        if (_u_ && _u_.dragging) {
+          var dx = e.pageX - _u_.offset[0];
+          var dy = e.pageY - _u_.offset[1];
+          var bitmap = _u_.bitmap;
+
+          switch (_u_.ri) {
+            case 0:
+              bitmap.x += dx;
+              bitmap.y += dy;
+              break;
+
+            case 1:
+              bitmap.x += dy;
+              bitmap.y -= dx;
+              break;
+
+            case 2:
+              bitmap.x -= dx;
+              bitmap.y -= dy;
+              break;
+
+            case 3:
+              bitmap.x -= dy;
+              bitmap.y += dx;
+              break;
+          }
+
+          _u_.offset[0] = e.pageX;
+          _u_.offset[1] = e.pageY;
+
+          _u_.stage.update();
+          _u_.bitmap80.updateImage(_u_.stage.canvas);
+          _u_.stage80.update();
+          return false;
+        }
         if (_u_ && _u_.resizing) {
           var dx = e.pageX - _u_.aoffset[0]
             , dy = e.pageY - _u_.aoffset[1]

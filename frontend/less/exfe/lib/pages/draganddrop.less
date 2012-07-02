@@ -1,7 +1,8 @@
 /**
  * Drag and Drop
  */
-[draggable="true"] {
+
+.draggable() {
   -khtml-user-drag: element;
   -webkit-user-drag: element;
   -khtml-user-select: none;
@@ -9,4 +10,8 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+[draggable="true"] {
+  .draggable();
 }
