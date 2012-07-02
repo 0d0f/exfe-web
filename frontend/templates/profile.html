@@ -108,14 +108,15 @@
               <input value="Steve Exfee" type="text" />
             </div>
             <div class="user-name">
-              <button class="xbtn xbtn-changepassword">Change Password...</button>
+              <!--<button class="xbtn xbtn-changepassword">Change Password...</button>-->
               <h3 class="pull-left">Steve Exfee</h3>
+              <div class="xbtn changepassword xbtn-changepassword"><i class="icon14-lock"></i><span>Change Password...</span></div>
             </div>
             <ul class="unstyled identity-list">
               <li class="default">
                 <i class="icon14-clear icon-move">
                   </i><span class="avatar"><img src="/img/users/u1x20.png" alt="" width="20" height="20" />
-                </span><span class="username">SteveE</span><span class="identity">@stevexfee</span><i class="icon16-identity-twitter"></i>
+                </span><span class="identityname">SteveE</span><span class="external">@stevexfee</span><i class="icon16-identity-twitter"></i>
                 <span class="xlabel">
                   <i class="icon16-warning"></i>
                   <span>Authorization failed.</span>
@@ -125,7 +126,7 @@
               <li class="dragme">
                 <i class="icon14-clear icon-move">
                   </i><span class="avatar"><img src="/img/users/u1x20.png" alt="" width="20" height="20" />
-                </span><span class="username">SteveE</span><span class="identity">@stevexfee</span><i class="icon16-identity-email"></i>
+                </span><div class="identity"><span class="identityname">SteveE</span><span class="external">@stevexfee stevexfee stevexfee stevexfee stevexfee stevexfee</span><i class="icon16-identity-email"></i></div>
                 <span class="xlabel">
                   <i class="icon16-warning"></i>
                   <span>Authorization failed.</span>
@@ -135,14 +136,14 @@
               <li class="editing">
                 <i class="icon14-clear icon-move">
                 </i><span class="avatar"><img src="/img/users/u2x20.png" alt="" width="20" height="20" />
-                </span><span class="username"><input value="Steve Exfee"
-                type="text" /></span><span class="identity">steve@0d0f.com</span>
+                </span><span class="identityname"><input value="Steve Exfee"
+                type="text" /></span><span class="external">steve@0d0f.com</span>
                 <span class="mkdef">Make Default</span>
               </li>
               <li>
                 <i class="icon14-clear icon-move">
                 </i><span class="avatar"><img src="/img/users/u2x20.png" alt="" width="20" height="20" />
-                </span><span class="username">SteveE</span><span class="identity">@stevexfee</span>
+                </span><span class="identityname">SteveE</span><span class="external">@stevexfee</span>
                 <span class="xlabel">
                   <i class="icon16-warning"></i>
                   <span>Pending verification, 5 days left.</span>
@@ -223,7 +224,7 @@
             <li>Add more frequently used identities that may use for gathering.</li>
           </ul>
           <p><span class="x-sign">EXFE</span> is ready for your iPhone, and Android soon.</p>
-          <div class="pull-right arrow rb"></div>
+          <div class="pull-right arrow"><div class="rb"></div></div>
         </div>
 
         <div class="row">
@@ -266,6 +267,12 @@
                   </div>
 
                 </div>
+
+                <!-- Gather A X Box -->
+                <div class="gatherax-box">
+                  <a href="/x/gather"><span>Oh~ Your list is empty.</span> <span class="underline">Gather a <em class="x-sign">X</em></span></a>
+                </div>
+                <!--/ Gather A X Box -->
 
                 <div class="more">
                   <a href="#">more...</a>

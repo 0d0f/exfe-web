@@ -122,11 +122,20 @@
 
       .changepassword {
         display: inline-block;
-        padding: 0 10px;
+        padding: 1px 10px 1px 6px;
         height: 16px;
         font-size: 12px;
-        line-height: 14px;
-        color: #4c4c4c;
+        line-height: 18px;
+        color: #191919;
+
+        span {
+          margin-left: 10px;
+          display: none;
+        }
+
+        &.xbtn-changepassword span {
+          display: inline;
+        }
       }
 
       .identity-list {
@@ -144,11 +153,6 @@
 
         .icon-move {
           .hide();
-        }
-
-        [class^="icon16-identity"],
-        [class*=" icon16-identity"] {
-          margin-right: 15px;
         }
 
         .editing {
@@ -177,7 +181,16 @@
           text-decoration: underline;
         }
 
-        .username {
+        .identity {
+          display: inline-block;
+          margin-right: 15px;
+
+          &.textoverflow {
+            .text-overflow();
+          }
+        }
+
+        .identityname {
           margin-left: 10px;
           input[type="text"] {
             height: 18px;
@@ -193,14 +206,14 @@
           .hide-inline;
         }
 
-        .identity {
+        .external {
           margin-left: 10px;
           margin-right: 5px;
           font-style: oblique;
         }
 
         .xlabel {
-          color: #4c4c4c;
+          color: #cc4747;
 
           .xbtn {
             margin-left: 10px;
