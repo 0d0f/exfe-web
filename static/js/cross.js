@@ -34,22 +34,24 @@ ExfeeCache = {
 
     tried_key        : {},
 
-    updated_identity : {},
+    updated_identity : [],
 
 
     init : function() {
         var Store          = require('store'),
             cached_user_id = Store.get('exfee_cache_user_id');
-        if (User && User.id && cached_user_id && User.id === cached_user_id) {
-            try {
-                ExfeeCache.identities = JSON.parse(
-                    Store.get('exfee_cache_identities')
-                );
-            } catch (err) {
-                ExfeeCache.identities = [];
-            }
-        } else {
+        this.identities    = Store.get('exfee_cache_identities');
+        if (!User || !User.id || !cached_user_id
+         || User.id !== cached_user_id || !this.identities) {
             ExfeeCache.identities = [];
+        }
+    },
+
+
+    saveCache : function() {
+        if (User && User.id) {
+            Store.set('exfee_cache_user_id',    User.id);
+            Store.set('exfee_cache_identities', this.identities);
         }
     },
 
@@ -63,22 +65,39 @@ ExfeeCache = {
                 || matchString(key, identity.external_username)
                 || matchString(key, identity.name);
         };
-        var isMyIdentity  = function(identity) {
-            return identity.connected_user_id && User && User.id
-                && identity.connected_user_id === User.id;
-        }
         var arrCatched = [];
         key = key.toLowerCase();
-        for (var i = 0, i < this.identities.length, i++) {
+        for (var i = 0; i < this.identities.length; i++) {
             if (matchIdentity(this.identities[i])
-            &&  !isMyIdentity(this.identities[i])
-            && checkExistence(this.identities[i])) {
+             &&  !ExfeeWidget.isMyIdentity(this.identities[i])
+             && ExfeeWidget.checkExistence(this.identities[i])) {
                 arrCatched.push(ExfeUtilities.clone(this.identities[i]));
             }
         }
         return arrCatched;
-    }
+    },
 
+
+    cacheIdentity : function(identities, unshift) {
+        identities = ExfeUtilities.clone(identities);
+        for (var i = 0; i < identities.length; i++) {
+            for (var j = 0; j < this.identities; j++) {
+                if (ExfeeWidget.compareIdentity(identities[i], this.identities[j])) {
+                    this.identities.splice(j, 1);
+                }
+            }
+            if (unshift) {
+                this.identities.unshift(identities[i]);
+            } else {
+                this.identities.push(identities[i]);
+            }
+            if (this.identities.length > 233) {
+                this.identities.splice(233);
+            }
+            this.updated_identity.push(identities[i]);
+        }
+        this.saveCache();
+    },
 
 };
 
@@ -91,13 +110,13 @@ ExfeeWidget = {
 
     editable         : false,
 
-    completimer      : 0,
+    complete_timer   : 0,
 
     complete_key     : {},
 
     complete_exfee   : {},
 
-    complete_request : '',
+    complete_request : 0,
 
     selected         : '',
 
@@ -117,7 +136,12 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
+        this.complete_timer = setInterval(
+            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
+            50
+        );
         return ExfeUtilities.clone(this);
+
     },
 
 
@@ -253,12 +277,9 @@ ExfeeWidget = {
 
 
     checkComplete : function(objInput, key) {
-        this.showCompleteItems(
-            $(objInput[0].parentNode.parentNode).find('.autocomplete')[0],
-            key,
-            ExfeeCache.search(key)
-        );
-        this.ajaxComplete(domId, key);
+        var objPanel = $(objInput[0].parentNode.parentNode).find('.autocomplete');
+        this.showCompleteItems(objPanel, key, ExfeeCache.search(key));
+        this.ajaxComplete(objPanel, key);
     },
 
 
@@ -282,11 +303,12 @@ ExfeeWidget = {
         } else {
             objPanel.slideUp(50);
         }
-    };
+    },
 
 
     showCompleteItems : function(objPanel, key, identities) {
-        var exfeeWidgetId    = objPanel.parentNode.id,
+        // @todo: 使用 typeahead 替代这段代码
+        var exfeeWidgetId    = objPanel[0].parentNode.id,
             objCompleteList  = $(objPanel).find('ol'),
             strCompleteItems = '';
         key = key.toLowerCase();
@@ -327,60 +349,38 @@ ExfeeWidget = {
     },
 
 
+    isMyIdentity : function(identity) {
+        return identity.connected_user_id && User && User.id
+            && identity.connected_user_id === User.id;
+    },
 
 
-
-ns.ajaxComplete = function(domId, key) {
-    if (!key.length || typeof this.exfeeChecked[key] !== 'undefined') {
-        return;
-    }
-    if (this.completeRequest) {
-        this.completeRequest.abort();
-    }
-    this.completeRequest = $.ajax({
-        type     : 'GET',
-        url      : site_url + '/identity/complete',
-        data     : {key : key},
-        info     : {domId : domId, key : key},
-        dataType : 'json',
-        success  : function(data) {
-            var gotExfee = [];
-            for (var i in data) {
-                var curIdentity = {
-                        identityid        : data[i].id,
-                        name              : data[i].name,
-                        avatar_file_name  : data[i].avatar_file_name
-                                          ? data[i].avatar_file_name
-                                          : 'default.png',
-                        bio               : data[i].bio,
-                        external_identity : data[i].external_identity,
-                        external_username : data[i].external_username,
-                        provider          : data[i].provider,
-                        userid            : data[i].uid
-                    },
-                    curId = curIdentity.external_identity.toLowerCase(),
-                    exist = false;
-                for (var j in odof.exfee.gadget.exfeeAvailable) {
-                    if (odof.exfee.gadget.exfeeAvailable[j]
-                            .external_identity.toLowerCase() === curId
-                     || curId === myIdentity.external_identity
-                     || typeof odof.exfee.gadget.exfeeInput[domId][curIdentity] !== 'undefined') {
-                        exist = true;
-                        break;
+    ajaxComplete : function(objPanel, key) {
+        if (!User || !key.length || typeof ExfeeCache.tried_key[key] !== 'undefined') {
+            return;
+        }
+        if (this.complete_request) {
+            this.complete_request.abort();
+        }
+        this.complete_request = Api.request(
+            'complete',
+            {type : 'get', data : {key : key}},
+            function(data) {
+                var caughtIdentities = [];
+                for (var i = 0; i < data.identities.length; i++) {
+                    if (!ExfeeWidget.isMyIdentity(data.identities[i])
+                     && !ExfeeWidget.checkExistence(data.identities[i])) {
+                        caughtIdentities.push(data.identities[i]);
+                    }
+                    ExfeeCache. odof.exfee.gadget.cacheExfee(caughtIdentities);
+                    ExfeeCache.tried_key[key] = true;
+                    if (ExfeeWidget.complete_key[objPanel[0].parentNode.id] === key) {
+                        ExfeeWidget.showCompleteItems(objPanel, key, caughtIdentities);
                     }
                 }
-                if (!exist) {
-                    gotExfee.push(curIdentity);
-                }
             }
-            odof.exfee.gadget.cacheExfee(gotExfee);
-            odof.exfee.gadget.exfeeChecked[this.info.key] = true;
-            if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
-                odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
-            }
-        }
-    });
-};
+        );
+    },
 
 
 
@@ -388,7 +388,7 @@ ns.ajaxComplete = function(domId, key) {
 
 
 
-
+/*
 ns.ajaxIdentity = function(identities) {
     for (var i in identities) {
         if (typeof this.exfeeIdentified[
@@ -448,7 +448,7 @@ ns.ajaxIdentity = function(identities) {
 };
 
 
-
+*/
 
 
 
@@ -484,7 +484,7 @@ ns.ajaxIdentity = function(identities) {
             }
         }
         for (i = 0; i < arrInput.length; i++) {
-            var item = parseAttendeeInfo(arrInput[i]);
+            var item = ExfeeWidget.parseAttendeeInfo(arrInput[i]);
             if (item && (parseInt(i) < arrInput.length - 1 || force)) {
                 arrValid.push(item);
             } else {
@@ -498,89 +498,86 @@ ns.ajaxIdentity = function(identities) {
         for (i = 0; i < arrValid.length; i++) {
             this.addExfee(arrValid[i]);
         }
-        odof.exfee.gadget.chkComplete(domId, arrInvalid.pop());
+        ExfeeWidget.checkComplete(objInput, arrInvalid.pop());
     },
 
 
     inputEvent : function(event) {
         var objInput = $(event.target);
-
-        console.log(objInput);
-        return;
-        var domId = event.target.id.split('_')[0];
         switch (event.type) {
             case 'keydown':
                 switch (event.which) {
                     case 9:  // tab
-                        odof.exfee.gadget.chkInput(domId, true);
+                        ExfeeWidget.checkInput(objInput, true);
                         break;
                     case 13: // enter
-                        var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
-                            curItem     = objSelected.length ? objSelected.attr('identity') : null;
-                        if (odof.exfee.gadget.completing[domId] && curItem) {
-                            odof.exfee.gadget.addExfeeFromCache(domId, curItem);
-                            odof.exfee.gadget.displayComplete(domId, false);
-                            $('#' + domId + '_exfeegadget_inputbox').val('');
-                        } else {
-                            odof.exfee.gadget.chkInput(domId, true);
-                        }
+                        // var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
+                        //     curItem     = objSelected.length ? objSelected.attr('identity') : null;
+                        // if (odof.exfee.gadget.completing[domId] && curItem) {
+                        //     odof.exfee.gadget.addExfeeFromCache(domId, curItem);
+                        //     odof.exfee.gadget.displayComplete(domId, false);
+                        //     $('#' + domId + '_exfeegadget_inputbox').val('');
+                        // } else {
+                        //     odof.exfee.gadget.chkInput(domId, true);
+                        // }
                         break;
                     case 27: // esc
-                        if (odof.exfee.gadget.completing[domId]) {
-                            odof.exfee.gadget.displayComplete(domId, false);
-                        }
+                        // if (odof.exfee.gadget.completing[domId]) {
+                        //     odof.exfee.gadget.displayComplete(domId, false);
+                        // }
                         break;
                     case 38: // up
                     case 40: // down
-                        var baseId     = '#' + domId + '_exfeegadget_autocomplete',
-                            objCmpBox  = $(baseId),
-                            cboxHeight = 207,
-                            cellHeight = 51,
-                            shrMargin  = 3,
-                            curScroll  = objCmpBox.scrollTop();
-                        if (!odof.exfee.gadget.completing[domId]) {
-                            return;
-                        }
-                        var objSelected = $(baseId + ' > ol > .autocomplete_selected'),
-                            curItem     = null,
-                            idxItem     = null,
-                            tarIdx      = null,
-                            maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
-                        if (objSelected.length) {
-                            curItem = objSelected.attr('identity');
-                            for (var i in odof.exfee.gadget.curComplete[domId]) {
-                                if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
-                                    idxItem = parseInt(i);
-                                    break;
-                                }
-                            }
-                        }
-                        switch (event.which) {
-                            case 38:
-                                tarIdx = curItem
-                                       ? (idxItem > 0 ? (idxItem - 1) : maxIdx)
-                                       : maxIdx;
-                                break;
-                            case 40:
-                                tarIdx = curItem
-                                       ? (idxItem < maxIdx ? (idxItem + 1) : 0)
-                                       : 0;
-                        }
-                        odof.exfee.gadget.selectCompleteResult(
-                            domId,
-                            odof.exfee.gadget.curComplete[domId][tarIdx]
-                        );
-                        var curCellTop = tarIdx * cellHeight,
-                            curScrlTop = curCellTop - curScroll;
-                        if (curScrlTop < 0) {
-                            objCmpBox.scrollTop(curCellTop);
-                        } else if (curScrlTop + cellHeight > cboxHeight) {
-                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
-                        }
+                        // var baseId     = '#' + domId + '_exfeegadget_autocomplete',
+                        //     objCmpBox  = $(baseId),
+                        //     cboxHeight = 207,
+                        //     cellHeight = 51,
+                        //     shrMargin  = 3,
+                        //     curScroll  = objCmpBox.scrollTop();
+                        // if (!odof.exfee.gadget.completing[domId]) {
+                        //     return;
+                        // }
+                        // var objSelected = $(baseId + ' > ol > .autocomplete_selected'),
+                        //     curItem     = null,
+                        //     idxItem     = null,
+                        //     tarIdx      = null,
+                        //     maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
+                        // if (objSelected.length) {
+                        //     curItem = objSelected.attr('identity');
+                        //     for (var i in odof.exfee.gadget.curComplete[domId]) {
+                        //         if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
+                        //             idxItem = parseInt(i);
+                        //             break;
+                        //         }
+                        //     }
+                        // }
+                        // switch (event.which) {
+                        //     case 38:
+                        //         tarIdx = curItem
+                        //                ? (idxItem > 0 ? (idxItem - 1) : maxIdx)
+                        //                : maxIdx;
+                        //         break;
+                        //     case 40:
+                        //         tarIdx = curItem
+                        //                ? (idxItem < maxIdx ? (idxItem + 1) : 0)
+                        //                : 0;
+                        // }
+                        // odof.exfee.gadget.selectCompleteResult(
+                        //     domId,
+                        //     odof.exfee.gadget.curComplete[domId][tarIdx]
+                        // );
+                        // var curCellTop = tarIdx * cellHeight,
+                        //     curScrlTop = curCellTop - curScroll;
+                        // if (curScrlTop < 0) {
+                        //     objCmpBox.scrollTop(curCellTop);
+                        // } else if (curScrlTop + cellHeight > cboxHeight) {
+                        //     objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
+                        // }
                 }
                 break;
             case 'blur':
-                odof.exfee.gadget.displayComplete(domId, false);
+                var objPanel = $(objInput[0].parentNode.parentNode).find('.autocomplete');
+                ExfeeWidget.displayCompletePanel(objPanel, false);
         }
     },
 
@@ -604,7 +601,6 @@ define(function (require, exports, module) {
 
     var $     = require('jquery');
     var Store = require('store');
-    var Api   = require('api');
 
 
     window.Cross = {
@@ -656,6 +652,9 @@ define(function (require, exports, module) {
         type        : 'Exfee',
         invitations : []
     };
+
+
+    window.Api   = require('api');
 
 
     var ExfeeWidgestInit = function() {
@@ -1304,41 +1303,4 @@ ns.getExfees = function(domId) {
         }
     }
     return arrExfees;
-};
-
-
-ns.cacheExfee = function(exfees, unshift) {
-    for (var i in exfees) {
-        var objExfee    = odof.util.clone(exfees[i]),
-            curIdentity = objExfee.external_identity
-                        = objExfee.external_identity.toLowerCase(),
-            arrCleanKey = ['rsvp', 'host', 'plus'];
-        for (var j in arrCleanKey) {
-            if (typeof objExfee[arrCleanKey[j]] !== 'undefined') {
-                delete objExfee[arrCleanKey[j]];
-            }
-        }
-        for (j in this.exfeeAvailable) {
-            if (this.exfeeAvailable[j].external_identity.toLowerCase()
-            === curIdentity) {
-                this.exfeeAvailable.splice(i, 1);
-            }
-        }
-        if (unshift) {
-            this.exfeeAvailable.unshift(objExfee);
-        } else {
-            this.exfeeAvailable.push(objExfee);
-        }
-        if (this.exfeeAvailable.length > 250) {
-            this.exfeeAvailable.splice(250);
-        }
-        this.exfeeIdentified[curIdentity] = true;
-    }
-    if (typeof localStorage !== 'undefined') {
-        var curIdentity = myIdentity && typeof myIdentity.external_identity !== 'undefined'
-                        ? myIdentity.external_identity.toLowerCase() : '';
-        localStorage.setItem(this.exfeeAvailableIdK, curIdentity);
-        localStorage.setItem(this.exfeeAvailableKey,
-                             JSON.stringify(this.exfeeAvailable));
-    }
 };
