@@ -4,7 +4,7 @@ include "share/header.php";
 $error = $this->getVar("error");
 
 ?>
-<link rel="stylesheet" type="text/css" href="/static/?f=css/404.css">
+<link rel="stylesheet" type="text/css" href="/static/css/404.css">
 </head>
 <body id="error_404_page">
     <?php include "share/nav.php" ?>

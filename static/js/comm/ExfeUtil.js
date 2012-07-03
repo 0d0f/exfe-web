@@ -1,20 +1,3 @@
-ns.getUTF8Length = function(str){
-    if(typeof str == "undefined" || str == ""){ return 0; }
-    var len = 0;
-    for (var i = 0; i < str.length; i++){
-        charCode = str.charCodeAt(i);
-        if (charCode < 0x007f){
-            len += 1;
-        } else if ((0x0080 <= charCode) && (charCode <= 0x07ff)){
-            len += 2;
-        } else if ((0x0800 <= charCode) && (charCode <= 0xffff)){
-            len += 3;
-        }
-    }
-    return len;
-};
-
-
 ns.verifyDisplayName = function(dname){
     if(typeof dname == "undefined" || dname == ""){
         return false;
@@ -146,19 +129,6 @@ util.count = function(object) {
         num++;
     }
     return num;
-};
-
-
-/**
- * cut long user name
- * by Leask
- */
-util.cutLongName = function(strName) {
-    strName = strName ? strName.replace(/[^0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+/g, ' ') : '';
-    while (odof.comm.func.getUTF8Length(strName) > 30) {
-        strName = strName.substring(0, strName.length - 1);
-    }
-    return strName;
 };
 
 
