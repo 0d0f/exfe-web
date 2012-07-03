@@ -515,9 +515,16 @@ define('uploader', [], function (require, exports, module) {
 
     // write the ArrayBuffer to a blob, and you're done
     var BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.BlobBuilder;
-    var bb = new BlobBuilder();
-    bb.append(ab);
-    return bb.getBlob(mimeString);
+    var res;
+    if (BlobBuilder) {
+      var bb = new BlobBuilder();
+      bb.append(ab);
+      res = bb.getBlob(mimeString);
+    } else {
+      // safari
+      res = new Blob([ab], {"type": mimeString});
+    }
+    return res;
   }
 
   function getAsPNGBlob(canvas, filename) {
