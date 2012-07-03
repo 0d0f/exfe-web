@@ -42,6 +42,8 @@ define('api', [], function (require, exports, module) {
     // Identity
     getIdentityById: '/identities/:identity_id',
 
+    complete: '/identities/complete',
+
     getIdentity: '/identities/get',
 
     updateIdentity: '/identities/:identity_id/update',
@@ -49,8 +51,6 @@ define('api', [], function (require, exports, module) {
 
     // Cross
     getCross: '/crosses/:cross_id',
-
-    complete: '/identities/complete',
 
     gather: '/crosses/gather',
 
