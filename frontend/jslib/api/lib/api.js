@@ -50,6 +50,8 @@ define('api', [], function (require, exports, module) {
     // Cross
     getCross: '/crosses/:cross_id',
 
+    complete: '/identities/complete',
+
     gather: '/crosses/gather',
 
     editCross: '/crosses/:cross_id/edit',
