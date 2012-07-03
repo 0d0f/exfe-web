@@ -34,22 +34,24 @@ ExfeeCache = {
 
     tried_key        : {},
 
-    updated_identity : {},
+    updated_identity : [],
 
 
     init : function() {
         var Store          = require('store'),
             cached_user_id = Store.get('exfee_cache_user_id');
-        if (User && User.id && cached_user_id && User.id === cached_user_id) {
-            try {
-                ExfeeCache.identities = JSON.parse(
-                    Store.get('exfee_cache_identities')
-                );
-            } catch (err) {
-                ExfeeCache.identities = [];
-            }
-        } else {
+        this.identities    = Store.get('exfee_cache_identities');
+        if (!User || !User.id || !cached_user_id
+         || User.id !== cached_user_id || !this.identities) {
             ExfeeCache.identities = [];
+        }
+    },
+
+
+    saveCache : function() {
+        if (User && User.id) {
+            Store.set('exfee_cache_user_id',    User.id);
+            Store.set('exfee_cache_identities', this.identities);
         }
     },
 
@@ -63,22 +65,39 @@ ExfeeCache = {
                 || matchString(key, identity.external_username)
                 || matchString(key, identity.name);
         };
-        var isMyIdentity  = function(identity) {
-            return identity.connected_user_id && User && User.id
-                && identity.connected_user_id === User.id;
-        }
         var arrCatched = [];
         key = key.toLowerCase();
         for (var i = 0; i < this.identities.length; i++) {
             if (matchIdentity(this.identities[i])
-            &&  !isMyIdentity(this.identities[i])
-            && checkExistence(this.identities[i])) {
+             &&  !ExfeeWidget.isMyIdentity(this.identities[i])
+             && ExfeeWidget.checkExistence(this.identities[i])) {
                 arrCatched.push(ExfeUtilities.clone(this.identities[i]));
             }
         }
         return arrCatched;
-    }
+    },
 
+
+    cacheIdentity : function(identities, unshift) {
+        identities = ExfeUtilities.clone(identities);
+        for (var i = 0; i < identities.length; i++) {
+            for (var j = 0; j < this.identities; j++) {
+                if (ExfeeWidget.compareIdentity(identities[i], this.identities[j])) {
+                    this.identities.splice(j, 1);
+                }
+            }
+            if (unshift) {
+                this.identities.unshift(identities[i]);
+            } else {
+                this.identities.push(identities[i]);
+            }
+            if (this.identities.length > 233) {
+                this.identities.splice(233);
+            }
+            this.updated_identity.push(identities[i]);
+        }
+        this.saveCache();
+    },
 
 };
 
@@ -91,7 +110,7 @@ ExfeeWidget = {
 
     editable         : false,
 
-    completimer      : 0,
+    complete_timer   : 0,
 
     complete_key     : {},
 
@@ -117,7 +136,12 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
+        this.complete_timer = setInterval(
+            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
+            50
+        );
         return ExfeUtilities.clone(this);
+
     },
 
 
@@ -284,7 +308,7 @@ ExfeeWidget = {
 
     showCompleteItems : function(objPanel, key, identities) {
         // @todo: 使用 typeahead 替代这段代码
-        var exfeeWidgetId    = objPanel.parentNode.id,
+        var exfeeWidgetId    = objPanel[0].parentNode.id,
             objCompleteList  = $(objPanel).find('ol'),
             strCompleteItems = '';
         key = key.toLowerCase();
@@ -325,6 +349,12 @@ ExfeeWidget = {
     },
 
 
+    isMyIdentity : function(identity) {
+        return identity.connected_user_id && User && User.id
+            && identity.connected_user_id === User.id;
+    },
+
+
     ajaxComplete : function(objPanel, key) {
         if (!User || !key.length || typeof ExfeeCache.tried_key[key] !== 'undefined') {
             return;
@@ -332,63 +362,24 @@ ExfeeWidget = {
         if (this.complete_request) {
             this.complete_request.abort();
         }
-        this.complete_request = this.api.request(
+        this.complete_request = Api.request(
             'complete',
             {type : 'get', data : {key : key}},
             function(data) {
-                console.log(data);
-            },
-            function(data) {
-                // failed
-                console.log(data);
+                var caughtIdentities = [];
+                for (var i = 0; i < data.identities.length; i++) {
+                    if (!ExfeeWidget.isMyIdentity(data.identities[i])
+                     && !ExfeeWidget.checkExistence(data.identities[i])) {
+                        caughtIdentities.push(data.identities[i]);
+                    }
+                    ExfeeCache. odof.exfee.gadget.cacheExfee(caughtIdentities);
+                    ExfeeCache.tried_key[key] = true;
+                    if (ExfeeWidget.complete_key[objPanel[0].parentNode.id] === key) {
+                        ExfeeWidget.showCompleteItems(objPanel, key, caughtIdentities);
+                    }
+                }
             }
         );
-
-/*
-        $.ajax({
-            type     : 'GET',
-            url      : site_url + '/identity/complete',
-            data     : {key : key},
-            info     : {domId : domId, key : key},
-            dataType : 'json',
-            success  : function(data) {
-                var gotExfee = [];
-                for (var i in data) {
-                    var curIdentity = {
-                            identityid        : data[i].id,
-                            name              : data[i].name,
-                            avatar_file_name  : data[i].avatar_file_name
-                                              ? data[i].avatar_file_name
-                                              : 'default.png',
-                            bio               : data[i].bio,
-                            external_identity : data[i].external_identity,
-                            external_username : data[i].external_username,
-                            provider          : data[i].provider,
-                            userid            : data[i].uid
-                        },
-                        curId = curIdentity.external_identity.toLowerCase(),
-                        exist = false;
-                    for (var j in odof.exfee.gadget.exfeeAvailable) {
-                        if (odof.exfee.gadget.exfeeAvailable[j]
-                                .external_identity.toLowerCase() === curId
-                         || curId === myIdentity.external_identity
-                         || typeof odof.exfee.gadget.exfeeInput[domId][curIdentity] !== 'undefined') {
-                            exist = true;
-                            break;
-                        }
-                    }
-                    if (!exist) {
-                        gotExfee.push(curIdentity);
-                    }
-                }
-                odof.exfee.gadget.cacheExfee(gotExfee);
-                odof.exfee.gadget.exfeeChecked[this.info.key] = true;
-                if (this.info.key === odof.exfee.gadget.keyComplete[this.info.domId]) {
-                    odof.exfee.gadget.showComplete(this.info.domId, this.info.key, gotExfee);
-                }
-            }
-        });
-*/
     },
 
 
@@ -493,7 +484,7 @@ ns.ajaxIdentity = function(identities) {
             }
         }
         for (i = 0; i < arrInput.length; i++) {
-            var item = parseAttendeeInfo(arrInput[i]);
+            var item = ExfeeWidget.parseAttendeeInfo(arrInput[i]);
             if (item && (parseInt(i) < arrInput.length - 1 || force)) {
                 arrValid.push(item);
             } else {
@@ -507,7 +498,7 @@ ns.ajaxIdentity = function(identities) {
         for (i = 0; i < arrValid.length; i++) {
             this.addExfee(arrValid[i]);
         }
-        odof.exfee.gadget.chkComplete(domId, arrInvalid.pop());
+        ExfeeWidget.checkComplete(objInput, arrInvalid.pop());
     },
 
 
@@ -1312,41 +1303,4 @@ ns.getExfees = function(domId) {
         }
     }
     return arrExfees;
-};
-
-
-ns.cacheExfee = function(exfees, unshift) {
-    for (var i in exfees) {
-        var objExfee    = odof.util.clone(exfees[i]),
-            curIdentity = objExfee.external_identity
-                        = objExfee.external_identity.toLowerCase(),
-            arrCleanKey = ['rsvp', 'host', 'plus'];
-        for (var j in arrCleanKey) {
-            if (typeof objExfee[arrCleanKey[j]] !== 'undefined') {
-                delete objExfee[arrCleanKey[j]];
-            }
-        }
-        for (j in this.exfeeAvailable) {
-            if (this.exfeeAvailable[j].external_identity.toLowerCase()
-            === curIdentity) {
-                this.exfeeAvailable.splice(i, 1);
-            }
-        }
-        if (unshift) {
-            this.exfeeAvailable.unshift(objExfee);
-        } else {
-            this.exfeeAvailable.push(objExfee);
-        }
-        if (this.exfeeAvailable.length > 250) {
-            this.exfeeAvailable.splice(250);
-        }
-        this.exfeeIdentified[curIdentity] = true;
-    }
-    if (typeof localStorage !== 'undefined') {
-        var curIdentity = myIdentity && typeof myIdentity.external_identity !== 'undefined'
-                        ? myIdentity.external_identity.toLowerCase() : '';
-        localStorage.setItem(this.exfeeAvailableIdK, curIdentity);
-        localStorage.setItem(this.exfeeAvailableKey,
-                             JSON.stringify(this.exfeeAvailable));
-    }
 };
