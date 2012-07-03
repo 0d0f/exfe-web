@@ -12,7 +12,7 @@ EXFE_CSS_DEV = ${CSS_DIR}/exfe_dev.css
 EXFE_MIN_CSS = ${CSS_DIR}/exfe.min.css
 EXFE_MIN_CSS_DEV = ${CSS_DIR}/exfe_dev.min.css
 
-STATIC = ${PREFIX}/../../static/1b
+STATIC = ${PREFIX}/../static/1b
 STATIC_IMG_DIR = ${STATIC}/img
 STATIC_CSS_DIR = ${STATIC}/css
 STATIC_JS_DIR = ${STATIC}/js
@@ -39,8 +39,8 @@ CSS:
 sync:
 	@cp ${EXFE_MIN_CSS} ${STATIC_CSS_DIR}
 	@echo "Sync css files...                                        ${CHECK} Done"
-	@cp -R ${JS_DIR}/* ${STATIC_JS_DIR}
-	@echo "Sync js files...                                         ${CHECK} Done"
+#	@cp -R ${JS_DIR}/* ${STATIC_JS_DIR}
+#	@echo "Sync js files...                                         ${CHECK} Done"
 	@cp -R ${IMG_DIR}/* ${STATIC_IMG_DIR}
 	@echo "Sync image files...                                      ${CHECK} Done"
 #
