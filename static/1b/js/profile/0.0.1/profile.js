@@ -527,7 +527,7 @@ define(function (require, exports, module) {
       //$(this).find('i.icon-minus-sign').toggleClass('hide');
       //if (e.type === 'mouseenter') $(this).addClass('over');
       //else $(this).removeClass('over');
-      $(this).find('.xbtn-reverify, .xbtn-reauthorize').toggleClass('hide');
+      ///$(this).find('.xbtn-reverify, .xbtn-reauthorize').toggleClass('hide');
     });
 
     // removed identity
@@ -702,6 +702,17 @@ define(function (require, exports, module) {
       $(this).find('span.arrow').toggleClass('lt rb');
     });
 
+    $BODY.on('hover.profile', '.changepassword', function (e) {
+      var t = e.type;
+      $(this).data('hoverout', t === 'mouseleave');
+      if (t === 'mouseenter') {
+        $(this).addClass('xbtn-changepassword');
+      } else {
+        $(this).removeClass('xbtn-changepassword');
+      }
+    });
+
+    /*
     $BODY.on('hover.profile', '.settings-panel', function (e) {
       var t = e.type;
       $(this).data('hoverout', t === 'mouseleave');
@@ -713,6 +724,7 @@ define(function (require, exports, module) {
         //$(this).find('.xlabel').addClass('hide');
       }
     });
+    */
 
     // more
     $BODY.on('click.profile', '.more > a', function (e) {
