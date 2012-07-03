@@ -38,8 +38,7 @@ ExfeeCache = {
 
 
     init : function() {
-        var Store          = require('store'),
-            cached_user_id = Store.get('exfee_cache_user_id');
+        var cached_user_id = Store.get('exfee_cache_user_id');
         this.identities    = Store.get('exfee_cache_identities');
         if (!User || !User.id || !cached_user_id
          || User.id !== cached_user_id || !this.identities) {
@@ -57,10 +56,12 @@ ExfeeCache = {
 
 
     search : function(key) {
-        var matchString   = function(subject) {
-            return subject.toLowerCase().indexOf(key) !== -1;
+        var matchString   = function(key, subject) {
+            return subject
+                 ? subject.toLowerCase().indexOf(key) !== -1
+                 : false;
         };
-        var matchIdentity = function(identity) {
+        var matchIdentity = function(key, identity) {
             return matchString(key, identity.external_id)
                 || matchString(key, identity.external_username)
                 || matchString(key, identity.name);
@@ -68,9 +69,9 @@ ExfeeCache = {
         var arrCatched = [];
         key = key.toLowerCase();
         for (var i = 0; i < this.identities.length; i++) {
-            if (matchIdentity(this.identities[i])
-             &&  !ExfeeWidget.isMyIdentity(this.identities[i])
-             && ExfeeWidget.checkExistence(this.identities[i])) {
+            if (matchIdentity(key, this.identities[i])
+             && !ExfeeWidget.isMyIdentity(this.identities[i])
+             && !ExfeeWidget.checkExistence(this.identities[i])) {
                 arrCatched.push(ExfeUtilities.clone(this.identities[i]));
             }
         }
@@ -78,10 +79,10 @@ ExfeeCache = {
     },
 
 
-    cacheIdentity : function(identities, unshift) {
+    cacheIdentities : function(identities, unshift) {
         identities = ExfeUtilities.clone(identities);
         for (var i = 0; i < identities.length; i++) {
-            for (var j = 0; j < this.identities; j++) {
+            for (var j = 0; j < this.identities.length; j++) {
                 if (ExfeeWidget.compareIdentity(identities[i], this.identities[j])) {
                     this.identities.splice(j, 1);
                 }
@@ -278,8 +279,8 @@ ExfeeWidget = {
 
     checkComplete : function(objInput, key) {
         var objPanel = $(objInput[0].parentNode.parentNode).find('.autocomplete');
-        this.showCompleteItems(objPanel, key, ExfeeCache.search(key));
-        this.ajaxComplete(objPanel, key);
+        this.showCompleteItems(objPanel, key, key ? ExfeeCache.search(key) : []);
+        //this.ajaxComplete(objPanel, key);/.///////////////////////////////////////
     },
 
 
@@ -314,7 +315,7 @@ ExfeeWidget = {
         key = key.toLowerCase();
         if (ExfeeWidget.complete_key[exfeeWidgetId] !== key) {
             ExfeeWidget.complete_exfee[exfeeWidgetId] = [];
-            objCompleteList.html();
+            objCompleteList.html('');
         }
         ExfeeWidget.complete_key[exfeeWidgetId] = key;
         for (var i = 0; i < identities.length; i++) {
@@ -372,7 +373,7 @@ ExfeeWidget = {
                      && !ExfeeWidget.checkExistence(data.identities[i])) {
                         caughtIdentities.push(data.identities[i]);
                     }
-                    ExfeeCache. odof.exfee.gadget.cacheExfee(caughtIdentities);
+                    ExfeeCache.cacheIdentities(caughtIdentities);
                     ExfeeCache.tried_key[key] = true;
                     if (ExfeeWidget.complete_key[objPanel[0].parentNode.id] === key) {
                         ExfeeWidget.showCompleteItems(objPanel, key, caughtIdentities);
@@ -600,7 +601,6 @@ ns.ajaxIdentity = function(identities) {
 define(function (require, exports, module) {
 
     var $     = require('jquery');
-    var Store = require('store');
 
 
     window.Cross = {
@@ -654,10 +654,8 @@ define(function (require, exports, module) {
     };
 
 
-    window.Api   = require('api');
-
-
     var ExfeeWidgestInit = function() {
+        ExfeeCache.init();
         window.GatherExfeeWidget = ExfeeWidget.make(
             'gather-exfee', true, function() {
 
@@ -769,6 +767,19 @@ define(function (require, exports, module) {
     };
 
 
+    // init api
+    window.Store = require('store');
+    window.Api   = require('api');
+
+
+    // get current user
+    var Signin  = Store.get('signin');
+    window.User = Signin ? Store.get('user') : null;
+    if (User) {
+        Api.setToken(Signin.token);
+    }
+
+
     // init exfee widgets
     ExfeeWidgestInit();
 
@@ -781,14 +792,6 @@ define(function (require, exports, module) {
     InputFormInit();
 
 
-    // get current user
-    var Signin  = Store.get('signin');
-    window.User = Signin ? Store.get('user') : null;
-    if (User) {
-        Api.setToken(Signin.token);
-        Cross.by_identity.id = User.default_identity.id;
-    }
-
     // get cross
     var Cross_id = 100134;
     if (Cross_id) {
@@ -799,13 +802,12 @@ define(function (require, exports, module) {
                 UpdateCross(data.cross);
             },
             function(data) {
-                // failed
                 console.log(data);
             }
         );
+    } else if (User) {
+        Cross.by_identity.id = User.default_identity.id;
     }
-
-
 
 });
 
