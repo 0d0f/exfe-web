@@ -66,7 +66,52 @@ define(function (require, exports, module) {
         }
       },
 
+      onHideAfter: function () {
+        this.$('.modal-body').eq(0).css('opacity', 1);
+        this.switchTabType = 'd00';
+
+        // abort ajax
+        if (this._oauth_) {
+          this._oauth_.abort();
+        }
+      },
+
       events: {
+        'click .oauth > a': function (e) {
+          e.preventDefault();
+          var that = this;
+          var $e = $(e.currentTarget)
+            , oauthType = $e.data('oauth');
+          if (oauthType === 'twitter') {
+            that._oauth_ = $.ajax({
+              url: '/oauth/twitterAuthenticate',
+              beforeSend: function (xhr) {
+                that.$('.modal-body').eq(0).css('opacity', 0);
+                that.$('.xbtn-oauth').data('redirect', null);
+                that.switchTab('d05');
+                that.$('.authentication')
+                  .find('.xalert-error')
+                  .html('')
+                  .addClass('hide');
+              },
+              success: function (data) {
+                that.$('.xbtn-oauth').data('redirect', data.redirect);
+              },
+              fail: function (data) {
+                that.$('.authentication')
+                  .find('.xalert-error')
+                  .html(data.meta.errorDetail)
+                  .removeClass('hide');
+              }
+            });
+          }
+        },
+        'click .xbtn-oauth': function (e) {
+          var redirect = $(e.currentTarget).data('redirect');
+          if (redirect) {
+            window.localtion = redirect;
+          }
+        },
         'click .xbtn-verify': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
@@ -287,8 +332,8 @@ define(function (require, exports, module) {
         // TODO: oAuth 地址设置
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
-            + '<div class="pull-right">'
-              + '<a href="/oAuth/twitterRedirect"><img src="/static/1B/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+            + '<div class="pull-right oauth">'
+              + '<a href="#" data-oauth="twitter"><img src="/static/1b/img/twitter-logo.png" alt="" width="52" height="40"></a>'
             + '</div>'
             + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'
@@ -347,7 +392,8 @@ define(function (require, exports, module) {
           + '<a href="#" class="pull-right xbtn-setup d d00 hide">Set Up?</a>'
           + '<button href="#" class="pull-right xbtn-blue d d01 d02 x-signin disabled hide">Sign In</button>'
           //+ '<button href="#" class="pull-right xbtn-blue d d04 xbtn-success hide">Done</button>'
-          + '<button href="#" class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>',
+          + '<button href="#" class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>'
+          + '<button href="#" class="pull-right xbtn-white d d05 xbtn-oauth hide">OK</button>',
 
         others: ''
           + '<div class="isee d d03 hide">'
@@ -356,6 +402,14 @@ define(function (require, exports, module) {
               + '<p>Tired of signing up all around?</p>'
               + '<p>Just authorize through your existing accounts on other websites, such as Twitter, <span class="strike">Facebook or Google</span>. We hate spam, will NEVER disappoint your trust.</p>'
               + '<p>Otherwise, just enter your email and a recognizable  name, along with a password for sign-in in future.</p>'
+            + '</div>'
+          + '</div>'
+          + '<div class="authentication d d05 hide">'
+            + '<div class="modal-body">'
+              + '<div class="shadow title">Authentication</div>'
+              + '<div class="center shadow title" style="margin-bottom: 0;">through Twitter</div>'
+              + '<p class="xalert-error hide"></p>'
+              + '<p>Redirection...</p>'
             + '</div>'
           + '</div>'
       }
