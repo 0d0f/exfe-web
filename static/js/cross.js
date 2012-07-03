@@ -384,91 +384,6 @@ ExfeeWidget = {
     },
 
 
-
-
-
-
-
-/*
-ns.ajaxIdentity = function(identities) {
-    for (var i in identities) {
-        if (typeof this.exfeeIdentified[
-                identities[i].external_identity.toLowerCase()
-            ] !== 'undefined') {
-            identities.splice(i, 1);
-        }
-    }
-    if (!identities.length) {
-        return;
-    }
-    $.ajax({
-        type     : 'GET',
-        url      : site_url + '/identity/get',
-        data     : {identities : JSON.stringify(identities)},
-        dataType : 'json',
-        success  : function(data) {
-            var arrExfee = [];
-            for (var i in data.response.identities) {
-                var arrCatch = ['avatar_file_name', 'external_identity', 'name',
-                                'external_username', 'identityid', 'bio', 'provider'],
-                    objExfee = {};
-                for (var j in arrCatch) {
-                    objExfee[arrCatch[j]] = data.response.identities[i][arrCatch[j]];
-                }
-                objExfee.identityid = parseInt(objExfee.identityid)
-                var curId    = objExfee.external_identity.toLowerCase(),
-                    domExfee = $(
-                        '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
-                    );
-                for (j in odof.exfee.gadget.exfeeInput) {
-                    if (typeof odof.exfee.gadget.exfeeInput[j][curId] === 'undefined' ) {
-                        continue;
-                    }
-                    for (var k in arrCatch) {
-                        if (typeof objExfee[arrCatch[k]] === 'undefined') {
-                            continue;
-                        }
-                        odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
-                      = objExfee[arrCatch[k]];
-                    }
-                }
-                if (domExfee.length) {
-                    domExfee.find('.exfee_avatar').attr(
-                        'src', odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name,
-                        80, img_url)
-                    );
-                    domExfee.find('.exfee_name').html(objExfee.name);
-                    domExfee.find('.exfee_identity').html(objExfee.external_identity);
-                }
-                arrExfee.push(objExfee);
-            }
-            odof.exfee.gadget.cacheExfee(arrExfee);
-        }
-    });
-};
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     checkInput : function(objInput, force) {
         var strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
@@ -583,19 +498,6 @@ ns.ajaxIdentity = function(identities) {
     },
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 define(function (require, exports, module) {
@@ -1305,4 +1207,63 @@ ns.getExfees = function(domId) {
         }
     }
     return arrExfees;
+};
+
+
+ns.ajaxIdentity = function(identities) {
+    for (var i in identities) {
+        if (typeof this.exfeeIdentified[
+                identities[i].external_identity.toLowerCase()
+            ] !== 'undefined') {
+            identities.splice(i, 1);
+        }
+    }
+    if (!identities.length) {
+        return;
+    }
+    $.ajax({
+        type     : 'GET',
+        url      : site_url + '/identity/get',
+        data     : {identities : JSON.stringify(identities)},
+        dataType : 'json',
+        success  : function(data) {
+            var arrExfee = [];
+            for (var i in data.response.identities) {
+                var arrCatch = ['avatar_file_name', 'external_identity', 'name',
+                                'external_username', 'identityid', 'bio', 'provider'],
+                    objExfee = {};
+                for (var j in arrCatch) {
+                    objExfee[arrCatch[j]] = data.response.identities[i][arrCatch[j]];
+                }
+                objExfee.identityid = parseInt(objExfee.identityid)
+                var curId    = objExfee.external_identity.toLowerCase(),
+                    domExfee = $(
+                        '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
+                    );
+                for (j in odof.exfee.gadget.exfeeInput) {
+                    if (typeof odof.exfee.gadget.exfeeInput[j][curId] === 'undefined' ) {
+                        continue;
+                    }
+                    for (var k in arrCatch) {
+                        if (typeof objExfee[arrCatch[k]] === 'undefined') {
+                            continue;
+                        }
+                        odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
+                      = objExfee[arrCatch[k]];
+                    }
+                }
+                if (domExfee.length) {
+                    domExfee.find('.exfee_avatar').attr(
+                        'src', odof.comm.func.getUserAvatar(
+                        objExfee.avatar_file_name,
+                        80, img_url)
+                    );
+                    domExfee.find('.exfee_name').html(objExfee.name);
+                    domExfee.find('.exfee_identity').html(objExfee.external_identity);
+                }
+                arrExfee.push(objExfee);
+            }
+            odof.exfee.gadget.cacheExfee(arrExfee);
+        }
+    });
 };
