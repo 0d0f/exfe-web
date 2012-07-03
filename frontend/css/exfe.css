@@ -5640,62 +5640,64 @@ input[type="submit"].btn.btn-mini {
   width: 10px;
   height: 10px;
   background: transparent;
-  background: #ddd;
-  border: 1px solid #666;
-  opacity: 0.5;
-  filter: alpha(opacity=50);
   -webkit-user-select: none;
    -khtml-user-select: none;
      -moz-user-select: none;
-       -o-user-select: none;
+      -ms-user-select: none;
           user-select: none;
+  -webkit-user-drag: element;
+   -khtml-user-drag: element;
 }
 
 .modal-uploader .anchor-nw {
-  top: -5.5px;
-  left: -5.5px;
+  top: -5px;
+  left: -5px;
   cursor: nw-resize;
 }
 
 .modal-uploader .anchor-n {
-  top: -5.5px;
-  left: 115.5px;
+  top: -5px;
+  left: 5px;
+  width: 230px;
   cursor: n-resize;
 }
 
 .modal-uploader .anchor-ne {
-  top: -5.5px;
-  right: -5.5px;
+  top: -5px;
+  right: -5px;
   cursor: ne-resize;
 }
 
 .modal-uploader .anchor-w {
-  top: 115.5px;
-  left: -5.5px;
+  top: 5px;
+  left: -5px;
+  height: 230px;
   cursor: w-resize;
 }
 
 .modal-uploader .anchor-e {
-  top: 115.5px;
-  right: -5.5px;
+  top: 5px;
+  right: -5px;
+  height: 230px;
   cursor: e-resize;
 }
 
 .modal-uploader .anchor-sw {
-  bottom: -5.5px;
-  left: -5.5px;
+  bottom: -5px;
+  left: -5px;
   cursor: sw-resize;
 }
 
 .modal-uploader .anchor-s {
-  bottom: -5.5px;
-  left: 115.5px;
+  bottom: -5px;
+  left: 5px;
+  width: 230px;
   cursor: s-resize;
 }
 
 .modal-uploader .anchor-se {
-  right: -5.5px;
-  bottom: -5.5px;
+  right: -5px;
+  bottom: -5px;
   cursor: se-resize;
 }
 
@@ -6700,10 +6702,19 @@ input[type="submit"].btn.btn-mini {
 .settings-panel .user-infos .changepassword {
   display: inline-block;
   height: 16px;
-  padding: 0 10px;
+  padding: 1px 10px 1px 6px;
   font-size: 12px;
-  line-height: 14px;
-  color: #4c4c4c;
+  line-height: 18px;
+  color: #191919;
+}
+
+.settings-panel .user-infos .changepassword span {
+  display: none;
+  margin-left: 10px;
+}
+
+.settings-panel .user-infos .changepassword.xbtn-changepassword span {
+  display: inline;
 }
 
 .settings-panel .user-infos .identity-list {
@@ -6722,11 +6733,6 @@ input[type="submit"].btn.btn-mini {
 
 .settings-panel .user-infos .identity-list .icon-move {
   display: none;
-}
-
-.settings-panel .user-infos .identity-list [class^="icon16-identity"],
-.settings-panel .user-infos .identity-list [class*=" icon16-identity"] {
-  margin-right: 15px;
 }
 
 .settings-panel .user-infos .identity-list .editing .mkdef {
@@ -6753,11 +6759,22 @@ input[type="submit"].btn.btn-mini {
   text-decoration: underline;
 }
 
-.settings-panel .user-infos .identity-list .username {
+.settings-panel .user-infos .identity-list .identity {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.settings-panel .user-infos .identity-list .identity.textoverflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-panel .user-infos .identity-list .identityname {
   margin-left: 10px;
 }
 
-.settings-panel .user-infos .identity-list .username input[type="text"] {
+.settings-panel .user-infos .identity-list .identityname input[type="text"] {
   width: 120px;
   height: 18px;
   font-size: 12px;
@@ -6769,14 +6786,14 @@ input[type="submit"].btn.btn-mini {
   text-decoration: underline;
 }
 
-.settings-panel .user-infos .identity-list .identity {
+.settings-panel .user-infos .identity-list .external {
   margin-right: 5px;
   margin-left: 10px;
   font-style: oblique;
 }
 
 .settings-panel .user-infos .identity-list .xlabel {
-  color: #4c4c4c;
+  color: #cc4747;
 }
 
 .settings-panel .user-infos .identity-list .xlabel .xbtn {

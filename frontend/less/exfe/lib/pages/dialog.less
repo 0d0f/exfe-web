@@ -271,63 +271,60 @@
     position: absolute;
     z-index: @index + 2;
     background: transparent;
-    background: #ddd;
-    border: 1px solid #666;
-    .opacity(50);
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
-  user-select: none;
+    //background: #ddd;
+    //.opacity(50);
+    .draggable();
   }
 
-  @resizeableBorder: 0.5px;
-
   .anchor-nw {
-    top: -5px - @resizeableBorder;
-    left: -5px - @resizeableBorder;
+    top: -5px;
+    left: -5px;
     cursor: nw-resize;
   }
 
   .anchor-n {
-    top: -5px - @resizeableBorder;
-    left: 115px + @resizeableBorder;
+    width: 230px;
+    top: -5px;
+    left: 5px;
     cursor: n-resize;
   }
 
   .anchor-ne {
-    top: -5px - @resizeableBorder;
-    right: -5px - @resizeableBorder;
+    top: -5px;
+    right: -5px;
     cursor: ne-resize;
   }
 
   .anchor-w {
-    top: 115px + @resizeableBorder;
-    left: -5px - @resizeableBorder;
+    height: 230px;
+    top: 5px;
+    left: -5px;
     cursor: w-resize;
   }
 
   .anchor-e {
-    top: 115px + @resizeableBorder;
-    right: -5px - @resizeableBorder;
+    height: 230px;
+    top: 5px;
+    right: -5px;
     cursor: e-resize;
   }
 
   .anchor-sw {
-    bottom: -5px - @resizeableBorder;
-    left: -5px - @resizeableBorder;
+    bottom: -5px;
+    left: -5px;
     cursor: sw-resize;
   }
 
   .anchor-s {
-    bottom: -5px - @resizeableBorder;
-    left: 115px + @resizeableBorder;
+    width: 230px;
+    bottom: -5px;
+    left: 5px;
     cursor: s-resize;
   }
 
   .anchor-se {
-    right: -5px - @resizeableBorder;
-    bottom: -5px - @resizeableBorder;
+    right: -5px;
+    bottom: -5px;
     cursor: se-resize;
   }
 
