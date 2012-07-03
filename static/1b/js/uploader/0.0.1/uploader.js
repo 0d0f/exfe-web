@@ -521,7 +521,7 @@ define('uploader', [], function (require, exports, module) {
       bb.append(ab);
       res = bb.getBlob(mimeString);
     } else {
-      // safari
+      // for safari
       res = new Blob([ab], {"type": mimeString});
     }
     return res;
@@ -531,7 +531,7 @@ define('uploader', [], function (require, exports, module) {
     if(canvas.mozGetAsFile) {
       return canvas.mozGetAsFile(filename, "image/png");
     } else {
-      var data = canvas.toDataURL();
+      var data = canvas.toDataURL('image/png');
       var blob = dataURItoBlob(data);
       return blob;
     }
