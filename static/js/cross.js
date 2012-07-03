@@ -747,10 +747,6 @@ ns.make = function(domId, curExfee, curEditable, curDiffCallback, skipInitCallba
         'click', this.eventAvatar
     );
     $('body').bind('click', this.cleanFloating);
-
-    this.completimer[domId] = setInterval(
-        "odof.exfee.gadget.chkInput('" + domId + "')", 50
-    );
     $('#' + domId + '_exfeegadget_addbtn').live(
         'keydown click', this.eventAddbutton
     );
@@ -866,18 +862,7 @@ ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
             var strClassRsvp = this.getClassRsvp(objExfee.rsvp),
                 thisIsMe     = objExfee.external_identity === (myIdentity ? myIdentity.external_identity : ''),
                 disIdentity  = this.displayIdentity(objExfee);
-            /*$('#' + domId + '_exfeegadget_avatararea > ol').append(
-                '<li identity="' + objExfee.external_identity + '">'
-              +     '<div class="exfee_avatarblock" '
-              +         'unselectable="on" onselectstart="return false;">'
-              +        (objExfee.host
-              ?         '<div class="exfee_hostmark">H</div>' : '')
-              +         '<img src="' + odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name, 80, img_url)
-              +         '" class="exfee_avatar">'
-              +         '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
-              +     '</div>'
-              +     '<div class="exfee_baseinfo floating">'
+            /*+     '<div class="exfee_baseinfo floating">'
               +         '<span class="exfee_name exfee_baseinfo_name">'
               +             objExfee.name
               +         '</span>'
@@ -922,35 +907,8 @@ ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
               +         '<div class="exfee_extrainfo_extraid_area">'
               +         '</div>'
               +     '</div>'
-              + '</li>'
-            );
-            $('#' + domId + '_exfeegadget_listarea > ol').append(
-                '<li identity="' + objExfee.external_identity + '">'
-              //+     '<div class="exfee_rsvpblock ' + strClassRsvp + '"></div>'
-              +     '<div class="exfee_baseblock">'
-              +         '<span class="exfee_name">'
-              +             objExfee.name
-              +         '</span>'
-              +        '<span class="exfee_identity">'
-              +             objExfee.external_identity
-              +         '</span>'
-              +     '</div>'
-              +     '<div class="exfee_extrablock">'
-              +         '<img src="' + odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name, 80, img_url)
-              +         '" class="exfee_avatar">'
-              +     '</div>'
-              + '</li>'
-            );
             */
-            if (objExfee.provider) {
-                this.exfeeInput[domId][objExfee.external_identity] = objExfee;
-            }
         //}
-    }
-    this.updateExfeeSummary(domId);
-    if (!noCallback && this.diffCallback[domId]) {
-        this.diffCallback[domId]();
     }
     if (!noIdentity) {
         setTimeout(function() {
