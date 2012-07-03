@@ -280,7 +280,7 @@ ExfeeWidget = {
     checkComplete : function(objInput, key) {
         var objPanel = $(objInput[0].parentNode.parentNode).find('.autocomplete');
         this.showCompleteItems(objPanel, key, key ? ExfeeCache.search(key) : []);
-        //this.ajaxComplete(objPanel, key);/.///////////////////////////////////////
+        this.ajaxComplete(objPanel, key);
     },
 
 
