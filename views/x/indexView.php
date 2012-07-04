@@ -180,7 +180,7 @@ EXFE Maps
 <!-- JavaScript at the bottom for fast page loading -->
 <?php include 'share/footer.php'; ?>
 <script src="/static/js/cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-<script src="/static/1b/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+<script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
 </html>
