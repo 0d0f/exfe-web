@@ -5412,6 +5412,18 @@ input[type="submit"].btn.btn-mini {
   width: 340px;
 }
 
+.modal-id .authentication {
+  position: absolute;
+  top: 50px;
+  width: 340px;
+  text-align: center;
+}
+
+.modal-id .authentication .xalert-error {
+  background: transparent;
+  border: none;
+}
+
 .modal-fp .identity {
   width: 271px;
   height: 26px;

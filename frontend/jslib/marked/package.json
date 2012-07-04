@@ -1,0 +1,20 @@
+{
+  "name": "marked",
+  "version": "0.2.5",
+  "description": "A markdown parser built for speed",
+  "homepage": "https://github.com/chjj/marked",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/chjj/marked.git"
+  },
+  "pull": {
+    "url": "https://raw.github.com/chjj/marked/master/lib/marked.js",
+    "minurl": ""
+  },
+  "hint": false,
+  "module": {
+    "header": "define('marked', [], function (require, exports, module) {\n\n\n",
+    "footer": "\n\n\n});"
+  }
+}
+
