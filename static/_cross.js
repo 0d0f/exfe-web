@@ -629,6 +629,10 @@ define(function (require, exports, module) {
 
 
     var ShowBackground = function() {
+        Cross.widget.background.image = Cross.widget.background.image
+      ? Cross.widget.background.image : AvailableBackgrounds[
+            parseInt(Math.random() * AvailableBackgrounds.length)
+        ];
         $('.cross-background').css(
             'background-image',
             'url(/static/img/xbg/' + Cross.widget.background.image + ')'
@@ -713,7 +717,6 @@ define(function (require, exports, module) {
             }
         );
     } else {
-        Cross.widgets.background.image = '';
         if (User) {
             Cross.by_identity.id = User.default_identity.id;
         }

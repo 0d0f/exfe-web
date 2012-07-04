@@ -9,7 +9,7 @@
     include 'share/nav.php';
 ?>
 <script>
-    var AvailableBackgrounds = <?php$this->getVar('backgrounds');
+    var AvailableBackgrounds = <?php echo json_encode($this->getVar('backgrounds')); ?>;
 </script>
 
 <!--
@@ -179,7 +179,7 @@ EXFE Maps
 
 <!-- JavaScript at the bottom for fast page loading -->
 <?php include 'share/footer.php'; ?>
-<script src="/static/js/cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+<script src="/static/_cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
