@@ -1,9 +1,5 @@
 ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
-ns.editable  = false;
-
-ns.expended  = false;
-
 
 ns.showDesc = function(editing)
 {
@@ -275,6 +271,7 @@ ns.makeMessage = function(objItem)
          + '</li>';
 };
 
+
 ns.showConfirmed = function (users) {
     var str = '<ul>', i = 0, l = users.length, j = 0;
     for (; i < l; i++) {
@@ -381,6 +378,7 @@ ns.show = function(editable)
     this.showRsvp();
 };
 
+
 ns.fetchUserByIdentityId = function (identity_id) {
     var user = null;
     $.each(crossExfee, function (i, v) {
@@ -391,6 +389,7 @@ ns.fetchUserByIdentityId = function (identity_id) {
     return user;
 };
 
+
 ns.showComponents = function()
 {
     this.showTitle();
@@ -398,6 +397,7 @@ ns.showComponents = function()
     this.showTime();
     this.showPlace();
 };
+
 
 ns.changeConfirmed = function (new_myrsvp, user_id) {
     var old_myrsvp = window['myrsvp'];
@@ -410,19 +410,6 @@ ns.changeConfirmed = function (new_myrsvp, user_id) {
     $span.html(c+i);
 };
 
-ns.setXTitleBackground = function () {
-    // 设置标题背景图片
-    var bkgIMG = new Image();
-    if (crossData.background) {
-        bkgIMG.src = img_url + '/xbgimage/' + crossData.background + '_web.jpg';
-    } else {
-        bkgIMG.src = '/static/images/x_background_pure.png';
-    }
-    bkgIMG.onload = function () {
-        $('#x_view').css('background', 'url(' + bkgIMG.src + ') no-repeat 0 -198px');
-    }
-    bkgIMG.onerror = function () {};
-}
 
 $(function () {
     var DOC = $(document);
