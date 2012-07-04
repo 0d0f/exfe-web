@@ -438,9 +438,9 @@ ExfeeWidget = {
                         // }
                         break;
                     case 27: // esc
-                        // if (odof.exfee.gadget.completing[domId]) {
-                        //     odof.exfee.gadget.displayComplete(domId, false);
-                        // }
+                        if (odof.exfee.gadget.completing[domId]) {
+                            odof.exfee.gadget.displayComplete(domId, false);
+                        }
                         break;
                     case 38: // up
                     case 40: // down
@@ -601,6 +601,8 @@ define(function (require, exports, module) {
 
     var ShowTitle = function() {
         $('.cross-title > h1').html(Cross.title);
+        document.title = 'EXFE - ' + Cross.title;
+        // @todo 不同长度的 title 使用不同的样式
     };
 
 
