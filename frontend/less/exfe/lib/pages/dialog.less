@@ -231,9 +231,28 @@
   }
 
   .avatar80 {
+    position: absolute;
     width: 80px;
     height: 80px;
     overflow: hidden;
+  }
+
+  .zoom {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    z-index: @index + 3;
+    cursor: pointer;
+    display: none;
+  }
+
+  .upload {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    z-index: @index + 3;
+    cursor: pointer;
+    display: none;
   }
 
   .rotate {
@@ -275,6 +294,7 @@
     .overlay {
       width: 80px;
       height: 80px;
+      .opacity(50);
     }
   }
 
@@ -284,12 +304,14 @@
     position: absolute;
     z-index: @index + 2;
     background: transparent;
-    //background: #ddd;
-    //.opacity(50);
+    background: #ddd;
+    .opacity(50);
     .draggable();
   }
 
   .anchor-nw {
+    width: 30px;
+    height: 30px;
     top: -5px;
     left: -5px;
     cursor: nw-resize;
@@ -303,6 +325,8 @@
   }
 
   .anchor-ne {
+    width: 30px;
+    height: 30px;
     top: -5px;
     right: -5px;
     cursor: ne-resize;
@@ -323,6 +347,8 @@
   }
 
   .anchor-sw {
+    width: 30px;
+    height: 30px;
     bottom: -5px;
     left: -5px;
     cursor: sw-resize;
@@ -336,6 +362,8 @@
   }
 
   .anchor-se {
+    width: 30px;
+    height: 30px;
     right: -5px;
     bottom: -5px;
     cursor: se-resize;
