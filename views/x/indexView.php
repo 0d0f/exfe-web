@@ -33,7 +33,7 @@ EXFE Maps
   <section id="gather" class="x-gather">
 
     <!-- Cross-Form -->
-    <div class="cross-form">
+    <div class="cross-form" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
 
       <div class="form-horizontal">
 

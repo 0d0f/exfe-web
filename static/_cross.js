@@ -147,9 +147,18 @@ ExfeeWidget = {
 
 
     showAll : function() {
+        var intAccepted = 0, intTotal = 0;
+        $('#' + this.dom_id + ' .thumbnails').html('');
         for (var i = 0; i < Exfee.invitations.length; i++) {
+            var intCell = Exfee.invitations[i].mates + 1;
             this.showOne(Exfee.invitations[i]);
+            if (Exfee.invitations[i].rsvp === 'ACCEPTED') {
+                intAccepted += intCell;
+            }
+            intTotal += intCell;
         }
+        $('#' + this.dom_id + ' .attended').html(intAccepted);
+        $('#' + this.dom_id + ' .total').html('of ' + intTotal);
     },
 
 
@@ -202,14 +211,15 @@ ExfeeWidget = {
 
 
     addExfee : function(identity) {
-        if (this.checkExistence(identity)) {
-            Cross.invitations.push({
+        if (!this.checkExistence(identity)) {
+            Exfee.invitations.push({
                 identity    : ExfeUtilities.clone(identity),
                 rsvp_status : 'NORESPONSE',
                 host        : false,
                 mates       : 0
             });
         }
+        this.callback();
     },
 
 
@@ -312,7 +322,7 @@ ExfeeWidget = {
         var exfeeWidgetId    = objPanel[0].parentNode.id,
             objCompleteList  = $(objPanel).find('ol'),
             strCompleteItems = '';
-        key = key.toLowerCase();
+        key = key ? key.toLowerCase() : '';
         if (ExfeeWidget.complete_key[exfeeWidgetId] !== key) {
             ExfeeWidget.complete_exfee[exfeeWidgetId] = [];
             objCompleteList.html('');
@@ -357,7 +367,7 @@ ExfeeWidget = {
 
 
     ajaxComplete : function(objPanel, key) {
-        if (!User || !key.length || typeof ExfeeCache.tried_key[key] !== 'undefined') {
+        if (!User || !key || typeof ExfeeCache.tried_key[key] !== 'undefined') {
             return;
         }
         if (this.complete_request) {
@@ -414,7 +424,7 @@ ExfeeWidget = {
         for (i = 0; i < arrValid.length; i++) {
             this.addExfee(arrValid[i]);
         }
-        ExfeeWidget.checkComplete(objInput, arrInvalid.pop());
+        this.checkComplete(objInput, arrInvalid.pop());
     },
 
 
@@ -434,12 +444,15 @@ ExfeeWidget = {
                         //     odof.exfee.gadget.displayComplete(domId, false);
                         //     $('#' + domId + '_exfeegadget_inputbox').val('');
                         // } else {
-                        //     odof.exfee.gadget.chkInput(domId, true);
+                            ExfeeWidget.checkInput(objInput, true);
                         // }
                         break;
                     case 27: // esc
-                        if (odof.exfee.gadget.completing[domId]) {
-                            odof.exfee.gadget.displayComplete(domId, false);
+                        if (ExfeeWidget.completing) {
+                            ExfeeWidget.displayComplete(
+                                $(objInput[0].parentNode.parentNode)[0].id,
+                                false
+                            );
                         }
                         break;
                     case 38: // up
@@ -559,14 +572,10 @@ define(function (require, exports, module) {
     var ExfeeWidgestInit = function() {
         ExfeeCache.init();
         window.GatherExfeeWidget = ExfeeWidget.make(
-            'gather-exfee', true, function() {
-
-            }
+            'gather-exfee', true, ShowExfee
         );
         window.CrossExfeeWidget  = ExfeeWidget.make(
-            'cross-exfee', true, function() {
-
-            }
+            'cross-exfee',  true, ShowExfee
         );
     };
 
@@ -717,12 +726,35 @@ define(function (require, exports, module) {
             }
         );
     } else {
+        $('.cross-form').show();
         if (User) {
             Cross.by_identity.id = User.default_identity.id;
         }
     }
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
