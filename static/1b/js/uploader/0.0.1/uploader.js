@@ -215,8 +215,6 @@ define('uploader', [], function (require, exports, module) {
           self.canvasOffset.width = canvas.width;
           self.canvasOffset.height = canvas.height;
 
-          readFileToImage(originalImage, filehtml5._file);
-
           originalImage.onload = function () {
 
             bitmap = new Bitmap(originalImage);
@@ -252,6 +250,8 @@ define('uploader', [], function (require, exports, module) {
             self.bitmap80 = bitmap80;
             self.stage80 = stage80;
           };
+
+          readFileToImage(originalImage, filehtml5._file);
 
           docBind(this);
 
@@ -384,7 +384,9 @@ define('uploader', [], function (require, exports, module) {
 
           var originalCanvas = document.createElement('canvas');
 
-          originalCanvas.width = originalCanvas.height = Math.min(originalImage.width, originalImage.height);
+          var min = Math.min(originalImage.width, originalImage.height);
+          //originalCanvas.width = originalCanvas.height = min > 1024 ? 1024 : min;
+          originalCanvas.width = originalCanvas.height = min;
           var originalCtx = originalCanvas.getContext('2d');
           originalCtx.translate(originalCanvas.width / 2, originalCanvas.height / 2);
           originalCtx.save();
@@ -393,11 +395,17 @@ define('uploader', [], function (require, exports, module) {
           originalCtx.restore();
           originalCtx.save();
 
-          // 头像上传
-          this.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), {
-            'original': saveCanvasAsFile(originalCanvas, 'original.png'),
-            '80_80': saveCanvasAsFile(stage80.canvas, '80_80.png')
-          });
+          var img0 = saveCanvasAsFile(originalCanvas, 'original.png');
+          var img1 =  saveCanvasAsFile(stage80.canvas, '80_80.png');
+
+          var that = this;
+          setTimeout(function () {
+            // 头像上传
+            that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), {
+              'original': img0,
+              '80_80': img1
+            });
+          }, 20);
         }
       },
 
@@ -521,7 +529,8 @@ define('uploader', [], function (require, exports, module) {
       bb.append(ab);
       res = bb.getBlob(mimeString);
     } else {
-      // for safari
+      // for safari Blob  算法不一样，导致 bytelength 也不一样
+      // wtf? // 对于大文件不稳定哦
       res = new Blob([ab], {"type": mimeString});
     }
     return res;
