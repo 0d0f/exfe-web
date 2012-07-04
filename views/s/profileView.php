@@ -10,7 +10,7 @@
       <section id="profile" class="x-profile">
 
         <div class="row settings-panel">
-          <div class="pull-left user-avatar">
+          <div class="pull-left user-avatar editable">
           </div>
 
           <div class="pull-right user-xstats">
