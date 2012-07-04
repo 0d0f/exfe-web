@@ -4,7 +4,6 @@ error_reporting(E_ALL ^ E_NOTICE);
 $curDir = dirname(__FILE__);
 require_once "{$curDir}/../common.php";
 require_once "{$curDir}/../DataModel.php";
-require_once "{$curDir}/libfilesystem.php";
 require_once "{$curDir}/libimage.php";
 
 class xbgUtilitie extends DataModel {

@@ -1,5 +1,5 @@
 <?php
-#image functions by @Leaskh
+#image lib by @Leaskh
 
 class libImage {
 
