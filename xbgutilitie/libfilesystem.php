@@ -5,7 +5,7 @@ class libFileSystem {
     public function checkPath($path) {
         return $path === '/' || $path === '~';
     }
-    
+
 
     public function delFolder($path) {
         if ($this->checkPath($path)) {
@@ -13,8 +13,8 @@ class libFileSystem {
         }
         return $this->emptyFolder($path) && rmdir($path);
     }
-    
-    
+
+
     public function emptyFolder($path) {
         if ($this->checkPath($path)) {
             return false;
