@@ -9,7 +9,7 @@
     include 'share/nav.php';
 ?>
 <script>
-//    var
+    var AvailableBackgrounds = [];
 </script>
 
 <!--
