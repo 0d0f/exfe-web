@@ -11,10 +11,10 @@
   <meta name="keywords" content="EXFE, X, cross, exfee, gather, Gather a X, hangout, gathering, invite, RSVP" />
   <meta name="description" content="EXFE, an utility for hanging out with friends." />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <link rel="shortcut icon" href="/static/1b/img/favicon_16.png" />
-  <link rel="apple-touch-icon" href="/static/1b/img/favicon_32.png" />
+  <link rel="shortcut icon" href="/static/img/favicon_16.png" />
+  <link rel="apple-touch-icon" href="/static/img/favicon_32.png" />
   <title>EXFE.COM</title>
 
   <!-- V2 -->
-  <link href="/static/1b/css/exfe.min.css?t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet" type="text/css" />
-  <script src="/static/1b/js/modernizr/2.5.3/modernizr.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <link href="/static/css/exfe.min.css?t=<?php echo STATIC_CODE_TIMESTAMP; ?>" rel="stylesheet" type="text/css" />
+  <script src="/static/js/modernizr/2.5.3/modernizr.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>

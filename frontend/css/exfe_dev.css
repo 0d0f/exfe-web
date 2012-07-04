@@ -5591,9 +5591,28 @@ input[type="submit"].btn.btn-mini {
 }
 
 .modal-uploader .avatar80 {
+  position: absolute;
   width: 80px;
   height: 80px;
   overflow: hidden;
+}
+
+.modal-uploader .zoom {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  z-index: 4;
+  display: none;
+  cursor: pointer;
+}
+
+.modal-uploader .upload {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 4;
+  display: none;
+  cursor: pointer;
 }
 
 .modal-uploader .rotate {
@@ -5644,6 +5663,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .smallphoto .overlay {
   width: 80px;
   height: 80px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
 
 .modal-uploader .resizeable {
@@ -5652,18 +5673,29 @@ input[type="submit"].btn.btn-mini {
   width: 10px;
   height: 10px;
   background: transparent;
+  background: #ddd;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
   -webkit-user-select: none;
    -khtml-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-user-drag: element;
+          user-drag: none;
+  touch-callout: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
    -khtml-user-drag: element;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .modal-uploader .anchor-nw {
   top: -5px;
   left: -5px;
+  width: 30px;
+  height: 30px;
   cursor: nw-resize;
 }
 
@@ -5677,6 +5709,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-ne {
   top: -5px;
   right: -5px;
+  width: 30px;
+  height: 30px;
   cursor: ne-resize;
 }
 
@@ -5697,6 +5731,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-sw {
   bottom: -5px;
   left: -5px;
+  width: 30px;
+  height: 30px;
   cursor: sw-resize;
 }
 
@@ -5710,6 +5746,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-se {
   right: -5px;
   bottom: -5px;
+  width: 30px;
+  height: 30px;
   cursor: se-resize;
 }
 
@@ -7368,6 +7406,12 @@ input[type="submit"].btn.btn-mini {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          tap-highlight-color: rgba(0, 0, 0, 0);
+  -khtml-user-drag: element;
+         user-drag: none;
+  touch-callout: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
   -webkit-user-drag: element;
-   -khtml-user-drag: element;
 }
