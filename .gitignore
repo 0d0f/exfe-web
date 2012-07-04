@@ -1,6 +1,5 @@
 config.php
 .DS_Store
-static/config.php
 static/images/.DS_Store
 static/images/_*
 static/js/c.js
