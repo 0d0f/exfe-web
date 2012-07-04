@@ -3936,7 +3936,7 @@ input[type="submit"].btn.btn-mini {
   height: 20px;
   padding: 0;
   color: #b2b2b2;
-  background: url("/static/1b/img/modal-header-bg.png") repeat-x;
+  background: url("/static/img/modal-header-bg.png") repeat-x;
   border-bottom: none;
 }
 
@@ -4088,7 +4088,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 2;
   width: 100%;
   height: 100%;
-  background: url("/static/1b/img/loading.jpeg") center center no-repeat rgba(251, 251, 251, 0.8);
+  background: url("/static/img/loading.jpeg") center center no-repeat rgba(251, 251, 251, 0.8);
   background-size: 20px 20px;
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
@@ -4194,7 +4194,7 @@ input[type="submit"].btn.btn-mini {
   height: 160px;
   min-height: 160px;
   padding-top: 80px;
-  background: url("/static/1b/img/rome-sandbox.jpg") no-repeat;
+  background: url("/static/img/rome-sandbox.jpg") no-repeat;
   background-size: 400px 300px;
 }
 
@@ -4274,7 +4274,7 @@ input[type="submit"].btn.btn-mini {
 .small-loading {
   width: 16px;
   height: 16px;
-  background: url("/static/1b/img/small-loading.gif") no-repeat;
+  background: url("/static/img/small-loading.gif") no-repeat;
 }
 
 [class^="icon-"],
@@ -4285,7 +4285,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 12px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-position: 12px 12px;
   background-repeat: no-repeat;
 }
@@ -4303,7 +4303,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4320,7 +4320,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 16px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4337,7 +4337,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-repeat: no-repeat;
 }
 
@@ -4354,7 +4354,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 10px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-position: 10px 10px;
   background-repeat: no-repeat;
 }
@@ -4372,7 +4372,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 20px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-position: 20px 20px;
   background-repeat: no-repeat;
 }
@@ -4390,7 +4390,7 @@ input[type="submit"].btn.btn-mini {
   *margin-right: .3em;
   line-height: 24px;
   vertical-align: text-top;
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
   background-position: 24px 24px;
   background-repeat: no-repeat;
 }
@@ -4401,7 +4401,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .icon-white {
-  background-image: url("/static/1b/img/icons.png");
+  background-image: url("/static/img/icons.png");
 }
 
 .icon-exfe {
@@ -5035,7 +5035,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1001;
   width: 100%;
   height: 56px;
-  background: url("/static/1b/img/navbar-bg.png") repeat-x transparent;
+  background: url("/static/img/navbar-bg.png") repeat-x transparent;
 }
 
 .navbar .navbar-inner {
@@ -5128,15 +5128,15 @@ input[type="submit"].btn.btn-mini {
 }
 
 .navbar .user .user-name:before {
-  background: url("/static/1b/img/navbar-user-left.png") no-repeat transparent;
+  background: url("/static/img/navbar-user-left.png") no-repeat transparent;
 }
 
 .navbar .user .user-name {
-  background: url("/static/1b/img/navbar-user-down.png") repeat-x transparent;
+  background: url("/static/img/navbar-user-down.png") repeat-x transparent;
 }
 
 .navbar .user .user-name:after {
-  background: url("/static/1b/img/navbar-user-right.png") no-repeat transparent;
+  background: url("/static/img/navbar-user-right.png") no-repeat transparent;
 }
 
 .navbar .nav > li.user {
@@ -5148,7 +5148,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1001;
   width: 158px;
   height: 56px;
-  background: url("/static/1b/img/navbar-bg.png") repeat-x;
+  background: url("/static/img/navbar-bg.png") repeat-x;
 }
 
 .navbar .user-panel {
@@ -5591,9 +5591,28 @@ input[type="submit"].btn.btn-mini {
 }
 
 .modal-uploader .avatar80 {
+  position: absolute;
   width: 80px;
   height: 80px;
   overflow: hidden;
+}
+
+.modal-uploader .zoom {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  z-index: 4;
+  display: none;
+  cursor: pointer;
+}
+
+.modal-uploader .upload {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 4;
+  display: none;
+  cursor: pointer;
 }
 
 .modal-uploader .rotate {
@@ -5644,6 +5663,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .smallphoto .overlay {
   width: 80px;
   height: 80px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
 }
 
 .modal-uploader .resizeable {
@@ -5652,18 +5673,29 @@ input[type="submit"].btn.btn-mini {
   width: 10px;
   height: 10px;
   background: transparent;
+  background: #ddd;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
   -webkit-user-select: none;
    -khtml-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-user-drag: element;
+          user-drag: none;
+  touch-callout: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
    -khtml-user-drag: element;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .modal-uploader .anchor-nw {
   top: -5px;
   left: -5px;
+  width: 30px;
+  height: 30px;
   cursor: nw-resize;
 }
 
@@ -5677,6 +5709,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-ne {
   top: -5px;
   right: -5px;
+  width: 30px;
+  height: 30px;
   cursor: ne-resize;
 }
 
@@ -5697,6 +5731,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-sw {
   bottom: -5px;
   left: -5px;
+  width: 30px;
+  height: 30px;
   cursor: sw-resize;
 }
 
@@ -5710,6 +5746,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-se {
   right: -5px;
   bottom: -5px;
+  width: 30px;
+  height: 30px;
   cursor: se-resize;
 }
 
@@ -5718,7 +5756,7 @@ input[type="submit"].btn.btn-mini {
   height: 240px;
   text-align: center;
   cursor: pointer;
-  background-image: url("/static/1b/img/upload_128.png");
+  background-image: url("/static/img/upload_128.png");
   background-position: 50% 25px;
   background-repeat: no-repeat;
 }
@@ -5816,7 +5854,7 @@ input[type="submit"].btn.btn-mini {
   z-index: 1;
   width: 100%;
   height: 680px;
-  background: url(/static/1b/img/xtb/westlake.jpg) left -198px no-repeat;
+  background: url(/static/img/xtb/westlake.jpg) left -198px no-repeat;
   -webkit-border-radius: 4px 4px 0 0;
      -moz-border-radius: 4px 4px 0 0;
           border-radius: 4px 4px 0 0;
@@ -7368,6 +7406,12 @@ input[type="submit"].btn.btn-mini {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+          tap-highlight-color: rgba(0, 0, 0, 0);
+  -khtml-user-drag: element;
+         user-drag: none;
+  touch-callout: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
   -webkit-user-drag: element;
-   -khtml-user-drag: element;
 }

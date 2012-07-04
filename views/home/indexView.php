@@ -1,7 +1,7 @@
 <?php include "share/header.php" ?>
 
   <!-- V1 Home css -->
-  <link type="text/css" rel="stylesheet" href="/static/css/home.css" />
+  <link type="text/css" rel="stylesheet" href="/static/_css/home.css" />
   <!--/V1 Home css -->
 
 </head>
@@ -11,7 +11,7 @@
   <!-- v1 Home -->
   <div class="home_banner" id="home_banner">
     <div id="x_code_img">
-      <img style="display:none;" class="x-sign" src="/static/images/X-sign.jpg" alt=""/>
+      <img style="display:none;" class="x-sign" src="/static/_images/X-sign.jpg" alt=""/>
       <div class="xci-l">
         <div class="circle-o cx">
           <div class="circle-i">
@@ -42,7 +42,7 @@
   <!--/ V1 Home -->
 
   <?php include 'share/footer.php'; ?>
-  <script src="/static/1b/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <script>
   define(function (require) {

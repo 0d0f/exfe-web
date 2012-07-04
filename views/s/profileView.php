@@ -223,10 +223,10 @@
   {{/if}}
   </script>
   <?php include 'share/footer.php'; ?>
-  <script src="/static/1b/js/filehtml5/0.0.1/filehtml5.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-  <script src="/static/1b/js/uploader/0.0.1/uploader.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-  <script src="/static/1b/js/profile/0.0.1/profile.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-  <script src="/static/1b/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/filehtml5/0.0.1/filehtml5.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/uploader/0.0.1/uploader.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/profile/0.0.1/profile.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
 </html>

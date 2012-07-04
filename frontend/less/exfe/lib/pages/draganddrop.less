@@ -1,15 +1,24 @@
 /**
  * Drag and Drop
  */
-
+// 禁止选择
 .draggable() {
   -khtml-user-drag: element;
   -webkit-user-drag: element;
   -khtml-user-select: none;
+
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
   -moz-user-select: none;
   -ms-user-select: none;
+
   user-select: none;
+  touch-callout: none;
+  user-drag: none;
+  tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 [draggable="true"] {
