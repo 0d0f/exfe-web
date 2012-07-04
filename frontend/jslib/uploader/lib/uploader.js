@@ -53,10 +53,10 @@ define('uploader', [], function (require, exports, module) {
 
       var _ddEventhandler = $.proxy(this._ddEventhandler, this);
 
-      this.element.on('drop', '.dropbox', _ddEventhandler);
-      this.element.on('dragenter', '.dropbox', _ddEventhandler);
-      this.element.on('dragover', '.dropbox', _ddEventhandler);
-      this.element.on('dragleave', '.dropbox', _ddEventhandler);
+      this.element.on('drop', '.modal-main'/*'.dropbox'*/, _ddEventhandler);
+      this.element.on('dragenter', '.modal-main'/*'.dropbox'*/, _ddEventhandler);
+      this.element.on('dragover', '.modal-main'/*'.dropbox'*/, _ddEventhandler);
+      this.element.on('dragleave', '.modal-main'/*'.dropbox'*/, _ddEventhandler);
     },
 
     _ddEventhandler: function (e) {
@@ -76,9 +76,11 @@ define('uploader', [], function (require, exports, module) {
           break;
 
         case 'drop':
-          var dropbox = this.$('.photozone')[0];
+          //var dropbox = this.$('.photozone')[0];
+          var modalmain = this.$('.modal-main')[0];
 
-          if (!$.contains(dropbox, e.target) && (e.target !== dropbox)) {
+          //if (!$.contains(dropbox, e.target) && (e.target !== dropbox)) {
+          if (!$.contains(modalmain, e.target) && (e.target !== modalmain)) {
             return false;
           }
 
@@ -168,40 +170,53 @@ define('uploader', [], function (require, exports, module) {
     // 坐标旋转
     R: [0, 0],
 
+    filehtml5Bind: function () {
+      var that = this;
+
+      this.filehtml5._xhrHeaders = {
+        'Accept': 'application/json, text/javascript, */*; q=0.01'
+      };
+
+      this.filehtml5.on('uploadcomplete', function (e) {
+        that.$('.loading').addClass('hide');
+        data = JSON.parse(e.data);
+        if (data && data.meta.code === 200) {
+          if (data.response.type === 'user') {
+            $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
+          } else {
+            $('.identity-list li[data-identity-id="' + data.response.identity_id + '"] .avatar').find('img').attr('src', data.response.avatars['80_80']);
+          }
+        }
+
+        that.hide();
+      });
+
+      this.filehtml5.on('uploadstart', function (e) {
+        that.$('.loading').removeClass('hide');
+      });
+    },
+
     options: {
       limit: 1,
 
-      onDrop: function (e) {
+      onShowBefore: function () {
+        docBind(this);
       },
 
-      onFileselect: function (data) {
-        var files = data.fileList, filehtml5;
-        if (files.length) {
-          filehtml5 = this.filehtml5 = files[0];
+      onShowAfter: function (data) {
+        this._data = data;
 
-          this.filehtml5._xhrHeaders = {
-            'Accept': 'application/json, text/javascript, */*; q=0.01'
-          };
-
-          this.filehtml5.on('uploadcomplete', function (e) {
-            data = JSON.parse(e.data);
-            if (data && data.meta.code === 200) {
-              if (data.response.type === 'user') {
-                $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
-              }
-            }
-          });
-
+        if (data.original) {
           this.$('.overlay').addClass('hide');
           this.$('.resizeable').removeClass('hide');
-          this.$('.back, .rotate').show();
+          this.$('.upload, .rotate, .upload-done').show();
 
           var self = this;
           self.ri = 0;
           self.R = [0, 0];
           var canvas = document.getElementById('avatar240')
             , canvas80 = document.getElementById('avatar80')
-            , R = self.R
+            , r = self.r
             , stage = new Stage(canvas)
             , bitmap
             , stage80 = new Stage(canvas80)
@@ -217,9 +232,119 @@ define('uploader', [], function (require, exports, module) {
 
           originalImage.onload = function () {
 
+            var min = Math.min(originalImage.width, originalImage.height);
+            var sss = 1;
+
+            if (min > 240) {
+              sss = 240 / min;
+            }
+
             bitmap = new Bitmap(originalImage);
 
-            bitmap.setPosition(canvas.width / 2 - bitmap.regX, canvas.height / 2 - bitmap.regY);
+            self.psx = bitmap.scaleX = sss;
+            self.psy = bitmap.scaleY = sss;
+
+            bitmap.setPosition(canvas.width / 2 - (bitmap.regX *= bitmap.scaleX), canvas.height / 2 - (bitmap.regY *= bitmap.scaleY));
+            bitmap.rotation = self.ri;
+
+            bitmap.updateContext = function (ctx) {
+              ctx.translate(canvas.width * self.R[0], canvas.height * self.R[1]);
+              ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+            };
+
+            // add to canvas
+            stage.addChild(bitmap);
+
+            // update canvas
+            stage.update();
+
+            self.bitmap = bitmap;
+            self.stage = stage;
+
+            // ---------------------- 80 * 80 --------------
+            bitmap80 = new Bitmap(canvas);
+            bitmap80.updateImage = function (canvas) {
+              bitmap80.originalImage = canvas;
+            };
+            bitmap80.updateContext = function (ctx) {
+              ctx.scale(self.SCALE, self.SCALE);
+            };
+            stage80.addChild(bitmap80);
+            stage80.update();
+
+            self.bitmap80 = bitmap80;
+            self.stage80 = stage80;
+
+            var input = document.createElement('input');
+            input.type = 'file';
+            self.filehtml5 = new FileHTML5(input.files);
+            self.filehtml5Bind();
+          };
+
+          // CORS: cross origin
+          originalImage.crossOrigin = 'anonymous';
+          originalImage.src = data.original;
+        }
+
+      },
+
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+        docUnBind();
+      },
+
+      onDrop: function (e) {
+      },
+
+      onFileselect: function (data) {
+        var files = data.fileList, filehtml5;
+        if (files.length) {
+          filehtml5 = this.filehtml5 = files[0];
+
+          this.filehtml5Bind();
+
+          this.$('.overlay').addClass('hide');
+          this.$('.resizeable').removeClass('hide');
+          this.$('.upload, .rotate, .upload-done').show();
+          this.$('.back, .zoom, .upload-clear').hide();
+
+          var self = this;
+          self.ri = 0;
+          self.R = [0, 0];
+          var canvas = document.getElementById('avatar240')
+            , canvas80 = document.getElementById('avatar80')
+            , r = self.r
+            , stage = new Stage(canvas)
+            , bitmap
+            , stage80 = new Stage(canvas80)
+            , bitmap80
+            , originalImage = document.createElement('img');
+
+          // 记录画布相对于DOM坐标系中的位置
+          self.canvasOffset = $(canvas).offset();
+          self.canvasOffset.right = canvas.width + self.canvasOffset.left;
+          self.canvasOffset.bottom = canvas.height + self.canvasOffset.top;
+          self.canvasOffset.width = canvas.width;
+          self.canvasOffset.height = canvas.height;
+
+          originalImage.onload = function () {
+            var min = Math.min(originalImage.width, originalImage.height);
+            var sss = 1;
+
+            if (min > 240) {
+              sss = 240 / min;
+            }
+
+            bitmap = new Bitmap(originalImage);
+
+            self.psx = bitmap.scaleX = sss;
+            self.psy = bitmap.scaleY = sss;
+
+            bitmap.setPosition(canvas.width / 2 - (bitmap.regX *= bitmap.scaleX), canvas.height / 2 - (bitmap.regY *= bitmap.scaleY));
+            //bitmap.setPosition(canvas.width / 2 - bitmap.regX, canvas.height / 2 - bitmap.regY);
             bitmap.rotation = self.ri;
 
             bitmap.updateContext = function (ctx) {
@@ -251,9 +376,9 @@ define('uploader', [], function (require, exports, module) {
             self.stage80 = stage80;
           };
 
+          // CORS: cross origin
+          originalImage.crossOrigin = 'anonymous';
           readFileToImage(originalImage, filehtml5._file);
-
-          docBind(this);
 
         }
       },
@@ -265,62 +390,41 @@ define('uploader', [], function (require, exports, module) {
 
         'click .dropbox': function (e) {
           e.preventDefault();
+          this._fileInputField[0].value = null;
           this._bindSelectFile();
         },
 
         'mousedown #avatar240': function (e) {
           this.dragging = true;
-          //this.offset = [e.offsetX, e.offsetY];
           this.offset = [e.pageX, e.pageY];
           return false;
         },
 
-        /* 离开 `dropbox` 区域 也可以移动图片
-        'mousemove #avatar240': function (e) {
+        // zoom
+        'click .zoom': function (e) {
           e.preventDefault();
-          if (this.dragging) {
-            var dx = e.offsetX - this.offset[0];
-            var dy = e.offsetY - this.offset[1];
-            var bitmap = this.bitmap;
-
-            switch (this.ri) {
-              case 0:
-                bitmap.x += dx;
-                bitmap.y += dy;
-                break;
-
-              case 1:
-                bitmap.x += dy;
-                bitmap.y -= dx;
-                break;
-
-              case 2:
-                bitmap.x -= dx;
-                bitmap.y -= dy;
-                break;
-
-              case 3:
-                bitmap.x -= dy;
-                bitmap.y += dx;
-                break;
-            }
-
-            this.offset[0] = e.offsetX;
-            this.offset[1] = e.offsetY;
-
-            this.stage.update();
-            this.bitmap80.updateImage(this.stage.canvas);
-            this.stage80.update();
+          var src = '';
+          if ($.browser.safari && !/chrome/.test(navigator.userAgent.toLowerCase())) {
+            var canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d');
+            canvas.width = this.bitmap.originalImage.width;
+            canvas.height = this.bitmap.originalImage.height;
+            ctx.drawImage(this.bitmap.originalImage, 0, 0, canvas.width, canvas.height);
+            src = canvas.toDataURL('image/png');
+          } else {
+            src = this.bitmap.originalImage.src;
           }
+          return window.open(src);
         },
 
-        'mouseup #avatar240': function (e) {
-          this.resizing = false;
-          this.dragging = false;
-          // 冒泡触发
-          //return false;
+        // upload
+        'click .upload': function (e) {
+          e.preventDefault();
+          this.$('.overlay').removeClass('hide');
+          this.$('.resizeable').addClass('hide');
+          this.$('.upload, .rotate, .upload-done').hide();
+          this.$('.back, .zoom, .upload-clear').show();
         },
-        */
 
         // Rotate
         'click .rotate': function (e) {
@@ -350,33 +454,39 @@ define('uploader', [], function (require, exports, module) {
 
         // Back
         'click .back': function (e) {
-          this.$('.overlay').removeClass('hide');
-          this.$('.resizeable').addClass('hide');
-          this.$('.back, .rotate').hide();
-
-          this._fileInputField.val(null);
-          this.stage.clear();
-          this.stage80.clear();
-          delete this.bitmap;
-          delete this.stage;
-          delete this.bitmap80;
-          delete this.stage80;
+          this.$('.overlay').addClass('hide');
+          this.$('.resizeable').removeClass('hide');
+          this.$('.upload, .rotate, .upload-done').show();
+          this.$('.back, .zoom, .upload-clear').hide();
           return false;
         },
 
         // Resize
         'mousedown .resizeable': function (e) {
           var $e = $(e.target);
-          this.anchor = $e.data('anchor');
+          var anchor = this.anchor = $e.data('anchor');
           this.resizing = true;
-          // 在拖拽点中，相对DOM的坐标
-          var o = $e.offset()
-            , w = $e.width() / 2
-            , h = $e.height() / 2;
-          this.aoffset = [o + w, o.top + h];
+          this.aoffset = [e.pageX, e.pageY];
         },
 
-        'click .uploader-button': function (e) {
+        'click .upload-clear': function (e) {
+          this.$('.help-portrait').removeClass('hide');
+          this.$('.xbtn-yes, .xbtn-no').removeClass('hide');
+          return false;
+        },
+
+        'click .xbtn-no': function (e) {
+          this.$('.help-portrait').addClass('hide');
+          this.$('.xbtn-yes, .xbtn-no').addClass('hide');
+          return false;
+        },
+
+        'click .xbtn-yes': function (e) {
+          this.hide();
+          return false;
+        },
+
+        'click .upload-done': function (e) {
           var bitmap = this.bitmap;
           var originalImage = bitmap.originalImage;
           var stage = this.stage;
@@ -390,7 +500,7 @@ define('uploader', [], function (require, exports, module) {
           var originalCtx = originalCanvas.getContext('2d');
           originalCtx.translate(originalCanvas.width / 2, originalCanvas.height / 2);
           originalCtx.save();
-          originalCtx.rotate(this.ri * Stage.DEG_TO_RAD);
+          originalCtx.rotate(this.ri * 90 * Stage.DEG_TO_RAD);
           originalCtx.drawImage(originalImage, -originalCanvas.width / 2, -originalCanvas.height / 2);
           originalCtx.restore();
           originalCtx.save();
@@ -400,21 +510,20 @@ define('uploader', [], function (require, exports, module) {
 
           var that = this;
           setTimeout(function () {
-            // 头像上传
-            that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), {
+
+            var data = {
               'original': img0,
               '80_80': img1
-            });
-          }, 20);
-        }
-      },
+            };
 
-      onHideAfter: function () {
-        var $e = this.element;
-        this.offSrcNode();
-        this.destory();
-        $e.remove();
-        docUnBind();
+            if (that._data.identity_id) {
+              data.identity_id = that._data.identity_id;
+            }
+
+            // 头像上传
+            that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), data);
+          }, 15.6);
+        }
       },
 
       viewData: {
@@ -426,43 +535,54 @@ define('uploader', [], function (require, exports, module) {
         body: ''
           + '<div class="pull-right sider">'
             + '<div class="pull-right smallphoto">'
+              + '<i class="icon20-zoom zoom"></i>'
               + '<div class="avatar80">'
                 + '<canvas id="avatar80" width="80" height="80"></canvas>'
               + '</div>'
               + '<div class="overlay"></div>'
+              + '<div class="loading hide"></div>'
             + '</div>'
 
             + '<div class="uploader-form">'
-              + '<button class="pull-right xbtn xbtn-blue uploader-button">Done</button>'
+              + '<button class="pull-right xbtn xbtn-blue upload-done hide">Done</button>'
+              + '<button class="pull-right xbtn xbtn-white upload-clear hide">Clear</button>'
             + '</div>'
           + '</div>'
 
           + '<div class="photozone">'
+            + '<i class="icon20-upload upload"></i>'
             + '<i class="icon20-back back"></i>'
             + '<i class="icon20-rotate rotate"></i>'
-            + '<div class="anchor-nw resizeable hide" data-anchor="0"></div>'
             + '<div class="anchor-n resizeable hide" data-anchor="1"></div>'
-            + '<div class="anchor-ne resizeable hide" data-anchor="2"></div>'
             + '<div class="anchor-w resizeable hide" data-anchor="3"></div>'
             + '<div class="anchor-e resizeable hide" data-anchor="4"></div>'
-            + '<div class="anchor-sw resizeable hide" data-anchor="5"></div>'
             + '<div class="anchor-s resizeable hide" data-anchor="6"></div>'
+            + '<div class="anchor-nw resizeable hide" data-anchor="0"></div>'
+            + '<div class="anchor-ne resizeable hide" data-anchor="2"></div>'
+            + '<div class="anchor-sw resizeable hide" data-anchor="5"></div>'
             + '<div class="anchor-se resizeable hide" data-anchor="7"></div>'
             + '<div class="avatar240">'
               + '<canvas id="avatar240" width="240" height="240"></canvas>'
             + '</div>'
 
+            + '<div class="loading hide">'
+              + '<img src="/static/img/loading.gif" alt="" width="36" height="39" />'
+              + '<p>Uploading...</p>'
+            + '</div>'
+
             + '<div class="overlay dropbox">'
               + '<div class="droptips">Drop your photo <span class="hide">or URL</span> here.<br />'
-                + 'Alternatively, <span class="underline">open</span> local file, <br />'
-                + '<span class="underline">take</span> one from your camera.'
+                + 'Alternatively, <span class="underline">open</span> local file.'
+                // TODO: 第二版再弄摄像头
+                //+ 'Alternatively, <span class="underline">open</span> local file, <br />'
+                //+ '<span class="underline">take</span> one from your camera.'
               + '</div>'
             + '</div>'
           + '</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn xbtn-yellow hide">Yes</button>'
-          + '<button class="pull-right xbtn xbtn-white hide">No</button>',
+          + '<button class="pull-right xbtn xbtn-white xbtn-yes hide">Yes</button>'
+          + '<button class="pull-right xbtn xbtn-blue xbtn-no hide">No</button>',
 
         others: ''
           + '<div class="help-portrait hide">'
@@ -724,17 +844,19 @@ define('uploader', [], function (require, exports, module) {
           var dx = e.pageX - _u_.aoffset[0]
             , dy = e.pageY - _u_.aoffset[1]
             , dzx, dzy, sbx, sby
-            , cos = _u_.canvasOffset
+            //, cos = _u_.canvasOffset
             , w = _u_.stage.canvas.width
             , h = _u_.stage.canvas.height
             , bitmap = _u_.bitmap
             , img = bitmap.originalImage
             , psx = _u_.psx
             , psy = _u_.psy
-            , i = _u_.ri;
+            , i = _u_.ri
+            , ao = _u_.aoffset;
 
           function a1() {
-            dzy = cos.top - e.pageY;
+            //dzy = cos.top - e.pageY;
+            dzy = ao[1] - e.pageY;
             sby = dzy / h;
 
             if (i === 0) {
@@ -755,7 +877,8 @@ define('uploader', [], function (require, exports, module) {
           }
 
           function a3() {
-            dzx = cos.left - e.pageX;
+            //dzx = cos.left - e.pageX;
+            dzx = ao[0] - e.pageX;
             sbx = dzx / w;
 
             if (i === 0) {
@@ -776,7 +899,8 @@ define('uploader', [], function (require, exports, module) {
           }
 
           function a4() {
-            dzx = e.pageX - cos.right;
+            //dzx = e.pageX - cos.right;
+            dzx = e.pageX - ao[0];
             sbx = dzx / w;
 
             if (i === 0) {
@@ -797,7 +921,8 @@ define('uploader', [], function (require, exports, module) {
           }
 
           function a6() {
-            dzy = e.pageY - cos.bottom;
+            //dzy = e.pageY - cos.bottom;
+            dzy = e.pageY - ao[1];
             sby = dzy / h;
 
             if (i === 0) {
@@ -863,7 +988,6 @@ define('uploader', [], function (require, exports, module) {
 
           }
 
-          _u_.aoffset = [e.pageX, e.pageY];
           return false;
         }
       })
@@ -881,8 +1005,13 @@ define('uploader', [], function (require, exports, module) {
       });
   }
 
+  exports.Uploader = Uploader;
+  exports.uploadSettings = uploadSettings;
+
+  /*
   return function () {
     return new Uploader(uploadSettings);
   };
+  */
 
 });

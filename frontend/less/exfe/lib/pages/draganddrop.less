@@ -3,20 +3,20 @@
  */
 // 禁止选择
 .draggable() {
-  -khtml-user-drag: element;
-  -webkit-user-drag: element;
-  -khtml-user-select: none;
+  -khtml-user-drag: none;      // for safari
+  -khtml-user-select: none;    // for safari
 
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-user-drag: none;
+  -webkit-touch-callout: none; // for mobile
+  -webkit-user-select: none;   // for chrome
+  -webkit-user-drag: none;     // for chrome
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
-  -moz-user-select: none;
-  -ms-user-select: none;
+  -moz-user-select: none;      // for mozilla
+  -ms-user-select: none;       // for mircosoft
+  -o-user-select: none;        // for opera
 
-  user-select: none;
   touch-callout: none;
+  user-select: none;           // base css
   user-drag: none;
   tap-highlight-color: rgba(0, 0, 0, 0);
 }
