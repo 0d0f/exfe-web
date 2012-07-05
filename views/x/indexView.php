@@ -121,9 +121,9 @@ EXFE Maps
             <h3>Conversation</h3>
 
             <!-- Cross-Form -->
-            <div class="avatar-comment">
+            <div class="avatar-comment" id="conversation-form">
               <span class="pull-left avatar">
-                <img alt="" src="/img/users/u1x40.png" width="40" height="40" />
+                <img alt="" src="" width="40" height="40" />
               </span>
 
               <div class="comment">
