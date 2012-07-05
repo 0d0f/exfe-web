@@ -55,10 +55,9 @@ class CrossesActions extends ActionController {
     public function doEdit()
     {
         $params=$this->params;
-        $cross_str=$_POST["cross"];
-        $by_identity_id=intval($_POST["by_identity_id"]);
+        $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
-
+        $by_identity_id=$cross->by_identity->id;
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"],"by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)

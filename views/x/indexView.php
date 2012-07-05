@@ -114,7 +114,7 @@ EXFE Maps
           </div>
 
           <!-- Cross-Conversation -->
-          <div class="cross-conversation">
+          <div class="cross-conversation" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
 
             <a href="#" class="pull-right cross-history">Hide history</a>
 
@@ -127,9 +127,9 @@ EXFE Maps
               </span>
 
               <div class="comment">
-                <form class="comment-form" accept-charset="UTF-8" action="#" data-type="json" method="post">
+                <div class="comment-form">
                   <textarea></textarea>
-                </form>
+                </div>
               </div>
             </div>
             <!-- .Cross-Form -->
@@ -137,99 +137,6 @@ EXFE Maps
 
             <!-- Conversation-Timeline -->
             <div class="conversation-timeline">
-
-              <div class="avatar-comment">
-                <span class="pull-left avatar">
-                  <img alt="" src="/img/users/u2x40.png" width="40" height="40" />
-                </span>
-
-                <div class="comment">
-                  <p>
-                    <span class="author"><strong>DM.</strong>:&nbsp;</span>
-                    My only missing food in US, dudes! yummy! Lorem ipsum dolor sit amet, ligula suspendisse nulla pretium.
-                    <span class="pull-right date">
-                      <time>3 hours</time>
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="avatar-comment">
-                <span class="pull-left avatar">
-                  <img alt="" src="/img/users/u2x40.png" width="40" height="40" />
-                </span>
-
-                <div class="comment">
-                  <p>
-                    <span class="author"><strong>DM.</strong>:&nbsp;</span>
-                    My only missing food in US, dudes! yummy! Lorem ipsum dolor sit amet, ligula suspendisse nulla pretium.
-                    My only missing food in US, dudes! yummy! Lorem ipsum dolor sit amet, ligula suspendisse nulla pretium.
-                    <span class="pull-right date">
-                      <time>3 hours</time>
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="avatar-comment rsvp-history">
-                <i class="pull-left icon-check"></i>
-                <span class="pull-right avatar">
-                  <img alt="" src="/img/users/u2x20.png" width="20" height="20" />
-                </span>
-
-                <div class="comment">
-                  <p>
-                    <span class="author"><strong>DM.</strong>:&nbsp;</span>
-                    My only missing food in US.
-                  </p>
-                </div>
-              </div>
-
-              <div class="avatar-comment rsvp-history">
-                <i class="pull-left icon-user"></i>
-
-                <span class="pull-right avatar"><img alt="" src="/img/users/u3x20.png" width="20" height="20" /></span>
-
-                <div class="comment">
-                  <p>
-                    <span class="author"><em>gokeeper@gmail.com</em></span>
-                    My only missing food in US, dudes! yummy!
-                  </p>
-                </div>
-              </div>
-
-
-              <div class="avatar-comment">
-                <span class="pull-left avatar">
-                  <img alt="" src="/img/users/u2x40.png" width="40" height="40" />
-                </span>
-
-                <div class="comment">
-                  <p>
-                    <span class="author"><strong>KissDry</strong>:&nbsp;</span>
-                    -1 from me I dont want.
-                    <span class="pull-right date">
-                      <time>10 hours ago</time>
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              <div class="avatar-comment rsvp-history">
-                <i class="pull-left icon-file"></i>
-
-                <span class="pull-right avatar">
-                  <img alt="" src="/img/users/u1x20.png" width="20" height="20" />
-                </span>
-
-                <div class="comment">
-                  <p>
-                    <span class="author"><strong>Xin Li</strong>:&nbsp;</span>
-                    -1 from me I dont want to slow down internals
-                  </p>
-                </div>
-              </div>
-
             </div>
             <!-- .Conversation-Timeline -->
 

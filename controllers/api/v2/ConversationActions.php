@@ -2,8 +2,7 @@
 
 class ConversationActions extends ActionController {
 
-    public function doIndex()
-    {
+    public function doIndex() {
         $params=$this->params;
         $exfee_id=$params["id"];
         $updated_at=$params["updated_at"];
@@ -26,8 +25,7 @@ class ConversationActions extends ActionController {
     }
 
 
-    public function doAdd()
-    {
+    public function doAdd() {
         $params=$this->params;
         $exfee_id=$params["id"];
 
@@ -41,7 +39,8 @@ class ConversationActions extends ActionController {
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
 
-        $post=json_decode($_POST["post"]);
+        $post_str=@file_get_contents('php://input');
+        $post=json_decode($post_str);
         $post->postable_type='exfee';
         $post->postable_id=$exfee_id;
 
