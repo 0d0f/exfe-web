@@ -207,6 +207,12 @@ define('uploader', [], function (require, exports, module) {
         this._data = data;
 
         if (data.original) {
+
+          var input = document.createElement('input');
+          input.type = 'file';
+          this.filehtml5 = new FileHTML5(input.files);
+          this.filehtml5Bind();
+
           this.$('.overlay').addClass('hide');
           this.$('.resizeable').removeClass('hide');
           this.$('.upload, .rotate, .upload-done').show();
@@ -223,15 +229,7 @@ define('uploader', [], function (require, exports, module) {
             , bitmap80
             , originalImage = document.createElement('img');
 
-          // 记录画布相对于DOM坐标系中的位置
-          self.canvasOffset = $(canvas).offset();
-          self.canvasOffset.right = canvas.width + self.canvasOffset.left;
-          self.canvasOffset.bottom = canvas.height + self.canvasOffset.top;
-          self.canvasOffset.width = canvas.width;
-          self.canvasOffset.height = canvas.height;
-
           originalImage.onload = function () {
-
             var min = Math.min(originalImage.width, originalImage.height);
             var sss = 1;
 
@@ -274,11 +272,6 @@ define('uploader', [], function (require, exports, module) {
 
             self.bitmap80 = bitmap80;
             self.stage80 = stage80;
-
-            var input = document.createElement('input');
-            input.type = 'file';
-            self.filehtml5 = new FileHTML5(input.files);
-            self.filehtml5Bind();
           };
 
           // CORS: cross origin
@@ -323,14 +316,8 @@ define('uploader', [], function (require, exports, module) {
             , bitmap80
             , originalImage = document.createElement('img');
 
-          // 记录画布相对于DOM坐标系中的位置
-          self.canvasOffset = $(canvas).offset();
-          self.canvasOffset.right = canvas.width + self.canvasOffset.left;
-          self.canvasOffset.bottom = canvas.height + self.canvasOffset.top;
-          self.canvasOffset.width = canvas.width;
-          self.canvasOffset.height = canvas.height;
-
           originalImage.onload = function () {
+            var image = originalImage;
             var min = Math.min(originalImage.width, originalImage.height);
             var sss = 1;
 
@@ -338,13 +325,22 @@ define('uploader', [], function (require, exports, module) {
               sss = 240 / min;
             }
 
-            bitmap = new Bitmap(originalImage);
+            // gif
+            if (self.filehtml5._type === 'image/gif') {
+              var ccc = document.createElement('canvas'),
+                  ccctx = ccc.getContext('2d');
+              ccc.width = image.width;
+              ccc.height = image.height;
+              ccctx.drawImage(image, 0, 0, ccc.width, ccc.height);
+              image = ccc;
+            }
+
+            bitmap = new Bitmap(image);
 
             self.psx = bitmap.scaleX = sss;
             self.psy = bitmap.scaleY = sss;
 
             bitmap.setPosition(canvas.width / 2 - (bitmap.regX *= bitmap.scaleX), canvas.height / 2 - (bitmap.regY *= bitmap.scaleY));
-            //bitmap.setPosition(canvas.width / 2 - bitmap.regX, canvas.height / 2 - bitmap.regY);
             bitmap.rotation = self.ri;
 
             bitmap.updateContext = function (ctx) {
@@ -844,7 +840,6 @@ define('uploader', [], function (require, exports, module) {
           var dx = e.pageX - _u_.aoffset[0]
             , dy = e.pageY - _u_.aoffset[1]
             , dzx, dzy, sbx, sby
-            //, cos = _u_.canvasOffset
             , w = _u_.stage.canvas.width
             , h = _u_.stage.canvas.height
             , bitmap = _u_.bitmap
@@ -855,7 +850,6 @@ define('uploader', [], function (require, exports, module) {
             , ao = _u_.aoffset;
 
           function a1() {
-            //dzy = cos.top - e.pageY;
             dzy = ao[1] - e.pageY;
             sby = dzy / h;
 
@@ -877,7 +871,6 @@ define('uploader', [], function (require, exports, module) {
           }
 
           function a3() {
-            //dzx = cos.left - e.pageX;
             dzx = ao[0] - e.pageX;
             sbx = dzx / w;
 
@@ -899,7 +892,6 @@ define('uploader', [], function (require, exports, module) {
           }
 
           function a4() {
-            //dzx = e.pageX - cos.right;
             dzx = e.pageX - ao[0];
             sbx = dzx / w;
 
@@ -921,7 +913,6 @@ define('uploader', [], function (require, exports, module) {
           }
 
           function a6() {
-            //dzy = e.pageY - cos.bottom;
             dzy = e.pageY - ao[1];
             sby = dzy / h;
 
@@ -1007,11 +998,5 @@ define('uploader', [], function (require, exports, module) {
 
   exports.Uploader = Uploader;
   exports.uploadSettings = uploadSettings;
-
-  /*
-  return function () {
-    return new Uploader(uploadSettings);
-  };
-  */
 
 });
