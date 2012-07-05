@@ -484,7 +484,7 @@ define(function (require, exports, module) {
         body: ''
           + '<div class="shadow title"></div>'
           + '<div class="center shadow title" style="margin-bottom: 0;">Thanks for using <span class="x-sign">EXFE</span>.</div>'
-          + '<p class="center">An utility for hanging out with friends.</p>'
+          + '<p class="center">A utility for hanging out with friends.</p>'
           + '<p class="provider-email hide"><span class="x-sign">X</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a X”.</p>'
           + '<p class="provider-other hide"><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
           + '<p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>'
