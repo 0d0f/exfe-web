@@ -689,6 +689,9 @@ define(function (require, exports, module) {
 
 
     var ShowTimeline = function(timeline) {
+        $('#conversation-form span.avatar img').attr(
+            'src', User.default_identity.avatar_filename
+        );
         $('.cross-conversation').show();
         Timeline = timeline;
         for (var i = Timeline.length - 1; i >= 0; i--) {
