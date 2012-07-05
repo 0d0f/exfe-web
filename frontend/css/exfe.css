@@ -5010,6 +5010,12 @@ input[type="submit"].btn.btn-mini {
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
+.upload-done,
+.upload-clear {
+  padding: 0 25px;
+  line-height: 22px;
+}
+
 .xalert-error {
   padding: 5px;
   color: #cb4747;
@@ -5591,7 +5597,6 @@ input[type="submit"].btn.btn-mini {
 }
 
 .modal-uploader .avatar80 {
-  position: absolute;
   width: 80px;
   height: 80px;
   overflow: hidden;
@@ -5647,6 +5652,20 @@ input[type="submit"].btn.btn-mini {
   background-repeat: repeat-x;
 }
 
+.modal-uploader .loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.modal-uploader .loading img {
+  margin-top: 70px;
+}
+
 .modal-uploader .selected {
   -webkit-box-shadow: 0 1px 6px #3f6b7f;
      -moz-box-shadow: 0 1px 6px #3f6b7f;
@@ -5673,21 +5692,18 @@ input[type="submit"].btn.btn-mini {
   width: 10px;
   height: 10px;
   background: transparent;
-  background: #ddd;
-  opacity: 0.5;
-  filter: alpha(opacity=50);
   -webkit-user-select: none;
    -khtml-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
+       -o-user-select: none;
           user-select: none;
+  -webkit-user-drag: none;
   tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-user-drag: element;
-          user-drag: none;
+  user-drag: none;
+  -khtml-user-drag: none;
   touch-callout: none;
   -webkit-touch-callout: none;
-  -webkit-user-drag: none;
-   -khtml-user-drag: element;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -5783,9 +5799,33 @@ input[type="submit"].btn.btn-mini {
 
 .modal-uploader .help-portrait {
   position: absolute;
-  top: 50px;
+  top: 20px;
+  left: 0;
   z-index: 4;
   width: 340px;
+  height: 240px;
+  padding: 30px 30px 29px;
+  background-color: #eaeaea;
+  background-image: -moz-linear-gradient(270 eg, #f2f2f2, #eaeaea);
+  background-image: -ms-linear-gradient(270 eg, #f2f2f2, #eaeaea);
+  background-image: -webkit-linear-gradient(270 eg, #f2f2f2, #eaeaea);
+  background-image: -o-linear-gradient(270 eg, #f2f2f2, #eaeaea);
+  background-image: linear-gradient(270 eg, #f2f2f2, #eaeaea);
+  background-repeat: repeat-x;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
+
+.modal-uploader .xbtn-yes,
+.modal-uploader .xbtn-no {
+  position: relative;
+  z-index: 5;
+  width: 83px;
+  line-help: 22px;
+}
+
+.modal-uploader .xbtn-yes {
+  margin-left: 17px;
 }
 
 .x-home {
@@ -6767,6 +6807,10 @@ input[type="submit"].btn.btn-mini {
   display: inline;
 }
 
+.settings-panel .user-infos .editable .avatar {
+  cursor: pointer;
+}
+
 .settings-panel .user-infos .identity-list {
   font-size: 12px;
 }
@@ -7405,13 +7449,13 @@ input[type="submit"].btn.btn-mini {
    -khtml-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
+       -o-user-select: none;
           user-select: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-          tap-highlight-color: rgba(0, 0, 0, 0);
-  -khtml-user-drag: element;
+  tap-highlight-color: rgba(0, 0, 0, 0);
+  -khtml-user-drag: none;
          user-drag: none;
-  touch-callout: none;
   -webkit-touch-callout: none;
+          touch-callout: none;
   -webkit-user-drag: none;
-  -webkit-user-drag: element;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }

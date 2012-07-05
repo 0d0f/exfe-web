@@ -10,7 +10,7 @@
       <section id="profile" class="x-profile">
 
         <div class="row settings-panel">
-          <div class="pull-left user-avatar">
+          <div class="pull-left user-avatar editable">
           </div>
 
           <div class="pull-right user-xstats">
@@ -84,7 +84,7 @@
   <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
     <i class="icon-move"></i>
     <span class="avatar"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
-    </span><span class="identity"><span class="identityname"><em>{{printName name external_id}}</em></span><span class="external">{{atName provider external_id}}</span> <i class="icon16-identity-{{provider}}"></i></span>
+    </span><span class="identity"><span class="identityname">{{printName name external_id}}</span><span class="external">{{atName provider external_id}}</span> <i class="icon16-identity-{{provider}}"></i></span>
     {{#makeDefault __default__ status}}<a class="makedefault" href="#">Make default</a>{{/makeDefault}}
     {{#ifOauthVerifying provider status}}
     <span class="xlabel">
