@@ -113,6 +113,35 @@ EXFE Maps
 
           </div>
 
+          <!-- Cross-Conversation -->
+          <div class="cross-conversation" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+
+            <a href="#" class="pull-right cross-history">Hide history</a>
+
+            <h3>Conversation</h3>
+
+            <!-- Cross-Form -->
+            <div class="avatar-comment" id="conversation-form">
+              <span class="pull-left avatar">
+                <img alt="" src="" width="40" height="40" />
+              </span>
+
+              <div class="comment">
+                <div class="comment-form">
+                  <textarea></textarea>
+                </div>
+              </div>
+            </div>
+            <!-- .Cross-Form -->
+
+
+            <!-- Conversation-Timeline -->
+            <div class="conversation-timeline">
+            </div>
+            <!-- .Conversation-Timeline -->
+
+          </div>
+
         </div>
         <!-- .gr-b -->
 
