@@ -158,6 +158,7 @@ ns.showConversation = function()
     $('#x_conversation_list').html(strMessage);
 };
 
+
 //concat conversation history and sort
 ns.sortConversationAndHistory = function () {
     var tmpData = [].concat(crossData.history),
@@ -187,6 +188,7 @@ ns.sortConversationAndHistory = function () {
     }
     return tmpData;
 };
+
 
 ns.makeHistory = function (o) {
     var str = '', info = '', c = '';
@@ -291,35 +293,13 @@ ns.showConfirmed = function (users) {
 ns.show = function(editable)
 {
     // state: {0: 未知，1：去，2：不去，3：感兴趣}
-    var strCnvstn = editable
-                  ? '<div id="x_conversation_area">'
-                  +     '<a id="x_hide_history" href="javascript:void(0);"><span>Show</span> history</a>'
-                  +     '<h3 id="x_conversation">Conversation</h3>'
-                  +     '<div id="x_conversation_input_area" class="cleanup">'
-                  +         '<img id="x_conversation_my_avatar" class="x_conversation_avatar">'
-                  +         '<textarea id="x_conversation_input"></textarea>'
-                  +     '</div>'
-                  +     '<ol id="x_conversation_list"></ol>'
-                  + '</div>'
-                  : '',
-        crossHtml = '<div id="x_title_area">'
+    var crossHtml = '<div id="x_title_area">'
                   +     '<h2 id="x_title" class="x_title x_title_normal"></h2>'
                   +     '<input id="x_title_edit" class="x_title" style="display:none;">'
                   + '</div>'
                   + '<div id="x_content" class="cleanup">'
                   +     '<div id="x_mainarea">'
-                  +         '<div id="x_desc_area">'
-                  +             '<div id="x_desc" class="x_desc"></div>'
-                  +             '<textarea id="x_desc_edit" class="x_desc" style="display:none;"></textarea>'
-                  +             '<div id="x_desc_expand">'
-                  +                 '<div class="triangle-bottomright"><em></em></div>'
-                  +                 '<span>More</span>'
-                  +             '</div>'
-                  +         '</div>'
                   +         '<div id="x_rsvp_area" class="cleanup">'
-                  //+             '<span id="x_rsvp_msg">'
-                  //+                 'Your RSVP is "<span id="x_rsvp_status"></span>".'
-                  //+             '</span>'
                   +             '<div id="x_rsvp_msg">'
                   +                 '<div id="x_rsvp_status">'
                   +                     '<span id="x_rsvp_status_type"></span>'
@@ -334,20 +314,6 @@ ns.show = function(editable)
                   +                 '<div id="x_exfee_by_user"></div>'
                   +             '</div>'
                   +         '</div>'
-                  +         strCnvstn
-                  +     '</div>'
-                  +     '<div id="x_sidebar">'
-                  +         '<div id="x_time_area">'
-                  +             '<h3   id="x_time_relative"></h3>'
-                  +             '<span id="x_time_absolute"></span>'
-                  +         '</div>'
-                  +         '<div id="x_place_area">'
-                  +             '<h3   id="x_place_line1" class="x_place_line1_normal"></h3>'
-                  +             '<span id="x_place_line2"></span>'
-                  +         '</div>'
-                  +         '<div id="google_maps_cotainer"></div>'
-                  +         '<div id="xExfeeArea"></div>'
-                  +     '</div>'
                   + '</div>';
 
     $('#x_view_content').html(crossHtml);
