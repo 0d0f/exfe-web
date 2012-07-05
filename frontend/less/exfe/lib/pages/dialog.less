@@ -231,7 +231,6 @@
   }
 
   .avatar80 {
-    position: absolute;
     width: 80px;
     height: 80px;
     overflow: hidden;
@@ -281,6 +280,20 @@
     z-index: @index + 1;
   }
 
+  .loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background: rgba(255, 255, 255, .9);
+
+    img {
+      margin-top: 70px;
+    }
+  }
+
   .selected {
     .box-shadow(0 1px 6px #3F6B7F);
   }
@@ -304,8 +317,8 @@
     position: absolute;
     z-index: @index + 2;
     background: transparent;
-    background: #ddd;
-    .opacity(50);
+    //background: #ddd;
+    //.opacity(50);
     .draggable();
   }
 
@@ -399,14 +412,27 @@
     width: 100%;
   }
 
-  .uploader-button {
+  .help-portrait {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 340px;
+    height: 240px;
+    padding: 30px 30px 29px;
+    z-index: @index + 3;
+    #gradient > .directional(#f2f2f2, #eaeaea, 270eg);
+    .opacity(90);
   }
 
-  .help-portrait {
-    width: 340px;
-    position: absolute;
-    top: 50px;
-    z-index: @index + 3;
+  .xbtn-yes, .xbtn-no {
+    position: relative;
+    width: 83px;
+    line-help: 22px;
+    z-index: 5;
+  }
+
+  .xbtn-yes {
+    margin-left: 17px;
   }
 
 }

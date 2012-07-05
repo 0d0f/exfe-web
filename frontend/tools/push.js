@@ -9,7 +9,7 @@ var jsp = require("uglify-js").parser;
 var pro = require("uglify-js").uglify;
 
 //var jsdist = Path.resolve(__dirname, '../js');
-var jsdist = Path.resolve(__dirname, '../../static/1b/js');
+var jsdist = Path.resolve(__dirname, '../../static/js');
 var jslib = Path.resolve(__dirname, '../jslib');
 
 
