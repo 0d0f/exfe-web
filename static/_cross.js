@@ -515,7 +515,9 @@ ExfeeWidget = {
 
 define(function (require, exports, module) {
 
-    var $     = require('jquery');
+    var $        = require('jquery');
+
+    var Timeline = [];
 
 
     window.Cross = {
@@ -591,6 +593,43 @@ define(function (require, exports, module) {
                 // 需要登录
             }
         });
+        $('.cross-conversation .comment-form textarea').bind(
+            'keydown',
+            function(event) {
+                switch (event.which) {
+                    case 13: // enter
+                        var objInput = $(event.target),
+                            message  = objInput.val();
+                        if (!event.shiftKey && message.length) {
+                            event.preventDefault();
+                            objInput.val('');
+                            var post = {
+                                by_identity_id : User.default_identity.id,
+                                content        : message.substr(0, 233),
+                                id             : 0,
+                                relative       : [],
+                                type           : 'Post',
+                                via            : 'exfe.com'
+                            };
+                            Api.request(
+                                'addConversation',
+                                {
+                                    resources : {exfee_id : Exfee.id},
+                                    type      : 'POST',
+                                    data      : JSON.stringify(post)
+                                },
+                                function(data) {
+                                    ShowMessage(data.post);
+                                },
+                                function(data) {
+                                    console.log(data);
+                                }
+                            );
+                        }
+                        break;
+                }
+            }
+        )
     };
 
 
@@ -649,6 +688,35 @@ define(function (require, exports, module) {
     };
 
 
+    var ShowTimeline = function(timeline) {
+        $('.cross-conversation').show();
+        Timeline = timeline;
+        for (var i = Timeline.length - 1; i >= 0; i--) {
+            ShowMessage(Timeline[i]);
+        }
+    };
+
+
+    var ShowMessage = function(message) {
+        var strContent = ExfeUtilities.trim(message.content).replace(/\r\n|\n\r|\r|\n/g, '<br>'),
+            strMessage = '<div class="avatar-comment">'
+                       +   '<span class="pull-left avatar">'
+                       +     '<img alt="" src="' + message.by_identity.avatar_filename + '" width="40" height="40" />'
+                       +   '</span>'
+                       +   '<div class="comment">'
+                       +     '<p>'
+                       +       '<span class="author"><strong>DM.</strong>:&nbsp;</span>'
+                       +          strContent
+                       +       '<span class="pull-right date">'
+                       +         '<time>' + moment(message.created_at, 'YYYY-MM-DD HH:mm:ss Z').fromNow() + '</time>'
+                       +       '</span>'
+                       +     '</p>'
+                       +   '</div>'
+                       + '</div>';
+        $('.conversation-timeline').prepend(strMessage);
+    };
+
+
     var ShowCross = function() {
         ShowTitle();
         ShowDescription();
@@ -656,6 +724,20 @@ define(function (require, exports, module) {
         ShowPlace();
         ShowExfee();
         ShowBackground();
+    };
+
+
+    var GetTimeline = function() {
+        Api.request(
+            'conversation',
+            {resources : {exfee_id : Exfee.id}},
+            function(data) {
+                ShowTimeline(data.conversation);
+            },
+            function(data) {
+                console.log(data);
+            }
+        );
     };
 
 
@@ -668,6 +750,7 @@ define(function (require, exports, module) {
         Cross.background  = objCross.background;
         Exfee             = objCross.exfee;
         ShowCross();
+        GetTimeline();
     };
 
 
@@ -702,14 +785,12 @@ define(function (require, exports, module) {
 
     // init exfee widgets
     ExfeeWidgestInit();
-
-
     // init buttons
     ButtonsInit();
-
-
     // init input form
     InputFormInit();
+    // init moment
+    require('moment');
 
 
     // get cross
