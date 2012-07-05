@@ -143,6 +143,12 @@ define('uploader', [], function (require, exports, module) {
 
   var uploadSettings = {
 
+    errors: {
+      '500': 'Failed to open, please try again.',
+      'format': 'File format not supported.',
+      'size': 'File is too large.'
+    },
+
     //
     aoffset: [0, 0],
 
@@ -180,11 +186,13 @@ define('uploader', [], function (require, exports, module) {
       this.filehtml5.on('uploadcomplete', function (e) {
         that.$('.loading').addClass('hide');
         data = JSON.parse(e.data);
-        if (data && data.meta.code === 200) {
-          if (data.response.type === 'user') {
-            $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
-          } else {
-            $('.identity-list li[data-identity-id="' + data.response.identity_id + '"] .avatar').find('img').attr('src', data.response.avatars['80_80']);
+        if (data) {
+          if (data.meta.code === 200) {
+            if (data.response.type === 'user') {
+              $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
+            } else {
+              $('.identity-list li[data-identity-id="' + data.response.identity_id + '"] .avatar').find('img').attr('src', data.response.avatars['80_80']);
+            }
           }
         }
 
@@ -540,6 +548,7 @@ define('uploader', [], function (require, exports, module) {
             + '</div>'
 
             + '<div class="uploader-form">'
+              + '<div class="xalert-error"></div>'
               + '<button class="pull-right xbtn xbtn-blue upload-done hide">Done</button>'
               + '<button class="pull-right xbtn xbtn-white upload-clear hide">Clear</button>'
             + '</div>'
