@@ -777,10 +777,54 @@ define(function (require, exports, module) {
     $(this).parent().fadeOut();
   });
 
+  var Uploader = null;
+  var uploadSettings;
+  // 头像上传控件
+  var uploader = null;
   // uploader
-  $BODY.on('click.profile.uploader', '.user-avatar', function (e) {
-    var uploader = require('uploader')().render();
-    uploader.show();
+  $BODY.on('click.profile.uploader', '.user-avatar .avatar, .identity-list > li > .avatar', function (e) {
+    var $e = $(this),
+        $img = $e.find('img');
+
+    if (!$e.parent().hasClass('editable')) { return false; }
+
+    var identity_id = $e.parent().data('identity-id');
+
+    var data = {};
+
+    if (identity_id) {
+      data.identity_id = identity_id;
+    }
+
+    data['80_80'] = $img[0].src;
+
+    data['80_80'] = decodeURIComponent(data['80_80']);
+
+    if (!data['80_80'].match(/\/80_80_/)) {
+      data['80_80'] = '';
+    }
+
+    data['original'] = data['80_80'].replace(/80_80_/, 'original_');
+
+    if (!Uploader) {
+      Uploader = require('uploader').Uploader;
+      uploadSettings = $.extend(true, {}, require('uploader').uploadSettings, {
+        options: {
+          onHideBefore: function (e) {
+            uploaderTarget = null;
+            uploader = null;
+          }
+        }
+      });
+    }
+
+    if (uploader) {
+      uploader.hide();
+      uploader = null;
+    }
+
+    uploader = new Uploader(uploadSettings).render();
+    uploader.show(data);
   });
 
   /*
