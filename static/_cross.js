@@ -638,24 +638,157 @@ define(function (require, exports, module) {
         objGatherTitle.bind('focus blur keyup', function() {
             ChangeTitle(objGatherTitle.val());
         });
-    }
+    };
+
+
+    var changeCross = function(key, value) {
+
+        // time           : {
+        //     begin_at : {
+        //         date_word : '',
+        //         date      : '',
+        //         time_word : '',
+        //         time      : '',
+        //         timezone  : '',
+        //         id        : 0,
+        //         type      : 'EFTime'
+        //     },
+        //     origin       : '',
+        //     outputformat : '',
+        //     id           : 0,
+        //     type         : 'CrossTime'
+        // }
+        // place       : {
+        //     title       : '',
+        //     description : '',
+        //     lng         : 0,
+        //     lat         : 0,
+        //     provider    : '',
+        //     external_id : 0,
+        //     id          : 0,
+        //     type        : 'Place'
+        // }
+
+        switch (key) {
+            case 'title':
+            case 'description':
+                Cross.key = ExfeUtilities.trim(value);
+                break;
+            case 'time':
+                break;
+            case 'place':
+
+        }
+    };
+
+
+    var EditCross = function(event) {
+        var domWidget  = event ? event.target : null,
+            editArea   = $(domWidget).attr('editarea'),
+            editMethod = {
+            title : [
+                function() {
+                    $('.cross-title .show').show();
+                    $('.cross-title .edit').hide();
+                    ChangeTitle($('.cross-title .edit').val());
+                },
+                function() {
+                    $('.cross-title .show').hide();
+                    $('.cross-title .edit').show().focus();
+                }
+            ],
+            description : [
+                function() {
+                    $('.cross-description .show').show();
+                    $('.cross-description .edit').hide();
+                    ChangeDescription($('.cross-description .edit').val());
+                },
+                function() {
+                    $('.cross-description .show').hide();
+                    $('.cross-description .edit').show().focus();
+                }
+            ],
+            time : [
+                function() {
+
+                },
+                function() {
+
+                }
+            ],
+            place : [
+                function() {
+
+                },
+                function() {
+
+                }
+            ],
+            exfee : [
+                function() {
+
+                },
+                function() {
+
+                }
+            ]
+        };
+        if (event) {
+            event.stopPropagation();
+        }
+        while (domWidget && !editArea && domWidget.tagName !== 'BODY') {
+            domWidget = domWidget.parentNode;
+            editArea  = $(domWidget).attr('editarea');
+        }
+        for (var i in editMethod) {
+            editMethod[i][~~(i === editArea)]();
+        }
+    };
+
+
+    var Editable = function() {
+        $('body').bind('click', EditCross);
+        $('.cross-title .show').bind('click', EditCross);
+        $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
+            if (event.type === 'keydown') {
+                switch (event.which) {
+                    case 13:
+                        if (!event.shiftKey) {
+                            event.preventDefault();
+                            EditCross();
+                        }
+                        break;
+                }
+            }
+            ChangeTitle($('.cross-title .edit').val());
+        });
+        $('.cross-description .show').bind('click', EditCross);
+    };
 
 
     var ChangeTitle = function(title) {
         Cross.title = ExfeUtilities.trim(title);
         ShowTitle();
-    }
+    };
+
+
+    var ChangeDescription = function(description) {
+        Cross.description = ExfeUtilities.trim(description);
+        ShowDescription();
+    };
 
 
     var ShowTitle = function() {
-        $('.cross-title > h1').html(Cross.title);
+        $('.cross-title .show').html(Cross.title);
+        $('.cross-title .edit').html(Cross.title);
         document.title = 'EXFE - ' + Cross.title;
         // @todo 不同长度的 title 使用不同的样式
     };
 
 
     var ShowDescription = function() {
-        $('.cross-description').html(Cross.description);
+        $('.cross-description .show').html(Marked.parse(Cross.description));
+        $('.cross-description .edit').html(Cross.description);
     };
 
 
@@ -792,8 +925,12 @@ define(function (require, exports, module) {
     ButtonsInit();
     // init input form
     InputFormInit();
+    // init edit area
+    Editable();
     // init moment
     require('moment');
+    // init marked
+    Marked = require('marked');
 
 
     // get cross
