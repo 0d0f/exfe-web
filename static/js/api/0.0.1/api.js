@@ -64,6 +64,8 @@ define('api', [], function (require, exports, module) {
     // Conversation
     conversation: '/conversation/:exfee_id',
 
+    addConversation: '/conversation/:exfee_id/add',
+
 
     // Verify
     // 登陆前
