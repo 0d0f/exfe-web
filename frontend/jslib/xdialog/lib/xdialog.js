@@ -333,7 +333,7 @@ define(function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
             + '<div class="pull-right oauth">'
-              + '<a href="#" data-oauth="twitter"><img src="/static/1b/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+              + '<a href="#" data-oauth="twitter"><img src="/static/img/twitter-logo.png" alt="" width="52" height="40"></a>'
             + '</div>'
             + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'
