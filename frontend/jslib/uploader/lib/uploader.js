@@ -568,7 +568,12 @@ define('uploader', [], function (require, exports, module) {
         },
 
         'click .xbtn-yes': function (e) {
-          this.hide();
+          var data = {};
+
+          if (this._data.identity_id) {
+            data.identity_id = this._data.identity_id;
+          }
+          this.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), data);
           return false;
         },
 
