@@ -954,7 +954,6 @@ define('uploader', [], function (require, exports, module) {
           return false;
         }
         if (_u_ && _u_.resizing) {
-          console.log('move', [e.pageX, e.pageY]);
           var dx = e.pageX - _u_.aoffset[0]
             , dy = e.pageY - _u_.aoffset[1]
             , dzx, dzy, sbx, sby
