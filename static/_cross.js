@@ -809,9 +809,12 @@ define(function (require, exports, module) {
 
 
     var fixBackground = function() {
-        Cross.widget.background.image = AvailableBackgrounds[
-            parseInt(Math.random() * AvailableBackgrounds.length)
-        ];
+        var strBgImg = Cross.widget.background.image;
+        do {
+            Cross.widget.background.image = AvailableBackgrounds[
+                parseInt(Math.random() * AvailableBackgrounds.length)
+            ];
+        } while (strBgImg === Cross.widget.background.image);
         ShowBackground();
     };
 
