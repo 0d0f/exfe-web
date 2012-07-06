@@ -37,7 +37,8 @@ ExfeUtilities = {
 
 
     parseTimestring : function(strTime) {
-        var arrTime = strTime.split(/-|\ +|:/),
+        var sptTime = strTime.split(/-|\ +|:/),
+            arrTime = [],
             fmtFrom = 'YYYY MM DD hh mm ss a',
             rawTime = null,
             efeTime = {
@@ -51,7 +52,16 @@ ExfeUtilities = {
             db      = function (num) {
                 return num < 10 ? ('0' + num.toString()) : num.toString();
             };
+        for (var i = 0; i < sptTime.length; i++) {
+            if (sptTime[i]) {
+                arrTime.push(sptTime[i]);
+            }
+        }
         switch (arrTime.length) {
+            case 0:
+            case 1:
+            case 2:
+                break;
             case 3:
                 if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
                     efeTime.begin_at.date = rawTime.format('YYYY-MM-DD');
@@ -61,7 +71,7 @@ ExfeUtilities = {
             case 4:
             case 5:
                 arrTime.push('am');
-            case 6:
+            default:
                 if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
                     var objTime = rawTime.toDate();
                     efeTime.begin_at.date =    objTime.getUTCFullYear()   + '-'
@@ -587,7 +597,7 @@ define(function (require, exports, module) {
                 type      : 'EFTime'
             },
             origin       : '',
-            outputformat : '',
+            outputformat : 1,
             id           : 0,
             type         : 'CrossTime'
         },
@@ -688,49 +698,8 @@ define(function (require, exports, module) {
     var GatherFormInit = function() {
         var objGatherTitle = $('#gather-title');
         objGatherTitle.bind('focus keydown keyup blur', function(event) {
-            ChangeTitle(objGatherTitle.val(), event.type === 'blur');
+            ChangeTitle(objGatherTitle.val(), 'gather');
         });
-    };
-
-
-    var changeCross = function(key, value) {
-
-        // time           : {
-        //     begin_at : {
-        //         date_word : '',
-        //         date      : '',
-        //         time_word : '',
-        //         time      : '',
-        //         timezone  : '',
-        //         id        : 0,
-        //         type      : 'EFTime'
-        //     },
-        //     origin       : '',
-        //     outputformat : '',
-        //     id           : 0,
-        //     type         : 'CrossTime'
-        // }
-        // place       : {
-        //     title       : '',
-        //     description : '',
-        //     lng         : 0,
-        //     lat         : 0,
-        //     provider    : '',
-        //     external_id : 0,
-        //     id          : 0,
-        //     type        : 'Place'
-        // }
-
-        switch (key) {
-            case 'title':
-            case 'description':
-                Cross.key = ExfeUtilities.trim(value);
-                break;
-            case 'time':
-                break;
-            case 'place':
-
-        }
     };
 
 
@@ -742,7 +711,7 @@ define(function (require, exports, module) {
                 function() {
                     $('.cross-title .show').show();
                     $('.cross-title .edit').hide();
-                    ChangeTitle($('.cross-title .edit').val());
+                    ChangeTitle($('.cross-title .edit').val(), 'cross');
                 },
                 function() {
                     $('.cross-title .show').hide();
@@ -762,21 +731,16 @@ define(function (require, exports, module) {
             ],
             time : [
                 function() {
-
+                    $('.cross-date .show').show();
+                    $('.cross-date .edit').hide();
+                    ChangeTime($('.cross-date .edit').val());
                 },
                 function() {
-
+                    $('.cross-date .show').hide();
+                    $('.cross-date .edit').show().focus();
                 }
             ],
             place : [
-                function() {
-
-                },
-                function() {
-
-                }
-            ],
-            exfee : [
                 function() {
 
                 },
@@ -812,9 +776,13 @@ define(function (require, exports, module) {
                         break;
                 }
             }
-            ChangeTitle($('.cross-title .edit').val(), true);
+            ChangeTitle($(event.target).val(), 'cross');
+        });
+        $('.cross-date .edit').bind('focus keydown keyup blur', function(event) {
+            ChangeTime($(event.target).val());
         });
         $('.cross-description .show').bind('click', EditCross);
+        $('.shuffle-background').bind('click', fixBackground);
     };
 
 
@@ -822,13 +790,38 @@ define(function (require, exports, module) {
         if (!Cross.title.length) {
             Cross.title = User ? 'Meet ' + User.default_identity.name : 'Gather a X';
         }
-    }
+    };
 
 
-    var ChangeTitle = function(title, update_gather_form) {
+    var fixTime = function() {
+        var strDate = moment().format('YYYY-MM-DD');
+        Cross.time = {
+            begin_at : {
+                date_word : '', date : strDate,
+                time_word : '', time : '',
+                timezone  : ExfeUtilities.getTimezone(),
+                id        : 0,  type : 'EFTime'
+            },
+            origin : strDate, outputformat : 0, id : 0, type : 'CrossTime'
+        };
+        $('.cross-date .edit').val(strDate);
+    };
+
+
+    var fixBackground = function() {
+        var strBgImg = Cross.widget.background.image;
+        do {
+            Cross.widget.background.image = AvailableBackgrounds[
+                parseInt(Math.random() * AvailableBackgrounds.length)
+            ];
+        } while (strBgImg === Cross.widget.background.image);
+        ShowBackground();
+    };
+
+
+    var ChangeTitle = function(title, from) {
         Cross.title = ExfeUtilities.trim(title);
-        fixTitle();
-        ShowTitle(update_gather_form);
+        ShowTitle(from);
     };
 
 
@@ -840,17 +833,24 @@ define(function (require, exports, module) {
 
     var ChangeTime = function(time) {
         Cross.time = ExfeUtilities.parseTimestring(time);
-        ShowTime();
     };
 
 
-    var ShowTitle = function(include_gather_form) {
-        $('.cross-title .show').html(Cross.title);
-        $('.cross-title .edit').html(Cross.title);
-        document.title = 'EXFE - ' + Cross.title;
+    var ShowTitle = function(from) {
+        var title = Cross.title.length ? Cross.title : 'Enter intent';
+        $('.cross-title .show').html(title);
+        document.title = 'EXFE - ' + title;
         // @todo 不同长度的 title 使用不同的样式
-        if (include_gather_form) {
-            $('#gather-title').val(Cross.title);
+        switch (from) {
+            case 'gather':
+                $('.cross-title .edit').val(Cross.title);
+                break;
+            case 'cross':
+                $('#gather-title').val(Cross.title);
+                break;
+            default:
+                $('#gather-title').val(Cross.title);
+                $('.cross-title .edit').val(Cross.title);
         }
     };
 
@@ -866,25 +866,32 @@ define(function (require, exports, module) {
 
 
     var ShowTime = function() {
-        var strAbsTime = '', strRelTime = '';
+        var strAbsTime = '', strRelTime = '', format = 'YYYY-MM-DD';
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
-                strAbsTime = '';
-                strRelTime = Cross.time.origin;
+                strAbsTime = Cross.time.origin;
+                strRelTime = '&nbsp;';
             } else if (Cross.time.begin_at.time) {
-                strAbsTime = Cross.time.begin_at.date + ' '
-                           + Cross.time.begin_at.time;
-                strRelTime = moment.utc(strAbsTime, 'YYYY-MM-DD HH:mm:ss').fromNow();
+                var rawUtc = moment.utc(
+                    Cross.time.begin_at.date + ' '
+                  + Cross.time.begin_at.time,
+                    format + ' HH:mm:ss'
+                ).local();
+                strAbsTime = rawUtc.format('h:mmA on ddd, MMM D');
+                strRelTime = rawUtc.fromNow();
+                strRelTime = strRelTime.indexOf('a few seconds') !== -1
+                           ? 'Now'   : strRelTime;
             } else {
                 strAbsTime = Cross.time.begin_at.date;
-                strRelTime = moment(strAbsTime, 'YYYY-MM-DD').fromNow();
+                strRelTime = strAbsTime === moment().format(format)
+                           ? 'Today' : moment(strAbsTime, format).fromNow();
             }
         } else {
-            strAbsTime = 'Sometime';
-            strRelTime = 'Click here to set time.';
+            strAbsTime = 'Click here to set time.';
+            strRelTime = 'Sometime';
         }
-        $('.cross-date .h2').html(strAbsTime);
-        $('.cross-time').html(strRelTime);
+        $('.cross-date h2').html(strRelTime);
+        $('.cross-time').html(strAbsTime);
     };
 
 
@@ -901,10 +908,9 @@ define(function (require, exports, module) {
 
 
     var ShowBackground = function() {
-        Cross.widget.background.image = Cross.widget.background.image
-      ? Cross.widget.background.image : AvailableBackgrounds[
-            parseInt(Math.random() * AvailableBackgrounds.length)
-        ];
+        if (!Cross.widget.background.image) {
+            fixBackground();
+        }
         $('.cross-background').css(
             'background-image',
             'url(/static/img/xbg/' + Cross.widget.background.image + ')'
@@ -947,7 +953,6 @@ define(function (require, exports, module) {
     var ShowCross = function() {
         ShowTitle(true);
         ShowDescription();
-        ShowTime();
         ShowPlace();
         ShowExfee();
         ShowBackground();
@@ -973,11 +978,12 @@ define(function (require, exports, module) {
         Cross.description = objCross.description;
         Cross.time        = objCross.time;
         Cross.place       = objCross.place;
-        Cross.exfee_id    = objCross.exfee.id;
         Cross.background  = objCross.background;
+        Cross.exfee_id    = objCross.exfee.id;
         Exfee             = objCross.exfee;
         ShowCross();
         GetTimeline();
+        ChangeTime($('.cross-date .edit').val(Cross.time.origin));
     };
 
 
@@ -1023,6 +1029,8 @@ define(function (require, exports, module) {
     require('moment');
     // init marked
     Marked = require('marked');
+    // init showtime
+    var showtimeTimer = setInterval(ShowTime, 50);
 
 
     // get cross
@@ -1040,6 +1048,7 @@ define(function (require, exports, module) {
         );
     } else {
         fixTitle();
+        fixTime();
         ShowCross();
         $('.cross-form').show();
         if (User) {
