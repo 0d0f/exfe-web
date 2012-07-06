@@ -782,6 +782,7 @@ define(function (require, exports, module) {
             ChangeTime($(event.target).val());
         });
         $('.cross-description .show').bind('click', EditCross);
+        $('.shuffle-background').bind('click', fixBackground);
     };
 
 
@@ -804,6 +805,14 @@ define(function (require, exports, module) {
             origin : strDate, outputformat : 0, id : 0, type : 'CrossTime'
         };
         $('.cross-date .edit').val(strDate);
+    };
+
+
+    var fixBackground = function() {
+        Cross.widget.background.image = AvailableBackgrounds[
+            parseInt(Math.random() * AvailableBackgrounds.length)
+        ];
+        ShowBackground();
     };
 
 
@@ -896,10 +905,9 @@ define(function (require, exports, module) {
 
 
     var ShowBackground = function() {
-        Cross.widget.background.image = Cross.widget.background.image
-      ? Cross.widget.background.image : AvailableBackgrounds[
-            parseInt(Math.random() * AvailableBackgrounds.length)
-        ];
+        if (!Cross.widget.background.image) {
+            fixBackground();
+        }
         $('.cross-background').css(
             'background-image',
             'url(/static/img/xbg/' + Cross.widget.background.image + ')'
