@@ -58,9 +58,9 @@ EXFE Maps
             <div class="autocomplete" id="gather-exfee-complete"><ol></ol></div>
 
             <div class="pull-right cross-stats">
-              <span class="attended">2</span>
+              <span class="attended"></span>
               <div class="confirmed">
-                <div class="total">of 12</div>
+                <div class="total"></div>
                 <div>confirmed</div>
               </div>
             </div>
@@ -96,8 +96,9 @@ EXFE Maps
     <!-- Cross-Container -->
     <div class="cross-container">
       <!-- Cross-Title -->
-      <div class="cross-title">
-        <h1></h1>
+      <div class="cross-title" editarea="title">
+        <h1 class="show"></h1>
+        <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
       </div>
 
       <div class="row">
@@ -106,7 +107,10 @@ EXFE Maps
         <div class="gr-a">
 
           <!-- Cross-Content -->
-          <div class="cross-description"></div>
+          <div class="cross-description" editarea="description">
+            <div class="show"></div>
+            <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+          </div>
 
           <!-- Cross-rsvp -->
           <div class="cross-rsvp">
@@ -150,9 +154,10 @@ EXFE Maps
           <div>
 
             <!-- Cross-Time -->
-            <div class="cross-dp cross-date">
+            <div class="cross-dp cross-date" editarea="time">
               <h2>Tomorrow</h2>
-              <div class="cross-time">6:30PM on Fri, Apr 8</div>
+              <div class="cross-time show">6:30PM on Fri, Apr 8</div>
+              <input type="text" class="edit" placeholder="1984-06-04 09:00 AM" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Place -->
@@ -161,11 +166,12 @@ EXFE Maps
               <address>Pier 39, 203 C<br /> San Francisco<br /> http://crabhouse39.com<br /> (555) 434-2722<br /> overflow: hidden;</address>
             </div>
 
-            <!-- Cross-Map -->
+            <!-- Cross-Map
             <div class="cross-map">
-              <!--<img src="http://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&markers=size:mid%7Ccolor:blue%7C40.714728,-73.998672&zoom=13&size=280x140&maptype=road&sensor=false" alt="" />-->
+              <!--<img src="http://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&markers=size:mid%7Ccolor:blue%7C40.714728,-73.998672&zoom=13&size=280x140&maptype=road&sensor=false" alt="" />
               <img src="/img/google-staticmap.png" alt="" width="280px" height="140px" />
             </div>
+            -->
 
             <!-- Cross-Form: Exfee -->
             <div class="control-group cross-exfee" id="cross-exfee">
@@ -177,9 +183,9 @@ EXFE Maps
               <div class="autocomplete" id="cross-exfee-complete"><ol></ol></div>
 
               <div class="pull-right cross-stats">
-                <span class="attended">2</span>
+                <span class="attended"></span>
                 <div class="confirmed">
-                  <div class="total">of 12</div>
+                  <div class="total"></div>
                   <div>confirmed</div>
                 </div>
               </div>
@@ -208,6 +214,7 @@ EXFE Maps
 
 <!-- JavaScript at the bottom for fast page loading -->
 <?php include 'share/footer.php'; ?>
+<script src="/static/js/marked/0.2.5/marked.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <script src="/static/_cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
