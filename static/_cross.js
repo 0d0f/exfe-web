@@ -204,7 +204,6 @@ ExfeeWidget = {
             50
         );
         return ExfeUtilities.clone(this);
-
     },
 
 
@@ -272,12 +271,12 @@ ExfeeWidget = {
     },
 
 
-    addExfee : function(identity) {
+    addExfee : function(identity, host) {
         if (!this.checkExistence(identity)) {
             Exfee.invitations.push({
                 identity    : ExfeUtilities.clone(identity),
                 rsvp_status : 'NORESPONSE',
-                host        : false,
+                host        : !!host,
                 mates       : 0
             });
         }
@@ -577,60 +576,33 @@ ExfeeWidget = {
 
 define(function (require, exports, module) {
 
-    var $        = require('jquery');
-
-    var Timeline = [];
-
-
-    window.Cross = {
-        title       : '',
-        description : '',
-        by_identity : {id : 0},
-        time           : {
-            begin_at : {
-                date_word : '',
-                date      : '',
-                time_word : '',
-                time      : '',
-                timezone  : '',
-                id        : 0,
-                type      : 'EFTime'
+    var $        = require('jquery'),
+        Timeline = [],
+        rawCross = {
+            title : '', description : '', by_identity : {id : 0},
+            time  : {
+                begin_at : {
+                    date_word : '', date : '',
+                    time_word : '', time : '',
+                    timezone  : '', id   : 0, type : 'EFTime'
+                },
+                origin : '', outputformat : 1, id : 0, type : 'CrossTime'
             },
-            origin       : '',
-            outputformat : 1,
-            id           : 0,
-            type         : 'CrossTime'
+            place : {
+                title    : '', description : '', lng : 0, lat  : 0,
+                provider : '', external_id : 0,  id  : 0, type : 'Place'
+            },
+            attribute : {state : 'published'},
+            exfee_id  : 0,
+            widget    : {
+                background : {
+                    image     : '', widget_id : 0,
+                    id        : 0,  type      : 'Background'
+                }
+            },
+            relative : {id : 0, relation : ''}, type : 'Cross'
         },
-        place       : {
-            title       : '',
-            description : '',
-            lng         : 0,
-            lat         : 0,
-            provider    : '',
-            external_id : 0,
-            id          : 0,
-            type        : 'Place'
-        },
-        attribute   : {state : 'published'},
-        exfee_id    : 0,
-        widget      : {
-            background : {
-                image     : '',
-                widget_id : 0,
-                id        : 0,
-                type      : 'Background'
-            }
-        },
-        relative    : {id : 0, relation : ''},
-        type        : 'Cross'
-    };
-
-
-    window.Exfee = {
-        id          : 0,
-        type        : 'Exfee',
-        invitations : []
-    };
+        rawExfee = {id : 0, type : 'Exfee', invitations : []};
 
 
     var ExfeeWidgestInit = function() {
@@ -819,6 +791,11 @@ define(function (require, exports, module) {
     };
 
 
+    var fixExfee = function() {
+        ExfeeWidget.addExfee(User.default_identity, true);
+    };
+
+
     var ChangeTitle = function(title, from) {
         Cross.title = ExfeUtilities.trim(title);
         ShowTitle(from);
@@ -922,7 +899,7 @@ define(function (require, exports, module) {
         $('#conversation-form span.avatar img').attr(
             'src', User.default_identity.avatar_filename
         );
-        $('.cross-conversation').show();
+        $('.cross-conversation').slideDown(233);
         Timeline = timeline;
         for (var i = Timeline.length - 1; i >= 0; i--) {
             ShowMessage(Timeline[i]);
@@ -951,7 +928,7 @@ define(function (require, exports, module) {
 
 
     var ShowCross = function() {
-        ShowTitle(true);
+        ShowTitle();
         ShowDescription();
         ShowPlace();
         ShowExfee();
@@ -981,27 +958,70 @@ define(function (require, exports, module) {
         Cross.background  = objCross.background;
         Cross.exfee_id    = objCross.exfee.id;
         Exfee             = objCross.exfee;
+        $('.cross-date .edit').val(Cross.time.origin);
         ShowCross();
         GetTimeline();
-        ChangeTime($('.cross-date .edit').val(Cross.time.origin));
     };
 
 
-    var Gather = function() {
-        var strCross = JSON.stringify(Cross);
+    var GetCross = function(cross_id) {
         Api.request(
-            'gather',
-            {type : 'POST', data : strCross},
+            'getCross',
+            {resources : {cross_id : Cross_id}},
             function(data) {
-                console.log(data);
-                $('.cross-form').slideUp(300);
+                UpdateCross(data.cross);
             },
             function(data) {
-                // failed
                 console.log(data);
             }
         );
     };
+
+
+    var ResetCross = function() {
+        window.Cross = ExfeUtilities.clone(rawCross);
+        window.Exfee = ExfeUtilities.clone(rawExfee);
+        fixTitle();
+        fixTime();
+        fixExfee();
+    };
+
+
+    var NewCross = function(NoReset) {
+        if (!NoReset) {
+            ResetCross();
+        }
+        ShowCross();
+        ShowGatherForm();
+    };
+
+
+    var Gather = function() {
+        var objCross   = ExfeUtilities.clone(Cross);
+        objCross.exfee = ExfeUtilities.clone(Exfee);
+        Api.request(
+            'gather',
+            {type : 'POST', data : JSON.stringify(objCross)},
+            function(data) {
+                ShowGatherForm(true);
+                UpdateCross(data.cross);
+            },
+            function(data) {
+                console.log(data);
+            }
+        );
+    };
+
+
+    var ShowGatherForm = function(hide) {
+        if (hide) {
+            $('.cross-form').slideUp(233);
+        } else {
+            $('.cross-form').slideDown(233);
+            $('#gather-title').select();
+            $('#gather-title').focus();
+        }
+    }
 
 
     // init api
@@ -1017,6 +1037,10 @@ define(function (require, exports, module) {
     }
 
 
+    // init moment
+    require('moment');
+    // init cross step 1
+    ResetCross();
     // init exfee widgets
     ExfeeWidgestInit();
     // init buttons
@@ -1025,8 +1049,6 @@ define(function (require, exports, module) {
     GatherFormInit();
     // init edit area
     Editable();
-    // init moment
-    require('moment');
     // init marked
     Marked = require('marked');
     // init showtime
@@ -1034,23 +1056,11 @@ define(function (require, exports, module) {
 
 
     // get cross
-    var Cross_id = 100134;
-    if (0) {
-        Api.request(
-            'getCross',
-            {resources : {cross_id : Cross_id}},
-            function(data) {
-                UpdateCross(data.cross);
-            },
-            function(data) {
-                console.log(data);
-            }
-        );
+    var Cross_id = 0; // 100134;
+    if (Cross_id) {
+        GetCross(Cross_id);
     } else {
-        fixTitle();
-        fixTime();
-        ShowCross();
-        $('.cross-form').show();
+        NewCross(true);
         if (User) {
             Cross.by_identity.id = User.default_identity.id;
         }
