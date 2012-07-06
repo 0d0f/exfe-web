@@ -23,6 +23,58 @@ ExfeUtilities = {
                 variableNew = variable;
         }
         return variableNew;
+    },
+
+
+    getTimezone : function() {
+        // W3C : 'Fri Jul 06 2012 12:28:23 GMT+0800 (CST)'
+        // IE  : 'Fri Jul 6 12:28:23 UTC+0800 2012'
+        var rawTimeStr  = Date().toString(),
+            numTimezone = rawTimeStr.replace(/^.+([+-]\d{2})(\d{2}).+$/i, '$1:$2'),
+            strTimezone = rawTimeStr.replace(/^.*\(([a-z]*)\).*$/i, '$1');
+        return numTimezone + (strTimezone === rawTimeStr ? '' : (' ' + strTimezone));
+    },
+
+
+    parseTimestring : function(strTime) {
+        var arrTime = strTime.split(/-|\ +|:/),
+            fmtFrom = 'YYYY MM DD hh mm ss a',
+            rawTime = null,
+            efeTime = {
+                begin_at : {
+                    date_word : '', date : '',
+                    time_word : '', time : '',
+                    timezone  : this.getTimezone(), id : 0, type : 'EFTime'
+                },
+                origin : strTime, outputformat : 1, id : 0, type : 'CrossTime'
+            },
+            db      = function (num) {
+                return num < 10 ? ('0' + num.toString()) : num.toString();
+            };
+        switch (arrTime.length) {
+            case 3:
+                if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
+                    efeTime.begin_at.date = rawTime.format('YYYY-MM-DD');
+                    efeTime.outputformat  = 0;
+                }
+                break;
+            case 4:
+            case 5:
+                arrTime.push('am');
+            case 6:
+                if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
+                    var objTime = rawTime.toDate();
+                    efeTime.begin_at.date =    objTime.getUTCFullYear()   + '-'
+                                          + db(objTime.getUTCMonth() + 1) + '-'
+                                          + db(objTime.getUTCDate());
+                    efeTime.begin_at.time = db(objTime.getUTCHours())     + ':'
+                                          + db(objTime.getUTCMinutes())   + ':'
+                                          + db(objTime.getUTCSeconds());
+                    efeTime.outputformat  = 0;
+                }
+                break;
+        }
+        return efeTime;
     }
 
 };
@@ -271,12 +323,12 @@ ExfeeWidget = {
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
             objIdentity.provider          = 'email';
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
-            objIdentity.external_id       = 0;
+            objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'twitter';
         } else if (/^[a-z0-9_]{1,15}@facebook$/i.test(string)) {
-            objIdentity.external_id       = 0;
+            objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/@facebook$/ig, '');
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'facebook';
@@ -633,10 +685,10 @@ define(function (require, exports, module) {
     };
 
 
-    var InputFormInit = function() {
+    var GatherFormInit = function() {
         var objGatherTitle = $('#gather-title');
-        objGatherTitle.bind('focus blur keyup', function() {
-            ChangeTitle(objGatherTitle.val());
+        objGatherTitle.bind('focus keydown keyup blur', function(event) {
+            ChangeTitle(objGatherTitle.val(), event.type === 'blur');
         });
     };
 
@@ -760,15 +812,23 @@ define(function (require, exports, module) {
                         break;
                 }
             }
-            ChangeTitle($('.cross-title .edit').val());
+            ChangeTitle($('.cross-title .edit').val(), true);
         });
         $('.cross-description .show').bind('click', EditCross);
     };
 
 
-    var ChangeTitle = function(title) {
+    var fixTitle = function() {
+        if (!Cross.title.length) {
+            Cross.title = User ? 'Meet ' + User.default_identity.name : 'Gather a X';
+        }
+    }
+
+
+    var ChangeTitle = function(title, update_gather_form) {
         Cross.title = ExfeUtilities.trim(title);
-        ShowTitle();
+        fixTitle();
+        ShowTitle(update_gather_form);
     };
 
 
@@ -778,22 +838,53 @@ define(function (require, exports, module) {
     };
 
 
-    var ShowTitle = function() {
+    var ChangeTime = function(time) {
+        Cross.time = ExfeUtilities.parseTimestring(time);
+        ShowTime();
+    };
+
+
+    var ShowTitle = function(include_gather_form) {
         $('.cross-title .show').html(Cross.title);
         $('.cross-title .edit').html(Cross.title);
         document.title = 'EXFE - ' + Cross.title;
         // @todo 不同长度的 title 使用不同的样式
+        if (include_gather_form) {
+            $('#gather-title').val(Cross.title);
+        }
     };
 
 
     var ShowDescription = function() {
-        $('.cross-description .show').html(Marked.parse(Cross.description));
+        $('.cross-description .show').html(
+            Cross.description
+          ? Marked.parse(Cross.description)
+          : 'Click here to describe something about this X.'
+        );
         $('.cross-description .edit').html(Cross.description);
     };
 
 
     var ShowTime = function() {
-        $('.cross-time').html(Cross.time.begin_at.date_word);
+        var strAbsTime = '', strRelTime = '';
+        if (Cross.time.origin) {
+            if (Cross.time.outputformat) {
+                strAbsTime = '';
+                strRelTime = Cross.time.origin;
+            } else if (Cross.time.begin_at.time) {
+                strAbsTime = Cross.time.begin_at.date + ' '
+                           + Cross.time.begin_at.time;
+                strRelTime = moment.utc(strAbsTime, 'YYYY-MM-DD HH:mm:ss').fromNow();
+            } else {
+                strAbsTime = Cross.time.begin_at.date;
+                strRelTime = moment(strAbsTime, 'YYYY-MM-DD').fromNow();
+            }
+        } else {
+            strAbsTime = 'Sometime';
+            strRelTime = 'Click here to set time.';
+        }
+        $('.cross-date .h2').html(strAbsTime);
+        $('.cross-time').html(strRelTime);
     };
 
 
@@ -854,7 +945,7 @@ define(function (require, exports, module) {
 
 
     var ShowCross = function() {
-        ShowTitle();
+        ShowTitle(true);
         ShowDescription();
         ShowTime();
         ShowPlace();
@@ -897,6 +988,7 @@ define(function (require, exports, module) {
             {type : 'POST', data : strCross},
             function(data) {
                 console.log(data);
+                $('.cross-form').slideUp(300);
             },
             function(data) {
                 // failed
@@ -923,8 +1015,8 @@ define(function (require, exports, module) {
     ExfeeWidgestInit();
     // init buttons
     ButtonsInit();
-    // init input form
-    InputFormInit();
+    // init gather form
+    GatherFormInit();
     // init edit area
     Editable();
     // init moment
@@ -935,7 +1027,7 @@ define(function (require, exports, module) {
 
     // get cross
     var Cross_id = 100134;
-    if (Cross_id) {
+    if (0) {
         Api.request(
             'getCross',
             {resources : {cross_id : Cross_id}},
@@ -947,6 +1039,8 @@ define(function (require, exports, module) {
             }
         );
     } else {
+        fixTitle();
+        ShowCross();
         $('.cross-form').show();
         if (User) {
             Cross.by_identity.id = User.default_identity.id;
