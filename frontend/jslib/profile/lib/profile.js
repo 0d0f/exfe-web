@@ -488,7 +488,7 @@ define(function (require, exports, module) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
-      s.src = '/static/1b/js/newbieguide/0.0.1/newbieguide.min.js?t=' + Config.timestamp;
+      s.src = '/static/js/newbieguide/0.0.1/newbieguide.min.js?t=' + Config.timestamp;
       var body = document.body;
       body.appendChild(s);
     }
