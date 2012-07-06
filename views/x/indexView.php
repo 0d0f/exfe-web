@@ -154,9 +154,10 @@ EXFE Maps
           <div>
 
             <!-- Cross-Time -->
-            <div class="cross-dp cross-date">
+            <div class="cross-dp cross-date" editarea="time">
               <h2>Tomorrow</h2>
-              <div class="cross-time">6:30PM on Fri, Apr 8</div>
+              <div class="cross-time show">6:30PM on Fri, Apr 8</div>
+              <input type="text" class="edit" placeholder="1984-06-04 09:00 AM" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Place -->
