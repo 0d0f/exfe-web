@@ -100,7 +100,8 @@ define('uploader', [], function (require, exports, module) {
           filterFunc = this.fileFilterFunction,
           i = 0, l = newfiles.length;
 
-      if (filterFunc) {
+      if (false) {
+      //if (filterFunc) {
         for (; i < l; i++) {
           newfile = new FileHTML5(newfiles[i]);
           if (filterFunc(newfile)) {
@@ -143,6 +144,38 @@ define('uploader', [], function (require, exports, module) {
 
   var uploadSettings = {
 
+    errors: {
+      'server': 'Failed to open, please try again.',
+      'format': 'File format not supported.',
+      'size': 'File is too large.'
+    },
+
+    checkFile: function (file) {
+
+      if (this.checkFileFormat(file)) { return false; }
+
+      if (this.checkFileSize(file)) { return false; }
+
+      return true;
+    },
+
+    checkFileSize: function (file) {
+      var maxSize = 1024 * 1024 * 3, b = false;
+
+      this.emit('toggleError', (b = file._size > maxSize), 'size');
+
+      return b;
+    },
+
+    checkFileFormat: function (file) {
+      var b = !this.fileFilterFunction(file);
+
+      this.emit('toggleError', b, 'format');
+
+      return b;
+    },
+
+
     //
     aoffset: [0, 0],
 
@@ -178,15 +211,21 @@ define('uploader', [], function (require, exports, module) {
       };
 
       this.filehtml5.on('uploadcomplete', function (e) {
+        var b = true;
         that.$('.loading').addClass('hide');
         data = JSON.parse(e.data);
-        if (data && data.meta.code === 200) {
-          if (data.response.type === 'user') {
-            $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
-          } else {
-            $('.identity-list li[data-identity-id="' + data.response.identity_id + '"] .avatar').find('img').attr('src', data.response.avatars['80_80']);
+        if (data) {
+          if (data.meta.code === 200) {
+            b = false;
+            if (data.response.type === 'user') {
+              $('.user-avatar .avatar, .user-panel .avatar').find('img').attr('src', data.response.avatars['80_80']);
+            } else {
+              $('.identity-list li[data-identity-id="' + data.response.identity_id + '"] .avatar').find('img').attr('src', data.response.avatars['80_80']);
+            }
           }
         }
+
+        that.emit('toggleError', b, 'server');
 
         that.hide();
       });
@@ -289,6 +328,15 @@ define('uploader', [], function (require, exports, module) {
         docUnBind();
       },
 
+      onToggleError: function (b, errorType) {
+        if (b) {
+          this.$('.xalert-error').html(this.errors[errorType]).removeClass('hide');
+        }
+        else {
+          this.$('.xalert-error').addClass('hide');
+        }
+      },
+
       onDrop: function (e) {
       },
 
@@ -296,6 +344,8 @@ define('uploader', [], function (require, exports, module) {
         var files = data.fileList, filehtml5;
         if (files.length) {
           filehtml5 = this.filehtml5 = files[0];
+
+          if (!this.checkFile(filehtml5)) { return false; }
 
           this.filehtml5Bind();
 
@@ -325,7 +375,7 @@ define('uploader', [], function (require, exports, module) {
               sss = 240 / min;
             }
 
-            // gif
+            // gif, get first frame
             if (self.filehtml5._type === 'image/gif') {
               var ccc = document.createElement('canvas'),
                   ccctx = ccc.getContext('2d');
@@ -540,6 +590,7 @@ define('uploader', [], function (require, exports, module) {
             + '</div>'
 
             + '<div class="uploader-form">'
+              + '<div class="xalert-error"></div>'
               + '<button class="pull-right xbtn xbtn-blue upload-done hide">Done</button>'
               + '<button class="pull-right xbtn xbtn-white upload-clear hide">Clear</button>'
             + '</div>'
