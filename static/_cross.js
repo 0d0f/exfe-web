@@ -809,7 +809,6 @@ define(function (require, exports, module) {
 
     var ChangeTitle = function(title, from) {
         Cross.title = ExfeUtilities.trim(title);
-        fixTitle();
         ShowTitle(from);
     };
 
@@ -826,8 +825,9 @@ define(function (require, exports, module) {
 
 
     var ShowTitle = function(from) {
-        $('.cross-title .show').html(Cross.title);
-        document.title = 'EXFE - ' + Cross.title;
+        var title = Cross.title.length ? Cross.title : 'Enter intent';
+        $('.cross-title .show').html(title);
+        document.title = 'EXFE - ' + title;
         // @todo 不同长度的 title 使用不同的样式
         switch (from) {
             case 'gather':
@@ -858,7 +858,7 @@ define(function (require, exports, module) {
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
                 strAbsTime = Cross.time.origin;
-                strRelTime = '';
+                strRelTime = '&nbsp;';
             } else if (Cross.time.begin_at.time) {
                 var rawUtc = moment.utc(
                     Cross.time.begin_at.date + ' '
