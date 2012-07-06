@@ -281,10 +281,11 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function updateAvatarById($identity_id, $avatar_filename) {
-        return $identity_id && $avatar_filename && $this->query(
+    public function updateAvatarById($identity_id, $avatar_filename = '') {
+        return $identity_id && $this->query(
             "UPDATE `identities`
-             SET    `avatar_file_name` = '{$avatar_filename}'
+             SET    `avatar_file_name` = '{$avatar_filename}',
+                    `updated_at`       =  NOW()
              WHERE  `id`               =  {$identity_id}"
         );
     }
