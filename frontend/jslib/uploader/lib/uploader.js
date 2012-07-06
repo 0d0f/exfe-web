@@ -247,6 +247,8 @@ define('uploader', [], function (require, exports, module) {
       onShowAfter: function (data) {
         this._data = data;
 
+        this._canvasOffset = this.$('#avatar240').offset();
+
         if (data.original) {
 
           var input = document.createElement('input');
@@ -450,25 +452,6 @@ define('uploader', [], function (require, exports, module) {
           return false;
         },
 
-        // zoom
-        /*
-        'click .zoom': function (e) {
-          e.preventDefault();
-          var src = '';
-          if ($.browser.safari && !/chrome/.test(navigator.userAgent.toLowerCase())) {
-            var canvas = document.createElement('canvas'),
-                ctx = canvas.getContext('2d');
-            canvas.width = this.bitmap.originalImage.width;
-            canvas.height = this.bitmap.originalImage.height;
-            ctx.drawImage(this.bitmap.originalImage, 0, 0, canvas.width, canvas.height);
-            src = canvas.toDataURL('image/png');
-          } else {
-            src = this.bitmap.originalImage.src;
-          }
-          return window.open(src);
-        },
-        */
-
         // upload
         'click .upload': function (e) {
           e.preventDefault();
@@ -551,10 +534,25 @@ define('uploader', [], function (require, exports, module) {
 
         // Resize
         'mousedown .resizeable': function (e) {
+          e.preventDefault();
           var $e = $(e.target);
           var anchor = this.anchor = $e.data('anchor');
           this.resizing = true;
           this.aoffset = [e.pageX, e.pageY];
+
+          var offset = this._canvasOffset;
+
+          if (anchor === 7) {
+            this.dr = Math.sqrt(Math.pow(e.pageX - offset.left, 2) + Math.pow(e.pageY - offset.top, 2));
+          } else if (anchor === 5) {
+            this.dr = Math.sqrt(Math.pow(e.pageX - offset.left - 240, 2) + Math.pow(e.pageY - offset.top, 2));
+          } else if (anchor === 0) {
+            this.dr = Math.sqrt(Math.pow(e.pageX - offset.left - 240, 2) + Math.pow(e.pageY - offset.top - 240, 2));
+          } else if (anchor === 2) {
+            this.dr = Math.sqrt(Math.pow(e.pageX - offset.left, 2) + Math.pow(e.pageY - offset.top - 240, 2));
+          }
+
+          return false;
         },
 
         'click .upload-clear': function (e) {
@@ -645,7 +643,7 @@ define('uploader', [], function (require, exports, module) {
             + '</div>'
 
             + '<div class="uploader-form">'
-              + '<div class="xalert-error"></div>'
+              + '<div class="xalert-error hide"></div>'
               + '<button class="pull-right xbtn xbtn-blue upload-done hide">Done</button>'
               + '<button class="pull-right xbtn xbtn-white upload-clear hide">Clear</button>'
             + '</div>'
@@ -900,14 +898,11 @@ define('uploader', [], function (require, exports, module) {
   // 等比例
   function geometricProportion(x, y, h, w) {
     var a = [];
-    if (Math.abs(x) > Math.abs(y)) {
-      a[0] = x;
-      a[1] = x / w;
+    a[0] = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    if (x < 0 || y < 0) {
+      a[0] *= -1;
     }
-    else {
-      a[0] = y;
-      a[1] = y / h;
-    }
+    a[1] = a[0] / Math.sqrt(Math.pow(h, 2) + Math.pow(w, 2));
     return a;
   }
 
@@ -925,6 +920,7 @@ define('uploader', [], function (require, exports, module) {
         if (_u_ && _u_.dragging) {
           var dx = e.pageX - _u_.offset[0];
           var dy = e.pageY - _u_.offset[1];
+
           var bitmap = _u_.bitmap;
 
           switch (_u_.ri) {
@@ -958,6 +954,7 @@ define('uploader', [], function (require, exports, module) {
           return false;
         }
         if (_u_ && _u_.resizing) {
+          console.log('move', [e.pageX, e.pageY]);
           var dx = e.pageX - _u_.aoffset[0]
             , dy = e.pageY - _u_.aoffset[1]
             , dzx, dzy, sbx, sby
@@ -968,84 +965,86 @@ define('uploader', [], function (require, exports, module) {
             , psx = _u_.psx
             , psy = _u_.psy
             , i = _u_.ri
-            , ao = _u_.aoffset;
+            , ao = _u_.aoffset
+            , sss = _u_.sss
+            , canvasOffset = _u_._canvasOffset;
 
-          function a1(dzy, sby) {
+          function a1(sby) {
             //dzy = ao[1] - e.pageY; sby = dzy / h;
 
             if (i === 0) {
               bitmap.scaleY = psy + sby;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
               bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
             } else if (i === 1) {
               bitmap.scaleX = psx + sby;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
               bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
             } else if (i === 2) {
               bitmap.scaleY = psy + sby;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
             } else {
               bitmap.scaleX = psx + sby;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
             }
           }
 
-          function a3(dzx, sbx) {
+          function a3(sbx) {
             //dzx = ao[0] - e.pageX; sbx = dzx / w;
 
             if (i === 0) {
               bitmap.scaleX = psx + sbx;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
               bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
             } else if (i === 1) {
               bitmap.scaleY = psy + sbx;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
             } else if (i === 2) {
               bitmap.scaleX = psx + sbx;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
             } else {
               bitmap.scaleY = psy + sbx;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
               bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
             }
           }
 
-          function a4(dzx, sbx) {
+          function a4(sbx) {
             //dzx = e.pageX - ao[0]; sbx = dzx / w;
 
             if (i === 0) {
               bitmap.scaleX = psx + sbx;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
             } else if (i === 1) {
               bitmap.scaleY = psy + sbx;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
               bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
             } else if (i === 2) {
               bitmap.scaleX = psx + sbx;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
               bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
             } else {
               bitmap.scaleY = psy + sbx;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
             }
           }
 
-          function a6(dzy, sby) {
+          function a6(sby) {
             //dzy = e.pageY - ao[1]; sby = dzy / h;
 
             if (i === 0) {
               bitmap.scaleY = psy + sby;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
             } else if (i === 1) {
               bitmap.scaleX = psx + sby;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
             } else if (i === 2) {
               bitmap.scaleY = psy + sby;
-              if (bitmap.scaleY < 0) bitmap.scaleY = 1 / img.height;
+              if (bitmap.scaleY < 0) bitmap.scaleY = sss / img.height;
               bitmap.y -= bitmap.scaleY * img.height - bitmap.height;
             } else {
               bitmap.scaleX = psx + sby;
-              if (bitmap.scaleX < 0) bitmap.scaleX = 1 / img.width;
+              if (bitmap.scaleX < 0) bitmap.scaleX = sss / img.width;
               bitmap.x -= bitmap.scaleX * img.width - bitmap.width;
             }
           }
@@ -1055,67 +1054,67 @@ define('uploader', [], function (require, exports, module) {
 
             switch (_u_.anchor) {
               case 0:
-                dzy = ao[1] - e.pageY;
-                dzx = ao[0] - e.pageX;
+                //dzy = ao[1] - e.pageY; dzx = ao[0] - e.pageX;
 
-                a = geometricProportion(dzx, dzy, w, h);
-
-                a1(a[0], a[1]);
-                a3(a[0], a[1]);
+                var dzr = Math.sqrt(Math.pow(e.pageX - w - canvasOffset.left, 2) + Math.pow(e.pageY - canvasOffset.top - h, 2));
+                var r = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
+                dzr -= _u_.dr;
+                a1(dzr / r * sss);
+                a3(dzr / r * sss);
                 break;
 
               case 1:
                 dzy = ao[1] - e.pageY;
                 sby = dzy / h;
-                a1(dzy, sby);
+                a1(sby * sss);
                 break;
 
               case 2:
-                dzy = ao[1] - e.pageY;
-                dzx = e.pageX - ao[0];
+                //dzy = ao[1] - e.pageY; dzx = e.pageX - ao[0];
 
-                a = geometricProportion(dzx, dzy, w, h);
-
-                a1(a[0], a[1]);
-                a4(a[0], a[1]);
+                var dzr = Math.sqrt(Math.pow(e.pageX - canvasOffset.left, 2) + Math.pow(e.pageY - canvasOffset.top - h, 2));
+                var r = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
+                dzr -= _u_.dr;
+                a1(dzr / r * sss);
+                a3(dzr / r * sss);
                 break;
 
               case 3:
                 dzx = ao[0] - e.pageX;
                 sbx = dzx / w;
-                a3(dzx, sbx);
+                a3(sbx * sss);
                 break;
 
               case 4:
                 dzx = e.pageX - ao[0];
                 sbx = dzx / w;
-                a4(dzx, sbx);
+                a4(sbx * sss);
                 break;
 
               case 5:
-                dzx = ao[0] - e.pageX;
-                dzy = e.pageY - ao[1];
+                //dzx = ao[0] - e.pageX; dzy = e.pageY - ao[1];
 
-                a = geometricProportion(dzx, dzy, w, h);
-
-                a3(a[0], a[1]);
-                a6(a[0], a[1]);
+                var dzr = Math.sqrt(Math.pow(e.pageX - w - canvasOffset.left, 2) + Math.pow(e.pageY - canvasOffset.top, 2));
+                var r = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
+                dzr -= _u_.dr;
+                a3(dzr / r * sss);
+                a6(dzr / r * sss);
                 break;
 
               case 6:
                 dzy = e.pageY - ao[1];
                 sby = dzy / h;
-                a6(dzy, sby);
+                a6(sby * sss);
                 break;
 
               case 7:
-                dzx = e.pageX - ao[0];
-                dzy = e.pageY - ao[1];
+                //dzx = e.pageX - ao[0]; dzy = e.pageY - ao[1];
 
-                a = geometricProportion(dzx, dzy, w, h);
-
-                a4(a[0], a[1]);
-                a6(a[0], a[1]);
+                var dzr = Math.sqrt(Math.pow(e.pageX - canvasOffset.left, 2) + Math.pow(e.pageY - canvasOffset.top, 2));
+                var r = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
+                dzr -= _u_.dr;
+                a4(dzr / r * sss);
+                a6(dzr / r * sss);
                 break;
             }
 
