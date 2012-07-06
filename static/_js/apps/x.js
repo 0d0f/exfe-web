@@ -3,11 +3,6 @@ ns.arrRvsp   = ['', 'Accepted', 'Declined', 'Interested'];
 
 ns.showDesc = function(editing)
 {
-    var strDesc = crossData.description === '' && (editing || !odof.x.render.editable)
-    ? 'Write some words about this X.'
-    : crossData.description,
-    converter = new Showdown.converter();
-    $('#x_desc').html(converter.makeHtml(strDesc));
     if (!this.expended && $('#x_desc').height() > 200) {
         $('#x_desc_expand').show();
     } else {
@@ -345,26 +340,6 @@ ns.show = function(editable)
 };
 
 
-ns.fetchUserByIdentityId = function (identity_id) {
-    var user = null;
-    $.each(crossExfee, function (i, v) {
-        if (v.identity_id === identity_id) {
-            user = v;
-        }
-    });
-    return user;
-};
-
-
-ns.showComponents = function()
-{
-    this.showTitle();
-    this.showDesc();
-    this.showTime();
-    this.showPlace();
-};
-
-
 ns.changeConfirmed = function (new_myrsvp, user_id) {
     var old_myrsvp = window['myrsvp'];
     var i = 0;
@@ -377,43 +352,40 @@ ns.changeConfirmed = function (new_myrsvp, user_id) {
 };
 
 
-$(function () {
-    var DOC = $(document);
-    DOC.delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
-        var $x_desc_expand = $('#x_desc_expand'),
-            isMouseEnter = e.type === 'mouseenter';
-        if ($x_desc_expand.is(':hidden')) return;
-        $x_desc_expand
-            .toggleClass('x_desc_expand_hover')
-            .find('>a')[isMouseEnter ? 'show' : 'hide']();
-    });
+DOC.delegate('#x_desc_area', 'mouseenter mouseleave', function (e) {
+    var $x_desc_expand = $('#x_desc_expand'),
+        isMouseEnter = e.type === 'mouseenter';
+    if ($x_desc_expand.is(':hidden')) return;
+    $x_desc_expand
+        .toggleClass('x_desc_expand_hover')
+        .find('>a')[isMouseEnter ? 'show' : 'hide']();
+});
 
-    DOC.delegate('#x_rsvp_msg', 'mouseenter mouseleave', function (e) {
-        var timer = $(this).data('xtimer'),
-            isMouseEnter = e.type === 'mouseenter';
-        if (timer) {
-            clearTimeout(timer);
-            timer = null;
-        }
+DOC.delegate('#x_rsvp_msg', 'mouseenter mouseleave', function (e) {
+    var timer = $(this).data('xtimer'),
+        isMouseEnter = e.type === 'mouseenter';
+    if (timer) {
+        clearTimeout(timer);
+        timer = null;
+    }
 
-        if (isMouseEnter) {
-            timer = setTimeout(function () {
-                $('#x_exfee_users').hide();
-                $('#x_rsvp_typeinfo').show();
-            }, 500);
+    if (isMouseEnter) {
+        timer = setTimeout(function () {
+            $('#x_exfee_users').hide();
+            $('#x_rsvp_typeinfo').show();
+        }, 500);
 
-            $(this).data('xtimer', timer);
-        } else {
-            $('#x_exfee_users').show();
-            $('#x_rsvp_typeinfo').hide();
-        }
-    });
+        $(this).data('xtimer', timer);
+    } else {
+        $('#x_exfee_users').show();
+        $('#x_rsvp_typeinfo').hide();
+    }
+});
 
-    // History
-    DOC.delegate('a#x_hide_history', 'click', function (e) {
-        e.preventDefault();
-        var $span = $(this).find('span'), str = $span.html();
-        $span.html(str === 'Show' ? 'Hide' : 'Show');
-        $('#x_conversation_list').toggleClass('show_history');
-    });
+// History
+DOC.delegate('a#x_hide_history', 'click', function (e) {
+    e.preventDefault();
+    var $span = $(this).find('span'), str = $span.html();
+    $span.html(str === 'Show' ? 'Hide' : 'Show');
+    $('#x_conversation_list').toggleClass('show_history');
 });
