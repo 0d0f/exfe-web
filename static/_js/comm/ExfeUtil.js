@@ -1,20 +1,3 @@
-ns.verifyDisplayName = function(dname){
-    if(typeof dname == "undefined" || dname == ""){
-        return false;
-    }
-    var nameLength = ns.getUTF8Length(dname);
-    //var nameREG = "^[0-9a-zA-Z_\ \'\.]+$";
-    //var nameREG = "^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$";
-    var nameREG = "^[0-9a-zA-Z_\u4e00-\u9fa5\ \'\.]+$";
-    var re = new RegExp(nameREG);
-    if(!re.test(dname) || nameLength > 30){
-        return false;
-    }
-    return true;
-
-};
-
-
 ns.convertTimezoneToSecond = function(tz){
     tz = tz ? tz : '';
     var offsetSign = tz.substr(0,1);
@@ -27,45 +10,9 @@ ns.convertTimezoneToSecond = function(tz){
 };
 
 
-ns.getTimezone = function() {
-    var rawTimezone = Date().toString().replace(/^.+([a-z]{3}[+-]\d{4}).+$/i, '$1'),
-        tagTimezone = rawTimezone.replace(/^([a-z]{3}).+$/i, '$1'),
-        numTimezone = rawTimezone.replace(/^[a-z]{3}([+-])(\d{2})(\d{2})$/i, '$1$2:$3');
-    return numTimezone + (tagTimezone === 'UTC' ? '' : (' ' + tagTimezone));
-};
-
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-
-/**
- * Create a rand element id (string)
- * @None
- **/
-util.createRandElementID = function() {
-    var now = new Date().getTime ();
-    return now + ":" + Math.floor(Math.random() * 100000000);
-};
-
-
-/**
- * Remove a item from Array by item value
- * @Array, items;
- * @Return Array
- **/
-util.removeArrayItemByVal = function(myArray, itemToRemove) {
-    var j = 0;
-    while (j < myArray.length) {
-        if (myArray[j] == itemToRemove) {
-            myArray.splice(j, 1);
-        }
-        j++;
-    }
-    return myArray;
-};
-
 
 /**
  * Remove a item from Array by item ID
@@ -116,75 +63,6 @@ util.toDBC = function(str) {
         DBCStr += String.fromCharCode(c);
     }
     return DBCStr;
-};
-
-
-/**
- * count object items
- * by Leask
- */
-util.count = function(object) {
-    var num = 0;
-    for (var i in object) {
-        num++;
-    }
-    return num;
-};
-
-
-/**
- * parses sql datetime string and returns javascript date object
- * input has to be in this format: 1989-06-04 00:00:00
- * by Leask
- */
-util.getDateFromString = function(strTime) {
-    strTime = strTime ? strTime : '';
-    var regex = /^([0-9]{2,4})-([0-1][0-9])-([0-3][0-9]) (?:([0-2][0-9]):([0-5][0-9]):([0-5][0-9]))?$/,
-        parts = (strTime.length > 10 ? strTime : (strTime + ' 00:00:00')).replace(regex, "$1 $2 $3 $4 $5 $6").split(' '),
-        oDate = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
-    return oDate.toString() === 'Invalid Date' ? null : oDate;
-};
-
-
-/**
- * get relative time
- * by Leask
- */
-util.getRelativeTime = function(strTime, lang) {
-    var objTime   = this.getDateFromString(strTime),
-        timestamp = objTime
-                  ? (Math.round(objTime.getTime() / 1000)
-                  + odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone()))
-                  : -1;
-    if (timestamp < 0) {
-        return '';
-    }
-    var difference = Date.parse(new Date()) / 1000 - timestamp - window.utcDiff,
-        periods    = ['sec', 'min', 'hour', 'day', 'week', 'month', 'year', 'decade'],
-        lengths    = ['60', '60', '24', '7', '4.35', '12', '10'],
-        ending     = '';
-    if (difference > 0) {
-        // this was in the past
-        ending     = 'ago';
-    } else {
-        // this was in the future
-        difference = -difference;
-        ending     = 'later';
-    }
-    for (var i = 0; difference >= lengths[i]; i++) {
-        if (lengths[i] == 0) {
-            difference  = 0;
-            break;
-        } else {
-            difference /= lengths[i];
-        }
-    }
-    difference = Math.round(difference);
-    if (difference != 1) {
-        periods[i] += 's';
-    }
-    var text = difference + ' ' + periods[i] + ' ' + ending;
-    return text;
 };
 
 
@@ -241,51 +119,6 @@ util.getHumanDateTime = function(strTime, offset, lang) {
             stdTime = withTime ? (hour12 + ':' + minute + ' ' + ampm) : '';
             return (time_type ? time_type : stdTime) + ', ' + stdDate;
     }
-};
-
-
-/**
- * parse human datetime
- * by Leask
- */
-util.parseHumanDateTime = function(strTime, offset) {
-    function db(num) {
-        return num < 10 ? ('0' + num.toString()) : num.toString();
-    }
-    var arrTime = strTime.split(/-|\ +|:/);
-    if (arrTime.length === 5) {
-        arrTime.push('am');
-    }
-    if (arrTime.length === 3 || arrTime.length === 6) {
-        var month   = parseInt(arrTime[0], 10),
-            day     = parseInt(arrTime[1], 10),
-            year    = parseInt(arrTime[2], 10),
-            hour    = 0,
-            minute  = 0,
-            time    = '',
-            strTime = [year, db(month), db(day)].join('/');
-        if (arrTime.length === 6) {
-            hour    = parseInt(arrTime[3], 10)
-            hour   += (arrTime[5].toLowerCase() === 'pm' && hour !== 12 ? 12 : 0);
-            minute  = parseInt(arrTime[4], 10),
-            time    = ' ' + [db(hour), db(minute)].join(':');
-            if (typeof offset !== 'undefined') {
-                var objTime = new Date(new Date(strTime + time).getTime() - offset * 1000);
-                month  = objTime.getMonth() + 1;
-                day    = objTime.getDate();
-                year   = objTime.getFullYear();
-                hour   = objTime.getHours();
-                minute = objTime.getMinutes();
-                time   = ' ' + [db(hour), db(minute)].join(':');
-            }
-        }
-        strTime = [year, db(month), db(day)].join('/') + time;
-        if (new Date(strTime).toString() !== 'Invalid Date') {
-            return [year, db(month), db(day)].join('-')
-                 + (arrTime.length === 6 ? (time + ':00') : '');
-        }
-    }
-    return null;
 };
 
 
