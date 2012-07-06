@@ -91,81 +91,6 @@ ns.updatePlace = function(keepLocation) {
 };
 
 
-ns.summaryX = function() {
-    var x   = odof.util.clone(crossData);
-    x.place = JSON.stringify(x.place);
-    x.exfee = JSON.stringify(odof.exfee.gadget.getExfees('gatherExfee'));
-    return x;
-};
-
-
-ns.submitX = function() {
-    if (this.xSubmitting || crossData.begin_at === null) {
-        return;
-    }
-    this.xSubmitting = true;
-    $('#gather_failed_hint').hide();
-    $('#gather_submit').removeClass('mouseover');
-    $('#gather_submit').removeClass('mousedown');
-    $('#gather_submit').addClass('disabled');
-    // @todo daisy showing here
-    // $('#gather_submit').html('');
-
-    var x = this.summaryX();
-    x.draft_id = this.draft_id;
-
-    if (typeof window.mapRequest !== 'undefined') {
-        window.mapRequest.abort();
-    }
-
-    $.ajax({
-        type     : 'POST',
-        url      : site_url + '/x/gather',
-        dataType : 'json',
-        data     : x,
-        success  : function(data) {
-            if (data) {
-                if (data.success) {
-                    location.href = '/!' + data.crossid;
-                    return;
-                } else {
-                    switch (data.error) {
-                        case 'notlogin':
-                            odof.x.gather.autoSubmit = true;
-                            odof.user.status.doShowLoginDialog();
-                            break;
-                        case 'notverified':
-                            // @todo: inorder to gather X, user must be verified
-                            // odof.exlibs.ExDialog.initialize('');
-                    }
-                }
-            }
-            var curTop = parseInt($('#gather_submit_blank').css('padding-top'));
-            $('#gather_submit_blank').css(
-                'padding-top',
-                (curTop ? curTop : (curTop + 20)) + 'px'
-            );
-            // @todo daisy showing here
-            $('#gather_failed_hint').show();
-            $('#gather_submit').removeClass('mouseover');
-            $('#gather_submit').removeClass('mousedown');
-            $('#gather_submit').removeClass('disabled');
-            $('#gather_submit').html('Re-submit');
-            odof.x.gather.xSubmitting = false;
-        },
-        failure : function(data) {
-            // @todo daisy showing here
-            $('#gather_failed_hint').show();
-            $('#gather_submit').removeClass('mouseover');
-            $('#gather_submit').removeClass('mousedown');
-            $('#gather_submit').removeClass('disabled');
-            $('#gather_submit').html('Re-submit');
-            odof.x.gather.xSubmitting = false;
-        }
-    });
-};
-
-
 ns.afterLogin = function(status) {
     // check status
     if (status.response.success !== 'undefined' && status.response.success) {
@@ -207,39 +132,7 @@ ns.afterLogin = function(status) {
 
 
 $(document).ready(function() {
-                        timezone        : odof.comm.func.getTimezone(),
-                        background      : backgrounds[parseInt(Math.random() * backgrounds.length)]};
-
-    // X render
-    odof.x.render.show(false);
-
-    // Exfee input
-    var curExfees = [];
-    if (myIdentity) {
-        var meExfee = odof.util.clone(myIdentity);
-        meExfee.host = true;
-        meExfee.rsvp = 1;
-        curExfees.push(meExfee);
-    }
-    odof.exfee.gadget.make('gatherExfee', curExfees, true, odof.x.gather.showExfee);
-
-    // title
-    $('#gather_title').bind('focus blur keyup', function(event) {
-        switch (event.type) {
-            case 'focus':
-                $('#gather_title').addClass('gather_focus').removeClass('gather_blur');
-                break;
-            case 'blur':
-                $('#gather_title').addClass('gather_blur').removeClass('gather_focus');
-                odof.x.gather.updateTitle(true);
-                break;
-            case 'keyup':
-                odof.x.gather.updateTitle();
-        }
-    });
-    odof.x.gather.updateTitle(true);
-    $('#gather_title').select();
-    $('#gather_title').focus();
+    timezone        : odof.comm.func.getTimezone(),
 
     // description
     $('#gather_desc').bind('focus blur keyup', function(event) {

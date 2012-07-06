@@ -160,15 +160,16 @@ EXFE Maps
 
             <!-- Cross-Time -->
             <div class="cross-dp cross-date" editarea="time">
-              <h2>Tomorrow</h2>
-              <div class="cross-time show">6:30PM on Fri, Apr 8</div>
+              <h2></h2>
+              <div class="cross-time show"></div>
               <input type="text" class="edit" placeholder="1984-06-04 09:00 AM" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Place -->
-            <div class="cross-dp cross-place">
-              <h2>Crab House Pier 39, 2nd floor</h2>
-              <address>Pier 39, 203 C<br /> San Francisco<br /> http://crabhouse39.com<br /> (555) 434-2722<br /> overflow: hidden;</address>
+            <div class="cross-dp cross-place" editarea="place">
+              <h2 class="show"></h2>
+              <address class="show"></address>
+              <textarea class="edit"></textarea>
             </div>
 
             <!-- Cross-Map
