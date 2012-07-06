@@ -95,6 +95,11 @@ EXFE Maps
 
     <!-- Cross-Container -->
     <div class="cross-container">
+
+      <!-- Cross-Shuffle-Background -->
+      <button class="shuffle-background">Shuffle Background</button>
+      <!-- .Cross-Shuffle-Background -->
+
       <!-- Cross-Title -->
       <div class="cross-title" editarea="title">
         <h1 class="show"></h1>
