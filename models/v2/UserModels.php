@@ -835,10 +835,11 @@ class UserModels extends DataModel {
     }
 
 
-    public function updateAvatarById($user_id, $avatar_filename) {
-        return $user_id && $avatar_filename && $this->query(
+    public function updateAvatarById($user_id, $avatar_filename = '') {
+        return $user_id && $this->query(
             "UPDATE `users`
-             SET    `avatar_file_name` = '{$avatar_filename}'
+             SET    `avatar_file_name` = '{$avatar_filename}',
+                    `updated_at`       =  NOW()
              WHERE  `id`               =  {$user_id}"
         );
     }

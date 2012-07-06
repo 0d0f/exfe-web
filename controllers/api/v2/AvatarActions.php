@@ -53,46 +53,54 @@ class AvatarActions extends ActionController {
             }
         }
         // check images
-        $sizes       = array('original', '80_80');
-        $extensions  = array();
-        foreach ($sizes as $size) {
-            if (isset($_FILES[$size])) {
-                $arrExpName = explode('/', $_FILES[$size]['type']);
+        $sizes  = ['original' => '', '80_80' => ''];
+        $intImg = 0;
+        foreach ($sizes as $i => $item) {
+            if (isset($_FILES[$i])) {
+                $intImg++;
+                $arrExpName = explode('/', $_FILES[$i]['type']);
                 $arrExpName = $arrExpName[0]
                             ? $arrExpName
-                            : explode('.', $_FILES[$size]['name']);
-                $extensions[$size] = strtolower(array_pop($arrExpName));
-            } else {
-                apiError(400, "no_{$size}_image", "{$size} size image must be provided.");
-            }
-            switch ($extensions[$size]) {
-                case 'png':
-                case 'gif':
-                case 'bmp':
-                case 'jpg':
-                case 'jpeg':
-                    break;
-                default:
-                    apiError(400, "error_{$size}_image_format", "Error {$size} size image format.");
+                            : explode('.', $_FILES[$i]['name']);
+                switch ($sizes[$i] = strtolower(array_pop($arrExpName))) {
+                    case 'png':
+                    case 'gif':
+                    case 'bmp':
+                    case 'jpg':
+                    case 'jpeg':
+                        break;
+                    default:
+                        apiError(400, "error_{$i}_image_format", "Error {$i} size image format.");
+                }
             }
         }
-        // hash filename
-        if (!($fnmHashed = getHashedFilePath(Uniqid()))) {
-            apiError(500, 'error_saving_image', 'Error while saving image.');
+        if ($intImg && $intImg !== count($sizes)) {
+            apiError(400, "missing_some_sizes", "All size of images must be provided.");
         }
+
         // save file
         $apiResult = array('avatars' => array());
-        foreach ($sizes as $size) {
-            $filename  = "{$fnmHashed['filename']}.{$extensions[$size]}";
-            $full_path = "{$fnmHashed['path']}/{$size}_{$filename}";
-            $movResult = isset($_FILES[$size])
-                       ? move_uploaded_file($_FILES[$size]['tmp_name'], $full_path)
-                       : false;
-            if ($movResult) {
-                $apiResult['avatars'][$size] = getAvatarUrl('', '', $filename, $size);
-                continue;
+        if ($intImg) {
+            // hash filename
+            if (!($fnmHashed = getHashedFilePath(Uniqid()))) {
+                apiError(500, 'error_saving_image', 'Error while saving image.');
             }
+            foreach ($sizes as $i => $item) {
+                $filename  = "{$fnmHashed['filename']}.{$item}";
+                $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
+                $movResult = isset($_FILES[$i])
+                           ? move_uploaded_file($_FILES[$i]['tmp_name'], $full_path)
+                           : false;
+                if ($movResult) {
+                    $apiResult['avatars'][$i] = getAvatarUrl('', '', $filename, $i);
+                    continue;
+                }
+                apiError(500, 'error_saving_image', 'Error while saving image.');
+            }
+        } else {
+            $filename = '';
         }
+
         // update database
         if ($identity_id) {
             $apiResult['type']        = 'identity';
@@ -103,6 +111,19 @@ class AvatarActions extends ActionController {
             $apiResult['user_id']     = $user_id;
             $dbResult = $modUser->updateAvatarById($user_id, $filename);
         }
+
+        // get default avatar
+        if (!$intImg) {
+            $default_avatar
+          = $identity_id
+          ? $modIdentity->getIdentityById($identity_id, $user_id)->avatar_filename
+          : $modUser->getUserById($user_id)->avatar_filename;
+            foreach ($sizes as $i => $item) {
+                $apiResult['avatars'][$i] = $default_avatar;
+            }
+        }
+
+        // return
         if ($dbResult) {
             apiResponse($apiResult);
         }
