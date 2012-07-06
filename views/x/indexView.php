@@ -41,9 +41,9 @@ EXFE Maps
 
           <!-- Cross-Form: Title -->
           <div class="control-group">
-            <label class="control-label" for="gather-title">Title</label>
+            <label class="control-label" for="gather-title">Intent</label>
             <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-title" placeholder="Edit title here" />
+              <input type="text" class="input-xlarge" id="gather-title" placeholder="Enter intent" />
             </div>
           </div>
           <!-- .Cross-Form: Title -->
@@ -79,7 +79,7 @@ EXFE Maps
               <button class="btn btn-primary" id="cross-form-gather">Gather</button>
             </div>
             <div>
-              <p><span>EXFE</span> for iPhone, keep everything on track.</p>
+              <p>Edit more information directly in preview below.</p>
             </div>
         </div>
 
