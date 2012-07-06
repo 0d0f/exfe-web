@@ -5644,6 +5644,7 @@ input[type="submit"].btn.btn-mini {
   right: 0;
   z-index: 2;
   background-color: rgba(108, 121, 127, 0.97);
+  background-color: transparent;
   background-image: -ms-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
   background-image: -webkit-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
   background-image: -o-linear-gradient(266deg, rgba(233, 231, 235, 0.97), rgba(108, 121, 127, 0.97));
@@ -5710,8 +5711,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-nw {
   top: -5px;
   left: -5px;
-  width: 30px;
-  height: 30px;
+  width: 10px;
+  height: 10px;
   cursor: nw-resize;
 }
 
@@ -5725,8 +5726,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-ne {
   top: -5px;
   right: -5px;
-  width: 30px;
-  height: 30px;
+  width: 10px;
+  height: 10px;
   cursor: ne-resize;
 }
 
@@ -5747,8 +5748,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-sw {
   bottom: -5px;
   left: -5px;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   cursor: sw-resize;
 }
 
@@ -5762,8 +5763,8 @@ input[type="submit"].btn.btn-mini {
 .modal-uploader .anchor-se {
   right: -5px;
   bottom: -5px;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   cursor: se-resize;
 }
 
@@ -5772,9 +5773,10 @@ input[type="submit"].btn.btn-mini {
   height: 240px;
   text-align: center;
   cursor: pointer;
-  background-image: url("/img/upload_128.png");
-  background-position: 50% 25px;
-  background-repeat: no-repeat;
+}
+
+.modal-uploader .bigupload {
+  margin-top: 25px;
 }
 
 .modal-uploader .droptips {

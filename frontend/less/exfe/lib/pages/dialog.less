@@ -276,6 +276,7 @@
     position: absolute;
     top: 0;
     right: 0;
+    background-color: transparent;
     #gradient > .directional(rgba(233, 231, 235, .97), rgba(108, 121, 127,.97), 266deg);
     z-index: @index + 1;
   }
@@ -323,8 +324,8 @@
   }
 
   .anchor-nw {
-    width: 30px;
-    height: 30px;
+    width: 10px;
+    height: 10px;
     top: -5px;
     left: -5px;
     cursor: nw-resize;
@@ -338,8 +339,8 @@
   }
 
   .anchor-ne {
-    width: 30px;
-    height: 30px;
+    width: 10px;
+    height: 10px;
     top: -5px;
     right: -5px;
     cursor: ne-resize;
@@ -360,8 +361,8 @@
   }
 
   .anchor-sw {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     bottom: -5px;
     left: -5px;
     cursor: sw-resize;
@@ -375,8 +376,8 @@
   }
 
   .anchor-se {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     right: -5px;
     bottom: -5px;
     cursor: se-resize;
@@ -386,10 +387,11 @@
     width: 240px;
     height: 240px;
     text-align: center;
-    background-image: ~'url("@{imgPath}/upload_128.png")';
-    background-position: 50% 25px;
-    background-repeat: no-repeat;
     cursor: pointer;
+  }
+
+  .bigupload {
+    margin-top: 25px;
   }
 
   .droptips {

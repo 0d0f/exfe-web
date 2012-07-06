@@ -175,6 +175,8 @@ define('uploader', [], function (require, exports, module) {
       return b;
     },
 
+    // 缩放比例
+    sss: 1,
 
     //
     aoffset: [0, 0],
@@ -254,7 +256,8 @@ define('uploader', [], function (require, exports, module) {
 
           this.$('.overlay').addClass('hide');
           this.$('.resizeable').removeClass('hide');
-          this.$('.upload, .rotate, .upload-done').show();
+          this.$('.upload-done').show();
+          this.$('.upload-clear').hide();
 
           var self = this;
           self.ri = 0;
@@ -270,16 +273,16 @@ define('uploader', [], function (require, exports, module) {
 
           originalImage.onload = function () {
             var min = Math.min(originalImage.width, originalImage.height);
-            var sss = 1;
+            self.sss = 1;
 
             if (min > 240) {
-              sss = 240 / min;
+              self.sss = 240 / min;
             }
 
             bitmap = new Bitmap(originalImage);
 
-            self.psx = bitmap.scaleX = sss;
-            self.psy = bitmap.scaleY = sss;
+            self.psx = bitmap.scaleX = self.sss;
+            self.psy = bitmap.scaleY = self.sss;
 
             bitmap.setPosition(canvas.width / 2 - (bitmap.regX *= bitmap.scaleX), canvas.height / 2 - (bitmap.regY *= bitmap.scaleY));
             bitmap.rotation = self.ri;
@@ -351,8 +354,8 @@ define('uploader', [], function (require, exports, module) {
 
           this.$('.overlay').addClass('hide');
           this.$('.resizeable').removeClass('hide');
-          this.$('.upload, .rotate, .upload-done').show();
-          this.$('.back, .zoom, .upload-clear').hide();
+          this.$('.upload-done').show();
+          this.$('.upload-clear').hide();
 
           var self = this;
           self.ri = 0;
@@ -369,10 +372,10 @@ define('uploader', [], function (require, exports, module) {
           originalImage.onload = function () {
             var image = originalImage;
             var min = Math.min(originalImage.width, originalImage.height);
-            var sss = 1;
+            self.sss = 1;
 
             if (min > 240) {
-              sss = 240 / min;
+              self.sss = 240 / min;
             }
 
             // gif, get first frame
@@ -387,8 +390,8 @@ define('uploader', [], function (require, exports, module) {
 
             bitmap = new Bitmap(image);
 
-            self.psx = bitmap.scaleX = sss;
-            self.psy = bitmap.scaleY = sss;
+            self.psx = bitmap.scaleX = self.sss;
+            self.psy = bitmap.scaleY = self.sss;
 
             bitmap.setPosition(canvas.width / 2 - (bitmap.regX *= bitmap.scaleX), canvas.height / 2 - (bitmap.regY *= bitmap.scaleY));
             bitmap.rotation = self.ri;
@@ -469,7 +472,7 @@ define('uploader', [], function (require, exports, module) {
           this.$('.overlay').removeClass('hide');
           this.$('.resizeable').addClass('hide');
           this.$('.upload, .rotate, .upload-done').hide();
-          this.$('.back, .zoom, .upload-clear').show();
+          this.$('.back, .upload-clear').show();
         },
 
         // Rotate
@@ -498,12 +501,31 @@ define('uploader', [], function (require, exports, module) {
           return false;
         },
 
+        'hover .avatar240': function (e) {
+          if (e.type === 'mouseenter') {
+            this.$('.upload, .rotate').show();
+          }
+          else {
+            this.$('.upload, .rotate').hide();
+          }
+        },
+
+        'hover .overlay': function (e) {
+          var enter = e.type === 'mouseenter';
+          if ($(e.currentTarget).hasClass('dropbox')) {
+            this.$('.back')[enter ? 'show' : 'hide']();
+          }
+          else {
+            this.$('.zoom')[enter ? 'show' : 'hide']();
+          }
+        },
+
         // Back
         'click .back': function (e) {
           this.$('.overlay').addClass('hide');
           this.$('.resizeable').removeClass('hide');
           this.$('.upload, .rotate, .upload-done').show();
-          this.$('.back, .zoom, .upload-clear').hide();
+          this.$('.back, .upload-clear').hide();
           return false;
         },
 
@@ -533,25 +555,37 @@ define('uploader', [], function (require, exports, module) {
         },
 
         'click .upload-done': function (e) {
+          var self = this;
           var bitmap = this.bitmap;
           var originalImage = bitmap.originalImage;
           var stage = this.stage;
           var stage80 = this.stage80;
 
-          var originalCanvas = document.createElement('canvas');
+          // crop origin image {{{
+          var min = 240 / this.sss;
+          var x = bitmap.x / this.sss;
+          var y = bitmap.y / this.sss;
 
-          var min = Math.min(originalImage.width, originalImage.height);
-          //originalCanvas.width = originalCanvas.height = min > 1024 ? 1024 : min;
-          originalCanvas.width = originalCanvas.height = min;
-          var originalCtx = originalCanvas.getContext('2d');
-          originalCtx.translate(originalCanvas.width / 2, originalCanvas.height / 2);
-          originalCtx.save();
-          originalCtx.rotate(this.ri * 90 * Stage.DEG_TO_RAD);
-          originalCtx.drawImage(originalImage, -originalCanvas.width / 2, -originalCanvas.height / 2);
-          originalCtx.restore();
-          originalCtx.save();
+          var oc = document.createElement('canvas');
+          oc.width = oc.height = min;
+          var os = new Stage(oc);
+          var ob = new Bitmap(originalImage);
 
-          var img0 = saveCanvasAsFile(originalCanvas, 'original.png');
+          ob.setPosition(x, y);
+          ob.rotation = 90 * this.ri;
+          ob.scaleX = bitmap.scaleX / this.sss;
+          ob.scaleY = bitmap.scaleY / this.sss;
+
+          ob.updateContext = function (ctx) {
+            ctx.translate(oc.width * self.R[0], oc.height * self.R[1]);
+            ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+          };
+
+          os.addChild(ob);
+          os.update();
+          // }}}
+
+          var img0 = saveCanvasAsFile(os.canvas, 'original.png');
           var img1 =  saveCanvasAsFile(stage80.canvas, '80_80.png');
 
           var that = this;
@@ -581,11 +615,12 @@ define('uploader', [], function (require, exports, module) {
         body: ''
           + '<div class="pull-right sider">'
             + '<div class="pull-right smallphoto">'
-              + '<i class="icon20-zoom zoom"></i>'
               + '<div class="avatar80">'
                 + '<canvas id="avatar80" width="80" height="80"></canvas>'
               + '</div>'
-              + '<div class="overlay"></div>'
+              + '<div class="overlay">'
+                + '<i class="icon20-zoom zoom"></i>'
+              + '</div>'
               + '<div class="loading hide"></div>'
             + '</div>'
 
@@ -597,9 +632,6 @@ define('uploader', [], function (require, exports, module) {
           + '</div>'
 
           + '<div class="photozone">'
-            + '<i class="icon20-upload upload"></i>'
-            + '<i class="icon20-back back"></i>'
-            + '<i class="icon20-rotate rotate"></i>'
             + '<div class="anchor-n resizeable hide" data-anchor="1"></div>'
             + '<div class="anchor-w resizeable hide" data-anchor="3"></div>'
             + '<div class="anchor-e resizeable hide" data-anchor="4"></div>'
@@ -609,6 +641,8 @@ define('uploader', [], function (require, exports, module) {
             + '<div class="anchor-sw resizeable hide" data-anchor="5"></div>'
             + '<div class="anchor-se resizeable hide" data-anchor="7"></div>'
             + '<div class="avatar240">'
+              + '<i class="icon20-upload upload"></i>'
+              + '<i class="icon20-rotate rotate"></i>'
               + '<canvas id="avatar240" width="240" height="240"></canvas>'
             + '</div>'
 
@@ -618,6 +652,8 @@ define('uploader', [], function (require, exports, module) {
             + '</div>'
 
             + '<div class="overlay dropbox">'
+              + '<i class="icon20-back back"></i>'
+              + '<img class="bigupload" src="/static/img/upload_128.png" alt="" width="128" height="128" />'
               + '<div class="droptips">Drop your photo <span class="hide">or URL</span> here.<br />'
                 + 'Alternatively, <span class="underline">open</span> local file.'
                 // TODO: 第二版再弄摄像头
@@ -841,6 +877,20 @@ define('uploader', [], function (require, exports, module) {
     }
   };
 
+  // 等比例
+  function geometricProportion(x, y, h, w) {
+    var a = [];
+    if (Math.abs(x) > Math.abs(y)) {
+      a[0] = x;
+      a[1] = x / w;
+    }
+    else {
+      a[0] = y;
+      a[1] = y / h;
+    }
+    return a;
+  }
+
   function docUnBind() {
     $(document)
       .off('mousemove.photozone')
@@ -900,9 +950,8 @@ define('uploader', [], function (require, exports, module) {
             , i = _u_.ri
             , ao = _u_.aoffset;
 
-          function a1() {
-            dzy = ao[1] - e.pageY;
-            sby = dzy / h;
+          function a1(dzy, sby) {
+            //dzy = ao[1] - e.pageY; sby = dzy / h;
 
             if (i === 0) {
               bitmap.scaleY = psy + sby;
@@ -921,9 +970,8 @@ define('uploader', [], function (require, exports, module) {
             }
           }
 
-          function a3() {
-            dzx = ao[0] - e.pageX;
-            sbx = dzx / w;
+          function a3(dzx, sbx) {
+            //dzx = ao[0] - e.pageX; sbx = dzx / w;
 
             if (i === 0) {
               bitmap.scaleX = psx + sbx;
@@ -942,9 +990,8 @@ define('uploader', [], function (require, exports, module) {
             }
           }
 
-          function a4() {
-            dzx = e.pageX - ao[0];
-            sbx = dzx / w;
+          function a4(dzx, sbx) {
+            //dzx = e.pageX - ao[0]; sbx = dzx / w;
 
             if (i === 0) {
               bitmap.scaleX = psx + sbx;
@@ -963,9 +1010,8 @@ define('uploader', [], function (require, exports, module) {
             }
           }
 
-          function a6() {
-            dzy = e.pageY - ao[1];
-            sby = dzy / h;
+          function a6(dzy, sby) {
+            //dzy = e.pageY - ao[1]; sby = dzy / h;
 
             if (i === 0) {
               bitmap.scaleY = psy + sby;
@@ -985,42 +1031,71 @@ define('uploader', [], function (require, exports, module) {
           }
 
           if (dx || dy) {
+            var a;
 
             switch (_u_.anchor) {
               case 0:
-                a1();
-                a3();
+                dzy = ao[1] - e.pageY;
+                dzx = ao[0] - e.pageX;
+
+                a = geometricProportion(dzx, dzy, w, h);
+
+                a1(a[0], a[1]);
+                a3(a[0], a[1]);
                 break;
 
               case 1:
-                a1();
+                dzy = ao[1] - e.pageY;
+                sby = dzy / h;
+                a1(dzy, sby);
                 break;
 
               case 2:
-                a1();
-                a4();
+                dzy = ao[1] - e.pageY;
+                dzx = e.pageX - ao[0];
+
+                a = geometricProportion(dzx, dzy, w, h);
+
+                a1(a[0], a[1]);
+                a4(a[0], a[1]);
                 break;
 
               case 3:
-                a3();
+                dzx = ao[0] - e.pageX;
+                sbx = dzx / w;
+                a3(dzx, sbx);
                 break;
 
               case 4:
-                a4();
+                dzx = e.pageX - ao[0];
+                sbx = dzx / w;
+                a4(dzx, sbx);
                 break;
 
               case 5:
-                a3();
-                a6();
+                dzx = ao[0] - e.pageX;
+                dzy = e.pageY - ao[1];
+
+                a = geometricProportion(dzx, dzy, w, h);
+
+                a3(a[0], a[1]);
+                a6(a[0], a[1]);
                 break;
 
               case 6:
-                a6();
+                dzy = e.pageY - ao[1];
+                sby = dzy / h;
+                a6(dzy, sby);
                 break;
 
               case 7:
-                a4();
-                a6();
+                dzx = e.pageX - ao[0];
+                dzy = e.pageY - ao[1];
+
+                a = geometricProportion(dzx, dzy, w, h);
+
+                a4(a[0], a[1]);
+                a6(a[0], a[1]);
                 break;
             }
 
