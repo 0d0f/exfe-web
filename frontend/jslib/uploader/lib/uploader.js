@@ -444,12 +444,14 @@ define('uploader', [], function (require, exports, module) {
         },
 
         'mousedown #avatar240': function (e) {
+          e.preventDefault();
           this.dragging = true;
           this.offset = [e.pageX, e.pageY];
           return false;
         },
 
         // zoom
+        /*
         'click .zoom': function (e) {
           e.preventDefault();
           var src = '';
@@ -465,6 +467,7 @@ define('uploader', [], function (require, exports, module) {
           }
           return window.open(src);
         },
+        */
 
         // upload
         'click .upload': function (e) {
@@ -527,6 +530,23 @@ define('uploader', [], function (require, exports, module) {
           this.$('.upload, .rotate, .upload-done').show();
           this.$('.back, .upload-clear').hide();
           return false;
+        },
+
+        'click /*#avatar240,*/.smallphoto': function (e) {
+          e.preventDefault();
+          var src = '';
+          if (!this.bitmap) { return false; }
+          if ($.browser.safari && !/chrome/.test(navigator.userAgent.toLowerCase())) {
+            var canvas = document.createElement('canvas'),
+                ctx = canvas.getContext('2d');
+            canvas.width = this.bitmap.originalImage.width;
+            canvas.height = this.bitmap.originalImage.height;
+            ctx.drawImage(this.bitmap.originalImage, 0, 0, canvas.width, canvas.height);
+            src = canvas.toDataURL('image/png');
+          } else {
+            src = this.bitmap.originalImage.src;
+          }
+          return window.open(src);
         },
 
         // Resize
