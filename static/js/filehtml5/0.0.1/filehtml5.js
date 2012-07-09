@@ -63,9 +63,9 @@ define('filehtml5', [], function (require, exports, module) {
             var xhrupload = xhr.upload,
                 boundEventHandler = this._boundEventHandler;
 
-              xhrupload.removeEventListener('progress', boundEventHandler);
-              xhrupload.removeEventListener('crror', boundEventHandler);
-              xhrupload.removeEventListener('abort', boundEventHandler);
+              //xhrupload.removeEventListener('progress', boundEventHandler);
+              //xhrupload.removeEventListener('crror', boundEventHandler);
+              //xhrupload.removeEventListener('abort', boundEventHandler);
               xhr.removeEventListener('load', boundEventHandler);
               xhr.removeEventListener('error', boundEventHandler);
               xhr.removeEventListener('readystatechange', boundEventHandler);
@@ -121,12 +121,7 @@ define('filehtml5', [], function (require, exports, module) {
           key;
 
       for (key in parameters) {
-        if (typeof parameters[key] === 'Blob') {
-          uploadData.append(key, parameters[key], key);
-        }
-        else {
-          uploadData.append(key, parameters[key]);
-        }
+        uploadData.append(key, parameters[key]);
       }
       fileField && uploadData.append(fileField, this._file);
 
@@ -136,9 +131,9 @@ define('filehtml5', [], function (require, exports, module) {
       xhr.addEventListener('abort', boundEventHandler, false);
       xhr.addEventListener('loadend', boundEventHandler, false);
       xhr.addEventListener('readystatechange', boundEventHandler, false);
-      xhrupload.addEventListener('progress', boundEventHandler,false);
-      xhrupload.addEventListener('error', boundEventHandler, false);
-      xhrupload.addEventListener('abort', boundEventHandler, false);
+      //xhrupload.addEventListener('progress', boundEventHandler,false);
+      //xhrupload.addEventListener('error', boundEventHandler, false);
+      //xhrupload.addEventListener('abort', boundEventHandler, false);
 
       xhr.open('POST', url, true);
       xhr.withCredentials = true;
