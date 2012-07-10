@@ -87,6 +87,12 @@ EXFE Maps
 
     </div>
 
+    <!-- Cross-Edit -->
+    <div class="cross-edit">
+      <button class="save-cross">Save</button>
+    </div>
+    <!-- .Cross-Edit -->
+
     <!-- Cross-background -->
     <div class="cross-background">
       <div class="cross-background-blur"></div>
