@@ -260,6 +260,7 @@ define('uploader', [], function (require, exports, module) {
           this.$('.resizeable').removeClass('hide');
           this.$('.upload-done').show();
           this.$('.upload-clear').hide();
+          this.$('.zoom').show();
 
           var self = this;
           self.ri = 0;
@@ -502,7 +503,7 @@ define('uploader', [], function (require, exports, module) {
             this.$('.back')[enter ? 'show' : 'hide']();
           }
           else {
-            this.$('.zoom')[enter ? 'show' : 'hide']();
+            //this.$('.zoom')[enter ? 'show' : 'hide']();
           }
         },
 
@@ -638,11 +639,11 @@ define('uploader', [], function (require, exports, module) {
         body: ''
           + '<div class="pull-right sider">'
             + '<div class="pull-right smallphoto">'
+              + '<i class="icon20-zoom zoom"></i>'
               + '<div class="avatar80">'
                 + '<canvas id="avatar80" width="80" height="80"></canvas>'
               + '</div>'
               + '<div class="overlay">'
-                + '<i class="icon20-zoom zoom"></i>'
               + '</div>'
               + '<div class="loading hide"></div>'
             + '</div>'
@@ -1080,7 +1081,7 @@ define('uploader', [], function (require, exports, module) {
                 var r = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2));
                 dzr -= _u_.dr;
                 a1(dzr / r * sss);
-                a3(dzr / r * sss);
+                a4(dzr / r * sss);
                 break;
 
               case 3:
