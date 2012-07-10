@@ -746,7 +746,7 @@ define(function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-resetpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="resetpassword">Reset Password...</button>'
+          + '<button href="#" class="xbtn-white xbtn-resetpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="resetpassword">Forgot Password...</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
 
@@ -798,7 +798,7 @@ define(function (require, exports, module) {
           + '<a class="pull-right xbtn-cancel">Cancel</a>',
 
         body: ''
-          + '<div class="shadow title">Reset Password</div>'
+          + '<div class="shadow title">Forgot Password</div>'
           + '<div>Reset password by verifying identity:</div>'
           + '<ul class="unstyled">'
           +'</ul>'
@@ -1063,7 +1063,7 @@ define(function (require, exports, module) {
 
       onShowBefore: function (e) {
         var $e = $(e.currentTarget);
-        var identity_id = $e.parents('li').data('identity-id');
+        var identity_id = $e.data('identity-id') || $e.parents('li').data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
           if (v.id === identity_id) return true;
