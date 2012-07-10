@@ -632,7 +632,7 @@ define('uploader', [], function (require, exports, module) {
 
       viewData: {
 
-        cls: 'modal-uploader',
+        cls: 'mblack modal-uploader',
 
         title: 'Portrait',
 
