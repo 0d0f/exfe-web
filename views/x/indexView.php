@@ -169,7 +169,7 @@ EXFE Maps
             <div class="cross-dp cross-place" editarea="place">
               <h2 class="show"></h2>
               <address class="show"></address>
-              <textarea class="edit"></textarea>
+              <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Map
