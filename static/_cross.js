@@ -85,6 +85,21 @@ ExfeUtilities = {
                 break;
         }
         return efeTime;
+    },
+
+
+    parsePlacestring : function(strPlace) {
+        var rawPlace = strPlace.split(/\r\n|\r|\n/),
+            arrPlace = [];
+        for (var i = 0; i < rawPlace.length; i++) {
+            if (rawPlace[i]) {
+                arrPlace.push(rawPlace[i]);
+            }
+        }
+        return {
+            title : arrPlace.shift(), description : arrPlace.join('\r'), lng : 0,
+            lat   : 0, provider : '', external_id : 0, id : 0, type : 'Place'
+        };
     }
 
 };
@@ -714,10 +729,13 @@ define(function (require, exports, module) {
             ],
             place : [
                 function() {
-
+                    $('.cross-place .show').show();
+                    $('.cross-place .edit').hide();
+                    ChangePlace($('.cross-place .edit').val());
                 },
                 function() {
-
+                    $('.cross-place .show').hide();
+                    $('.cross-place .edit').show().focus();
                 }
             ]
         };
@@ -750,11 +768,18 @@ define(function (require, exports, module) {
             }
             ChangeTitle($(event.target).val(), 'cross');
         });
+        $('.cross-description .show').bind('click', EditCross);
+        $('.shuffle-background').bind('click', fixBackground);
         $('.cross-date .edit').bind('focus keydown keyup blur', function(event) {
             ChangeTime($(event.target).val());
         });
-        $('.cross-description .show').bind('click', EditCross);
-        $('.shuffle-background').bind('click', fixBackground);
+        $('.cross-place .edit').bind('keydown', function(event) {
+            if (event.shiftKey && event.which === 13) {
+                //event.preventDefault();
+                event.which = 4;
+            }
+        });
+        $('.cross-edit').bind('click', SaveCross);
     };
 
 
@@ -810,6 +835,12 @@ define(function (require, exports, module) {
 
     var ChangeTime = function(time) {
         Cross.time = ExfeUtilities.parseTimestring(time);
+    };
+
+
+    var ChangePlace = function(place) {
+        Cross.place = ExfeUtilities.parsePlacestring(place);
+        ShowPlace();
     };
 
 
@@ -873,8 +904,16 @@ define(function (require, exports, module) {
 
 
     var ShowPlace = function() {
-        $('.cross-dp.cross-place > h2').html(Cross.place.title);
-        $('.cross-dp.cross-place > address').html(Cross.place.description);
+        $('.cross-dp.cross-place > h2').html(
+            Cross.place.title
+          ? Cross.place.title
+          : 'Somewhere'
+        );
+        $('.cross-dp.cross-place > address').html(
+            Cross.place.description || Cross.place.title
+          ? Cross.place.description.replace(/\r\n|\r|\n/g, '<br>')
+          : 'Click here to set place.'
+        );
     };
 
 
@@ -927,6 +966,11 @@ define(function (require, exports, module) {
     };
 
 
+    var ShowRsvp = function() {
+
+    };
+
+
     var ShowCross = function() {
         ShowTitle();
         ShowDescription();
@@ -951,6 +995,7 @@ define(function (require, exports, module) {
 
 
     var UpdateCross = function(objCross) {
+        Cross.id          = objCross.id;
         Cross.title       = objCross.title;
         Cross.description = objCross.description;
         Cross.time        = objCross.time;
@@ -1013,11 +1058,31 @@ define(function (require, exports, module) {
     };
 
 
+    var SaveCross = function() {
+        var objCross   = ExfeUtilities.clone(Cross);
+        objCross.exfee = ExfeUtilities.clone(Exfee);
+        Api.request(
+            'editCross',
+            {type      : 'POST',
+             resources : {cross_id : Cross.id},
+             data      : JSON.stringify(objCross)},
+            function(data) {
+                UpdateCross(data.cross);
+            },
+            function(data) {
+                console.log(data);
+            }
+        );
+    };
+
+
     var ShowGatherForm = function(hide) {
         if (hide) {
             $('.cross-form').slideUp(233);
+            $('.cross-edit').show(233);
         } else {
             $('.cross-form').slideDown(233);
+            $('.cross-edit').hide(233);
             $('#gather-title').select();
             $('#gather-title').focus();
         }

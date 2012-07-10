@@ -123,25 +123,6 @@ util.getHumanDateTime = function(strTime, offset, lang) {
 
 
 /**
- * parse location string
- * by Leask
- */
-util.parseLocation = function(strPlace) {
-    var arrPlace = strPlace.split(/\r|\n|\r\n/),
-        prvPlace = [],
-        i = 0, l = arrPlace.length, item;
-    for (; i < l, item = arrPlace[i]; i++) {
-        if (item !== '') {
-            prvPlace.push(item);
-        }
-    }
-    return prvPlace.length
-         ? [prvPlace.shift(), prvPlace.join("\r")]
-         : ['', ''];
-};
-
-
-/**
  * get browser available size
  * by Leask
  */
