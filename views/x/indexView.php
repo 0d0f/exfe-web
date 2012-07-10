@@ -125,7 +125,19 @@ EXFE Maps
 
           <!-- Cross-rsvp -->
           <div class="cross-rsvp">
-
+            <div class="show">
+              <span class="attendance"></span>
+              <span class="by"></span>
+              <span class="change">Change attendance</span>
+            </div>
+            <div class="edit">
+              <span class="buttons">
+                <button class="accept">Accept</button>
+                <button class="decline">Decline</button>
+                <button class="interested">Interested</button>
+              </span>
+              <span class="by"></span>
+            </div>
           </div>
 
           <!-- Cross-Conversation -->
