@@ -87,6 +87,12 @@ EXFE Maps
 
     </div>
 
+    <!-- Cross-Edit -->
+    <div class="cross-edit">
+      <button class="save-cross">Save</button>
+    </div>
+    <!-- .Cross-Edit -->
+
     <!-- Cross-background -->
     <div class="cross-background">
       <div class="cross-background-blur"></div>
@@ -169,7 +175,7 @@ EXFE Maps
             <div class="cross-dp cross-place" editarea="place">
               <h2 class="show"></h2>
               <address class="show"></address>
-              <textarea class="edit"></textarea>
+              <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Map
