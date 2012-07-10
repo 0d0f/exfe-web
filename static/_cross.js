@@ -779,6 +779,7 @@ define(function (require, exports, module) {
                 event.which = 4;
             }
         });
+        $('.cross-edit').bind('click', SaveCross);
     };
 
 
@@ -989,6 +990,7 @@ define(function (require, exports, module) {
 
 
     var UpdateCross = function(objCross) {
+        Cross.id          = objCross.id;
         Cross.title       = objCross.title;
         Cross.description = objCross.description;
         Cross.time        = objCross.time;
@@ -1051,11 +1053,31 @@ define(function (require, exports, module) {
     };
 
 
+    var SaveCross = function() {
+        var objCross   = ExfeUtilities.clone(Cross);
+        objCross.exfee = ExfeUtilities.clone(Exfee);
+        Api.request(
+            'editCross',
+            {type      : 'POST',
+             resources : {cross_id : Cross.id},
+             data      : JSON.stringify(objCross)},
+            function(data) {
+                UpdateCross(data.cross);
+            },
+            function(data) {
+                console.log(data);
+            }
+        );
+    };
+
+
     var ShowGatherForm = function(hide) {
         if (hide) {
             $('.cross-form').slideUp(233);
+            $('.cross-edit').show(233);
         } else {
             $('.cross-form').slideDown(233);
+            $('.cross-edit').hide(233);
             $('#gather-title').select();
             $('#gather-title').focus();
         }
