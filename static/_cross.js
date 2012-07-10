@@ -966,6 +966,11 @@ define(function (require, exports, module) {
     };
 
 
+    var ShowRsvp = function() {
+
+    };
+
+
     var ShowCross = function() {
         ShowTitle();
         ShowDescription();
