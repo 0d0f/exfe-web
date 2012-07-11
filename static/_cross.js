@@ -643,16 +643,85 @@ ExfeeWidget = {
 
 define('exfeepanel', [], function (require, exports, module) {
 
+    var objBody = $('body');
+
+    objBody.bind('click', function(event) {
+        var domEvent = event.target;
+        while (domEvent
+            && !$(domEvent).hasClass('exfee_tip_panel')
+            && domEvent.tagName !== 'BODY') {
+            domEvent = domEvent.parentNode;
+        }
+        if (!$(domEvent).hasClass('exfee_tip_panel')) {
+            $('.exfee_tip_panel').hide(233).remove();
+        }
+    });
+
     return {
 
-        domIds : '',
+        objBody : objBody,
 
-        showInfoPanel : function(exfee, x, y) {
-
+        showTip : function(exfee, x, y) {
+            var strPanel = '<div class="exfeetip exfee_tip_panel" style="top: 785px; right: 285px; display: none;">'
+                         +   '<div class="inner">'
+                         +     '<h5>' + exfee.name + '</h5>'
+                         +     '<div>'
+                         +       '<i class="icon-user"></i><span>' + exfee.external_username + '</span>'
+                         +     '</div>'
+                         +   '</div>'
+                         + '</div>';
+            $('.exfeetip').hide(233).remove();
+            this.objBody.append(strPanel);
+            $('.exfeetip').show(233);
         },
 
-        showFullPanel : function(exfee, x, y) {
-
+        showPanel : function(exfee, x, y) {
+            var strPanel = '<div class="exfeepanel exfee_tip_panel" style="right: 600px; top: 500px">'
+                         +   '<div class="inner">'
+                         +     '<div class="avatar-name">'
+                         +       '<span class="pull-left avatar">'
+                         +         '<img src="/img/users/u2x50.png" alt="" width="60" height="60" />'
+                         +         '<span class="rb"><i class="icon-plus-sign"></i></span>'
+                         +       '</span>'
+                         +       '<h4>SteveE LongIDName</h4>'
+                         +     '</div>'
+                         +     '<div class="rsvp-actions">'
+                         +       '<div class="pull-right invited">'
+                         +         '<!--<span>+1</span>-->'
+                         +         '<i class="icon-plus-sign"></i>'
+                         +       '</div>'
+                         +       '<div class="rsvp-info">'
+                         +         '<div>Accepted</div>'
+                         +         '<span>by <strong>dm</strong></span>'
+                         +       '</div>'
+                         +       '<!--<button class="btn rsvp-btn">Accepted</button>-->'
+                         +     '</div>'
+                         +     '<div class="identities">'
+                         +       '<ul class="identities-list">'
+                         +         '<li>'
+                         +           '<i class="pull-left icon-envelope"></i>'
+                         +           '<span class="identity">steve_longaddress@0d0f.com</span>'
+                         +           '<div class="identity-btn">'
+                         +               '<i class="icon-minus-sign"></i>'
+                         +               '<button class="btn-leave">Leave</button>'
+                         +           '</div>'
+                         +         '</li>'
+                         +       '</ul>'
+                         +       '<div class="identity-actions">'
+                         +         '<p>'
+                         +           '<span class="xalert-error">Remove yourself?</span>'
+                         +           '<br />'
+                         +           'You will <strong>NOT</strong> be able to access any information in this <span class="x-sign">X</span>. Confirm leaving?'
+                         +           '<button class="pull-right btn-cancel">Cancel</button>'
+                         +         '</p>'
+                         +       '</div>'
+                         +     '</div>'
+                         +     '<i class="expand nomore"></i>'
+                         +   '</div>'
+                         + '</div>';
+            $('.exfeepanel').hide(233).remove();
+            this.objBody.append(strPanel);
+            $('.exfeepanel').show(233);
         },
 
     };
