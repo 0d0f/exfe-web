@@ -641,6 +641,26 @@ ExfeeWidget = {
 
 
 
+define('exfeepanel', [], function (require, exports, module) {
+
+    return {
+
+        domIds
+
+        showInfoPanel : function(exfee, x, y) {
+
+        },
+
+        showFullPanel : function(exfee, x, y) {
+
+        },
+
+    };
+
+});
+
+
+
 define(function (require, exports, module) {
 
     var $        = require('jquery'),
@@ -1251,6 +1271,8 @@ define(function (require, exports, module) {
     Editable();
     // init marked
     Marked = require('marked');
+    // init exfee panel
+    window.ExfeePanel = require('exfeepanel');
     // init showtime
     var showtimeTimer = setInterval(ShowTime, 50);
 

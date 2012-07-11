@@ -39,7 +39,8 @@ class ExfeeModels extends DataModel {
                 $withToken ? $eItem['token'] : '',
                 $eItem['created_at'],
                 $eItem['updated_at'],
-                !!intval($eItem['host'])
+                $eItem['host'],
+                $eItem['mates']
             );
         }
         $objExfee->updated_at = $exfee_updated_at;
@@ -88,6 +89,8 @@ class ExfeeModels extends DataModel {
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // get host boolean
         $host        = intval($invitation->host);
+        // get mates tinyint
+        $mates       = intval($invitation->mates)
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},
@@ -98,7 +101,8 @@ class ExfeeModels extends DataModel {
                 `exfee_updated_at` = NOW(),
                 `token`            = '{$invToken}',
                 `by_identity_id`   =  {$by_identity_id},
-                `host`             =  {$host}";
+                `host`             =  {$host},
+                `mates`            =  {$mates}";
         $dbResult = $this->query($sql);
         // save relations
         if ($user_id) {
@@ -123,6 +127,8 @@ class ExfeeModels extends DataModel {
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // get host boolean
         $host        = intval($invitation->host);
+        // get mates tinyint
+        $mates       = intval($invitation->mates);
         // update database
         return $this->query(
             "UPDATE `invitations` SET
@@ -130,7 +136,8 @@ class ExfeeModels extends DataModel {
              `updated_at`       = NOW(),
              `exfee_updated_at` = NOW(),
              `by_identity_id`   = {$by_identity_id},
-             `host`             = {$host}{$sqlToken}
+             `host`             = {$host},
+             `mates`            = {$mates}{$sqlToken}
              WHERE `id`         = {$invitation->id}"
         );
     }
