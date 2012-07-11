@@ -1087,10 +1087,12 @@ define(function (require, exports, module) {
                                 +   '</span>'
                                 + '</span>';
                 }
-                $('.cross-rsvp .show .accepted').html(
-                    objSummary.accepted
-                  ? (strSummary + objSummary.accepted + ' accepted.') : ''
-                );
+                strSummary += objSummary.accepted
+                            ? (objSummary.accepted + ' accepted.') : '';
+                var objAccepted = $('.cross-rsvp .show .accepted');
+                if (objAccepted.html() !== strSummary) {
+                    objAccepted.html(strSummary);
+                }
                 $('.cross-rsvp .show .attendance').html(attendance);
                 $('.cross-rsvp .show .by').html(by);
                 $('.cross-rsvp .show').slideDown(233);
