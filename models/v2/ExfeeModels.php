@@ -43,7 +43,7 @@ class ExfeeModels extends DataModel {
             );
         }
         $objExfee->updated_at = $exfee_updated_at;
-        $objExfee->countExfee();
+        $objExfee->summary();
         // return
         return $objExfee;
     }
