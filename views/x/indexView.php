@@ -129,7 +129,7 @@ EXFE Maps
               <span class="attendance"></span>
               <span class="accepted"></span>
               <span class="by"></span>
-              <span class="change">Change attendance</span>
+              <span class="change" editarea="rsvp">Change attendance</span>
             </div>
             <div class="edit">
               <span class="buttons">
