@@ -279,25 +279,57 @@ ExfeeWidget = {
 
 
     checkExistence : function(identity) {
-        for (var i = 0; i < Exfee.invitations; i++) {
-            if (compareIdentity(Exfee.invitations[i].identity, identity)) {
-                return true;
+        for (var i = 0; i < Exfee.invitations.length; i++) {
+            if (this.compareIdentity(Exfee.invitations[i].identity, identity)) {
+                return i;
             }
         }
         return false;
     },
 
 
-    addExfee : function(identity, host) {
+    addExfee : function(identity, host, rsvp) {
         if (!this.checkExistence(identity)) {
             Exfee.invitations.push({
                 identity    : ExfeUtilities.clone(identity),
-                rsvp_status : 'NORESPONSE',
+                rsvp_status : rsvp ? rsvp : 'NORESPONSE',
                 host        : !!host,
                 mates       : 0
             });
         }
         this.callback();
+    },
+
+
+    rsvpExfee : function(identity, rsvp) {
+        var idx = this.checkExistence(identity);
+        if (idx !== false) {
+            Exfee.invitations[idx].rsvp_status = rsvp;
+        }
+        this.callback();
+    },
+
+
+    rsvpMe : function(rsvp) {
+        this.rsvpExfee(User.default_identity, rsvp);
+    },
+
+
+    summary : function() {
+        var rtnResult = {accepted : 0, total : 0, accepted_invitations : []};
+        for (var i = 0; i < Exfee.invitations.length; i++) {
+            if (Exfee.invitations[i].rsvp_status === 'REMOVED'
+             || Exfee.invitations[i].rsvp_status === 'NOTIFICATION') {
+                continue;
+            }
+            var num = 1 + Exfee.invitations[i].mates;
+            rtnResult.total += num;
+            if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
+                rtnResult.accepted += num;
+                rtnResult.accepted_invitations.push(Exfee.invitations[i]);
+            }
+        }
+        return rtnResult;
     },
 
 
@@ -445,7 +477,7 @@ ExfeeWidget = {
 
 
     getInvitationByIdentityId : function(identity_id) {
-        for (var i = 0; i < Exfee.invitations; i++) {
+        for (var i = 0; i < Exfee.invitations.length; i++) {
             if (Exfee.invitations[i].identity.id === identity_id) {
                 return Exfee.invitations[i];
             }
@@ -790,6 +822,21 @@ define(function (require, exports, module) {
         });
         $('.cross-description .show').bind('click', EditCross);
         $('.shuffle-background').bind('click', fixBackground);
+        $('.cross-rsvp .show .change').bind('click', function() {
+            ShowRsvp(true);
+        });
+        $('.cross-rsvp .edit .accept').bind('click', function() {
+            ExfeeWidget.rsvpMe('ACCEPTED');
+            ShowRsvp();
+        });
+        $('.cross-rsvp .edit .decline').bind('click', function() {
+            ExfeeWidget.rsvpMe('DECLINED');
+            ShowRsvp();
+        });
+        $('.cross-rsvp .edit .interested').bind('click', function() {
+            ExfeeWidget.rsvpMe('INTERESTED');
+            ShowRsvp();
+        });
         $('.cross-date .edit').bind('focus keydown keyup blur', function(event) {
             ChangeTime($(event.target).val());
         });
@@ -837,7 +884,7 @@ define(function (require, exports, module) {
 
 
     var fixExfee = function() {
-        ExfeeWidget.addExfee(User.default_identity, true);
+        ExfeeWidget.addExfee(User.default_identity, true, 'ACCEPTED');
     };
 
 
@@ -986,40 +1033,67 @@ define(function (require, exports, module) {
     };
 
 
-    var ShowRsvp = function() {
-        var myInvitation = ExfeeWidget.getMyInvitation(),
-            byMe = myInvitation.identity.id === myInvitation.by_identity.id;
-        if (myInvitation.rsvp_status === 'NORESPONSE') {
-            $('.cross-rsvp .edit .by').html(
-                byMe ? '&nbsp;' : ('Invitation from ' + myInvitation.by_identity.name)
-            );
-            $('.cross-rsvp .show').hide();
-            $('.cross-rsvp .edit').show();
-        } else if (myInvitation.rsvp_status === 'ACCEPTED'
-                || myInvitation.rsvp_status === 'INTERESTED'
-                || myInvitation.rsvp_status === 'DECLINED') {
-            var attendance = '', by = '';
-            switch(myInvitation.rsvp_status) {
-                case 'ACCEPTED':
-                    attendance = 'Accepted';
-                    by         = 'Confirmed by ';
-                    break;
-                case 'DECLINED':
-                    attendance = 'Declined';
-                    by         = 'Declined by ';
-                    break;
-                case 'INTERESTED':
-                    attendance = 'Interested';
+    var ShowRsvp = function(buttons) {
+        var myInvitation = ExfeeWidget.getMyInvitation();
+        if (myInvitation) {
+            var by_identity = myInvitation.by_identity
+                            ? myInvitation.by_identity
+                            : User.default_identity,
+                byMe        = myInvitation.identity.id === by_identity.id;
+            if (myInvitation.rsvp_status === 'NORESPONSE' || buttons) {
+                $('.cross-rsvp .edit .by').html(
+                    byMe
+                  ? '&nbsp;'
+                  : ('Invitation from ' + myInvitation.by_identity.name)
+                );
+                $('.cross-rsvp .show').slideUp(233);
+                $('.cross-rsvp .edit').slideDown(233);
+                return;
+            } else if (myInvitation.rsvp_status === 'ACCEPTED'
+                    || myInvitation.rsvp_status === 'INTERESTED'
+                    || myInvitation.rsvp_status === 'DECLINED') {
+                var attendance = '', by = '';
+                switch(myInvitation.rsvp_status) {
+                    case 'ACCEPTED':
+                        attendance = 'Accepted';
+                        by         = 'Confirmed by ';
+                        break;
+                    case 'DECLINED':
+                        attendance = 'Declined';
+                        by         = 'Declined by ';
+                        break;
+                    case 'INTERESTED':
+                        attendance = 'Interested';
+                }
+                by = byMe || myInvitation.rsvp_status === 'INTERESTED'
+                   ? '&nbsp;' : (by + myInvitation.by_identity.name);
+                var objSummary = ExfeeWidget.summary(),
+                    strSummary = '';
+                for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
+                    strSummary += '<span>'
+                                +   '<img src="'
+                                +      objSummary.accepted_invitations[i].identity.avatar_filename
+                                +   '">'
+                                +   '<span>'
+                                +     (objSummary.accepted_invitations[i].mates
+                                     ? objSummary.accepted_invitations[i].mates
+                                     : '')
+                                +   '</span>'
+                                + '</span>';
+                }
+                $('.cross-rsvp .show .accepted').html(
+                    objSummary.accepted
+                  ? (strSummary + objSummary.accepted + ' accepted.') : ''
+                );
+                $('.cross-rsvp .show .attendance').html(attendance);
+                $('.cross-rsvp .show .by').html(by);
+                $('.cross-rsvp .show').slideDown(233);
+                $('.cross-rsvp .edit').slideUp(233);
+                return;
             }
-            by = byMe || myInvitation.rsvp_status === 'INTERESTED'
-               ? '&nbsp;' : (by + myInvitation.by_identity.name);
-            $('.cross-rsvp .info .by').html(by);
-            $('.cross-rsvp .show').show();
-            $('.cross-rsvp .edit').hide();
-        } else {
-            $('.cross-rsvp .show').hide();
-            $('.cross-rsvp .edit').hide();
         }
+        $('.cross-rsvp .show').slideUp(233);
+        $('.cross-rsvp .edit').slideUp(233);
     };
 
 
@@ -1029,6 +1103,7 @@ define(function (require, exports, module) {
         ShowPlace();
         ShowExfee();
         ShowBackground();
+        ShowRsvp();
     };
 
 
