@@ -90,7 +90,7 @@ class ExfeeModels extends DataModel {
         // get host boolean
         $host        = intval($invitation->host);
         // get mates tinyint
-        $mates       = intval($invitation->mates)
+        $mates       = intval($invitation->mates);
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},

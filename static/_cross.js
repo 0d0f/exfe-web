@@ -645,7 +645,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
     return {
 
-        domIds
+        domIds : '',
 
         showInfoPanel : function(exfee, x, y) {
 
