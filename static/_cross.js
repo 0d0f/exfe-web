@@ -788,7 +788,15 @@ define(function (require, exports, module) {
                 function() {
                     $('.cross-place .show').hide();
                     $('.cross-place .edit').show().focus();
-                }
+                },
+            ],
+            rsvp : [
+                function() {
+                    ShowRsvp();
+                },
+                function() {
+                    ShowRsvp(true);
+                },
             ]
         };
         if (event) {
@@ -822,9 +830,7 @@ define(function (require, exports, module) {
         });
         $('.cross-description .show').bind('click', EditCross);
         $('.shuffle-background').bind('click', fixBackground);
-        $('.cross-rsvp .show .change').bind('click', function() {
-            ShowRsvp(true);
-        });
+        $('.cross-rsvp .show .change').bind('click', EditCross);
         $('.cross-rsvp .edit .accept').bind('click', function() {
             ExfeeWidget.rsvpMe('ACCEPTED');
             ShowRsvp();
