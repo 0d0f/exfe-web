@@ -16,7 +16,7 @@ class Exfee extends EFObject {
     }
 
 
-    public function countExfee() {
+    public function summary() {
     	foreach ($this->invitations as $invI => $invItem) {
     		if ($invItem->rsvp_status === 'REMOVED'
     		 || $invItem->rsvp_status === 'NOTIFICATION') {

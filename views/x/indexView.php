@@ -127,6 +127,7 @@ EXFE Maps
           <div class="cross-rsvp">
             <div class="show">
               <span class="attendance"></span>
+              <span class="accepted"></span>
               <span class="by"></span>
               <span class="change">Change attendance</span>
             </div>
