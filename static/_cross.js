@@ -216,7 +216,7 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
-        $('#' + this.dom_id + ' .thumbnails > li.identity').live('mouseover mouseout click', function(event) {
+        $('#' + this.dom_id + ' .thumbnails > li.identity').live('mouseover mouseout mousedown', function(event) {
             var domEvent = event.target;
             while (domEvent
                 && !$(domEvent).hasClass('identity')
@@ -230,7 +230,8 @@ ExfeeWidget = {
                 case 'mouseout':
                     ExfeePanel.hideTip();
                     break;
-                case 'click':
+                case 'mousedown':
+                    ExfeeWidget.showPanel(domEvent);
             }
         });
         this.complete_timer = setInterval(
@@ -295,13 +296,31 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showTip(objInvitation.identity);
-
+        ExfeePanel.showTip(objInvitation);
     },
 
 
     showPanel : function(target) {
-
+        var objTarget         = $(target),
+            objIdentity       = {},
+            id                = objTarget.attr('id'),
+            provider          = objTarget.attr('provider'),
+            external_id       = objTarget.attr('external_id'),
+            external_username = objTarget.attr('external_username');
+        if (id = ~~id) {
+            objIdentity.id                = id;
+        }
+        if (provider) {
+            objIdentity.provider          = provider;
+        }
+        if (external_id) {
+            objIdentity.external_id       = external_id;
+        }
+        if (external_username) {
+            objIdentity.external_username = external_username;
+        }
+        var objInvitation = this.getInvitationByIdentity(objIdentity);
+        ExfeePanel.showPanel(objInvitation);
     },
 
 
@@ -696,12 +715,14 @@ define('exfeepanel', [], function (require, exports, module) {
     objBody.bind('click', function(event) {
         var domEvent = event.target;
         while (domEvent
-            && !$(domEvent).hasClass('exfee_tip_panel')
+            && !$(domEvent).hasClass('exfee_pop_up')
+            && !$(domEvent).hasClass('exfee_pop_up_save')
             && domEvent.tagName !== 'BODY') {
             domEvent = domEvent.parentNode;
         }
-        if (!$(domEvent).hasClass('exfee_tip_panel')) {
-            $('.exfee_tip_panel').hide().remove();
+        if (!$(domEvent).hasClass('exfee_pop_up')
+         && !$(domEvent).hasClass('exfee_pop_up_save')) {
+            $('.exfee_pop_up').hide().remove();
         }
     });
 
@@ -711,24 +732,28 @@ define('exfeepanel', [], function (require, exports, module) {
 
         tipId   : '',
 
-        newId   : function(exfee) {
-            return 'id_'                + exfee.id
-                 + 'provider_'          + exfee.provider
-                 + 'external_id_'       + exfee.external_id
-                 + 'external_username_' + exfee.external_username;
+        panelId : '',
+
+
+        newId   : function(invitation) {
+            return 'id_'                + invitation.identity.id
+                 + 'provider_'          + invitation.identity.provider
+                 + 'external_id_'       + invitation.identity.external_id
+                 + 'external_username_' + invitation.identity.external_username;
         },
 
-        showTip : function(exfee, x, y) {
-            var strTipId = this.newId(exfee);
-                strPanel = '<div class="exfeetip exfee_tip_panel" style="top: 785px; right: 285px; display: none;">'
+
+        showTip : function(invitation, x, y) {
+            var strTipId = this.newId(invitation),
+                strPanel = '<div class="exfeetip exfee_pop_up" style="top: 785px; right: 285px; display: none;">'
                          +   '<div class="inner">'
-                         +     '<h5>' + exfee.name + '</h5>'
+                         +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
-                         +       '<i class="icon-user"></i><span>' + exfee.external_username + '</span>'
+                         +       '<i class="icon-user"></i><span>' + invitation.identity.external_username + '</span>'
                          +     '</div>'
                          +   '</div>'
                          + '</div>';
-            if (this.tipId !== strTipId || !$('.exfee_tip_panel').length) {
+            if (this.tipId !== strTipId || !$('.exfeetip').length) {
                 this.tipId  =  strTipId;
                 this.hideTip();
                 this.objBody.append(strPanel);
@@ -737,20 +762,16 @@ define('exfeepanel', [], function (require, exports, module) {
         },
 
 
-        hideTip : function() {
-            $('.exfeetip').hide().remove();
-        },
-
-
-        showPanel : function(exfee, x, y) {
-            var strPanel = '<div class="exfeepanel exfee_tip_panel" style="right: 600px; top: 500px">'
+        showPanel : function(invitation, x, y) {
+            var strTipId = this.newId(invitation),
+                strPanel = '<div class="exfeepanel exfee_pop_up" style="right: 600px; top: 500px">'
                          +   '<div class="inner">'
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
-                         +         '<img src="/img/users/u2x50.png" alt="" width="60" height="60" />'
+                         +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="60" height="60" />'
                          +         '<span class="rb"><i class="icon-plus-sign"></i></span>'
                          +       '</span>'
-                         +       '<h4>SteveE LongIDName</h4>'
+                         +       '<h4>' + invitation.identity.name + '</h4>'
                          +     '</div>'
                          +     '<div class="rsvp-actions">'
                          +       '<div class="pull-right invited">'
@@ -786,9 +807,23 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '<i class="expand nomore"></i>'
                          +   '</div>'
                          + '</div>';
+            if (this.panelId !== strTipId || !$('.exfeepanel').length) {
+                this.panelId  =  strTipId;
+                this.hideTip();
+                this.hidePanel();
+                this.objBody.append(strPanel);
+                $('.exfeepanel').show();
+            }
+        },
+
+
+        hideTip : function() {
+            $('.exfeetip').hide().remove();
+        },
+
+
+        hidePanel : function() {
             $('.exfeepanel').hide().remove();
-            this.objBody.append(strPanel);
-            $('.exfeepanel').show();
         },
 
     };
