@@ -21,7 +21,10 @@
 
     "predef"        : [  // Custom globals.
       "define",
-      "Modernizr"
+      "Modernizr",
+      // https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Functions#escape_and_unescape_functions
+      "escape",
+      "unescape"
         //"exampleVar",
         //"anotherCoolGlobal",
         //"iLoveDouglas"
@@ -40,8 +43,9 @@
 
 
     // The Good Parts.
-    "asi"           : false,  // Tolerate Automatic Semicolon Insertion (no semicolons).                                                                    分号
+    "asi"           : true,   // Tolerate Automatic Semicolon Insertion (no semicolons).                                                                    分号
     "laxbreak"      : true,   // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.                                                       换行
+    "laxcomma"      : true,
     "bitwise"       : false,  // Prohibit bitwise operators (&, |, ^, etc.).                                                                                位运算
     "boss"          : false,  // Tolerate assignments inside if, for & while. Usually conditions & loops are for comparison, not assignments.               赋值语句
     "curly"         : true,   // Require {} for every new block or scope.                                                                                   {} 包裹
@@ -74,5 +78,5 @@
     "sub"           : false,  // Tolerate all forms of subscript notation besides dot notation e.g. `dict['key']` instead of `dict.key`.
     "trailing"      : false,  // Prohibit trailing whitespaces.
     "white"         : false,  // Check against strict whitespace and indentation rules.                                                                     空白
-    "escape"        : true    // https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Functions#escape_and_unescape_functions
+    "indent"        : 2
 }
