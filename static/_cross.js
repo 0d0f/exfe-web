@@ -714,16 +714,12 @@ define('exfeepanel', [], function (require, exports, module) {
 
     objBody.bind('click', function(event) {
         var domEvent = event.target;
-        console.log($(domEvent).hasClass('exfee_pop_up'));
         while (domEvent
             && !$(domEvent).hasClass('exfee_pop_up')
             && !$(domEvent).hasClass('exfee_pop_up_save')
             && domEvent.tagName !== 'BODY') {
             domEvent = domEvent.parentNode;
-            console.log(domEvent);
         }
-        console.log(event);
-
         if (!$(domEvent).hasClass('exfee_pop_up')
          && !$(domEvent).hasClass('exfee_pop_up_save')) {
             $('.exfee_pop_up').hide().remove();
@@ -757,7 +753,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '</div>'
                          +   '</div>'
                          + '</div>';
-            if (this.tipId !== strTipId || !$('.exfee_pop_up').length) {
+            if (this.tipId !== strTipId || !$('.exfeetip').length) {
                 this.tipId  =  strTipId;
                 this.hideTip();
                 this.objBody.append(strPanel);
@@ -811,7 +807,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '<i class="expand nomore"></i>'
                          +   '</div>'
                          + '</div>';
-            if (this.panelId !== strTipId || !$('.exfee_pop_up').length) {
+            if (this.panelId !== strTipId || !$('.exfeepanel').length) {
                 this.panelId  =  strTipId;
                 this.hideTip();
                 this.hidePanel();
