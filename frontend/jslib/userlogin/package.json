@@ -1,10 +1,10 @@
 {
-  "name": "userpanel",
+  "name": "userlogin",
   "version": "0.0.1",
-  "description": "user panel js",
+  "description": "user login js",
   "homepage": "https://exfe.com/",
   "author": "cfd",
-  "date": "01:33:06 06/14/2012",
+  "date": "14:50:17 07/12/2012",
   "hint": true
 }
 
