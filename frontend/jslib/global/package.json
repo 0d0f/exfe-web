@@ -1,0 +1,5 @@
+{
+  "name": "global",
+  "description": "全局熟悉配置，比如全局 document 时间绑定",
+  "version": "0.0.1"
+}
