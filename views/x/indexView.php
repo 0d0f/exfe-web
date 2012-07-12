@@ -65,7 +65,7 @@ EXFE Maps
               </div>
             </div>
 
-            <div class="cross-identities">
+            <div class="cross-identities exfee_pop_up_save">
               <ul class="thumbnails">
               </ul>
             </div>
@@ -215,7 +215,7 @@ EXFE Maps
                 </div>
               </div>
 
-              <div class="cross-identities">
+              <div class="cross-identities exfee_pop_up_save">
                 <ul class="thumbnails">
                 </ul>
               </div>
