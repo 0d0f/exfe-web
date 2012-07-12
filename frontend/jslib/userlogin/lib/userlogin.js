@@ -363,7 +363,7 @@ define(function (require) {
     );
 
   });
-  Bus.emit(START_UP);
+  //Bus.emit(START_UP);
 
   var $BODY = $(document.body);
   $(function () {
@@ -418,52 +418,6 @@ define(function (require) {
     }
 
     $BODY.on('mouseenter.dropdown mouseleave.dropdown', '.navbar .dropdown-wrapper', hover);
-
-    /*
-    // 兼容 iframe
-    var isIframe = !(parent === window);
-    var domain = /domain=([^&]+)/.exec(decodeURIComponent(window.location.search));
-    domain = (domain && domain[1]) || '';
-    $BODY.on('click', '#js-xgather', function (e) {
-      e.preventDefault();
-      // 兼容 iframe
-      if (isIframe) {
-        parent.postMessage('gather', domain);
-      }
-    });
-
-    $BODY.on('click', '.meta > a', function (e) {
-      var p = $(this).attr('href');
-      e.preventDefault();
-      // 兼容 iframe
-      if (isIframe) {
-        parent.postMessage('profile:' + p, domain);
-      }
-    });
-
-    $BODY.on('click', 'a[data-id]', function (e) {
-      var id_base62 = $(this).attr('href').substr(2);
-      e.preventDefault();
-      // 兼容 iframe
-      if (isIframe) {
-        parent.postMessage('cross:' + id_base62, domain);
-      }
-    });
-    */
-
-    //TODO:
-    // 阻止浏览器默认的拖拽行为, 暂时放这里
-    function _docddEventhandler(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      return false;
-    }
-
-    $(document.body)
-      .on('drop', _docddEventhandler)
-      .on('dragenter', _docddEventhandler)
-      .on('dragleave', _docddEventhandler)
-      .on('dragover', _docddEventhandler);
 
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
