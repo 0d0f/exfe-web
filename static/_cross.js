@@ -228,6 +228,7 @@ ExfeeWidget = {
                     ExfeeWidget.showTip(domEvent);
                     break;
                 case 'mouseout':
+                    ExfeePanel.hideTip();
                     break;
                 case 'click':
             }
@@ -729,11 +730,17 @@ define('exfeepanel', [], function (require, exports, module) {
                          + '</div>';
             if (this.tipId !== strTipId || !$('.exfee_tip_panel').length) {
                 this.tipId  =  strTipId;
-                $('.exfeetip').hide().remove();
+                this.hideTip();
                 this.objBody.append(strPanel);
                 $('.exfeetip').show();
             }
         },
+
+
+        hideTip : function() {
+            $('.exfeetip').hide().remove();
+        },
+
 
         showPanel : function(exfee, x, y) {
             var strPanel = '<div class="exfeepanel exfee_tip_panel" style="right: 600px; top: 500px">'
