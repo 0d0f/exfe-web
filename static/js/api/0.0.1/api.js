@@ -74,7 +74,9 @@ define('api', [], function (require, exports, module) {
     // 登陆后
     verifyUserIdentity: '/users/verifyUserIdentity',
 
-    forgotPassword: '/users/forgotPassword'
+    forgotPassword: '/users/forgotPassword',
+
+    avatarUpdate: '/avatar/update'
   };
 
   // Not Use Token
@@ -118,11 +120,11 @@ define('api', [], function (require, exports, module) {
     request: function (channel, options, done, fail) {
       var url = urls[channel], k, params, resources;
 
-      if (!url) return;
+      if (!url) { return; }
 
-      if (!(ignore.search(channel) > -1)) {
+      if (ignore.search(channel) === -1) {
 
-        if (!Api._token) return;
+        if (!Api._token) { return; }
 
         url += '?token=' + Api._token;
       }
@@ -150,15 +152,20 @@ define('api', [], function (require, exports, module) {
   // helper
 
   function doneCallback(done, fail) {
-    return cb;
-    function cb() {
+    return function cb() {
       var args = _slice(arguments), data = args[0];
       // status-code 200 success
       if (data && data.meta.code === 200) {
         args[0] = data.response;
-        done && done.apply(this, args);
+
+        if (done) {
+          done.apply(this, args);
+        }
+
       } else {
-        fail && fail.apply(this, args);
+        if (fail) {
+          fail.apply(this, args);
+        }
       }
       return this;
     }
@@ -194,15 +201,15 @@ define('api', [], function (require, exports, module) {
 
     _extend(o, options);
 
-    x = $.ajax(o)
+    dfd = $.ajax(o)
       // done callback
       .done(done)
       // fail callback
       .fail(fail);
 
-    return x;
+    return dfd;
   }
 
   return Api;
 
-});;
+});
