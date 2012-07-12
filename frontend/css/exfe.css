@@ -6188,14 +6188,6 @@ input[type="submit"].btn.btn-mini {
 .cross-identities .lt {
   position: absolute;
   z-index: 1001;
-  padding-right: 1px;
-  padding-left: 1px;
-  font-size: 10px;
-  font-weight: bold;
-  line-height: 10px;
-  color: #eaeaea;
-  text-align: center;
-  background-color: #1175A5;
 }
 
 .cross-identities .rt {
@@ -6206,13 +6198,6 @@ input[type="submit"].btn.btn-mini {
 .cross-identities .rb {
   right: -3px;
   bottom: -3px;
-  width: 14px;
-  height: 14px;
-  padding: 2px;
-  background-color: #d5d5d5;
-  -webkit-border-radius: 9px;
-     -moz-border-radius: 9px;
-          border-radius: 9px;
 }
 
 .cross-identities .lb {
@@ -6476,6 +6461,21 @@ input[type="submit"].btn.btn-mini {
 .exfeepanel .invited > i {
   display: block;
   margin-top: -50%;
+}
+
+.exfeepanel .mates {
+  width: 48px;
+  height: 14px;
+}
+
+.exfeepanel .mates .num {
+  display: inline-block;
+  width: 20px;
+  height: 14px;
+  font-weight: bold;
+  line-height: 14px;
+  color: #1175a5;
+  background: #cbdfe9;
 }
 
 .exfeepanel .identities-list {
