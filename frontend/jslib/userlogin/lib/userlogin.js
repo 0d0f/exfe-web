@@ -8,6 +8,12 @@ define(function (require) {
   var Store = require('store');
   var Handlebars = require('handlebars');
 
+  // window.location
+  var location = window.location;
+
+  // token regexp
+  var tokenRegExp = Util.tokenRegExp;
+
   var userpanelTmps = {
     // new identity
     '1': ''
@@ -93,225 +99,261 @@ define(function (require) {
       + '</div>'
   };
 
-  // Start Up App
-  var START_UP = 'app:startup';
-  // 未登陆状态 / 跳转
-  var NO_SIGN_IN = 'app:nosignin';
-  // 可以登陆状态
-  var SIGN_IN = 'app:signin';
+  // XAPP_LOGIN
+  var XAPP_LOGIN = 'xapp:login';
 
-  Bus.on(NO_SIGN_IN, function () {
-    // rewrite login page
-    if (/^s\/profile.*$/.test(window.location.pathname)) {
-      //window.location = '/';
-    }
+  // XAPP_LOGIN_DONE
+  var XAPP_LOGIN_DONE = 'xapp:logindone';
 
-    $('#js-signin').show();
-  });
+  // XAPP_LOGIN_FAIL
+  var XAPP_LOGIN_FAIL = 'xapp:loginfail';
 
-  Bus.on(SIGN_IN, function (dfd, type) {
+  // XAPP_CANNOT_LOGIN
+  var XAPP_CANNOT_LOGIN = 'xapp:cannotlogin';
 
-    dfd.then(function (data) {
-      Bus.emit('app:signinsuccess', data);
-      var SIGN_IN_OTHERS = 'app:signinothers';
-      Bus.emit(SIGN_IN_OTHERS, dfd);
-      Bus.emit('app:userpanel', {type: type, data: data});
-    });
+  // XAPP_USER_STATUS
+  var XAPP_USER_STATUS = 'xapp:userstatus';
 
-  });
+  // XAPP_USER_TOKEN
+  var XAPP_USER_TOKEN = 'xapp:usertoken';
 
-  Bus.on('app:changename', function (d) {
-    $('#user-name > span').html(d);
-  });
+  // XAPP_USER_PANEL
+  var XAPP_USER_PANEL = 'xapp:userpanel';
 
-  function createUserPanel(data, type) {
+  // XAPP_CROSS_TOKEN
+  var XAPP_CROSS_TOKEN = 'xapp:crosstoken';
+
+  var XAPP_CROSS_FETCH = 'xapp:crossfetch';
+
+  function createUserPanel(user, type) {
     if (type) {
-      $('#js-signin').remove();
+      $('#js-signin').hide();
       var $up = $('.nav li.dropdown').show();
 
       var s = Handlebars.compile(userpanelTmps[type]);
 
-      $(s(data)).appendTo($up.find('.dropdown-wrapper'));
+      $(s(user)).appendTo($up.find('.dropdown-wrapper'));
     }
   }
 
-  Bus.on('app:crosstoken', function (statuses, token, type) {
-    var status = statuses[token];
-    var identity_id = status.identity_id;
-    var dialogType, tab = '';
-    switch (status.identity_registration) {
+  // user can't login
+  Bus.on(XAPP_CANNOT_LOGIN, function () {
+    $('#js-signin').show();
+  });
+
+  Bus.on(XAPP_CROSS_TOKEN, function (d) {
+    var type = d.type
+      , tokens = d.tokens
+      , token = tokens[0]
+      , status = d.status[tokens]
+      , identity_id = status.identity_id
+      , registration = status.identity_registration
+      , dialogType = 'identification'
+      , tab = ''
+      , dfd;
+
+    switch (registration) {
       case 'VERIFY':
-        //dialogType = 'verification';
-        dialogType = 'identification';
         tab = 'd01';
         break;
       case 'SIGN_UP':
-        dialogType = 'identification';
         tab = 'd02';
-        type = 2;
+        type = d.type = 2;
         break;
       case 'SIGN_IN':
-        dialogType = 'identification';
         tab = 'd01';
     }
-    var dfd = $.when(
-      Api.request('getIdentityById',
-        {
-          resources: {identity_id: identity_id}
-        },
-        function (data) {
-          var external_id = data.identity.external_id;
-          $('#user-name > span').html(data.identity.name || external_id.split('@')[0]);
-          if (dialogType === 'verification') {
-            dialogType += '_' + data.identity.provider;
-          }
-          data.identity.__dialogtype__ = dialogType;
-          data.identity.__tab__ = tab;
-          createUserPanel(data.identity, type);
+
+    dfd = Api.request('getIdentityById'
+      , {
+        resources: {identity_id: identity_id}
+      }
+      , function (data) {
+        var external_id = data.identity.external_id;
+        $('#user-name > span').html(data.identity.name || external_id.split('@')[0]);
+        if ('verification' === dialogType) {
+          dialogType += '_' + data.identity.provider;
         }
-      )
+        data.identity.__dialogtype__ = dialogType;
+        data.identity.__tab__ = tab;
+        createUserPanel(data.identity, type);
+      }
     );
 
     dfd.done(function (data) {
-      Bus.emit('app:crossdata', token, status);
+      Bus.emit(XAPP_CROSS_FETCH, token, status);
     });
   });
 
-  Bus.on('app:userpanel', function (d) {
-    var type = d.type, data = d.data;
+  Bus.on(XAPP_USER_PANEL, function (type, user) {
 
-    createUserPanel(data.response.user, type);
-    $('#user-name > span').html(data.response.user.name);
+    createUserPanel(user, type);
 
-    //if (d.action_status === 3) {
-      var signin = Store.get('signin');
-      var user_id = signin.user_id;
-      Api.request('crosslist'
-        , {
-          resources: {user_id: user_id}
-        }
-        , function (data) {
-          // NOTE:
-          // now: 当前时间～cross发生时间(3hr)
-          // 24hr: cross发生时间 ～ 当前时间(24hr)
+    $('#user-name > span').html(user.name);
 
-          var crosses = data.crosses;
-          if (crosses.length) {
-            var now = +new Date();
-            var ne = now + 3 * 60 * 60 * 1000;
-            var n24 = now - 24 * 60 * 60 * 1000;
-            var l = 5;
-            var cs = {
-              crosses: []
-            };
+    var signin = Store.get('signin')
+      , user_id = signin.user_id;
 
-            R.map(crosses, function (v, i) {
-              if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
-                var t = R.filter(v.exfee.invitations, function (v2, j) {
-                  if (v2.rsvp_status === 'ACCEPTED' && v2.identity.connected_user_id === user_id) return true;
-                });
-                if (t.length) {
-                  cs.crosses.push(v);
-                }
+    Api.request('crosslist'
+      , {
+        resources: { user_id: user_id }
+      }
+      , function (data) {
+        // NOTE:
+        // now: 当前时间～cross发生时间(3hr)
+        // 24hr: cross发生时间 ～ 当前时间(24hr)
+
+        var crosses = data.crosses;
+        if (0 === crosses.length) { return; }
+        var now = +new Date()
+          , ne = now + 3 * 60 * 60 * 1000
+          , n24 = now - 24 * 60 * 60 * 1000
+          , l = 5
+          , cs = {
+            crosses: []
+          };
+
+        R.map(crosses, function (v, i) {
+          if (v.exfee && v.exfee.invitations && v.exfee.invitations.length) {
+            var t = R.filter(v.exfee.invitations, function (v2, j) {
+              if (v2.rsvp_status === 'ACCEPTED' && v2.identity.connected_user_id === user_id) {
+                return true;
               }
             });
-
-            cs.crosses = cs.crosses.slice(0, l);
-
-            Handlebars.registerHelper('alink', function (ctx) {
-              var s = '';
-              var beginAt = ctx.time.begin_at;
-              var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
-              if (now <= dt && dt <= ne) {
-                s = '<li class="tag">'
-                      + '<i class="icon10-now"></i>'
-              } else if (n24 <= dt && dt < now) {
-                s = '<li class="tag">'
-                      + '<i class="icon10-24hr"></i>'
-              } else {
-                s = '<li>'
-              }
-              s += '<a data-id="' + this.id + '" href="/!' + this.id + '">' + this.title + '</a>'
-                  + '</li>';
-              return s;
-            });
-
-            var s = '{{#if crosses}}'
-                + '<div>Upcoming:</div>'
-                + '<ul class="unstyled crosses">'
-                + '{{#each crosses}}'
-                  + '{{{alink this}}}'
-                + '{{/each}}'
-                + '</ul>'
-              + '{{/if}}';
-
-            var as = Handlebars.compile(s);
-            $('.user-panel .body').html(as(cs));
+            if (t.length) {
+              cs.crosses.push(v);
+            }
           }
+        });
 
-        }
-      );
-    //}
+        cs.crosses = cs.crosses.slice(0, l);
+
+        Handlebars.registerHelper('alink', function (ctx) {
+          var s = '';
+          var beginAt = ctx.time.begin_at;
+          var dt = new Date(beginAt.date.replace(/\-/g, '/') + ' ' + beginAt.time).getTime();
+          if (now <= dt && dt <= ne) {
+            s = '<li class="tag">'
+                  + '<i class="icon10-now"></i>'
+          } else if (n24 <= dt && dt < now) {
+            s = '<li class="tag">'
+                  + '<i class="icon10-24hr"></i>'
+          } else {
+            s = '<li>'
+          }
+          s += '<a data-id="' + this.id + '" href="/#!' + this.id + '">' + this.title + '</a>'
+              + '</li>';
+          return s;
+        });
+
+        var s = '{{#if crosses}}'
+            + '<div>Upcoming:</div>'
+            + '<ul class="unstyled crosses">'
+            + '{{#each crosses}}'
+              + '{{{alink this}}}'
+            + '{{/each}}'
+            + '</ul>'
+          + '{{/if}}';
+
+        var as = Handlebars.compile(s);
+        $('.user-panel .body').html(as(cs));
+      }
+    );
+  });
+
+  Bus.on(XAPP_LOGIN_DONE, function (type, dfd) {
+
+    dfd.then(function (data) {
+      //Bus.emit('app:signinsuccess', data);
+      //var SIGN_IN_OTHERS = 'app:signinothers';
+      //Bus.emit(SIGN_IN_OTHERS, dfd);
+      Bus.emit(XAPP_USER_PANEL, type, data.response.user);
+    });
 
   });
 
-  Bus.on('app:usertoken', function (statuses, token, type) {
-    var status = statuses[token];
-    var user_id = status.user_id;
+  Bus.on(XAPP_USER_TOKEN, function (tokens, type, statuses) {
+    var token = tokens[0]
+      , status = statuses[token]
+      , user_id = status.user_id
+      , dfd;
 
+    // set token
     Api.setToken(token);
+
     Store.set('signin', {token: token, user_id: user_id});
 
-    var dfd = $.when(
-      Api.request('getUser'
+    dfd = Api.request('getUser'
       , {
         resources: {user_id: user_id}
       }
       , function (data) {
-        var last_identity = Store.get('last_identity');
-        var identity = R.filter(data.user.identities, function (v) {
-          if (last_identity === v.external_id) return true;
-        })[0] || data.user.default_identity;
+        var last_external_id = Store.get('last_external_id')
+          , identity;
+
+        if (last_external_id) {
+          identity = R.filter(data.user.identities, function (v) {
+            if (last_external_id === v.external_id) {
+              return true;
+            }
+          })[0];
+        } else {
+          identity = data.user.default_identity;
+        }
+
+        // set last identity
         Store.set('lastIdentity', identity);
-      })
+        Store.set('last_external_id', identity.external_id);
+      }
     );
+
+    // login done
     dfd.done(function (d) {
-      Bus.emit(SIGN_IN, dfd, type);
+      Bus.emit(XAPP_LOGIN_DONE, type, dfd);
     });
 
   });
 
-  Bus.on('app:userstatus', function (d) {
-    var type= d.type, statuses = d.statuses, token = d.token;
-    switch (type) {
+  Bus.on(XAPP_USER_STATUS, function (d) {
+    switch (d.type) {
       case 1:
       case 2:
-        Bus.emit('app:crosstoken', statuses, token, type);
+        Bus.emit(XAPP_CROSS_TOKEN, d.tokens, d.type, d.statuses);
         break;
       case 3:
-        Bus.emit('app:usertoken', statuses, token, type);
+        Bus.emit(XAPP_USER_TOKEN, d.tokens, d.type, d.statuses);
         break;
       default:
-        //window.location.href = '/';
+        // fail
+        break;
     }
   });
 
-  // Start Up App
-  Bus.once(START_UP, function () {
+  // xapp login
+  Bus.once(XAPP_LOGIN, function () {
     // get token
-    var search = decodeURIComponent(window.location.search),
-      match = /token=([a-zA-Z0-9]{32})/.exec(search),
-      ntoken = (match && match[1]) || false,
-      signin = Store.get('signin'),
-      otoken = false,
-      tokens = [],
-      // type: 1 signin, 2 setup & merge, 3 auto login, 0 fail
-      type = 0,
-      channel,
-      tl;
-
-
-    signin && (otoken = signin.token);
+    tokenRegExp.lastIndex = 0;
+    var match = tokenRegExp.exec(location.search)
+      // new token
+      , ntoken = (match && match[1]) || false
+      , signin = Store.get('signin')
+      // old token
+      , otoken = (signin && signin.token) || false
+      , tokens = []
+      // logintype:
+      // -------------
+      // 1           3
+      //    login
+      // -------------
+      // 2           4
+      // merge & setup
+      // -------------
+      // 0
+      // fail
+      // -------------
+      , logintype = 0
+      // tokens length
+      , tokensLen;
 
     if (ntoken) {
       tokens.push(ntoken);
@@ -321,49 +363,60 @@ define(function (require) {
       tokens.push(otoken);
     }
 
-    if (!tokens.length) {
-      channel = NO_SIGN_IN;
-      $.when().then(function () {
-        Bus.emit(channel);
-      });
-      return;
+    // xapp cannot login
+    if (0 === (tokensLen = tokens.length)) {
+      return Bus.emit(XAPP_CANNOT_LOGIN);
     }
 
-    Api.request('checkAuthorization'
-      , {
+    // checking auth
+    Api.request('checkAuthorization', {
         type: 'POST',
         data: {
           tokens: JSON.stringify(tokens)
         }
-      }
-      , function (data) {
-        var statuses = data.statuses,
-            token = tokens[0],
-            status0 = statuses[token];
+      },
+
+      function (data) {
+        var statuses = data.statuses
+          , token = tokens[0]
+          , status0 = statuses[token]
+          // token type: `cross` `user`
+          , type
+          , CROSS_TOKEN = 'CROSS_TOKEN'
+          , USER_TOKEN = 'USER_TOKEN';
 
         if (status0) {
+          type = status0.type;
 
-          if (status0.type === 'CROSS_TOKEN') {
-            type = 1;
+          // cross token
+          if (CROSS_TOKEN === type) {
+            logintype = 1;
 
-            if (tl === 2) {
-              type = 2;
+            if (2 === tokensLen) {
+              logintype = 2;
             }
-          } else if (status0.type === 'USER_TOKEN') {
-            type = 3;
 
-            if (tl === 2) {
-              delete statuses[tokens[1]];
+          // user token
+          } else if (USER_TOKEN === type) {
+            logintype = 3;
+
+            if (2 === tokensLen) {
+              logintype = 4;
+              //delete statuses[tokens[1]];
             }
           }
         }
 
-        Bus.emit('app:userstatus', {token: token, type: type, statuses: statuses});
+        Bus.emit(XAPP_USER_STATUS, {
+            tokens: tokens
+          , type: logintype
+          , statuses: statuses
+        });
+
       }
     );
 
   });
-  //Bus.emit(START_UP);
 
   var $BODY = $(document.body);
   $(function () {
