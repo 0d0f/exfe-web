@@ -801,8 +801,8 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '</div>'
                          +       '<div class="rsvp-edit">'
                          +         '<div class="rsvp"></div>'
-                         +         '<span class="by">by <strong>dm</strong></span>'
-                         +         '<button class="btn rsvp-btn">Change</button>'
+                         +         '<span class="by">by <strong></strong></span>'
+                         +         '<button class="btn rsvp-btn"></button>'
                          +       '</div>'
                          +       '<div class="pull-right invited">'
                          +         '<span class="mates">'
@@ -816,7 +816,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '<ul class="identities-list">'
                          +         '<li>'
                          +           '<i class="pull-left icon-envelope"></i>'
-                         +           '<span class="identity">steve_longaddress@0d0f.com</span>'
+                         +           '<span class="identity">' + invitation.identity.external_username + '</span>'
                          +           '<div class="identity-btn">'
                          +               '<i class="icon-minus-sign"></i>'
                          +               '<button class="btn-leave">Leave</button>'
@@ -861,36 +861,52 @@ define('exfeepanel', [], function (require, exports, module) {
         showRsvp : function() {
             var by_identity = this.invitation.by_identity
                             ? this.invitation.by_identity
-                            : (User ? User.default_identity : null);
+                            : (User ? User.default_identity : null),
+                next_rsvp   = '';
+            switch (this.invitation.rsvp_status) {
+                case 'NORESPONSE':
+                    next_rsvp = 'ACCEPTED';
+                    break;
+                case 'ACCEPTED':
+                    next_rsvp = 'DECLINED';
+                    break;
+                case 'DECLINED':
+                    next_rsvp = 'NORESPONSE';
+                    break;
+                default:
+                    return;
+            }
             $('.exfee_pop_up .rsvp-info .rsvp').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
             $('.exfee_pop_up .rsvp-edit .rsvp').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
-            if (by_identity && this.invitation.identity.id === by_identity.id) {
-                $('.exfee_pop_up .rsvp-edit .by').hide();
-            } else {
-                $('.exfee_pop_up .rsvp-edit .by strong').html(invitation.by_identity.name);
-                $('.exfee_pop_up .rsvp-edit .by').show();
+            if (by_identity) {
+                if (this.invitation.identity.id === by_identity.id) {
+                    $('.exfee_pop_up .rsvp-edit .by').hide();
+                } else {
+                    $('.exfee_pop_up .rsvp-edit .by strong').html(by_identity.name);
+                    $('.exfee_pop_up .rsvp-edit .by').show();
+                }
             }
             if (this.invitation.mates) {
                 $('.exfee_pop_up .mates .num').html(this.invitation.mates).show();
                 $('.exfee_pop_up .mates .mates-minus').show();
-                $('.exfee_pop_up .mates .mates-add').toggleClass('icon14-mates-add',  true);
-                $('.exfee_pop_up .mates .mates-add').removeClass('icon-plus-blue',   false);
+                $('.exfee_pop_up .mates .mates-add').toggleClass('icon14-mates-add').toggleClass('icon-plus-blue', false);
             } else {
                 $('.exfee_pop_up .mates .num').hide();
                 $('.exfee_pop_up .mates .mates-minus').hide();
-                $('.exfee_pop_up .mates .mates-add').toggleClass('icon14-mates-add', false);
-                $('.exfee_pop_up .mates .mates-add').toggleClass('icon-plus-blue',    true);
+                $('.exfee_pop_up .mates .mates-add').toggleClass('icon14-mates-add', false).toggleClass('icon-plus-blue');
             }
+            $('.exfee_pop_up .rsvp-edit .rsvp-btn').html(next_rsvp).attr('rsvp', next_rsvp);
         },
 
 
         bindEvents : function() {
             $('.exfee_pop_up .mates .mates-add').bind('click',   this.matesAdd);
             $('.exfee_pop_up .mates .mates-minus').bind('click', this.matesMinus);
+            $('.exfee_pop_up .rsvp-edit .rsvp-btn').bind('click', this.rsvp);
         },
 
 
@@ -911,6 +927,16 @@ define('exfeepanel', [], function (require, exports, module) {
                     ExfeePanel.invitation.identity,
                   --ExfeePanel.invitation.mates
                 );
+                ExfeePanel.showRsvp();
+            }
+        },
+
+
+        rsvp : function() {
+            var rsvp = $(this).attr('rsvp');
+            if (rsvp) {
+                ExfeePanel.invitation.rsvp_status = rsvp;
+                ExfeeWidget.rsvpExfee(ExfeePanel.invitation.identity, rsvp);
                 ExfeePanel.showRsvp();
             }
         },
