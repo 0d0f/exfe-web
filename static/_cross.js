@@ -886,25 +886,23 @@ define('exfeepanel', [], function (require, exports, module) {
 
 
         matesAdd : function() {
-            ExfeePanel.invitation.mates
-        = ++ExfeePanel.invitation.mates > 9 ? 9
-        :   ExfeePanel.invitation.mates;
-            ExfeeWidget.changeMates(
-                ExfeePanel.invitation.identity,
-                ExfeePanel.invitation.mates
-            );
-            ExfeePanel.showRsvp();
+            if (ExfeePanel.invitation.mates < 9) {
+                ExfeeWidget.changeMates(
+                    ExfeePanel.invitation.identity,
+                  ++ExfeePanel.invitation.mates
+                );
+                ExfeePanel.showRsvp();
+            }
         },
 
 
         matesMinus : function() {
-            ExfeePanel.invitation.mates
-        = --ExfeePanel.invitation.mates < 0 ? 0
-        :   ExfeePanel.invitation.mates;
-            ExfeeWidget.changeMates(
-                ExfeePanel.invitation.identity,
-                ExfeePanel.invitation.mates
-            );
+            if (ExfeePanel.invitation.mates > 0) {
+                ExfeeWidget.changeMates(
+                    ExfeePanel.invitation.identity,
+                  --ExfeePanel.invitation.mates
+                );
+            }
             ExfeePanel.showRsvp();
         },
 
