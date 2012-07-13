@@ -114,6 +114,7 @@ define('odof', [], function (require, exports, module) {
   };
 
   _app.unhandled = function (ctx) {
+    this.emit('unhandled', ctx);
   };
 
   _app.replace = function (path, state, init, dispatch) {
