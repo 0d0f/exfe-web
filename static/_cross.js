@@ -902,8 +902,8 @@ define('exfeepanel', [], function (require, exports, module) {
                     ExfeePanel.invitation.identity,
                   --ExfeePanel.invitation.mates
                 );
+                ExfeePanel.showRsvp();
             }
-            ExfeePanel.showRsvp();
         },
 
 
