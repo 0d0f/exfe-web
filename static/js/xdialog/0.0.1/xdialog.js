@@ -209,7 +209,7 @@ define(function (require, exports, module) {
 
             // 清楚user 缓存
             Store.set('lastIdentity', null);
-            Store.set('last_identity', null);
+            Store.set('last_external_id', null);
             Store.set('signin', null);
             //Store.set('user', null);
           }
@@ -289,7 +289,7 @@ define(function (require, exports, module) {
               , function (data) {
                 Store.set('signin', data);
                 // 最后登陆的 external_identity
-                Store.set('last_identity', od.external_identity);
+                Store.set('last_external_id', od.external_identity);
                 if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
                     window.location = window.location.pathname;
                     return;
@@ -790,7 +790,7 @@ define(function (require, exports, module) {
 
       viewData: {
 
-        cls: 'modal-rsp mblack',
+        cls: 'mblack modal-rsp',
 
         title: 'Forgot Password',
 
