@@ -801,7 +801,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '</div>'
                          +       '<div class="rsvp-edit">'
                          +         '<div class="rsvp"></div>'
-                         +         '<span>by <strong>dm</strong></span>'
+                         +         '<span class="by">by <strong>dm</strong></span>'
                          +         '<button class="btn rsvp-btn">Change</button>'
                          +       '</div>'
                          +       '<div class="pull-right invited">'
@@ -859,12 +859,21 @@ define('exfeepanel', [], function (require, exports, module) {
 
 
         showRsvp : function() {
+            var by_identity = this.invitation.by_identity
+                            ? this.invitation.by_identity
+                            : (User ? User.default_identity : null);
             $('.exfee_pop_up .rsvp-info .rsvp').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
             $('.exfee_pop_up .rsvp-edit .rsvp').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
+            if (by_identity && this.invitation.identity.id === by_identity.id) {
+                $('.exfee_pop_up .rsvp-edit .by').hide();
+            } else {
+                $('.exfee_pop_up .rsvp-edit .by strong').html(invitation.by_identity.name);
+                $('.exfee_pop_up .rsvp-edit .by').show();
+            }
             if (this.invitation.mates) {
                 $('.exfee_pop_up .mates .num').html(this.invitation.mates).show();
                 $('.exfee_pop_up .mates .mates-minus').show();
