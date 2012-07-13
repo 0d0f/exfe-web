@@ -728,14 +728,21 @@ define('exfeepanel', [], function (require, exports, module) {
 
     return {
 
-        objBody : objBody,
+        objBody    : objBody,
 
-        tipId   : '',
+        tipId      : '',
 
-        panelId : '',
+        panelId    : '',
+
+        arrRsvp    : {NORESPONSE : ['Not responded'],
+                      ACCEPTED   : ['Accepted'],
+                      INTERESTED : ['Interested'],
+                      DECLINED   : ['Declined']},
+
+        invitation : {},
 
 
-        newId   : function(invitation) {
+        newId : function(invitation) {
             return 'id_'                + invitation.identity.id
                  + 'provider_'          + invitation.identity.provider
                  + 'external_id_'       + invitation.identity.external_id
@@ -774,15 +781,22 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '<h4>' + invitation.identity.name + '</h4>'
                          +     '</div>'
                          +     '<div class="rsvp-actions">'
-                         +       '<div class="pull-right invited">'
-                         +         '<!--<span>+1</span>-->'
-                         +         '<i class="icon-plus-sign"></i>'
-                         +       '</div>'
                          +       '<div class="rsvp-info">'
-                         +         '<div>Accepted</div>'
-                         +         '<span>by <strong>dm</strong></span>'
+                         +         '<div class="rsvp"></div>'
                          +       '</div>'
-                         +       '<!--<button class="btn rsvp-btn">Accepted</button>-->'
+                         +       '<div class="rsvp-edit">'
+                         +         '<div class="rsvp"></div>'
+                         +         '<span>by <strong>dm</strong></span>'
+                         +         '<button class="btn rsvp-btn">Change</button>'
+                         +       '</div>'
+                         +       '<div class="pull-right invited">'
+                         +         '<!--i class="icon-plus-blue"></i-->'
+                         +         '<span class="mates">'
+                         +          '<i class="pull-left mates-minus icon14-mates-minus"></i>'
+                         +          '<span class="pull-left num">2</span>'
+                         +          '<i class="pull-left mates-add icon14-mates-add"></i>'
+                         +        '</span>'
+                         +       '</div>'
                          +     '</div>'
                          +     '<div class="identities">'
                          +       '<ul class="identities-list">'
@@ -804,9 +818,10 @@ define('exfeepanel', [], function (require, exports, module) {
                          +         '</p>'
                          +       '</div>'
                          +     '</div>'
-                         +     '<i class="expand nomore"></i>'
+                         +     '<!--i class="expand nomore"></i-->'
                          +   '</div>'
                          + '</div>';
+            this.invitation = ExfeUtilities.clone(invitation);
             if (this.panelId !== strTipId || !$('.exfeepanel').length) {
                 this.panelId  =  strTipId;
                 this.hideTip();
@@ -814,6 +829,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 this.objBody.append(strPanel);
                 $('.exfeepanel').show();
             }
+            this.showRsvp();
         },
 
 
@@ -824,6 +840,16 @@ define('exfeepanel', [], function (require, exports, module) {
 
         hidePanel : function() {
             $('.exfeepanel').hide().remove();
+        },
+
+
+        showRsvp : function() {
+            $('.exfee_pop_up .rsvp-info .rsvp').html(
+                this.arrRsvp[this.invitation.rsvp_status][0]
+            );
+            $('.exfee_pop_up .rsvp-edit .rsvp').html(
+                this.arrRsvp[this.invitation.rsvp_status][0]
+            );
         },
 
     };

@@ -241,7 +241,7 @@ EXFE Maps
 <?php include 'share/footer.php'; ?>
 <script src="/static/js/marked/0.2.5/marked.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 <script src="/static/_cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-<script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+<script src="/static/js/userlogin/0.0.1/userlogin.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
 </body>
 </html>
