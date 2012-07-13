@@ -363,8 +363,17 @@ ExfeeWidget = {
                 host        : !!host,
                 mates       : 0
             });
+            this.callback();
         }
-        this.callback();
+    },
+
+
+    delExfee : function(identity) {
+        var idx = this.checkExistence(identity);
+        if (idx !== false) {
+            Exfee.invitations.splice(idx, 1);
+            this.callback();
+        }
     },
 
 
@@ -372,8 +381,8 @@ ExfeeWidget = {
         var idx = this.checkExistence(identity);
         if (idx !== false) {
             Exfee.invitations[idx].rsvp_status = rsvp;
+            this.callback();
         }
-        this.callback();
     },
 
 
@@ -387,8 +396,8 @@ ExfeeWidget = {
                 mates = 0;
             }
             Exfee.invitations[idx].mates = mates;
+            this.callback();
         }
-        this.callback();
     },
 
 
@@ -758,6 +767,8 @@ define('exfeepanel', [], function (require, exports, module) {
 
         mates_edit : false,
 
+        pre_delete : false,
+
 
         newId : function(invitation) {
             return 'id_'                + invitation.identity.id
@@ -825,8 +836,8 @@ define('exfeepanel', [], function (require, exports, module) {
                          +         '<li>'
                          +           '<i class="pull-left icon-envelope"></i>'
                          +           '<span class="identity">' + invitation.identity.external_username + '</span>'
-                         +           '<div class="identity-btn">'
-                         +               '<i class="icon-minus-sign"></i>'
+                         +           '<div class="identity-btn delete">'
+                         +               '<i class="icon-minus-sign">-</i>'
                          +               '<button class="btn-leave">Leave</button>'
                          +           '</div>'
                          +         '</li>'
@@ -835,7 +846,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +         '<p>'
                          +           '<span class="xalert-error">Remove yourself?</span>'
                          +           '<br />'
-                         +           'You will <strong>NOT</strong> be able to access any information in this <span class="x-sign">X</span>. Confirm leaving?'
+                         +           '<span class="xalter-info">You will <strong>NOT</strong> be able to access any information in this <span class="x-sign">X</span>. Confirm leaving?</span>'
                          +           '<button class="pull-right btn-cancel">Cancel</button>'
                          +         '</p>'
                          +       '</div>'
@@ -844,8 +855,10 @@ define('exfeepanel', [], function (require, exports, module) {
                          +   '</div>'
                          + '</div>';
             this.invitation = ExfeUtilities.clone(invitation);
-            if (this.panelId !== strTipId || !$('.exfeepanel').length) {
-                this.panelId  =  strTipId;
+            if (this.panelId   !== strTipId || !$('.exfeepanel').length) {
+                this.panelId    =  strTipId;
+                this.mates_edit =  false;
+                this.pre_delete =  false;
                 this.hideTip();
                 this.hidePanel();
                 this.objBody.append(strPanel);
@@ -867,9 +880,9 @@ define('exfeepanel', [], function (require, exports, module) {
 
 
         showRsvp : function() {
-            var by_identity = this.invitation.by_identity
-                            ? this.invitation.by_identity
-                            : (User ? User.default_identity : null),
+            var my_identity = User ? User.default_identity : null,
+                by_identity = this.invitation.by_identity
+                            ? this.invitation.by_identity  : my_identity,
                 next_rsvp   = '';
             switch (this.invitation.rsvp_status) {
                 case 'NORESPONSE':
@@ -926,6 +939,27 @@ define('exfeepanel', [], function (require, exports, module) {
                 $('.exfee_pop_up .mates-area').hide();
             }
             $('.exfee_pop_up .rsvp-edit .rsvp-btn').html(next_rsvp).attr('rsvp', next_rsvp);
+            if (this.invitation.host) {
+                $('.exfee_pop_up .identities-list .delete i').hide();
+                $('.exfee_pop_up .identities-list .delete button').hide();
+                $('.exfee_pop_up .identity-actions').hide();
+            } else {
+                if (this.pre_delete) {
+                    $('.exfee_pop_up .identities-list .delete i').hide();
+                    $('.exfee_pop_up .identities-list .delete button').show();
+                    if (my_identity && this.invitation.identity.id === my_identity.id) {
+                        $('.exfee_pop_up .identity-actions').show();
+                        $('.exfee_pop_up .identities-list .btn-leave').html('Leave');
+                    } else {
+                        $('.exfee_pop_up .identity-actions').hide();
+                        $('.exfee_pop_up .identities-list .btn-leave').html('Remove');
+                    }
+                } else {
+                    $('.exfee_pop_up .identities-list .delete i').show();
+                    $('.exfee_pop_up .identities-list .delete button').hide();
+                    $('.exfee_pop_up .identity-actions').hide();
+                }
+            }
         },
 
 
@@ -941,6 +975,24 @@ define('exfeepanel', [], function (require, exports, module) {
                     case 'mouseout':
                         ExfeePanel.mates_edit = false;
                 }
+                ExfeePanel.showRsvp();
+            });
+            $('.exfee_pop_up .identities-list .delete i').bind('click',      function(event) {
+                event.stopPropagation();
+                ExfeePanel.pre_delete = true;
+                ExfeePanel.showRsvp();
+            });
+            $('.exfee_pop_up .identities-list .delete button').bind('click', function(event) {
+                ExfeeWidget.delExfee(ExfeePanel.invitation.identity);
+                // @todo by Leask if the delete on is me, reflash this page!!!!!
+                ExfeePanel.hidePanel();
+            });
+            $('.exfee_pop_up .identity-actions .btn-cancel').bind('click',   function(event) {
+                ExfeePanel.pre_delete = false;
+                ExfeePanel.showRsvp();
+            });
+            $('.exfee_pop_up').bind('click', function() {
+                ExfeePanel.pre_delete = false;
                 ExfeePanel.showRsvp();
             });
         },
