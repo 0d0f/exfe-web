@@ -377,6 +377,21 @@ ExfeeWidget = {
     },
 
 
+    changeMates: function(identity, mates) {
+        var idx = this.checkExistence(identity);
+        if (idx !== false) {
+            if (mates > 9) {
+                mates = 9;
+            }
+            if (mates < 0) {
+                mates = 0;
+            }
+            Exfee.invitations[idx].mates = mates;
+        }
+        this.callback();
+    },
+
+
     rsvpMe : function(rsvp) {
         this.rsvpExfee(User.default_identity, rsvp);
     },
@@ -790,11 +805,10 @@ define('exfeepanel', [], function (require, exports, module) {
                          +         '<button class="btn rsvp-btn">Change</button>'
                          +       '</div>'
                          +       '<div class="pull-right invited">'
-                         +         '<!--i class="icon-plus-blue"></i-->'
                          +         '<span class="mates">'
                          +          '<i class="pull-left mates-minus icon14-mates-minus"></i>'
                          +          '<span class="pull-left num">2</span>'
-                         +          '<i class="pull-left mates-add icon14-mates-add"></i>'
+                         +          '<i class="pull-left mates-add"></i>'
                          +        '</span>'
                          +       '</div>'
                          +     '</div>'
@@ -827,6 +841,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 this.hideTip();
                 this.hidePanel();
                 this.objBody.append(strPanel);
+                this.bindEvents();
                 $('.exfeepanel').show();
             }
             this.showRsvp();
@@ -850,7 +865,49 @@ define('exfeepanel', [], function (require, exports, module) {
             $('.exfee_pop_up .rsvp-edit .rsvp').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
+            if (this.invitation.mates) {
+                $('.exfee_pop_up .mates .num').html(this.invitation.mates).show();
+                $('.exfee_pop_up .mates .mates-minus').show();
+                $('.exfee_pop_up .mates .mates-add').toggleClass('icon14-mates-add',  true);
+                $('.exfee_pop_up .mates .mates-add').removeClass('icon-plus-blue',   false);
+            } else {
+                $('.exfee_pop_up .mates .num').hide();
+                $('.exfee_pop_up .mates .mates-minus').hide();
+                $('.exfee_pop_up .mates .mates-add').toggleClass('icon14-mates-add', false);
+                $('.exfee_pop_up .mates .mates-add').toggleClass('icon-plus-blue',    true);
+            }
         },
+
+
+        bindEvents : function() {
+            $('.exfee_pop_up .mates .mates-add').bind('click',   this.matesAdd);
+            $('.exfee_pop_up .mates .mates-minus').bind('click', this.matesMinus);
+        },
+
+
+        matesAdd : function() {
+            ExfeePanel.invitation.mates
+        = ++ExfeePanel.invitation.mates > 9 ? 9
+        :   ExfeePanel.invitation.mates;
+            ExfeeWidget.changeMates(
+                ExfeePanel.invitation.identity,
+                ExfeePanel.invitation.mates
+            );
+            ExfeePanel.showRsvp();
+        },
+
+
+        matesMinus : function() {
+            ExfeePanel.invitation.mates
+        = --ExfeePanel.invitation.mates < 0 ? 0
+        :   ExfeePanel.invitation.mates;
+            ExfeeWidget.changeMates(
+                ExfeePanel.invitation.identity,
+                ExfeePanel.invitation.mates
+            );
+            ExfeePanel.showRsvp();
+        },
+
 
     };
 
