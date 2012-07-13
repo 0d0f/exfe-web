@@ -100,7 +100,9 @@ define('util', [], function (require, exports, module) {
         return res;
       }
 
-    }()
+    }(),
+
+    tokenRegExp: /token=([a-zA-Z0-9]{32})/
   };
 
   return Util;
