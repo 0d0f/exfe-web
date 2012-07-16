@@ -613,7 +613,7 @@ ExfeeWidget = {
 
 
     checkInput : function(objInput, force) {
-        if (!objInput) {
+        if (!objInput || !objInput.length) {
             return;
         }
         var strInput   = objInput.val(),
