@@ -11,6 +11,7 @@
   <script src="/static/js/jquery/1.7.2/jquery.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/moment/1.6.2/moment.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/store/1.3.3/store.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/marked/0.2.5/marked.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/handlebars/1.0.0/handlebars.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/jqfocusend/0.0.1/jqfocusend.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/jqoffset/0.0.1/jqoffset.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
@@ -25,5 +26,20 @@
   <script src="/static/js/xidentity/0.0.1/xidentity.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/xdialog/0.0.1/xdialog.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
+  <!-- profile -->
+  <script src="/static/js/filehtml5/0.0.1/filehtml5.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/uploader/0.0.1/uploader.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/profile/0.0.1/profile.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
+  <!-- cross -->
+  <script src="/static/_cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
+  <script src="/static/js/global/0.0.1/global.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
+  <!-- odof -->
+  <script src="/static/js/odof/0.0.1/odof.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
   <!-- 每个页面先单独引入 signin -->
-  <!--script src="/static/js/userpanel/0.0.1/userpanel.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script-->
+  <script src="/static/js/userlogin/0.0.1/userlogin.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
+  <script src="/static/js/xapp/0.0.1/xapp.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>

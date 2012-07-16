@@ -20,6 +20,7 @@
     "dojo"          : false,
 
     "predef"        : [  // Custom globals.
+      "$",
       "define",
       "Modernizr",
       // https://developer.mozilla.org/en/Core_JavaScript_1.5_Guide/Functions#escape_and_unescape_functions
@@ -47,7 +48,7 @@
     "laxbreak"      : true,   // Tolerate unsafe line breaks e.g. `return [\n] x` without semicolons.                                                       换行
     "laxcomma"      : true,
     "bitwise"       : false,  // Prohibit bitwise operators (&, |, ^, etc.).                                                                                位运算
-    "boss"          : false,  // Tolerate assignments inside if, for & while. Usually conditions & loops are for comparison, not assignments.               赋值语句
+    "boss"          : true,   // Tolerate assignments inside if, for & while. Usually conditions & loops are for comparison, not assignments.               赋值语句
     "curly"         : true,   // Require {} for every new block or scope.                                                                                   {} 包裹
     "eqeqeq"        : true,   // Require triple equals i.e. `===`.                                                                                          强比较
     "eqnull"        : false,  // Tolerate use of `== null`.                                                                                                 == 比较
@@ -62,10 +63,10 @@
     "regexdash"     : false,  // Tolerate unescaped last dash i.e. `[-...]`.
     "scripturl"     : true,   // Tolerate script-targeted URLs.
     "shadow"        : false,  // Allows re-define variables later in code e.g. `var x=1; x=2;`.
-    "supernew"      : false,  // Tolerate `new function () { ... };` and `new Object;`.
+    "supernew"      : true,   // Tolerate `new function () { ... };` and `new Object;`.
     "undef"         : true,   // Require all non-global variables be declared before they are used.                                                         全局，使用前先声明
     "smarttabs"     : true,   // If smarttabs should be tolerated (http://www.emacswiki.org/emacs/SmartTabs).
-    "proto"         : false,  // If the `__proto__` property should be allowed.
+    "proto"         : true,   // If the `__proto__` property should be allowed.
 
 
     // Personal styling prefrences.
