@@ -1,7 +1,6 @@
 define(function (require) {
   var $ = require('jquery');
   $(function() {
-    document.title = 'EXFE';
     var winHeight = $(document).outerHeight();
     var minH = 528, maxH = 704,
         imgminH = 450, imgmaxH = 600,

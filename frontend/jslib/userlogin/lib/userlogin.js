@@ -1,5 +1,4 @@
-define(function (require) {
-
+define('middleware', [], function (require, exports, module) {
   var $ = require('jquery');
   var R = require('rex');
   var Api = require('api');
@@ -8,185 +7,191 @@ define(function (require) {
   var Store = require('store');
   var Handlebars = require('handlebars');
 
-  // window.location
-  var location = window.location;
-
   // token regexp
   var tokenRegExp = Util.tokenRegExp;
 
-  var userpanelTmps = {
-    // new identity
-    '1': ''
-      + '<div class="dropdown-menu user-panel">'
-        + '<div class="header">'
-          + '<h2>Browsing Identity</h2>'
-        + '</div>'
-        + '<div class="body">'
-        + '<div>You are browsing this page as Email identity:</div>'
-        + '<div class="identity">'
-          + '<span class="pull-right avatar">'
-            + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
-          + '</span>'
-          + '<i class="icon16-identity-{{provider}}"></i>'
-          + '<span>{{external_id}}</span>'
-        + '</div>'
-        + '</div>'
-        + '<div class="footer">'
-          + '<button class="xbtn xbtn-signin" data-widget="dialog" data-identity-id={{id}} data-dialog-tab="{{__tab__}}" data-dialog-type="{{__dialogtype__}}" data-source="{{external_id}}">Sign In</button>'
-        + '</div>'
-      + '</div>',
+  var middleware = module.exports = {};
 
-    // new identity & merge
-    '2': ''
-      + '<div class="dropdown-menu user-panel">'
-        + '<div class="header">'
-          + '<h2>Browsing Identity</h2>'
-        + '</div>'
-        + '<div class="body">'
-          + '<div>You are browsing this page as Email identity:</div>'
-          + '<div class="identity">'
-            + '<span class="pull-right avatar">'
-              + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
-            + '</span>'
-            + '<i class="icon-envelope"></i>'
-            + '<span>{{external_id}}</span>'
-          + '</div>'
-          + '<div class="set-up">'
-            + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{external_id}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
-          + '</div>'
-          //+ '<div class="spliterline"></div>'
-          //+ '<div class="merge hide">'
-          //  + '<a href="#">Merge</a> with your currently signed in identities:'
-          //+ '</div>'
-          //+ '<div class="identity hide">'
-            //+ '<span class="pull-right avatar">'
-            //  + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
-            //+ '</span>'
-            //+ '<i class="icon16-identity-{{provider}}"></i>'
-            //+ '<span>{{external_id}}</span>'
-          //+ '</div>'
-          + '</div>'
-        + '<div class="footer">'
-          + '<button class="xbtn xbtn-gather" id="js-xgather">Gather</button>'
-        + '</div>'
-      + '</div>',
+  middleware.login = function (req, res, next) {
+    tokenRegExp.lastIndex = 0;
+    var match = tokenRegExp.exec(location.search)
+      // new token
+      , ntoken = (match && match[1]) || false
+      , signin = Store.get('signin')
+      // old token
+      , otoken = (signin && signin.token) || false
+      , tokens = []
+      // logintype:
+      // -------------
+      // 1           3
+      //    login
+      // -------------
+      // 2           4
+      // merge & setup
+      // -------------
+      // 0
+      // fail
+      // -------------
+      , logintype = 0
+      // tokens length
+      , tokensLen;
 
-    // signin
-    '3': ''
-      + '<div class="dropdown-menu user-panel">'
-        + '<div class="header">'
-          + '<div class="meta">'
-            + '<a class="pull-right avatar" href="/s/profile">'
-              + '<img width="40" height="40" alt="" src="{{avatar_filename}}" />'
-            + '</a>'
-            + '<a class="attended" href="/s/profile">'
-              + '<span class="attended-nums">{{cross_quantity}}</span>'
-              + '<span class="attended-x"><em class="x-sign">X</em> attended</span>'
-            + '</a>'
-          + '</div>'
-        + '</div>'
-        + '<div class="body">'
-        + '</div>'
-        + '<div class="footer">'
-          //+ '<button class="xbtn xbtn-gather">Gather</button>'
-          + '<a href="/x/gather" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
-          + '<div class="spliterline"></div>'
-          + '<div class="actions">'
-            + '<a href="/s/logout" class="pull-right" id="js-signout">Sign out</a>'
-            //+ '<a href="#">Settings</a>'
-          + '</div>'
-        + '</div>'
-      + '</div>'
+    if (ntoken) {
+      tokens.push(ntoken);
+    }
+
+    if (otoken && (ntoken !== otoken)) {
+      tokens.push(otoken);
+    }
+
+    res.loginable = true;
+
+    // login-able
+    if (0 === (tokensLen = tokens.length)) {
+      res.loginable = false;
+      if (req.url !== '/') {
+        Bus.emit('xapp:goto_home');
+      }
+      else {
+        next();
+      }
+      return;
+    }
+
+    var signin = Store.get('signin');
+
+    // checking auth
+    Api.request('checkAuthorization', {
+        type: 'POST',
+        data: {
+          tokens: JSON.stringify(tokens)
+        }
+      },
+
+      function (data) {
+        var statuses = data.statuses
+          , token = tokens[0]
+          , status0 = statuses[token]
+          // token type: `cross` `user`
+          , type
+          , CROSS_TOKEN = 'CROSS_TOKEN'
+          , USER_TOKEN = 'USER_TOKEN';
+
+        if (status0) {
+          type = status0.type;
+
+          // cross token
+          if (CROSS_TOKEN === type) {
+            logintype = 1;
+
+            if (2 === tokensLen) {
+              logintype = 2;
+            }
+
+          // user token
+          } else if (USER_TOKEN === type) {
+            logintype = 3;
+
+            if (2 === tokensLen) {
+              logintype = 4;
+              //delete statuses[tokens[1]];
+            }
+          }
+        }
+
+        Bus.emit(XAPP_USER_STATUS, {
+            tokens: tokens
+          , type: logintype
+          , statuses: statuses
+        });
+
+        next();
+
+      }
+    );
+
   };
-
-  // XAPP_LOGIN
-  var XAPP_LOGIN = 'xapp:login';
-
-  // XAPP_LOGIN_DONE
-  var XAPP_LOGIN_DONE = 'xapp:logindone';
-
-  // XAPP_LOGIN_FAIL
-  var XAPP_LOGIN_FAIL = 'xapp:loginfail';
-
-  // XAPP_CANNOT_LOGIN
-  var XAPP_CANNOT_LOGIN = 'xapp:cannotlogin';
-
-  // XAPP_USER_STATUS
-  var XAPP_USER_STATUS = 'xapp:userstatus';
 
   // XAPP_USER_TOKEN
   var XAPP_USER_TOKEN = 'xapp:usertoken';
 
-  // XAPP_USER_PANEL
-  var XAPP_USER_PANEL = 'xapp:userpanel';
+  Bus.on(XAPP_USER_TOKEN, function (token, user_id, type) {
+    var dfd;
 
-  // XAPP_CROSS_TOKEN
-  var XAPP_CROSS_TOKEN = 'xapp:crosstoken';
+    // set token
+    Api.setToken(token);
 
-  var XAPP_CROSS_FETCH = 'xapp:crossfetch';
+    Store.set('signin', {token: token, user_id: user_id});
 
-  function createUserPanel(user, type) {
-    if (type) {
-      $('#js-signin').hide();
-      var $up = $('.nav li.dropdown').show();
-
-      var s = Handlebars.compile(userpanelTmps[type]);
-
-      $(s(user)).appendTo($up.find('.dropdown-wrapper'));
-    }
-  }
-
-  // user can't login
-  Bus.on(XAPP_CANNOT_LOGIN, function () {
-    $('#js-signin').show();
-  });
-
-  Bus.on(XAPP_CROSS_TOKEN, function (d) {
-    var type = d.type
-      , tokens = d.tokens
-      , token = tokens[0]
-      , status = d.status[tokens]
-      , identity_id = status.identity_id
-      , registration = status.identity_registration
-      , dialogType = 'identification'
-      , tab = ''
-      , dfd;
-
-    switch (registration) {
-      case 'VERIFY':
-        tab = 'd01';
-        break;
-      case 'SIGN_UP':
-        tab = 'd02';
-        type = d.type = 2;
-        break;
-      case 'SIGN_IN':
-        tab = 'd01';
-    }
-
-    dfd = Api.request('getIdentityById'
+    dfd = Api.request('getUser'
       , {
-        resources: {identity_id: identity_id}
+        resources: {user_id: user_id}
       }
       , function (data) {
-        var external_id = data.identity.external_id;
-        $('#user-name > span').html(data.identity.name || external_id.split('@')[0]);
-        if ('verification' === dialogType) {
-          dialogType += '_' + data.identity.provider;
+        var last_external_id = Store.get('last_external_id')
+          , identity;
+
+        if (last_external_id) {
+          identity = R.filter(data.user.identities, function (v) {
+            if (last_external_id === v.external_id) {
+              return true;
+            }
+          })[0];
+        } else {
+          identity = data.user.default_identity;
         }
-        data.identity.__dialogtype__ = dialogType;
-        data.identity.__tab__ = tab;
-        createUserPanel(data.identity, type);
+
+        // set last identity
+        Store.set('user', data.user);
+        Store.set('lastIdentity', identity);
+        Store.set('last_external_id', identity.external_id);
       }
     );
 
-    dfd.done(function (data) {
-      Bus.emit(XAPP_CROSS_FETCH, token, status);
+    // login done
+    dfd.done(function (d) {
+      Bus.emit(XAPP_LOGIN_DONE, type, dfd);
     });
+
   });
 
-  Bus.on(XAPP_USER_PANEL, function (type, user) {
+  // XAPP_USER_STATUS
+  var XAPP_USER_STATUS = 'xapp:userstatus';
 
+  Bus.on(XAPP_USER_STATUS, function (d) {
+    switch (d.type) {
+      case 1:
+      case 2:
+        Bus.emit(XAPP_CROSS_TOKEN, d.tokens, d.type, d.statuses);
+        break;
+      case 3:
+        var token = d.tokens[0]
+          , status = d.statuses[token]
+          , user_id = status.user_id;
+        Bus.emit(XAPP_USER_TOKEN, token, user_id, d.type);
+        break;
+      default:
+        // fail
+        break;
+    }
+  });
+
+  // XAPP_LOGIN_DONE
+  var XAPP_LOGIN_DONE = 'xapp:logindone';
+
+  Bus.on(XAPP_LOGIN_DONE, function (type, dfd) {
+    dfd.then(function (data) {
+      Bus.emit(XAPP_USER_PANEL, type, data.response.user);
+      Bus.emit('xapp:home_profile');
+    });
+
+  });
+
+  // XAPP_USER_PANEL
+  var XAPP_USER_PANEL = 'xapp:userpanel';
+
+  Bus.on(XAPP_USER_PANEL, function (type, user) {
+    if($('.user-panel').length) return;
     createUserPanel(user, type);
 
     $('#user-name > span').html(user.name);
@@ -261,162 +266,104 @@ define(function (require) {
     );
   });
 
-  Bus.on(XAPP_LOGIN_DONE, function (type, dfd) {
+  // helper
 
-    dfd.then(function (data) {
-      //Bus.emit('app:signinsuccess', data);
-      //var SIGN_IN_OTHERS = 'app:signinothers';
-      //Bus.emit(SIGN_IN_OTHERS, dfd);
-      Bus.emit(XAPP_USER_PANEL, type, data.response.user);
-    });
+  function createUserPanel(user, type) {
+    if (type) {
+      $('#js-signin').hide();
+      var $up = $('.nav li.dropdown').remove('user').show();
 
-  });
+      var s = Handlebars.compile(userpanelTmps[type]);
 
-  Bus.on(XAPP_USER_TOKEN, function (tokens, type, statuses) {
-    var token = tokens[0]
-      , status = statuses[token]
-      , user_id = status.user_id
-      , dfd;
-
-    // set token
-    Api.setToken(token);
-
-    Store.set('signin', {token: token, user_id: user_id});
-
-    dfd = Api.request('getUser'
-      , {
-        resources: {user_id: user_id}
-      }
-      , function (data) {
-        var last_external_id = Store.get('last_external_id')
-          , identity;
-
-        if (last_external_id) {
-          identity = R.filter(data.user.identities, function (v) {
-            if (last_external_id === v.external_id) {
-              return true;
-            }
-          })[0];
-        } else {
-          identity = data.user.default_identity;
-        }
-
-        // set last identity
-        Store.set('lastIdentity', identity);
-        Store.set('last_external_id', identity.external_id);
-      }
-    );
-
-    // login done
-    dfd.done(function (d) {
-      Bus.emit(XAPP_LOGIN_DONE, type, dfd);
-    });
-
-  });
-
-  Bus.on(XAPP_USER_STATUS, function (d) {
-    switch (d.type) {
-      case 1:
-      case 2:
-        Bus.emit(XAPP_CROSS_TOKEN, d.tokens, d.type, d.statuses);
-        break;
-      case 3:
-        Bus.emit(XAPP_USER_TOKEN, d.tokens, d.type, d.statuses);
-        break;
-      default:
-        // fail
-        break;
+      $(s(user)).appendTo($up.find('.dropdown-wrapper'));
+      //$('.dropdown-wrapper').find('.user-panel').addClass('show');
     }
-  });
+  }
 
-  // xapp login
-  Bus.once(XAPP_LOGIN, function () {
-    // get token
-    tokenRegExp.lastIndex = 0;
-    var match = tokenRegExp.exec(location.search)
-      // new token
-      , ntoken = (match && match[1]) || false
-      , signin = Store.get('signin')
-      // old token
-      , otoken = (signin && signin.token) || false
-      , tokens = []
-      // logintype:
-      // -------------
-      // 1           3
-      //    login
-      // -------------
-      // 2           4
-      // merge & setup
-      // -------------
-      // 0
-      // fail
-      // -------------
-      , logintype = 0
-      // tokens length
-      , tokensLen;
+  var userpanelTmps = {
+    // new identity
+    '1': ''
+      + '<div class="dropdown-menu user-panel">'
+        + '<div class="header">'
+          + '<h2>Browsing Identity</h2>'
+        + '</div>'
+        + '<div class="body">'
+        + '<div>You are browsing this page as Email identity:</div>'
+        + '<div class="identity">'
+          + '<span class="pull-right avatar">'
+            + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
+          + '</span>'
+          + '<i class="icon16-identity-{{provider}}"></i>'
+          + '<span>{{external_id}}</span>'
+        + '</div>'
+        + '</div>'
+        + '<div class="footer">'
+          + '<button class="xbtn xbtn-signin" data-widget="dialog" data-identity-id={{id}} data-dialog-tab="{{__tab__}}" data-dialog-type="{{__dialogtype__}}" data-source="{{external_id}}">Sign In</button>'
+        + '</div>'
+      + '</div>',
 
-    if (ntoken) {
-      tokens.push(ntoken);
-    }
+    // new identity & merge
+    '2': ''
+      + '<div class="dropdown-menu user-panel">'
+        + '<div class="header">'
+          + '<h2>Browsing Identity</h2>'
+        + '</div>'
+        + '<div class="body">'
+          + '<div>You are browsing this page as Email identity:</div>'
+          + '<div class="identity">'
+            + '<span class="pull-right avatar">'
+              + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
+            + '</span>'
+            + '<i class="icon-envelope"></i>'
+            + '<span>{{external_id}}</span>'
+          + '</div>'
+          + '<div class="set-up">'
+            + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{external_id}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
+          + '</div>'
+          //+ '<div class="spliterline"></div>'
+          //+ '<div class="merge hide">'
+          //  + '<a href="#">Merge</a> with your currently signed in identities:'
+          //+ '</div>'
+          //+ '<div class="identity hide">'
+            //+ '<span class="pull-right avatar">'
+            //  + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
+            //+ '</span>'
+            //+ '<i class="icon16-identity-{{provider}}"></i>'
+            //+ '<span>{{external_id}}</span>'
+          //+ '</div>'
+          + '</div>'
+        + '<div class="footer">'
+          + '<button class="xbtn xbtn-gather" id="js-xgather">Gather</button>'
+        + '</div>'
+      + '</div>',
 
-    if (otoken && (ntoken !== otoken)) {
-      tokens.push(otoken);
-    }
-
-    // xapp cannot login
-    if (0 === (tokensLen = tokens.length)) {
-      return Bus.emit(XAPP_CANNOT_LOGIN);
-    }
-
-    // checking auth
-    Api.request('checkAuthorization', {
-        type: 'POST',
-        data: {
-          tokens: JSON.stringify(tokens)
-        }
-      },
-
-      function (data) {
-        var statuses = data.statuses
-          , token = tokens[0]
-          , status0 = statuses[token]
-          // token type: `cross` `user`
-          , type
-          , CROSS_TOKEN = 'CROSS_TOKEN'
-          , USER_TOKEN = 'USER_TOKEN';
-
-        if (status0) {
-          type = status0.type;
-
-          // cross token
-          if (CROSS_TOKEN === type) {
-            logintype = 1;
-
-            if (2 === tokensLen) {
-              logintype = 2;
-            }
-
-          // user token
-          } else if (USER_TOKEN === type) {
-            logintype = 3;
-
-            if (2 === tokensLen) {
-              logintype = 4;
-              //delete statuses[tokens[1]];
-            }
-          }
-        }
-
-        Bus.emit(XAPP_USER_STATUS, {
-            tokens: tokens
-          , type: logintype
-          , statuses: statuses
-        });
-
-      }
-    );
-
-  });
+    // signin
+    '3': ''
+      + '<div class="dropdown-menu user-panel">'
+        + '<div class="header">'
+          + '<div class="meta">'
+            + '<a class="pull-right avatar" href="/#{{default_identity.external_id}}">'
+              + '<img width="40" height="40" alt="" src="{{avatar_filename}}" />'
+            + '</a>'
+            + '<a class="attended" href="/#{{default_identity.external_id}}">'
+              + '<span class="attended-nums">{{cross_quantity}}</span>'
+              + '<span class="attended-x"><em class="x-sign">X</em> attended</span>'
+            + '</a>'
+          + '</div>'
+        + '</div>'
+        + '<div class="body">'
+        + '</div>'
+        + '<div class="footer">'
+          //+ '<button class="xbtn xbtn-gather">Gather</button>'
+          + '<a href="/x/gather" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
+          + '<div class="spliterline"></div>'
+          + '<div class="actions">'
+            + '<a href="#" class="pull-right" id="js-signout">Sign out</a>'
+            //+ '<a href="#">Settings</a>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+  };
 
   var $BODY = $(document.body);
   $(function () {
@@ -430,7 +377,7 @@ define(function (require) {
     function hover(e) {
       var self = $(this)
         , timer = self.data('timer')
-        , $userPanel = self.find('div.user-panel')
+        , $userPanel = self.find('div.user-panel').addClass('show')
         , h = -$userPanel.outerHeight();
 
       e.preventDefault();
@@ -474,8 +421,17 @@ define(function (require) {
 
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
+      $('.navbar .dropdown-wrapper').find('.user-panel').remove();;
+      $('#js-signin')
+        .show()
+        .next().hide()
+        .removeClass('user')
+        .find('.fill-left').addClass('hide')
+        .end()
+        .find('#user-name span').text('');;
       Store.remove('signin');
-      window.location = '/s/logout';
+      Bus.emit('xapp:goto_home');
     });
   });
+
 });

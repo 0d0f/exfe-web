@@ -234,10 +234,10 @@ ExfeeWidget = {
                     ExfeeWidget.showPanel(domEvent);
             }
         });
-        this.complete_timer = setInterval(
-            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
-            50
-        );
+        //this.complete_timer = setInterval(
+        //    "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
+        //    50
+        //);
         return ExfeUtilities.clone(this);
     },
 
@@ -1622,7 +1622,6 @@ define(function (require, exports, module) {
     // init api
     window.Store = require('store');
     window.Api   = require('api');
-
 
     // get current user
     var Signin  = Store.get('signin');
