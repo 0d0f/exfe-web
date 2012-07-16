@@ -1542,7 +1542,7 @@ define(function (require, exports, module) {
     var GetCross = function(cross_id) {
         Api.request(
             'getCross',
-            {resources : {cross_id : Cross_id}},
+            {resources : {cross_id : cross_id}},
             function(data) {
                 UpdateCross(data.cross);
             },
