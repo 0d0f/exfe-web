@@ -1582,8 +1582,7 @@ define(function (require, exports, module) {
             'gather',
             {type : 'POST', data : JSON.stringify(objCross)},
             function(data) {
-                ShowGatherForm(true);
-                UpdateCross(data.cross);
+                document.location = '/#!' + data.cross.id;
             },
             function(data) {
                 console.log(data);
