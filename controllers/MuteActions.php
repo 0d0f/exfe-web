@@ -1,7 +1,8 @@
 <?php
+
 class MuteActions extends ActionController {
-    public function doX()
-    {
+
+    public function doX() {
         $cross_id = intval($_GET["id"]);
 
         $success=FALSE;
@@ -60,5 +61,3 @@ class MuteActions extends ActionController {
     }
 
 }
-
-
