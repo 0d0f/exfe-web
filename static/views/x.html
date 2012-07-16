@@ -1,0 +1,202 @@
+  <section id="gather" class="x-gather">
+
+    <!-- Cross-Form -->
+    <div class="cross-form" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+
+      <div class="form-horizontal">
+
+          <legend class="hide">Extending form controls</legend>
+
+          <!-- Cross-Form: Title -->
+          <div class="control-group">
+            <label class="control-label" for="gather-title">Intent</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="gather-title" placeholder="Enter intent" />
+            </div>
+          </div>
+          <!-- .Cross-Form: Title -->
+
+          <!-- Cross-Form: Exfee -->
+          <div class="control-group cross-exfee" id="gather-exfee">
+            <label class="control-label" for="gather-exfee-input">Exfee</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="gather-exfee-input" placeholder="Enter attendees' information" />
+            </div>
+
+            <div class="autocomplete" id="gather-exfee-complete"><ol></ol></div>
+
+            <div class="pull-right cross-stats">
+              <span class="attended"></span>
+              <div class="confirmed">
+                <div class="total"></div>
+                <div>confirmed</div>
+              </div>
+            </div>
+
+            <div class="cross-identities exfee_pop_up_save">
+              <ul class="thumbnails">
+              </ul>
+            </div>
+
+          </div>
+          <!-- .Cross-Form: Exfee -->
+
+          <div class="form-actions">
+            <div class="pull-right control-buttos">
+              <button class="btn" id="cross-form-discard">Discard</button>
+              <button class="btn btn-primary" id="cross-form-gather">Gather</button>
+            </div>
+            <div>
+              <p>Edit more information directly in preview below.</p>
+            </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Cross-Edit -->
+    <div class="cross-edit">
+      <button class="save-cross">Save</button>
+    </div>
+    <!-- .Cross-Edit -->
+
+    <!-- Cross-background -->
+    <div class="cross-background">
+      <div class="cross-background-blur"></div>
+      <div class="cross-background-side"></div>
+    </div>
+
+    <!-- Cross-Container -->
+    <div class="cross-container">
+
+      <!-- Cross-Shuffle-Background -->
+      <button class="shuffle-background">Shuffle Background</button>
+      <!-- .Cross-Shuffle-Background -->
+
+      <!-- Cross-Title -->
+      <div class="cross-title" editarea="title">
+        <h1 class="show"></h1>
+        <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+      </div>
+
+      <div class="row">
+
+        <!-- gr-b -->
+        <div class="gr-a">
+
+          <!-- Cross-Content -->
+          <div class="cross-description" editarea="description">
+            <div class="show"></div>
+            <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+          </div>
+
+          <!-- Cross-rsvp -->
+          <div class="cross-rsvp">
+            <div class="show">
+              <span class="attendance"></span>
+              <span class="accepted"></span>
+              <span class="by"></span>
+              <span class="change" editarea="rsvp">Change attendance</span>
+            </div>
+            <div class="edit">
+              <span class="buttons">
+                <button class="accept">Accept</button>
+                <button class="decline">Decline</button>
+                <button class="interested">Interested</button>
+              </span>
+              <span class="by"></span>
+            </div>
+          </div>
+
+          <!-- Cross-Conversation -->
+          <div class="cross-conversation" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+
+            <a href="#" class="pull-right cross-history">Hide history</a>
+
+            <h3>Conversation</h3>
+
+            <!-- Cross-Form -->
+            <div class="avatar-comment" id="conversation-form">
+              <span class="pull-left avatar">
+                <img alt="" src="" width="40" height="40" />
+              </span>
+
+              <div class="comment">
+                <div class="comment-form">
+                  <textarea></textarea>
+                </div>
+              </div>
+            </div>
+            <!-- .Cross-Form -->
+
+
+            <!-- Conversation-Timeline -->
+            <div class="conversation-timeline">
+            </div>
+            <!-- .Conversation-Timeline -->
+
+          </div>
+
+        </div>
+        <!-- .gr-b -->
+
+        <!-- gr-b -->
+        <div class="gr-b">
+          <div>
+
+            <!-- Cross-Time -->
+            <div class="cross-dp cross-date" editarea="time">
+              <h2></h2>
+              <div class="cross-time show"></div>
+              <input type="text" class="edit" placeholder="1984-06-04 09:00 AM" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+            </div>
+
+            <!-- Cross-Place -->
+            <div class="cross-dp cross-place" editarea="place">
+              <h2 class="show"></h2>
+              <address class="show"></address>
+              <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+            </div>
+
+            <!-- Cross-Map
+            <div class="cross-map">
+              <!--<img src="http://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&markers=size:mid%7Ccolor:blue%7C40.714728,-73.998672&zoom=13&size=280x140&maptype=road&sensor=false" alt="" />
+              <img src="/img/google-staticmap.png" alt="" width="280px" height="140px" />
+            </div>
+            -->
+
+            <!-- Cross-Form: Exfee -->
+            <div class="control-group cross-exfee" id="cross-exfee">
+              <label class="control-label" for="cross-exfee-input">Exfee</label>
+              <div class="controls">
+                <input type="text" class="input-xlarge" id="cross-exfee-input" placeholder="Enter attendees' information" />
+              </div>
+
+              <div class="autocomplete" id="cross-exfee-complete"><ol></ol></div>
+
+              <div class="pull-right cross-stats">
+                <span class="attended"></span>
+                <div class="confirmed">
+                  <div class="total"></div>
+                  <div>confirmed</div>
+                </div>
+              </div>
+
+              <div class="cross-identities exfee_pop_up_save">
+                <ul class="thumbnails">
+                </ul>
+              </div>
+
+            </div>
+            <!-- .Cross-Form: Exfee -->
+
+          </div>
+        </div>
+        <!-- .gr-b -->
+
+
+      </div>
+    </div>
+
+  </section>
