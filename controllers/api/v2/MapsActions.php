@@ -1,8 +1,10 @@
 <?php
+
 session_write_close();
 require_once dirname(dirname(__FILE__)).'/../../lib/FoursquareAPI.class.php';
 
 class MapsActions extends ActionController {
+
     public function doGetLocation(){
 
         $params = $this->params;
@@ -24,7 +26,7 @@ class MapsActions extends ActionController {
         $result_response=array();
         $result_response["places"]=array();
         $result_response["meta"]=$data["meta"];
-        
+
         if($data["meta"]["code"]=="200")
         {
             $venues=$data["response"]["venues"];
@@ -37,5 +39,3 @@ class MapsActions extends ActionController {
         echo json_encode($result_response);
     }
 }
-
-
