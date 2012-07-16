@@ -1657,10 +1657,6 @@ define(function (require, exports, module) {
     });
     // init event
     bus.on('xapp:cross', function(Cross_id) {
-        // init
-        if (!Window.Cross) {
-
-        }
         // get cross
         if (Cross_id) {
             GetCross(Cross_id);
