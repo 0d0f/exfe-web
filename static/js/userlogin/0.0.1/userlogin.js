@@ -355,7 +355,7 @@ define('middleware', [], function (require, exports, module) {
         + '</div>'
         + '<div class="footer">'
           //+ '<button class="xbtn xbtn-gather">Gather</button>'
-          + '<a href="/x/gather" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
+          + '<a href="/#!0" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
           + '<div class="spliterline"></div>'
           + '<div class="actions">'
             + '<a href="#" class="pull-right" id="js-signout">Sign out</a>'

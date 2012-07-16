@@ -75,7 +75,7 @@ define(function (require, exports, module) {
       url: '/static/views/x.html?123',
       success: function (data) {
         $('.container > div[role="main"]').append(data);
-        Bus.emit('xapp:cross', cross_id);
+        Bus.emit('xapp:cross', +cross_id);
         next();
       }
     });
