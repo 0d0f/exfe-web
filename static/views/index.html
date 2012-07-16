@@ -1,0 +1,42 @@
+        <!-- v1 Home -->
+        <div class="home_banner" id="home_banner">
+          <div id="x_code_img">
+            <img style="display:none;" class="x-sign" src="/static/img/X-sign.jpg" alt=""/>
+            <div class="xci-l">
+              <div class="circle-o cx">
+                <div class="circle-i">
+                  <h3>X <span>(cross)</span></h3>
+                  <p class="explain">is a gathering<br />of people,<br />on purpose or not.</p>
+                  <p class="additional">All <span class="x-blue">X</span> are private by<br />default, accessible to<br />only attendees.</p>
+                </div>
+              </div>
+            </div>
+            <div class="xci-r">
+              <div class="circle-o cexfee">
+                <div class="circle-i">
+                  <h3>EXFE <span>[ˈ<em>ɛ</em>ksfi]</span></h3>
+                  <p class="explain">is an utility<br />for hanging out<br />with friends.</p>
+                  <p class="additional">Stop calling up every<br />one RSVP, losing in endless<br />emails and messages<br />off the point.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="home_bottom">
+          <div class="gather_btn">
+            <!--<a href="/x/gather"><img src="/static/images/home_gather_btn.png" alt="Gather" title="Gather" /></a>-->
+            <a href="/x/gather">Gather a <span>X</span></a>
+          </div>
+          <div class="home_bottom_btn"></div>
+        </div>
+        <!--/ V1 Home -->
+
+        <script id="homescript">
+          define(function (require) {
+            var timestamp = require('config').timestamp;
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = '/static/js/xhome/0.0.1/xhome.js?t=' + timestamp;
+            document.getElementById('home_banner').appendChild(script);
+          });
+        </script>
