@@ -213,26 +213,17 @@ define(function (require, exports, module) {
   });
 
   // 用户信息,包括多身份信息
-  var identities_defe = function (data) {
-    if (!data) return;
-
-    var user;
-
-    if (data.response) user = data.response.user;
-    else if (data instanceof Array) user = data[0].response.user;
-
-    Store.set('user', user);
-
+  var identities_defe = function (user) {
     $('.user-xstats .attended').html(user.cross_quantity);
     $('#user-name > span').html(user.name);
 
     var jst_user = $('#jst-user-avatar');
+
     var s = Handlebars.compile(jst_user.html());
     var h = s({avatar_filename: user.avatar_filename});
     $('.user-avatar').append(h);
 
     $('.user-name').find('h3').html(user.name);
-
 
     var jst_identity_list = $('#jst-identity-list');
     var s = Handlebars.compile(jst_identity_list.html());
@@ -249,8 +240,6 @@ define(function (require, exports, module) {
 
   // crossList 信息
   var crossList_defe = function (data) {
-    if (!data) return;
-    data = Store.get('signin');
     if (!data) return;
     var user_id = data.user_id;
 
@@ -332,8 +321,6 @@ define(function (require, exports, module) {
 
   var crosses_inversation_defe = function (data) {
     if (!data) return;
-    data = Store.get('signin');
-    if (!data) return;
     var user_id = data.user_id;
     //var qdate = Store.get('qdate') || '';
     //qdate && (qdate = '&date=' + qdate);
@@ -408,8 +395,6 @@ define(function (require, exports, module) {
   };
 
   var crosses_update_defe = function (data) {
-    if (!data) return;
-    data = Store.get('signin');
     if (!data) return;
     var user_id = data.user_id;
     var now = new Date();

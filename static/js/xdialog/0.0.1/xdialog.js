@@ -74,6 +74,10 @@ define(function (require, exports, module) {
         if (this._oauth_) {
           this._oauth_.abort();
         }
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
       },
 
       events: {
@@ -269,7 +273,7 @@ define(function (require, exports, module) {
 
           if (t === 'd01' || t === 'd02') {
 
-            var dfd = Api.request('signin'
+            Api.request('signin'
               , {
                 type: 'POST',
                 data: {
@@ -290,12 +294,16 @@ define(function (require, exports, module) {
                 Store.set('signin', data);
                 // 最后登陆的 external_identity
                 Store.set('last_external_id', od.external_identity);
+
                 if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
                     window.location = window.location.pathname;
                     return;
                 }
+
+                // goto profile
                 if (t === 'd01') {
-                  window.location = '/s/profile';
+                  Bus.emit('xapp:usertoken', data.token, data.user_id, 3);
+                  that.hide();
                 } else {
                   that.hide();
                   var d = new Dialog(dialogs.welcome);

@@ -1,194 +1,486 @@
 //
 // TODO: 先实现分发
-  //  - Module
+//  - Module
 //  - View
 //  - Controller / Operation
 //  - Event
 //
-// Refer
+// Refer:
+//    - https://github.com/senchalabs/connect
 //    - https://github.com/visionmedia/page.js
 //    - https://github.com/maccman/spine/blob/master/lib/route.js
 
 // odof
 define('odof', [], function (require, exports, module) {
+  var $ = require('jquery');
+
+  var _firstLoad = false;
+
+  // http://cacheandquery.com/blog/category/technology/
+  $(window).on('load', function (e) {
+    _firstLoad = true;
+
+    setTimeout(function () { _firstLoad = false; }, 0);
+  });
+
+  // window.location
+  var location = window.location;
+
+
   var Emitter = require('emitter');
-  var OdOf = {};
 
-  var historySupport = (window.history !== null ? window.history.pushState : void 0) !== null;
+  // export module
+  exports = module.exports = createApplication;
 
-  var hashStrip = /^#*/;
-
-  var namedParam = /:([\w\d]+)/g;
-
-  var splatParam = /\*([\w\d]+)/g;
-
-  var escapeRegExp = /[-[\]{}()+?.,\\^$|#\s]/g;
-
-  var basepath = '';
-
-  OdOf.createApplication = function () {
+  /**
+   * Create an odof application
+   */
+  function createApplication() {
     function app() {}
-    merge(app, _app);
+    merge(app, appProto);
     merge(app, Emitter.prototype);
+    app.route = '/';
+    app.stack = [];
+    app.request = new Request();
+    app.response = new Response();
+    for (var i = 0, len = arguments.length; i < len; ++i) {
+      app.use(arguments[i]);
+    }
     app.init();
     return app;
-  };
+  }
 
-  var _app = {};
+  /**
+   * Application prototype
+   */
+  var appProto = {};
 
-  _app.getPath = function () {
-    var path = window.location.pathname;
-    if (path.substr(0, 1) !== '/') {
-      path = '/' + path;
+  // Initialization middleware
+  function odofInit(app) {
+    return function init(req, res, next) {
+      req.app = res.app = app;
+
+      //req.res = res;
+      //res.req = req;
+
+      req.next = next;
+      next();
     }
-    return path;
+  }
+
+  appProto.init = function () {
+    this.use(odofInit(this));
+    this.cache = {};
+    this.settings = {};
+    this.engine = {};
+    this.viewCallbacks = {};
+    this.defaultConfiguration();
   };
 
-  _app.getHash = function () {
-    return window.location.hash;
-  };
+  appProto.historySupport = (window.history !== null ? window.history.pushState : void 0) !== null;
 
-  _app.getFragment = function () {
-    return this.getHash().replace(hashStrip, '');
-  };
-
-  _app.getHost = function () {
-    return (document.location + '').replace(this.getPath() + this.getHash(), '');
-  };
-
-  _app.basePath = function (path) {
-    if (0 === arguments.length) return basepath;
-    basepath = path;
-  };
-
-  _app.start = function () {
-    if (historySupport) {
-      window.addEventListener('popstate', proxy(this, this.change), false);
-    } else {
-      window.addEventListener('hashchange', proxy(this, this.change), false);
-    }
-  };
-
-  // hash change
-  _app.change = function (e) {
-    var current = this.getFragment();
-    if (current === this.fragment) return;
-    this.replace(window.location.pathname + window.location.hash + window.location.search, e.state);
-  };
-
-  _app.stop = function () {
-    if (historySupport) {
-      window.removeEventListener('popstate', proxy(this, this.change));
-    } else {
-      window.removeEventListener('hashchange', proxy(this, this.change));
-    }
-  };
-
-  _app.init = function () {
+  appProto.defaultConfiguration = function () {
     var self = this;
+    this.set('env', 'development');
+
     this._dispatch = true;
-    this.callbacks = [];
-    this.start();
+    // router
+    this._router = new Router(this);
+    this._router.caseSensitive = this.enabled('case sensitive routing');
+    this._router.strict = this.enabled('strict routing');
+    this.routes = this._router.map;
+
+    this._usedRouter = false;
   };
 
-  _app.get = function (path, fn) {
-    if ('function' === typeof fn) {
-      var route = new Route(path);
-      for (var i = 1, l = arguments.length; i < l; ++i) {
-        this.callbacks.push(route.middleware(arguments[i]));
-      }
+  appProto.use = function (route, fn) {
+    var app, home, handle;
+
+    // default route to '/'
+    if ('string' !== typeof route) {
+      fn = route;
+      route = '/';
     }
+
+    // '/abcdefg/' => '/abcdefg'
+    if ('/' !== route && '/' === route[route.length - 1]) {
+      route = route.slice(0, -1);
+    }
+
+    this.stack.push({ route: route, handle: fn });
+
+    return this;
   };
 
-  _app.dispatch = function (ctx) {
-    var self = this;
-    var i = 0;
+  appProto.run = function (options) {
+    options = options || {};
+    var self = this
+      , req = self.request
+      , res = self.response;
 
-    function next() {
-      var fn = self.callbacks[i++];
-      if (!fn) return self.unhandled(ctx);
-      fn(ctx, next);
+    if (this.running) return;
+    this.running = true;
+
+    if (false === options.dispatch) this._dispatch = false;
+
+    if (false !== options.popstate) {
+
+      if (this.historySupport) {
+        $(window).on('popstate', { app: this }, onpopstate);
+      } else {
+        $(window).on('hashchange', { app: this },  onpopstate);
+      }
+
+    }
+
+    if (!this._dispatch) return;
+
+    this.handle(req, res);
+  };
+
+  function onpopstate(e) {
+    if (_firstLoad) return _firstLoad = false;
+    //console.log('popstate');
+    var app = e.data.app
+      , req = app.request
+      , res = app.response
+      , url = req.url;
+    req.updateLocation();
+    if ('/' !== url && url === req.url) return;
+    app.handle(req, res);
+    res.save();
+    delete e.data;
+  }
+
+  appProto.handle = function (req, res, out) {
+    var stack = this.stack
+      , index = 0;
+
+    req.originalUrl = req.originalUrl || req.url;
+
+    function next(err) {
+      var layer, path;
+
+      layer = stack[index++];
+
+      //console.dir(stack);
+
+      //console.log(index, layer);
+
+      if (!layer) {
+        if (out) {
+          return out(err);
+        }
+        return;
+      }
+
+      path = req.url;
+
+      if (0 !== path.indexOf(layer.route)) return next(err);
+
+      layer.handle(req, res, next);
+
     }
 
     next();
   };
 
-  _app.unhandled = function (ctx) {
-    this.emit('unhandled', ctx);
+  appProto.set = function (setting, val) {
+    if (1 === arguments.length) {
+      if (this.settings.hasOwnProperty(setting)) {
+        return this.settings[setting];
+      }
+    } else {
+      this.settings[setting] = val;
+      return this;
+    }
   };
 
-  _app.replace = function (path, state, init, dispatch) {
-    var ctx = new Context(path, state);
-    ctx.init = init;
-    if (!dispatch) this._dispatch = true;
-    if (this._dispatch) this.dispatch(ctx);
-    this.fragment = this.getFragment();
-    return ctx;
+  appProto.enable = function (setting) {
+    return this.set(setting, true);
   };
 
-  _app.run = function (options) {
-    options = options || {};
-    if (this.running) return;
-    this.running = true;
-    if (false === options.dispatch) this._dispatch = false;
-    if (!this._dispatch) return;
-    this.replace(window.location.pathname + window.location.hash + window.location.search, null, true, this._dispatch);
+  appProto.enabled = function (setting) {
+    return !!this.set(setting);
   };
 
-  // Context
-  function Context(path, state) {
-    if ('/' === path[0] && 0 !== path.indexOf(basepath)) path = basepath + path;
-    var i = path.indexOf('?');
-    this.canonicalPath = path;
-    this.path = path.replace(basepath, '') || '/';
-    this.title = document.title;
-    this.state = state || {};
-    this.state.path = path;
-    this.querystring = ~i ? path.slice(i + 1) : '';
-    this.pathname = ~i ? path.slice(0, i) : path;
-    this.params = [];
+  appProto.disable = function (setting) {
+    return this.set(setting, false);
+  };
+
+  appProto.disabled = function (setting) {
+    return !this.set(setting);
+  };
+
+  // get request
+  appProto.get = function (path) {
+    var args = [].slice.call(arguments);
+    if (!this._usedRouter) {
+      this._usedRouter = true;
+      this.use(this._router.middleware);
+    }
+    return this._router.route.apply(this._router, args);
+  };
+
+  appProto.render = function (name, options, fn) {
+  };
+
+  // Request
+  function Request() {
+    // default `GET` for browser
+    this.method = 'GET';
+
+    this.updateLocation();
   }
 
-  // Route
-  function Route(path, options) {
-    options = options || {};
+  Request.prototype.updateLocation = function () {
+    this.host = location.hostname;
+    this.port = location.port || 80;
+    this.path = location.pathname;
+    this.hash = location.hash;//getHash(location.hash);
+    this.querystring = location.search;// || getQuerystring(location.href);
+    this.url = location.pathname + this.querystring + this.hash;
+  };
+
+  //Request.prototype.abort = function () {};
+
+  // Response
+  function Response(path, state) {
     this.path = path;
+    this.title = document.title;
+    this.state = state || {};
+  }
+
+  // rendre view
+  Response.prototype.render = function (view, options, fn) {
+    var self = this
+      , options = options || {}
+      , app = this.app;
+
+    if ('function' === typeof options) {
+      fn = options, options = {};
+    }
+
+    fn = fn || function () {};
+
+    // render
+    app.render(view, options, fn);
+  };
+
+  Response.prototype.redirect = function (url, title, state) {
+    //console.log(url);
+    this.path = url;
+    this.title = title;
+    this.state = state;
+    document.title = this.title;
+    this.pushState();
+    $(window).triggerHandler('popstate');
+  };
+
+  // save the state
+  Response.prototype.save = function () {
+    window.history.replaceState(this.state, this.title, this.path);
+  };
+
+  // push the state onto the history stack
+  Response.prototype.pushState = function () {
+    window.history.pushState(this.state, this.title, this.path);
+  };
+
+  // Router
+  function Router(options) {
+    options = options || {};
+    var self = this;
+    this.map = [];
+    this.params = {};
+    this._params = [];
+    this.caseSensitive = options.caseSensitive;
+    this.strict = options.strict;
+    this.middleware = function router(req, res, next) {
+      self._dispatch(req, res, next);
+    };
+  }
+
+  Router.prototype._dispatch = function (req, res, next) {
+    var params = this.params
+      , self = this;
+
+    function pass(i, err) {
+      var paramCallbacks
+      , paramIndex = 0
+      , paramVal
+      , route
+      , keys
+      , key
+      , ret;
+
+      // match next route
+      function nextRoute(err) {
+        pass(req._route_index + 1, err);
+      }
+
+      // match route
+      req.route = route = self.matchRequest(req, i);
+
+      // no route
+      if (!route) {
+        return next(err);
+      }
+
+      // we have a route
+      // start at param 0
+      req.params = route.params;
+      keys = route.keys;
+      i = 0;
+
+      // param callbacks
+      function param(err) {
+        paramIndex = 0;
+        key = keys[i++];
+        paramVal = key && req.params[key.name];
+        paramCallbacks = key && params[key.name];
+
+        if (key) {
+          param();
+        } else {
+          i = 0;
+          callbacks();
+        }
+      }
+
+      param(err);
+
+      function callbacks(err) {
+        var fn = route.callbacks[i++];
+        if (fn) {
+          fn(req, res, callbacks);
+        } else {
+          nextRoute(err);
+        }
+      }
+      //callbacks(err);
+
+      /*
+      // single paramCallbacks
+      function paramCallback(err) {
+        var fn = paramCallbacks[paramIndex++];
+        if (err || !fn) return param(err);
+        fn(req, res, paramCallback, paramVal, key.name);
+      }
+
+      // invoke route callbacks
+      function callbacks(err) {
+        var fn = route.callbacks[i++];
+
+
+        try {
+
+          if ('route' == err) {
+            nextRoute();
+          } else if (err && fn) {
+            fn(err, req, res, callbacks);
+          } else if (fn) {
+            fn(req, res, callbacks);
+          } else {
+            nextRoute(err);
+          }
+
+        } catch (err) {
+          callbacks(err);
+        }
+      }
+      */
+
+    }
+
+    pass(0);
+  };
+
+  Router.prototype.matchRequest = function (req, i) {
+    var routes = this.map
+      , path = req.url
+      , route
+      , len = routes.length;
+
+    i = i || 0;
+
+    // matching routes
+    for (; i < len; ++i) {
+      route = routes[i];
+      if (route.match(path)) {
+        req._route_index = i;
+        return route;
+      }
+    }
+
+  };
+
+  Router.prototype.route = function (path) {
+    if (0 === arguments.length) return;
+    var callbacks = [].slice.call(arguments, 1)
+      , route = new Route(path, callbacks, {
+          sensitive: this.caseSensitive
+        , strict: this.strict
+      });
+
+    this.map.push(route);
+    return this;
+  };
+
+  Router.prototype.param = function (name, fn) {
+    var _params = this._params
+      , len
+      , ret
+      , i;
+
+    if ('function' === typeof name) {
+      _params.push(name);
+      return;
+    }
+
+    len = _params.length;
+
+    for (i = 0; i < len; ++i) {
+      if (ret = _params[i](name, fn)) {
+        fn = ret;
+      }
+    }
+
+    if ('function' !== typeof fn) {}
+
+    (this.params[name] = this.params[name] || []).push(fn);
+
+    return this;
+  };
+
+  function Route(path, callbacks, options) {
+    options = options || {};
+    //this.method = 'GET';
+    this.path = path;
+    this.callbacks = callbacks;
     this.regexp = pathToRegexp(path
       , this.keys = []
       , options.sensitive
-      , options.strict
-    );
+      , options.strict);
   }
 
-  Route.prototype.middleware = function (fn) {
-    var self = this;
-    return function (ctx, next) {
-      if (self.match(ctx.path, ctx.params)) {
-        return fn(ctx, next);
-      }
-      next();
-    };
-  };
-
-  Route.prototype.match = function (path, params) {
+  Route.prototype.match = function (path) {
     var keys = this.keys
-      , qsIndex = path.indexOf('?')
-      , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
-      , m = this.regexp.exec(pathname);
+      , params = this.params = []
+      , m = this.regexp.exec(path)
+      , i, len
+      , key, val;
 
     if (!m) return false;
 
-    for (var i = 1, len = m.length; i < len; ++i) {
-      var key = keys[i - 1];
-
-      var val = 'string' === typeof m[i]
+    for (i = 1, len = m.length; i < len; ++i) {
+      key = keys[i - 1];
+      val = 'string' === typeof m[i]
         ? decodeURIComponent(m[i])
         : m[i];
 
       if (key) {
-        params[key.name] = undefined !== params[key.name]
-          ? params[key.name]
-          : val;
+        params[key.name] = val;
       } else {
         params.push(val);
       }
@@ -197,24 +489,41 @@ define('odof', [], function (require, exports, module) {
     return true;
   };
 
+  // Helper
+  function merge (t, s) {
+    var k;
+    if (t && s) {
+      for (k in s) {
+        t[k] = s[k];
+      }
+    }
+    return t;
+  }
 
-  // Helper --------------------
+  function getHash(path) {
+    var path = path
+      , iq = path.indexOf('?');
+    if (iq > -1) path = path.substr(0, iq);
+    return path;
+  };
 
-  function proxy(o, fn) {
-    return cb;
-    function cb() {
-      fn.apply(o, arguments);
-    };
+  function getQuerystring(path) {
+    var path = path
+      , iq = path.indexOf('?') + 1
+      , ih;
+    path = path.substr(iq);
+    ih = path.indexOf('#');
+    if (ih > iq) path = path.substr(iq, ih);
+    return path;
   }
 
   function pathToRegexp(path, keys, sensitive, strict) {
     if (path instanceof RegExp) return path;
-    if (path instanceof Array) path = '(' + path.join('|') + ')';
+    if (Array.isArray(path)) path = '(' + path.join('|') + ')';
     path = path
       .concat(strict ? '' : '/?')
       .replace(/\/\(/g, '(?:/')
-      .replace(/\+/g, '__plus__')
-      .replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, function(_, slash, format, key, capture, optional){
+      .replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?(\*)?/g, function(_, slash, format, key, capture, optional, star){
         keys.push({ name: key, optional: !! optional });
         slash = slash || '';
         return ''
@@ -222,25 +531,12 @@ define('odof', [], function (require, exports, module) {
           + '(?:'
           + (optional ? slash : '')
           + (format || '') + (capture || (format && '([^/.]+?)' || '([^/]+?)')) + ')'
-          + (optional || '');
+          + (optional || '')
+          + (star ? '(/*)?' : '');
       })
-      .replace(/([\/.])/g, '\\$1')
-      .replace(/__plus__/g, '(.+)')
-      .replace(/\*/g, '(.*)');
+    .replace(/([\/.])/g, '\\$1')
+    .replace(/\*/g, '(.*)');
     return new RegExp('^' + path + '$', sensitive ? '' : 'i');
   }
-
-  function merge(t, s) {
-    if (t && s) {
-      for (var k in s) {
-        t[k] = s[k];
-      }
-    }
-    return t;
-  }
-
-  var _slice = Array.prototype.slice;
-
-  module.exports = OdOf;
 
 });

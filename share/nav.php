@@ -1,5 +1,5 @@
 
-  <!-- NavBar -->
+  <!-- NavBar {{{-->
   <div class="navbar">
 
     <!-- navbar-bg -->
@@ -34,4 +34,4 @@
     <!-- /navbar-inner -->
 
   </div>
-  <!-- /NavBar -->
+  <!-- /NavBar }}}-->
