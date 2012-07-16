@@ -234,10 +234,10 @@ ExfeeWidget = {
                     ExfeeWidget.showPanel(domEvent);
             }
         });
-        //this.complete_timer = setInterval(
-        //    "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
-        //    50
-        //);
+        this.complete_timer = setInterval(
+           "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
+           50
+        );
         return ExfeUtilities.clone(this);
     },
 
@@ -613,6 +613,9 @@ ExfeeWidget = {
 
 
     checkInput : function(objInput, force) {
+        if (!objInput) {
+            return;
+        }
         var strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
             arrValid   = [],
