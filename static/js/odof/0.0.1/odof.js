@@ -26,6 +26,9 @@ define('odof', [], function (require, exports, module) {
   // window.location
   var location = window.location;
 
+  // window.history
+  var history = window.history;
+
 
   var Emitter = require('emitter');
 
@@ -77,7 +80,7 @@ define('odof', [], function (require, exports, module) {
     this.defaultConfiguration();
   };
 
-  appProto.historySupport = (window.history !== null ? window.history.pushState : void 0) !== null;
+  appProto.historySupport = (history !== null ? history.pushState : void 0) !== null;
 
   appProto.defaultConfiguration = function () {
     var self = this;
@@ -148,8 +151,6 @@ define('odof', [], function (require, exports, module) {
     req.updateLocation();
     if ('/' !== url && url === req.url) return;
     app.handle(req, res);
-    res.save();
-    delete e.data;
   }
 
   appProto.handle = function (req, res, out) {
@@ -271,8 +272,8 @@ define('odof', [], function (require, exports, module) {
     //console.log(url);
     this.path = url;
     this.title = title;
-    this.state = state;
     document.title = this.title;
+    this.state = state;
     this.pushState();
     $(window).triggerHandler('popstate');
   };
