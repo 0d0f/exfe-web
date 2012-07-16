@@ -1541,6 +1541,7 @@ define(function (require, exports, module) {
 
 
     var GetCross = function(cross_id) {
+      console.log('getCross', cross_id, Api);
         Api.request(
             'getCross',
             {resources : {cross_id : cross_id}},
