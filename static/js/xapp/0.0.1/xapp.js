@@ -76,6 +76,7 @@ define(function (require, exports, module) {
       success: function (data) {
         $('.container > div[role="main"]').append(data);
         Bus.emit('xapp:cross', +cross_id);
+        Bus.emit('xapp:cross:main');
         next();
       }
     });
@@ -108,19 +109,26 @@ define(function (require, exports, module) {
 
   app.run();
 
-  $(function () {
-    $(document).on('click', '[href^="/#"]', function (e) {
+  //$(function () {
+    $(document.body).on('click.xapp', '[href^="/#"]', function (e) {
+      // TODO: 暂时放这里
+      Bus.emit('xapp:cross:end');
+
       var $e = $(e.currentTarget);
       var path = $e.attr('href');
-      alert(path);
+
+      //alert(path);
+
       if (2 === path.indexOf('!')) {
-        app.response.redirect(path, 'Cross', {id: 'cross'});
+        app.response.redirect(path, 'Cross', {id: 'cross' + path.substr(2)});
       } else {
         var last_external_id = Store.get('last_external_id');
+        //alert(last_external_id);
         app.response.redirect('/#' + last_external_id, 'Profile', {id: 'profile'});
       }
+      e.stopPropagation();
+      e.preventDefault();
     });
-  });
 
-  //console.dir(app);
+  //});
 });
