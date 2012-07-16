@@ -1651,16 +1651,18 @@ define(function (require, exports, module) {
     // init showtime
     var showtimeTimer = setInterval(ShowTime, 50);
 
+    var bus = require('bus');
 
-    // get cross
-    var Cross_id = 0; // 100134;
-    if (Cross_id) {
-        GetCross(Cross_id);
-    } else {
-        NewCross(true);
-        if (User) {
-            Cross.by_identity.id = User.default_identity.id;
+    bus.on('xapp:cross', function(Cross_id) {
+        // get cross
+        if (Cross_id) {
+            GetCross(Cross_id);
+        } else {
+            NewCross(true);
+            if (User) {
+                Cross.by_identity.id = User.default_identity.id;
+            }
         }
-    }
+    });
 
 });
