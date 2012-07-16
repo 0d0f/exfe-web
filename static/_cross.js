@@ -1260,7 +1260,7 @@ define(function (require, exports, module) {
 
     var fixTime = function() {
         var strDate = moment().format('YYYY-MM-DD');
-        Cross.time = {
+        Cross.time  = {
             begin_at : {
                 date_word : '', date : strDate,
                 time_word : '', time : '',
@@ -1274,10 +1274,11 @@ define(function (require, exports, module) {
 
 
     var fixBackground = function() {
-        var strBgImg = Cross.widget.background.image;
+        var backgrounds = require('config').backgrounds,
+            strBgImg    = Cross.widget.background.image;
         do {
-            Cross.widget.background.image = AvailableBackgrounds[
-                parseInt(Math.random() * AvailableBackgrounds.length)
+            Cross.widget.background.image = backgrounds[
+                parseInt(Math.random() * backgrounds.length)
             ];
         } while (strBgImg === Cross.widget.background.image);
         ShowBackground();
