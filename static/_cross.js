@@ -1541,7 +1541,6 @@ define(function (require, exports, module) {
 
 
     var GetCross = function(cross_id) {
-      console.log('getCross', cross_id, Api);
         Api.request(
             'getCross',
             {resources : {cross_id : cross_id}},
@@ -1633,28 +1632,35 @@ define(function (require, exports, module) {
     }
 
 
-    // init moment
-    require('moment');
-    // init cross step 1
-    ResetCross();
-    // init exfee widgets
-    ExfeeWidgestInit();
-    // init buttons
-    ButtonsInit();
-    // init gather form
-    GatherFormInit();
-    // init edit area
-    Editable();
-    // init marked
-    Marked = require('marked');
-    // init exfee panel
-    window.ExfeePanel = require('exfeepanel');
-    // init showtime
-    var showtimeTimer = setInterval(ShowTime, 50);
-
+    // init bus
     var bus = require('bus');
-
+    // init event: main
+    bus.on('xapp:cross:main', function() {
+        // init moment
+        require('moment');
+        // init cross step 1
+        ResetCross();
+        // init exfee widgets
+        ExfeeWidgestInit();
+        // init buttons
+        ButtonsInit();
+        // init gather form
+        GatherFormInit();
+        // init edit area
+        Editable();
+        // init marked
+        Marked = require('marked');
+        // init exfee panel
+        window.ExfeePanel    = require('exfeepanel');
+        // init showtime
+        window.showtimeTimer = setInterval(ShowTime, 50);
+    });
+    // init event
     bus.on('xapp:cross', function(Cross_id) {
+        // init
+        if (!Window.Cross) {
+
+        }
         // get cross
         if (Cross_id) {
             GetCross(Cross_id);
@@ -1664,6 +1670,10 @@ define(function (require, exports, module) {
                 Cross.by_identity.id = User.default_identity.id;
             }
         }
+    });
+    // init event: end
+    bus.on('xapp:cross:end', function() {
+        clearTimeout(window.showtimeTimer);
     });
 
 });
