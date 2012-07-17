@@ -226,24 +226,27 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
-        $('#' + this.dom_id + ' .thumbnails > li.identity').live('mouseover mouseout mousedown', function(event) {
-            var domEvent = event.target;
-            while (domEvent
-                && !$(domEvent).hasClass('identity')
-                && domEvent.tagName !== 'BODY') {
-                domEvent = domEvent.parentNode;
+        $('#' + this.dom_id + ' .thumbnails > li.identity').live(
+            'mouseover mouseout mousedown',
+            function(event) {
+                var domEvent = event.target;
+                while (domEvent
+                    && !$(domEvent).hasClass('identity')
+                    && domEvent.tagName !== 'BODY') {
+                    domEvent = domEvent.parentNode;
+                }
+                switch (event.type) {
+                    case 'mouseover':
+                        ExfeeWidget.showTip(domEvent);
+                        break;
+                    case 'mouseout':
+                        ExfeePanel.hideTip();
+                        break;
+                    case 'mousedown':
+                        ExfeeWidget.showPanel(domEvent);
+                }
             }
-            switch (event.type) {
-                case 'mouseover':
-                    ExfeeWidget.showTip(domEvent);
-                    break;
-                case 'mouseout':
-                    ExfeePanel.hideTip();
-                    break;
-                case 'mousedown':
-                    ExfeeWidget.showPanel(domEvent);
-            }
-        });
+        );
         this.complete_timer = setInterval(
            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
            50
