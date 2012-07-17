@@ -58,30 +58,9 @@ ns.eventCompleteItem = function(event) {
 };
 
 
-ns.selectCompleteResult = function(domId, identity) {
-    var strBaseId = '#' + domId + '_exfeegadget_autocomplete > ol > li',
-        className = 'autocomplete_selected';
-    $(strBaseId).removeClass(className);
-    $(strBaseId + '[identity="' + identity + '"]').addClass(className);
-};
-
-
 ns.getClassRsvp = function(rsvp) {
     return 'exfee_rsvp_'
          + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
-};
-
-
-ns.addExfeeFromCache = function(domId, identity) {
-    for (var i in odof.exfee.gadget.exfeeAvailable) {
-        if (odof.exfee.gadget.exfeeAvailable[i].external_identity === identity) {
-            var objExfee = odof.util.clone(odof.exfee.gadget.exfeeAvailable[i]);
-            odof.exfee.gadget.exfeeAvailable.splice(i, 1);
-            odof.exfee.gadget.cacheExfee([objExfee], true);
-            odof.exfee.gadget.addExfee(domId, [objExfee], true);
-            break;
-        }
-    }
 };
 
 
