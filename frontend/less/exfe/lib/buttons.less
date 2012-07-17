@@ -136,3 +136,26 @@
   padding: 0 25px;
   line-height: 22px;
 }
+
+.xbtn-rsvp {
+  width: 140px;
+  hegith: 32px;
+  border: 1px solid rgba(230, 230, 230, .5);
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 32px;
+  text-shadow: 0 1px 1px rgba(213, 233, 242, 1);
+  .border-radius(5px);
+  .box-shadow(0 1px 2px rgba(0, 0, 0, .25));
+
+  &.accept {
+    #gradient > .directional(#d5e8f2, #1175a5, 270deg);
+    background-color: transparent;
+  }
+
+  &.decline {
+    #gradient > .directional(#e6e6e6, #7f7f7f, 270deg);
+    background-color: transparent;
+  }
+
+}
