@@ -288,6 +288,7 @@ ExfeeWidget = {
 
     showTip : function(target) {
         var objTarget         = $(target),
+            objOffset         = objTarget.offset(),
             objIdentity       = {},
             id                = objTarget.attr('id'),
             provider          = objTarget.attr('provider'),
@@ -306,12 +307,13 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showTip(objInvitation);
+        ExfeePanel.showTip(objInvitation, objOffset.left, objOffset.top);
     },
 
 
     showPanel : function(target) {
         var objTarget         = $(target),
+            objOffset         = objTarget.offset(),
             objIdentity       = {},
             id                = objTarget.attr('id'),
             provider          = objTarget.attr('provider'),
@@ -330,7 +332,7 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showPanel(objInvitation);
+        ExfeePanel.showPanel(objInvitation, objOffset.left, objOffset.top);
     },
 
 
@@ -797,7 +799,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showTip : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeetip exfee_pop_up" style="top: 785px; right: 285px; display: none;">'
+                strPanel = '<div class="exfeetip exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; display: none;">'
                          +   '<div class="inner">'
                          +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
@@ -816,7 +818,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showPanel : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeepanel exfee_pop_up" style="right: 600px; top: 500px">'
+                strPanel = '<div class="exfeepanel exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px">'
                          +   '<div class="inner">'
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
