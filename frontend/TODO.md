@@ -1,6 +1,8 @@
 TODO
 ----
 
+* HTML5 Cache Manifest
+
 * 仔细阅读:
   - CSS: https://github.com/necolas/idiomatic-css/tree/master/translations/zh-CN
   - JS: https://github.com/rwldrn/idiomatic.js/tree/master/translations/zh_CN
