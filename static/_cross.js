@@ -178,6 +178,16 @@ ExfeeCache = {
         this.saveCache();
     },
 
+
+    fetchIdentity : function(identity) {
+        for (var i = 0; i < this.identities.length; i++) {
+            if (ExfeeWidget.compareIdentity(identity, this.identities[i])) {
+                return ExfeUtilities.clone(this.identities[i]);
+            }
+        }
+        return null;
+    }
+
 };
 
 
@@ -192,9 +202,9 @@ ExfeeWidget = {
 
     complete_timer   : 0,
 
-    complete_key     : {},
+    complete_key     : '',
 
-    complete_exfee   : {},
+    complete_exfee   : [],
 
     complete_request : 0,
 
@@ -216,24 +226,27 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
-        $('#' + this.dom_id + ' .thumbnails > li.identity').live('mouseover mouseout mousedown', function(event) {
-            var domEvent = event.target;
-            while (domEvent
-                && !$(domEvent).hasClass('identity')
-                && domEvent.tagName !== 'BODY') {
-                domEvent = domEvent.parentNode;
+        $('#' + this.dom_id + ' .thumbnails > li.identity').live(
+            'mouseover mouseout mousedown',
+            function(event) {
+                var domEvent = event.target;
+                while (domEvent
+                    && !$(domEvent).hasClass('identity')
+                    && domEvent.tagName !== 'BODY') {
+                    domEvent = domEvent.parentNode;
+                }
+                switch (event.type) {
+                    case 'mouseover':
+                        ExfeeWidget.showTip(domEvent);
+                        break;
+                    case 'mouseout':
+                        ExfeePanel.hideTip();
+                        break;
+                    case 'mousedown':
+                        ExfeeWidget.showPanel(domEvent);
+                }
             }
-            switch (event.type) {
-                case 'mouseover':
-                    ExfeeWidget.showTip(domEvent);
-                    break;
-                case 'mouseout':
-                    ExfeePanel.hideTip();
-                    break;
-                case 'mousedown':
-                    ExfeeWidget.showPanel(domEvent);
-            }
-        });
+        );
         this.complete_timer = setInterval(
            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
            50
@@ -278,6 +291,7 @@ ExfeeWidget = {
 
     showTip : function(target) {
         var objTarget         = $(target),
+            objOffset         = objTarget.offset(),
             objIdentity       = {},
             id                = objTarget.attr('id'),
             provider          = objTarget.attr('provider'),
@@ -296,12 +310,13 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showTip(objInvitation);
+        ExfeePanel.showTip(objInvitation, objOffset.left, objOffset.top + 40);
     },
 
 
     showPanel : function(target) {
         var objTarget         = $(target),
+            objOffset         = objTarget.offset(),
             objIdentity       = {},
             id                = objTarget.attr('id'),
             provider          = objTarget.attr('provider'),
@@ -320,7 +335,7 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showPanel(objInvitation);
+        ExfeePanel.showPanel(objInvitation, objOffset.left, objOffset.top);
     },
 
 
@@ -510,7 +525,7 @@ ExfeeWidget = {
 
 
     displayCompletePanel : function(objPanel, display) {
-        if (display) {
+        if (this.completing = display) {
             objPanel.slideDown(50);
         } else {
             objPanel.slideUp(50);
@@ -520,19 +535,18 @@ ExfeeWidget = {
 
     showCompleteItems : function(objPanel, key, identities) {
         // @todo: 使用 typeahead 替代这段代码
-        var exfeeWidgetId    = objPanel[0].parentNode.id,
-            objCompleteList  = $(objPanel).find('ol'),
+        var objCompleteList  = $(objPanel).find('ol'),
             strCompleteItems = '';
         key = key ? key.toLowerCase() : '';
-        if (ExfeeWidget.complete_key[exfeeWidgetId] !== key) {
-            ExfeeWidget.complete_exfee[exfeeWidgetId] = [];
+        if (ExfeeWidget.complete_key !== key) {
+            ExfeeWidget.complete_exfee = [];
             objCompleteList.html('');
         }
-        ExfeeWidget.complete_key[exfeeWidgetId] = key;
+        ExfeeWidget.complete_key = key;
         for (var i = 0; i < identities.length; i++) {
             var shown = false;
-            for (var j = 0; j < ExfeeWidget.complete_exfee[exfeeWidgetId].length; j++) {
-                if (this.compareIdentity(ExfeeWidget.complete_exfee[exfeeWidgetId][j], identities[i])) {
+            for (var j = 0; j < ExfeeWidget.complete_exfee.length; j++) {
+                if (this.compareIdentity(ExfeeWidget.complete_exfee[j], identities[i])) {
                     shown = true;
                     break;
                 }
@@ -540,8 +554,8 @@ ExfeeWidget = {
             if (shown) {
                 continue;
             }
-            var index = ExfeeWidget.complete_exfee[exfeeWidgetId].push(ExfeUtilities.clone(identities[i]));
-            strCompleteItems += '<li complete_index="' + index + '">'
+            var index = ExfeeWidget.complete_exfee.push(ExfeUtilities.clone(identities[i]));
+            strCompleteItems += '<li>'
                               +     '<img src="' + identities[i].avatar_filename + '" class="exfee-avatar">'
                               +     '<span class="exfee_info">'
                               +         '<span class="exfee_name">'
@@ -556,7 +570,7 @@ ExfeeWidget = {
         objCompleteList.append(strCompleteItems);
         this.displayCompletePanel(
             objPanel,
-            key && ExfeeWidget.complete_exfee[exfeeWidgetId].length
+            key && ExfeeWidget.complete_exfee.length
         );
     },
 
@@ -603,7 +617,7 @@ ExfeeWidget = {
                     }
                     ExfeeCache.cacheIdentities(caughtIdentities);
                     ExfeeCache.tried_key[key] = true;
-                    if (ExfeeWidget.complete_key[objPanel[0].parentNode.id] === key) {
+                    if (ExfeeWidget.complete_key === key) {
                         ExfeeWidget.showCompleteItems(objPanel, key, caughtIdentities);
                     }
                 }
@@ -649,6 +663,22 @@ ExfeeWidget = {
     },
 
 
+    selectCompleteItem : function(index) {
+        var className = 'selected';
+        $('.autocomplete > ol > li').removeClass(className).eq(index).addClass(className);
+    },
+
+
+    useCompleteItem : function(index) {
+        var identity = ExfeeCache.fetchIdentity(this.complete_exfee[index]);
+        if (identity) {
+            this.complete_exfee.splice(index, 1);
+            this.addExfee(identity);
+            ExfeeCache.cacheIdentities(identity);
+        }
+    },
+
+
     inputEvent : function(event) {
         var objInput = $(event.target);
         switch (event.type) {
@@ -658,71 +688,60 @@ ExfeeWidget = {
                         ExfeeWidget.checkInput(objInput, true);
                         break;
                     case 13: // enter
-                        // var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
-                        //     curItem     = objSelected.length ? objSelected.attr('identity') : null;
-                        // if (odof.exfee.gadget.completing[domId] && curItem) {
-                        //     odof.exfee.gadget.addExfeeFromCache(domId, curItem);
-                        //     odof.exfee.gadget.displayComplete(domId, false);
-                        //     $('#' + domId + '_exfeegadget_inputbox').val('');
-                        // } else {
+                        var objSelected = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol > .selected'),
+                            curItem     = objSelected.length ? ~~objSelected.index() : null;
+                        if (ExfeeWidget.completing && curItem !== null) {
+                            ExfeeWidget.useCompleteItem(curItem);
+                            ExfeeWidget.displayCompletePanel(
+                                $(objInput[0].parentNode.parentNode).find('.autocomplete'),
+                                false
+                            );
+                            objInput.val('');
+                        } else {
                             ExfeeWidget.checkInput(objInput, true);
-                        // }
+                        }
                         break;
                     case 27: // esc
                         if (ExfeeWidget.completing) {
-                            ExfeeWidget.displayComplete(
-                                $(objInput[0].parentNode.parentNode)[0].id,
+                            ExfeeWidget.displayCompletePanel(
+                                $(objInput[0].parentNode.parentNode).find('.autocomplete'),
                                 false
                             );
                         }
                         break;
                     case 38: // up
                     case 40: // down
-                        // var baseId     = '#' + domId + '_exfeegadget_autocomplete',
-                        //     objCmpBox  = $(baseId),
-                        //     cboxHeight = 207,
-                        //     cellHeight = 51,
-                        //     shrMargin  = 3,
-                        //     curScroll  = objCmpBox.scrollTop();
-                        // if (!odof.exfee.gadget.completing[domId]) {
-                        //     return;
-                        // }
-                        // var objSelected = $(baseId + ' > ol > .autocomplete_selected'),
-                        //     curItem     = null,
-                        //     idxItem     = null,
-                        //     tarIdx      = null,
-                        //     maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
-                        // if (objSelected.length) {
-                        //     curItem = objSelected.attr('identity');
-                        //     for (var i in odof.exfee.gadget.curComplete[domId]) {
-                        //         if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
-                        //             idxItem = parseInt(i);
-                        //             break;
-                        //         }
-                        //     }
-                        // }
-                        // switch (event.which) {
-                        //     case 38:
-                        //         tarIdx = curItem
-                        //                ? (idxItem > 0 ? (idxItem - 1) : maxIdx)
-                        //                : maxIdx;
-                        //         break;
-                        //     case 40:
-                        //         tarIdx = curItem
-                        //                ? (idxItem < maxIdx ? (idxItem + 1) : 0)
-                        //                : 0;
-                        // }
-                        // odof.exfee.gadget.selectCompleteResult(
-                        //     domId,
-                        //     odof.exfee.gadget.curComplete[domId][tarIdx]
-                        // );
-                        // var curCellTop = tarIdx * cellHeight,
-                        //     curScrlTop = curCellTop - curScroll;
-                        // if (curScrlTop < 0) {
-                        //     objCmpBox.scrollTop(curCellTop);
-                        // } else if (curScrlTop + cellHeight > cboxHeight) {
-                        //     objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
-                        // }
+                        event.preventDefault();
+                        var objCmpBox  = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol'),
+                            cboxHeight = 207,
+                            cellHeight = 51,
+                            shrMargin  = 3,
+                            curScroll  = objCmpBox.scrollTop();
+                        if (!ExfeeWidget.completing) {
+                            return;
+                        }
+                        var objSelected = objCmpBox.find('.selected'),
+                            curItem     = ~~objSelected.index(),
+                            maxIdx      = ExfeeWidget.complete_exfee.length - 1;
+                        switch (event.which) {
+                            case 38: // up
+                                if (--curItem < 0) {
+                                    curItem = maxIdx;
+                                }
+                                break;
+                            case 40: // down
+                                if (++curItem > maxIdx) {
+                                    curItem = 0;
+                                }
+                        }
+                        ExfeeWidget.selectCompleteItem(curItem);
+                        var curCellTop = curItem * cellHeight,
+                            curScrlTop = curCellTop - curScroll;
+                        if (curScrlTop < 0) {
+                            objCmpBox.scrollTop(curCellTop);
+                        } else if (curScrlTop + cellHeight > cboxHeight) {
+                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
+                        }
                 }
                 break;
             case 'blur':
@@ -783,7 +802,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showTip : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeetip exfee_pop_up" style="top: 785px; right: 285px; display: none;">'
+                strPanel = '<div class="exfeetip exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; display: none;">'
                          +   '<div class="inner">'
                          +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
@@ -802,7 +821,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showPanel : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeepanel exfee_pop_up" style="right: 600px; top: 500px">'
+                strPanel = '<div class="exfeepanel exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px">'
                          +   '<div class="inner">'
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
