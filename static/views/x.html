@@ -1,11 +1,18 @@
   <section id="gather" class="x-gather">
 
     <!-- Cross-Form -->
-    <div class="cross-form" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+    <div class="cross-form hide">
 
       <div class="form-horizontal">
 
-          <legend class="hide">Extending form controls</legend>
+          <!--<legend class="hide">Extending form controls</legend>-->
+
+          <!-- Choose Identity -->
+          <div class="pull-left choose-identity">
+            <div class="">Sign in to host</div>
+            <i class=""></i>
+          </div>
+          <!-- .Choose Identity -->
 
           <!-- Cross-Form: Title -->
           <div class="control-group">
@@ -68,7 +75,7 @@
 
     <!-- Cross-Shuffle-Background -->
     <!-- 添加 `sb-animate` 设置旋转动画, 去掉则还原 -->
-    <i class="pull-right icon14-question shuffle-background"></i>
+    <!--<i class="pull-right icon14-question shuffle-background"></i>-->
     <!-- .Cross-Shuffle-Background -->
 
     <!-- Cross-background -->
@@ -79,10 +86,6 @@
 
     <!-- Cross-Container -->
     <div class="cross-container">
-
-      <!-- Cross-Shuffle-Background -->
-      <button class="shuffle-background">Shuffle Background</button>
-      <!-- .Cross-Shuffle-Background -->
 
       <!-- Cross-Title -->
       <div class="cross-title" editarea="title">
@@ -105,22 +108,21 @@
           <div class="cross-rsvp">
             <div class="show">
               <span class="attendance"></span>
-              <span class="accepted"></span>
               <span class="by"></span>
               <span class="change" editarea="rsvp">Change attendance</span>
             </div>
             <div class="edit">
-              <span class="buttons">
-                <button class="accept">Accept</button>
-                <button class="decline">Decline</button>
-                <button class="interested">Interested</button>
-              </span>
+              <div class="rsvp-group">
+                <button class="xbtn-rsvp accept">Accept</button>
+                <button class="xbtn-rsvp decline">Decline</button>
+                <span class="interested">Interested</span>
+              </div>
               <span class="by"></span>
             </div>
           </div>
 
           <!-- Cross-Conversation -->
-          <div class="cross-conversation" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+          <div class="cross-conversation hide">
 
             <!--<a href="#" class="pull-right cross-history">Hide history</a>-->
 
@@ -171,32 +173,38 @@
 
             <!-- Cross-Map
             <div class="cross-map">
-              <!--<img src="http://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&markers=size:mid%7Ccolor:blue%7C40.714728,-73.998672&zoom=13&size=280x140&maptype=road&sensor=false" alt="" />
+              <<img src="http://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&markers=size:mid%7Ccolor:blue%7C40.714728,-73.998672&zoom=13&size=280x140&maptype=road&sensor=false" alt="" />
               <img src="/img/google-staticmap.png" alt="" width="280px" height="140px" />
             </div>
             -->
 
             <!-- Cross-Form: Exfee -->
-            <div class="control-group cross-exfee" id="cross-exfee">
-              <label class="control-label" for="cross-exfee-input">Exfee</label>
-              <div class="controls">
-                <input type="text" class="input-xlarge" id="cross-exfee-input" placeholder="Enter attendees' information" />
-              </div>
-
-              <div class="autocomplete" id="cross-exfee-complete"><ol></ol></div>
+            <div class="cross-exfee">
 
               <div class="pull-right cross-stats">
-                <span class="attended"></span>
+                <span class="attended">0</span>
                 <div class="confirmed">
-                  <div class="total"></div>
+                  <div class="total">of <span></span></div>
                   <div>confirmed</div>
                 </div>
               </div>
 
-              <div class="cross-identities exfee_pop_up_save">
-                <ul class="thumbnails">
-                </ul>
+              <h3><i class="icon24-exfee"></i>Exfee</h3>
+
+              <div class="cross-identities">
+
+                <ul class="clearfix unstyled thumbnails"></ul>
+
+                <div class="invite">
+                  <form class="invite-form" accept-charset="UTF-8" action="#" data-type="json" method="get">
+                    <i class="icon-plus-sign"></i>
+                    <input name="identity" type="text" class="input-xlarge" id="cross-exfee-input" placeholder="Enter attendees' information" />
+                  </form>
+                </div>
+
               </div>
+
+              <div class="autocomplete" id="cross-exfee-complete"><ol></ol></div>
 
             </div>
             <!-- .Cross-Form: Exfee -->
