@@ -6134,6 +6134,7 @@ input[type="submit"].btn.btn-mini {
   cursor: pointer;
 }
 
+.icon24-conversation,
 .icon24-exfee {
   margin-top: -3px;
   margin-right: 6px;
@@ -6199,10 +6200,6 @@ input[type="submit"].btn.btn-mini {
   margin-bottom: 20px;
 }
 
-.avatar-comment .comment-form {
-  margin: 0;
-}
-
 .avatar-comment .comment-form textarea {
   width: 422px;
   height: 40px;
@@ -6212,6 +6209,7 @@ input[type="submit"].btn.btn-mini {
   -webkit-border-radius: 0;
      -moz-border-radius: 0;
           border-radius: 0;
+  resize: none;
 }
 
 .avatar-comment > .avatar {
