@@ -3,9 +3,47 @@
 
   .cross-form {
     //height: 500px;
-    padding: 40px 40px 0;
+    //padding: 40px 40px 0;
+    position: relative;
+    padding: 40px 40px 45px 160px;
     margin: 0 auto;
     #gradient > .directional(#e6e6e6, #fafafa, 270deg);
+
+    .cross-identities {
+      margin: 10px 0 0 80px;
+    }
+
+    .discard {
+      font-size: 12px;
+      color: #797979;
+      margin-right: 13px;
+    }
+
+    .helps {
+      margin-left: 20px;
+    }
+
+    .help-block {
+      margin: 0;
+      color: #4c4c4c;
+    }
+  }
+
+  .choose-identity {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    left: 80px;
+
+    .placeholder {
+      display: table-cell;
+      height: 80px;
+      text-align: center;
+      vertical-align: middle;
+      #gradient > .directional(#fafafa, #e6e6e6, 270deg);
+      border: 1px solid #e6e6e6;
+      .border-radius(5px);
+    }
   }
 
   .row {
@@ -29,7 +67,7 @@
 
   .control-group {
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
 
   input, textarea {
@@ -37,19 +75,35 @@
   }
 
   .control-label {
-    width: 170px;
+    width: 70px;
     color: #7f7f7f;
+    margin-right: 10px;
   }
 
   .controls {
-    margin-left: 180px;
+    margin-left: 0px;
   }
 
   .control-buttos {
-    margin-right: 110px;
+    margin-right: 45px;
+  }
+
+  .form-actions {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-top: none;
   }
 }
 
+#gather-title {
+  width: 460px;
+}
+
+#gather-exfee {
+  margin-bottom: 0;
+}
+/*
 #gather-title, #gather-description {
   width: 480px;
 }
@@ -65,16 +119,5 @@
 #gather-exfee {
   width: 260px;
 }
+*/
 
-.form-actions {
-  margin-top: 0;
-  margin-bottom: 0;
-  background: none;
-  border-top: none;
-}
-
-.choose-identity {
-  position: relative;
-  width: 80px;
-  height: 80px;
-}
