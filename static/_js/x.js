@@ -58,14 +58,6 @@ ns.eventCompleteItem = function(event) {
 };
 
 
-ns.selectCompleteResult = function(domId, identity) {
-    var strBaseId = '#' + domId + '_exfeegadget_autocomplete > ol > li',
-        className = 'autocomplete_selected';
-    $(strBaseId).removeClass(className);
-    $(strBaseId + '[identity="' + identity + '"]').addClass(className);
-};
-
-
 ns.getClassRsvp = function(rsvp) {
     return 'exfee_rsvp_'
          + this.arrStrRsvp[rsvp].split(' ').join('').toLowerCase();
