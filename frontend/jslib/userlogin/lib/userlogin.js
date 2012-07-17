@@ -49,7 +49,7 @@ define('middleware', [], function (require, exports, module) {
     // login-able
     if (0 === (tokensLen = tokens.length)) {
       res.loginable = false;
-      if (req.url !== '/') {
+      if (req.url !== '/' && req.url !== '/#gather') {
         Bus.emit('xapp:goto_home');
       }
       else {
@@ -194,6 +194,7 @@ define('middleware', [], function (require, exports, module) {
     if($('.user-panel').length) return;
     createUserPanel(user, type);
 
+    $('#user-name').attr('href', '/#' + user.default_identity.external_id);
     $('#user-name > span').html(user.name);
 
     var signin = Store.get('signin')
@@ -355,7 +356,7 @@ define('middleware', [], function (require, exports, module) {
         + '</div>'
         + '<div class="footer">'
           //+ '<button class="xbtn xbtn-gather">Gather</button>'
-          + '<a href="/#!0" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
+          + '<a href="/#gather" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
           + '<div class="spliterline"></div>'
           + '<div class="actions">'
             + '<a href="#" class="pull-right" id="js-signout">Sign out</a>'

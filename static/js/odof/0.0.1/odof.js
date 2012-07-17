@@ -151,6 +151,9 @@ define('odof', [], function (require, exports, module) {
     req.updateLocation();
     if ('/' !== url && url === req.url) return;
     app.handle(req, res);
+    e.stopPropagation()
+    e.preventDefault()
+    return false;
   }
 
   appProto.handle = function (req, res, out) {
@@ -501,6 +504,7 @@ define('odof', [], function (require, exports, module) {
     return t;
   }
 
+  /*
   function getHash(path) {
     var path = path
       , iq = path.indexOf('?');
@@ -517,6 +521,7 @@ define('odof', [], function (require, exports, module) {
     if (ih > iq) path = path.substr(iq, ih);
     return path;
   }
+  */
 
   function pathToRegexp(path, keys, sensitive, strict) {
     if (path instanceof RegExp) return path;

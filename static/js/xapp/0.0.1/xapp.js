@@ -65,6 +65,22 @@ define(function (require, exports, module) {
       });
     });
 
+  // gather a cross
+  app.get('/#gather', function (req, res, next) {
+    //console.log('gather a cross');
+    $('.container > div[role="main"]').html('');
+    $('#home').html('');
+    $.ajax({
+      url: '/static/views/x.html?123',
+      success: function (data) {
+        $('.container > div[role="main"]').append(data);
+        Bus.emit('xapp:cross:main');
+        Bus.emit('xapp:cross', 0);
+        next();
+      }
+    });
+  });
+
   // cross
   app.get('/#!:id', function (req, res, next) {
     var cross_id = req.params.id;
@@ -109,9 +125,10 @@ define(function (require, exports, module) {
 
   app.run();
 
+  // NOTE: DOM EVENT 暂时放这里
   //$(function () {
     $(document.body).on('click.xapp', '[href^="/#"]', function (e) {
-      // TODO: 暂时放这里
+      // NOTE: 暂时放这里
       Bus.emit('xapp:cross:end');
 
       var $e = $(e.currentTarget);
@@ -119,7 +136,10 @@ define(function (require, exports, module) {
 
       //alert(path);
 
-      if (2 === path.indexOf('!')) {
+      if (path === '/#gather') {
+        app.response.redirect(path, 'Gather a X', {id: 'gather' + 0});
+      }
+      else if (2 === path.indexOf('!')) {
         app.response.redirect(path, 'Cross', {id: 'cross' + path.substr(2)});
       } else {
         var last_external_id = Store.get('last_external_id');
