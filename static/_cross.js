@@ -192,9 +192,9 @@ ExfeeWidget = {
 
     complete_timer   : 0,
 
-    complete_key     : {},
+    complete_key     : '',
 
-    complete_exfee   : {},
+    complete_exfee   : [],
 
     complete_request : 0,
 
@@ -510,7 +510,7 @@ ExfeeWidget = {
 
 
     displayCompletePanel : function(objPanel, display) {
-        if (display) {
+        if (this.completing = display) {
             objPanel.slideDown(50);
         } else {
             objPanel.slideUp(50);
@@ -541,7 +541,7 @@ ExfeeWidget = {
                 continue;
             }
             var index = ExfeeWidget.complete_exfee[exfeeWidgetId].push(ExfeUtilities.clone(identities[i]));
-            strCompleteItems += '<li complete_index="' + index + '">'
+            strCompleteItems += '<li>'
                               +     '<img src="' + identities[i].avatar_filename + '" class="exfee-avatar">'
                               +     '<span class="exfee_info">'
                               +         '<span class="exfee_name">'
@@ -649,6 +649,12 @@ ExfeeWidget = {
     },
 
 
+    selectCompleteItem : function(index) {
+        var className = 'selected';
+        $('.autocomplete > ol > li').removeClass(className).eq(index).addClass(className);
+    },
+
+
     inputEvent : function(event) {
         var objInput = $(event.target);
         switch (event.type) {
@@ -678,51 +684,37 @@ ExfeeWidget = {
                         break;
                     case 38: // up
                     case 40: // down
-                        // var baseId     = '#' + domId + '_exfeegadget_autocomplete',
-                        //     objCmpBox  = $(baseId),
-                        //     cboxHeight = 207,
-                        //     cellHeight = 51,
-                        //     shrMargin  = 3,
-                        //     curScroll  = objCmpBox.scrollTop();
-                        // if (!odof.exfee.gadget.completing[domId]) {
-                        //     return;
-                        // }
-                        // var objSelected = $(baseId + ' > ol > .autocomplete_selected'),
-                        //     curItem     = null,
-                        //     idxItem     = null,
-                        //     tarIdx      = null,
-                        //     maxIdx      = odof.exfee.gadget.curComplete[domId].length - 1;
-                        // if (objSelected.length) {
-                        //     curItem = objSelected.attr('identity');
-                        //     for (var i in odof.exfee.gadget.curComplete[domId]) {
-                        //         if (odof.exfee.gadget.curComplete[domId][i] === curItem) {
-                        //             idxItem = parseInt(i);
-                        //             break;
-                        //         }
-                        //     }
-                        // }
-                        // switch (event.which) {
-                        //     case 38:
-                        //         tarIdx = curItem
-                        //                ? (idxItem > 0 ? (idxItem - 1) : maxIdx)
-                        //                : maxIdx;
-                        //         break;
-                        //     case 40:
-                        //         tarIdx = curItem
-                        //                ? (idxItem < maxIdx ? (idxItem + 1) : 0)
-                        //                : 0;
-                        // }
-                        // odof.exfee.gadget.selectCompleteResult(
-                        //     domId,
-                        //     odof.exfee.gadget.curComplete[domId][tarIdx]
-                        // );
-                        // var curCellTop = tarIdx * cellHeight,
-                        //     curScrlTop = curCellTop - curScroll;
-                        // if (curScrlTop < 0) {
-                        //     objCmpBox.scrollTop(curCellTop);
-                        // } else if (curScrlTop + cellHeight > cboxHeight) {
-                        //     objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
-                        // }
+                        var objCmpBox  = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol'),
+                            cboxHeight = 207,
+                            cellHeight = 51,
+                            shrMargin  = 3,
+                            curScroll  = objCmpBox.scrollTop();
+                        if (!ExfeeWidget.completing) {
+                            return;
+                        }
+                        var objSelected = objCmpBox.find('.selected'),
+                            curItem     = ~~objSelected.index(),
+                            maxIdx      = ExfeeWidget.complete_exfee.length - 1;
+                            console.log(curItem);
+                        switch (event.which) {
+                            case 38: // up
+                                if (--curItem < 0) {
+                                    curItem = maxIdx;
+                                }
+                                break;
+                            case 40: // down
+                                if (++curItem > maxIdx) {
+                                    curItem = 0;
+                                }
+                        }
+                        ExfeeWidget.selectCompleteItem(curItem);
+                        var curCellTop = curItem * cellHeight,
+                            curScrlTop = curCellTop - curScroll;
+                        if (curScrlTop < 0) {
+                            objCmpBox.scrollTop(curCellTop);
+                        } else if (curScrlTop + cellHeight > cboxHeight) {
+                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
+                        }
                 }
                 break;
             case 'blur':

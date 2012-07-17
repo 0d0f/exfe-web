@@ -103,7 +103,7 @@ EXFE Maps
     <div class="cross-container">
 
       <!-- Cross-Shuffle-Background -->
-      <button class="shuffle-background">Shuffle Background</button>
+      <!-- button class="shuffle-background">Shuffle Background</button -->
       <!-- .Cross-Shuffle-Background -->
 
       <!-- Cross-Title -->
