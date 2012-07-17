@@ -3,16 +3,16 @@
     <!-- Cross-Form -->
     <div class="cross-form hide">
 
+      <!-- Choose Identity -->
+      <div class="pull-left choose-identity">
+        <div class="placeholder">Sign in to host</div>
+        <i class=""></i>
+      </div>
+      <!-- .Choose Identity -->
+
       <div class="form-horizontal">
 
           <!--<legend class="hide">Extending form controls</legend>-->
-
-          <!-- Choose Identity -->
-          <div class="pull-left choose-identity">
-            <div class="">Sign in to host</div>
-            <i class=""></i>
-          </div>
-          <!-- .Choose Identity -->
 
           <!-- Cross-Form: Title -->
           <div class="control-group">
@@ -32,16 +32,9 @@
 
             <div class="autocomplete" id="gather-exfee-complete"><ol></ol></div>
 
-            <div class="pull-right cross-stats">
-              <span class="attended"></span>
-              <div class="confirmed">
-                <div class="total"></div>
-                <div>confirmed</div>
-              </div>
-            </div>
-
-            <div class="cross-identities exfee_pop_up_save">
-              <ul class="thumbnails">
+            <!--<div class="cross-identities exfee_pop_up_save">-->
+            <div class="cross-identities">
+              <ul class="unstyled thumbnails">
               </ul>
             </div>
 
@@ -50,11 +43,11 @@
 
           <div class="form-actions">
             <div class="pull-right control-buttos">
-              <button class="btn" id="cross-form-discard">Discard</button>
-              <button class="btn btn-primary" id="cross-form-gather">Gather</button>
+              <span class="underline discard" id="cross-form-discard">Discard</span>
+              <button class="xbtn-savegather" id="cross-form-gather">Gather</button>
             </div>
-            <div>
-              <p>Edit more information directly in preview below.</p>
+            <div class="helps">
+              <p class="help-block">Edit more information directly in preview below.</p>
             </div>
         </div>
 
@@ -105,7 +98,9 @@
           <div class="cross-rsvp">
             <div class="show">
               <span class="attendance"></span>
-              <span class="by"></span>
+              <span class="by">
+                <img class="avatar" src="" width="20" height="20" />
+              </span>
               <span class="change" editarea="rsvp">Change attendance</span>
             </div>
             <div class="edit">
