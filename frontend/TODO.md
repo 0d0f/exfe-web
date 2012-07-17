@@ -1,14 +1,24 @@
 TODO
 ----
 
+### 02:11:33 07/18/2012
+* JS 引入单元测试(选型)
+  - mocha
+  - qunit
+  - ...
+
+### 02:11:42 07/18/2012
 * HTML5 Cache Manifest
 
+### 02:11:48 07/18/2012
 * 仔细阅读:
   - CSS: https://github.com/necolas/idiomatic-css/tree/master/translations/zh-CN
   - JS: https://github.com/rwldrn/idiomatic.js/tree/master/translations/zh_CN
 
+### 02:11:55 07/18/2012
 * https://developers.google.com/speed/pagespeed/
 
+### 02:11:59 07/18/2012
 * 第二阶段，打算把 Less => stylus, jade template
   - https://github.com/LearnBoost/stylus
   - http://jade-lang.com/
