@@ -307,7 +307,7 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showTip(objInvitation, objOffset.left, objOffset.top);
+        ExfeePanel.showTip(objInvitation, objOffset.left, objOffset.top + 40);
     },
 
 
