@@ -1,8 +1,15 @@
 TODO
 ----
 
-* 第二阶段，打算把 Less => stylus
+* 仔细阅读:
+  - CSS: https://github.com/necolas/idiomatic-css/tree/master/translations/zh-CN
+  - JS: https://github.com/rwldrn/idiomatic.js/tree/master/translations/zh_CN
+
+* https://developers.google.com/speed/pagespeed/
+
+* 第二阶段，打算把 Less => stylus, jade template
   - https://github.com/LearnBoost/stylus
+  - http://jade-lang.com/
 
 * 身份窗口，Identity  邮箱输入后缀自动完成
 
