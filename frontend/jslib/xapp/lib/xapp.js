@@ -57,7 +57,7 @@ define(function (require, exports, module) {
       $('#js-signin').show();
       $(document).find('head').eq(0).append('<link rel="stylesheet" type="text/css" href="/static/_css/home.css?t=' + Config.timestamp + '" />');
       $.ajax({
-        url: '/static/views/index.html',
+        url: '/static/views/index.html?t=' + Config.timestamp,
         success: function (data) {
           $('.container > div[role="main"]').html('');
           $('#home').append(data);
@@ -71,7 +71,7 @@ define(function (require, exports, module) {
     $('.container > div[role="main"]').html('');
     $('#home').html('');
     $.ajax({
-      url: '/static/views/x.html?123',
+      url: '/static/views/x.html?t=' + Config.timestamp,
       success: function (data) {
         $('.container > div[role="main"]').append(data);
         Bus.emit('xapp:cross:main');
@@ -88,7 +88,7 @@ define(function (require, exports, module) {
     $('.container > div[role="main"]').html('');
     $('#home').html('');
     $.ajax({
-      url: '/static/views/x.html?123',
+      url: '/static/views/x.html?t=' + Config.timestamp,
       success: function (data) {
         $('.container > div[role="main"]').append(data);
         Bus.emit('xapp:cross:main');
@@ -106,7 +106,7 @@ define(function (require, exports, module) {
     , function (req, res, next) {
       $('#home').html('');
       $.ajax({
-        url: '/static/views/profile.html?123',
+        url: '/static/views/profile.html?t=' + Config.timestamp,
         success: function (data) {
           $('.container > div[role="main"]').empty().append(data);
           next();
