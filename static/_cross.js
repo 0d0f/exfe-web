@@ -178,6 +178,16 @@ ExfeeCache = {
         this.saveCache();
     },
 
+
+    fetchIdentity : function(identity) {
+        for (var i = 0; i < this.identities.length; i++) {
+            if (ExfeeWidget.compareIdentity(identity, this.identities[i])) {
+                return ExfeUtilities.clone(this.identities[i]);
+            }
+        }
+        return null;
+    }
+
 };
 
 
@@ -520,19 +530,18 @@ ExfeeWidget = {
 
     showCompleteItems : function(objPanel, key, identities) {
         // @todo: 使用 typeahead 替代这段代码
-        var exfeeWidgetId    = objPanel[0].parentNode.id,
-            objCompleteList  = $(objPanel).find('ol'),
+        var objCompleteList  = $(objPanel).find('ol'),
             strCompleteItems = '';
         key = key ? key.toLowerCase() : '';
-        if (ExfeeWidget.complete_key[exfeeWidgetId] !== key) {
-            ExfeeWidget.complete_exfee[exfeeWidgetId] = [];
+        if (ExfeeWidget.complete_key !== key) {
+            ExfeeWidget.complete_exfee = [];
             objCompleteList.html('');
         }
-        ExfeeWidget.complete_key[exfeeWidgetId] = key;
+        ExfeeWidget.complete_key = key;
         for (var i = 0; i < identities.length; i++) {
             var shown = false;
-            for (var j = 0; j < ExfeeWidget.complete_exfee[exfeeWidgetId].length; j++) {
-                if (this.compareIdentity(ExfeeWidget.complete_exfee[exfeeWidgetId][j], identities[i])) {
+            for (var j = 0; j < ExfeeWidget.complete_exfee.length; j++) {
+                if (this.compareIdentity(ExfeeWidget.complete_exfee[j], identities[i])) {
                     shown = true;
                     break;
                 }
@@ -540,7 +549,7 @@ ExfeeWidget = {
             if (shown) {
                 continue;
             }
-            var index = ExfeeWidget.complete_exfee[exfeeWidgetId].push(ExfeUtilities.clone(identities[i]));
+            var index = ExfeeWidget.complete_exfee.push(ExfeUtilities.clone(identities[i]));
             strCompleteItems += '<li>'
                               +     '<img src="' + identities[i].avatar_filename + '" class="exfee-avatar">'
                               +     '<span class="exfee_info">'
@@ -556,7 +565,7 @@ ExfeeWidget = {
         objCompleteList.append(strCompleteItems);
         this.displayCompletePanel(
             objPanel,
-            key && ExfeeWidget.complete_exfee[exfeeWidgetId].length
+            key && ExfeeWidget.complete_exfee.length
         );
     },
 
@@ -603,7 +612,7 @@ ExfeeWidget = {
                     }
                     ExfeeCache.cacheIdentities(caughtIdentities);
                     ExfeeCache.tried_key[key] = true;
-                    if (ExfeeWidget.complete_key[objPanel[0].parentNode.id] === key) {
+                    if (ExfeeWidget.complete_key === key) {
                         ExfeeWidget.showCompleteItems(objPanel, key, caughtIdentities);
                     }
                 }
@@ -655,6 +664,16 @@ ExfeeWidget = {
     },
 
 
+    useCompleteItem : function(index) {
+        var identity = ExfeeCache.fetchIdentity(this.complete_exfee[index]);
+        if (identity) {
+            this.complete_exfee.splice(index, 1);
+            this.addExfee(identity);
+            ExfeeCache.cacheIdentities(identity);
+        }
+    },
+
+
     inputEvent : function(event) {
         var objInput = $(event.target);
         switch (event.type) {
@@ -664,26 +683,30 @@ ExfeeWidget = {
                         ExfeeWidget.checkInput(objInput, true);
                         break;
                     case 13: // enter
-                        // var objSelected = $('#' + domId + '_exfeegadget_autocomplete > ol > .autocomplete_selected'),
-                        //     curItem     = objSelected.length ? objSelected.attr('identity') : null;
-                        // if (odof.exfee.gadget.completing[domId] && curItem) {
-                        //     odof.exfee.gadget.addExfeeFromCache(domId, curItem);
-                        //     odof.exfee.gadget.displayComplete(domId, false);
-                        //     $('#' + domId + '_exfeegadget_inputbox').val('');
-                        // } else {
+                        var objSelected = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol > .selected'),
+                            curItem     = objSelected.length ? ~~objSelected.index() : null;
+                        if (ExfeeWidget.completing && curItem !== null) {
+                            ExfeeWidget.useCompleteItem(curItem);
+                            ExfeeWidget.displayCompletePanel(
+                                $(objInput[0].parentNode.parentNode).find('.autocomplete'),
+                                false
+                            );
+                            objInput.val('');
+                        } else {
                             ExfeeWidget.checkInput(objInput, true);
-                        // }
+                        }
                         break;
                     case 27: // esc
                         if (ExfeeWidget.completing) {
-                            ExfeeWidget.displayComplete(
-                                $(objInput[0].parentNode.parentNode)[0].id,
+                            ExfeeWidget.displayCompletePanel(
+                                $(objInput[0].parentNode.parentNode).find('.autocomplete'),
                                 false
                             );
                         }
                         break;
                     case 38: // up
                     case 40: // down
+                        event.preventDefault();
                         var objCmpBox  = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol'),
                             cboxHeight = 207,
                             cellHeight = 51,
@@ -695,7 +718,6 @@ ExfeeWidget = {
                         var objSelected = objCmpBox.find('.selected'),
                             curItem     = ~~objSelected.index(),
                             maxIdx      = ExfeeWidget.complete_exfee.length - 1;
-                            console.log(curItem);
                         switch (event.which) {
                             case 38: // up
                                 if (--curItem < 0) {

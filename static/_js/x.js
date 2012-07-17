@@ -64,19 +64,6 @@ ns.getClassRsvp = function(rsvp) {
 };
 
 
-ns.addExfeeFromCache = function(domId, identity) {
-    for (var i in odof.exfee.gadget.exfeeAvailable) {
-        if (odof.exfee.gadget.exfeeAvailable[i].external_identity === identity) {
-            var objExfee = odof.util.clone(odof.exfee.gadget.exfeeAvailable[i]);
-            odof.exfee.gadget.exfeeAvailable.splice(i, 1);
-            odof.exfee.gadget.cacheExfee([objExfee], true);
-            odof.exfee.gadget.addExfee(domId, [objExfee], true);
-            break;
-        }
-    }
-};
-
-
 ns.addExfee = function(domId, exfees, noIdentity, noCallback) {
     //for (var k = 0; k < 4; k++) {
     // @cfd 为什么注释这里的代码？这里是用来排序显示的，根据rsvp状态优先显示exfee的。 @todo by @leask
