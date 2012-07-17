@@ -110,3 +110,11 @@
     background-image: linear-gradient(left, @startColor 0%, @midColor @colorStop, @endColor 100%); // CSS3
   }
 }
+
+.transforms(@transforms) {
+  -webkit-transform: @transforms;
+     -moz-transform: @transforms;
+      -ms-transform: @transforms;
+       -o-transform: @transforms;
+          transform: @transforms;
+}
