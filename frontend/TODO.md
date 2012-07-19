@@ -1,6 +1,16 @@
 TODO
 ----
 
+### 02:39:58 07/20/2012
+  * humans.txt http://humanstxt.org/
+  * robots.txt
+
+### 01:52:04 07/20/2012
+  * 拖拽url图片，canvas 保存，跨域问题
+
+### 00:38:17 07/20/2012
+  * 考虑复杂 hash ，可以增设类似 express sub-app
+
 ### 11:42:42 07/18/2012
   * http://nicolasgallagher.com/jump-links-and-viewport-positioning/demo/#method-A
   * 思考浏览器的a hash 行为，与新结构 hash 跳转的冲突问题
