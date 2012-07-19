@@ -409,7 +409,7 @@ define('middleware', [], function (require, exports, module) {
       if (!_i_) {
         $userPanel.css('top', h);
         self.find('.user-panel').addClass('show');
-        _i_ = true;
+        //_i_ = true;
       }
 
       self.prev().removeClass('hide');
@@ -421,8 +421,28 @@ define('middleware', [], function (require, exports, module) {
 
     $BODY.on('mouseenter.dropdown mouseleave.dropdown', '.navbar .dropdown-wrapper', hover);
 
+    $BODY.on('click.dropdown', '.navbar .dropdown-wrapper a[href^="/#"]', function (e) {
+      var self = $('.navbar .dropdown-wrapper')
+        , $userPanel = self.find('div.user-panel').addClass('show')
+        , timer = self.data('timer')
+        , h = -$userPanel.outerHeight();
+
+        clearTimeout(timer);
+        self.data('timer', timer = null);
+        $userPanel.css('top', h);
+
+        self
+        .prev()
+        .addClass('hide')
+       .end()
+       .parent()
+       .removeClass('user');
+    });
+
     $BODY.on('click', '#js-signout', function (e) {
       e.preventDefault();
+      // NOTE: 暂时放这里
+      Bus.emit('xapp:cross:end');
       $('.navbar .dropdown-wrapper').find('.user-panel').remove();;
       $('#js-signin')
         .show()

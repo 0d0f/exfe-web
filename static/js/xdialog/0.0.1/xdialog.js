@@ -295,10 +295,14 @@ define(function (require, exports, module) {
                 // 最后登陆的 external_identity
                 Store.set('last_external_id', od.external_identity);
 
+                /*
                 if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
                     window.location = window.location.pathname;
                     return;
                 }
+                */
+
+               console.dir(data);
 
                 // goto profile
                 if (t === 'd01') {
