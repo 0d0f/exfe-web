@@ -1,27 +1,31 @@
 TODO
 ----
 
+### 11:42:42 07/18/2012
+  * http://nicolasgallagher.com/jump-links-and-viewport-positioning/demo/#method-A
+  * 思考浏览器的a hash 行为，与新结构 hash 跳转的冲突问题
+
 ### 02:11:33 07/18/2012
-* JS 引入单元测试(选型)
-  - mocha
-  - qunit
-  - ...
+  * JS 引入单元测试(选型)
+    - mocha
+    - qunit
+    - ...
 
 ### 02:11:42 07/18/2012
-* HTML5 Cache Manifest
+  * HTML5 Cache Manifest
 
 ### 02:11:48 07/18/2012
-* 仔细阅读:
-  - CSS: https://github.com/necolas/idiomatic-css/tree/master/translations/zh-CN
-  - JS: https://github.com/rwldrn/idiomatic.js/tree/master/translations/zh_CN
+  * 仔细阅读:
+    - CSS: https://github.com/necolas/idiomatic-css/tree/master/translations/zh-CN
+    - JS: https://github.com/rwldrn/idiomatic.js/tree/master/translations/zh_CN
 
 ### 02:11:55 07/18/2012
 * https://developers.google.com/speed/pagespeed/
 
 ### 02:11:59 07/18/2012
-* 第二阶段，打算把 Less => stylus, jade template
-  - https://github.com/LearnBoost/stylus
-  - http://jade-lang.com/
+  * 第二阶段，打算把 Less => stylus, jade template
+    - https://github.com/LearnBoost/stylus
+    - http://jade-lang.com/
 
 * 身份窗口，Identity  邮箱输入后缀自动完成
 
