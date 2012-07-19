@@ -48,7 +48,7 @@ class CrossHelper extends ActionController {
 
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
                 $conversation_count=$conversationData->getConversationCounter($cross["exfee_id"],$uid);
-                $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
+                $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place,$conversation_count);
                 $cross->by_identity=$by_identity;
                 $cross->created_at=$created_at." +0000";
                 $relative_id=0;
