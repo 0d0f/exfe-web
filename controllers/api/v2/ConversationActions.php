@@ -66,6 +66,7 @@ class ConversationActions extends ActionController {
         $hlpCross = $this->getHelperByName('cross', 'v2');
         $modUser  = $this->getModelByName('user',   'v2');
         $modExfee = $this->getModelByName('exfee',  'v2');
+        $modConversation= $this->getModelByName('conversation',  'v2');
         $cross_id = $modExfee->getCrossIdByExfeeId($new_post_obj->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
         $msgArg   = array(
@@ -87,10 +88,11 @@ class ConversationActions extends ActionController {
                     $msgArg['to_identities'][] = $mItem;
                 }
                 // set conversation counter
-                $modExfee->addConversationCounter(
+                $modConversation->addConversationCounter(
                     $cross->exfee->id,
                     $invitation->identity->connected_user_id
                 );
+                $modExfee->updateExfeeTime($cross->exfee->id);
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
