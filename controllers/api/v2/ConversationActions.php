@@ -77,7 +77,7 @@ class ConversationActions extends ActionController {
         $chkUser = array();
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
-            if ($invitation->identity->connected_user_id]) {
+            if ($invitation->identity->connected_user_id
              && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
                 $mobIdentities = $modUser->getMobileIdentitiesByUserId(
@@ -102,8 +102,7 @@ class ConversationActions extends ActionController {
     }
 
 
-    public function doDel()
-    {
+    public function doDel() {
         $params=$this->params;
         $exfee_id=$params["id"];
         $post_id=$params["post_id"];

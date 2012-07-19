@@ -22,9 +22,22 @@ class CrossesActions extends ActionController {
 
 
     public function doGetCrossByInvitationToken() {
-        $params = $this->params;
-        $token  = $params['token'];
+        $modExfee = $this->getModelByName('exfee', 'v2');
+        $params   = $this->params;
+        $token    = $params['token'];
+        if (!$token) {
+            apiError(); ///////////////
+        }
+        $rawInvitation = $modExfee->getRawInvitationByToken($token);
+        if (!$rawInvitation) {
+            apiError(); ///////////////
+        }
+        if ($rawInvitation['tokenexpired']) {
 
+        } else {
+
+        }
+        print_r($rawInvitation);
     }
 
 

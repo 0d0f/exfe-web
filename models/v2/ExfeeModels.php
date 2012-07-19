@@ -50,14 +50,15 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getInvitationByToken($token) {
+    public function getRawInvitationByToken($token) {
         if ($token) {
             $rawInvitation = $this->getRow(
                 "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
             );
             if ($rawInvitation) {
-
+                return $rawInvitation;
             }
+            ///////////////////
         }
         return null;
     }
