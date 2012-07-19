@@ -850,7 +850,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +           '<i class="pull-left mates-minus icon14-mates-minus"></i>'
                          +           '<span class="pull-left num"></span>'
                          +           '<i class="pull-left mates-add"></i>'
-                         +        '</span>'
+                         +         '</span>'
                          +       '</div>'
                          +     '</div>'
                          +     '<div class="identities">'
