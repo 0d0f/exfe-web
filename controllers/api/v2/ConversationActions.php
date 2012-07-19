@@ -6,7 +6,7 @@ class ConversationActions extends ActionController {
         $params=$this->params;
         $exfee_id=$params["id"];
         $updated_at=$params["updated_at"];
-        $clear=$params["clear_counter"];
+        $clear=$params["clear"];
 
         if($updated_at!='')
             $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
@@ -27,7 +27,6 @@ class ConversationActions extends ActionController {
             //clear counter
             $conversationData=$this->getModelByName("conversation","v2");
             $conversationData->clearConversationCounter($exfee_id,$result["uid"]);
-
         }
         apiResponse(array("conversation"=>$conversation));
     }
