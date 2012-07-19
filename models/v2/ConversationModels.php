@@ -57,4 +57,30 @@ class ConversationModels extends DataModel {
         return intval($post["userid"]);
     }
 
+    public function addConversationCounter($exfee_id,$user_id,$count=1)
+    {
+        if( intval($exfee_id) > 0 && intval($user_id)>0 ) {
+            $key = $exfee_id.":".$user_id;
+            $redis = new Redis();
+            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+            $conversation_count = $redis->HGET("conversation:count",$key);
+            $conversation_count=$conversation_count+$count;
+            $redis->HSET("conversation:count",$key,$conversation_count);
+        }
+    }
+    public function clearConversationCounter($exfee_id,$user_id)
+    {
+        $key = $exfee_id.":".$user_id;
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $redis->HSET("conversation:count",$key,0);
+    }
+
+    public function getConversationCounter($exfee_id,$user_id) {
+        $key = $exfee_id.":".$user_id;
+        $redis = new Redis();
+        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+        $conversation_count = $redis->HGET("conversation:count",$key);
+        return $conversation_count;
+    }
 }
