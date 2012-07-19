@@ -174,17 +174,31 @@ define('lightsaber', function (require, exports, module) {
 
     // set .cache unless explicitly provided
     opts.cache = null === opts.cache
-      ? this.enable('view cache')
+      ? this.enabled('view cache')
       : opts.cache;
 
       // primed
     if (opts.cache) view = cache[name];
 
     if (!view) {
+      view = new View(name, {
+          engine: this.set('view engine')
+        , root: this.set('views')
+      }, this.set('timestamp'));
+
+      if (!view.path) {
+        var err = new Error('Failed to lookup view "' + name + '"');
+        err.view = view;
+        return fn(err);
+      }
+
+      // prime the cache
+      if (opts.cache) cache[name] = view;
     }
 
+    // render
     try {
-
+      view.render(opts, fn);
     } catch (err) {
       fn(err);
     }
@@ -325,6 +339,14 @@ define('lightsaber', function (require, exports, module) {
     return false;
   };
 
+  // Generate an `Error`
+  prop.error = function (code, msg) {
+    var err = new Error(msg);
+    err.status = code;
+    return err;
+  };
+
+
 
   // Request
   function Request() {
@@ -340,16 +362,14 @@ define('lightsaber', function (require, exports, module) {
     this.port = location.port || 80;
     this.path = location.pathname;
     this.hash = location.hash;
-    this.query = location.search;
-    this.url = location.pathname + this.query + this.hash;
+    this.querystring = location.search;
+    this.url = location.pathname + this.querystring + this.hash;
   };
 
   prop.param = function (name, defaultValue) {
     var params = this.params || {}
-      , body = this.body || {}
       , query = this.query || {};
     if (null != params[name] && params.hasOwnProperty(name)) return params[name];
-    if (null != body[name]) return body[name];
     if (null != query[name]) return query[name];
     return defaultValue;
   };
@@ -373,13 +393,33 @@ define('lightsaber', function (require, exports, module) {
   // Response.prototype
   prop = Response.prototype;
 
-  prop.redirect = function (url, title, state) {
+  // redirect('back')
+  // redirect('/user', 'User Page', {id: 'user'});
+  prop.redirect = function (url) {
+    var argsLen = argumens.length
+      , title
+      , state;
+
+    // `back` `forward`
+    if (1 === argsLen) {
+      url = arguments[0];
+      if (url === 'back' || url === 'forward') {
+        history[url]();
+      }
+      return;
+    }
+
     this.path = url;
     this.title = title;
     document.title = this.title;
     this.state = state;
     this.pushState();
-    $(window).triggerHandler('popstate');
+
+    if (!this.historySupport) {
+      location.hash = path.substr(2);
+    }
+
+    $(win).triggerHandler('popstate');
   };
 
   // save state
@@ -624,28 +664,32 @@ define('lightsaber', function (require, exports, module) {
 
 
   // View
-  function View(name, options) {
+  function View(name, options, timestamp) {
     options = options || {};
     this.name = name;
     this.root = options.root;
     this.engine = options.engine;
+    this.ext = extname(name);
+    this.timestamp = timestamp || '';
     this.path = this.lookup(name);
   }
 
   prop = View.prototype;
 
   prop.lookup  = function (path) {
+    return this.root + '/' + path + '?t=' + this.timestamp;
   };
 
   prop.render = function (options, fn) {
-    this.engine(this.path, options, fn);
+    //this.engine(this.path, options, fn);
+    return read(this.engine, this.path, options, fn, this.ext);
   };
 
 
   // Middlewars
   // **************************************************
 
-  // lightsaber init middleware
+  // lightsaber init middleware:
   function lightsaberInit(app) {
     return function init(req, res, next) {
       req.app = res.app = app;
@@ -659,8 +703,32 @@ define('lightsaber', function (require, exports, module) {
     };
   }
 
+  // Basic Auth:
+  //function basicAuth(callback, realm) {}
+
+  // Error Handle:
+  //middleware.errorHandle = function (err, req, res, next) {};
+
+
   // Helper
   // **************************************************
+
+  // ajax get template
+  function read(engine, path, options, fn, ext) {
+    return $.get(path, function (tpl) {
+      var template, html = tpl;
+      if (ext !== 'html') {
+        template = engine.compile(tpl);
+        html = template(options);
+      }
+      fn(html);
+    });
+  }
+
+  // extname
+  function extname(filename) {
+    return filename.split('.')[1] || 'html';
+  }
 
   // locals
   function locals(obj) {
