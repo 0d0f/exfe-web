@@ -23,7 +23,10 @@ class ConversationActions extends ActionController {
 
         $helperData=$this->getHelperByName("conversation","v2");
         $conversation=$helperData->getConversationByExfeeId($exfee_id,$updated_at);
-        if($clear=='false') {
+        if($clear!='false') {
+            //clear counter
+            $conversationData=$this->getModelByName("conversation","v2");
+            $conversationData->clearConversationCounter($exfee_id,$result["uid"]);
 
         }
         apiResponse(array("conversation"=>$conversation));
