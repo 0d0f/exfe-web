@@ -57,30 +57,30 @@ class ConversationModels extends DataModel {
         return intval($post["userid"]);
     }
 
-    public function addConversationCounter($cross_id,$user_id,$count)
+    public function addConversationCounter($exfee_id,$user_id,$count=1)
     {
-        if( intval($cross_id) > 0 && intval($user_id)>0 ) {
-            $key = $cross_id.":".$user_id;
+        if( intval($exfee_id) > 0 && intval($user_id)>0 ) {
+            $key = $exfee_id.":".$user_id;
             $redis = new Redis();
             $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-            $conversation_count = json_decode($redis->HGET("conversation:count",$key),true);
+            $conversation_count = $redis->HGET("conversation:count",$key);
             $conversation_count=$conversation_count+$count;
             $redis->HSET("conversation:count",$key,$conversation_count);
         }
     }
-    public function clearConversationCounter($cross_id,$user_id)
+    public function clearConversationCounter($exfee_id,$user_id)
     {
-        $key = $cross_id.":".$user_id;
+        $key = $exfee_id.":".$user_id;
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $conversation_count = json_decode($redis->HGET("conversation:count",$key),true);
         $redis->HSET("conversation:count",$key,0);
     }
-    public function getConversationCounter($cross_id,$user_id) {
-        $key = $cross_id.":".$user_id;
+
+    public function getConversationCounter($exfee_id,$user_id) {
+        $key = $exfee_id.":".$user_id;
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $conversation_count = json_decode($redis->HGET("conversation:count",$key),true);
+        $conversation_count = $redis->HGET("conversation:count",$key);
         return $conversation_count;
     }
 }
