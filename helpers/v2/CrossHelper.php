@@ -2,13 +2,14 @@
 
 class CrossHelper extends ActionController {
 
-    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false)
+    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false,$uid)
     {
         $crossData=$this->getModelByName("cross","v2");
         $crosses=$crossData->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
         //build and return a cross object array
         $exfeeData=$this->getModelByName("exfee","v2");
         $identityData=$this->getModelByName("identity","v2");
+        $conversationData=$this->getModelByName("conversation","v2");
         $cross_list=array();
         $cross_ids=array();
 
@@ -46,6 +47,7 @@ class CrossHelper extends ActionController {
                     $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
 
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
+                $conversation_count=$conversationData->getConversationCounter($cross["exfee_id"],$uid);
                 $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
                 $cross->by_identity=$by_identity;
                 $cross->created_at=$created_at." +0000";
