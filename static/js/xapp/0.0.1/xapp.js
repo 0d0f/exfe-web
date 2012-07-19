@@ -9,6 +9,7 @@ define(function (require, exports, module) {
   var Config = require('config');
   var odof = require('odof');
   var middleware = require('middleware');
+  var Handlebars = require('handlebars');
 
   var lightsaber = require('lightsaber');
 
@@ -20,6 +21,8 @@ define(function (require, exports, module) {
   app.use(middleware.login);
 
   app.configure(function () {
+    app.set('timestamp', Config.timestamp);
+    app.set('view engine', Handlebars);
     app.set('views', '/static/views');
     //console.log(app.set('views'));
   });
@@ -64,14 +67,14 @@ define(function (require, exports, module) {
     }
 
     $('#js-signin').show();
+
     $(document).find('head').eq(0).append('<link rel="stylesheet" type="text/css" href="/static/_css/home.css?t=' + Config.timestamp + '" />');
-    $.ajax({
-      url: '/static/views/index.html?t=' + Config.timestamp,
-      success: function (data) {
-        $('.container > div[role="main"]').html('');
-        $('#home').append(data);
-      }
+
+    res.render('index.html', function (tpl) {
+      $('.container > div[role="main"]').html('');
+      $('#home').append(tpl);
     });
+
   });
 
 
@@ -82,7 +85,7 @@ define(function (require, exports, module) {
    */
   app.param('crossId', function (req, res, next, id) {
     //console.log('cross param corssId', id.toString());
-    if (id != 0) {
+    if (id !== '0') {
       next();
     } else {
       next(new Error('crossId fail'));
@@ -90,21 +93,16 @@ define(function (require, exports, module) {
   });
 
   app.get('/#!:crossId', function (req, res, next) {
-    //console.log('cross');
-    //console.dir(req.params);
     var cross_id = req.params.crossId;
-    //console.log('cross', 0);
     $('.container > div[role="main"]').html('');
     $('#home').html('');
-    $.ajax({
-      url: '/static/views/x.html?t=' + Config.timestamp,
-      success: function (data) {
-        $('.container > div[role="main"]').append(data);
-        Bus.emit('xapp:cross:main');
-        Bus.emit('xapp:cross', +cross_id);
-        next();
-      }
+
+    res.render('x.html', function (tpl) {
+      $('.container > div[role="main"]').append(tpl);
+      Bus.emit('xapp:cross:main');
+      Bus.emit('xapp:cross', +cross_id);
     });
+
   });
 
 
@@ -112,18 +110,14 @@ define(function (require, exports, module) {
    * Gather a X
    */
   app.get('/#gather', function (req, res, next) {
-    //console.log('gather a x');
-    //console.log('gather a cross');
     $('.container > div[role="main"]').html('');
     $('#home').html('');
-    $.ajax({
-      url: '/static/views/x.html?t=' + Config.timestamp,
-      success: function (data) {
-        $('.container > div[role="main"]').append(data);
-        Bus.emit('xapp:cross:main');
-        Bus.emit('xapp:cross', 0);
-        next();
-      }
+
+    res.render('x.html', function(tpl) {
+      $('.container > div[role="main"]').append(tpl);
+      Bus.emit('xapp:cross:main');
+      Bus.emit('xapp:cross', 0);
+      next();
     });
   });
 
@@ -132,14 +126,11 @@ define(function (require, exports, module) {
    */
   app.get(/^\/#([^@\/\s\!]+)@([^@\/\s\.]+)/
     , function (req, res, next) {
-      //console.log('profile');
       $('#home').html('');
-      $.ajax({
-        url: '/static/views/profile.html?t=' + Config.timestamp,
-        success: function (data) {
-          $('.container > div[role="main"]').empty().append(data);
-          next();
-        }
+
+      res.render('profile.html', function (tpl) {
+        $('.container > div[role="main"]').empty().append(tpl);
+        next();
       });
     }
    , function (req, res, next) {
