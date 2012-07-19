@@ -50,6 +50,20 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function getRawInvitationByToken($token) {
+        if ($token) {
+            $rawInvitation = $this->getRow(
+                "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
+            );
+            if ($rawInvitation) {
+                return $rawInvitation;
+            }
+            ///////////////////
+        }
+        return null;
+    }
+
+
     public function getUserIdsByExfeeId($exfee_id) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
@@ -221,8 +235,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getNewExfeeId()
-    {
+    public function getNewExfeeId() {
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
         return $exfee_id;

@@ -1160,6 +1160,10 @@ define(function (require, exports, module) {
 
 
     var EditCross = function(event) {
+        // @todo by @Leask: 暂时确保在 Cross 页
+        if (!$('.cross-container').length) {
+            return;
+        }
         var domWidget  = event ? event.target : null,
             editArea   = $(domWidget).attr('editarea'),
             editMethod = {
