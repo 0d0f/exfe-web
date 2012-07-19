@@ -36,8 +36,8 @@
 
   <script src="/static/js/global/0.0.1/global.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-  <!-- odof -->
-  <script src="/static/js/odof/0.0.1/odof.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <!-- lightsaber -->
+  <script src="/static/js/lightsaber/0.0.1/lightsaber.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <!-- 每个页面先单独引入 signin -->
   <script src="/static/js/userlogin/0.0.1/userlogin.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>

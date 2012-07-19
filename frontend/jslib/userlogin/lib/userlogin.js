@@ -13,6 +13,7 @@ define('middleware', [], function (require, exports, module) {
   var middleware = module.exports = {};
 
   middleware.login = function (req, res, next) {
+    //console.log('middleware login');
     tokenRegExp.lastIndex = 0;
     var match = tokenRegExp.exec(location.search)
       // new token
