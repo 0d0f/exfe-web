@@ -6,7 +6,7 @@ class ConversationActions extends ActionController {
         $params=$this->params;
         $exfee_id=$params["id"];
         $updated_at=$params["updated_at"];
-        $clear=$params["clear_counter"];
+        $clear=$params["clear"];
 
         if($updated_at!='')
             $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
@@ -27,7 +27,6 @@ class ConversationActions extends ActionController {
             //clear counter
             $conversationData=$this->getModelByName("conversation","v2");
             $conversationData->clearConversationCounter($exfee_id,$result["uid"]);
-
         }
         apiResponse(array("conversation"=>$conversation));
     }
@@ -67,6 +66,7 @@ class ConversationActions extends ActionController {
         $hlpCross = $this->getHelperByName('cross', 'v2');
         $modUser  = $this->getModelByName('user',   'v2');
         $modExfee = $this->getModelByName('exfee',  'v2');
+        $modConversation= $this->getModelByName('conversation',  'v2');
         $cross_id = $modExfee->getCrossIdByExfeeId($new_post_obj->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
         $msgArg   = array(
@@ -75,18 +75,26 @@ class ConversationActions extends ActionController {
             'to_identities' => array(),
             'by_identity'   => $identity,
         );
-        $chkMobUs = array();
+        $chkUser = array();
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
-            // get mobile identities
-            if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+            if ($invitation->identity->connected_user_id
+             && !$chkUser[$invitation->identity->connected_user_id]) {
+                // get mobile identities
                 $mobIdentities = $modUser->getMobileIdentitiesByUserId(
                     $invitation->identity->connected_user_id
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
                     $msgArg['to_identities'][] = $mItem;
                 }
-                $chkMobUs[$invitation->identity->connected_user_id] = true;
+                // set conversation counter
+                $modConversation->addConversationCounter(
+                    $cross->exfee->id,
+                    $invitation->identity->connected_user_id
+                );
+                $modExfee->updateExfeeTime($cross->exfee->id);
+                // marked
+                $chkUser[$invitation->identity->connected_user_id] = true;
             }
         }
         $hlpGobus->send('cross', 'Update', $msgArg);
@@ -96,8 +104,7 @@ class ConversationActions extends ActionController {
     }
 
 
-    public function doDel()
-    {
+    public function doDel() {
         $params=$this->params;
         $exfee_id=$params["id"];
         $post_id=$params["post_id"];

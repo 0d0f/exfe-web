@@ -2,8 +2,7 @@
 
 class CrossesActions extends ActionController {
 
-    public function doIndex()
-    {
+    public function doIndex() {
         $params=$this->params;
         $checkHelper=$this->getHelperByName("check","v2");
         $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
@@ -22,8 +21,27 @@ class CrossesActions extends ActionController {
     }
 
 
-    public function doGather()
-    {
+    public function doGetCrossByInvitationToken() {
+        $modExfee = $this->getModelByName('exfee', 'v2');
+        $params   = $this->params;
+        $token    = $params['token'];
+        if (!$token) {
+            apiError(); ///////////////
+        }
+        $rawInvitation = $modExfee->getRawInvitationByToken($token);
+        if (!$rawInvitation) {
+            apiError(); ///////////////
+        }
+        if ($rawInvitation['tokenexpired']) {
+
+        } else {
+
+        }
+        print_r($rawInvitation);
+    }
+
+
+    public function doGather() {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
@@ -52,8 +70,7 @@ class CrossesActions extends ActionController {
     }
 
 
-    public function doEdit()
-    {
+    public function doEdit() {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
