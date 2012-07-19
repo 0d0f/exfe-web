@@ -72,18 +72,25 @@ class ConversationActions extends ActionController {
             'to_identities' => array(),
             'by_identity'   => $identity,
         );
-        $chkMobUs = array();
+        $chkUser = array();
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
-            // get mobile identities
-            if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+            if ($invitation->identity->connected_user_id]) {
+             && !$chkUser[$invitation->identity->connected_user_id]) {
+                // get mobile identities
                 $mobIdentities = $modUser->getMobileIdentitiesByUserId(
                     $invitation->identity->connected_user_id
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
                     $msgArg['to_identities'][] = $mItem;
                 }
-                $chkMobUs[$invitation->identity->connected_user_id] = true;
+                // set conversation counter
+                $modExfee->addConversationCounter(
+                    $cross->exfee->id,
+                    $invitation->identity->connected_user_id
+                );
+                // marked
+                $chkUser[$invitation->identity->connected_user_id] = true;
             }
         }
         $hlpGobus->send('cross', 'Update', $msgArg);
