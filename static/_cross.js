@@ -279,7 +279,7 @@ ExfeeWidget = {
           +     '" external_username="' + invitation.identity.external_username.toLowerCase() + '">'
           +     '<span class="avatar">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
-          +         '<span class="rt">' + (invitation.host ? 'H' : '') + '</span>'
+          +         '<span class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></span>'
           +         '<span class="lt">' + (invitation.mates ? invitation.mates : '') + '</span>'
           +         '<span class="rb"><i class="icon-time"></i></span>'
           +     '</span>'
