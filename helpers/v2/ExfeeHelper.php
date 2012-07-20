@@ -19,9 +19,4 @@ class ExfeeHelper extends ActionController {
         return $this->modExfee->getCrossIdByExfeeId($exfee_id);
     }
 
-
-    public function checkInvitationToken($token) {
-    	return $this->modExfee->checkInvitationToken($token);
-    }
-
 }
