@@ -12,52 +12,12 @@ define('middleware', [], function (require, exports, module) {
 
   var middleware = module.exports = {};
 
-  /*
   middleware.basicAuth = function (req, res, next) {
-    tokenRegExp.lastIndex = 0;
-    var match = tokenRegExp.exec(req.url)
-      , urlToken = 
-  };
-  */
+    var signin = Store.get('signin')
+      , token = (signin && signin.token) || false
+      , logintype = 0;
 
-  // Login Handle.
-  middleware.login = function (req, res, next) {
-    //console.log('middleware login');
-    tokenRegExp.lastIndex = 0;
-    var match = tokenRegExp.exec(req.url)
-      // new token
-      , ntoken = (match && match[1]) || false
-      , signin = Store.get('signin')
-      // old token
-      , otoken = (signin && signin.token) || false
-      , tokens = []
-      // logintype:
-      // -------------
-      // 1           3
-      //    login
-      // -------------
-      // 2           4
-      // merge & setup
-      // -------------
-      // 0
-      // fail
-      // -------------
-      , logintype = 0
-      // tokens length
-      , tokensLen;
-
-    if (ntoken) {
-      tokens.push(ntoken);
-    }
-
-    if (otoken && (ntoken !== otoken)) {
-      tokens.push(otoken);
-    }
-
-    res.loginable = true;
-
-    // login-able
-    if (0 === (tokensLen = tokens.length)) {
+    if (!token) {
       res.loginable = false;
       if (req.url !== '/' && req.url !== '/#gather') {
         Bus.emit('xapp:goto_home');
@@ -68,42 +28,30 @@ define('middleware', [], function (require, exports, module) {
       return;
     }
 
-    var signin = Store.get('signin');
-
     // checking auth
-    Api.request('checkAuthorization', {
+    //http://redmine.0d0f.com/projects/0d0f/wiki/CheckAuthorization/
+    Api.request('checkAuthorization'
+      , {
         type: 'POST',
         data: {
-          tokens: JSON.stringify(tokens)
+          token: token
         }
-      },
+      }
+    , function (data) {
+        if (data) {
+          Bus.emit(XAPP_USER_STATUS, {
+              token: token
+            , type: 3
+            , data: data
+          });
 
-      function (data) {
-        var statuses = data.statuses
-          , token = tokens[0]
-          , status0 = statuses[token];
+          res.loginable = true;
 
-        if (status0) {
-            logintype = 3;
-
-          if (2 === tokensLen) {
-            logintype = 4;
-            //delete statuses[tokens[1]];
-          }
+          next();
         }
-
-        Bus.emit(XAPP_USER_STATUS, {
-            tokens: tokens
-          , type: logintype
-          , statuses: statuses
-        });
-
-        next();
-
       }
     );
-
-  };
+  }
 
   // XAPP_USER_TOKEN
   var XAPP_USER_TOKEN = 'xapp:usertoken';
@@ -153,14 +101,10 @@ define('middleware', [], function (require, exports, module) {
 
   Bus.on(XAPP_USER_STATUS, function (d) {
     switch (d.type) {
-      case 1:
-      case 2:
-        Bus.emit(XAPP_CROSS_TOKEN, d.tokens, d.type, d.statuses);
-        break;
       case 3:
-        var token = d.tokens[0]
-          , status = d.statuses[token]
-          , user_id = status.user_id;
+        var token = d.token
+          , data = d.data
+          , user_id = d.data.user_id;
         Bus.emit(XAPP_USER_TOKEN, token, user_id, d.type);
         break;
       default:

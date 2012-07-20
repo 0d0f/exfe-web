@@ -29,8 +29,6 @@ define('lightsaber', function (require, exports, module) {
 
   exports.createApplication = createApplication;
 
-  exports.errorHandler = errorHandler;
-
   var prop;
 
   // lightsaber version
@@ -326,6 +324,8 @@ define('lightsaber', function (require, exports, module) {
   prop.change = function (e) {
     if (_firstLoad) return _firstLoad = false;
 
+    //console.dir(e.originalEvent);
+
     var app = e.data.app
       , req = app.request
       , res = app.response
@@ -412,10 +412,14 @@ define('lightsaber', function (require, exports, module) {
       return;
     }
 
+    title = arguments[1];
+    state = arguments[2] || {};
+
     this.path = url;
     this.title = title;
     document.title = this.title;
     this.state = state;
+    this.state.id = uuid();
     this.pushState();
 
     if (!this.historySupport) {
@@ -706,17 +710,13 @@ define('lightsaber', function (require, exports, module) {
     };
   }
 
-  // Basic Auth:
-  //function basicAuth(callback, realm) {}
-
-  // Error Handle:
-  function errorHandler(err, req, res, next) {
-    alert(error);
-  };
-
 
   // Helper
   // **************************************************
+  function uuid() {
+    return ++uuid.id;
+  }
+  uuid.id = 0;
 
   // ajax get template
   function read(engine, path, options, fn, ext) {
