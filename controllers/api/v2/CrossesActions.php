@@ -22,64 +22,71 @@ class CrossesActions extends ActionController {
 
 
     public function doGetCrossByInvitationToken() {
+        // load models
         $checkHelper = $this->getHelperByName('check', 'v2');
         $modExfee    = $this->getModelByName('exfee',  'v2');
         $modUser     = $this->getModelByName('user',   'v2');
-
-
-        // get status
-        $result      = $checkHelper->isAPIAllow('user_edit', $token);
-
-
-        doCheckAuthorization
-        $params   = $this->params;
-        // get invitation token
-        $invToken = $_POST['invitation_token'];
-        if (!$invToken) {
-            apiError();
-        }
-        // get user token
-        $usrToken = $params['token'];
-        // get user signin
-        if ($usrToken) {
-
-        } else {
-
-        }
+        // get signin status
+        $params      = $this->params;
+        $signinStat  = $checkHelper->isAPIAllow('user_edit', trim($params['token']));
+        $user_id     = $signinStat['check'] ? $signinStat['uid'] : 0;
         // get invitation data
-        $rawInvitation = $modExfee->getRawInvitationByToken($invToken);
-        if (!$rawInvitation) {
-            apiError(); ///////////////
-        }
-        if ($rawInvitation['tokenexpired']) {
+        $invitation  = $modExfee->getRawInvitationByToken(trim($_POST['invitation_token']));
+        // 受邀 token 存在
+        if ($invitation) {
+            // get user info by invitation token
+            $user_infos = $modUser->getUserIdentityInfoByIdentityId(
+                (int) $invitation->identity_id
+            );
+            // 受邀 token 有效
+            if ($invitation['token_used_at'] === '0000-00-00 00:00:00'
+             || time() - strtotime($invitation['token_used_at']) < 60 * 60) {
+                // 已登录
+                if ($user_id) {
+                    // 身份连接状态 CONNECTED / REVOKED
+                    if (isset($user_infos['CONNECTED'])
+                     || isset($user_infos['REVOKED'])) {
+                        // 同用户 : 正常登录
+                        // 不同用户 : 浏览身份 / M50D5 合并或登录（REVOKED身份合并后状态不变）
+                    }
+                    // 身份连接状态 VERIFYING / RELATED
+                    if (isset($user_infos['VERIFYING'])
+                     || isset($user_infos['RELATED'])) {
+                        // （建新用户并连接，清除验证token） 浏览身份 / M50D5 设置或合并
+                    }
+                // 未登录
+                } else {
+                    // 身份连接状态 CONNECTED
+                    if (isset($user_infos['CONNECTED'])) {
+                        // 正常登录
+                    }
+                    // 身份连接状态 REVOKED
+                    if (isset($user_infos['REVOKED'])) {
+                        // 浏览身份 / M50D4 登录
+                    }
+                    // 身份连接状态 VERIFYING / RELATED
+                    if (isset($user_infos['VERIFYING'])
+                     || isset($user_infos['RELATED'])) {
+                        // （建新用户并连接，清除验证token）正常登录
+                    }
+                }
+            // 受邀 token 无效
+            } else {
+                if ($user_id) {
+                    // 身份连接状态  （后台操作）登录状态 / 帐号弹出窗
+                    // CONNECTED   （同用户） 正常登录
+                } else {
+                    // 身份连接状态  （后台操作）登录状态 / 帐号弹出窗
+                    //      -       只读浏览 / M50D4 登录
+                }
 
+            }
+            // 用户状态错误
+            // apiError();
+        // 受邀 token 不存在
         } else {
-
+            // apiError();
         }
-
-
-
-
-
-
-
-// get models
-
-        // get inputs
-        $token       = trim($_POST['token']);
-        // get status
-        $result      = $checkHelper->isAPIAllow('user_edit', $token);
-        // return
-        if ($result['check']) {
-            apiResponse($modUser->getUserIdentityInfoByUserId($result['uid']));
-        }
-        apiError(401, 'no_signin', ''); // 需要登录
-
-
-
-
-
-        print_r($rawInvitation);
     }
 
 
