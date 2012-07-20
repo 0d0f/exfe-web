@@ -21,8 +21,7 @@ define(function (require, exports, module) {
   // Error Handler
   //app.use(lightsaber.errorHandler);
 
-  app.use(middleware.login);
-  //app.use(middleware.basicAuth);
+  app.use(middleware.basicAuth);
 
   app.set('timestamp', Config.timestamp);
   app.set('view cache', Handlebars);
