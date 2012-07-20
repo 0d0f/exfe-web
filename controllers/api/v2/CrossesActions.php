@@ -24,11 +24,21 @@ class CrossesActions extends ActionController {
     public function doGetCrossByInvitationToken() {
         $modExfee = $this->getModelByName('exfee', 'v2');
         $params   = $this->params;
-        $token    = $params['token'];
-        if (!$token) {
-            apiError(); ///////////////
+        // get invitation token
+        $invToken = $_POST['invitation_token'];
+        if (!$invToken) {
+            apiError();
         }
-        $rawInvitation = $modExfee->getRawInvitationByToken($token);
+        // get user token
+        $usrToken = $params['token'];
+        // get user signin
+        if ($usrToken) {
+
+        } else {
+
+        }
+        // get invitation data
+        $rawInvitation = $modExfee->getRawInvitationByToken($invToken);
         if (!$rawInvitation) {
             apiError(); ///////////////
         }
