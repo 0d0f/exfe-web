@@ -4277,6 +4277,72 @@ input[type="submit"].btn.btn-mini {
   background: url("/static/img/small-loading.gif") no-repeat;
 }
 
+.ids-popmenu {
+  position: absolute;
+  left: 1px;
+  z-index: 10501;
+  width: 280px;
+  margin-top: 0;
+  line-height: 18px;
+  color: #4c4c4c;
+  background-color: #e6e6e6;
+  background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -o-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #fff;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.ids-popmenu ol {
+  margin: 0;
+}
+
+.ids-popmenu li {
+  height: 40px;
+  padding: 4px;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.ids-popmenu .avatar {
+  margin-right: 5px;
+}
+
+.ids-popmenu .identity {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.ids-popmenu .identity .name {
+  font-size: 18px;
+  font-style: normal;
+  line-height: 24px;
+}
+
+.ids-popmenu .identity .externalid {
+  font-style: oblique;
+  color: #191919;
+}
+
+.ids-popmenu .identity .provider {
+  line-height: 20px;
+}
+
+.ids-popmenu li:hover,
+.ids-popmenu .active {
+  color: #191919;
+  background-color: rgba(127, 127, 127, 0.05);
+}
+
 [class^="icon-"],
 [class*=" icon-"] {
   display: inline-block;
