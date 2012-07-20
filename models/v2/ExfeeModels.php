@@ -135,7 +135,7 @@ class ExfeeModels extends DataModel {
         }
         // make invitation token
         $sqlToken = $updateToken
-                  ? (", `token` = '" . $this->makeExfeeToken() . "', `tokenexpired` = 0")
+                  ? (", `token` = '" . $this->makeExfeeToken() . "', `token_used_at` = 0")
                   : '';
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
@@ -381,23 +381,6 @@ class ExfeeModels extends DataModel {
     public function getCrossIdByExfeeId($exfee_id) {
         $result=$this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
         return intval($result['id']);
-    }
-
-
-    public function checkInvitationToken($token) {
-        if ($token) {
-            $invRow = $this->getRow(
-                "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
-            );
-            if ($invRow) {
-                return array(
-                    'identity_id' => (int) $invRow['identity_id'],
-                    'cross_id'    => (int) $invRow['cross_id'],
-                    'read_only'   => (boolean) $invRow['tokenexpired'],
-                );
-            }
-        }
-        return null;
     }
 
 }
