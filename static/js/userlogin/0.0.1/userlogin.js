@@ -12,10 +12,19 @@ define('middleware', [], function (require, exports, module) {
 
   var middleware = module.exports = {};
 
+  /*
+  middleware.basicAuth = function (req, res, next) {
+    tokenRegExp.lastIndex = 0;
+    var match = tokenRegExp.exec(req.url)
+      , urlToken = 
+  };
+  */
+
+  // Login Handle.
   middleware.login = function (req, res, next) {
     //console.log('middleware login');
     tokenRegExp.lastIndex = 0;
-    var match = tokenRegExp.exec(location.search)
+    var match = tokenRegExp.exec(req.url)
       // new token
       , ntoken = (match && match[1]) || false
       , signin = Store.get('signin')
@@ -72,31 +81,14 @@ define('middleware', [], function (require, exports, module) {
       function (data) {
         var statuses = data.statuses
           , token = tokens[0]
-          , status0 = statuses[token]
-          // token type: `cross` `user`
-          , type
-          , CROSS_TOKEN = 'CROSS_TOKEN'
-          , USER_TOKEN = 'USER_TOKEN';
+          , status0 = statuses[token];
 
         if (status0) {
-          type = status0.type;
-
-          // cross token
-          if (CROSS_TOKEN === type) {
-            logintype = 1;
-
-            if (2 === tokensLen) {
-              logintype = 2;
-            }
-
-          // user token
-          } else if (USER_TOKEN === type) {
             logintype = 3;
 
-            if (2 === tokensLen) {
-              logintype = 4;
-              //delete statuses[tokens[1]];
-            }
+          if (2 === tokensLen) {
+            logintype = 4;
+            //delete statuses[tokens[1]];
           }
         }
 

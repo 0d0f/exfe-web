@@ -18,18 +18,22 @@ define(function (require, exports, module) {
   // Create App
   var app = lightsaber();
 
+  // Error Handler
+  //app.use(lightsaber.errorHandler);
+
   app.use(middleware.login);
+  //app.use(middleware.basicAuth);
 
-  app.configure(function () {
-    app.set('timestamp', Config.timestamp);
-    app.set('view engine', Handlebars);
-    app.set('views', '/static/views');
-    //console.log(app.set('views'));
-  });
+  app.set('timestamp', Config.timestamp);
+  app.set('view cache', Handlebars);
+  app.set('view engine', Handlebars);
+  app.set('views', '/static/views');
 
+
+  /*
   app.configure('development', function () {
   });
-
+  */
 
   var hi = 0;
   Bus.on('xapp:goto_home', function (next) {
@@ -43,7 +47,6 @@ define(function (require, exports, module) {
     }
   });
 
-  var pi = 0;
   var XAPP_GOTO_PROFILE = 'xapp:goto_profile';
   Bus.on(XAPP_GOTO_PROFILE, function () {
       if (app.request.url !== '/') return;
@@ -141,7 +144,6 @@ define(function (require, exports, module) {
       dfd.resolve(signin)
       Bus.emit('app:signinothers', dfd);
    });
-
 
   // startup app
   app.run();

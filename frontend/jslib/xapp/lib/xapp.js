@@ -18,9 +18,14 @@ define(function (require, exports, module) {
   // Create App
   var app = lightsaber();
 
+  // Error Handler
+  //app.use(lightsaber.errorHandler);
+
   app.use(middleware.login);
+  //app.use(middleware.basicAuth);
 
   app.set('timestamp', Config.timestamp);
+  app.set('view cache', Handlebars);
   app.set('view engine', Handlebars);
   app.set('views', '/static/views');
 
@@ -139,7 +144,6 @@ define(function (require, exports, module) {
       dfd.resolve(signin)
       Bus.emit('app:signinothers', dfd);
    });
-
 
   // startup app
   app.run();
