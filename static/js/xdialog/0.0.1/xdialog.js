@@ -302,8 +302,6 @@ define(function (require, exports, module) {
                 }
                 */
 
-               console.dir(data);
-
                 // goto profile
                 if (t === 'd01') {
                   Bus.emit('xapp:usertoken', data.token, data.user_id, 3);

@@ -29,6 +29,8 @@ define('lightsaber', function (require, exports, module) {
 
   exports.createApplication = createApplication;
 
+  exports.errorHandler = errorHandler;
+
   var prop;
 
   // lightsaber version
@@ -250,6 +252,7 @@ define('lightsaber', function (require, exports, module) {
       , index = 0;
 
     function next(err) {
+      // next callback
       var layer = stack[index++]
         , path;
 
@@ -396,7 +399,7 @@ define('lightsaber', function (require, exports, module) {
   // redirect('back')
   // redirect('/user', 'User Page', {id: 'user'});
   prop.redirect = function (url) {
-    var argsLen = argumens.length
+    var argsLen = arguments.length
       , title
       , state;
 
@@ -416,7 +419,7 @@ define('lightsaber', function (require, exports, module) {
     this.pushState();
 
     if (!this.historySupport) {
-      location.hash = path.substr(2);
+      location.hash = this.path.substr(2);
     }
 
     $(win).triggerHandler('popstate');
@@ -707,7 +710,9 @@ define('lightsaber', function (require, exports, module) {
   //function basicAuth(callback, realm) {}
 
   // Error Handle:
-  //middleware.errorHandle = function (err, req, res, next) {};
+  function errorHandler(err, req, res, next) {
+    alert(error);
+  };
 
 
   // Helper
