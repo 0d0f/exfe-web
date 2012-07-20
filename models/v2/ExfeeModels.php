@@ -58,7 +58,6 @@ class ExfeeModels extends DataModel {
             if ($rawInvitation) {
                 return $rawInvitation;
             }
-            ///////////////////
         }
         return null;
     }
