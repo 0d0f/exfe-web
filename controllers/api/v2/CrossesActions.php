@@ -32,26 +32,31 @@ class CrossesActions extends ActionController {
         $user_id     = $signinStat['check'] ? $signinStat['uid'] : 0;
         // get invitation data
         $invitation  = $modExfee->getRawInvitationByToken(trim($_POST['invitation_token']));
-        //
+        // 受邀 token 存在
         if ($invitation) {
+            // 受邀 token 有效
             if ($invitation['token_used_at'] === '0000-00-00 00:00:00'
              || time() - strtotime($invitation['token_used_at']) < 60 * 60) {
+                // 已登录
                 if ($user_id) {
-                    // 已登录 受邀token有效   身份连接状态          （后台操作）登录状态 / 帐号弹出窗
-                    // TRUE    TRUE         CONNECTED / REVOKED （同用户）   正常登录
-                    // TRUE    TRUE         CONNECTED / REVOKED （不同用户）   浏览身份 / M50D5 合并或登录（REVOKED身份合并后状态不变）
-                    // TRUE    TRUE         VERIFYING / RELATED （建新用户并连接，清除验证token）浏览身份 / M50D5 设置或合并
+                    // 身份连接状态                                       （后台操作）登录状态 / 帐号弹出窗
+                    // CONNECTED / REVOKED （同用户）                      正常登录
+                    // CONNECTED / REVOKED （不同用户）                    浏览身份 / M50D5 合并或登录（REVOKED身份合并后状态不变）
+                    // VERIFYING / RELATED （建新用户并连接，清除验证token） 浏览身份 / M50D5 设置或合并
+                // 未登录
                 } else {
-                    // 已登录 受邀token有效   身份连接状态          （后台操作）登录状态 / 帐号弹出窗
-                    // FALSE   TRUE         CONNECTED            正常登录
-                    // FALSE   TRUE         REVOKED              浏览身份 / M50D4 登录
-                    // FALSE   TRUE         VERIFYING / RELATED （建新用户并连接，清除验证token）正常登录
+                    // 身份连接状态          （后台操作）登录状态 / 帐号弹出窗
+                    // CONNECTED            正常登录
+                    // REVOKED              浏览身份 / M50D4 登录
+                    // VERIFYING / RELATED （建新用户并连接，清除验证token）正常登录
                 }
+            // 受邀 token 无效
             } else {
-                // 已登录 受邀token有效   身份连接状态          （后台操作）登录状态 / 帐号弹出窗
-                // TRUE    FALSE        CONNECTED           （同用户） 正常登录
-                //   -     FALSE            -                只读浏览 / M50D4 登录
+                // 已登录 身份连接状态  （后台操作）登录状态 / 帐号弹出窗
+                // TRUE  CONNECTED   （同用户） 正常登录
+                //   -       -       只读浏览 / M50D4 登录
             }
+        // 受邀 token 不存在
         } else {
             // apiError();
         }
