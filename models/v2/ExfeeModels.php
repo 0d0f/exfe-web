@@ -349,8 +349,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getExfeeIdByUserid($userid,$updated_at="")
-    {
+    public function getExfeeIdByUserid($userid,$updated_at="") {
         $sql="select identityid from user_identity where userid=$userid;";
         $identities=$this->getColumn($sql);
         if($updated_at!="")
@@ -364,21 +363,13 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateExfeeTime($exfee_id)
-    {
+    public function updateExfeeTime($exfee_id) {
         $sql="update invitations set exfee_updated_at=NOW() where `cross_id`=$exfee_id;";
         $this->query($sql);
     }
 
 
-    public function getUpdate($exfee_id,$updated_at)
-    {
-        //$sql="select id from exfees where ";
-    }
-
-
-    public function getUpdatedExfeeByIdentityIds($identityids,$updated_at)
-    {
+    public function getUpdatedExfeeByIdentityIds($identityids,$updated_at) {
 
         $join_identity_ids=implode($identityids,",");
         $sql="select cross_id from invitations where identity_id in ({$join_identity_ids}) and exfee_updated_at >'$updated_at'; ";
