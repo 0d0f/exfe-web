@@ -22,7 +22,16 @@ class CrossesActions extends ActionController {
 
 
     public function doGetCrossByInvitationToken() {
-        $modExfee = $this->getModelByName('exfee', 'v2');
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $modExfee    = $this->getModelByName('exfee',  'v2');
+        $modUser     = $this->getModelByName('user',   'v2');
+
+
+        // get status
+        $result      = $checkHelper->isAPIAllow('user_edit', $token);
+
+
+        doCheckAuthorization
         $params   = $this->params;
         // get invitation token
         $invToken = $_POST['invitation_token'];
@@ -47,6 +56,29 @@ class CrossesActions extends ActionController {
         } else {
 
         }
+
+
+
+
+
+
+
+// get models
+
+        // get inputs
+        $token       = trim($_POST['token']);
+        // get status
+        $result      = $checkHelper->isAPIAllow('user_edit', $token);
+        // return
+        if ($result['check']) {
+            apiResponse($modUser->getUserIdentityInfoByUserId($result['uid']));
+        }
+        apiError(401, 'no_signin', ''); // 需要登录
+
+
+
+
+
         print_r($rawInvitation);
     }
 

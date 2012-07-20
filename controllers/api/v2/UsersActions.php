@@ -401,32 +401,17 @@ class UsersActions extends ActionController {
 
     public function doCheckAuthorization() {
         // get models
-        $checkHelper   = $this->getHelperByName('check',   'v2');
-        $hlpExfee      = $this->getHelperByName('exfee',   'v2');
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $checkHelper = $this->getHelperByName('check', 'v2');
+        $modUser     = $this->getModelByName('user',   'v2');
         // get inputs
-        $arrTokens     = trim($_POST['tokens']) ? json_decode($_POST['tokens']) : array();
-        $objStatuses   = new stdClass;
+        $token       = trim($_POST['token']);
         // get status
-        foreach ($arrTokens as $token) {
-            $result = $checkHelper->isAPIAllow('user_edit', $token);
-            // @todo: needed to be upgrade, when making the new cross page by @Leaskh
-            if ($result['check']) {
-                $objStatuses->$token
-              = array('type' => 'USER_TOKEN')
-              + $modUser->getUserIdentityInfoByUserId($result['uid']);
-            } elseif (($invInfo = $hlpExfee->checkInvitationToken($token))) {
-                // @todo: v1 v2 bridge by @Leaskh {
-                $identity = $modIdentity->getIdentityById($identity_id);
-                $raw_flag = $modUser->getRegistrationFlag($identity);
-                // }
-                $objStatuses->$token
-              = array('type' => 'CROSS_TOKEN', 'identity_registration' => $raw_flag['flag'])
-              + $invInfo;
-            }
+        $result      = $checkHelper->isAPIAllow('user_edit', $token);
+        // return
+        if ($result['check']) {
+            apiResponse($modUser->getUserIdentityInfoByUserId($result['uid']));
         }
-        apiResponse(array('statuses' => $objStatuses));
+        apiError(401, 'no_signin', ''); // 需要登录
     }
 
 
@@ -457,34 +442,6 @@ class UsersActions extends ActionController {
         // raw signin
         $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
         if ($siResult) {
-            // v1 v2 bridge {
-            // @todo: remember to remove this fucking UGLY codes!
-            // @todo: remember to remove this fucking UGLY codes!
-            // @todo: remember to remove this fucking UGLY codes!
-            // @todo: remember to remove this fucking UGLY codes!
-            // @todo: remember to remove this fucking UGLY codes!
-            // @todo: remember to remove this fucking UGLY codes!
-            // @todo: remember to remove this fucking UGLY codes!
-            setcookie('uid', $siResult['user_id'],     time()+31536000, "/", COOKIES_DOMAIN);
-            setcookie('id',  $siResult['identity_id'], time()+31536000, "/", COOKIES_DOMAIN);
-            $_SESSION['userid']         = $siResult['user_id'];
-            $_SESSION['identity_id']    = $siResult['identity_id'];
-            $_SESSION['user_time_zone'] = '+08:00';
-            $objIdentity = $modIdentity->getIdentityById($siResult['identity_id']);
-            $identity = array();
-            $identity['external_identity'] = $objIdentity->external_id;
-            $identity['external_username'] = $objIdentity->external_username;
-            $identity['provider']          = $objIdentity->provider;
-            $identity['name']              = $objIdentity->name;
-            $identity['bio']               = $objIdentity->bio;
-            $identity['avatar_file_name']  = getAvatarUrl(
-                $objIdentity->provider,
-                $objIdentity->external_id,
-                $objIdentity->avatar_filename
-            );
-            $_SESSION['identity']       = $identity;
-            unset($_SESSION['tokenIdentity']);
-            // }
             apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
         }
         apiError(403, 'failed', '');
