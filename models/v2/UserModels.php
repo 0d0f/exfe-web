@@ -268,7 +268,7 @@ class UserModels extends DataModel {
                     $arrStatus[$status] = array();
                 }
                 $arrStatus[$status][] = array(
-                    'user_id'     => $user_id,
+                    'user_id'     => (int) $user_id,
                     'password'    => !!$passwd['encrypted_password'],
                     'id_quantity' => count($ids),
                 );
