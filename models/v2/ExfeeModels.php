@@ -56,10 +56,27 @@ class ExfeeModels extends DataModel {
                 "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
             );
             if ($rawInvitation) {
+                $rawInvitation['id']             = (int) $rawInvitation['id'];
+                $rawInvitation['identity_id']    = (int) $rawInvitation['identity_id'];
+                $rawInvitation['state']          = (int) $rawInvitation['state'];
+                $rawInvitation['by_identity_id'] = (int) $rawInvitation['by_identity_id'];
+                $rawInvitation['host']           = (int) $rawInvitation['host'];
+                $rawInvitation['mates']          = (int) $rawInvitation['mates'];
+                $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
+                $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
                 return $rawInvitation;
             }
         }
         return null;
+    }
+
+
+    public function usedToken($token) {
+        return $this->query(
+            "UPDATE `invitations`
+             SET    `token_used_at` = NOW()
+             WHERE  `token` = '{$token}'"
+        );
     }
 
 
