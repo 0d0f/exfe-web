@@ -29,7 +29,7 @@ class CrossesActions extends ActionController {
         // get signin status
         $params      = $this->params;
         $signinStat  = $checkHelper->isAPIAllow('user_edit', trim($params['token']));
-        $user_id     = $signinStat['check'] ? $signinStat['uid'] : 0;
+        $user_id     = $signinStat['check'] ? (int) $signinStat['uid'] : 0;
         // get invitation data
         $invitation  = $modExfee->getRawInvitationByToken(trim($_POST['invitation_token']));
         // 受邀 token 存在
@@ -46,40 +46,50 @@ class CrossesActions extends ActionController {
                     // 身份连接状态 CONNECTED / REVOKED
                     if (isset($user_infos['CONNECTED'])
                      || isset($user_infos['REVOKED'])) {
-                        // 同用户 : 正常登录
-                        // 不同用户 : 浏览身份 / M50D5 合并或登录（REVOKED身份合并后状态不变）
+                        if (isset($user_infos['CONNECTED']) {
+                            $inv_user_id = $user_infos['CONNECTED'][0]['user_id'];
+                        } else if (isset($user_infos['REVOKED'])) {
+                            $inv_user_id = $user_infos['REVOKED'][0]['user_id'];
+                        }
+                        // 同用户: 正常登陆
+                        if ($inv_user_id === $user_id) {
+
+                        // 不同用户: 浏览身份 / M50D5 合并或登录（REVOKED身份合并后状态不变）
+                        } else {
+
+                        }
                     }
-                    // 身份连接状态 VERIFYING / RELATED
+                    // 身份连接状态 VERIFYING / RELATED: （建新用户并连接，清除验证token） 浏览身份 / M50D5 设置或合并
                     if (isset($user_infos['VERIFYING'])
                      || isset($user_infos['RELATED'])) {
-                        // （建新用户并连接，清除验证token） 浏览身份 / M50D5 设置或合并
+
                     }
                 // 未登录
                 } else {
-                    // 身份连接状态 CONNECTED
+                    // 身份连接状态 CONNECTED: 正常登录
                     if (isset($user_infos['CONNECTED'])) {
-                        // 正常登录
+
                     }
-                    // 身份连接状态 REVOKED
+                    // 身份连接状态 REVOKED: 浏览身份 / M50D4 登录
                     if (isset($user_infos['REVOKED'])) {
-                        // 浏览身份 / M50D4 登录
+
                     }
-                    // 身份连接状态 VERIFYING / RELATED
+                    // 身份连接状态 VERIFYING / RELATED: （建新用户并连接，清除验证token）正常登录
                     if (isset($user_infos['VERIFYING'])
                      || isset($user_infos['RELATED'])) {
-                        // （建新用户并连接，清除验证token）正常登录
+
                     }
                 }
             // 受邀 token 无效
             } else {
-                if ($user_id) {
-                    // 身份连接状态  （后台操作）登录状态 / 帐号弹出窗
-                    // CONNECTED   （同用户） 正常登录
-                } else {
-                    // 身份连接状态  （后台操作）登录状态 / 帐号弹出窗
-                    //      -       只读浏览 / M50D4 登录
-                }
+                // 已登录 && 身份连接状态 CONNECTED && 同用户: 正常登录
+                if ($user_id && isset($user_infos['CONNECTED'])
+                 && $user_id === $user_infos['CONNECTED'][0]['user_id']) {
 
+                // 其他情况: 只读浏览 / M50D4 登录
+                } else {
+
+                }
             }
             // 用户状态错误
             // apiError();
