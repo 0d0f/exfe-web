@@ -247,6 +247,12 @@ ExfeeWidget = {
                 }
             }
         );
+        $('#' + this.dom_id + ' .typeahead > ol > li').live(
+            'mouseenter',
+            function(event) {
+                ExfeeWidget.selectCompleteItem($(this).index());
+            }
+        );
         this.complete_timer = setInterval(
            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
            50
@@ -504,7 +510,7 @@ ExfeeWidget = {
 
 
     checkComplete : function(objInput, key) {
-        var objPanel = $(objInput[0].parentNode.parentNode).find('.autocomplete');
+        var objPanel = $(objInput[0].parentNode.parentNode).find('.typeahead');
         this.showCompleteItems(objPanel, key, key ? ExfeeCache.search(key) : []);
         this.ajaxComplete(objPanel, key);
     },
@@ -526,6 +532,8 @@ ExfeeWidget = {
 
     displayCompletePanel : function(objPanel, display) {
         if (this.completing = display) {
+            var objInput = $(objPanel[0].parentNode.parentNode).find('.exfee-input').offset();
+            $(objPanel).css({left : (objInput.left - 200) + 'px', top : (objInput.top + objInput.height) + 'px'});
             objPanel.slideDown(50);
         } else {
             objPanel.slideUp(50);
@@ -554,17 +562,17 @@ ExfeeWidget = {
             if (shown) {
                 continue;
             }
-            var index = ExfeeWidget.complete_exfee.push(ExfeUtilities.clone(identities[i]));
-            strCompleteItems += '<li>'
-                              +     '<img src="' + identities[i].avatar_filename + '" class="exfee-avatar">'
-                              +     '<span class="exfee_info">'
-                              +         '<span class="exfee_name">'
-                              +             identities[i].name
-                              +         '</span>'
-                              +         '<span class="exfee_identity">'
-                              +             this.displayIdentity(identities[i])
-                              +         '</span>'
-                              +     '</span>'
+            var index = ExfeeWidget.complete_exfee.push(ExfeUtilities.clone(identities[i])) - 1;
+            strCompleteItems += '<li' + (index ? '' : ' class="active"') + '>'
+                              +   '<span class="pull-left avatar">'
+                              +     '<img src="' + identities[i].avatar_filename + '" alt="" width="40" height="40">'
+                              +   '</span>'
+                              +   '<div class="identity">'
+                              +     '<div class="name">' + identities[i].name + '</div>'
+                              +     '<div>'
+                              +       '<span class="externalid">' + this.displayIdentity(identities[i]) + '</span>'
+                              +     '</div>'
+                              +   '</div>'
                               + '</li>';
         }
         objCompleteList.append(strCompleteItems);
@@ -664,8 +672,8 @@ ExfeeWidget = {
 
 
     selectCompleteItem : function(index) {
-        var className = 'selected';
-        $('.autocomplete > ol > li').removeClass(className).eq(index).addClass(className);
+        var className = 'active';
+        $('.typeahead > ol > li').removeClass(className).eq(index).addClass(className);
     },
 
 
@@ -688,12 +696,12 @@ ExfeeWidget = {
                         ExfeeWidget.checkInput(objInput, true);
                         break;
                     case 13: // enter
-                        var objSelected = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol > .selected'),
+                        var objSelected = $(objInput[0].parentNode.parentNode).find('.typeahead > ol > .active'),
                             curItem     = objSelected.length ? ~~objSelected.index() : null;
                         if (ExfeeWidget.completing && curItem !== null) {
                             ExfeeWidget.useCompleteItem(curItem);
                             ExfeeWidget.displayCompletePanel(
-                                $(objInput[0].parentNode.parentNode).find('.autocomplete'),
+                                $(objInput[0].parentNode.parentNode).find('.typeahead'),
                                 false
                             );
                             objInput.val('');
@@ -704,7 +712,7 @@ ExfeeWidget = {
                     case 27: // esc
                         if (ExfeeWidget.completing) {
                             ExfeeWidget.displayCompletePanel(
-                                $(objInput[0].parentNode.parentNode).find('.autocomplete'),
+                                $(objInput[0].parentNode.parentNode).find('.typeahead'),
                                 false
                             );
                         }
@@ -712,7 +720,7 @@ ExfeeWidget = {
                     case 38: // up
                     case 40: // down
                         event.preventDefault();
-                        var objCmpBox  = $(objInput[0].parentNode.parentNode).find('.autocomplete > ol'),
+                        var objCmpBox  = $(objInput[0].parentNode.parentNode).find('.typeahead > ol'),
                             cboxHeight = 207,
                             cellHeight = 51,
                             shrMargin  = 3,
@@ -720,7 +728,7 @@ ExfeeWidget = {
                         if (!ExfeeWidget.completing) {
                             return;
                         }
-                        var objSelected = objCmpBox.find('.selected'),
+                        var objSelected = objCmpBox.find('.active'),
                             curItem     = ~~objSelected.index(),
                             maxIdx      = ExfeeWidget.complete_exfee.length - 1;
                         switch (event.which) {
@@ -745,7 +753,7 @@ ExfeeWidget = {
                 }
                 break;
             case 'blur':
-                var objPanel = $(objInput[0].parentNode.parentNode).find('.autocomplete');
+                var objPanel = $(objInput[0].parentNode.parentNode).find('.typeahead');
                 ExfeeWidget.displayCompletePanel(objPanel, false);
         }
     },
@@ -1312,6 +1320,7 @@ define(function (require, exports, module) {
 
 
     var fixExfee = function() {
+        // @todo
         ExfeeWidget.addExfee(User.default_identity, true, 'ACCEPTED');
     };
 
