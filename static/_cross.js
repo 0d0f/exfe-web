@@ -1181,6 +1181,7 @@ define(function (require, exports, module) {
                     $('.cross-title .show').show();
                     $('.cross-title .edit').hide();
                     ChangeTitle($('.cross-title .edit').val(), 'cross');
+                    AutoSaveCross();
                 },
                 function() {
                     $('.cross-title .show').hide();
@@ -1192,6 +1193,7 @@ define(function (require, exports, module) {
                     $('.cross-description .show').show();
                     $('.cross-description .edit').hide();
                     ChangeDescription($('.cross-description .edit').val());
+                    AutoSaveCross();
                 },
                 function() {
                     $('.cross-description .show').hide();
@@ -1203,6 +1205,7 @@ define(function (require, exports, module) {
                     $('.cross-date .show').show();
                     $('.cross-date .edit').hide();
                     ChangeTime($('.cross-date .edit').val());
+                    AutoSaveCross();
                 },
                 function() {
                     $('.cross-date .show').hide();
@@ -1214,6 +1217,7 @@ define(function (require, exports, module) {
                     $('.cross-place .show').show();
                     $('.cross-place .edit').hide();
                     ChangePlace($('.cross-place .edit').val());
+                    AutoSaveCross();
                 },
                 function() {
                     $('.cross-place .show').hide();
@@ -1327,11 +1331,7 @@ define(function (require, exports, module) {
 
 
     var ChangeTitle = function(title, from) {
-        title = ExfeUtilities.trim(title);
-        if (Cross.id && title !== Cross.title) {
-            SaveCross();
-        }
-        Cross.title = title;
+        Cross.title = ExfeUtilities.trim(title);
         ShowTitle(from);
     };
 
@@ -1631,6 +1631,11 @@ define(function (require, exports, module) {
     var SaveCross = function() {
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.exfee = ExfeUtilities.clone(Exfee);
+        /////////////////////////
+        objCross.by_identity = {};
+        objCross.by_identity.id = User.default_identity.id;
+        /////////////////////////
+        console.log(Cross.id);
         Api.request(
             'editCross',
             {type      : 'POST',
@@ -1643,6 +1648,17 @@ define(function (require, exports, module) {
                 console.log(data);
             }
         );
+    };
+
+
+    var AutoSaveCross = function() {
+        if (Cross.id) {
+            var curCross = JSON.stringify(Cross);
+            if (savedCross !== curCross) {
+                SaveCross();
+                savedCross = curCross;
+            }
+        }
     };
 
 
@@ -1666,6 +1682,8 @@ define(function (require, exports, module) {
 
     // init bus
     var bus = require('bus');
+    // init auto cross saving
+    var savedCross = '';
     // init event: main
     bus.on('xapp:cross:main', function() {
         // get current user
