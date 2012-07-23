@@ -130,7 +130,7 @@ define('api', [], function (require, exports, module) {
 
       if (!url) { return; }
 
-      if (ignore.search(channel) === -1) {
+      if (ignore.split(' ').indexOf(channel) === -1) {
 
         if (!Api._token) { return; }
 
