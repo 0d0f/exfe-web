@@ -1,6 +1,9 @@
 TODO
 ----
 
+### 18:29:01 07/23/2012
+  * copy clip http://www.jeffothy.com/weblog/clipboard-copy/
+
 ### 02:39:58 07/20/2012
   * humans.txt http://humanstxt.org/
   * robots.txt
