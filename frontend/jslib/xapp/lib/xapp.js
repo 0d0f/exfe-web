@@ -13,8 +13,6 @@ define(function (require, exports, module) {
 
   var lightsaber = require('lightsaber');
 
-  //console.log('lightsaber.version', lightsaber.version);
-
   // Create App
   var app = lightsaber();
 
@@ -24,7 +22,7 @@ define(function (require, exports, module) {
   app.use(middleware.basicAuth);
 
   app.set('timestamp', Config.timestamp);
-  app.set('view cache', Handlebars);
+  app.set('view cache', true);
   app.set('view engine', Handlebars);
   app.set('views', '/static/views');
 
@@ -36,10 +34,7 @@ define(function (require, exports, module) {
 
   var hi = 0;
   Bus.on('xapp:goto_home', function (next) {
-    //console.log('fire goto home');
-    //console.log('fire goto home', next);
     if (0 === hi++) {
-      //alert('goto_home');
       app.response.redirect('/', 'EXFE.COM', {id: 'home'});
       next && next();
       hi = 0;
@@ -62,7 +57,6 @@ define(function (require, exports, module) {
    * Home
    */
   app.get('/', function (req, res, next) {
-    //console.log('home');
     if (res.loginable) {
       //Bus.emit('xapp:home_profile');
       return;
@@ -85,8 +79,58 @@ define(function (require, exports, module) {
    * route middleware
    * param cross id
    */
+  // cross token
+  app.get('/#!token=:token', function (req, res, next) {
+    var signin = Store.get('signin')
+      , userToken = signin && signin.token || false
+      , crossToken = req.params.token || false
+      , params;
+
+    if (!crossToken) {
+      return;
+    }
+
+    params = {};
+    if (userToken) {
+      params.token = userToken;
+    }
+
+    $('.container > div[role="main"]').html('');
+    $('#home').html('');
+
+    Api.request('getCrossByInvitationToken'
+      , {
+        type: 'POST',
+        params: params,
+        data: {
+          invitation_token: crossToken
+        }
+      }
+      , function (data) {
+        var cross = data.cross
+          , browsingIdentity = data.browsing_identity
+          , signin = data.signin
+          , read_only = data.read_only;
+
+        if (signin) {
+          Store.set('signin', signin);
+        }
+
+        res.render('x.html', function (tpl) {
+          $('.container > div[role="main"]').append(tpl);
+          Bus.emit('xapp:cross:main');
+          Bus.emit('xapp:cross', null, browsingIdentity, cross, read_only);
+        });
+      }
+      // fail
+      , function (data) {
+      }
+    );
+
+  });
+
+
   app.param('crossId', function (req, res, next, id) {
-    //console.log('cross param corssId', id.toString());
     if (id !== '0') {
       next();
     } else {
@@ -104,9 +148,16 @@ define(function (require, exports, module) {
       Bus.emit('xapp:cross:main');
       Bus.emit('xapp:cross', +cross_id);
     });
-
   });
 
+  app.param('token', function (req, res, next, token) {
+    if (token.match(/^[a-zA-Z0-9]{32}$/)) {
+      next();
+    }
+    else {
+      next(new Error('token'));
+    }
+  });
 
   /**
    * Gather a X
@@ -156,8 +207,6 @@ define(function (require, exports, module) {
       var $e = $(e.currentTarget);
       var path = $e.attr('href');
 
-      //alert(path);
-
       if (path === '/#gather') {
         app.response.redirect(path, 'Gather a X', {id: 'gather' + 0});
       }
@@ -165,7 +214,6 @@ define(function (require, exports, module) {
         app.response.redirect(path, 'Cross', {id: 'cross' + path.substr(2)});
       } else {
         var last_external_id = Store.get('last_external_id');
-        //alert(last_external_id);
         app.response.redirect('/#' + last_external_id, 'Profile', {id: 'profile'});
       }
       e.stopPropagation();
