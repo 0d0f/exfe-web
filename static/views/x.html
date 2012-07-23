@@ -28,8 +28,10 @@
           <div class="control-group cross-exfee" id="gather-exfee">
             <label class="control-label" for="gather-exfee-input">Exfee</label>
             <div class="controls">
-              <input type="text" class="input-xlarge" id="gather-exfee-input" placeholder="Enter attendees' information" />
+              <input type="text" class="input-xlarge exfee-input" id="gather-exfee-input" placeholder="Enter attendees' information" />
             </div>
+
+            <div class="typeahead ids-popmenu"><ol class="unstyled"></ol></div>
 
             <!--<div class="cross-identities exfee_pop_up_save">-->
             <div class="cross-identities">
@@ -190,7 +192,8 @@
 
                 <div class="invite">
                     <i class="icon-plus-sign"></i>
-                    <input name="identity" type="text" class="input-xlarge" id="cross-exfee-input" placeholder="Enter attendees' information" />
+                    <input name="identity" type="text" class="input-xlarge exfee-input" id="cross-exfee-input" placeholder="Enter attendees' information" />
+                    <div class="typeahead ids-popmenu"><ol class="unstyled"></ol></div>
                 </div>
 
               </div>
@@ -207,35 +210,3 @@
     </div>
 
   </section>
-
-  <div class="typeahead ids-popmenu">
-    <ol class="unstyled">
-      <li>
-        <span class="pull-left avatar">
-          <img src="" alt="" width="40" height="40" />
-        </span>
-        <div class="identity">
-          <div class="name">joy</div>
-          <div><span class="externalid">stevexfee</span></div>
-        </div>
-      </li>
-      <li class="active">
-        <span class="pull-left avatar">
-          <img src="" alt="" width="40" height="40" />
-        </span>
-        <div class="identity">
-          <div class="name">joy</div>
-          <div><span class="externalid">stevexfee</span> <span class="provider">@Facebook</span></div>
-        </div>
-      </li>
-      <li>
-        <span class="pull-left avatar">
-          <img src="" alt="" width="40" height="40" />
-        </span>
-        <div class="identity">
-          <div class="name">joy</div>
-          <div><span class="externalid">stevexfee</span> <span class="provider">@Twitter</span></div>
-        </div>
-      </li>
-    </ol>
-  </div>
