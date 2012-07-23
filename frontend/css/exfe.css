@@ -4253,7 +4253,6 @@ input[type="submit"].btn.btn-mini {
   cursor: pointer;
 }
 
-.popmenu li:hover,
 .popmenu .active {
   color: #191919;
   background-color: rgba(127, 127, 127, 0.08);
