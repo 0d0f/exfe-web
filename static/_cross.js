@@ -1649,18 +1649,18 @@ define(function (require, exports, module) {
     window.Store = require('store');
     window.Api   = require('api');
 
-    // get current user
-    var Signin  = Store.get('signin');
-    window.User = Signin ? Store.get('user') : null;
-    if (User) {
-        Api.setToken(Signin.token);
-    }
-
 
     // init bus
     var bus = require('bus');
     // init event: main
     bus.on('xapp:cross:main', function() {
+        // get current user
+        var Signin  = Store.get('signin');
+        window.User = Signin ? Store.get('user') : null;
+        if (User) {
+            Api.setToken(Signin.token);
+        }
+
         // init moment
         require('moment');
         // init cross step 1
