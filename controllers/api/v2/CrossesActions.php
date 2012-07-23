@@ -49,7 +49,7 @@ class CrossesActions extends ActionController {
             ];
             // 受邀 token 有效
             if ($invitation['token_used_at'] === '0000-00-00 00:00:00'
-             || time() - strtotime($invitation['token_used_at']) < 60 * 60) {
+             || time() - strtotime($invitation['token_used_at']) < 1410) { // 23 * 60 + 30
                 $modExfee->usedToken($invToken);
                 $result['read_only'] = false;
                 // 已登录

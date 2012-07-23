@@ -4337,7 +4337,6 @@ input[type="submit"].btn.btn-mini {
   line-height: 20px;
 }
 
-.ids-popmenu li:hover,
 .ids-popmenu .active {
   color: #191919;
   background-color: rgba(127, 127, 127, 0.05);
