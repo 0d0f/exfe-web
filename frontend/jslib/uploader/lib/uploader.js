@@ -1072,6 +1072,7 @@ define('uploader', [], function (require, exports, module) {
                 dzy = ao[1] - e.pageY;
                 sby = dzy / h;
                 a1(sby * sss);
+                a3(sby * sss);
                 break;
 
               case 2:
@@ -1088,12 +1089,14 @@ define('uploader', [], function (require, exports, module) {
                 dzx = ao[0] - e.pageX;
                 sbx = dzx / w;
                 a3(sbx * sss);
+                a1(sbx * sss);
                 break;
 
               case 4:
                 dzx = e.pageX - ao[0];
                 sbx = dzx / w;
                 a4(sbx * sss);
+                a6(sbx * sss);
                 break;
 
               case 5:
@@ -1109,6 +1112,7 @@ define('uploader', [], function (require, exports, module) {
               case 6:
                 dzy = e.pageY - ao[1];
                 sby = dzy / h;
+                a4(sby * sss);
                 a6(sby * sss);
                 break;
 
