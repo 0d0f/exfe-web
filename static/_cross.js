@@ -566,6 +566,7 @@ ExfeeWidget = {
             strCompleteItems += '<li' + (index ? '' : ' class="active"') + '>'
                               +   '<span class="pull-left avatar">'
                               +     '<img src="' + identities[i].avatar_filename + '" alt="" width="40" height="40">'
+                              +     '<span class="rb"><i class="icon16-identity-' + identities[i].provider + '"></i></span>'
                               +   '</span>'
                               +   '<div class="identity">'
                               +     '<div class="name">' + identities[i].name + '</div>'
@@ -1281,7 +1282,7 @@ define(function (require, exports, module) {
                 event.which = 4;
             }
         });
-        $('.cross-edit').bind('click', SaveCross);
+        // $('.cross-edit').bind('click', SaveCross);
     };
 
 
@@ -1326,7 +1327,11 @@ define(function (require, exports, module) {
 
 
     var ChangeTitle = function(title, from) {
-        Cross.title = ExfeUtilities.trim(title);
+        title = ExfeUtilities.trim(title);
+        if (Cross.id && title !== Cross.title) {
+            SaveCross();
+        }
+        Cross.title = title;
         ShowTitle(from);
     };
 
