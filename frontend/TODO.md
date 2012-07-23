@@ -1,6 +1,10 @@
 TODO
 ----
 
+### 22:06:31 07/23/2012
+  * https://github.com/SlexAxton/messageformat.js 国际化 i18n
+  * https://github.com/SlexAxton/Jed
+
 ### 18:29:01 07/23/2012
   * copy clip http://www.jeffothy.com/weblog/clipboard-copy/
 
