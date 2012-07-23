@@ -190,7 +190,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function addUser($password) {
+    public function addUser($password = '') {
         $passwordSql = '';
         if ($password) {
             $passwordSalt = md5(createToken());
