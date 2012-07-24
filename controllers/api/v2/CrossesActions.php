@@ -70,21 +70,9 @@ class CrossesActions extends ActionController {
                                 $invitation['identity_id']
                             );
                         }
-                    // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录（建新用户并连接身份，同时清除该身份其它验证token）
+                    // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
                     } elseif (isset($user_infos['VERIFYING'])
                            || isset($user_infos['RELATED']) || !$user_infos) {
-                        // clear verify token
-                        if (isset($user_infos['VERIFYING'])) {
-                            $modUser->destroySimilarTokens(
-                                $invitation['identity_id'], 'VERIFY'
-                            );
-                        }
-                        // add new user
-                        $user_id = $modUser->addUser();
-                        // connect identity to new user
-                        $modUser->setUserIdentityStatus(
-                            $user_id, $invitation['identity_id'], 3
-                        );
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
@@ -101,25 +89,9 @@ class CrossesActions extends ActionController {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
-                    // 身份连接状态 VERIFYING / RELATED: 正常登录（建新用户并连接身份，同时清除该身份其它验证token）
+                    // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
                     } elseif (isset($user_infos['VERIFYING'])
-                           || isset($user_infos['RELATED'])) {
-                        // clear verify token
-                        if (isset($user_infos['VERIFYING'])) {
-                            $modUser->destroySimilarTokens(
-                                $invitation['identity_id'], 'VERIFY'
-                            );
-                        }
-                        // add new user
-                        $user_id = $modUser->addUser();
-                        // connect identity to new user
-                        $modUser->setUserIdentityStatus(
-                            $user_id, $invitation['identity_id'], 3
-                        );
-                        // signin
-                        $result['signin'] = $modUser->rawSiginin($user_id);
-                    // 身份连接状态 null: Token 身份登录
-                    } elseif (!$user_infos) {
+                           || isset($user_infos['RELATED']) || !$user_infos) {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
