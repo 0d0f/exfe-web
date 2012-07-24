@@ -399,6 +399,11 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doSetupUserByInvitationToken() {
+        //////////////////
+    }
+
+
     public function doCheckAuthorization() {
         // get models
         $checkHelper = $this->getHelperByName('check', 'v2');
