@@ -1635,7 +1635,6 @@ define(function (require, exports, module) {
         objCross.by_identity = {};
         objCross.by_identity.id = User.default_identity.id;
         /////////////////////////
-        console.log(Cross.id);
         Api.request(
             'editCross',
             {type      : 'POST',
