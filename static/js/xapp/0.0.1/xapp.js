@@ -4,6 +4,7 @@
 // test
 define(function (require, exports, module) {
 
+  var Api = require('api');
   var Bus = require('bus');
   var Store = require('store');
   var Config = require('config');
@@ -15,6 +16,13 @@ define(function (require, exports, module) {
 
   // Create App
   var app = lightsaber();
+
+  app.on('launch', function () {
+    console.log('app launch');
+  });
+  app.on('launched', function () {
+    console.log('app launched');
+  });
 
   // Error Handler
   //app.use(lightsaber.errorHandler);
@@ -80,54 +88,77 @@ define(function (require, exports, module) {
    * param cross id
    */
   // cross token
-  app.get('/#!token=:token', function (req, res, next) {
-    var signin = Store.get('signin')
-      , userToken = signin && signin.token || false
-      , crossToken = req.params.token || false
-      , params;
+  app.get('/#!token=:token'
+    , function (req, res, next) {
+      var signin = Store.get('signin')
+        , userToken = signin && signin.token || false
+        , crossToken = req.params.token || false
+        , params;
 
-    if (!crossToken) {
-      return;
-    }
-
-    params = {};
-    if (userToken) {
-      params.token = userToken;
-    }
-
-    $('.container > div[role="main"]').html('');
-    $('#home').html('');
-
-    Api.request('getCrossByInvitationToken'
-      , {
-        type: 'POST',
-        params: params,
-        data: {
-          invitation_token: crossToken
-        }
+      if (!crossToken) {
+        return;
       }
-      , function (data) {
-        var cross = data.cross
+
+      params = {};
+      if (userToken) {
+        params.token = userToken;
+      }
+
+      $('.container > div[role="main"]').html('');
+      $('#home').html('');
+
+      Api.request('getCrossByInvitationToken'
+        , {
+          type: 'POST',
+          params: params,
+          data: {
+            invitation_token: crossToken
+          }
+        }
+        , function (data) {
+          //console.dir(data);
+          var signin = data.signin
+            , browsingIdentity = data.browsing_identity;
+
+          // XAPP_USER_TOKEN
+          var XAPP_USER_TOKEN = 'xapp:usertoken';
+
+          // debug
+          //signin = browsingIdentity = false;
+
+          if (signin) {
+            Store.set('signin', signin);
+            Bus.emit(XAPP_USER_TOKEN, signin.token, signin.user_id, 2);
+          } else if (browsingIdentity) {
+            console.log(browsingIdentity);
+            createUserPanel(browsingIdentity, 1);
+          }
+
+          req._data = data;
+
+          next();
+
+        }
+        // fail
+        //, function (data) {}
+      );
+
+    }
+    , function (req, res, next) {
+        var data = req._data
+          , cross = data.cross
           , browsingIdentity = data.browsing_identity
-          , signin = data.signin
           , read_only = data.read_only;
 
-        if (signin) {
-          Store.set('signin', signin);
-        }
+        delete req._data;
 
         res.render('x.html', function (tpl) {
           $('.container > div[role="main"]').append(tpl);
           Bus.emit('xapp:cross:main');
           Bus.emit('xapp:cross', null, browsingIdentity, cross, read_only);
         });
-      }
-      // fail
-      , function (data) {
-      }
-    );
-
-  });
+    }
+  );
 
 
   app.param('crossId', function (req, res, next, id) {
@@ -155,7 +186,7 @@ define(function (require, exports, module) {
       next();
     }
     else {
-      next(new Error('token'));
+      next(new Error('invalid token'));
     }
   });
 
