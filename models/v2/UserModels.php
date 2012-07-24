@@ -190,7 +190,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function addUser($password = '') {
+    public function addUser($password = '', $name = '') {
         $passwordSql = '';
         if ($password) {
             $passwordSalt = md5(createToken());
@@ -198,8 +198,12 @@ class UserModels extends DataModel {
             $passwordSql  = "`encrypted_password` = '{$passwordInDb}',
                              `password_salt`      = '{$passwordSalt}',";
         }
+        $nameSql = '';
+        if ($name) {
+            $nameSql      = "`name` = '{$name}',";
+        }
         $dbResult = $this->query(
-            "INSERT INTO `users` SET {$passwordSql} `created_at` = NOW()"
+            "INSERT INTO `users` SET {$passwordSql} {$nameSql} `created_at` = NOW()"
         );
         return intval($dbResult['insert_id']);
     }

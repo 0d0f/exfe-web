@@ -112,7 +112,7 @@ class CrossesActions extends ActionController {
             apiResponse($result);
         // 受邀 token 不存在
         } else {
-            apiError(404, 'invalid_invitation_token', '');
+            apiError(404, 'invalid_invitation_token', 'Invalid Invitation Token');
         }
     }
 

@@ -3,9 +3,9 @@
 class UsersActions extends ActionController {
 
     public function doIndex() {
-        $modUser = $this->getModelByName('User', 'v2');
+        $modUser     = $this->getModelByName('User',   'v2');
         $checkHelper = $this->getHelperByName('check', 'v2');
-        $params  = $this->params;
+        $params      = $this->params;
         if (!$params['id']) {
             apiError(400, 'no_user_id', 'user_id must be provided');
         }
@@ -35,7 +35,7 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser = $this->getModelByName('User', 'v2');
+        $modUser     = $this->getModelByName('User', 'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
         if (!($external_id = trim($_POST['external_id']))) {
@@ -134,8 +134,8 @@ class UsersActions extends ActionController {
 
     public function doGetRegistrationFlag() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
         $params = $this->params;
         if (!$external_id = trim($params['external_id'])) {
@@ -175,8 +175,8 @@ class UsersActions extends ActionController {
 
     public function doVerifyIdentity() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
         if (!$external_id = trim($_POST['external_id'])) {
             apiError(400, 'no_external_id', 'external_id must be provided');
@@ -249,8 +249,8 @@ class UsersActions extends ActionController {
 
     public function doForgotPassword() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
         if (!$external_id = trim($_POST['external_id'])) {
             apiError(400, 'no_external_id', 'external_id must be provided');
@@ -351,8 +351,8 @@ class UsersActions extends ActionController {
 
     public function doResolveToken() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
         if (!$token = trim($_POST['token'])) {
             apiError(400, 'no_token', 'token must be provided');
@@ -378,8 +378,8 @@ class UsersActions extends ActionController {
 
     public function doResetPassword() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
         if (!$token = trim($_POST['token'])) {
             apiError(400, 'no_token', 'token must be provided');
@@ -400,7 +400,47 @@ class UsersActions extends ActionController {
 
 
     public function doSetupUserByInvitationToken() {
-        //////////////////
+        // get models
+        $modUser  = $this->getModelByName('user',  'v2');
+        $modExfee = $this->getModelByName('exfee', 'v2');
+        // get name
+        if (!($name = trim($_POST['name']))) {
+            apiError(400, 'no_user_name', 'No user name');
+        }
+        // get password
+        if (!($passwd = $_POST['password'])) {
+            apiError(400, 'no_password', 'No password');
+        }
+        // get invitation data
+        $invToken   = trim($_POST['invitation_token']);
+        $invitation = $modExfee->getRawInvitationByToken($invToken);
+        // 如果 token 有效
+        if ($invitation
+         && ($invitation['token_used_at'] === '0000-00-00 00:00:00'
+          || time() - strtotime($invitation['token_used_at']) < 1410)) { // 23 * 60 + 30
+            // get user info by invitation token
+            $user_infos = $modUser->getUserIdentityInfoByIdentityId(
+                $invitation['identity_id']
+            );
+            // try connected user
+            if (!isset($user_infos['CONNECTED'])) {
+                // clear verify token
+                if (isset($user_infos['VERIFYING'])) {
+                    $modUser->destroySimilarTokens(
+                        $invitation['identity_id'], 'VERIFY'
+                    );
+                }
+                // add new user
+                $user_id = $modUser->addUser($passwd, $name);
+                // connect identity to new user
+                $modUser->setUserIdentityStatus(
+                    $user_id, $invitation['identity_id'], 3
+                );
+                // signin
+                apiResponse(['signin' => $modUser->rawSiginin($user_id)]);
+            }
+        }
+        apiError(400, 'invalid_invitation_token', 'Invalid Invitation Token');
     }
 
 
