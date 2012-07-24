@@ -4909,31 +4909,31 @@ input[type="submit"].btn.btn-mini {
   height: 30px;
   font-size: 22px;
   font-weight: 300;
-  line-height: 26px;
   line-height: 30px;
+  line-height: 26px;
   color: #050505;
   text-align: center;
   text-shadow: 0 1px 1px #fafafa;
-  background-color: #d5e7f0;
-  background-color: #8cbbd2;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d5e7f0), to(#1f78a5));
-  background-image: linear-gradient(top, #d5e7f0, #1f78a5);
-  background-image: -o-linear-gradient(top, #d5e7f0, #1f78a5);
-  background-image: -ms-linear-gradient(top, #d5e7f0, #1f78a5);
-  background-image: -moz-linear-gradient(top, #d5e7f0, #1f78a5);
-  background-image: -webkit-linear-gradient(top, #d5e7f0, #1f78a5);
+  background-color: #86bad3;
+  background-color: transparent;
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#d4e7f1), to(#1276a7));
+  background-image: -webkit-linear-gradient(top, #d4e7f1, #1276a7);
+  background-image: -o-linear-gradient(top, #d4e7f1, #1276a7);
+  background-image: linear-gradient(top, #d4e7f1, #1276a7);
+  background-image: -moz-linear-gradient(top, #d4e7f1, #1276a7);
+  background-image: -ms-linear-gradient(top, #d4e7f1, #1276a7);
   background-repeat: repeat-x;
   border: 1px solid rgba(127, 127, 127, 0.15);
+  border-color: #1276a7 #1276a7 #0b4562;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-color: #1f78a5 #1f78a5 #134965;
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
           border-radius: 3px;
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#d5e7f0', endColorstr='#1f78a5', GradientType=0);
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#d4e7f1', endColorstr='#1276a7', GradientType=0);
   filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-  -webkit-box-shadow: 0 1px 1px #fafafa;
-     -moz-box-shadow: 0 1px 1px #fafafa;
-          box-shadow: 0 1px 1px #fafafa;
+  -webkit-box-shadow: 0 1px 1px #ffffff;
+     -moz-box-shadow: 0 1px 1px #ffffff;
+          box-shadow: 0 1px 1px #ffffff;
 }
 
 .xbtn-reauthorize {
