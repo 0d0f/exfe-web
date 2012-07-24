@@ -96,9 +96,11 @@ ExfeUtilities = {
                 arrPlace.push(rawPlace[i]);
             }
         }
+        var title = arrPlace.shift();
+        title = title ? title : '';
         return {
-            title : arrPlace.shift(), description : arrPlace.join('\r'), lng : 0,
-            lat   : 0, provider : '', external_id : 0, id : 0, type : 'Place'
+            title : title, description : arrPlace.join('\r'), lng : 0, lat : 0,
+            provider : '', external_id : 0, id : 0, type : 'Place'
         };
     }
 
@@ -1075,12 +1077,7 @@ define(function (require, exports, module) {
             },
             attribute : {state : 'published'},
             exfee_id  : 0,
-            widget    : {
-                background : {
-                    image     : '', widget_id : 0,
-                    id        : 0,  type      : 'Background'
-                }
-            },
+            widget : [{image : '', widget_id : 0, id : 0, type : 'Background'}],
             relative : {id : 0, relation : ''}, type : 'Cross'
         },
         rawExfee = {id : 0, type : 'Exfee', invitations : []};
@@ -1313,13 +1310,18 @@ define(function (require, exports, module) {
 
 
     var fixBackground = function() {
-        var backgrounds = require('config').backgrounds,
-            strBgImg    = Cross.widget.background.image;
+        var backgrounds = require('config').backgrounds;
+        for (var i = 0; i < Cross.widget.length; i++) {
+            if (Cross.widget[i].type === 'Background') {
+                break;
+            }
+        }
+        var strBgImg = Cross.widget[i].image;
         do {
-            Cross.widget.background.image = backgrounds[
+            Cross.widget[i].image = backgrounds[
                 parseInt(Math.random() * backgrounds.length)
             ];
-        } while (strBgImg === Cross.widget.background.image);
+        } while (strBgImg === Cross.widget[i].image);
         ShowBackground();
     };
 
@@ -1433,12 +1435,17 @@ define(function (require, exports, module) {
 
 
     var ShowBackground = function() {
-        if (!Cross.widget.background.image) {
+        for (var i = 0; i < Cross.widget.length; i++) {
+            if (Cross.widget[i].type === 'Background') {
+                break;
+            }
+        }
+        if (!Cross.widget[i].image) {
             fixBackground();
         }
         $('.cross-background').css(
             'background-image',
-            'url(/static/img/xbg/' + Cross.widget.background.image + ')'
+            'url(/static/img/xbg/' + Cross.widget[i].image + ')'
         );
     };
 
@@ -1571,9 +1578,10 @@ define(function (require, exports, module) {
         Cross.description = objCross.description;
         Cross.time        = objCross.time;
         Cross.place       = objCross.place;
-        Cross.background  = objCross.background;
+        Cross.widget      = objCross.widget;
         Cross.exfee_id    = objCross.exfee.id;
         Exfee             = objCross.exfee;
+        savedCross        = summaryCross();
         $('.cross-date .edit').val(Cross.time.origin);
         ShowCross();
         GetTimeline();
@@ -1630,7 +1638,6 @@ define(function (require, exports, module) {
 
     var SaveCross = function() {
         var objCross   = ExfeUtilities.clone(Cross);
-        objCross.exfee = ExfeUtilities.clone(Exfee);
         /////////////////////////
         objCross.by_identity = {};
         objCross.by_identity.id = User.default_identity.id;
@@ -1641,18 +1648,35 @@ define(function (require, exports, module) {
              resources : {cross_id : Cross.id},
              data      : JSON.stringify(objCross)},
             function(data) {
-                UpdateCross(data.cross);
+                console.log('Saved');
             },
             function(data) {
-                console.log(data);
+                console.log('Field');
             }
         );
     };
 
 
+    var summaryCross = function() {
+        return JSON.stringify({
+            id          : Cross.id,
+            title       : Cross.title,
+            description : Cross.description,
+            time        : Cross.time.origin,
+            place       : {title       : Cross.place.title,
+                           description : Cross.place.description},
+            background  : Cross.widget[0].image
+        });
+    };
+
+
     var AutoSaveCross = function() {
         if (Cross.id) {
-            var curCross = JSON.stringify(Cross);
+            var curCross = summaryCross();
+            console.log('---------');
+            console.log(curCross);
+            console.log(savedCross);
+            console.log(savedCross !== curCross);
             if (savedCross !== curCross) {
                 SaveCross();
                 savedCross = curCross;

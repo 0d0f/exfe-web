@@ -29,7 +29,7 @@ class Cross extends Metainfo {
         $this->host_identity=$host_identity;
 
         $this->attribute = $attribute;
-        $this->widget    =$widget;
+        $this->widget    = $widget;
 
         $this->title       = $title;
         $this->description = $description;

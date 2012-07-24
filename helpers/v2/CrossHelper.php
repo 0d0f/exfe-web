@@ -25,13 +25,8 @@ class CrossHelper extends ActionController {
                 $place=new Place($cross["place_id"],$cross["place_line1"],$cross["place_line2"],$cross["lng"],$cross["lat"],$cross["provider"],$cross["external_id"]);
                 $background=new Background($cross["background"]);
 
-                if(sizeof(explode(" ",$cross["begin_at"]))>1)
-                {
-                    $datetime=explode(" ",$cross["begin_at"]);
-                    $date=$datetime[0];
-                    $time=$datetime[1];
-                }
-                $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],intval($cross["outputformat"]));
+                $begin_at=new CrossTime($cross['date_word'], $cross['date'], $cross['time_word'], $cross['time'], $cross["timezone"], $cross['origin_begin_at'], intval($cross['outputformat']));
+
                 $attribute=array();
                 if($cross["state"]==1)
                     $attribute["state"]="published";
@@ -86,13 +81,8 @@ class CrossHelper extends ActionController {
 
 
         $background=new Background($cross["background"]);
-        if(sizeof(explode(" ",$cross["begin_at"]))>1)
-        {
-            $datetime=explode(" ",$cross["begin_at"]);
-            $date=$datetime[0];
-            $time=$datetime[1];
-        }
-        $begin_at=new CrossTime("",$date,"",$time,$cross["timezone"],$cross["origin_begin_at"],intval($cross["outputformat"]));
+
+        $begin_at=new CrossTime($cross['date_word'], $cross['date'], $cross['time_word'], $cross['time'], $cross["timezone"], $cross['origin_begin_at'], intval($cross['outputformat']));
 
         $attribute=array();
         if($cross["state"]==1)
