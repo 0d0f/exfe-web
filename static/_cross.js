@@ -247,12 +247,6 @@ ExfeeWidget = {
                 }
             }
         );
-        $('#' + this.dom_id + ' .typeahead > ol > li').live(
-            'mouseenter',
-            function(event) {
-                ExfeeWidget.selectCompleteItem($(this).index());
-            }
-        );
         this.complete_timer = setInterval(
            "ExfeeWidget.checkInput($('#" + this.dom_id + " .input-xlarge'))",
            50
@@ -510,9 +504,8 @@ ExfeeWidget = {
 
 
     checkComplete : function(objInput, key) {
-        var objPanel = $(objInput[0].parentNode.parentNode).find('.typeahead');
-        this.showCompleteItems(objPanel, key, key ? ExfeeCache.search(key) : []);
-        this.ajaxComplete(objPanel, key);
+        this.showCompleteItems(objInput, key, key ? ExfeeCache.search(key) : []);
+        this.ajaxComplete(objInput, key);
     },
 
 
@@ -530,20 +523,22 @@ ExfeeWidget = {
     },
 
 
-    displayCompletePanel : function(objPanel, display) {
-        if (this.completing = display) {
-            var objInput = $(objPanel[0].parentNode.parentNode).find('.exfee-input').offset();
-            $(objPanel).css({left : (objInput.left - 200) + 'px', top : (objInput.top + objInput.height) + 'px'});
-            objPanel.slideDown(50);
+    displayCompletePanel : function(objInput, display) {
+        if ((this.completing = display)) {
+            var ostInput = objInput.offset();
+            $('.ids-popmenu').css({
+                left :  ostInput.left + 'px',
+                top  : (ostInput.top  + objInput.height() + 10) + 'px'
+            }).slideDown(50);
         } else {
-            objPanel.slideUp(50);
+            $('.ids-popmenu').slideUp(50);
         }
     },
 
 
-    showCompleteItems : function(objPanel, key, identities) {
+    showCompleteItems : function(objInput, key, identities) {
         // @todo: 使用 typeahead 替代这段代码
-        var objCompleteList  = $(objPanel).find('ol'),
+        var objCompleteList  = $('.ids-popmenu > ol'),
             strCompleteItems = '';
         key = key ? key.toLowerCase() : '';
         if (ExfeeWidget.complete_key !== key) {
@@ -578,7 +573,7 @@ ExfeeWidget = {
         }
         objCompleteList.append(strCompleteItems);
         this.displayCompletePanel(
-            objPanel,
+            objInput,
             key && ExfeeWidget.complete_exfee.length
         );
     },
@@ -607,7 +602,7 @@ ExfeeWidget = {
     },
 
 
-    ajaxComplete : function(objPanel, key) {
+    ajaxComplete : function(objInput, key) {
         if (!User || !key || typeof ExfeeCache.tried_key[key] !== 'undefined') {
             return;
         }
@@ -627,7 +622,7 @@ ExfeeWidget = {
                     ExfeeCache.cacheIdentities(caughtIdentities);
                     ExfeeCache.tried_key[key] = true;
                     if (ExfeeWidget.complete_key === key) {
-                        ExfeeWidget.showCompleteItems(objPanel, key, caughtIdentities);
+                        ExfeeWidget.showCompleteItems(objInput, key, caughtIdentities);
                     }
                 }
             }
@@ -674,7 +669,7 @@ ExfeeWidget = {
 
     selectCompleteItem : function(index) {
         var className = 'active';
-        $('.typeahead > ol > li').removeClass(className).eq(index).addClass(className);
+        $('.ids-popmenu > ol > li').removeClass(className).eq(index).addClass(className);
     },
 
 
@@ -697,14 +692,11 @@ ExfeeWidget = {
                         ExfeeWidget.checkInput(objInput, true);
                         break;
                     case 13: // enter
-                        var objSelected = $(objInput[0].parentNode.parentNode).find('.typeahead > ol > .active'),
+                        var objSelected = $('.ids-popmenu > ol > .active'),
                             curItem     = objSelected.length ? ~~objSelected.index() : null;
                         if (ExfeeWidget.completing && curItem !== null) {
                             ExfeeWidget.useCompleteItem(curItem);
-                            ExfeeWidget.displayCompletePanel(
-                                $(objInput[0].parentNode.parentNode).find('.typeahead'),
-                                false
-                            );
+                            ExfeeWidget.displayCompletePanel(objInput, false);
                             objInput.val('');
                         } else {
                             ExfeeWidget.checkInput(objInput, true);
@@ -712,16 +704,13 @@ ExfeeWidget = {
                         break;
                     case 27: // esc
                         if (ExfeeWidget.completing) {
-                            ExfeeWidget.displayCompletePanel(
-                                $(objInput[0].parentNode.parentNode).find('.typeahead'),
-                                false
-                            );
+                            ExfeeWidget.displayCompletePanel(objInput, false);
                         }
                         break;
                     case 38: // up
                     case 40: // down
                         event.preventDefault();
-                        var objCmpBox  = $(objInput[0].parentNode.parentNode).find('.typeahead > ol'),
+                        var objCmpBox  = $('.ids-popmenu > ol'),
                             cboxHeight = 207,
                             cellHeight = 51,
                             shrMargin  = 3,
@@ -754,8 +743,7 @@ ExfeeWidget = {
                 }
                 break;
             case 'blur':
-                var objPanel = $(objInput[0].parentNode.parentNode).find('.typeahead');
-                ExfeeWidget.displayCompletePanel(objPanel, false);
+                ExfeeWidget.displayCompletePanel(objInput, false);
         }
     },
 
@@ -1286,6 +1274,18 @@ define(function (require, exports, module) {
                 event.which = 4;
             }
         });
+        $('.ids-popmenu > ol > li').live(
+            'mouseenter mousedown',
+            function(event) {
+                switch (event.type) {
+                    case 'mouseenter':
+                        ExfeeWidget.selectCompleteItem($(this).index());
+                        break;
+                    case 'mousedown':
+                        ExfeeWidget.useCompleteItem($(this).index());
+                }
+            }
+        );
         // $('.cross-edit').bind('click', SaveCross);
     };
 
