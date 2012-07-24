@@ -17,7 +17,7 @@
 
         <div class="nav-collapse">
           <ul class="nav pull-right">
-            <li id="js-signin">
+            <li id="js-signin" style="display: none;">
               <a class="sign-in" href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In</a>
             </li>
             <li class="dropdown" style="display: none;">

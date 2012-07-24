@@ -294,6 +294,9 @@ define('lightsaber', function (require, exports, module) {
 
   // run app
   prop.run = function (options) {
+    // onLaunch
+    this.emit('launch');
+
     options = options || {};
 
     var req = this.request
@@ -319,6 +322,9 @@ define('lightsaber', function (require, exports, module) {
     if (this.disabled('dispatch')) return;
 
     this.handle(req, res);
+
+    // onLaunched
+    this.emit('launched');
   };
 
   prop.change = function (e) {

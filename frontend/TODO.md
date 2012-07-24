@@ -1,6 +1,11 @@
 TODO
 ----
 
+### 22:06:31 07/23/2012
+  * https://github.com/SlexAxton/messageformat.js 国际化 i18n
+  * https://github.com/SlexAxton/Jed
+  * http://developer.chrome.com/trunk/apps/i18n.html
+
 ### 18:29:01 07/23/2012
   * copy clip http://www.jeffothy.com/weblog/clipboard-copy/
 
@@ -9,6 +14,7 @@ TODO
   * robots.txt
 
 ### 01:52:04 07/20/2012
+  * 新 API 可以拖拽目录 folder
   * 拖拽url图片，canvas 保存，跨域问题
 
 ### 00:38:17 07/20/2012

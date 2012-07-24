@@ -19,7 +19,8 @@ define('middleware', [], function (require, exports, module) {
 
     if (!token) {
       res.loginable = false;
-      if (req.url !== '/' && req.url !== '/#gather') {
+      $('#js-signin').show();
+      if (req.url !== '/' && req.url !== '/#gather' && !req.url.match(/^\/#!token=[a-zA-Z0-9]{32}/)) {
         Bus.emit('xapp:goto_home');
       }
       else {
@@ -78,7 +79,9 @@ define('middleware', [], function (require, exports, module) {
               return true;
             }
           })[0];
-        } else {
+        }
+
+        if (!identity) {
           identity = data.user.default_identity;
         }
 
@@ -388,7 +391,8 @@ define('middleware', [], function (require, exports, module) {
         .end()
         .find('#user-name span').text('');;
       Store.remove('signin');
-      Bus.emit('xapp:goto_home');
+      window.location = '/';
+      //Bus.emit('xapp:goto_home');
     });
   });
 
