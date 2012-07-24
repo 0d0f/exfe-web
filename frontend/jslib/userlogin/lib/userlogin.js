@@ -42,7 +42,7 @@ define('middleware', [], function (require, exports, module) {
         if (data) {
           Bus.emit(XAPP_USER_STATUS, {
               token: token
-            , type: 3
+            , type: 2
             , data: data
           });
 
@@ -104,7 +104,7 @@ define('middleware', [], function (require, exports, module) {
 
   Bus.on(XAPP_USER_STATUS, function (d) {
     switch (d.type) {
-      case 3:
+      case 2:
         var token = d.token
           , data = d.data
           , user_id = d.data.user_id;
@@ -222,29 +222,8 @@ define('middleware', [], function (require, exports, module) {
   }
 
   var userpanelTmps = {
-    // new identity
-    '1': ''
-      + '<div class="dropdown-menu user-panel">'
-        + '<div class="header">'
-          + '<h2>Browsing Identity</h2>'
-        + '</div>'
-        + '<div class="body">'
-        + '<div>You are browsing this page as Email identity:</div>'
-        + '<div class="identity">'
-          + '<span class="pull-right avatar">'
-            + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
-          + '</span>'
-          + '<i class="icon16-identity-{{provider}}"></i>'
-          + '<span>{{external_id}}</span>'
-        + '</div>'
-        + '</div>'
-        + '<div class="footer">'
-          + '<button class="xbtn xbtn-signin" data-widget="dialog" data-identity-id={{id}} data-dialog-tab="{{__tab__}}" data-dialog-type="{{__dialogtype__}}" data-source="{{external_id}}">Sign In</button>'
-        + '</div>'
-      + '</div>',
-
     // new identity & merge
-    '2': ''
+    '1': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
           + '<h2>Browsing Identity</h2>'
@@ -258,20 +237,22 @@ define('middleware', [], function (require, exports, module) {
             + '<i class="icon-envelope"></i>'
             + '<span>{{external_id}}</span>'
           + '</div>'
+          + '{{#unless connected_user_id}}'
           + '<div class="set-up">'
             + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{external_id}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
           + '</div>'
-          //+ '<div class="spliterline"></div>'
-          //+ '<div class="merge hide">'
-          //  + '<a href="#">Merge</a> with your currently signed in identities:'
-          //+ '</div>'
-          //+ '<div class="identity hide">'
-            //+ '<span class="pull-right avatar">'
-            //  + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
-            //+ '</span>'
-            //+ '<i class="icon16-identity-{{provider}}"></i>'
-            //+ '<span>{{external_id}}</span>'
-          //+ '</div>'
+          + '{{/unless}}'
+          + '<div class="spliterline"></div>'
+          + '<div class="merge hide">'
+            + '<a href="#">Merge</a> with your currently signed in identities:'
+          + '</div>'
+          + '<div class="identity hide">'
+            + '<span class="pull-right avatar">'
+              + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
+            + '</span>'
+            + '<i class="icon16-identity-{{provider}}"></i>'
+            + '<span>{{external_id}}</span>'
+          + '</div>'
           + '</div>'
         + '<div class="footer">'
           + '<button class="xbtn xbtn-gather" id="js-xgather">Gather</button>'
@@ -279,7 +260,7 @@ define('middleware', [], function (require, exports, module) {
       + '</div>',
 
     // signin
-    '3': ''
+    '2': ''
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
           + '<div class="meta">'
