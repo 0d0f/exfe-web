@@ -5968,63 +5968,6 @@ input[type="submit"].btn.btn-mini {
   text-align: center;
 }
 
-.x-home-gather {
-  margin-left: 0;
-  background-color: #fafafa;
-  background-image: -moz-linear-gradient(270deg, #e6e6e6, #fafafa);
-  background-image: -ms-linear-gradient(270deg, #e6e6e6, #fafafa);
-  background-image: -webkit-linear-gradient(270deg, #e6e6e6, #fafafa);
-  background-image: -o-linear-gradient(270deg, #e6e6e6, #fafafa);
-  background-image: linear-gradient(270deg, #e6e6e6, #fafafa);
-  background-repeat: repeat-x;
-}
-
-.x-home-gather .x-gather {
-  text-align: center;
-}
-
-.x-home-gather .x-gather a.xbtn {
-  display: inline-block;
-  width: 218px;
-  height: 58px;
-}
-
-.x-home-gather .x-gather a.xbtn:hover {
-  color: #050505;
-  text-decoration: none;
-}
-
-.x-home-gather .x-gather .xbtn-gather {
-  margin-top: 40px;
-  margin-bottom: 40px;
-  font-size: 34px;
-  line-height: 60px;
-  border: none;
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-          border-radius: 5px;
-  -webkit-box-shadow: 0 1px 4px rgba(5, 5, 5, 0.5);
-     -moz-box-shadow: 0 1px 4px rgba(5, 5, 5, 0.5);
-          box-shadow: 0 1px 4px rgba(5, 5, 5, 0.5);
-}
-
-.x-home-gather .x-explain .nav {
-  width: 91.818%;
-  margin-bottom: 0;
-}
-
-.x-home-gather .x-explain .nav > li {
-  height: 25px;
-  margin-left: 42px;
-}
-
-.x-home-gather .x-features {
-  width: 695px;
-  height: 36px;
-  margin: 0 auto;
-  background: url(/img/index-icons-bt.png) no-repeat;
-}
-
 .cross-alert {
   height: 40px;
   padding: 0 40px;
