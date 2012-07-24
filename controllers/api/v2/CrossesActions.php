@@ -105,8 +105,11 @@ class CrossesActions extends ActionController {
                  ||  (isset($user_infos['REVOKED'])   && ($inv_user_id = $user_infos['REVOKED'][0]['user_id'])))
                  && $user_id === $inv_user_id) {
                     $result['read_only'] = false;
+                // 其他情况: 只读浏览
                 } else {
-                    // 其他情况: 只读浏览
+                    $result['browsing_identity'] = $modIdentity->getIdentityById(
+                        $invitation['identity_id']
+                    );
                 }
             }
             apiResponse($result);
