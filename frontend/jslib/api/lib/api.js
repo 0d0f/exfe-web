@@ -76,11 +76,16 @@ define('api', [], function (require, exports, module) {
 
     forgotPassword: '/users/forgotPassword',
 
-    avatarUpdate: '/avatar/update'
+    avatarUpdate: '/avatar/update',
+
+    // Cross Token
+    // ep:
+    //  http -f post api.local.exfe.com/v2/crosses/GetCrossByInvitationToken?token="249ceff8cbdc3fd20ce95ea391739b59" invitation_token="d8983af0ff726256851e0a4e5c41d6db"
+    getCrossByInvitationToken: '/crosses/getCrossByInvitationToken'
   };
 
   // Not Use Token
-  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity verifyUserIdentity forgotPassword getIdentityById';
+  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity verifyUserIdentity forgotPassword getIdentityById getCrossByInvitationToken';
 
   var Api = {
 
@@ -118,23 +123,28 @@ define('api', [], function (require, exports, module) {
      *
      */
     request: function (channel, options, done, fail) {
-      var url = urls[channel], k, params, resources;
+      var url = urls[channel]
+        , k
+        , params = options.params
+        , resources = options.resources;
 
       if (!url) { return; }
 
-      if (ignore.search(channel) === -1) {
+      if (ignore.split(' ').indexOf(channel) === -1) {
 
         if (!Api._token) { return; }
 
-        url += '?token=' + Api._token;
+        if (!params) params = {};
+
+        params.token = Api._token;
       }
 
-      if ((params = options.params)) {
+      if (params) {
         params = $.param(params);
-        url += '&' + params;
+        url += params ? '?' + params : '';
       }
 
-      if ((resources = options.resources)) {
+      if (resources) {
         for (k in resources) {
           url = url.replace(':' + k, encodeURIComponent(resources[k]));
         }
