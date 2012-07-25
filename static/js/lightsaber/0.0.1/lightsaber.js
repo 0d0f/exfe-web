@@ -29,7 +29,7 @@ define('lightsaber', function (require, exports, module) {
 
   exports.createApplication = createApplication;
 
-  var prop;
+  var proto;
 
   // lightsaber version
   exports.version = '0.0.1';
@@ -47,12 +47,12 @@ define('lightsaber', function (require, exports, module) {
   // Application
   function Application() {}
 
-  prop = Application.prototype;
+  proto = Application.prototype;
 
   // html5 history support
-  prop.historySupport = (history !== null ? history.pushState : void 0) !== null;
+  proto.historySupport = (history !== null ? history.pushState : void 0) !== null;
 
-  prop.init = function () {
+  proto.init = function () {
     this.route = ROOT;
     this.stack = [];
     this.cache = {};
@@ -61,7 +61,7 @@ define('lightsaber', function (require, exports, module) {
     this.defaultConfiguration();
   };
 
-  prop.defaultConfiguration = function () {
+  proto.defaultConfiguration = function () {
     // default settings
     this.set('env', 'development');
     //this.set('env', 'production');
@@ -93,7 +93,7 @@ define('lightsaber', function (require, exports, module) {
     });
   };
 
-  prop.use = function (route, fn) {
+  proto.use = function (route, fn) {
     var app, home, handle;
 
     // default route to '/'
@@ -112,7 +112,7 @@ define('lightsaber', function (require, exports, module) {
     return this;
   };
 
-  prop.set = function (setting, val) {
+  proto.set = function (setting, val) {
     if (1 === arguments.length) {
       if (this.settings.hasOwnProperty(setting)) {
         return this.settings[setting];
@@ -123,23 +123,23 @@ define('lightsaber', function (require, exports, module) {
     }
   };
 
-  prop.enabled = function (setting) {
+  proto.enabled = function (setting) {
     return !!this.set(setting);
   };
 
-  prop.disabled = function (setting) {
+  proto.disabled = function (setting) {
     return !this.set(setting);
   };
 
-  prop.enable = function (setting) {
+  proto.enable = function (setting) {
     return this.set(setting, true);
   };
 
-  prop.disable = function (setting) {
+  proto.disable = function (setting) {
     return this.set(setting, false);
   };
 
-  prop.configure = function (env, fn) {
+  proto.configure = function (env, fn) {
     var envs = 'all'
       , args = [].slice.call(arguments);
 
@@ -152,7 +152,7 @@ define('lightsaber', function (require, exports, module) {
     return this;
   };
 
-  prop.render = function (name, options, fn) {
+  proto.render = function (name, options, fn) {
     var self = this
       , opts = {}
       , cache = this.cache
@@ -204,11 +204,11 @@ define('lightsaber', function (require, exports, module) {
     }
   };
 
-  prop.path = function () {
+  proto.path = function () {
     return this.route;
   };
 
-  prop.param = function (name, fn) {
+  proto.param = function (name, fn) {
     var fns = [].slice.call(arguments, 1)
       , i = 0
       , len;
@@ -236,7 +236,7 @@ define('lightsaber', function (require, exports, module) {
   };
 
   // get method request
-  prop.get = function (path) {
+  proto.get = function (path) {
     var args = [].slice.call(arguments);
     if (!this._usedRouter) {
       this._usedRouter = true;
@@ -245,7 +245,7 @@ define('lightsaber', function (require, exports, module) {
     return this._router.route.apply(this._router, args);
   };
 
-  prop.handle = function (req, res) {
+  proto.handle = function (req, res) {
     var stack = this.stack
       , index = 0;
 
@@ -293,7 +293,7 @@ define('lightsaber', function (require, exports, module) {
   };
 
   // run app
-  prop.run = function (options) {
+  proto.run = function (options) {
     // onLaunch
     this.emit('launch');
 
@@ -327,7 +327,7 @@ define('lightsaber', function (require, exports, module) {
     this.emit('launched');
   };
 
-  prop.change = function (e) {
+  proto.change = function (e) {
     if (_firstLoad) return _firstLoad = false;
 
     //console.dir(e.originalEvent);
@@ -349,7 +349,7 @@ define('lightsaber', function (require, exports, module) {
   };
 
   // Generate an `Error`
-  prop.error = function (code, msg) {
+  proto.error = function (code, msg) {
     var err = new Error(msg);
     err.status = code;
     return err;
@@ -359,14 +359,17 @@ define('lightsaber', function (require, exports, module) {
 
   // Request
   function Request() {
+    // session
+    this.session = {};
+
     this.method = 'GET';
     this.updateUrl();
   }
 
   // Request.prototype
-  prop = Request.prototype;
+  proto = Request.prototype;
 
-  prop.updateUrl = function () {
+  proto.updateUrl = function () {
     this.host = location.hostname;
     this.port = location.port || 80;
     this.path = location.pathname;
@@ -375,7 +378,7 @@ define('lightsaber', function (require, exports, module) {
     this.url = location.pathname + this.querystring + this.hash;
   };
 
-  prop.param = function (name, defaultValue) {
+  proto.param = function (name, defaultValue) {
     var params = this.params || {}
       , query = this.query || {};
     if (null != params[name] && params.hasOwnProperty(name)) return params[name];
@@ -383,11 +386,11 @@ define('lightsaber', function (require, exports, module) {
     return defaultValue;
   };
 
-  prop.getPath = function () {
+  proto.getPath = function () {
     return this.path;
   };
 
-  prop.getHost = function () {
+  proto.getHost = function () {
     return this.host;
   };
 
@@ -400,11 +403,11 @@ define('lightsaber', function (require, exports, module) {
   }
 
   // Response.prototype
-  prop = Response.prototype;
+  proto = Response.prototype;
 
   // redirect('back')
   // redirect('/user', 'User Page', {id: 'user'});
-  prop.redirect = function (url) {
+  proto.redirect = function (url) {
     var argsLen = arguments.length
       , title
       , state;
@@ -414,6 +417,8 @@ define('lightsaber', function (require, exports, module) {
       url = arguments[0];
       if (url === 'back' || url === 'forward') {
         history[url]();
+      } else {
+        location.href = url;
       }
       return;
     }
@@ -436,16 +441,16 @@ define('lightsaber', function (require, exports, module) {
   };
 
   // save state
-  prop.save = function () {
+  proto.save = function () {
     history.replaceState(this.state, this.title, this.path);
   };
 
   // push the state onto the history stack
-  prop.pushState = function () {
+  proto.pushState = function () {
     history.pushState(this.state, this.title, this.path);
   };
 
-  prop.render = function (view, options, fn) {
+  proto.render = function (view, options, fn) {
     var self = this
       , options = options || {}
       , app = this.app
@@ -478,9 +483,9 @@ define('lightsaber', function (require, exports, module) {
     };
   }
 
-  prop = Router.prototype;
+  proto = Router.prototype;
 
-  prop.param = function (name, fn) {
+  proto.param = function (name, fn) {
     // param logic
     if ('function' === typeof name) {
       this._params.push(name);
@@ -509,7 +514,7 @@ define('lightsaber', function (require, exports, module) {
     return this;
   };
 
-  prop._dispatch = function (req, res, next) {
+  proto._dispatch = function (req, res, next) {
     var params = this.params
       , self = this;
 
@@ -601,7 +606,7 @@ define('lightsaber', function (require, exports, module) {
 
   };
 
-  prop.matchRequest = function (req, i) {
+  proto.matchRequest = function (req, i) {
     var path = req.url
       , routes = this.map
       , len = routes.length
@@ -620,7 +625,7 @@ define('lightsaber', function (require, exports, module) {
 
   };
 
-  prop.route = function (path) {
+  proto.route = function (path) {
     if (!path) new Error('Router#get() requires a path');
 
     var callbacks = [].slice.call(arguments, 1)
@@ -646,9 +651,9 @@ define('lightsaber', function (require, exports, module) {
       , options.strict);
   }
 
-  prop = Route.prototype;
+  proto = Route.prototype;
 
-  prop.match = function (path) {
+  proto.match = function (path) {
     this.regexp.lastIndex = 0;
 
     var keys = this.keys
@@ -687,16 +692,17 @@ define('lightsaber', function (require, exports, module) {
     this.path = this.lookup(name);
   }
 
-  prop = View.prototype;
+  proto = View.prototype;
 
-  prop.lookup  = function (path) {
+  proto.lookup  = function (path) {
     return this.root + '/' + path + '?t=' + this.timestamp;
   };
 
-  prop.render = function (options, fn) {
+  proto.render = function (options, fn) {
     //this.engine(this.path, options, fn);
     return read(this.engine, this.path, options, fn, this.ext);
   };
+
 
 
   // Middlewars
