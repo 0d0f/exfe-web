@@ -235,7 +235,7 @@ class ExfeeModels extends DataModel {
                 $msgArg['to_identities'][] = $identity;
                 // get mobile identities
                 if (!$chkMobUs[$identity->connected_user_id]) {
-                    $mobIdentities = $modUser->getMobileIdentitiesByUserId(
+                    $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
                         $identity->connected_user_id
                     );
                     foreach ($mobIdentities as $mI => $mItem) {

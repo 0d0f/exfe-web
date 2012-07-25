@@ -151,7 +151,7 @@ ExfeeCache = {
         for (var i = 0; i < this.identities.length; i++) {
             if (matchIdentity(key, this.identities[i])
              && !ExfeeWidget.isMyIdentity(this.identities[i])
-             && !ExfeeWidget.checkExistence(this.identities[i])) {
+             &&  ExfeeWidget.checkExistence(this.identities[i]) === false) {
                 arrCatched.push(ExfeUtilities.clone(this.identities[i]));
             }
         }
@@ -263,12 +263,14 @@ ExfeeWidget = {
         var intAccepted = 0, intTotal = 0;
         $('#' + this.dom_id + ' .thumbnails').html('');
         for (var i = 0; i < Exfee.invitations.length; i++) {
-            var intCell = Exfee.invitations[i].mates + 1;
-            this.showOne(Exfee.invitations[i]);
-            if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
-                intAccepted += intCell;
+            if (Exfee.invitations[i].rsvp_status !== 'REMOVED') {
+                var intCell = Exfee.invitations[i].mates + 1;
+                this.showOne(Exfee.invitations[i]);
+                if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
+                    intAccepted += intCell;
+                }
+                intTotal += intCell;
             }
-            intTotal += intCell;
         }
         $('#' + this.dom_id + ' .attended').html(intAccepted);
         $('#' + this.dom_id + ' .total').html('of ' + intTotal);
@@ -375,24 +377,25 @@ ExfeeWidget = {
 
 
     addExfee : function(identity, host, rsvp) {
-        if (identity && !this.checkExistence(identity)) {
-            Exfee.invitations.push({
-                identity    : ExfeUtilities.clone(identity),
-                rsvp_status : rsvp ? rsvp : 'NORESPONSE',
-                host        : !!host,
-                mates       : 0
-            });
+        if (identity) {
+            var idx = this.checkExistence(identity);
+            if (idx === false) {
+                Exfee.invitations.push({
+                    identity    : ExfeUtilities.clone(identity),
+                    rsvp_status : rsvp ? rsvp : 'NORESPONSE',
+                    host        : !!host,
+                    mates       : 0
+                });
+            } else {
+                Exfee.invitations[idx].rsvp_status = 'NORESPONSE';
+            }
             this.callback();
         }
     },
 
 
     delExfee : function(identity) {
-        var idx = this.checkExistence(identity);
-        if (idx !== false) {
-            Exfee.invitations.splice(idx, 1);
-            this.callback();
-        }
+        this.rsvpExfee(identity, 'REMOVED');
     },
 
 
@@ -632,7 +635,7 @@ ExfeeWidget = {
                 var caughtIdentities = [];
                 for (var i = 0; i < data.identities.length; i++) {
                     if (!ExfeeWidget.isMyIdentity(data.identities[i])
-                     && !ExfeeWidget.checkExistence(data.identities[i])) {
+                     &&  ExfeeWidget.checkExistence(data.identities[i]) === false) {
                         caughtIdentities.push(data.identities[i]);
                     }
                     ExfeeCache.cacheIdentities(caughtIdentities);
@@ -653,7 +656,21 @@ ExfeeWidget = {
                 {type      : 'POST',
                  data      : {identities : JSON.stringify(identities)}},
                 function(data) {
-                    console.log(data)
+                    var caughtIdentities = [];
+                    for (var i = 0; i < data.identities.length; i++) {
+                        if (data.identities[i].id) {
+                            var idx = ExfeeWidget.checkExistence(data.identities[i]);
+                            if (idx !== false) {
+                                Exfee.invitations[idx].identity = data.identities[i];
+                            }
+                            caughtIdentities.push(data.identities[i]);
+                        }
+                    }
+                    if (caughtIdentities.length) {
+                        ExfeeCache.cacheIdentities(caughtIdentities);
+                        window.GatherExfeeWidget.showAll();
+                        window.CrossExfeeWidget.showAll();
+                    }
                 }
             );
         }
@@ -996,7 +1013,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 if (this.pre_delete) {
                     $('.exfee_pop_up .identities-list .delete i').hide();
                     $('.exfee_pop_up .identities-list .delete button').show();
-                    if (my_identity && this.invitation.identity.id === my_identity.id) {
+                    if (curIdentity && this.invitation.identity.id === curIdentity.id) {
                         $('.exfee_pop_up .identity-actions').show();
                         $('.exfee_pop_up .identities-list .btn-leave').html('Leave');
                     } else {
