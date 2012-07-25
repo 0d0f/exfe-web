@@ -3,19 +3,15 @@
 <body>
   <?php include "share/nav.php" ?>
 
-  <!-- V1 home -->
-  <div id="home"></div>
-  <!-- /V1 home -->
-
   <!-- Container {{{-->
-  <div class="container">
+  <div class="container" id="js-main">
 
     <div role="main"></div>
 
   </div>
   <!--/Container }}}-->
 
-  <noscript>Exfe can't load if JavaScript is disabled</noscript>
+  <noscript>Exfe.com can't load if JavaScript is disabled</noscript>
 
   <?php include 'share/footer.php'; ?>
 </body>
