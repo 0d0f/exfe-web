@@ -1,42 +1,57 @@
-        <!-- v1 Home -->
-        <div class="home_banner" id="home_banner">
-          <div id="x_code_img">
-            <img style="display:none;" class="x-sign" src="/static/img/X-sign.jpg" alt=""/>
-            <div class="xci-l">
-              <div class="circle-o cx">
-                <div class="circle-i">
-                  <h3>X <span>(cross)</span></h3>
-                  <p class="explain">is a gathering<br />of people,<br />on purpose or not.</p>
-                  <p class="additional">All <span class="x-blue">X</span> are private by<br />default, accessible to<br />only attendees.</p>
-                </div>
-              </div>
-            </div>
-            <div class="xci-r">
-              <div class="circle-o cexfee">
-                <div class="circle-i">
-                  <h3>EXFE <span>[ˈ<em>ɛ</em>ksfi]</span></h3>
-                  <p class="explain">is an utility<br />for hanging out<br />with friends.</p>
-                  <p class="additional">Stop calling up every<br />one RSVP, losing in endless<br />emails and messages<br />off the point.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="home_bottom">
-          <div class="gather_btn">
-            <!--<a href="/x/gather"><img src="/static/images/home_gather_btn.png" alt="Gather" title="Gather" /></a>-->
-            <a href="/#gather">Gather a <span>X</span></a>
-          </div>
-          <div class="home_bottom_btn"></div>
-        </div>
-        <!--/ V1 Home -->
+      <section id="home" class="x-home">
 
-        <script id="homescript">
-          define(function (require) {
-            var timestamp = require('config').timestamp;
-            var script = document.createElement('script');
-            script.async = true;
-            script.src = '/static/js/xhome/0.0.1/xhome.js?t=' + timestamp;
-            document.getElementById('home_banner').appendChild(script);
-          });
-        </script>
+        <div class="page-header">
+
+          <div class="title tanimate" data-id="x">
+            <h1>EXFE <small>[’ɛksfi]</small></h1>
+            <p>A Utility for hanging out, with friends.</p>
+          </div>
+
+          <div class="title" data-id="rsvp">
+            <h1>X <small>[krɔs]</small></h1>
+            <p>A gathering of people, any intent.</p>
+          </div>
+
+          <div class="title" data-id="handy">
+            <p>Connected, <br />with tools & apps you preferred.</p>
+          </div>
+
+          <div class="title" data-id="save">
+            <p>Private, <br />attendee access only.</p>
+          </div>
+
+        </div>
+
+        <div class="page-main">
+          <!--<img class="exfe-toy" id="js-exfe-toy" src="/static/img/exfe-toy.png" alt="" />-->
+
+          <div class="circle c-x fadeIn" style="left: 245px; top: -57.5px;">X
+            <div class="c-inner"></div>
+          </div>
+          <div class="circle c-rsvp hide" style="right: 200px; top: -10px;">RSVP
+            <div class="c-inner"></div>
+          </div>
+          <div class="circle c-handy hide" style="right: 235px; bottom: -55px;">Handy
+            <div class="c-inner"></div>
+          </div>
+          <div class="circle c-safe hide" style="left: 200px; bottom: -15px;">Safe
+            <div class="c-inner"></div>
+          </div>
+
+        </div>
+
+        <div class="page-footer">
+          <a class="xbtn-gatherax" href="/#gather">Gather a X</a>
+        </div>
+
+      </section>
+
+      <script id="homescript">
+        define(function (require) {
+          var timestamp = require('config').timestamp;
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = '/static/js/xhome/0.0.1/xhome.js?t=' + timestamp;
+          document.getElementById('home').appendChild(script);
+        });
+      </script>
