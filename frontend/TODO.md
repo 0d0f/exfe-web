@@ -1,6 +1,12 @@
 TODO
 ----
 
+### 00:43:21 07/25/2012
+  * 实用 CSS3 media queries, 首页效果
+  * http://www.w3.org/TR/CSS2/media.html
+  * http://reference.sitepoint.com/html/link/media
+  * http://smashinghub.com/responsive-web-design-an-ultimate-guide.htm
+
 ### 22:06:31 07/23/2012
   * https://github.com/SlexAxton/messageformat.js 国际化 i18n
   * https://github.com/SlexAxton/Jed
