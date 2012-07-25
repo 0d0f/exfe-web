@@ -1082,17 +1082,19 @@ define(function (require, exports, module) {
 
 
     var SaveExfee = function() {
-        Api.request(
-            'editExfee',
-            {type      : 'POST',
-             resources : {exfee_id : Exfee.id},
-             data      : {by_identity_id : curIdentity.id,
-                          exfee          : JSON.stringify(Exfee)}},
-            function(data) {},
-            function(data) {
-                console.log('Field');
-            }
-        );
+        if (Cross.id) {
+            Api.request(
+                'editExfee',
+                {type      : 'POST',
+                 resources : {exfee_id : Exfee.id},
+                 data      : {by_identity_id : curIdentity.id,
+                              exfee          : JSON.stringify(Exfee)}},
+                function(data) {},
+                function(data) {
+                    console.log('Field');
+                }
+            );
+        }
     };
 
 
@@ -1118,10 +1120,10 @@ define(function (require, exports, module) {
             window.location = '/';
         });
         $('#cross-form-gather').bind('click', function() {
-            if (Cross.by_identity.id) {
+            if (curIdentity) {
                 Gather();
             } else {
-                // 需要登录
+                alert('Require Signin!');
             }
         });
         $('.cross-conversation .comment-form textarea').bind(
@@ -1648,11 +1650,7 @@ define(function (require, exports, module) {
     var Gather = function() {
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.exfee = ExfeUtilities.clone(Exfee);
-        if (curIdentity) {
-            objCross.by_identity = {id : curIdentity.id};
-        } else {
-            alert('Require Signin!');
-        }
+        objCross.by_identity = {id : curIdentity.id};
         Api.request(
             'gather',
             {type : 'POST', data : JSON.stringify(objCross)},
