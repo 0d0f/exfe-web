@@ -263,7 +263,7 @@ ExfeeWidget = {
         for (var i = 0; i < Exfee.invitations.length; i++) {
             var intCell = Exfee.invitations[i].mates + 1;
             this.showOne(Exfee.invitations[i]);
-            if (Exfee.invitations[i].rsvp === 'ACCEPTED') {
+            if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
                 intAccepted += intCell;
             }
             intTotal += intCell;
@@ -1081,13 +1081,34 @@ define(function (require, exports, module) {
         rawExfee = {id : 0, type : 'Exfee', invitations : []};
 
 
+    var SaveExfee = function() {
+        Api.request(
+            'editExfee',
+            {type      : 'POST',
+             resources : {exfee_id : Exfee.id},
+             data      : {by_identity_id : curIdentity.id,
+                          exfee          : JSON.stringify(Exfee)}},
+            function(data) {},
+            function(data) {
+                console.log('Field');
+            }
+        );
+    };
+
+
+    var ExfeeCallback = function() {
+        ShowExfee();
+        SaveExfee();
+    };
+
+
     var ExfeeWidgestInit = function() {
         ExfeeCache.init();
         window.GatherExfeeWidget = ExfeeWidget.make(
-            'gather-exfee', true, ShowExfee
+            'gather-exfee', true, ExfeeCallback
         );
         window.CrossExfeeWidget  = ExfeeWidget.make(
-            'cross-exfee',  true, ShowExfee
+            'cross-exfee',  true, ExfeeCallback
         );
     };
 
@@ -1287,7 +1308,7 @@ define(function (require, exports, module) {
 
     var fixTitle = function() {
         if (!Cross.title.length) {
-            Cross.title = User ? 'Meet ' + curIdentity.name : 'Gather a X';
+            Cross.title = curIdentity ? 'Meet ' + curIdentity.name : 'Gather a X';
         }
     };
 
