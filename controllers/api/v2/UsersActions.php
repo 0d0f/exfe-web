@@ -598,10 +598,10 @@ class UsersActions extends ActionController {
         // get crosses
         $rawCrosses = array();
         if ($fetchIncl['upcoming'] || $fetchIncl['sevendays'] || $fetchIncl['later']) {
-            $rawCrosses['future']   = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future',   $today);
+            $rawCrosses['future']   = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future', $today);
         }
         if ($fetchIncl['past']) {
-            $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',     $today);
+            $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',   $today);
         }
         if ($fetchIncl['sometime']) {
             $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime');

@@ -5,13 +5,13 @@ class CrossModels extends DataModel {
     public function getCrossesByExfeeids($exfee_id_list, $time_type = null, $time_split = null) {
         switch ($time_type) {
             case 'future':
-                $filter = "AND c.`date` >= FROM_UNIXTIME({$time_split}) AND c.`date` <> '' ORDER BY c.`date` DESC";
+                $filter = "AND c.`date` <> '' AND c.`begin_at` >= FROM_UNIXTIME({$time_split}) ORDER BY c.`begin_at` DESC";
                 break;
             case 'past':
-                $filter = "AND c.`date` <  FROM_UNIXTIME({$time_split}) AND c.`date` <> '' ORDER BY c.`date` DESC";
+                $filter = "AND c.`date` <> '' AND c.`begin_at` <  FROM_UNIXTIME({$time_split}) ORDER BY c.`begin_at` DESC";
                 break;
             case 'sometime':
-                $filter = "AND c.`date`  = '' ORDER BY c.`created_at` DESC";
+                $filter = "AND c.`date` =  '' ORDER BY c.`created_at` DESC";
                 break;
             default:
                 $filter = '';
@@ -44,7 +44,7 @@ class CrossModels extends DataModel {
                     $background=$widget->image;
             }
 
-        $begin_at_time_in_old_format=$cross_time->begin_at->date." ".$cross_time->begin_at->time;
+        $begin_at_time_in_old_format=$cross_time->begin_at->date . ($cross_time->begin_at->date ? (' ' . $cross_time->begin_at->time) : '');
 
         if(intval($cross->id)==0)
         {
