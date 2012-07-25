@@ -220,6 +220,8 @@ ExfeeWidget = {
 
     base_info_timer  : 0,
 
+    api_url          : '',
+
 
     make : function(dom_id, editable, callback) {
         this.dom_id   = dom_id;
@@ -469,12 +471,21 @@ ExfeeWidget = {
 
 
     parseAttendeeInfo : function(string) {
+        function getAvatarUrl(provider, external_id) {
+            var avatar = ExfeeWidget.api_url + '/avatar/get?provider=' + provider + '&external_id=' + external_id;
+            if (provider === 'email') {
+                avatar = 'http://www.gravatar.com/avatar/' + external_id + '?d=' + encodeURIComponent(avatar);
+            }
+            return avatar;
+        }
         string = ExfeUtilities.trim(string);
         var objIdentity = {
+            id                : 0,
             name              : '',
             external_id       : '',
             external_username : '',
-            provider          : ''
+            provider          : '',
+            type              : 'identity'
         }
         if (/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/.test(string)) {
             var iLt = string.indexOf('<'),
@@ -483,21 +494,25 @@ ExfeeWidget = {
             objIdentity.external_username = objIdentity.external_id;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(ExfeUtilities.trim(string.substring(0, iLt)).replace(/^"|^'|"$|'$/g, '')));
             objIdentity.provider          = 'email';
+            objIdentity.avatar_filename   = getAvatarUrl('email', objIdentity.external_id);
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(string)) {
             objIdentity.external_id       = string;
             objIdentity.external_username = string;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
             objIdentity.provider          = 'email';
+            objIdentity.avatar_filename   = getAvatarUrl('email', string);
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'twitter';
+            objIdentity.avatar_filename   = getAvatarUrl('twitter', objIdentity.external_username);
         } else if (/^[a-z0-9_]{1,15}@facebook$/i.test(string)) {
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/@facebook$/ig, '');
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'facebook';
+            objIdentity.avatar_filename   = getAvatarUrl('facebook', objIdentity.external_username);
         } else {
             objIdentity = null;
         }
@@ -1106,6 +1121,7 @@ define(function (require, exports, module) {
 
     var ExfeeWidgestInit = function() {
         ExfeeCache.init();
+        ExfeeWidget.api_url = require('config').api_url;
         window.GatherExfeeWidget = ExfeeWidget.make(
             'gather-exfee', true, ExfeeCallback
         );
