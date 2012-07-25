@@ -373,7 +373,7 @@ ExfeeWidget = {
 
 
     addExfee : function(identity, host, rsvp) {
-        if (!this.checkExistence(identity)) {
+        if (identity && !this.checkExistence(identity)) {
             Exfee.invitations.push({
                 identity    : ExfeUtilities.clone(identity),
                 rsvp_status : rsvp ? rsvp : 'NORESPONSE',
@@ -419,7 +419,7 @@ ExfeeWidget = {
 
 
     rsvpMe : function(rsvp) {
-        this.rsvpExfee(User.default_identity, rsvp);
+        this.rsvpExfee(curIdentity, rsvp);
     },
 
 
@@ -582,8 +582,9 @@ ExfeeWidget = {
 
 
     isMyIdentity : function(identity) {
-        return identity.connected_user_id && User && User.id
-            && identity.connected_user_id === User.id;
+        return curIdentity
+            && (this.compareIdentity(identity, curIdentity)
+             || identity.connected_user_id === curIdentity.connected_user_id);
     },
 
 
@@ -598,9 +599,7 @@ ExfeeWidget = {
 
 
     getMyInvitation : function() {
-        return User
-             ? this.getInvitationByIdentity(User.default_identity)
-             : null;
+        return curIdentity ? this.getInvitationByIdentity(curIdentity) : null;
     },
 
 
@@ -901,9 +900,8 @@ define('exfeepanel', [], function (require, exports, module) {
 
 
         showRsvp : function() {
-            var my_identity = User ? User.default_identity : null,
-                by_identity = this.invitation.by_identity
-                            ? this.invitation.by_identity  : my_identity,
+            var by_identity = this.invitation.by_identity
+                            ? this.invitation.by_identity : curIdentity,
                 next_rsvp   = '';
             switch (this.invitation.rsvp_status) {
                 case 'NORESPONSE':
@@ -1116,7 +1114,7 @@ define(function (require, exports, module) {
                             event.preventDefault();
                             objInput.val('');
                             var post = {
-                                by_identity_id : User.default_identity.id,
+                                by_identity_id : curIdentity,
                                 content        : message.substr(0, 233),
                                 id             : 0,
                                 relative       : [],
@@ -1289,7 +1287,7 @@ define(function (require, exports, module) {
 
     var fixTitle = function() {
         if (!Cross.title.length) {
-            Cross.title = User ? 'Meet ' + User.default_identity.name : 'Gather a X';
+            Cross.title = User ? 'Meet ' + curIdentity.name : 'Gather a X';
         }
     };
 
@@ -1327,8 +1325,7 @@ define(function (require, exports, module) {
 
 
     var fixExfee = function() {
-        // @todo
-        ExfeeWidget.addExfee(User.default_identity, true, 'ACCEPTED');
+        ExfeeWidget.addExfee(curIdentity, true, 'ACCEPTED');
     };
 
 
@@ -1452,7 +1449,7 @@ define(function (require, exports, module) {
 
     var ShowTimeline = function(timeline) {
         $('#conversation-form span.avatar img').attr(
-            'src', User.default_identity.avatar_filename
+            'src', curIdentity.avatar_filename
         );
         $('.cross-conversation').slideDown(233);
         Timeline = timeline;
@@ -1486,8 +1483,7 @@ define(function (require, exports, module) {
         var myInvitation = ExfeeWidget.getMyInvitation();
         if (myInvitation) {
             var by_identity = myInvitation.by_identity
-                            ? myInvitation.by_identity
-                            : User.default_identity,
+                            ? myInvitation.by_identity : curIdentity,
                 byMe        = myInvitation.identity.id === by_identity.id;
             if (myInvitation.rsvp_status === 'NORESPONSE' || buttons) {
                 $('.cross-rsvp .edit .by').html(
@@ -1572,7 +1568,7 @@ define(function (require, exports, module) {
     };
 
 
-    var UpdateCross = function(objCross) {
+    var UpdateCross = function(objCross, read_only) {
         Cross.id          = objCross.id;
         Cross.title       = objCross.title;
         Cross.description = objCross.description;
@@ -1581,6 +1577,7 @@ define(function (require, exports, module) {
         Cross.widget      = objCross.widget;
         Cross.exfee_id    = objCross.exfee.id;
         Exfee             = objCross.exfee;
+        readOnly          = read_only;
         savedCross        = summaryCross();
         $('.cross-date .edit').val(Cross.time.origin);
         ShowCross();
@@ -1593,7 +1590,13 @@ define(function (require, exports, module) {
             'getCross',
             {resources : {cross_id : cross_id}},
             function(data) {
-                UpdateCross(data.cross);
+                for (var i = 0; i < data.cross.exfee.invitations.length; i++) {
+                    if (ExfeeWidget.isMyIdentity(data.cross.exfee.invitations[i].identity)) {
+                        curIdentity = ExfeUtilities.clone(data.cross.exfee.invitations[i].identity);
+                        break;
+                    }
+                }
+                UpdateCross(data.cross, false);
             },
             function(data) {
                 console.log(data);
@@ -1612,6 +1615,7 @@ define(function (require, exports, module) {
 
 
     var NewCross = function(NoReset) {
+        readOnly = false;
         if (!NoReset) {
             ResetCross();
         }
@@ -1623,6 +1627,11 @@ define(function (require, exports, module) {
     var Gather = function() {
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.exfee = ExfeUtilities.clone(Exfee);
+        if (curIdentity) {
+            objCross.by_identity = {id : curIdentity.id};
+        } else {
+            alert('Require Signin!');
+        }
         Api.request(
             'gather',
             {type : 'POST', data : JSON.stringify(objCross)},
@@ -1638,10 +1647,7 @@ define(function (require, exports, module) {
 
     var SaveCross = function() {
         var objCross   = ExfeUtilities.clone(Cross);
-        /////////////////////////
-        objCross.by_identity = {};
-        objCross.by_identity.id = User.default_identity.id;
-        /////////////////////////
+        objCross.by_identity = {id : curIdentity.id};
         Api.request(
             'editCross',
             {type      : 'POST',
@@ -1673,10 +1679,6 @@ define(function (require, exports, module) {
     var AutoSaveCross = function() {
         if (Cross.id) {
             var curCross = summaryCross();
-            console.log('---------');
-            console.log(curCross);
-            console.log(savedCross);
-            console.log(savedCross !== curCross);
             if (savedCross !== curCross) {
                 SaveCross();
                 savedCross = curCross;
@@ -1703,6 +1705,10 @@ define(function (require, exports, module) {
     window.Api   = require('api');
 
 
+    // init participated identity
+    window.curIdentity = null;
+    // init read only flag
+    window.readOnly    = false;
     // init bus
     var bus = require('bus');
     // init auto cross saving
@@ -1714,6 +1720,7 @@ define(function (require, exports, module) {
         window.User = Signin ? Store.get('user') : null;
         if (User) {
             Api.setToken(Signin.token);
+            curIdentity = ExfeUtilities.clone(User.default_identity);
         }
 
         // init moment
@@ -1736,15 +1743,15 @@ define(function (require, exports, module) {
         window.showtimeTimer = setInterval(ShowTime, 50);
     });
     // init event
-    bus.on('xapp:cross', function(Cross_id) {
+    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only) {
         // get cross
-        if (Cross_id) {
+        if (Cross_id > 0) {
             GetCross(Cross_id);
+        } else if (Cross_id === null) {
+            curIdentity = browsingIdentity;
+            UpdateCross(cross, read_only);
         } else {
             NewCross(true);
-            if (User) {
-                Cross.by_identity.id = User.default_identity.id;
-            }
         }
     });
     // init event: end
