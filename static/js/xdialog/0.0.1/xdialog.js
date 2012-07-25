@@ -295,16 +295,9 @@ define(function (require, exports, module) {
                 // 最后登陆的 external_identity
                 Store.set('last_external_id', od.external_identity);
 
-                /*
-                if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
-                    window.location = window.location.pathname;
-                    return;
-                }
-                */
-
                 // goto profile
                 if (t === 'd01') {
-                  Bus.emit('xapp:usertoken', data.token, data.user_id, 3);
+                  Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
                   that.hide();
                 } else {
                   that.hide();
@@ -1323,6 +1316,7 @@ define(function (require, exports, module) {
       });
 
       Bus.on('widget-dialog-identification-nothing', function () {
+        if (!('$' in that)) return;
         that.$('.user-identity').addClass('hide');
         that.$('[for="identity"]').removeClass('label-error')
           .find('span').text('');
