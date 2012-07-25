@@ -36,10 +36,11 @@
 
   <script src="/static/js/global/0.0.1/global.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
+  <script src="/static/js/user/0.0.1/user.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
   <!-- lightsaber -->
   <script src="/static/js/lightsaber/0.0.1/lightsaber.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
-  <!-- 每个页面先单独引入 signin -->
-  <script src="/static/js/userlogin/0.0.1/userlogin.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-
-  <script src="/static/js/xapp/0.0.1/xapp.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/middleware/0.0.1/middleware.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/routes/0.0.1/routes.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/app/0.0.1/app.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
