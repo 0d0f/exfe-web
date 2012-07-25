@@ -60,6 +60,8 @@ define('api', [], function (require, exports, module) {
     // Exfee
     rsvp: '/exfee/:exfee_id/rsvp',
 
+    editExfee: '/exfee/:exfee_id/edit',
+
 
     // Conversation
     conversation: '/conversation/:exfee_id',
