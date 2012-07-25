@@ -104,10 +104,8 @@ class ExfeeModels extends DataModel {
             $invitation->identity->id = $hlpIdentity->addIdentity(
                 $invitation->identity->provider,
                 $invitation->identity->external_id,
-                $identityDetail = array(
-                    'name'              => $invitation->identity->name,
-                    'external_username' => $invitation->identity->external_username,
-                )
+                ['name'              => $invitation->identity->name,
+                 'external_username' => $invitation->identity->external_username]
             );
         }
         if (!$invitation->identity->id) {

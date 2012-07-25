@@ -646,6 +646,20 @@ ExfeeWidget = {
     },
 
 
+    ajaxIdentity : function(identities) {
+        if (identities && identities.length) {
+            Api.request(
+                'getIdentity',
+                {type      : 'POST',
+                 data      : {identities : JSON.stringify(identities)}},
+                function(data) {
+                    console.log(data)
+                }
+            );
+        }
+    },
+
+
     checkInput : function(objInput, force) {
         if (!objInput || !objInput.length) {
             return;
@@ -679,6 +693,7 @@ ExfeeWidget = {
         for (i = 0; i < arrValid.length; i++) {
             this.addExfee(arrValid[i]);
         }
+        this.ajaxIdentity(arrValid);
         this.checkComplete(objInput, arrInvalid.pop());
     },
 
