@@ -295,10 +295,8 @@ class ExfeeModels extends DataModel {
                 $toItem->identity->id = $hlpIdentity->addIdentity(
                     $toItem->identity->provider,
                     $toItem->identity->external_id,
-                    $toItem = array(
-                        'name'              => $toItem->identity->name,
-                        'external_username' => $toItem->identity->external_username,
-                    )
+                    ['name'              => $toItem->identity->name,
+                     'external_username' => $toItem->identity->external_username]
                 );
             }
             // if no identity id, skip it
