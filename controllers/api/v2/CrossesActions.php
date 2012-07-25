@@ -69,6 +69,7 @@ class CrossesActions extends ActionController {
                             $result['browsing_identity'] = $modIdentity->getIdentityById(
                                 $invitation['identity_id']
                             );
+                            $result['action'] = 'singin';
                         }
                     // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
                     } elseif (isset($user_infos['VERIFYING'])
@@ -76,6 +77,7 @@ class CrossesActions extends ActionController {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
+                        $result['action'] = 'setup';
                     }
                 // 未登录
                 } else {
@@ -89,12 +91,14 @@ class CrossesActions extends ActionController {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
+                        $result['action'] = 'singin';
                     // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
                     } elseif (isset($user_infos['VERIFYING'])
                            || isset($user_infos['RELATED']) || !$user_infos) {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
+                        $result['action'] = 'setup';
                     }
                 }
             // 受邀 token 无效
@@ -110,6 +114,7 @@ class CrossesActions extends ActionController {
                     $result['browsing_identity'] = $modIdentity->getIdentityById(
                         $invitation['identity_id']
                     );
+                    $result['action'] = 'singin';
                 }
             }
             apiResponse($result);
