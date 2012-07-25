@@ -297,7 +297,7 @@ define(function (require, exports, module) {
 
                 // goto profile
                 if (t === 'd01') {
-                  Bus.emit('xapp:usertoken', data.token, data.user_id, 3);
+                  Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
                   that.hide();
                 } else {
                   that.hide();
@@ -1316,6 +1316,7 @@ define(function (require, exports, module) {
       });
 
       Bus.on('widget-dialog-identification-nothing', function () {
+        if (!('$' in that)) return;
         that.$('.user-identity').addClass('hide');
         that.$('[for="identity"]').removeClass('label-error')
           .find('span').text('');
