@@ -137,48 +137,55 @@
 
   <!-- container -->
   <div class="container">
-    <header></header>
 
     <div role="main">
       <section id="home" class="x-home">
 
-        <img alt="X Sign" src="/img/X-sign.jpg" />
+        <div class="page-header">
+
+          <div class="title" id="js-exfe">
+            <h1>EXFE <small>[’ɛksfi]</small></h1>
+            <p>A Utility for hanging out, with friends.</p>
+          </div>
+
+          <div class="title hide" id="js-x">
+            <h1>X <small>[krɔs]</small></h1>
+            <p>A gathering of people, any intent.</p>
+          </div>
+
+          <div class="title hide" id="js-private">
+            <p>Private, <br />attendee access only.</p>
+          </div>
+
+          <div class="title hide" id="js-connected">
+            <p>Connected, <br />with tools & apps you preferred.</p>
+          </div>
+
+        </div>
+
+        <div class="page-main">
+          <img class="exfe-toy" id="js-exfe-toy" src="../img/exfe-toy.png" alt="" />
+
+          <div class="circle" style="left: 200px; top: 25px;">X</div>
+          <div class="circle" style="right: 200px; top: 10px;">RSVP</div>
+          <div class="circle" style="left: 160px; bottom: 25px;">Safe</div>
+          <div class="circle" style="right: 160px; bottom: 10px;">Handy</div>
+
+        </div>
+
+        <div class="page-footer">
+          <a class="xbtn-gatherax" href="/#gather">Gather a X</a>
+        </div>
 
       </section>
     </div>
 
-    <footer></footer>
-  </div>
-
-  <div class="row x-home-gather">
-    <div class="x-gather">
-      <a href="#" class="xbtn xbtn-gather">Gather a <span class="x-sign">X</span></a>
-    </div>
-
-    <div class="container x-explain">
-      <div class="x-features"></div>
-      <!--
-      <ul class="nav nav-pills">
-        <li>1</li>
-        <li>2</li>
-        <li>Gather</li>
-        <li>3</li>
-        <li>4</li>
-        <li>Cross</li>
-        <li>5</li>
-        <li>6</li>
-        <li>Engage</li>
-        <li>7</li>
-        <li>8</li>
-      </ul>
-      -->
-    </div>
   </div>
 
   <!-- JavaScript at the bottom for fast page loading -->
   <script src="../jslib/common/lib/common.js"></script>
   <script src="../jslib/modernizr/lib/modernizr.js"></script>
-  <script src="../jslib/jquery/lib/jquery.js"></script>'
+  <script src="../jslib/jquery/lib/jquery.js"></script>
 
 </body>
 </html>

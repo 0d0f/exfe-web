@@ -1,49 +1,113 @@
 define(function (require) {
   var $ = require('jquery');
-  $(function() {
-    var winHeight = $(document).outerHeight();
-    var minH = 528, maxH = 704,
-        imgminH = 450, imgmaxH = 600,
-        minWh = 680, maxWh = 980,
-        wi, h, hi,
-        minL = 177.82, minT = 11.84,
-        maxL = 175, maxT = 25, l, t;
-    if (winHeight < minWh) {
-      hi = 450;
-      h = minH;
-      l = minL;
-      t = minT;
-    } else if (winHeight > maxWh) {
-      h = maxH;
-      hi = imgmaxH;
-      l = maxL;
-      t = maxT;
-    } else {
-      var p = (winHeight - minWh) / (maxWh - minWh);
-      h = minH + (maxH - minH) * p;
-      hi = imgminH + (imgmaxH - imgminH) * p;
-      l = minL + (maxL - minL) * p;
-      t = minT + (maxT - minT) * p;
-    }
-    wi = hi;
-    $(".x-sign").width(wi).height(hi).show().parent().css({
-        'margin-left': -wi / 2,
-        'margin-top': (h - hi) / 2 - 10
-    });
-    $('.cexfee').css({
-      'right': -l, 'bottom': t
-    });
-    $('.cx').css({
-      'left': -l, 'top': t
-    });
-    $('#home_banner').css('height', h);
 
-    $('.xci-l, .xci-r').hover(function (e) {
-      $(this).find('.circle-o').stop(true, true).addClass('bounceIn').show();
-    }, function (e) {
-      $(this).find('.circle-o').delay(233).fadeOut(function () {
-        $(this).removeClass('bounceIn');
-      });
+  $(function () {
+
+    var $DOC = $(document)
+      // titles
+      , $titles = $('.page-header  div.title')
+      // cirles
+      , $circles = $('div.circle')
+      , i = 0
+      , j = 0
+      , l = $circles.length
+      , isNotFirst = false
+      , timer;
+
+    $DOC.on('hover', 'div.circle', function (e) {
+      var $that = $(this)
+        , isEnter = e.type === 'mouseenter'
+        , n = $that.index();
+
+      clearInterval(timer);
+      timer = null;
+
+      if (isEnter) {
+
+        i--;
+        if (i < 0) i = l - 1;
+        if ((j = i - 1) < 0) j = l - 1;
+
+        if (isNotFirst) {
+          $titles
+            .eq(i)
+            .removeClass('tanimate');
+            //.stop(true, true)
+            //.fadeOut();
+
+          $circles
+            .eq(i)
+            .removeClass('fadeIn')
+            .addClass('fadeOut');
+        }
+
+        i = n;
+
+        $titles
+          .eq(i)
+          .addClass('tanimate');
+          //.stop(true, true)
+          //.fadeIn();
+
+        $that
+          .removeClass('fadeOut')
+          .addClass('fadeIn');
+
+        i++;
+      }
+      else {
+        if (!$that.hasClass('fadeIn')) return;
+        $titles
+          .eq(n)
+          .removeClass('tanimate');
+          //.stop(true, true)
+          //.fadeOut();
+
+        $that
+          .removeClass('fadeIn')
+          .addClass('fadeOut');
+        if (!timer) createTimer();
+      }
     });
+
+    createTimer();
+
+    function createTimer() {
+      timer = setInterval(function () {
+        if (i === l) i = 0;
+        if ((j = i - 1) < 0) j = l - 1;
+
+        if (isNotFirst) {
+          $titles
+            .eq(j)
+            .removeClass('tanimate');
+            //.stop(true, true)
+            //.fadeOut();
+
+          $circles
+            .eq(j)
+            .removeClass('fadeIn')
+            .addClass('fadeOut');
+        }
+
+        $titles
+          .eq(i)
+          .addClass('tanimate');
+          //.stop(true, true)
+          //.fadeIn();
+
+        $circles
+          .eq(i)
+          .removeClass('fadeOut')
+          .addClass('fadeIn');
+
+        !isNotFirst && (isNotFirst = true);
+
+        i++;
+      }, 2584/*1597*/);
+    }
+
+
   });
+
 });

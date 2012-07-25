@@ -1,6 +1,6 @@
 
   <!-- NavBar {{{-->
-  <div class="navbar">
+  <div class="navbar hide" id="js-navbar">
 
     <!-- navbar-bg -->
     <div class="navbar-bg"></div>
