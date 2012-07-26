@@ -39,13 +39,13 @@ class GobusActions extends ActionController {
         $modCnvrstn      = $this->getModelByName('Conversation', 'v2');
         $hlpCross        = $this->getHelperByName('Cross', 'v2');
         // get raw data
-        $per_user_hash   = trim($_POST['per_user_hash']);
+        $iom             = trim($_POST['iom']);
         $provider        = trim($_POST['provider']);
         $external_id     = trim($_POST['external_id']);
         $content         = trim($_POST['content']);
         $time            = strtotime($_POST['time']);
         // check data
-        if (!$per_user_hash || !$provider || !$external_id || !$content || !$time) {
+        if (!$iom || !$provider || !$external_id || !$content || !$time) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
@@ -63,9 +63,9 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
-        // get cross id by per_user_hash
+        // get cross id by iom
         $objCurl = curl_init();
-        curl_setopt($objCurl, CURLOPT_URL, PUH_URL . "/puh/{$raw_by_identity->connected_user_id}/{$per_user_hash}");
+        curl_setopt($objCurl, CURLOPT_URL, IOM_URL . "/iom/{$raw_by_identity->connected_user_id}/{$iom}");
         curl_setopt($objCurl, CURLOPT_HEADER, 0);
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         $curlResult = curl_exec($objCurl);
