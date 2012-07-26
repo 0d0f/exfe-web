@@ -14,7 +14,7 @@ define("IMG_URL", "http://images.exfe.com");
 
 define("API_URL", "http://api.local.exfe.com");
 
-define("PUH_URL", "http://192.168.1.113:8080");
+define("IOM_URL", "http://192.168.1.113:8080");
 
 define("DEFAULT_AVATAR_URL", "http://images.exfe.com/web/80_80_default.png");
 
