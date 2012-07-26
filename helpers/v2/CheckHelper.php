@@ -47,10 +47,17 @@ class CheckHelper extends ActionController {
                 }
                 break;
             case 'conversation':
-            case 'conversation_add':
-                $userids=$exfeeData->getUserIdsByExfeeId($args["exfee_id"]);
+                $userids = $exfeeData->getUserIdsByExfeeId($args['exfee_id']);
                 if (in_array($uid, $userids)) {
-                    return array("check"=>true,"uid"=>$uid);
+                    return array('check' => true, 'uid' => $uid);
+                }
+                break;
+            case 'conversation_add':
+                $userids = $exfeeData->getUserIdsByExfeeId($args['exfee_id']);
+                $idntIds = $exfeeData->getIdentityIdsByExfeeId($args['exfee_id']);
+                if (in_array($uid, $userids)
+                 && in_array($args['identity_id'], $idntIds)) {
+                    return array('check' => true, 'uid'=>$uid);
                 }
                 break;
             case 'conversation_del':

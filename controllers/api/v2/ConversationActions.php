@@ -33,51 +33,53 @@ class ConversationActions extends ActionController {
 
 
     public function doAdd() {
-        $params=$this->params;
-        $exfee_id=$params["id"];
-
-        $checkHelper=$this->getHelperByName("check","v2");
-        $result=$checkHelper->isAPIAllow("conversation_add",$params["token"],array("user_id"=>$uid,"exfee_id"=>$exfee_id));
-        if($result["check"]!==true)
-        {
-            if($result["uid"]===0)
-                apiError(401,"invalid_auth","");
-            else
+        // get models
+        $modConv  = $this->getModelByName('conversation', 'v2');
+        $hlpCheck = $this->getHelperByName('check',       'v2');
+        // get exfee_id
+        $params   = $this->params;
+        $exfee_id = $params['id'];
+        // get raw post
+        $post_str = @file_get_contents('php://input');
+        $post     = json_decode($post_str);
+        $post->postable_type = 'exfee';
+        $post->postable_id   = $exfee_id;
+        // check auth
+        $result   = $hlpCheck->isAPIAllow(
+            'conversation_add', $params['token'], ['user_id' => $uid,
+            'exfee_id' => $exfee_id, 'identity_id' => $post->by_identity_id]
+        );
+        if (!$result['check']) {
+            if ($result['uid']) {
                 apiError(403,"not_authorized","The X you're requesting is private.");
+            } else {
+                apiError(401,"invalid_auth","");
+            }
         }
-
-        $post_str=@file_get_contents('php://input');
-        $post=json_decode($post_str);
-        $post->postable_type='exfee';
-        $post->postable_id=$exfee_id;
-
-
-        $modelData=$this->getModelByName("conversation","v2");
-        $post_id=$modelData->addPost($post);
-        $new_post=$modelData->getPostById($post_id);
-
-        $identityHelper=$this->getHelperByName("identity","v2");
-        $identity=$identityHelper->getIdentityById($new_post["identity_id"]);
-        $new_post_obj=new Post($new_post["id"],$identity,$new_post["content"], $new_post["postable_id"],$new_post["postable_type"],"");
-        $new_post_obj->created_at=$new_post["created_at"];
-
+        // do post
+        $post_id = $modConv->addPost($post);
+        if (!$post_id) {
+            apiError(400, 'failed', '');
+        }
+        // get post
+        $post = $modConv->getPostById($post_id);
         // call Gobus {
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         $hlpCross = $this->getHelperByName('cross', 'v2');
         $modUser  = $this->getModelByName('user',   'v2');
         $modExfee = $this->getModelByName('exfee',  'v2');
-        $modConversation= $this->getModelByName('conversation',  'v2');
-        $cross_id = $modExfee->getCrossIdByExfeeId($new_post_obj->postable_id);
+        $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
         $msgArg   = array(
             'cross'         => $cross,
-            'post'          => $new_post_obj,
+            'post'          => $post,
             'to_identities' => array(),
-            'by_identity'   => $identity,
+            'by_identity'   => $post->by_identity,
         );
-        $chkUser = array();
+        $chkUser  = array();
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
+            // @todo: $msgArg['depended'] = false;
             if ($invitation->identity->connected_user_id
              && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -88,19 +90,24 @@ class ConversationActions extends ActionController {
                     $msgArg['to_identities'][] = $mItem;
                 }
                 // set conversation counter
-                $modConversation->addConversationCounter(
+                $modConv->addConversationCounter(
                     $cross->exfee->id,
                     $invitation->identity->connected_user_id
                 );
-                $modExfee->updateExfeeTime($cross->exfee->id);
+                // depended
+                if ($invitation->identity->connected_user_id
+                === $identity->connected_user_id) {
+                    // @todo: $msgArg['depended'] = true;
+                }
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
         }
         $hlpGobus->send('cross', 'Update', $msgArg);
+        $modExfee->updateExfeeTime($cross->exfee->id);
         // }
-
-        apiResponse(array("post" => $new_post_obj));
+        // return
+        apiResponse(['post' => $post]);
     }
 
 
