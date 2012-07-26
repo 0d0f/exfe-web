@@ -80,10 +80,25 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function getIdentityIdsByExfeeId($exfee_id) {
+        $identity_ids = array();
+        $sql = "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
+        $rawExfee     = $this->getAll($sql);
+        if ($rawExfee) {
+            foreach ($rawExfee as $ei => $eItem) {
+                if ($eItem['identity_id'] && $eItem['state'] !== 4) {
+                    $identity_ids[] = $eItem['identity_id'];
+                }
+            }
+        }
+        return $identity_ids;
+    }
+
+
     public function getUserIdsByExfeeId($exfee_id) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
-        $sql="SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
+        $sql = "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
         $rawExfee     = $this->getAll($sql);
         if ($rawExfee) {
             foreach ($rawExfee as $ei => $eItem) {
@@ -391,7 +406,7 @@ class ExfeeModels extends DataModel {
 
 
     public function getCrossIdByExfeeId($exfee_id) {
-        $result=$this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
+        $result = $this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
         return intval($result['id']);
     }
 

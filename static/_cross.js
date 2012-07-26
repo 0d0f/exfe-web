@@ -1185,7 +1185,7 @@ define(function (require, exports, module) {
                             event.preventDefault();
                             objInput.val('');
                             var post = {
-                                by_identity_id : curIdentity,
+                                by_identity_id : curIdentity.id,
                                 content        : message.substr(0, 233),
                                 id             : 0,
                                 relative       : [],
