@@ -37,12 +37,6 @@ html, body {
       position: absolute;
       width: 100%;
       text-align: center;
-      /*margin-left: -89px;*/
-      /*.opacity(0);*/
-      /*-webkit-transition: margin-left 610ms ease-in-out, opacity 610ms ease-in-out;*/
-      /*-moz-transition: margin-left 610ms ease-in-out, opacity 610ms ease-in-out;*/
-      /*-o-transition: margin-left 610ms ease-in-out, opacity 610ms ease-in-out;*/
-      /*-ms-transition: margin-left 610ms ease-in-out, opacity 610ms ease-in-out;*/
       transition: opacity 610ms ease-in-out;
       -webkit-transition: opacity 610ms ease-in-out;
       -moz-transition: opacity 610ms ease-in-out;
@@ -51,18 +45,17 @@ html, body {
       transition: opacity 610ms ease-in-out;
     }
 
-    .tanimate {
-      /*margin-left: 0px;*/
-      opacity: 1;
+    .t-fadeOut {
+      .opacity(0);
     }
 
-    .tanimate1 {
-      /*margin-left: 89px;*/
-      opacity: 0;
+    .t-fadeIn {
+      .opacity(100);
     }
 
-    .title[data-id="x"] {
-     padding-left: 24px;
+    .title[data-id="exfe"] h1,
+    .title[data-id="x"] h1 {
+     padding-left: 25px;
     }
 
     h1 {
@@ -112,8 +105,21 @@ html, body {
         .opacity(100);
       }
 
-      .exfe-scaleOn2 {
-        -webkit-transition: -webkit-transform 0.5s cubic-bezier(1,0,.5,1);
+      .exfe-toy-shadow {
+        position: absolute;
+        .opacity(66);
+        /*.opacity(66);*/
+      }
+
+      .exfe-scaleOut {
+        -webkit-animation-fill-mode: forwards;
+        -webkit-transition: -webkit-transform 377ms ease-in, opacity 377ms ease-in;
+        -moz-transition: -moz-transform 377ms ease-in, opacity 377ms ease-in;
+        -o-transition: -o-transform 377ms ease-in, opacity 377ms ease-in;
+        -ms-transition: -ms-transform 377ms ease-in, opacity 377ms ease-in;
+        transition: transform 377ms ease-in, opacity 377ms ease-in;
+        .scale(1.15);
+        .opacity(0);
       }
 
     .circle {
