@@ -415,9 +415,7 @@ class UsersActions extends ActionController {
         $invToken   = trim($_POST['invitation_token']);
         $invitation = $modExfee->getRawInvitationByToken($invToken);
         // 如果 token 有效
-        if ($invitation
-         && ($invitation['token_used_at'] === '0000-00-00 00:00:00'
-          || time() - strtotime($invitation['token_used_at']) < 1410)) { // 23 * 60 + 30
+        if ($invitation && $invitation['valid']) {
             // get user info by invitation token
             $user_infos = $modUser->getUserIdentityInfoByIdentityId(
                 $invitation['identity_id']

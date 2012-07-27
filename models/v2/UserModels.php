@@ -183,7 +183,7 @@ class UserModels extends DataModel {
 
     public function getUserIdByIdentityId($identity_id) {
         $dbResult = $this->getRow(
-            "SELECT `userid` FROM `user_identity` WHERE `identityid`= {$identity_id}"
+            "SELECT `userid` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `status` = 3"
         );
         $user_id = intval($dbResult["userid"]);
         return $user_id ?: null;
