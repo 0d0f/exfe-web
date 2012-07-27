@@ -54,6 +54,11 @@ define('middleware', [], function (require, exports, module) {
     );
   }
 
+  var XAPP_CROSS_TOKEN = 'xapp:crosstoken';
+  Bus.on(XAPP_CROSS_TOKEN, function (browsingIdentity) {
+    createUserPanel(browsingIdentity, 1);
+  });
+
   // XAPP_USER_TOKEN
   var XAPP_USER_TOKEN = 'xapp:usertoken';
 
@@ -211,10 +216,17 @@ define('middleware', [], function (require, exports, module) {
 
   function createUserPanel(user, type) {
     if (type) {
+      if (type === 1) {
+        $('.user-name > span').addClass('browsing-identity').text(user.name || user.nickname);
+      } else if (type === 2) {
+        $('.user-name > span').removeClass('browsing-identity').text(user.name || user.nickname);
+      }
       $('#js-signin').hide();
       var $up = $('.nav li.dropdown').remove('user').show();
 
       var s = Handlebars.compile(userpanelTmps[type]);
+
+      $up.find('.dropdown-wrapper').find('.user-panel').remove();
 
       $(s(user)).appendTo($up.find('.dropdown-wrapper'));
       //$('.dropdown-wrapper').find('.user-panel').addClass('show');
@@ -234,7 +246,7 @@ define('middleware', [], function (require, exports, module) {
             + '<span class="pull-right avatar">'
               + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
             + '</span>'
-            + '<i class="icon-envelope"></i>'
+            + '<i class="icon16-identity-{{provider}}"></i>'
             + '<span>{{external_id}}</span>'
           + '</div>'
           + '{{#unless connected_user_id}}'
@@ -242,7 +254,7 @@ define('middleware', [], function (require, exports, module) {
             + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{external_id}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
           + '</div>'
           + '{{/unless}}'
-          + '<div class="spliterline"></div>'
+          //+ '<div class="spliterline"></div>'
           + '<div class="merge hide">'
             + '<a href="#">Merge</a> with your currently signed in identities:'
           + '</div>'
@@ -253,9 +265,14 @@ define('middleware', [], function (require, exports, module) {
             + '<i class="icon16-identity-{{provider}}"></i>'
             + '<span>{{external_id}}</span>'
           + '</div>'
+          + '{{#if isNotLogin}}'
+          + '<div class="spliterline"></div>'
+          + '<div class="merge">'
+            + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in</a> with browsing identity<br />(sign out from current account).'
           + '</div>'
+          + '{{/if}}'
+        + '</div>'
         + '<div class="footer">'
-          + '<button class="xbtn xbtn-gather" id="js-xgather">Gather</button>'
         + '</div>'
       + '</div>',
 
@@ -276,7 +293,6 @@ define('middleware', [], function (require, exports, module) {
         + '<div class="body">'
         + '</div>'
         + '<div class="footer">'
-          //+ '<button class="xbtn xbtn-gather">Gather</button>'
           + '<a href="/#gather" class="xbtn xbtn-gather" id="js-xgather">Gather</a>'
           + '<div class="spliterline"></div>'
           + '<div class="actions">'
