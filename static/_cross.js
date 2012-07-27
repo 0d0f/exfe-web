@@ -1185,7 +1185,7 @@ define(function (require, exports, module) {
                             event.preventDefault();
                             objInput.val('');
                             var post = {
-                                by_identity_id : curIdentity,
+                                by_identity_id : curIdentity.id,
                                 content        : message.substr(0, 233),
                                 id             : 0,
                                 relative       : [],
@@ -1224,7 +1224,7 @@ define(function (require, exports, module) {
 
     var EditCross = function(event) {
         // @todo by @Leask: 暂时确保在 Cross 页
-        if (!$('.cross-container').length) {
+        if (!$('.cross-container').length || readOnly) {
             return;
         }
         var domWidget  = event ? event.target : null,

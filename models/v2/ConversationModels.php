@@ -32,11 +32,26 @@ class ConversationModels extends DataModel {
     }
 
 
-    public function getPostById($post_id)
-    {
-        $sql="select * from posts where del=0 and id=$post_id;";
-        $post=$this->getRow($sql);
-        return $post;
+    public function getPostById($post_id) {
+        $rawPost = $this->getRawPostById($post_id);
+        if ($rawPost) {
+            $hlpIdentity = $this->getHelperByName('identity', 'v2');
+            $identity    = $hlpIdentity->getIdentityById($rawPost['identity_id']);
+            return new Post(
+                $rawPost['id'], $identity, $rawPost['content'],
+                $rawPost['postable_id'], $rawPost['postable_type'],
+                '', $rawPost['created_at']
+            );
+        } else {
+            return null;
+        }
+    }
+
+
+    public function getRawPostById($post_id) {
+        return $this->getRow(
+            "SELECT * FROM `posts` WHERE `del` = 0 and `id` = {$post_id}"
+        );
     }
 
 
