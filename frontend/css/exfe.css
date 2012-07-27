@@ -5172,6 +5172,11 @@ input[type="submit"].btn.btn-mini {
   color: #191919;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 .navbar {
   margin-bottom: 24px;
 }
@@ -6001,12 +6006,6 @@ body {
 }
 
 .hbg {
-  /*position: relative;*/
-
-  /*top: -74px;*/
-
-  /*z-index: @zindexDropdown + 3;*/
-
   background-color: #84a4bf;
   background-image: -moz-linear-gradient(top, #5a7a95, #c3e3fd);
   background-image: -ms-linear-gradient(top, #5a7a95, #c3e3fd);
@@ -6016,8 +6015,6 @@ body {
   background-image: linear-gradient(top, #5a7a95, #c3e3fd);
   background-repeat: repeat-x;
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#5a7a95', endColorstr='#c3e3fd', GradientType=0);
-  /*overflow: hidden;*/
-
 }
 
 .x-home {
@@ -6311,7 +6308,7 @@ body {
 @-o-keyframes bounceIn {
   0% {
     opacity: 0;
-    -o-transform: sggcale(0.01);
+    -o-transform: scale(0.01);
   }
   50% {
     opacity: 1;
