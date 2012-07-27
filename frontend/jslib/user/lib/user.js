@@ -52,6 +52,10 @@ define('user', function (require, exports, module) {
         Store.set('user', data.user);
         Store.set('lastIdentity', identity);
         Store.set('last_external_id', identity.external_id);
+
+        if (window.location.hash.match(/^\/?#?$/)) {
+          window.location.href = '/#' + identity.external_id;
+        }
       }
     );
 
