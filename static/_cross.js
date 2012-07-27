@@ -403,7 +403,12 @@ ExfeeWidget = {
         var idx = this.checkExistence(identity);
         if (idx !== false) {
             Exfee.invitations[idx].rsvp_status = rsvp;
-            this.callback();
+            var refresh = false;
+            if (rsvp === 'REMOVED' && curIdentity
+             && ExfeeWidget.compareIdentity(Exfee.invitations[idx].identity, curIdentity)) {
+                refresh = true;
+            }
+            this.callback(refresh);
         }
     },
 
@@ -1050,7 +1055,6 @@ define('exfeepanel', [], function (require, exports, module) {
             });
             $('.exfee_pop_up .identities-list .delete button').bind('click', function(event) {
                 ExfeeWidget.delExfee(ExfeePanel.invitation.identity);
-                // @todo by Leask if the delete on is me, reflash this page!!!!!
                 ExfeePanel.hidePanel();
             });
             $('.exfee_pop_up .identity-actions .btn-cancel').bind('click',   function(event) {
@@ -1128,7 +1132,7 @@ define(function (require, exports, module) {
         rawExfee = {id : 0, type : 'Exfee', invitations : []};
 
 
-    var SaveExfee = function() {
+    var SaveExfee = function(refresh) {
         if (Cross.id) {
             Api.request(
                 'editExfee',
@@ -1136,7 +1140,11 @@ define(function (require, exports, module) {
                  resources : {exfee_id : Exfee.id},
                  data      : {by_identity_id : curIdentity.id,
                               exfee          : JSON.stringify(Exfee)}},
-                function(data) {},
+                function(data) {
+                    if (refresh) {
+                        window.location.reload();
+                    }
+                },
                 function(data) {
                     console.log('Field');
                 }
@@ -1145,9 +1153,9 @@ define(function (require, exports, module) {
     };
 
 
-    var ExfeeCallback = function() {
+    var ExfeeCallback = function(refresh) {
         ShowExfee();
-        SaveExfee();
+        SaveExfee(refresh);
     };
 
 
