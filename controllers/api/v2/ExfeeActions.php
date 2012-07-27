@@ -50,6 +50,7 @@ class ExfeeActions extends ActionController {
             }
             apiError(401, 'invalid_auth', '');
         }
+        $by_identity_id = (int) $result['by_identity_id'];
         // do it
         $exfee = json_decode($_POST['exfee']);
         if ($exfee && isset($exfee->invitations) && is_array($exfee->invitations)

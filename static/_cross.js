@@ -1562,8 +1562,8 @@ define(function (require, exports, module) {
                   ? '&nbsp;'
                   : ('Invitation from ' + myInvitation.by_identity.name)
                 );
-                $('.cross-rsvp .show').slideUp(233);
-                $('.cross-rsvp .edit').slideDown(233);
+                $('.cross-rsvp .show').hide();
+                $('.cross-rsvp .edit').fadeIn(233);
                 return;
             } else if (myInvitation.rsvp_status === 'ACCEPTED'
                     || myInvitation.rsvp_status === 'INTERESTED'
@@ -1605,13 +1605,13 @@ define(function (require, exports, module) {
                 }
                 $('.cross-rsvp .show .attendance').html(attendance);
                 $('.cross-rsvp .show .by').html(by);
-                $('.cross-rsvp .show').slideDown(233);
-                $('.cross-rsvp .edit').slideUp(233);
+                $('.cross-rsvp .show').fadeIn(233);
+                $('.cross-rsvp .edit').hide();
                 return;
             }
         }
-        $('.cross-rsvp .show').slideUp(233);
-        $('.cross-rsvp .edit').slideUp(233);
+        $('.cross-rsvp .show').hide();
+        $('.cross-rsvp .edit').hide();
     };
 
 
@@ -1810,13 +1810,14 @@ define(function (require, exports, module) {
         window.showtimeTimer = setInterval(ShowTime, 50);
     });
     // init event
-    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only) {
+    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only, invitation_token) {
         // get cross
         if (Cross_id > 0) {
             GetCross(Cross_id);
         } else if (Cross_id === null) {
             curIdentity = browsingIdentity;
             UpdateCross(cross, read_only);
+            Api.setToken(invitation_token);
         } else {
             NewCross(true);
         }
