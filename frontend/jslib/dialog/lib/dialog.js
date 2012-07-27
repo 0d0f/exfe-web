@@ -113,9 +113,9 @@ define('dialog', [], function (require, exports, module) {
       return this;
     },
 
-    hide: function (data) {
+    hide: function (e) {
       // before
-      this.emit('hideBefore', data);
+      this.emit('hideBefore', e);
 
       this.element.addClass('hide');
 
@@ -127,8 +127,12 @@ define('dialog', [], function (require, exports, module) {
 
       // if (this.options.lifecycle) {}
       // after
-      this.emit('hideAfter', data);
+      this.emit('hideAfter', e);
 
+      if (e && 'stopPropagation' in e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
       return this;
     },
 

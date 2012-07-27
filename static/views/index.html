@@ -1,22 +1,27 @@
       <section id="home" class="x-home">
+        <div class="x-signin hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00"></div>
 
-        <div class="page-header">
+        <div class="page-header opacity0">
 
-          <div class="title tanimate" data-id="x">
+          <div class="title" data-id="exfe">
             <h1>EXFE <small>[’ɛksfi]</small></h1>
-            <p>A Utility for hanging out, with friends.</p>
+            <p>A utility for hanging out with friends.</p>
           </div>
 
-          <div class="title" data-id="rsvp">
-            <h1>X <small>[krɔs]</small></h1>
-            <p>A gathering of people, any intent.</p>
+          <div class="title hide" data-id="x">
+            <h1>X <small>(cross)</small></h1>
+            <p>A gathering of people for any intent.</p>
           </div>
 
-          <div class="title" data-id="handy">
+          <div class="title hide" data-id="rsvp">
+            <p>No more endless calls, <br />emails, messages off-the-point.</p>
+          </div>
+
+          <div class="title hide" data-id="handy">
             <p>Connected, <br />with tools & apps you preferred.</p>
           </div>
 
-          <div class="title" data-id="save">
+          <div class="title hide" data-id="save">
             <p>Private, <br />attendee access only.</p>
           </div>
 
@@ -25,33 +30,27 @@
         <div class="page-main">
           <!--<img class="exfe-toy" id="js-exfe-toy" src="/static/img/exfe-toy.png" alt="" />-->
 
-          <div class="circle c-x fadeIn" style="left: 245px; top: -57.5px;">X
-            <div class="c-inner"></div>
-          </div>
-          <div class="circle c-rsvp hide" style="right: 200px; top: -10px;">RSVP
-            <div class="c-inner"></div>
-          </div>
-          <div class="circle c-handy hide" style="right: 235px; bottom: -55px;">Handy
-            <div class="c-inner"></div>
-          </div>
-          <div class="circle c-safe hide" style="left: 200px; bottom: -15px;">Safe
-            <div class="c-inner"></div>
+          <div class="circles opacity0">
+            <div class="circle c-x">X
+              <div class="c-inner"></div>
+            </div>
+            <div class="circle c-rsvp">RSVP
+              <div class="c-inner"></div>
+            </div>
+            <div class="circle c-handy">Handy
+              <div class="c-inner"></div>
+            </div>
+            <div class="circle c-safe">Safe
+              <div class="c-inner"></div>
+            </div>
           </div>
 
         </div>
 
-        <div class="page-footer">
-          <a class="xbtn-gatherax" href="/#gather">Gather a X</a>
+        <div class="page-footer opacity0">
+          <a class="gather-wrapper" href="/#gather">
+            <button class="xbtn-gatherax">Start</button>
+          </a>
         </div>
 
       </section>
-
-      <script id="homescript">
-        define(function (require) {
-          var timestamp = require('config').timestamp;
-          var script = document.createElement('script');
-          script.async = true;
-          script.src = '/static/js/xhome/0.0.1/xhome.js?t=' + timestamp;
-          document.getElementById('home').appendChild(script);
-        });
-      </script>
