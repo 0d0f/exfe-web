@@ -83,9 +83,9 @@ define('routes', function (require, exports, module) {
       var $img = $('<img class="exfe-toy" id="js-exfe-toy" src="/static/img/exfe-toy.png" alt="" />');
       $img.load(function () {
         $page_main
-          .append($img)
-          .find('.circle')
-          .removeClass('hide');
+          .append($img);
+
+        $.getScript("/static/js/home/0.0.1/home.js");
       });
     });
   };
@@ -125,7 +125,9 @@ define('routes', function (require, exports, module) {
 
       if (!userToken) {
         var signin = Store.get('signin')
-        signin && (userToken = signin.token);
+        if (signin) {
+          userToken = signin.token;
+        }
       }
 
       if (userToken) {
@@ -182,7 +184,7 @@ define('routes', function (require, exports, module) {
       , browsingIdentity = data.browsing_identity
       , read_only = data.read_only;
 
-    delete req.session.tmpData;;
+    delete req.session.tmpData;
 
     res.render('x.html', function (tpl) {
       $('#js-main > div[role="main"]').append(tpl);
