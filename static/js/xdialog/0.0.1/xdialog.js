@@ -298,6 +298,7 @@ define(function (require, exports, module) {
                 // goto profile
                 if (t === 'd01') {
                   Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
+                  Bus.emit('xapp:usersignin');
                   that.hide();
                 } else {
                   that.hide();
