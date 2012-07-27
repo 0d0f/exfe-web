@@ -28,7 +28,8 @@ class GobusActions extends ActionController {
             'avatar_filename'   => $avatar_filename,
             'external_username' => $external_username,
         ));
-        echo json_encode(array('identity_id' => $id));
+        // return
+        apiResponse(['identity_id' => $id]);
     }
 
 
@@ -39,13 +40,13 @@ class GobusActions extends ActionController {
         $modCnvrstn      = $this->getModelByName('Conversation', 'v2');
         $hlpCross        = $this->getHelperByName('Cross', 'v2');
         // get raw data
-        $per_user_hash   = trim($_POST['per_user_hash']);
+        $iom             = trim($_POST['iom']);
         $provider        = trim($_POST['provider']);
         $external_id     = trim($_POST['external_id']);
         $content         = trim($_POST['content']);
         $time            = strtotime($_POST['time']);
         // check data
-        if (!$per_user_hash || !$provider || !$external_id || !$content || !$time) {
+        if (!$iom || !$provider || !$external_id || !$content || !$time) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
@@ -63,9 +64,9 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
-        // get cross id by per_user_hash
+        // get cross id by iom
         $objCurl = curl_init();
-        curl_setopt($objCurl, CURLOPT_URL, PUH_URL . "/puh/{$raw_by_identity->connected_user_id}/{$per_user_hash}");
+        curl_setopt($objCurl, CURLOPT_URL, IOM_URL . "/iom/{$raw_by_identity->connected_user_id}/{$iom}");
         curl_setopt($objCurl, CURLOPT_HEADER, 0);
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         $curlResult = curl_exec($objCurl);
@@ -104,15 +105,59 @@ class GobusActions extends ActionController {
             return;
         }
         // add post to conversation
-        $post    = new Post(0, null, $content, $cross->exfee->id, 'exfee');
+        $post     = new Post(0, null, $content, $cross->exfee->id, 'exfee');
         $post->by_identity_id = $by_identity->id;
-        $post_id = $modCnvrstn->addPost($post, $time);
+        $post_id  = $modCnvrstn->addPost($post, $time);
         if (!$post_id) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
         // get the new post
-        $post    = $modCnvrstn->getPostById($post_id);
+        $post     = $modCnvrstn->getPostById($post_id);
+        // call Gobus {
+        $hlpGobus = $this->getHelperByName('gobus',       'v2');
+        $modExfee = $this->getModelByName('exfee',        'v2');
+        $modConv  = $this->getModelByName('conversation', 'v2');
+        $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
+        $cross    = $hlpCross->getCross($cross_id, true);
+        $msgArg   = array(
+            'cross'         => $cross,
+            'post'          => $post,
+            'to_identities' => array(),
+            'by_identity'   => $by_identity,
+        );
+        $chkUser = array();
+        foreach ($cross->exfee->invitations as $invitation) {
+            $msgArg['to_identities'][] = $invitation->identity;
+            // @todo: $msgArg['depended'] = false;
+            if ($invitation->identity->connected_user_id
+             && !$chkUser[$invitation->identity->connected_user_id]) {
+                // get mobile identities
+                $mobIdentities = $modUser->getMobileIdentitiesByUserId(
+                    $invitation->identity->connected_user_id
+                );
+                foreach ($mobIdentities as $mI => $mItem) {
+                    $msgArg['to_identities'][] = $mItem;
+                }
+                // set conversation counter
+                $modConv->addConversationCounter(
+                    $cross->exfee->id,
+                    $invitation->identity->connected_user_id
+                );
+                // depended
+                if ($invitation->identity->connected_user_id
+                === $by_identity->connected_user_id) {
+                    // @todo: $msgArg['depended'] = true;
+                }
+                // marked
+                $chkUser[$invitation->identity->connected_user_id] = true;
+            }
+        }
+        $hlpGobus->send('cross', 'Update', $msgArg);
+        $modExfee->updateExfeeTime($cross->exfee->id);
+        // }
+        // return
+        apiResponse(['post' => $post]);
     }
 
 }

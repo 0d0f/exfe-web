@@ -49,62 +49,6 @@ util.toDBC = function(str) {
 
 
 /**
- * get human datetime
- * by Leask with han
- */
-util.getHumanDateTime = function(strTime, offset, lang) {
-    // init
-    strTime = strTime ? strTime : '';
-    var oriDate   = strTime.split(','),
-        time_type = '';
-    strTime = this.trim(oriDate[0]);
-    var withTime  = strTime.split(' ').length > 1;
-    // get timetype
-    if (oriDate.length > 1) {
-        time_type = this.trim(oriDate[1]);
-    } else if (!withTime) {
-        time_type = 'Anytime';
-    }
-    if (strTime === '' || strTime === '0000-00-00 00:00:00') {
-        return oriDate.length > 1 && time_type ? time_type : 'Sometime';
-    }
-    // fix timezone offset
-    var objDate   = this.getDateFromString(strTime);
-    if (objDate === null) {
-        return '';
-    }
-    if (withTime && !time_type) {
-        objDate = new Date(objDate.getTime()
-                + (typeof offset !== 'undefined' ? offset
-                : odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone())) * 1000);
-    }
-    // rebuild time
-    var arrMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        month    = arrMonth[objDate.getMonth()],
-        date     = objDate.getDate(),
-        year     = objDate.getFullYear(),
-        stdDate  = '',
-        stdTime  = '';
-    if (withTime) {
-        var hour24 = objDate.getHours(),
-            hour12 = hour24 > 12 ? (hour24 - 12) : hour24,
-            ampm   = hour24 < 12 ? 'AM'          : 'PM',
-            minute = objDate.getMinutes();
-        minute = minute < 10 ? ('0' + minute) : minute;
-    }
-    // return
-    switch (lang) {
-        case 'en':
-        default:
-            stdDate = [month, date].join(' ') + ', ' + year;
-            stdTime = withTime ? (hour12 + ':' + minute + ' ' + ampm) : '';
-            return (time_type ? time_type : stdTime) + ', ' + stdDate;
-    }
-};
-
-
-/**
  * get browser available size
  * by Leask
  */
@@ -113,65 +57,6 @@ util.getClientSize = function() {
         width  : window.innerWidth  || document.documentElement.clientWidth,
         height : window.innerHeight || document.documentElement.clientHeight
     };
-};
-
-
-ns.ajaxIdentity = function(identities) {
-    for (var i in identities) {
-        if (typeof this.exfeeIdentified[
-                identities[i].external_identity.toLowerCase()
-            ] !== 'undefined') {
-            identities.splice(i, 1);
-        }
-    }
-    if (!identities.length) {
-        return;
-    }
-    $.ajax({
-        type     : 'GET',
-        url      : site_url + '/identity/get',
-        data     : {identities : JSON.stringify(identities)},
-        dataType : 'json',
-        success  : function(data) {
-            var arrExfee = [];
-            for (var i in data.response.identities) {
-                var arrCatch = ['avatar_file_name', 'external_identity', 'name',
-                                'external_username', 'identityid', 'bio', 'provider'],
-                    objExfee = {};
-                for (var j in arrCatch) {
-                    objExfee[arrCatch[j]] = data.response.identities[i][arrCatch[j]];
-                }
-                objExfee.identityid = parseInt(objExfee.identityid)
-                var curId    = objExfee.external_identity.toLowerCase(),
-                    domExfee = $(
-                        '.exfeegadget_avatararea > ol > li[identity="' + curId + '"]'
-                    );
-                for (j in odof.exfee.gadget.exfeeInput) {
-                    if (typeof odof.exfee.gadget.exfeeInput[j][curId] === 'undefined' ) {
-                        continue;
-                    }
-                    for (var k in arrCatch) {
-                        if (typeof objExfee[arrCatch[k]] === 'undefined') {
-                            continue;
-                        }
-                        odof.exfee.gadget.exfeeInput[j][curId][arrCatch[k]]
-                      = objExfee[arrCatch[k]];
-                    }
-                }
-                if (domExfee.length) {
-                    domExfee.find('.exfee_avatar').attr(
-                        'src', odof.comm.func.getUserAvatar(
-                        objExfee.avatar_file_name,
-                        80, img_url)
-                    );
-                    domExfee.find('.exfee_name').html(objExfee.name);
-                    domExfee.find('.exfee_identity').html(objExfee.external_identity);
-                }
-                arrExfee.push(objExfee);
-            }
-            odof.exfee.gadget.cacheExfee(arrExfee);
-        }
-    });
 };
 
 
