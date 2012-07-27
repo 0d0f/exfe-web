@@ -287,7 +287,7 @@ ExfeeWidget = {
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<span class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></span>'
           +         '<span class="lt">' + (invitation.mates ? invitation.mates : '') + '</span>'
-          +         '<span class="rb"><i class="icon-time"></i></span>'
+       // +         '<span class="rb"><i class="icon-time"></i></span>'
           +     '</span>'
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
           + '</li>'
@@ -403,7 +403,12 @@ ExfeeWidget = {
         var idx = this.checkExistence(identity);
         if (idx !== false) {
             Exfee.invitations[idx].rsvp_status = rsvp;
-            this.callback();
+            var refresh = false;
+            if (rsvp === 'REMOVED' && curIdentity
+             && ExfeeWidget.compareIdentity(Exfee.invitations[idx].identity, curIdentity)) {
+                refresh = true;
+            }
+            this.callback(refresh);
         }
     },
 
@@ -1050,7 +1055,6 @@ define('exfeepanel', [], function (require, exports, module) {
             });
             $('.exfee_pop_up .identities-list .delete button').bind('click', function(event) {
                 ExfeeWidget.delExfee(ExfeePanel.invitation.identity);
-                // @todo by Leask if the delete on is me, reflash this page!!!!!
                 ExfeePanel.hidePanel();
             });
             $('.exfee_pop_up .identity-actions .btn-cancel').bind('click',   function(event) {
@@ -1128,7 +1132,7 @@ define(function (require, exports, module) {
         rawExfee = {id : 0, type : 'Exfee', invitations : []};
 
 
-    var SaveExfee = function() {
+    var SaveExfee = function(refresh) {
         if (Cross.id) {
             Api.request(
                 'editExfee',
@@ -1136,7 +1140,11 @@ define(function (require, exports, module) {
                  resources : {exfee_id : Exfee.id},
                  data      : {by_identity_id : curIdentity.id,
                               exfee          : JSON.stringify(Exfee)}},
-                function(data) {},
+                function(data) {
+                    if (refresh) {
+                        window.location.reload();
+                    }
+                },
                 function(data) {
                     console.log('Field');
                 }
@@ -1145,9 +1153,9 @@ define(function (require, exports, module) {
     };
 
 
-    var ExfeeCallback = function() {
+    var ExfeeCallback = function(refresh) {
         ShowExfee();
-        SaveExfee();
+        SaveExfee(refresh);
     };
 
 
@@ -1562,8 +1570,8 @@ define(function (require, exports, module) {
                   ? '&nbsp;'
                   : ('Invitation from ' + myInvitation.by_identity.name)
                 );
-                $('.cross-rsvp .show').slideUp(233);
-                $('.cross-rsvp .edit').slideDown(233);
+                $('.cross-rsvp .show').hide();
+                $('.cross-rsvp .edit').fadeIn(233);
                 return;
             } else if (myInvitation.rsvp_status === 'ACCEPTED'
                     || myInvitation.rsvp_status === 'INTERESTED'
@@ -1587,7 +1595,7 @@ define(function (require, exports, module) {
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
                     strSummary += '<span>'
-                                +   '<img src="'
+                                +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
                                 +   '">'
                                 +   '<span>'
@@ -1605,13 +1613,13 @@ define(function (require, exports, module) {
                 }
                 $('.cross-rsvp .show .attendance').html(attendance);
                 $('.cross-rsvp .show .by').html(by);
-                $('.cross-rsvp .show').slideDown(233);
-                $('.cross-rsvp .edit').slideUp(233);
+                $('.cross-rsvp .show').fadeIn(233);
+                $('.cross-rsvp .edit').hide();
                 return;
             }
         }
-        $('.cross-rsvp .show').slideUp(233);
-        $('.cross-rsvp .edit').slideUp(233);
+        $('.cross-rsvp .show').hide();
+        $('.cross-rsvp .edit').hide();
     };
 
 
@@ -1810,13 +1818,14 @@ define(function (require, exports, module) {
         window.showtimeTimer = setInterval(ShowTime, 50);
     });
     // init event
-    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only) {
+    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only, invitation_token) {
         // get cross
         if (Cross_id > 0) {
             GetCross(Cross_id);
         } else if (Cross_id === null) {
             curIdentity = browsingIdentity;
             UpdateCross(cross, read_only);
+            Api.setToken(invitation_token);
         } else {
             NewCross(true);
         }

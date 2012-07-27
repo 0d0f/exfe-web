@@ -37,7 +37,7 @@ class CrossesActions extends ActionController {
         $invToken    = trim($_POST['invitation_token']);
         $invitation  = $modExfee->getRawInvitationByToken($invToken);
         // 受邀 token 存在
-        if ($invitation) {
+        if ($invitation && $invitation['state'] !== 4) {
             // get user info by invitation token
             $user_infos = $modUser->getUserIdentityInfoByIdentityId(
                 $invitation['identity_id']
@@ -48,8 +48,7 @@ class CrossesActions extends ActionController {
                 'read_only' => true
             ];
             // 受邀 token 有效
-            if ($invitation['token_used_at'] === '0000-00-00 00:00:00'
-             || time() - strtotime($invitation['token_used_at']) < 1410) { // 23 * 60 + 30
+            if ($invitation['valid']) {
                 $modExfee->usedToken($invToken);
                 $result['read_only'] = false;
                 // 已登录
@@ -168,6 +167,7 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
+        $by_identity_id = (int) $result['by_identity_id'];
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
         $crossHelper=$this->getHelperByName("cross","v2");
