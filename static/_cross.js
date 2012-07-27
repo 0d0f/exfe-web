@@ -1431,6 +1431,15 @@ define(function (require, exports, module) {
     };
 
 
+    var ShowHost = function() {
+        if (curIdentity) {
+            $('.choose-identity').html(
+                '<img src="' + curIdentity.avatar_filename + '">'
+            );
+        }
+    };
+
+
     var ShowTitle = function(from) {
         var title = Cross.title.length ? Cross.title : 'Enter intent';
         $('.cross-title .show').html(title);
@@ -1767,6 +1776,7 @@ define(function (require, exports, module) {
             $('.cross-form').slideUp(233);
             $('.cross-edit').show(233);
         } else {
+            ShowHost();
             $('.cross-form').slideDown(233);
             $('.cross-edit').hide(233);
             $('#gather-title').select();
@@ -1828,6 +1838,20 @@ define(function (require, exports, module) {
             Api.setToken(invitation_token);
         } else {
             NewCross(true);
+        }
+    });
+    // init event: signin
+    bus.on('xapp:usersignin', function() {
+        if (!Cross.id) {
+            // get current user
+            var Signin  = Store.get('signin');
+            window.User = Signin ? Store.get('user') : null;
+            if (User) {
+                Api.setToken(Signin.token);
+                curIdentity = ExfeUtilities.clone(User.default_identity);
+                ShowHost();
+                fixExfee();
+            }
         }
     });
     // init event: end
