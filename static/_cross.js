@@ -287,7 +287,7 @@ ExfeeWidget = {
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<span class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></span>'
           +         '<span class="lt">' + (invitation.mates ? invitation.mates : '') + '</span>'
-          +         '<span class="rb"><i class="icon-time"></i></span>'
+       // +         '<span class="rb"><i class="icon-time"></i></span>'
           +     '</span>'
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
           + '</li>'
@@ -1587,7 +1587,7 @@ define(function (require, exports, module) {
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
                     strSummary += '<span>'
-                                +   '<img src="'
+                                +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
                                 +   '">'
                                 +   '<span>'
