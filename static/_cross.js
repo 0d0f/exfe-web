@@ -1224,7 +1224,7 @@ define(function (require, exports, module) {
 
     var EditCross = function(event) {
         // @todo by @Leask: 暂时确保在 Cross 页
-        if (!$('.cross-container').length) {
+        if (!$('.cross-container').length || readOnly) {
             return;
         }
         var domWidget  = event ? event.target : null,
