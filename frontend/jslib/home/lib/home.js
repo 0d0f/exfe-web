@@ -1,6 +1,7 @@
 define(function (require) {
   var $ = require('jquery');
 
+
   $(function () {
 
 
@@ -18,7 +19,8 @@ define(function (require) {
       , ph_paddingTopDist = ph_maxPaddingTop - ph_minPaddingTop
       , ph_nPaddingTop
 
-      , TOY = $('#js-exfe-toy')
+      , TOY = $X.find('#js-exfe-toy')
+      , TOY_SHADOW = $X.find('.exfe-toy-shadow')
       // 原始边长
       , t_w = TOY.width()
       //, t_h = TOY.height()
@@ -51,10 +53,10 @@ define(function (require) {
 
       , timer
       , $titles = PH.find('div.title')
+      , l = $titles.length
       , i = 0
       , j = 0
-      , l = $titles.length
-      , state = true;
+      , loaded = false;
 
     WIN.data('home', true);
 
@@ -65,88 +67,86 @@ define(function (require) {
       calculate();
     });
 
-    setTimeout(function () {
-      TOY.addClass('exfe-scaleOn');
-      /*
-      var bound = false;
-       * wtf? webkit fired twice , mozilla fired thrice, FUCK!
-      TOY.on('webkitTransitionEnd oTransitionEnd msTransitionEnd transitionEnd transitionend', function cb(e) {
-        if (bound) {
-          TOY.off('webkitTransitionEnd', cb);
-          return;
-        }
-        bound = true;
 
-        PH.animate({
-          opacity: 1
-        }, 250);
-        CIRCLES.animate({
-          opacity: 1
-        }, 250);
-        PF.animate({
-          opacity: 1
-        }, 250)
-      });
-      return false;
-      */
-     setTimeout(function () {
-       $titles
-        .addClass('opacity0')
-        .removeClass('hide');
-
-        next(i);
-
-        PH.animate({
-          opacity: 1
-        }, 250);
-        CIRCLES.animate({
-          opacity: 1
-        }, 250);
-        PF.animate({
-          opacity: 1
-        }, 250, function () {
-          if (WIN.data('home')) {
-            clearInterval(timer);
-            timer = null;
-          }
-          createTimer();
+    // animations queue
+    TOY
+      .addClass('exfe-init')
+      .delay(500, 'starter')
+      .delay(500, 'show-title')
+      .delay(233, 'show-circles')
+      .delay(233, 'show-start')
+      .delay(233, 'ender')
+      .queue('starter', function (next) {
+          TOY.addClass('exfe-scaleOn');
+          TOY.dequeue('show-title');
         })
-     }, 500);
-    }, 501);
+      .queue('show-title', function (next) {
+        TOY_SHADOW.removeClass('hide');
+        PH.animate({
+          opacity: 1
+        }, 233);
+        TOY.dequeue('show-circles');
+      })
+      .queue('show-circles', function (next) {
+        CIRCLES.animate({
+          opacity: 1
+        }, 233);
+        TOY.dequeue('show-start');
+      })
+      .queue('show-start', function (next) {
+        PF.animate({
+          opacity: 1
+        }, 233)
+        TOY.dequeue('ender');
+      })
+      .queue('ender', function () {
+
+        createTimer();
+
+        // clean up class
+        $titles
+          .eq(0)
+          .addClass('t-fadeIn')
+          .nextAll()
+          .addClass('t-fadeOut')
+          .removeClass('hide');
+
+        loaded = true;
+      })
+      .dequeue('starter');
 
     DOC
       .off('hover.home', '#js-exfe-toy, div.circle')
       .on('hover.home', '#js-exfe-toy, div.circle', function (e) {
-        var $that = $(this)
-          , isEnter = e.type === 'mouseenter'
-          , n = $that.index('div.circle');
-
-        $titles.removeClass('tanimate1 tanimate');
-        state = false;
-
-        if (n === -1) n = 0;
-        else n++;
+        if (!loaded) {
+          return;
+        }
 
         clearInterval(timer);
         timer = null;
 
+        var $that = $(this)
+          , isEnter = e.type === 'mouseenter'
+          , n = $that.index('div.circle')
+
+        if (n === -1) n = 0;
+        else n++;
+
+
         if (isEnter) {
 
-          // prev
-          prev(j+1);
+          if (n === i) return;
+
+          prev(i);
 
           i = n;
 
-          // next
-          next(n);
+          next(i);
 
-        }
-        else {
-          // current
-          prev(i = n);
-
+        } else {
           if (!timer) createTimer();
         }
+
       });
 
     DOC
@@ -204,12 +204,17 @@ define(function (require) {
         .width(nt_w)
         .height(nt_w);
 
+      t_position = TOY.position();
+
+      TOY_SHADOW
+        .width(nt_w)
+        .height(nt_w)
+        .css(t_position);
+
       PF.css({
         paddingTop: pf_nPaddingTop,
         paddingBottom: pf_nPaddingBottom
       });
-
-      t_position = TOY.position();
 
       var c0_a = Math.sin(45 * Math.PI / 180) * nr;
       var c0_b = Math.sin(45 * Math.PI / 180) * nr;
@@ -250,41 +255,34 @@ define(function (require) {
           right: c3_left,
           bottom: c3_top
         });
-
-      TOY.addClass('exfe-init');
     }
 
     function createTimer() {
       timer = setInterval(function () {
+        i++;
         if (i === l) i = 0;
         if ((j = i - 1) < 0) j = l - 1;
-
-        if (state && i === 1) state = false;
 
         // prev
         prev(j);
 
         // next
         next(i);
-
-        i++;
-      }, 6765/*4181*//*2584*//*1597*/);
+      }, 6765);
     }
 
     function prev(n) {
-      //console.log('prev', n, state);
-      $titles.not($titles.get(n)).removeClass('tanimate1 tanimate');
       $titles
         .eq(n)
-        .addClass('tanimate1')
-        .removeClass('tanimate');
+        .removeClass('t-fadeIn')
+        .addClass('t-fadeOut');
 
-      if (n === 0 || state) {
-        if (n === 0) {
-          TOY.removeClass('exfe-scale2');
-        }
+      if (n === 0) {
+        TOY_SHADOW
+          .removeClass('exfe-scaleOut');
         return;
       }
+
       $circles
         .eq(n - 1)
         .removeClass('fadeIn')
@@ -292,18 +290,17 @@ define(function (require) {
     }
 
     function next(n) {
-      //console.log('next', n);
       $titles
         .eq(n)
-        .removeClass('hide tanimate1')
-        .addClass('tanimate');
+        .removeClass('hide t-fadeOut')
+        .addClass('t-fadeIn');
 
       if (n === 0){
-        if (n === 0 && !state) {
-          TOY.addClass('exfe-scale2');
-        }
+        TOY_SHADOW
+          .addClass('exfe-scaleOut');
         return;
       }
+
       $circles
         .eq(n - 1)
         .removeClass('fadeOut')
