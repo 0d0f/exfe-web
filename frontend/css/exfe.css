@@ -3859,6 +3859,10 @@ input[type="submit"].btn.btn-mini {
   display: none;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .show-inline-block {
   display: inline-block;
 }
@@ -5991,8 +5995,18 @@ input[type="submit"].btn.btn-mini {
   margin: 0 0 15px 5px;
 }
 
-.hbg {
+html,
+body {
   height: 100%;
+}
+
+.hbg {
+  /*position: relative;*/
+
+  /*top: -74px;*/
+
+  /*z-index: @zindexDropdown + 3;*/
+
   background-color: #84a4bf;
   background-image: -moz-linear-gradient(top, #5a7a95, #c3e3fd);
   background-image: -ms-linear-gradient(top, #5a7a95, #c3e3fd);
@@ -6002,6 +6016,8 @@ input[type="submit"].btn.btn-mini {
   background-image: linear-gradient(top, #5a7a95, #c3e3fd);
   background-repeat: repeat-x;
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#5a7a95', endColorstr='#c3e3fd', GradientType=0);
+  /*overflow: hidden;*/
+
 }
 
 .x-home {
@@ -6009,12 +6025,17 @@ input[type="submit"].btn.btn-mini {
   text-align: center;
 }
 
+.x-home .opacity0 {
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
 .x-home .page-header {
   position: relative;
   height: 92px;
   padding: 0;
-  padding-top: 120px;
-  padding-bottom: 123.5px;
+  padding-top: 140px;
+  padding-bottom: 114px;
   margin: 0;
   color: #fafafa;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
@@ -6024,37 +6045,53 @@ input[type="submit"].btn.btn-mini {
 .x-home .page-header .title {
   position: absolute;
   width: 100%;
-  margin-left: -144px;
   text-align: center;
-  opacity: 0;
-  -webkit-transition: margin-left 0.233s ease-in-out, opacity 0.233s ease-in-out;
-     -moz-transition: margin-left 0.233s ease-in-out, opacity 0.233s ease-in-out;
-      -ms-transition: margin-left 0.233s ease-in-out, opacity 0.233s ease-in-out;
-       -o-transition: margin-left 0.233s ease-in-out, opacity 0.233s ease-in-out;
-          transition: margin-left 0.233s ease-in-out, opacity 0.233s ease-in-out;
+  -webkit-transition: opacity 610ms ease-in-out;
+     -moz-transition: opacity 610ms ease-in-out;
+      -ms-transition: opacity 610ms ease-in-out;
+       -o-transition: opacity 610ms ease-in-out;
+          transition: opacity 610ms ease-in-out;
+  transition: opacity 610ms ease-in-out;
 }
 
 .x-home .page-header .tanimate {
-  margin-left: 0;
+  /*margin-left: 0px;*/
+
   opacity: 1;
 }
 
+.x-home .page-header .tanimate1 {
+  /*margin-left: 89px;*/
+
+  opacity: 0;
+}
+
+.x-home .page-header .title[data-id="x"] {
+  padding-left: 24px;
+}
+
 .x-home .page-header h1 {
-  font-size: 46px;
+  font-size: 48px;
   font-weight: 600;
   line-height: 50px;
 }
 
 .x-home .page-header h1 small {
   margin-left: -5px;
-  font-size: 13px;
+  font-size: 18px;
   color: #fafafa;
 }
 
+.x-home .page-header h1 + p {
+  margin-top: 0;
+  line-height: 40px;
+}
+
 .x-home .page-header p {
+  margin-top: 3px;
   font-size: 36px;
   font-weight: 400;
-  line-height: 40px;
+  line-height: 50px;
 }
 
 .x-home .page-main {
@@ -6065,6 +6102,36 @@ input[type="submit"].btn.btn-mini {
 
 .x-home .page-main .exfe-toy {
   position: relative;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+     -moz-transition: -moz-transform 0.5s ease, opacity 0.5s ease;
+      -ms-transition: -ms-transform 0.5s ease, opacity 0.5s ease;
+       -o-transition: -o-transform 0.5s ease, opacity 0.5s ease;
+          transition: transform 0.5s ease, opacity 0.5s ease;
+  -webkit-animation-fill-mode: forwards;
+}
+
+.x-home .page-main .exfe-init {
+  -webkit-transform: scale(2);
+     -moz-transform: scale(2);
+      -ms-transform: scale(2);
+       -o-transform: scale(2);
+          transform: scale(2);
+}
+
+.x-home .page-main .exfe-scaleOn {
+  opacity: 1;
+  filter: alpha(opacity=100);
+  -webkit-transform: scale(1);
+     -moz-transform: scale(1);
+      -ms-transform: scale(1);
+       -o-transform: scale(1);
+          transform: scale(1);
+}
+
+.x-home .page-main .exfe-scaleOn2 {
+  -webkit-transition: -webkit-transform 0.5s cubic-bezier(1, 0, 0.5, 1);
 }
 
 .x-home .page-main .circle {
@@ -6101,6 +6168,8 @@ input[type="submit"].btn.btn-mini {
   -webkit-border-radius: 50%;
      -moz-border-radius: 50%;
           border-radius: 50%;
+  opacity: 0;
+  filter: alpha(opacity=0);
   -webkit-transform: scale(0.01);
      -moz-transform: scale(0.01);
       -ms-transform: scale(0.01);
@@ -6185,16 +6254,16 @@ input[type="submit"].btn.btn-mini {
     opacity: 0;
     -webkit-transform: scale(0.01);
   }
-  50% {
+  60% {
     opacity: 1;
     -webkit-transform: scale(1.26);
   }
-  70% {
-    /*-webkit-transform: scale(.9);*/
-  
-    -webkit-transform: scale(1.1);
-  }
+  /*70% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1.1);*/
+  /*}*/
   100% {
+    opacity: 1;
     -webkit-transform: scale(1);
   }
 }
@@ -6208,12 +6277,14 @@ input[type="submit"].btn.btn-mini {
     opacity: 1;
     -moz-transform: scale(1.26);
   }
-  70% {
-    /*-moz-transform: scale(.9);*/
-  
-    -moz-transform: scale(1.1);
-  }
+  /*
+          70% {
+            opacity: 1;
+            -moz-transform: scale(1.1);
+          }
+          */
   100% {
+    opacity: 1;
     -moz-transform: scale(1);
   }
 }
@@ -6221,18 +6292,20 @@ input[type="submit"].btn.btn-mini {
 @-o-keyframes bounceIn {
   0% {
     opacity: 0;
-    -o-transform: scale(0.01);
+    -o-transform: sggcale(0.01);
   }
   50% {
     opacity: 1;
     -o-transform: scale(1.26);
   }
-  70% {
-    /*-o-transform: scale(.9);*/
-  
-    -o-transform: scale(1.1);
-  }
+  /*
+          70% {
+            opacity: 1;
+            -o-transform: scale(1.1);
+          }
+          */
   100% {
+    opacity: 1;
     -o-transform: scale(1);
   }
 }
@@ -6246,25 +6319,33 @@ input[type="submit"].btn.btn-mini {
     opacity: 1;
     transform: scale(1.26);
   }
-  70% {
-    transform: scale(1.1);
-  }
+  /*
+          70% {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+          */
   100% {
+    opacity: 1;
     transform: scale(1);
   }
 }
 
 @-webkit-keyframes bounceOut {
   0% {
+    opacity: 1;
     -webkit-transform: scale(1);
   }
-  25% {
-    -webkit-transform: scale(0.95);
-  }
-  50% {
-    opacity: 1;
-    -webkit-transform: scale(1.1);
-  }
+  /*
+          25% {
+            -webkit-transform: scale(.95);
+          }
+    
+          50% {
+            opacity: 1;
+            -webkit-transform: scale(.5);
+          }
+          */
   100% {
     opacity: 0;
     -webkit-transform: scale(0.01);
@@ -6275,13 +6356,16 @@ input[type="submit"].btn.btn-mini {
   0% {
     -moz-transform: scale(1);
   }
-  25% {
-    -moz-transform: scale(0.95);
-  }
-  50% {
-    opacity: 1;
-    -moz-transform: scale(1.1);
-  }
+  /*
+          25% {
+            -moz-transform: scale(.95);
+          }
+    
+          50% {
+            opacity: 1;
+            -moz-transform: scale(1.1);
+          }
+          */
   100% {
     opacity: 0;
     -moz-transform: scale(0.01);
@@ -6292,13 +6376,16 @@ input[type="submit"].btn.btn-mini {
   0% {
     -o-transform: scale(1);
   }
-  25% {
-    -o-transform: scale(0.95);
-  }
-  50% {
-    opacity: 1;
-    -o-transform: scale(1.1);
-  }
+  /*
+          25% {
+            -o-transform: scale(.95);
+          }
+    
+          50% {
+            opacity: 1;
+            -o-transform: scale(1.1);
+          }
+          */
   100% {
     opacity: 0;
     -o-transform: scale(0.01);
@@ -6309,13 +6396,16 @@ input[type="submit"].btn.btn-mini {
   0% {
     transform: scale(1);
   }
-  25% {
-    transform: scale(0.95);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
+  /*
+          25% {
+            transform: scale(.95);
+          }
+    
+          50% {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+          */
   100% {
     opacity: 0;
     transform: scale(0.01);
@@ -6338,10 +6428,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .x-home .page-main .fadeIn {
-  -webkit-animation-duration: 233ms;
-     -moz-animation-duration: 233ms;
-       -o-animation-duration: 233ms;
-          animation-duration: 233ms;
+  -webkit-animation-duration: 610ms;
+     -moz-animation-duration: 610ms;
+       -o-animation-duration: 610ms;
+          animation-duration: 610ms;
   -webkit-animation-name: fadeIn;
      -moz-animation-name: fadeIn;
        -o-animation-name: fadeIn;
@@ -6353,10 +6443,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .x-home .page-main .fadeOut {
-  -webkit-animation-duration: 233ms;
-     -moz-animation-duration: 233ms;
-       -o-animation-duration: 233ms;
-          animation-duration: 233ms;
+  -webkit-animation-duration: 610ms;
+     -moz-animation-duration: 610ms;
+       -o-animation-duration: 610ms;
+          animation-duration: 610ms;
   -webkit-animation-name: fadeOut;
      -moz-animation-name: fadeOut;
        -o-animation-name: fadeOut;
@@ -6368,10 +6458,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .x-home .page-main .animated {
-  -webkit-animation-duration: 233ms;
-     -moz-animation-duration: 233ms;
-       -o-animation-duration: 233ms;
-          animation-duration: 233ms;
+  -webkit-animation-duration: 610ms;
+     -moz-animation-duration: 610ms;
+       -o-animation-duration: 610ms;
+          animation-duration: 610ms;
   -moz-animation-fill-mode: both;
        animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
@@ -6379,10 +6469,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .x-home .page-main .bounceIn {
-  -webkit-animation-duration: 233ms;
-     -moz-animation-duration: 233ms;
-       -o-animation-duration: 233ms;
-          animation-duration: 233ms;
+  -webkit-animation-duration: 610ms;
+     -moz-animation-duration: 610ms;
+       -o-animation-duration: 610ms;
+          animation-duration: 610ms;
   -webkit-animation-name: bounceIn;
      -moz-animation-name: bounceIn;
        -o-animation-name: bounceIn;
@@ -6394,10 +6484,10 @@ input[type="submit"].btn.btn-mini {
 }
 
 .x-home .page-main .circle.fadeIn .c-inner {
-  -webkit-animation-duration: 233ms;
-     -moz-animation-duration: 233ms;
-       -o-animation-duration: 233ms;
-          animation-duration: 233ms;
+  -webkit-animation-duration: 610ms;
+     -moz-animation-duration: 610ms;
+       -o-animation-duration: 610ms;
+          animation-duration: 610ms;
   -webkit-animation-name: bounceIn;
      -moz-animation-name: bounceIn;
        -o-animation-name: bounceIn;
@@ -6442,18 +6532,30 @@ input[type="submit"].btn.btn-mini {
 }
 
 .x-home .page-footer {
-  padding-top: 150px;
-  padding-bottom: 154px;
+  padding-top: 108px;
+  /*padding-top: 64px;*/
+
+  padding-bottom: 132px;
+  /*padding-bottom: 60px;*/
+
+}
+
+.x-home .gather-wrapper {
+  display: block;
+  width: 142px;
+  height: 34px;
+  padding: 19px 23px;
+  margin: 0 auto;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .x-home .xbtn-gatherax {
-  display: inline-block;
   width: 140px;
   height: 32px;
   font: italic 300 22px/32px "Myriad Pro";
   color: #99aec5;
   text-align: center;
-  text-decoration: none;
   text-shadow: 0 1px 0 #ffffff;
   background-color: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(129, 158, 184, 0.75);
