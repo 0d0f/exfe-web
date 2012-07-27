@@ -182,14 +182,15 @@ define('routes', function (require, exports, module) {
     var data = req.session.tmpData
       , cross = data.cross
       , browsingIdentity = data.browsing_identity
-      , read_only = data.read_only;
+      , read_only = data.read_only
+      , token = req.params.token;
 
     delete req.session.tmpData;
 
     res.render('x.html', function (tpl) {
       $('#js-main > div[role="main"]').append(tpl);
       Bus.emit('xapp:cross:main');
-      Bus.emit('xapp:cross', null, browsingIdentity, cross, read_only);
+      Bus.emit('xapp:cross', null, browsingIdentity, cross, read_only, token);
     });
   };
 
