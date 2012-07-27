@@ -1,9 +1,7 @@
 define(function (require) {
   var $ = require('jquery');
 
-
   $(function () {
-
 
     var WIN = $(window)
       , DOC = $(document)
@@ -50,12 +48,15 @@ define(function (require) {
       , c0_left
       , c3_top
       , c3_left
+      , rc = $circles.eq(0).width() / 2
 
       , timer
       , $titles = PH.find('div.title')
       , l = $titles.length
       , i = 0
       , j = 0
+
+      // 可以触发行为
       , loaded = false;
 
     WIN.data('home', true);
@@ -76,10 +77,12 @@ define(function (require) {
       .delay(233, 'show-circles')
       .delay(233, 'show-start')
       .delay(233, 'ender')
+      // 入场动画
       .queue('starter', function (next) {
           TOY.addClass('exfe-scaleOn');
           TOY.dequeue('show-title');
         })
+      // 显示 title
       .queue('show-title', function (next) {
         TOY_SHADOW.removeClass('hide');
         PH.animate({
@@ -87,18 +90,21 @@ define(function (require) {
         }, 233);
         TOY.dequeue('show-circles');
       })
+      // 显示圆圈
       .queue('show-circles', function (next) {
         CIRCLES.animate({
           opacity: 1
         }, 233);
         TOY.dequeue('show-start');
       })
+      // 显示按钮
       .queue('show-start', function (next) {
         PF.animate({
           opacity: 1
         }, 233)
         TOY.dequeue('ender');
       })
+      // 最后，初始化定时器等
       .queue('ender', function () {
 
         createTimer();
@@ -113,6 +119,7 @@ define(function (require) {
 
         loaded = true;
       })
+      // 开始动画
       .dequeue('starter');
 
     DOC
@@ -135,6 +142,7 @@ define(function (require) {
 
         if (isEnter) {
 
+          // reennter return;
           if (n === i) return;
 
           prev(i);
@@ -219,8 +227,8 @@ define(function (require) {
       var c0_a = Math.sin(45 * Math.PI / 180) * nr;
       var c0_b = Math.sin(45 * Math.PI / 180) * nr;
 
-      c0_top = t_position.top - (c0_a - nt_w / 2) - 25.5;
-      c0_left = t_position.left - (c0_b - nt_w / 2) - 25.5;
+      c0_top = t_position.top - (c0_a - nt_w / 2) - rc;
+      c0_left = t_position.left - (c0_b - nt_w / 2) - rc;
 
       $circles
         .eq(0)
@@ -239,8 +247,8 @@ define(function (require) {
       var c3_a = Math.sin(30 * Math.PI / 180) * nr;
       var c3_b = Math.cos(30 * Math.PI / 180) * nr;
 
-      c3_top = t_position.top + (c3_a + nt_w / 2) - 25.5;
-      c3_left = t_position.left - (c3_b - nt_w / 2) - 25.5;
+      c3_top = t_position.top + (c3_a + nt_w / 2) - rc;
+      c3_left = t_position.left - (c3_b - nt_w / 2) - rc;
 
       $circles
         .eq(3)
