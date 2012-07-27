@@ -80,7 +80,7 @@ define('routes', function (require, exports, module) {
     res.render('index.html', function (tpl) {
       $main.append(tpl);
       var $page_main = $main.find('div.page-main');
-      var $img = $('<img class="exfe-toy" id="js-exfe-toy" src="/static/img/exfe-toy.png" alt="" />');
+      var $img = $('<img class="exfe-toy" id="js-exfe-toy" src="/static/img/exfe.png" alt="" />');
       $img.load(function () {
         $page_main
           .append($img);
