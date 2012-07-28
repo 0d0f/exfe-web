@@ -50,7 +50,7 @@ define(function (require) {
       , c3_left
       , rc = $circles.eq(0).width() / 2
 
-      , timer
+      , timer = null
       , $titles = PH.find('div.title')
       , l = $titles.length
       , i = 0
@@ -106,6 +106,9 @@ define(function (require) {
       })
       // 最后，初始化定时器等
       .queue('ender', function () {
+        if (timer) {
+          cleanup(timer);
+        }
 
         createTimer();
 
@@ -129,8 +132,7 @@ define(function (require) {
           return;
         }
 
-        clearInterval(timer);
-        timer = null;
+        cleanup(timer);
 
         var $that = $(this)
           , isEnter = e.type === 'mouseenter'
@@ -277,6 +279,11 @@ define(function (require) {
         // next
         next(i);
       }, 6765);
+    }
+
+    function cleanup(timer) {
+      clearInterval(timer);
+      timer = null;
     }
 
     function prev(n) {
