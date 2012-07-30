@@ -52,7 +52,7 @@ class UsersActions extends ActionController {
         $loghelper=$this->getHelperByName('log');
         $logs=$loghelper->getMergedXUpdate($uid, 'all', urldecode($params["updated_since"]), 200);
 
-        $identityhelper=$this->getHelperByName("identity");
+        $identityhelper=$this->getHelperByName('identity', 'v2');
         $identityhelper->cleanIdentityBadgeNumber($device_identity_id,$uid);
 
         $responobj["meta"]["code"]=200;
