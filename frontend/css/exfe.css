@@ -6157,10 +6157,9 @@ body {
 
 .x-home .page-main .circle {
   position: absolute;
+  display: table;
   width: 55px;
   height: 55px;
-  font-size: 32px;
-  line-height: 55px;
   color: transparent;
   text-align: center;
 }
@@ -6550,6 +6549,11 @@ body {
   -webkit-animation-fill-mode: both;
 }
 
+.x-home .page-main .c-ctx {
+  display: table-cell;
+  vertical-align: middle;
+}
+
 .x-home .page-main .c-rsvp,
 .x-home .page-main .c-safe,
 .x-home .page-main .c-handy {
@@ -6559,18 +6563,22 @@ body {
 .x-home .page-main .c-x {
   font-family: "Helvetica Neue";
   font-size: 28px;
+  line-height: 34px;
 }
 
 .x-home .page-main .c-rsvp {
   font-size: 22px;
+  line-height: 28px;
 }
 
 .x-home .page-main .c-safe {
   font-size: 24px;
+  line-height: 30px;
 }
 
 .x-home .page-main .c-handy {
   font-size: 18px;
+  line-height: 24px;
 }
 
 .x-home .page-footer {
