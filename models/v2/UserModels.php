@@ -422,6 +422,7 @@ class UserModels extends DataModel {
                 }
                 break;
             case 'twitter':
+                // @todo by @leaskh
         }
         // return
         return null;
