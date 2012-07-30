@@ -38,8 +38,8 @@ class UsersActions extends ActionController {
         $modUser     = $this->getModelByName('User', 'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!($external_id = trim($_POST['external_id']))) {
-            apiError(400, 'no_external_id', '');
+        if (!($external_username = trim($_POST['external_username']))) {
+            apiError(400, 'no_external_username', '');
         }
         if (!($provider = trim($_POST['provider']))) {
             apiError(400, 'no_provider', '');
@@ -50,9 +50,9 @@ class UsersActions extends ActionController {
         if (!$modUser->verifyUserPassword($user_id, $password)) {
             apiError(403, 'invalid_password', ''); // 密码错误
         }
-        if (($identity_id = $modIdentity->addIdentity($provider, $external_id, array(), $user_id))
+        if (($identity_id = $modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username], $user_id))
          && ($objIdentity = $modIdentity->getIdentityById($identity_id, $user_id))) {
-            apiResponse(array('identity' => $objIdentity));
+            apiResponse(['identity' => $objIdentity]);
         } else {
             apiError(400, 'failed', '');
         }
@@ -463,29 +463,29 @@ class UsersActions extends ActionController {
         $modUser       = $this->getModelByName('user',     'v2');
         $modIdentity   = $this->getModelByName('identity', 'v2');
         // collecting post data
-        if (!$external_id = $_POST['external_id']) {
-            apiError(403, 'no_external_id', 'external_id must be provided');
+        if (!$external_username = $_POST['external_username']) {
+            apiError(403, 'no_external_username', 'external_username must be provided');
         }
         if (!$provider = $_POST['provider']) {
             apiError(403, 'no_provider', 'provider must be provided');
         }
-        // @todo: 需要根据 $provider 检查 $external_identity 有效性
+        // @todo: 需要根据 $provider 检查 $external_username 有效性
         if (!$password = $_POST['password']) {
             apiError(403, 'no_password', 'password must be provided');
         }
         // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
         if (($name = trim($_POST['name'])) !== ''
-        && !$modIdentity->getIdentityByProviderExternalId($provider, $external_id, true)) {
+        && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, false, true)) {
             if (!($user_id = $modUser->addUser($password))
-             || !$modIdentity->addIdentity($provider, $external_id, array('name' => $name), $user_id)) {
+             || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
                 apiError(403, 'failed', 'failed while signing up new user');
             }
         }
         // raw signin
-        $siResult = $modUser->signinForAuthToken($provider, $external_id, $password);
+        $siResult = $modUser->signinForAuthToken($provider, $external_username, $password);
         if ($siResult) {
-            apiResponse(array('user_id' => $siResult['user_id'], 'token' => $siResult['token']));
+            apiResponse(['user_id' => $siResult['user_id'], 'token' => $siResult['token']]);
         }
         apiError(403, 'failed', '');
     }

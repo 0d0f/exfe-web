@@ -120,9 +120,9 @@ class ExfeeModels extends DataModel {
         // adding new identity
         if (!$invitation->identity->id) {
             $invitation->identity->id = $hlpIdentity->addIdentity(
-                $invitation->identity->provider,
-                $invitation->identity->external_id,
-                ['name'              => $invitation->identity->name,
+                ['provider'          => $invitation->identity->provider,
+                 'external_id'       => $invitation->identity->external_id,
+                 'name'              => $invitation->identity->name,
                  'external_username' => $invitation->identity->external_username]
             );
         }
@@ -309,9 +309,9 @@ class ExfeeModels extends DataModel {
             // adding new identity
             if (!$toItem->identity->id) {
                 $toItem->identity->id = $hlpIdentity->addIdentity(
-                    $toItem->identity->provider,
-                    $toItem->identity->external_id,
-                    ['name'              => $toItem->identity->name,
+                    ['provider'          => $toItem->identity->provider,
+                     'external_id'       => $toItem->identity->external_id,
+                     'name'              => $toItem->identity->name,
                      'external_username' => $toItem->identity->external_username]
                 );
             }

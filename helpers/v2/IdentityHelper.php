@@ -14,8 +14,8 @@ class IdentityHelper extends ActionController {
     }
 
 
-    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0) {
-        return $this->modIdentity->addIdentity($provider, $external_id, $identityDetail, $user_id);
+    public function addIdentity($identityDetail = array(), $user_id = 0) {
+        return $this->modIdentity->addIdentity($identityDetail, $user_id);
     }
 
 
