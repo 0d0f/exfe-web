@@ -48,7 +48,7 @@ html, body {
 
     .title[data-id="exfe"] h1,
     .title[data-id="x"] h1 {
-     padding-left: 25px;
+     padding-left: 35px;
     }
 
     h1 {
@@ -116,12 +116,13 @@ html, body {
       }
 
     .circle {
+      display: table;
       position: absolute;
-      width: 51px;
-      height: 51px;
-      font-size: 32px;
+      width: 55px;
+      height: 55px;
+      /*font-size: 32px;*/
       text-align: center;
-      line-height: 51px;
+      /*line-height: 55px;*/
       color: transparent;
     }
 
@@ -130,16 +131,16 @@ html, body {
       position: absolute;
       top: -4px;
       left: -4px;
-      width: 51px;
-      height: 51px;
+      width: 55px;
+      height: 55px;
       border: 4px solid #e4f7fd;
       .border-radius(50%);
     }
 
     .c-inner {
       position: absolute;
-      width: 53px;
-      height: 53px;
+      width: 57px;
+      height: 57px;
       top: -1px;
       left: -1px;
       .scale(0.01);
@@ -234,6 +235,10 @@ html, body {
         /*opacity: 1;*/
         /*-webkit-transform: scale(1.1);*/
       /*}*/
+      90% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+      }
       100% {
         opacity: 1;
         -webkit-transform: scale(1);
@@ -255,6 +260,10 @@ html, body {
         -moz-transform: scale(1.1);
       }
       */
+      90% {
+        opacity: 1;
+        -moz-transform: scale(1);
+      }
       100% {
         opacity: 1;
         -moz-transform: scale(1);
@@ -276,6 +285,10 @@ html, body {
         -o-transform: scale(1.1);
       }
       */
+      90% {
+        opacity: 1;
+        -o-transform: scale(1);
+      }
       100% {
         opacity: 1;
         -o-transform: scale(1);
@@ -297,6 +310,10 @@ html, body {
         transform: scale(1.1);
       }
       */
+      90% {
+        opacity: 1;
+        transform: scale(1);
+      }
       100% {
         opacity: 1;
         transform: scale(1);
@@ -453,22 +470,36 @@ html, body {
       .bounceOut();
     }
 
+    .c-ctx {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
     .c-rsvp,
     .c-safe,
     .c-handy {
       font-style: italic;
     }
 
+    .c-x {
+      font-size: 28px;
+      line-height: 34px;
+      font-family: "Helvetica Neue";
+    }
+
     .c-rsvp {
-      font-size: 20px;
+      font-size: 22px;
+      line-height: 28px;
     }
 
     .c-safe {
-      font-size: 22px;
+      font-size: 24px;
+      line-height: 30px;
     }
 
     .c-handy {
       font-size: 18px;
+      line-height: 24px;
     }
 
   }
