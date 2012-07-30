@@ -138,14 +138,14 @@ class UsersActions extends ActionController {
         $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
         $params = $this->params;
-        if (!$external_id = trim($params['external_id'])) {
-            apiError(400, 'no_external_id', 'external_id must be provided');
+        if (!$external_username = trim($params['external_username'])) {
+            apiError(400, 'no_external_username', 'external_username must be provided');
         }
         if (!$provider = trim($params['provider'])) {
             apiError(400, 'no_provider', 'provider must be provided');
         }
         // get identity
-        $identity = $modIdentity->getIdentityByProviderExternalId($provider, $external_id);
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
             apiResponse(array('registration_flag' => 'SIGN_UP'));
