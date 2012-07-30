@@ -24,4 +24,9 @@ class UserHelper extends ActionController {
         return $this->modUser->arrUserIdentityStatus[$status_index];
     }
 
+
+    public function verifyIdentity($identity, $action, $user_id = 0) {
+        return $this->modUser->verifyIdentity($identity, $action, $user_id);
+    }
+
 }
