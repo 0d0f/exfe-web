@@ -479,10 +479,10 @@ ExfeeWidget = {
 
 
     parseAttendeeInfo : function(string) {
-        function getAvatarUrl(provider, external_id) {
-            var avatar = ExfeeWidget.api_url + '/avatar/get?provider=' + provider + '&external_id=' + external_id;
+        function getAvatarUrl(provider, external_username) {
+            var avatar = ExfeeWidget.api_url + '/avatar/get?provider=' + provider + '&external_username=' + external_username;
             if (provider === 'email') {
-                avatar = 'http://www.gravatar.com/avatar/' + external_id + '?d=' + encodeURIComponent(avatar);
+                avatar = 'http://www.gravatar.com/avatar/' + external_username + '?d=' + encodeURIComponent(avatar);
             }
             return avatar;
         }
@@ -502,7 +502,7 @@ ExfeeWidget = {
             objIdentity.external_username = objIdentity.external_id;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(ExfeUtilities.trim(string.substring(0, iLt)).replace(/^"|^'|"$|'$/g, '')));
             objIdentity.provider          = 'email';
-            objIdentity.avatar_filename   = getAvatarUrl('email', objIdentity.external_id);
+            objIdentity.avatar_filename   = getAvatarUrl('email', objIdentity.external_username);
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(string)) {
             objIdentity.external_id       = string;
             objIdentity.external_username = string;
