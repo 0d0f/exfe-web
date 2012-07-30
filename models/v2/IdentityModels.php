@@ -43,7 +43,7 @@ class IdentityModels extends DataModel {
             }
             $rawIdentity['avatar_file_name'] = getAvatarUrl(
                 $rawIdentity['provider'],
-                $rawIdentity['external_identity'],
+                $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name']
             );
             $objIdentity = new Identity(
@@ -79,12 +79,13 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityByProviderAndExternalUsername($provider, $external_username, $withRevoked = false) {
-        return $this->packageIdentity($this->getRow(
+    public function getIdentityByProviderAndExternalUsername($provider, $external_username, $withRevoked = false, $get_id_only = false) {
+        $rawIdentity = $this->getRow(
             "SELECT * FROM `identities` WHERE
              `provider`          = '{$provider}' AND
              `external_username` = '{$external_username}'"
-        ), null, $withRevoked);
+        );
+        return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity, null, $withRevoked);
     }
 
 
@@ -180,35 +181,50 @@ class IdentityModels extends DataModel {
      * add a new identity into database
      * all parameters allow in $identityDetail:
      * {
+     *     $provider,
+     *     $external_id,
+     *     $external_username,
      *     $name,
      *     $nickname,
      *     $bio,
-     *     $external_username,
      *     $avatar_filename,
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($provider, $external_id, $identityDetail = array(), $user_id = 0, $status = 2) {
-        // init
-        if (!$provider || (!$external_id && !$identityDetail['external_username'])) {
+    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2) {
+        // collecting new identity informations
+        $provider          = mysql_real_escape_string(trim($identityDetail['provider']));
+        $external_id       = mysql_real_escape_string(trim($identityDetail['external_id']));
+        $external_username = mysql_real_escape_string(trim($identityDetail['external_username']));
+        $name              = mysql_real_escape_string(trim($identityDetail['name']));
+        $nickname          = mysql_real_escape_string(trim($identityDetail['nickname']));
+        $bio               = mysql_real_escape_string(trim($identityDetail['bio']));
+        $avatar_filename   = mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        // basic check
+        if (!$provider || (!$external_id && !$external_username)) {
             return null;
         }
-        // collecting new identity informations
-        $name              = trim(mysql_real_escape_string($identityDetail['name']));
-        $nickname          = trim(mysql_real_escape_string($identityDetail['nickname']));
-        $bio               = trim(mysql_real_escape_string($identityDetail['bio']));
-        $provider          = trim(mysql_real_escape_string(strtolower($provider)));
-        $external_id       = trim(mysql_real_escape_string(strtolower($external_id)));
-        $external_username = trim(mysql_real_escape_string($identityDetail['external_username'] ?: $external_id));
-        $avatar_filename   = trim(mysql_real_escape_string($identityDetail['avatar_filename']));
         // check current identity
         $curIdentity = $this->getRow(
-            $external_id
-          ? "SELECT `id` FROM `identities` WHERE `external_identity` = '{$external_id}' LIMIT 1"
-          : "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND `external_username` = '{$external_username}' LIMIT 1"
+            "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND " + (
+                $external_id
+              ? "`external_identity` = '{$external_id}'"
+              : "`external_username` = '{$external_username}'"
+            ) + ' LIMIT 1'
         );
         if (intval($curIdentity['id']) > 0) {
             return intval($curIdentity['id']);
+        }
+        // fixed args
+        switch ($provider) {
+            case 'email':
+                $external_id = $external_username;
+                break;
+            case 'twitter':
+            case 'facebook':
+                break;
+            default:
+                return null;
         }
         // insert new identity into database
         $dbResult = $this->query(
@@ -228,10 +244,10 @@ class IdentityModels extends DataModel {
                 // create new token
                 $activecode = createToken();
                 // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo   = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
                 $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
                 $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
-                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : 0;
+                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : $userInfo['default_identity'];
                 // @todo: commit these two query as a transaction
                 $this->query(
                     "UPDATE `users` SET
@@ -253,7 +269,7 @@ class IdentityModels extends DataModel {
                 // send welcome and active email
                 if ($provider === 'email') {
                     $hlpIdentity = $this->getHelperByName('identity');
-                    $hlpIdentity-> sentWelcomeAndActiveEmail(array(
+                    $hlpIdentity->sentWelcomeAndActiveEmail(array(
                         'identityid'        => $id,
                         'external_identity' => $external_id,
                         'name'              => $name,
