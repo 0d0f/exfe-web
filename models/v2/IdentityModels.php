@@ -241,14 +241,11 @@ class IdentityModels extends DataModel {
         // update user information
         if ($id) {
             if ($user_id) {
-                // create new token
-                $activecode = createToken();
                 // do update
                 $userInfo   = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
                 $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
                 $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
                 $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : $userInfo['default_identity'];
-                // @todo: commit these two query as a transaction
                 $this->query(
                     "UPDATE `users` SET
                      `name`             = '{$userInfo['name']}',
@@ -256,28 +253,21 @@ class IdentityModels extends DataModel {
                      `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
-                $this->query(
-                    "INSERT INTO `user_identity` SET
-                     `identityid` =  {$id},
-                     `userid`     =  {$user_id},
-                     `status`     =  {$status},
-                     `created_at` = NOW(),
-                     `activecode` = '{$activecode}'"
-                );
-                // make verify token
-                $verifyToken = packArray(array('identity_id' => $id, 'activecode' => $activecode));
-                // send welcome and active email
+                // send welcome and active email via Gobus {
                 if ($provider === 'email') {
-                    $hlpIdentity = $this->getHelperByName('identity');
-                    $hlpIdentity->sentWelcomeAndActiveEmail(array(
-                        'identityid'        => $id,
-                        'external_identity' => $external_id,
-                        'name'              => $name,
-                        'avatar_file_name'  => $avatar_filename,
-                        'activecode'        => $activecode,
-                        'token'             => $verifyToken
-                    ));
+                    $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                    $hlpUder  = $this->getHelperByName('user',  'v2');
+                    $objIdentity = $this->getIdentityById($id);
+                    $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
+                    if ($vfyResult) {
+                        $hlpGobus->send('user', 'Welcome', [
+                            'To_identity' => $objIdentity,
+                            'User_name'   => $userInfo['name'],
+                            'Token'       => $vfyResult['token'],
+                        ]);
+                    }
                 }
+                // }
             }
             return $id;
         }
