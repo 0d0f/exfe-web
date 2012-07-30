@@ -84,24 +84,24 @@ define(function (require) {
         })
       // 显示 title
       .queue('show-title', function (next) {
-        TOY_SHADOW.removeClass('hide');
+        //TOY_SHADOW.removeClass('hide');
         PH.animate({
           opacity: 1
-        }, 233);
+        }, 1000/*233*/);
         TOY.dequeue('show-circles');
       })
       // 显示圆圈
       .queue('show-circles', function (next) {
         CIRCLES.animate({
           opacity: 1
-        }, 233);
+        }, 1000/*233*/);
         TOY.dequeue('show-start');
       })
       // 显示按钮
       .queue('show-start', function (next) {
         PF.animate({
           opacity: 1
-        }, 233)
+        }, 1000/*233*/)
         TOY.dequeue('ender');
       })
       // 最后，初始化定时器等
@@ -132,7 +132,7 @@ define(function (require) {
           return;
         }
 
-        cleanup(timer);
+        cleanup();
 
         var $that = $(this)
           , isEnter = e.type === 'mouseenter'
@@ -163,11 +163,14 @@ define(function (require) {
     .off('click.home')
     .on('click.home', function (e) {
       var $e = $(e.target);
+
       if (!$e.hasClass('gather-wrapper')
           && !$e.parent().hasClass('gather-wrapper')
-          && !$('.modal-id').length && $.contains($('.modal-id'), $e)
+          && !$e.hasClass('modal')
+          && !$.contains($('.modal'), $e)
          ) {
-        $('.x-signin').trigger('click.dialog.data-api');
+          console.log(1);
+          $('.x-signin').trigger('click.dialog.data-api');
       }
     });
 
@@ -281,7 +284,7 @@ define(function (require) {
       }, 6765);
     }
 
-    function cleanup(timer) {
+    function cleanup() {
       clearInterval(timer);
       timer = null;
     }
@@ -294,6 +297,7 @@ define(function (require) {
 
       if (n === 0) {
         TOY_SHADOW
+          .addClass('hide')
           .removeClass('exfe-scaleOut');
         return;
       }
@@ -311,8 +315,12 @@ define(function (require) {
         .addClass('t-fadeIn');
 
       if (n === 0){
+
         TOY_SHADOW
-          .addClass('exfe-scaleOut');
+          .removeClass('hide');
+        setTimeout(function () {
+          TOY_SHADOW.addClass('exfe-scaleOut');
+        }, 0);
         return;
       }
 
