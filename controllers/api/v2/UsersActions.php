@@ -178,15 +178,15 @@ class UsersActions extends ActionController {
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
-        if (!$external_id = trim($_POST['external_id'])) {
-            apiError(400, 'no_external_id', 'external_id must be provided');
+        if (!$external_username = trim($_POST['external_username'])) {
+            apiError(400, 'no_external_username', 'external_username must be provided');
         }
         if (!$provider = trim($_POST['provider'])) {
             apiError(400, 'no_provider', 'provider must be provided');
         }
         // get identity
-        $identity = $modIdentity->getIdentityByProviderExternalId(
-            $provider, $external_id
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $external_username
         );
         // init return value
         $rtResult = array('identity' => $identity);
@@ -252,15 +252,15 @@ class UsersActions extends ActionController {
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
         // get inputs
-        if (!$external_id = trim($_POST['external_id'])) {
-            apiError(400, 'no_external_id', 'external_id must be provided');
+        if (!$external_username = trim($_POST['external_username'])) {
+            apiError(400, 'no_external_username', 'external_username must be provided');
         }
         if (!$provider = trim($_POST['provider'])) {
             apiError(400, 'no_provider', 'provider must be provided');
         }
         // get identity
-        $identity = $modIdentity->getIdentityByProviderExternalId(
-            $provider, $external_id
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $external_username
         );
         // init return value
         $rtResult = array('identity' => $identity);
