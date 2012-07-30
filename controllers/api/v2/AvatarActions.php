@@ -12,11 +12,11 @@ class AvatarActions extends ActionController {
     public function doGet() {
         $params  = $this->params;
         $modUser = $this->getModelByName('user', 'v2');
-        if ($params['provider'] && $params['external_id']
-         && $modUser->getUserAvatarByProviderAndExternalId($params['provider'], $params['external_id'])) {
+        if ($params['provider'] && $params['external_username']
+         && $modUser->getUserAvatarByProviderAndExternalUsername($params['provider'], $params['external_username'])) {
             return;
         }
-        $modUser->makeDefaultAvatar($params['external_id']);
+        $modUser->makeDefaultAvatar($params['external_username']);
     }
 
 

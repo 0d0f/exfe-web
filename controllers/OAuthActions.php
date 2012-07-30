@@ -71,9 +71,9 @@ class OAuthActions extends ActionController {
                             return;
                         }
                         $identity_id = $modIdentity->addIdentity(
-                            'twitter',
-                            $objTwitterIdentity->external_id,
-                            ['name'              => $objTwitterIdentity->name,
+                            ['provider'          => 'twitter',
+                             'external_id'       => $objTwitterIdentity->external_id,
+                             'name'              => $objTwitterIdentity->name,
                              'bio'               => $objTwitterIdentity->bio,
                              'external_username' => $objTwitterIdentity->external_username,
                              'avatar_filename'   => $objTwitterIdentity->avatar_filename],

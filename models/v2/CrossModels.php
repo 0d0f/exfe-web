@@ -110,6 +110,7 @@ class CrossModels extends DataModel {
             $result = $this->query($sql);
             if($result >0)
             {
+                print_r($cross_updated);
                 saveUpdate($cross->id,$cross_updated);
                 return $cross->id;
             }
