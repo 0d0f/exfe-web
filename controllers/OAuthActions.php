@@ -158,7 +158,7 @@ class OAuthActions extends ActionController {
                         return;
                     }
                     $modOauth->addtoSession(['signin' => $rstSignin]);
-                    header('location: /s/profile');
+                    header('location: /');
                     return;
                 }
                 echo 'Request error!';
@@ -169,7 +169,7 @@ class OAuthActions extends ActionController {
         header('location:' .(
             $oauthIfo['workflow']['callback']['oauth_device'] === 'iOS'
          ? "{$oauthIfo['workflow']['callback']['oauth_device_callback']}?err=OAuth error."
-         : '/s/profile'
+         : '/'
         ));
     }
 
@@ -203,7 +203,7 @@ class OAuthActions extends ActionController {
                 return;
             }
         }
-        header('location: /s/profile');
+        header('location: /');
     }
 
 
