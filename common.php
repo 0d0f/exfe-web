@@ -225,7 +225,7 @@ function getHashedFilePath($filename = '') {
 }
 
 
-function getAvatarUrl($provider = '', $external_id = '', $raw_avatar = '', $size = '80_80', $spec_fallback = '') {
+function getAvatarUrl($provider = '', $external_username = '', $raw_avatar = '', $size = '80_80', $spec_fallback = '') {
     if ($raw_avatar) {
         $raw_avatar
       = preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
@@ -235,9 +235,9 @@ function getAvatarUrl($provider = '', $external_id = '', $raw_avatar = '', $size
       . '/' . substr($raw_avatar, 1, 2)
       . '/' . "{$size}_{$raw_avatar}");
     } else {
-        $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_id={$external_id}");
+        $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_username={$external_username}");
         if ($provider === 'email') {
-            $raw_avatar = 'http://www.gravatar.com/avatar/' . md5($external_id) . '?d=' . urlencode($raw_avatar);
+            $raw_avatar = 'http://www.gravatar.com/avatar/' . md5($external_username) . '?d=' . urlencode($raw_avatar);
         }
     }
     return $raw_avatar;
