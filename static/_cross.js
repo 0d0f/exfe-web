@@ -1470,6 +1470,26 @@ define(function (require, exports, module) {
 
 
     var ShowTime = function() {
+        function getTimezoneOffset(timezone) {
+            if ((timezone = ExfeUtilities.trim(timezone))) {
+                var arrTimezone = timezone.split(':');
+                if (arrTimezone.length === 2) {
+                    var intHour = parseInt(arrTimezone[0], 10) * 60 * 60,
+                        intMin  = parseInt(arrTimezone[1], 10) * 60;
+                    return intHour + (intHour > 0 ? intMin : -intMin);
+                }
+            }
+            return null;
+        }
+        var crossOffset = getTimezoneOffset(Cross.time.begin_at.timezone),
+            timeOffset  = getTimezoneOffset(ExfeUtilities.getTimezone());
+        if (crossOffset === timeOffset && require('config').timevalid) {
+
+        }
+
+
+
+
         var strAbsTime = '', strRelTime = '', format = 'YYYY-MM-DD';
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
@@ -1782,7 +1802,7 @@ define(function (require, exports, module) {
             $('#gather-title').select();
             $('#gather-title').focus();
         }
-    }
+    };
 
 
     // init api
