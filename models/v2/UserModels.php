@@ -109,13 +109,12 @@ class UserModels extends DataModel {
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
-            $rawUser['avatar_file_name'] = $rawUser['avatar_file_name'] ? getAvatarUrl('', '', $rawUser['avatar_file_name']) : '';
             $user = new User(
                 $rawUser['id'],
                 $rawUser['name'],
                 $rawUser['bio'],
                 null, // default_identity
-                $rawUser['avatar_file_name'],
+                getAvatarUrl('', '', $rawUser['avatar_file_name']),
                 $rawUser['timezone']
             );
             if ($withCrossQuantity) {
@@ -139,7 +138,7 @@ class UserModels extends DataModel {
                     foreach ($identities as $i => $item) {
                         $item['avatar_file_name'] = getAvatarUrl(
                             $item['provider'],
-                            $item['external_identity'],
+                            $item['external_username'],
                             $item['avatar_file_name']
                         );
                         $identity = new Identity(
@@ -502,11 +501,11 @@ class UserModels extends DataModel {
     }
 
 
-    public function signinForAuthToken($provider, $external_id, $password) {
+    public function signinForAuthToken($provider, $external_username, $password) {
         $sql = "SELECT `user_identity`.`userid`, `user_identity`.`status`, `user_identity`.`identityid`
                 FROM   `identities`, `user_identity`
                 WHERE  `identities`.`provider`          = '{$provider}'
-                AND    `identities`.`external_identity` = '{$external_id}'
+                AND    `identities`.`external_username` = '{$external_username}'
                 AND    `identities`.`id` = `user_identity`.`identityid`";
         $rawUser = $this->getRow($sql);
         if ($rawUser && ($user_id = intval($rawUser['userid']))) {
@@ -520,7 +519,7 @@ class UserModels extends DataModel {
              && $password === $passwdInDb['encrypted_password']) {
                 $rsResult = $this->rawSiginin($user_id, $passwdInDb);
                 if ($rsResult) {
-                    return $rsResult + array('identity_id' => $rawUser['identityid']);
+                    return $rsResult + ['identity_id' => $rawUser['identityid']];
                 }
             }
         }
@@ -780,11 +779,11 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserAvatarByProviderAndExternalId($provider, $external_id) {
+    public function getUserAvatarByProviderAndExternalUsername($provider, $external_username) {
         $rawIdentity = $this->getRow(
             "SELECT `id`, `name` FROM `identities`
              WHERE  `provider`          = '{$provider}'
-             AND    `external_identity` = '{$external_id}'"
+             AND    `external_username` = '{$external_username}'"
         );
         if ($rawIdentity && $rawIdentity['id']) {
             $rawUser = $this->getRow(
