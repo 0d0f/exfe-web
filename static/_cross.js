@@ -1482,33 +1482,33 @@ define(function (require, exports, module) {
             return null;
         }
         var crossOffset = getTimezoneOffset(Cross.time.begin_at.timezone),
-            timeOffset  = getTimezoneOffset(ExfeUtilities.getTimezone());
-        if (crossOffset === timeOffset && require('config').timevalid) {
-
-        }
-
-
-
-
-        var strAbsTime = '', strRelTime = '', format = 'YYYY-MM-DD';
+            timeOffset  = getTimezoneOffset(ExfeUtilities.getTimezone()),
+            timevalid   = crossOffset === timeOffset && require('config').timevalid,
+            strAbsTime  = '', strRelTime = '', format = 'YYYY-MM-DD';
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
-                strAbsTime = Cross.time.origin;
-                strRelTime = '&nbsp;';
+                strAbsTime  = Cross.time.origin;
+                strRelTime  = '&nbsp;';
             } else if (Cross.time.begin_at.time) {
-                var rawUtc = moment.utc(
+                console.log(moment.utc(
                     Cross.time.begin_at.date + ' '
-                  + Cross.time.begin_at.time,
-                    format + ' HH:mm:ss'
-                ).local();
-                strAbsTime = rawUtc.format('h:mmA on ddd, MMM D');
-                strRelTime = rawUtc.fromNow();
-                strRelTime = strRelTime.indexOf('a few seconds') !== -1
-                           ? 'Now'   : strRelTime;
+                  + Cross.time.begin_at.time, format + ' HH:mm:ss'
+                ).fn.unix());
+                return;
+                var rawUtc  = moment.utc(moment.utc(
+                    Cross.time.begin_at.date + ' '
+                  + Cross.time.begin_at.time, format + ' HH:mm:ss'
+                ).fn.unix() + (timevalid ? timeOffset : crossOffset));
+                strAbsTime  = rawUtc.format('h:mmA on ddd, MMM D')
+                            + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
+                strRelTime  = rawUtc.fromNow();
+                strRelTime  = strRelTime.indexOf('a few seconds') !== -1
+                            ? 'Now'   : strRelTime;
             } else {
-                strAbsTime = Cross.time.begin_at.date;
-                strRelTime = strAbsTime === moment().format(format)
-                           ? 'Today' : moment(strAbsTime, format).fromNow();
+                strAbsTime  = Cross.time.begin_at.date
+                            + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));
+                strRelTime  = Cross.time.begin_at.date === moment().format(format)
+                            ? 'Today' : moment(strAbsTime, format).fromNow();
             }
         } else {
             strAbsTime = 'Click here to set time.';
