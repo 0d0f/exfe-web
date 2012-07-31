@@ -5,6 +5,7 @@ define(function (require, exports, module) {
   var Api = require('api');
   var Util = require('util');
   var Store = require('store');
+  var Config = require('config');
   var $BODY = $(document.body);
 
   var Dialog = require('dialog');
@@ -95,7 +96,7 @@ define(function (require, exports, module) {
 
           if (oauthType === 'twitter') {
             that._oauth_ = $.ajax({
-              url: '/oauth/twitterAuthenticate',
+              url: Config.api_url + '/oauth/twitterAuthenticate',
               dataType: 'JSON',
               beforeSend: function (xhr) {
                 that.$('.modal-body').eq(0).css('opacity', 0);
@@ -555,6 +556,7 @@ define(function (require, exports, module) {
     options: {
       onHideAfter: function (e) {
         // jquery.Event
+        // TODO: 临时处理 , 首页 登录窗口
         if (e) {
           var dialog_from = this.dialog_from;
           if (dialog_from) {
