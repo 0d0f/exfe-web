@@ -1,5 +1,6 @@
 define('middleware', function (require, exports, module) {
   var Api = require('api')
+    , Bus = require('bus')
     , Store = require('store');
 
   var middleware = module.exports = {};
@@ -17,6 +18,10 @@ define('middleware', function (require, exports, module) {
       content = JSON.parse(meta_sign.content);
       Store.set('signin', signin = content.signin);
       document.getElementsByTagName('head')[0].removeChild(meta_sign);
+      // TODO: 总感觉放这里不合适，后面再想想看 {{{
+      Bus.emit('xapp:usertoken', signin.token, signin.user_id, 2);
+      Bus.emit('xapp:usersignin');
+      // }}}
     }
 
     signin = signin || Store.get('signin');
@@ -42,7 +47,7 @@ define('middleware', function (require, exports, module) {
         }
       }
       , function (data) {
-        console.dir(data);
+        req.session.identities_status = data.identities_status;
         req.session.password = data.password;
         next();
       }

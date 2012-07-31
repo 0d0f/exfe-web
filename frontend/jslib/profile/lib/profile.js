@@ -200,11 +200,11 @@ define(function (require, exports, module) {
     return Handlebars.helpers['if'].call(this, context, options);
   });
 
-  Handlebars.registerHelper('atName', function (provder, external_id) {
-    //var s = '';
-    //if (provder === 'twitter') s = '@' + external_id;
-    //else s = external_id;
-    return external_id;
+  Handlebars.registerHelper('atName', function (provder, external_username) {
+    var s = '';
+    if (provder === 'twitter') s = '@' + external_username;
+    else s = external_username;
+    return s;
   });
 
   Handlebars.registerHelper('editable', function (provder, status, options) {
@@ -215,7 +215,7 @@ define(function (require, exports, module) {
   // 用户信息,包括多身份信息
   var identities_defe = function (user) {
     $('.user-xstats .attended').html(user.cross_quantity);
-    $('#user-name > span').html(user.name);
+    //$('#user-name > span').html(user.external_username || user.name || user.nickname);
 
     var jst_user = $('#jst-user-avatar');
 
@@ -223,7 +223,7 @@ define(function (require, exports, module) {
     var h = s({avatar_filename: user.avatar_filename});
     $('.user-avatar').append(h);
 
-    $('.user-name').find('h3').html(user.name);
+    $('#profile .user-name').find('h3').html(user.external_username || user.name || user.nickname);
 
     var jst_identity_list = $('#jst-identity-list');
     var s = Handlebars.compile(jst_identity_list.html());

@@ -22,10 +22,12 @@ define(function (require, exports, module) {
       },
 
       onCheckUser: function () {
-        var lastIdentity = Store.get('lastIdentity');
+        var lastIdentity = Store.get('lastIdentity')
+          , last_external_username = Store.get('last_external_username');
         if (lastIdentity) {
           // 暂时处理单用户，默认取第一个
-          this.$('#identity').val(lastIdentity.external_id);
+          //this.$('#identity').val(lastIdentity.external_id);
+          this.$('#identity').val(last_external_username);
           this.$('.x-signin').removeClass('disabled loading');
           this.availability = true;
 
@@ -263,6 +265,7 @@ define(function (require, exports, module) {
         'click .xbtn-forgotpwd': function (e) {
           e.preventDefault();
           this.element.addClass('hide');
+          $('#js-modal-backdrop').addClass('hide');
           //this.hide();
           //this.switchTab('d04');
         },
@@ -303,6 +306,11 @@ define(function (require, exports, module) {
 
           if (!od.password || (t === 'd02' && !od.name)) {
             return;
+          }
+
+          // 非 normal email
+          if (od.provider !== 'email') {
+            od.external_identity = od.external_username;
           }
 
           if (t === 'd01' || t === 'd02') {
@@ -545,17 +553,28 @@ define(function (require, exports, module) {
   dialogs.forgotpassword = {
 
     options: {
+      onHideAfter: function (e) {
+        // jquery.Event
+        if (e) {
+          var dialog_from = this.dialog_from;
+          if (dialog_from) {
+            $('[data-dialog-type="' + dialog_from + '"]').data('dialog').hide();
+          }
+        }
+
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
 
       events: {
         'click .xbtn-cancel': function (e) {
           var dialog_from = this.dialog_from;
           this.hide();
-          var $e = this.element;
-          this.offSrcNode();
-          this.destory();
-          $e.remove();
           if (dialog_from) {
             $('[data-dialog-type="' + dialog_from + '"]').data('dialog').element.removeClass('hide');
+            $('#js-modal-backdrop').removeClass('hide');
             //$('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
             // TODO: 先简单处理，后面是否要保存 target 元素
           }
@@ -568,11 +587,11 @@ define(function (require, exports, module) {
             return;
           }
           if ($e.hasClass('success')) {
-            this.hide();
+            this.hide(e);
             var $t = this.element;
-            this.offSrcNode();
-            this.destory();
-            $t.remove();
+            //this.offSrcNode();
+            //this.destory();
+            //$t.remove();
             return;
           }
           var i = $e.data('identity');
@@ -582,7 +601,7 @@ define(function (require, exports, module) {
                 type: 'POST',
                 data: {
                   provider: i.provider,
-                  external_username: i.external_id
+                  external_username: i.external_username
                 },
                 beforeSend: function (xhr) {
                   $e.addClass('disabled');
@@ -612,12 +631,15 @@ define(function (require, exports, module) {
             if (is.avatar_filename === 'default.png') {
               is.avatar_filename = '/img/default_portraituserface_20.png';
             }
-            var external_id = is.external_id;
+            var external_username = is.external_username;
             var src = is.avatar_filename;
             var $identity = this.$('.user-identity');
             $identity.find('img.avatar').attr('src', src);
             $identity.find('i').addClass('icon16-identity-' + is.provider);
-            $identity.next().text(external_id);
+            if (is.provider === 'twitter') {
+              external_username = '@' + external_username;
+            }
+            $identity.next().text(external_username);
             this.$('.xbtn-verify').data('identity', is);
           }
         }
@@ -1339,11 +1361,11 @@ define(function (require, exports, module) {
             that.$('.user-identity').addClass('hide');
           }
 
-          console.log(data);
           that.identityFlag = data.registration_flag;
           // SIGN_IN
           if (data.registration_flag === 'SIGN_IN') {
             t = 'd01';
+            that.$('.xbtn-forgotpwd').removeClass('hide');
           }
           // SIGN_UP 新身份
           else if (data.registration_flag === 'SIGN_UP') {
@@ -1376,11 +1398,10 @@ define(function (require, exports, module) {
       // TODO: 后期优化掉
       Bus.off('widget-dialog-identification-nothing');
       Bus.on('widget-dialog-identification-nothing', function () {
-        console.log(1);
         that.$('.user-identity').addClass('hide');
         that.$('[for="identity"]').removeClass('label-error')
           .find('span').text('');
-        that.$('.xbtn-forgotpwd').data('source', null);
+        that.$('.xbtn-forgotpwd').addClass('hide').data('source', null);
         that.availability = false;
         //if (that.switchTabType !== 'd02') that.switchTab('d01');
         that.$('.x-signin')[(that.availability ? 'remove' : 'add') + 'Class']('disabled');
