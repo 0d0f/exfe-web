@@ -70,6 +70,7 @@ define('dialog', [], function (require, exports, module) {
           , footer = data.footer
           , others = data.others
           , cls = data.cls;
+        this.element.attr('tabIndex', -1);
         if (cls) this.element.addClass(cls);
         if (title) this.element.find('h3').eq(0).html(title);
         if (body) this.element.find('div.modal-body').html(body);

@@ -30,6 +30,60 @@ define(function (require) {
       }
     },
 
+    select: function () {
+      var active = this.$('.active'),
+          val = active.data('value');
+
+      if (!val) return false;
+
+      this.target
+        .val(this.updater(val))
+        .change();
+
+      this.emit('select', val);
+      this.selecting = false;
+    },
+
+    tab: function () {
+      var val = this.target.val();
+      //this.emit('select', val);
+      return this.hide();
+    },
+
+    keypress: function (e, keyCode) {
+      if (!this.isShown) return;
+
+      keyCode = e.keyCode;
+      switch(keyCode) {
+        case 9: // tab
+          this.tab();
+          //e.preventDefault();
+          break;
+        //case 13: // nete
+        //case 27: // escape
+          //e.preventDefault();
+          //break;
+
+        case 38: // up arrow
+          if (e.type !== 'keydown') break;
+          e.preventDefault();
+          this.selecting = true;
+          this.prev();
+          this.select();
+          break;
+
+        case 40: //down break
+          if (e.type !== 'keydown') break;
+          e.preventDefault();
+          this.selecting = true;
+          this.next();
+          this.select();
+          break;
+      }
+
+      e.stopPropagation();
+    },
+
     options: {
 
       // ajax settings
@@ -67,7 +121,7 @@ define(function (require) {
 
         that.cache || (that.cache = {});
 
-        if (that.source && that.source.length) {
+        if (!that.selecting && that.source && that.source.length) {
           items = $.grep(that.source, function (item) {
             return that.matcher(item);
           });
@@ -77,7 +131,6 @@ define(function (require) {
           } else {
             that.render(items.slice(0)).show();
           }
-
         }
 
         if (that.timer) {

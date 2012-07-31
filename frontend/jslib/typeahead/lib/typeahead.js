@@ -72,7 +72,7 @@ define('typeahead', [], function (require, exports, module) {
 
     select: function () {
       var active = this.$('.active'),
-          val = active.attr('data-value');
+          val = active.data('value');
       this.target
         .val(this.updater(val))
         .change();
@@ -86,7 +86,7 @@ define('typeahead', [], function (require, exports, module) {
     },
 
     itemRender: function (item, i) {
-      return $(this.options.viewData.item).attr('data-value', item).html(item);
+      return $(this.options.viewData.item).data('value', item).html(item);
     },
 
     render: function (items) {
@@ -95,7 +95,7 @@ define('typeahead', [], function (require, exports, module) {
         return that.itemRender(item, i)[0];
       });
 
-      items.first().addClass('active');
+      //items.first().addClass('active');
       var $ul = $(this.options.viewData.menu).html(items);
       this.element.html($ul);
       return this;
@@ -138,24 +138,26 @@ define('typeahead', [], function (require, exports, module) {
     },
 
     next: function (e) {
-      var active = this.element.find('.active').removeClass('active')
+      var active = this.element.find('.active')
         , next = active.next();
 
       if (!next.length) {
         next = this.element.find('li').first();
       }
 
+      active.removeClass('active');
       next.addClass('active');
     },
 
     prev: function (e) {
-      var active = this.element.find('.active').removeClass('active')
+      var active = this.element.find('.active')
         , prev = active.prev();
 
       if (!prev.length) {
         prev = this.element.find('li').last();
       }
 
+      active.removeClass('active');
       prev.addClass('active');
     },
 
