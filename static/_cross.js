@@ -70,7 +70,7 @@ ExfeUtilities = {
                 break;
             case 4:
             case 5:
-                arrTime.push('am');
+                arrTime.push(parseInt(arrTime[3], 10) === 12 ? 'pm' : 'am');
             default:
                 if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
                     var objTime = rawTime.toDate();
@@ -1490,18 +1490,13 @@ define(function (require, exports, module) {
                 strAbsTime  = Cross.time.origin;
                 strRelTime  = '&nbsp;';
             } else if (Cross.time.begin_at.time) {
-                console.log(moment.utc(
+                var objMon  = moment((moment.utc(
                     Cross.time.begin_at.date + ' '
                   + Cross.time.begin_at.time, format + ' HH:mm:ss'
-                ).fn.unix());
-                return;
-                var rawUtc  = moment.utc(moment.utc(
-                    Cross.time.begin_at.date + ' '
-                  + Cross.time.begin_at.time, format + ' HH:mm:ss'
-                ).fn.unix() + (timevalid ? timeOffset : crossOffset));
-                strAbsTime  = rawUtc.format('h:mmA on ddd, MMM D')
+                ).unix()    + (timevalid ? 0 : (crossOffset - timeOffset))) * 1000);
+                strAbsTime  = objMon.format('h:mmA on ddd, MMM D')
                             + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
-                strRelTime  = rawUtc.fromNow();
+                strRelTime  = objMon.fromNow();
                 strRelTime  = strRelTime.indexOf('a few seconds') !== -1
                             ? 'Now'   : strRelTime;
             } else {
