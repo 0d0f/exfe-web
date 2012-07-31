@@ -31,7 +31,7 @@ define(function (require, exports, module) {
   app.get('/#gather', routes.switchPage, routes.signin, routes.gather);
 
   // profile
-  app.get(/^\/#([^@\/\s\!]+)@([^@\/\s\.]+)/, routes.switchPage, routes.signin, routes.profile);
+  app.get(/^\/#([^@\/\s\!]+)?@([^@\/\s\.]+)/, routes.switchPage, routes.signin, routes.profile);
 
   // cross
   // cross token
