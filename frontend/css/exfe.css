@@ -159,6 +159,7 @@ body {
   margin: 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
+  -webkit-font-smoothing: antialiased;
   line-height: 20px;
   color: #191919;
   background-color: #fafafa;
@@ -5542,9 +5543,34 @@ body {
 }
 
 .modal-id .authorize {
-  display: table-cell;
   height: 40px;
-  vertical-align: middle;
+  padding-left: 55px;
+  line-height: 40px;
+}
+
+.modal-id .oauth {
+  margin-left: 32px;
+}
+
+.modal-id .oauth > a {
+  display: block;
+  width: 40px;
+  height: 40px;
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  cursor: pointer;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: 0;
+}
+
+.modal-id .oauth-twitter {
+  background-image: url("/static/img/twitter_40_gray.png");
+}
+
+.modal-id .oauth-twitter:hover {
+  background-image: url("/static/img/twitter_40.png");
 }
 
 .modal-id .user-identity {
@@ -5592,6 +5618,10 @@ body {
   top: 50px;
   width: 340px;
   text-align: center;
+}
+
+.modal-id .authentication .content {
+  margin-top: 65px;
 }
 
 .modal-id .authentication .xalert-error {
@@ -6068,7 +6098,7 @@ body {
 
 .x-home .page-header .title[data-id="exfe"] h1,
 .x-home .page-header .title[data-id="x"] h1 {
-  padding-left: 35px;
+  padding-left: 50px;
 }
 
 .x-home .page-header h1 {
@@ -6157,7 +6187,6 @@ body {
 
 .x-home .page-main .circle {
   position: absolute;
-  display: table;
   width: 55px;
   height: 55px;
   color: transparent;
@@ -6272,24 +6301,56 @@ body {
 @-webkit-keyframes bounceIn {
   0% {
     opacity: 0;
-    -webkit-transform: scale(0.01);
+    -webkit-transform: scale(0.3);
   }
-  60% {
+  33% {
+    opacity: 1;
+    -webkit-transform: scale(1.18);
+  }
+  35% {
     opacity: 1;
     -webkit-transform: scale(1.26);
   }
   /*70% {*/
   /*opacity: 1;*/
-  /*-webkit-transform: scale(1.1);*/
+  /*-webkit-transform: scale(1.26);*/
   /*}*/
-  90% {
-    opacity: 1;
-    -webkit-transform: scale(1);
-  }
+  /*71% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1.20);*/
+  /*}*/
+  /*80% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1);*/
+  /*}*/
   100% {
     opacity: 1;
     -webkit-transform: scale(1);
   }
+  /*0% {*/
+  /*opacity: 0;*/
+  /*-webkit-transform: scale(0.01);*/
+  /*}*/
+  /*70% {*/
+  /*opacity: .5;*/
+  /*-webkit-transform: scale(1.1);*/
+  /*}*/
+  /*90% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1);*/
+  /*}*/
+  /*85% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1.26);*/
+  /*}*/
+  /*70% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1.1);*/
+  /*}*/
+  /*100% {*/
+  /*opacity: 1;*/
+  /*-webkit-transform: scale(1);*/
+  /*}*/
 }
 
 @-moz-keyframes bounceIn {
@@ -6297,16 +6358,14 @@ body {
     opacity: 0;
     -moz-transform: scale(0.01);
   }
-  50% {
+  /*50% {*/
+  /*opacity: 1;*/
+  /*-moz-transform: scale(1.26);*/
+  /*}*/
+  70% {
     opacity: 1;
-    -moz-transform: scale(1.26);
+    -moz-transform: scale(1.1);
   }
-  /*
-          70% {
-            opacity: 1;
-            -moz-transform: scale(1.1);
-          }
-          */
   90% {
     opacity: 1;
     -moz-transform: scale(1);
@@ -6322,16 +6381,14 @@ body {
     opacity: 0;
     -o-transform: scale(0.01);
   }
-  50% {
+  /*50% {*/
+  /*opacity: 1;*/
+  /*-o-transform: scale(1.26);*/
+  /*}*/
+  70% {
     opacity: 1;
-    -o-transform: scale(1.26);
+    -o-transform: scale(1.1);
   }
-  /*
-          70% {
-            opacity: 1;
-            -o-transform: scale(1.1);
-          }
-          */
   90% {
     opacity: 1;
     -o-transform: scale(1);
@@ -6347,19 +6404,13 @@ body {
     opacity: 0;
     transform: scale(0.01);
   }
-  50% {
+  /*80% {*/
+  /*opacity: 1;*/
+  /*transform: scale(1.26);*/
+  /*}*/
+  70% {
     opacity: 1;
-    transform: scale(1.26);
-  }
-  /*
-          70% {
-            opacity: 1;
-            transform: scale(1.1);
-          }
-          */
-  90% {
-    opacity: 1;
-    transform: scale(1);
+    transform: scale(1.1);
   }
   100% {
     opacity: 1;
@@ -6550,8 +6601,14 @@ body {
 }
 
 .x-home .page-main .c-ctx {
-  display: table-cell;
-  vertical-align: middle;
+  position: relative;
+  top: 50%;
+  /*background: red;*/
+
+  /*display: table-cell;*/
+
+  /*vertical-align: middle;*/
+
 }
 
 .x-home .page-main .c-rsvp,
@@ -6560,25 +6617,55 @@ body {
   font-style: italic;
 }
 
+.x-home .page-main .c-rsvp .c-ctx,
+.x-home .page-main .c-safe .c-ctx,
+.x-home .page-main .c-handy .c-ctx {
+  padding-top: 2px;
+}
+
 .x-home .page-main .c-x {
   font-family: "Helvetica Neue";
   font-size: 28px;
   line-height: 34px;
 }
 
+.x-home .page-main .c-x .c-ctx {
+  margin-top: -17px;
+}
+
 .x-home .page-main .c-rsvp {
   font-size: 22px;
+  /*height: 22px;*/
+
+  /*height: 28px;*/
+
   line-height: 28px;
+}
+
+.x-home .page-main .c-rsvp .c-ctx {
+  margin-top: -14px;
 }
 
 .x-home .page-main .c-safe {
   font-size: 24px;
+  /*height: 24px;*/
+
   line-height: 30px;
+}
+
+.x-home .page-main .c-safe .c-ctx {
+  margin-top: -15px;
 }
 
 .x-home .page-main .c-handy {
   font-size: 18px;
+  /*height: 18px;*/
+
   line-height: 24px;
+}
+
+.x-home .page-main .c-handy .c-ctx {
+  margin-top: -12px;
 }
 
 .x-home .page-footer {
