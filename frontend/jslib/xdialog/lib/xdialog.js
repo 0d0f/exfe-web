@@ -86,6 +86,17 @@ define(function (require, exports, module) {
       },
 
       events: {
+        // bind `enter` key for submit
+        'keypress .modal-main': function (e) {
+          var t = this.switchTabType
+            , kc = e.keyCode;
+
+          // enter
+          if (this.availability && (t === 'd01' || t === 'd02') && kc === 13) {
+            this.$('.x-signin').click();
+          }
+        },
+
         'click .oauth > a': function (e) {
           e.stopPropagation();
           e.preventDefault();
@@ -339,11 +350,10 @@ define(function (require, exports, module) {
 
                 that.hide();
                 // goto profile
-                if (t === 'd01') {
+                if (t === 'd01' || t === 'd02') {
                   Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
                   Bus.emit('xapp:usersignin');
                 } else {
-                  that.hide();
                   var d = new Dialog(dialogs.welcome);
                   d.render();
                   d.show(od);
