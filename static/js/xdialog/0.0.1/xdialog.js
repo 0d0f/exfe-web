@@ -78,43 +78,70 @@ define(function (require, exports, module) {
         this.offSrcNode();
         this.destory();
         $e.remove();
+
+        // TODO: 删除 `popmenu` 元素，暂时先放着
+        $('.popmenu').remove();
       },
 
       events: {
         'click .oauth > a': function (e) {
+          e.stopPropagation();
           e.preventDefault();
           var that = this;
           var $e = $(e.currentTarget)
             , oauthType = $e.data('oauth');
+
           if (oauthType === 'twitter') {
             that._oauth_ = $.ajax({
               url: '/oauth/twitterAuthenticate',
+              dataType: 'JSON',
               beforeSend: function (xhr) {
                 that.$('.modal-body').eq(0).css('opacity', 0);
-                that.$('.xbtn-oauth').data('redirect', null);
                 that.switchTab('d05');
+
                 that.$('.authentication')
-                  .find('.xalert-error')
-                  .html('')
+                  .find('img')
+                  .removeClass('hide');
+
+                that.$('.authentication')
+                  .find('.redirecting')
+                  .removeClass('hide');
+
+                that.$('.authentication')
+                  .find('.xalert-fail')
+                  .addClass('hide');
+
+                that.$('.xbtn-oauth')
                   .addClass('hide');
               },
               success: function (data) {
-                that.$('.xbtn-oauth').data('redirect', data.redirect);
-              },
-              fail: function (data) {
-                that.$('.authentication')
-                  .find('.xalert-error')
-                  .html(data.meta.errorDetail)
-                  .removeClass('hide');
+                var code = data.meta.code;
+                if (code === 200) {
+                  window.location.href = data.response.redirect;
+                } else {
+                  that.$('.authentication')
+                    .find('img')
+                  .addClass('hide');
+
+                  that.$('.authentication')
+                    .find('.redirecting')
+                    .addClass('hide');
+
+                  that.$('.authentication')
+                    .find('.xalert-fail')
+                    .removeClass('hide');
+
+                  that.$('.xbtn-oauth')
+                    .removeClass('hide');
+                }
               }
             });
           }
         },
         'click .xbtn-oauth': function (e) {
-          var redirect = $(e.currentTarget).data('redirect');
-          if (redirect) {
-            window.localtion = redirect;
-          }
+          this.$('.modal-body').eq(0).css('opacity', 1);
+          this.switchTab('d00');
+          return false;
         },
         'click .xbtn-verify': function (e) {
           var that = this;
@@ -132,7 +159,7 @@ define(function (require, exports, module) {
               type: 'POST',
               data: {
                 provider: provider,
-                external_id: external_id
+                external_username: external_id
               },
               beforeSend: function (data) {
               },
@@ -155,7 +182,7 @@ define(function (require, exports, module) {
           var val = Util.trim($(e.currentTarget).val());
           var $identity = this.$('[for="identity"]');
           var $text = $identity.find('span');
-          if (!val || !Util.parseId(val).provider) {
+          if (val.length && !Util.parseId(val).provider) {
             $identity.addClass('label-error');
             $text.text('Invalid identity.');
           } else {
@@ -194,15 +221,17 @@ define(function (require, exports, module) {
           }
         },
         'click .help-subject': function (e) {
-          var $e = $(e.currentTarget), flag = this.identityFlag;
+          var $e = $(e.currentTarget)
+            , flag = this.identityFlag
+            , s;
 
           if ($e.hasClass('icon14-question')) {
             if (flag && flag === 'SET_PASSWORD') {
-              var s = 'Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.'
+              s = 'Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.'
             } else {
-              var s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
+              s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
             }
-            $e.parent().find('.xalert-error').html(s).removeClass('hide');;
+            $e.parent().find('.xalert-error').html(s).removeClass('hide');
           } else {
             this.switchTab('d00');
             this.resetInputs();
@@ -213,9 +242,13 @@ define(function (require, exports, module) {
 
             // 清楚user 缓存
             Store.set('lastIdentity', null);
-            Store.set('last_external_id', null);
+            Store.set('last_external_username', null);
             Store.set('signin', null);
-            //Store.set('user', null);
+            Store.set('user', null);
+
+            // cleanup `xidentity` source data
+            // TODO: 后期移调
+            this.$('[data-typeahead-type="identity"]').data('typeahead').source = null;
           }
 
         },
@@ -229,12 +262,13 @@ define(function (require, exports, module) {
         },
         'click .xbtn-forgotpwd': function (e) {
           e.preventDefault();
-          this.hide();
+          this.element.addClass('hide');
+          //this.hide();
           //this.switchTab('d04');
         },
         'click .xbtn-setup': function (e) {
           e.preventDefault();
-          this.$('.modal-body').eq(0).css('opacity', .2);
+          this.$('.modal-body').eq(0).css('opacity', 0.05);
           this.switchTab('d03');
         },
         'click .xbtn-isee': function (e) {
@@ -277,7 +311,7 @@ define(function (require, exports, module) {
               , {
                 type: 'POST',
                 data: {
-                  external_id: od.external_identity,
+                  external_username: od.external_identity,
                   provider: od.provider,
                   password: od.password,
                   name: od.name || '',
@@ -293,13 +327,13 @@ define(function (require, exports, module) {
               , function (data) {
                 Store.set('signin', data);
                 // 最后登陆的 external_identity
-                Store.set('last_external_id', od.external_identity);
+                Store.set('last_external_username', od.external_identity);
 
+                that.hide();
                 // goto profile
                 if (t === 'd01') {
                   Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
                   Bus.emit('xapp:usersignin');
-                  that.hide();
                 } else {
                   that.hide();
                   var d = new Dialog(dialogs.welcome);
@@ -336,10 +370,12 @@ define(function (require, exports, module) {
         // TODO: oAuth 地址设置
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
-            + '<div class="pull-right oauth">'
-              + '<a href="#" data-oauth="twitter"><img src="/static/img/twitter-logo.png" alt="" width="52" height="40"></a>'
+            + '<div class="clearfix">'
+              + '<div class="pull-left authorize">Start with:</div>'
+              + '<div class="pull-left oauth">'
+                + '<a href="#" class="oauth-twitter" data-oauth="twitter">twitter</a>'
+              + '</div>'
             + '</div>'
-            + '<div class="authorize">Sign in through:</div>'
             + '<div class="orspliter">or</div>'
             + '<form class="modal-form">'
               + '<fieldset>'
@@ -376,7 +412,8 @@ define(function (require, exports, module) {
                   + '</div>'
 
                   + '<div class="control-group d d01 hide">'
-                    + '<div class="controls">'
+                    //+ '<div class="controls">'
+                    + '<div class="control-label">'
                       + '<label class="checkbox">'
                         + '<input type="checkbox" id="auto-signin" value="1" checked>'
                         + 'Sign in automatically'
@@ -397,7 +434,8 @@ define(function (require, exports, module) {
           + '<button href="#" class="pull-right xbtn-blue d d01 d02 x-signin disabled hide">Sign In</button>'
           //+ '<button href="#" class="pull-right xbtn-blue d d04 xbtn-success hide">Done</button>'
           + '<button href="#" class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>'
-          + '<button href="#" class="pull-right xbtn-white d d05 xbtn-oauth hide">OK</button>',
+          + '<button href="#" class="pull-right xbtn-white d hide">OK</button>'
+          + '<button href="#" class="pull-right xbtn-white d xbtn-oauth hide">Back</button>',
 
         others: ''
           + '<div class="isee d d03 hide">'
@@ -411,9 +449,12 @@ define(function (require, exports, module) {
           + '<div class="authentication d d05 hide">'
             + '<div class="modal-body">'
               + '<div class="shadow title">Authentication</div>'
-              + '<div class="center shadow title" style="margin-bottom: 0;">through Twitter</div>'
-              + '<p class="xalert-error hide"></p>'
-              + '<p>Redirection...</p>'
+              + '<div class="center shadow title">through Twitter</div>'
+              + '<div class="content">'
+                + '<img class="hide" src="/static/img/loading.gif" width="32" height="32" />'
+                + '<p class="redirecting hide">Redirection...</p>'
+                + '<p class="xalert-fail hide">Failed to connect with Twitter server.</p>'
+              + '</div>'
             + '</div>'
           + '</div>'
       }
@@ -504,6 +545,7 @@ define(function (require, exports, module) {
   dialogs.forgotpassword = {
 
     options: {
+
       events: {
         'click .xbtn-cancel': function (e) {
           var dialog_from = this.dialog_from;
@@ -513,7 +555,8 @@ define(function (require, exports, module) {
           this.destory();
           $e.remove();
           if (dialog_from) {
-            $('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
+            $('[data-dialog-type="' + dialog_from + '"]').data('dialog').element.removeClass('hide');
+            //$('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
             // TODO: 先简单处理，后面是否要保存 target 元素
           }
         },
@@ -521,7 +564,9 @@ define(function (require, exports, module) {
         'click .xbtn-verify': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
-          if ($e.hasClass('disabled')) return;
+          if ($e.hasClass('disabled')) {
+            return;
+          }
           if ($e.hasClass('success')) {
             this.hide();
             var $t = this.element;
@@ -537,7 +582,7 @@ define(function (require, exports, module) {
                 type: 'POST',
                 data: {
                   provider: i.provider,
-                  external_id: i.external_id
+                  external_username: i.external_id
                 },
                 beforeSend: function (xhr) {
                   $e.addClass('disabled');
@@ -564,8 +609,8 @@ define(function (require, exports, module) {
         if (data && data.identity) {
           var is = data.identity;
           if (is) {
-            if (is['avatar_filename'] === 'default.png') {
-              is['avatar_filename'] = '/img/default_portraituserface_20.png';
+            if (is.avatar_filename === 'default.png') {
+              is.avatar_filename = '/img/default_portraituserface_20.png';
             }
             var external_id = is.external_id;
             var src = is.avatar_filename;
@@ -588,15 +633,18 @@ define(function (require, exports, module) {
 
         body: ''
           + '<div class="shadow title">Forgot Password</div>'
-          + '<div>Identity to reset password:</div>'
+          + '<div>You can reset your <span class="x-sign">EXFE</span> password through identity:</div>'
           + '<div class="pull-right user-identity">'
             + '<img class="avatar" src="" alt="" width="40" height="40" />'
             + '<i class="provider"></i>'
           + '</div>'
           + '<div class="identity disabled"></div>'
+          + '<div>Confirm sending reset token to your mailbox?</div>'
           + '<div class="hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
-          + '<div class="xalert-error hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam.</div>'
-          + '<div class="xalert-success hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the link.</div>',
+          + '<div class="xalert-error hide">'
+            + '<p>Requested too much, hold on awhile.</p>'
+            + '<p>Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</p>'
+          + '</div>',
 
         footer: ''
           + '<button class="pull-right xbtn-blue xbtn-verify">Verify</button>'
@@ -605,7 +653,7 @@ define(function (require, exports, module) {
       }
     }
 
-  };
+  }
 
   dialogs.changepassword = {
 
@@ -623,12 +671,14 @@ define(function (require, exports, module) {
           var user = Store.get('user');
           var identities = user.identities;
           var is = R.filter(identities, function (v, i) {
-            if (v.status === 'CONNECTED') return true;
+            if (v.status === 'CONNECTED') {
+              return true;
+            }
           });
           if (is.length === 1) {
             e.stopPropagation();
             this.hide();
-            var d = new Dialog(dialogs['forgotpassword']);
+            var d = new Dialog(dialogs.forgotpassword);
             d.dialog_from = 'changepassword';
             d.render();
             $(e.currentTarget).data('identity-id', is[0].id);
@@ -1070,7 +1120,9 @@ define(function (require, exports, module) {
         var identity_id = $e.data('identity-id') || $e.parents('li').data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
-          if (v.id === identity_id) return true;
+          if (v.id === identity_id) {
+            return true;
+          }
         })[0];
         this.$('.xbtn-verify').data('identity_id', identity.id);
         this.$('.identity').text(identity.external_id);
@@ -1161,7 +1213,9 @@ define(function (require, exports, module) {
         var identity_id = $e.parents('li').data('identity-id');
         var user = Store.get('user');
         var identity = R.filter(user.identities, function (v, i) {
-          if (v.id === identity_id) return true;
+          if (v.id === identity_id) {
+            return true;
+          }
         })[0];
         this.$('.xbtn-verify').data('identity_id', identity.id);
         this.$('.identity').text(identity.external_id);
@@ -1248,6 +1302,8 @@ define(function (require, exports, module) {
     init: function () {
       var that = this;
 
+      // TODO: 后期优化掉
+      Bus.off('widget-dialog-identification-auto');
       Bus.on('widget-dialog-identification-auto', function (data) {
         var $identityLabel = that.$('[for="identity"]'),
             $identityLabelSpan = $identityLabel.find('span');
@@ -1283,6 +1339,7 @@ define(function (require, exports, module) {
             that.$('.user-identity').addClass('hide');
           }
 
+          console.log(data);
           that.identityFlag = data.registration_flag;
           // SIGN_IN
           if (data.registration_flag === 'SIGN_IN') {
@@ -1316,8 +1373,10 @@ define(function (require, exports, module) {
         that.$('.xbtn-forgotpwd').data('source', data);
       });
 
+      // TODO: 后期优化掉
+      Bus.off('widget-dialog-identification-nothing');
       Bus.on('widget-dialog-identification-nothing', function () {
-        if (!('$' in that)) return;
+        console.log(1);
         that.$('.user-identity').addClass('hide');
         that.$('[for="identity"]').removeClass('label-error')
           .find('span').text('');
