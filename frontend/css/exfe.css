@@ -4240,7 +4240,7 @@ input[type="submit"].btn.btn-mini {
   position: absolute;
   left: 1px;
   z-index: 10501;
-  width: 216px;
+  width: 231px;
   line-height: 24px;
   color: #4c4c4c;
   background-color: #f2f2f2;
@@ -4693,10 +4693,6 @@ input[type="submit"].btn.btn-mini {
 
 .icon16-timezone {
   background-position: -256px -26px;
-}
-
-.icon40-twitter {
-  background-position: 0 -68px;
 }
 
 .icon10-host-h {
@@ -5164,9 +5160,14 @@ input[type="submit"].btn.btn-mini {
 
 .xalert-error {
   padding: 5px;
-  color: #cb4747;
+  /*color: #cb4747;*/
+
   background: rgba(255, 230, 230, 0.25);
   border: 1px solid #ffe6e6;
+}
+
+.xalert-fail {
+  color: #cb4747;
 }
 
 .xalert-info {
@@ -5622,6 +5623,10 @@ body {
 
 .modal-id .authentication .content {
   margin-top: 65px;
+}
+
+.modal-id .authentication .redirecting {
+  margin-top: 20px;
 }
 
 .modal-id .authentication .xalert-error {

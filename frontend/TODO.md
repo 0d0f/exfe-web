@@ -1,6 +1,9 @@
 TODO
 ----
 
+## 10:21:25 07/30/2012
+  * CSS3 @font-face http://yuguo.us/weblog/css3-font-face-format/?utm_source=twitterfeed&utm_medium=twitter
+
 ### 00:43:21 07/25/2012
   * 实用 CSS3 media queries, 首页效果
   * http://www.w3.org/TR/CSS2/media.html
