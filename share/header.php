@@ -12,7 +12,7 @@
   <meta name="description" content="EXFE, an utility for hanging out with friends." />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 <?php if (($twitterSignin = $this->getVar('twitter_signin'))) { ?>
-  <meta name="sign-token" content="<?php echo json_encode($twitterSignin); ?>" />
+  <meta name="sign-token" content="<?php echo htmlentities(json_encode($twitterSignin)); ?>" />
 <?php } ?>
   <link rel="shortcut icon" href="/static/img/favicon_16.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon_32.png" />
