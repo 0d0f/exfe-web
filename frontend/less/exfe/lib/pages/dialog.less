@@ -1,9 +1,32 @@
 // modal identification
 .modal-id {
   .authorize {
-    display: table-cell;
-    vertical-align: middle;
+    /*display: table-cell;*/
+    /*vertical-align: middle;*/
     height: 40px;
+    line-height: 40px;
+    padding-left: 55px;
+  }
+
+  .oauth {
+    margin-left: 32px;
+
+    > a {
+      display: block;
+      width: 40px;
+      height: 40px;
+      .hide-text();
+      cursor: pointer;
+      background-repeat: no-repeat;
+    }
+  }
+
+  .oauth-twitter {
+    background-image: ~'url("@{imgPath}/twitter_40_gray.png")';
+
+    &:hover {
+      background-image: ~'url("@{imgPath}/twitter_40.png")';
+    }
   }
 
   .user-identity {
@@ -52,6 +75,10 @@
     top: 50px;
 
     text-align: center;
+
+    .content {
+      margin-top: 65px;
+    }
 
     .xalert-error {
       background: transparent;
