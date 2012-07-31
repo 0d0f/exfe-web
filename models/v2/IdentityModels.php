@@ -245,9 +245,9 @@ class IdentityModels extends DataModel {
                 $hlpUder  = $this->getHelperByName('user', 'v2');
                 // do update
                 $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
-                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
-                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : $userInfo['default_identity'];
+                $userInfo['name']             = $userInfo['name']             == '' ? $name : $userInfo['name'];
+                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio  : $userInfo['bio'];
+                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id   : $userInfo['default_identity'];
                 $this->query(
                     "UPDATE `users` SET
                      `name`             = '{$userInfo['name']}',
