@@ -83,6 +83,12 @@ ns.expendDesc = function() {
 
 ns.showTime = function()
 {
+
+    var maxDiff = 30*60, localUtc = Math.round(new Date().getTime()/1000);
+    window.timeValid = Math.abs(window.utcDiff = localUtc - utc) < 15 * 60;
+    window.timeOffset = odof.comm.func.convertTimezoneToSecond(odof.comm.func.getTimezone());});;
+
+
     var strRelativeTime = '',
         strAbsoluteTime = '';
     if (!crossData.begin_at || crossData.begin_at === '0000-00-00 00:00:00') {
