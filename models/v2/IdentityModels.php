@@ -241,6 +241,8 @@ class IdentityModels extends DataModel {
         // update user information
         if ($id) {
             if ($user_id) {
+                // load models
+                $hlpUder  = $this->getHelperByName('user', 'v2');
                 // do update
                 $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
                 $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
@@ -253,9 +255,8 @@ class IdentityModels extends DataModel {
                      `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
-                // welcome and verify user via Gobus {
                 if ($status === 2) {
-                    $hlpUder  = $this->getHelperByName('user',  'v2');
+                    // welcome and verify user via Gobus {
                     if ($provider === 'email') {
                         $hlpGobus = $this->getHelperByName('gobus', 'v2');
                         $objIdentity = $this->getIdentityById($id);
@@ -268,10 +269,10 @@ class IdentityModels extends DataModel {
                             ]);
                         }
                     }
+                    // }
                 } else {
                     $hlpUder->setUserIdentityStatus($user_id, $id, $status);
                 }
-                // }
             }
             return $id;
         }
