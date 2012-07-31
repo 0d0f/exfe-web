@@ -33,7 +33,8 @@ define('routes', function (require, exports, module) {
 
   // signin
   routes.signin = function (req, res, next) {
-    //console.log(req.session.token, req.session.user_id);
+    console.log(req.session.token, req.session.user_id);
+    alert(req.url);
 
     var session = req.session;
 
@@ -217,8 +218,15 @@ define('routes', function (require, exports, module) {
   // Helpers:
   // ----------------------
   function redirectProfile(res) {
-    var external_id = Store.get('user').default_identity.external_id;
-    res.redirect('/#' + external_id);
+    // TODO: 后面应该封装下
+    var identity = Store.get('user').default_identity
+      , external_username = identity.external_username;
+
+    if (identity.provider === 'twitter') {
+      external_username = '@' + external_username;
+    }
+
+    res.redirect('/#' + external_username);
   }
 
 });

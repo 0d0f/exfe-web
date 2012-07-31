@@ -89,7 +89,7 @@ define(function (require) {
         if ((res = Util.parseId(q)).provider) {
           var identity = {
             provider: res.provider,
-            external_id: res.external_identity
+            external_username: res.external_identity
           };
 
           that.timer = setTimeout(function () {
