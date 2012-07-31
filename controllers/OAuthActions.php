@@ -65,7 +65,11 @@ class OAuthActions extends ActionController {
                     );
                     // 身份不存在，创建新身份并连接新用户
                     if (!$objIdentity) {
-                        $user_id = $modUser->addUser();
+                        $user_id = $modUser->addUser(
+                            '',
+                            $objTwitterIdentity->name
+                         ?: $objTwitterIdentity->external_username
+                        );
                         if (!$user_id) {
                             echo 'Can not signin with this Twitter identity, please retry later!';
                             return;
