@@ -62,7 +62,6 @@ define('user', function (require, exports, module) {
         Store.set('last_external_username', external_username);
 
         if (window.location.hash.match(/^\/?#?$/)) {
-          alert(2);
           window.location.href = '/#' + external_username;
         }
       }
@@ -113,7 +112,7 @@ define('user', function (require, exports, module) {
 
     // ======================================
     // TODO: 后面应该封装下
-    var identity = Store.get('user').default_identity
+    var identity = user.default_identity
       , external_username = identity.external_username;
 
     if (identity.provider === 'twitter') {
@@ -121,6 +120,7 @@ define('user', function (require, exports, module) {
     }
     // ======================================
 
+    $un.attr('href', '/#' + external_username);
     $un.find(' > span').html(user.name || user.nickname || identity.external_username);
 
     var signin = Store.get('signin')
@@ -197,10 +197,11 @@ define('user', function (require, exports, module) {
 
   function createUserPanel(user, type) {
     if (type) {
+      $('#user-name > span').text(user.name || user.nickname || user.external_username);
       if (type === 1) {
-        $('.user-name > span').addClass('browsing-identity').text(user.name || user.nickname);
+        $('#user-name > span').addClass('browsing-identity');
       } else if (type === 2) {
-        $('.user-name > span').removeClass('browsing-identity').text(user.name || user.nickname);
+        $('#user-name > span').removeClass('browsing-identity');
       }
       $('#js-signin').hide();
       var $up = $('.nav li.dropdown').remove('user').show();

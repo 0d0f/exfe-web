@@ -33,8 +33,7 @@ define('routes', function (require, exports, module) {
 
   // signin
   routes.signin = function (req, res, next) {
-    console.log(req.session.token, req.session.user_id);
-    alert(req.url);
+    //console.log(req.session.token, req.session.user_id);
 
     var session = req.session;
 
@@ -58,6 +57,10 @@ define('routes', function (require, exports, module) {
       }
 
     } else {
+
+      // NOTE: 暂时放这
+      $(document).off('click.home');
+
       if (!session.unRegenerate) {
         Bus.emit('xapp:usertoken', session.token, session.user_id, 2);
       }
