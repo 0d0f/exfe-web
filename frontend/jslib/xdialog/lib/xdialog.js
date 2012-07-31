@@ -5,7 +5,6 @@ define(function (require, exports, module) {
   var Api = require('api');
   var Util = require('util');
   var Store = require('store');
-  var Config = require('config');
   var $BODY = $(document.body);
 
   var Dialog = require('dialog');
@@ -96,7 +95,7 @@ define(function (require, exports, module) {
 
           if (oauthType === 'twitter') {
             that._oauth_ = $.ajax({
-              url: Config.api_url + '/oauth/twitterAuthenticate',
+              url: '/oauth/twitterAuthenticate',
               dataType: 'JSON',
               beforeSend: function (xhr) {
                 that.$('.modal-body').eq(0).css('opacity', 0);
