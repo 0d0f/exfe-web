@@ -87,9 +87,13 @@ define(function (require) {
         }
 
         if ((res = Util.parseId(q)).provider) {
+          var external_username = res.external_identity;
+          if (res.provider === 'twitter') {
+            external_username = res.external_username;
+          }
           var identity = {
             provider: res.provider,
-            external_username: res.external_identity
+            external_username: external_username
           };
 
           that.timer = setTimeout(function () {
