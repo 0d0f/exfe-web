@@ -10,9 +10,18 @@ define('middleware', function (require, exports, module) {
       return;
     }
 
-    var signin = Store.get('signin')
-      , token = (signin && signin.token) || false
-      , user_id = (signin && signin.user_id) || false;
+    var signin, token, user_id, content;
+
+    var meta_sign = document.getElementsByName('sign-token')[0];
+    if (meta_sign) {
+      content = JSON.parse(meta_sign.content);
+      Store.set('signin', signin = content.signin);
+      document.getElementsByTagName('head')[0].removeChild(meta_sign);
+    }
+
+    signin = signin || Store.get('signin');
+    token = (signin && signin.token) || false;
+    user_id = (signin && signin.user_id) || false;
 
     if (!token) {
       next();
@@ -33,6 +42,7 @@ define('middleware', function (require, exports, module) {
         }
       }
       , function (data) {
+        console.dir(data);
         req.session.password = data.password;
         next();
       }

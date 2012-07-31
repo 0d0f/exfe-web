@@ -33,12 +33,16 @@ define('user', function (require, exports, module) {
         resources: {user_id: user_id}
       }
       , function (data) {
-        var last_external_id = Store.get('last_external_id')
+        var last_external_username = Store.get('last_external_username')
           , identity;
 
-        if (last_external_id) {
+        if (last_external_username) {
           identity = R.filter(data.user.identities, function (v) {
-            if (last_external_id === v.external_id) {
+            var eun = v.external_username;
+            if (v.provider === 'twitter') {
+              eun = '@' + eun;
+            }
+            if (last_external_username === eun) {
               return true;
             }
           })[0];
@@ -51,10 +55,15 @@ define('user', function (require, exports, module) {
         // set last identity
         Store.set('user', data.user);
         Store.set('lastIdentity', identity);
-        Store.set('last_external_id', identity.external_id);
+        var external_username = identity.external_username;
+        if (identity.provider === 'twitter') {
+          external_username = '@' + external_username;
+        }
+        Store.set('last_external_username', external_username);
 
         if (window.location.hash.match(/^\/?#?$/)) {
-          window.location.href = '/#' + identity.external_id;
+          alert(2);
+          window.location.href = '/#' + external_username;
         }
       }
     );
@@ -101,8 +110,18 @@ define('user', function (require, exports, module) {
     createUserPanel(user, type);
 
     var $un = $('#user-name');
-    $un.attr('href', '/#' + user.default_identity.external_id);
-    $un.find(' > span').html(user.name || user.nickname);
+
+    // ======================================
+    // TODO: 后面应该封装下
+    var identity = Store.get('user').default_identity
+      , external_username = identity.external_username;
+
+    if (identity.provider === 'twitter') {
+      external_username = '@' + external_username;
+    }
+    // ======================================
+
+    $un.find(' > span').html(user.name || user.nickname || identity.external_username);
 
     var signin = Store.get('signin')
       , user_id = signin.user_id;
@@ -186,6 +205,14 @@ define('user', function (require, exports, module) {
       $('#js-signin').hide();
       var $up = $('.nav li.dropdown').remove('user').show();
 
+      Handlebars.registerHelper('_external_username', function (external_username, provider) {
+        if (provider === 'twitter') {
+          external_username = '@' + external_username;
+        }
+
+        return external_username;
+      });
+
       var s = Handlebars.compile(userpanelTmps[type]);
 
       $up.find('.dropdown-wrapper').find('.user-panel').remove();
@@ -209,11 +236,11 @@ define('user', function (require, exports, module) {
               + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
             + '</span>'
             + '<i class="icon16-identity-{{provider}}"></i>'
-            + '<span>{{external_id}}</span>'
+            + '<span>{{_external_username external_username provider}}</span>'
           + '</div>'
           + '{{#if isSetup}}'
           + '<div class="set-up">'
-            + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{external_id}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
+            + '<a href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02" data-source="{{_external_username external_username provider}}">Set Up</a> as your independent new <span class="x-sign">EXFE</span> identity.'
           + '</div>'
           + '{{/if}}'
           //+ '<div class="spliterline"></div>'
@@ -225,7 +252,7 @@ define('user', function (require, exports, module) {
               + '<img width="20" height="20" alt="" src="{{avatar_filename}}">'
             + '</span>'
             + '<i class="icon16-identity-{{provider}}"></i>'
-            + '<span>{{external_id}}</span>'
+            + '<span>{{_external_username external_username provider}}</span>'
           + '</div>'
           + '{{#if isNotLogin}}'
           + '<div class="spliterline"></div>'
@@ -243,10 +270,10 @@ define('user', function (require, exports, module) {
       + '<div class="dropdown-menu user-panel">'
         + '<div class="header">'
           + '<div class="meta">'
-            + '<a class="pull-right avatar" href="/#{{default_identity.external_id}}">'
+            + '<a class="pull-right avatar" href="/#{{_external_username default_identity.external_username default_identity.provider}}">'
               + '<img width="40" height="40" alt="" src="{{avatar_filename}}" />'
             + '</a>'
-            + '<a class="attended" href="/#{{default_identity.external_id}}">'
+            + '<a class="attended" href="/#{{_external_username default_identity.external_username default_identity.provider}}">'
               + '<span class="attended-nums">{{cross_quantity}}</span>'
               + '<span class="attended-x"><em class="x-sign">X</em> attended</span>'
             + '</a>'

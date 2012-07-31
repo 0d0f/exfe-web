@@ -167,10 +167,9 @@ define(function (require) {
       if (!$e.hasClass('gather-wrapper')
           && !$e.parent().hasClass('gather-wrapper')
           && !$e.hasClass('modal')
-          && !$.contains($('.modal'), $e)
+          && !$('.modal').size()
          ) {
-          console.log(1);
-          $('.x-signin').trigger('click.dialog.data-api');
+          $('.sign-in').trigger('click.dialog.data-api');
       }
     });
 
