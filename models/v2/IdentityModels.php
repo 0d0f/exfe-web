@@ -242,7 +242,7 @@ class IdentityModels extends DataModel {
         if ($id) {
             if ($user_id) {
                 // do update
-                $userInfo   = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
                 $userInfo['name']             = $userInfo['name']             == '' ? $name            : $userInfo['name'];
                 $userInfo['bio']              = $userInfo['bio']              == '' ? $bio             : $userInfo['bio'];
                 $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id              : $userInfo['default_identity'];
@@ -253,19 +253,23 @@ class IdentityModels extends DataModel {
                      `default_identity` =  {$userInfo['default_identity']}
                      WHERE `id`         =  {$user_id}"
                 );
-                // send welcome and active email via Gobus {
-                if ($provider === 'email') {
-                    $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                // welcome and verify user via Gobus {
+                if ($status === 2) {
                     $hlpUder  = $this->getHelperByName('user',  'v2');
-                    $objIdentity = $this->getIdentityById($id);
-                    $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
-                    if ($vfyResult) {
-                        $hlpGobus->send('user', 'Welcome', [
-                            'To_identity' => $objIdentity,
-                            'User_name'   => $userInfo['name'],
-                            'Token'       => $vfyResult['token'],
-                        ]);
+                    if ($provider === 'email') {
+                        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                        $objIdentity = $this->getIdentityById($id);
+                        $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
+                        if ($vfyResult) {
+                            $hlpGobus->send('user', 'Welcome', [
+                                'To_identity' => $objIdentity,
+                                'User_name'   => $userInfo['name'],
+                                'Token'       => $vfyResult['token'],
+                            ]);
+                        }
                     }
+                } else {
+                    $hlpUder->setUserIdentityStatus($user_id, $id, $status);
                 }
                 // }
             }

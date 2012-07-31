@@ -101,7 +101,11 @@ class OAuthActions extends ActionController {
                             $user_id = $objIdentity->revoked_user_id;
                         // 孤立身份，创建新用户并连接到该身份
                         } else {
-                            $user_id = $modUser->addUser();
+                            $user_id = $modUser->addUser(
+                                '',
+                                $objTwitterIdentity->name
+                             ?: $objTwitterIdentity->external_username
+                            );
                         }
                         if (!$user_id) {
                             echo 'Can not signin with this Twitter identity, please retry later!';
