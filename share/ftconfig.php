@@ -8,7 +8,7 @@
       backgrounds: <?php echo json_encode($this->getVar('backgrounds')), "\n"; ?>
     };
 
-    config.timevalid = Math.abs(Math.round(+new Date() / 1000) - config.timestamp) < 15 * 60;
+    config.timevalid = Math.abs(Math.round(+new Date() / 1000) - <?php echo Time(); ?>) < 15 * 60;
 
     return config;
   });
