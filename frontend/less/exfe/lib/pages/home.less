@@ -48,7 +48,7 @@ html, body {
 
     .title[data-id="exfe"] h1,
     .title[data-id="x"] h1 {
-     padding-left: 35px;
+     padding-left: 50px;
     }
 
     h1 {
@@ -116,7 +116,7 @@ html, body {
       }
 
     .circle {
-      display: table;
+      /*display: table;*/
       position: absolute;
       width: 55px;
       height: 55px;
@@ -225,24 +225,63 @@ html, body {
     @-webkit-keyframes bounceIn {
       0% {
         opacity: 0;
-        -webkit-transform: scale(0.01);
+        -webkit-transform: scale(.3);
       }
-      60% {
+
+      33% {
+        opacity: 1;
+        -webkit-transform: scale(1.18);
+      }
+
+      35% {
         opacity: 1;
         -webkit-transform: scale(1.26);
       }
+
       /*70% {*/
         /*opacity: 1;*/
-        /*-webkit-transform: scale(1.1);*/
+        /*-webkit-transform: scale(1.26);*/
       /*}*/
-      90% {
-        opacity: 1;
-        -webkit-transform: scale(1);
-      }
+
+      /*71% {*/
+        /*opacity: 1;*/
+        /*-webkit-transform: scale(1.20);*/
+      /*}*/
+      /*80% {*/
+        /*opacity: 1;*/
+        /*-webkit-transform: scale(1);*/
+      /*}*/
+
       100% {
         opacity: 1;
         -webkit-transform: scale(1);
       }
+      /*0% {*/
+        /*opacity: 0;*/
+        /*-webkit-transform: scale(0.01);*/
+      /*}*/
+      /*70% {*/
+        /*opacity: .5;*/
+        /*-webkit-transform: scale(1.1);*/
+      /*}*/
+
+      /*90% {*/
+        /*opacity: 1;*/
+        /*-webkit-transform: scale(1);*/
+      /*}*/
+
+      /*85% {*/
+        /*opacity: 1;*/
+        /*-webkit-transform: scale(1.26);*/
+      /*}*/
+      /*70% {*/
+        /*opacity: 1;*/
+        /*-webkit-transform: scale(1.1);*/
+      /*}*/
+      /*100% {*/
+        /*opacity: 1;*/
+        /*-webkit-transform: scale(1);*/
+      /*}*/
     }
 
     @-moz-keyframes bounceIn {
@@ -250,16 +289,14 @@ html, body {
         opacity: 0;
         -moz-transform: scale(0.01);
       }
-      50% {
-        opacity: 1;
-        -moz-transform: scale(1.26);
-      }
-      /*
+      /*50% {*/
+        /*opacity: 1;*/
+        /*-moz-transform: scale(1.26);*/
+      /*}*/
       70% {
         opacity: 1;
         -moz-transform: scale(1.1);
       }
-      */
       90% {
         opacity: 1;
         -moz-transform: scale(1);
@@ -275,16 +312,14 @@ html, body {
         opacity: 0;
         -o-transform: scale(0.01);
       }
-      50% {
-        opacity: 1;
-        -o-transform: scale(1.26);
-      }
-      /*
+      /*50% {*/
+        /*opacity: 1;*/
+        /*-o-transform: scale(1.26);*/
+      /*}*/
       70% {
         opacity: 1;
         -o-transform: scale(1.1);
       }
-      */
       90% {
         opacity: 1;
         -o-transform: scale(1);
@@ -300,19 +335,13 @@ html, body {
         opacity: 0;
         transform: scale(0.01);
       }
-      50% {
-        opacity: 1;
-        transform: scale(1.26);
-      }
-      /*
+      /*80% {*/
+        /*opacity: 1;*/
+        /*transform: scale(1.26);*/
+      /*}*/
       70% {
         opacity: 1;
         transform: scale(1.1);
-      }
-      */
-      90% {
-        opacity: 1;
-        transform: scale(1);
       }
       100% {
         opacity: 1;
@@ -471,35 +500,58 @@ html, body {
     }
 
     .c-ctx {
-      display: table-cell;
-      vertical-align: middle;
+      position: relative;
+      top: 50%;
+      /*background: red;*/
+      /*display: table-cell;*/
+      /*vertical-align: middle;*/
     }
 
     .c-rsvp,
     .c-safe,
     .c-handy {
       font-style: italic;
+      .c-ctx {
+        padding-top: 2px; // Myriad 字体偏移, 无法居中 wtf?
+      }
     }
 
     .c-x {
       font-size: 28px;
+      /*height: 28px;*/
       line-height: 34px;
       font-family: "Helvetica Neue";
+      .c-ctx {
+        margin-top: -34px / 2;
+      }
     }
 
     .c-rsvp {
       font-size: 22px;
+      /*height: 22px;*/
+      /*height: 28px;*/
       line-height: 28px;
+      .c-ctx {
+        margin-top: -28px/ 2;
+      }
     }
 
     .c-safe {
       font-size: 24px;
+      /*height: 24px;*/
       line-height: 30px;
+      .c-ctx {
+        margin-top: -30px / 2;
+      }
     }
 
     .c-handy {
       font-size: 18px;
+      /*height: 18px;*/
       line-height: 24px;
+      .c-ctx {
+        margin-top: -24px/2;
+      }
     }
 
   }
