@@ -153,11 +153,10 @@ class OAuthActions extends ActionController {
                         ['screen_name_a' => $objIdentity->external_username,
                          'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                     );
-                    if ($twitterConn->response['response'] === 'false') {
-                        header('location: /oAuth/confirmTwitterFollowing');
-                        return;
-                    }
-                    $modOauth->addtoSession(['signin' => $rstSignin]);
+                    $modOauth->addtoSession([
+                        'twitter_signin'    => $rstSignin,
+                        'twitter_following' => $twitterConn->response['response'] === 'true'
+                    ]);
                     header('location: /');
                     return;
                 }
@@ -174,40 +173,44 @@ class OAuthActions extends ActionController {
     }
 
 
-    public function doConfirmTwitterFollowing() {
-        $modOauth = $this->getModelByName('OAuth', 'v2');
-        $oauthIfo = $modOauth->getSession();
-        if ($oauthIfo['signin']) {
-            $confirm = trim(exGet('confirm'));
-            if ($confirm === 'yes') {
-                $twitterConn = new tmhOAuth(array(
-                  'consumer_key'    => TWITTER_CONSUMER_KEY,
-                  'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                  'user_token'      => $accessToken['oauth_token'],
-                  'user_secret'     => $accessToken['oauth_token_secret']
-                ));
+    public function doFollowExfe() {
+        // load models
+        $modUser     = $this->getModelByName('user',     'v2');
+        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modOauth    = $this->getModelByName('OAuth',    'v2');
+        $checkHelper = $this->getHelperByName('check',   'v2');
+        // get args
+        $params      = $this->params;
+        $identity_id = trim($_POST['identity_id']);
+        // basic check
+        $result      = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // check user identity status
+        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
+            case 'CONNECTED':
+                $accessToken = $modIdentity->getOAuthTokenById($identity_id);
+                $twitterConn = new tmhOAuth([
+                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                    'user_token'      => $accessToken['oauth_token'],
+                    'user_secret'     => $accessToken['oauth_token_secret']
+                ]);
                 $twitterConn->request(
                     'POST',
                     $twitterConn->url('1/friendships/create'),
-                    array('screen_name' => TWITTER_OFFICE_ACCOUNT)
+                    ['screen_name' => TWITTER_OFFICE_ACCOUNT]
                 );
-            } else {
-                $modIdentity = $this->getModelByName('Identity', 'v2');
-                $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
-                    'twitter', $objTwitterIdentity->external_username, true
-                );
-                $this->setVar('user_name',           $modIdentity->name);
-                $this->setVar('user_avatar',         $modIdentity->avatar_filename);
-                $this->setVar('exfe_office_account', TWITTER_OFFICE_ACCOUNT);
-                $this->displayView();
-                return;
-            }
+                apiResponse(new stdClass);
+                break;
+            default:
+                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
         }
-        header('location: /');
+        apiError(500, 'failed', '');
     }
-
-
-
 
 
 
