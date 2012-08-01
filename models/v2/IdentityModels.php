@@ -85,7 +85,7 @@ class IdentityModels extends DataModel {
              `provider`          = '{$provider}' AND
              `external_username` = '{$external_username}'"
         );
-        return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity, null, $withRevoked);
+        return $get_id_only ? intval($rawIdentity['id']) : $this->packageIdentity($rawIdentity, null, $withRevoked);
     }
 
 
@@ -95,7 +95,7 @@ class IdentityModels extends DataModel {
              `provider`          = '{$provider}' AND
              `external_identity` = '{$external_id}'"
         );
-        return $get_id_only ? intval($rawIdentity) : $this->packageIdentity($rawIdentity);
+        return $get_id_only ? intval($rawIdentity['id']) : $this->packageIdentity($rawIdentity);
     }
 
 
