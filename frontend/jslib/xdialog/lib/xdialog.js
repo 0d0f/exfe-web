@@ -106,7 +106,7 @@ define(function (require, exports, module) {
 
           if (oauthType === 'twitter') {
             that._oauth_ = $.ajax({
-              url: '/oauth/twitterAuthenticate',
+              url: '/OAuth/twitterAuthenticate',
               dataType: 'JSON',
               beforeSend: function (xhr) {
                 that.$('.modal-body').eq(0).css('opacity', 0);
