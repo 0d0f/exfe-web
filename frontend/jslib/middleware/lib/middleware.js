@@ -13,11 +13,11 @@ define('middleware', function (require, exports, module) {
 
     var signin, token, user_id, content;
 
-    var meta_sign = document.getElementsByName('sign-token')[0];
-    if (meta_sign) {
-      content = JSON.parse(meta_sign.content);
+    var meta_signin = document.getElementsByName('signin-token')[0];
+    if (meta_signin) {
+      content = JSON.parse(meta_signin.content);
       Store.set('signin', signin = content.signin);
-      document.getElementsByTagName('head')[0].removeChild(meta_sign);
+      document.getElementsByTagName('head')[0].removeChild(meta_signin);
       // TODO: 总感觉放这里不合适，后面再想想看 {{{
       Bus.emit('xapp:usertoken', signin.token, signin.user_id, 2);
       Bus.emit('xapp:usersignin');
