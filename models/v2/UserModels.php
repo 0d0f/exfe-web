@@ -360,6 +360,7 @@ class UserModels extends DataModel {
         switch ($action) {
             case 'VERIFY':
                 if ($user_id) {
+                    print_r($setResult);
                     $setResult = $this->setUserIdentityStatus(
                         $user_id, $identity->id, 2
                     );
@@ -508,7 +509,6 @@ class UserModels extends DataModel {
                 WHERE  `identities`.`provider`          = '{$provider}'
                 AND    `identities`.`external_username` = '{$external_username}'
                 AND    `identities`.`id` = `user_identity`.`identityid`";
-        echo $sql;
         $rawUser = $this->getRow($sql);
         if ($rawUser && ($user_id = intval($rawUser['userid']))) {
             $status      = intval($rawUser['status']);
