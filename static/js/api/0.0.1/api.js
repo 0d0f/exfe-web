@@ -13,80 +13,80 @@ define('api', [], function (require, exports, module) {
 
 
     // Users
-    signin: '/users/signin',
+    signin: '/Users/signin',
 
-    getRegistrationFlag: '/users/getRegistrationFlag',
+    getRegistrationFlag: '/Users/getRegistrationFlag',
 
-    checkAuthorization: '/users/checkAuthorization',
+    checkAuthorization: '/Users/checkAuthorization',
 
     // -------------- Must Use Token ---------------------- //
-    getUser: '/users/:user_id',
+    getUser: '/Users/:user_id',
 
     signout: '',
 
-    updateUser: '/users/update',
+    updateUser: '/Users/update',
 
-    setPassword: '/users/:user_id/setPassword',
+    setPassword: '/Users/:user_id/setPassword',
 
-    crosses: '/users/:user_id/crosses',
+    crosses: '/Users/:user_id/crosses',
 
-    crosslist: '/users/:user_id/crosslist',
+    crosslist: '/Users/:user_id/crosslist',
 
-    addIdentity: '/users/addIdentity',
+    addIdentity: '/Users/addIdentity',
 
-    deleteIdentity: '/users/deleteIdentity',
+    deleteIdentity: '/Users/deleteIdentity',
 
-    setDefaultIdentity: '/users/setDefaultIdentity',
+    setDefaultIdentity: '/Users/setDefaultIdentity',
 
 
     // Identity
-    getIdentityById: '/identities/:identity_id',
+    getIdentityById: '/Identities/:identity_id',
 
-    complete: '/identities/complete',
+    complete: '/Identities/complete',
 
-    getIdentity: '/identities/get',
+    getIdentity: '/Identities/get',
 
-    updateIdentity: '/identities/:identity_id/update',
+    updateIdentity: '/Identities/:identity_id/update',
 
 
     // Cross
-    getCross: '/crosses/:cross_id',
+    getCross: '/Crosses/:cross_id',
 
-    gather: '/crosses/gather',
+    gather: '/Crosses/gather',
 
-    editCross: '/crosses/:cross_id/edit',
+    editCross: '/Crosses/:cross_id/edit',
 
 
     // Exfee
-    rsvp: '/exfee/:exfee_id/rsvp',
+    rsvp: '/Exfee/:exfee_id/rsvp',
 
-    editExfee: '/exfee/:exfee_id/edit',
+    editExfee: '/Exfee/:exfee_id/edit',
 
 
     // Conversation
-    conversation: '/conversation/:exfee_id',
+    conversation: '/Conversation/:exfee_id',
 
-    addConversation: '/conversation/:exfee_id/add',
+    addConversation: '/Conversation/:exfee_id/add',
 
 
     // Verify
     // 登陆前
-    verifyIdentity: '/users/verifyIdentity',
+    verifyIdentity: '/Users/verifyIdentity',
 
     // 登陆后
-    verifyUserIdentity: '/users/verifyUserIdentity',
+    verifyUserIdentity: '/Users/verifyUserIdentity',
 
-    forgotPassword: '/users/forgotPassword',
+    forgotPassword: '/Users/forgotPassword',
 
-    avatarUpdate: '/avatar/update',
+    avatarUpdate: '/Avatar/update',
 
     // Cross Token
     // ep:
     //  http -f post api.local.exfe.com/v2/crosses/GetCrossByInvitationToken?token="249ceff8cbdc3fd20ce95ea391739b59" invitation_token="d8983af0ff726256851e0a4e5c41d6db"
-    getCrossByInvitationToken: '/crosses/getCrossByInvitationToken',
+    getCrossByInvitationToken: '/Crosses/getCrossByInvitationToken'
 
     // follow exfe
-    followExfe: '/oauth/followExfe'
+    //followExfe: '/Oauth/followExfe'
   };
 
   // Not Use Token
@@ -109,7 +109,7 @@ define('api', [], function (require, exports, module) {
      *
      * Usage:
      *
-     *    Api.request('/users/:user_id/crosslist?token=xxx'
+     *    Api.request('/Users/:user_id/crosslist?token=xxx'
      *      , {
      *        // url params
      *        params {
