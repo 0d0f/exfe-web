@@ -44,8 +44,15 @@ define(function (require) {
       this.selecting = false;
     },
 
+    mouseenter: function (e) {
+      e.preventDefault();
+      this.$('.active').removeClass('active');
+      $(e.currentTarget).addClass('active');
+      this.select();
+    },
+
     tab: function () {
-      var val = this.target.val();
+      //var val = this.target.val();
       //this.emit('select', val);
       return this.hide();
     },
@@ -59,7 +66,7 @@ define(function (require) {
           this.tab();
           //e.preventDefault();
           break;
-        //case 13: // nete
+        //case 13: // enter
         //case 27: // escape
           //e.preventDefault();
           //break;
