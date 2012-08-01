@@ -360,10 +360,10 @@ class UserModels extends DataModel {
         switch ($action) {
             case 'VERIFY':
                 if ($user_id) {
-                    print_r($setResult);
                     $setResult = $this->setUserIdentityStatus(
                         $user_id, $identity->id, 2
                     );
+                    print_r($setResult);
                     if (!$setResult) {
                         return null;
                     }
