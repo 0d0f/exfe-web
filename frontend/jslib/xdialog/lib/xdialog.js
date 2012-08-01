@@ -590,7 +590,8 @@ define(function (require, exports, module) {
 
       events: {
         'click .caret-outer': function (e) {
-          this.$('.dropdown-menu').show();
+          this.$('.dropdown-toggle').addClass('open');
+          e.stopPropagation();
         },
 
         'hover .dropdown-menu > li': function (e) {
@@ -605,7 +606,8 @@ define(function (require, exports, module) {
             , index = $(e.currentTarget).data('index');
 
           this.updateIdentity(ids[index]);
-          this.$('.dropdown-menu').hide();
+          // TODO: 优化
+          //this.$('.dropdown-toggle').removeClass('open');
         },
 
         'click .xbtn-cancel': function (e) {
