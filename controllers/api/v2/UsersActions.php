@@ -349,7 +349,7 @@ class UsersActions extends ActionController {
                         $hlpGobus->send('user', 'Verify', [
                             'to_identity' => $identity,
                             'user_name'   => $user->name,
-                            'action'      => $gobusFlag,
+                            'action'      => 'CONFIRM_IDENTITY',
                             'token'       => $viResult['token'],
                         ]);
                         // }
