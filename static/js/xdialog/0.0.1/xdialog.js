@@ -160,10 +160,10 @@ define(function (require, exports, module) {
           var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('xbtn-success')) {
-            that.hide();
-            that.$('.verify-messages').addClass('hide');
+            that.$('.verify-after').addClass('hide');
             $e.removeClass('xbtn-success').text('Verify');
-            return;
+            that.hide();
+            return false;
           }
           var provider = that._identity.provider;
           var external_id = that._identity.external_id;
@@ -173,21 +173,18 @@ define(function (require, exports, module) {
               data: {
                 provider: provider,
                 external_username: external_id
-              },
-              beforeSend: function (data) {
-              },
-              complete: function () {
               }
             }
             , function (data) {
+              that.$('.verify-before').addClass('hide');
               if (data.action === 'VERIFYING') {
-                that.$('.verify-messages').removeClass('hide');
+                that.$('.verify-after').removeClass('hide');
                 $e.addClass('xbtn-success').text('Done');
               } else if (data.action === 'REDIRECT') {
+                //$e.addClass('verify-error').removeClass('hide');
+              } else {
+                $e.addClass('verify-error').removeClass('hide');
               }
-            }
-            // fail
-            , function (data) {
             }
           );
         },
@@ -295,7 +292,7 @@ define(function (require, exports, module) {
           e.preventDefault();
           this.$('#identity').val('');
           //this.emit('checkUser');
-          this.resetInputs();
+          this.resetInputs()
           this.switchTab('d00', true);
         },
         'click .x-signin': function (e) {
@@ -439,7 +436,19 @@ define(function (require, exports, module) {
                     + '</div>'
                   + '</div>'
 
-                  + '<p class="verify-message hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</p>'
+                  + '<div class="verify-before d d04 hide">'
+                    + '<span class="xalert-fail">This identity requires verification before using.</span><br />'
+                    + 'Confirm sending verification to your mailbox?'
+                  + '</div>'
+
+                  + '<div class="verify-after hide">'
+                    + 'Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.'
+                  + '</div>'
+
+                  + '<div class="verify-error hide">'
+                    + '<span class="xalert-fail">Requested too much, hold on awhile.</span><br />'
+                    + 'Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.'
+                  + '</div>'
 
               + '</fieldset>'
             + '</form>',
@@ -1445,11 +1454,11 @@ define(function (require, exports, module) {
             t = 'd02';
           }
           // RESet Password
-          else if (data.registration_flag === 'SET_PASSWORD') {
-            t = 'd00';
-            $identityLabel.addClass('label-error')
-            $identityLabelSpan.text('Identity has no password set.');
-          }
+          //else if (data.registration_flag === 'SET_PASSWORD') {
+            //t = 'd00';
+            //$identityLabel.addClass('label-error')
+            //$identityLabelSpan.text('Identity has no password set.');
+          //}
           else if (data.registration_flag === 'VERIFY') {
             t = 'd04';
           }
