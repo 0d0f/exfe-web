@@ -286,17 +286,23 @@ class UserModels extends DataModel {
         $user_infos = $this->getUserIdentityInfoByIdentityId($identity->id);
         // no user
         if (!$user_infos) {
-            return array(
-                'flag'   => 'VERIFY',
-                'reason' => 'NO_USER',
-            );
+            $rtResult = ['reason' => 'NO_USER'];
+            switch ($identity->provider) {
+                case 'email':
+                    $rtResult['flag'] = 'VERIFY';
+                    break;
+                case 'twitter':
+                    $rtResult['flag'] = 'AUTHENTICATE';
+                    break;
+                default:
+                    return null;
+            }
+            return $rtResult;
         }
         // get flag {
         // try connected user
         if (isset($user_infos['CONNECTED'])) {
-            $rtResult = array(
-                'user_id' => $user_infos['CONNECTED'][0]['user_id'],
-            );
+            $rtResult = ['user_id' => $user_infos['CONNECTED'][0]['user_id']];
             if ($user_infos['CONNECTED'][0]['password']) {
                 $rtResult['flag'] = 'SIGN_IN';
                 return $rtResult;
@@ -304,7 +310,7 @@ class UserModels extends DataModel {
             $rtResult['reason'] = 'NO_PASSWORD';
             switch ($identity->provider) {
                 case 'email':
-                    $rtResult['flag'] = 'SET_PASSWORD';
+                    $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
                     $rtResult['flag'] = 'AUTHENTICATE';
@@ -318,11 +324,11 @@ class UserModels extends DataModel {
         if (isset($user_infos['VERIFYING'])) {
             foreach ($user_infos['VERIFYING'] as $uItem) {
                 if ($uItem['password'] && $uItem['id_quantity'] === 1) {
-                    return array(
+                    return [
                         'flag'    => 'SIGN_IN',
                         'reason'  => 'NEW_USER',
                         'user_id' => $uItem['user_id'],
-                    );
+                    ];
                 }
             }
         }
@@ -343,7 +349,18 @@ class UserModels extends DataModel {
         }
         // try verifying or related user
         if (isset($user_infos['VERIFYING']) || isset($user_infos['RELATED'])) {
-            return array('flag' => 'VERIFY', 'reason' => 'RELATED');
+            $rtResult = ['reason' => 'RELATED'];
+            switch ($identity->provider) {
+                case 'email':
+                    $rtResult['flag'] = 'VERIFY';
+                    break;
+                case 'twitter':
+                    $rtResult['flag'] = 'AUTHENTICATE';
+                    break;
+                default:
+                    return null;
+            }
+            return $rtResult;
         }
         // }
         // failed
