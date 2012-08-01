@@ -852,7 +852,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showTip : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeetip exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; display: none;">'
+                strPanel = '<div class="exfeetip exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; display: none; z-index: 11">'
                          +   '<div class="inner">'
                          +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
@@ -871,7 +871,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showPanel : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeepanel exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px">'
+                strPanel = '<div class="exfeepanel exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; z-index: 10">'
                          +   '<div class="inner">'
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
