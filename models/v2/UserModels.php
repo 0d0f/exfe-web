@@ -363,7 +363,6 @@ class UserModels extends DataModel {
                     $setResult = $this->setUserIdentityStatus(
                         $user_id, $identity->id, 2
                     );
-                    print_r($setResult);
                     if (!$setResult) {
                         return null;
                     }
