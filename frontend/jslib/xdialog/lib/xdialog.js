@@ -39,7 +39,7 @@ define(function (require, exports, module) {
             .next()
             .attr('class', 'provider icon16-identity-' + lastIdentity.provider);
 
-          this.$('.xbtn-forgotpwd').data('source', {identity: lastIdentity});
+          this.$('.xbtn-forgotpwd').data('source', [lastIdentity]);
         }
 
         if (this.availability) {
@@ -562,6 +562,15 @@ define(function (require, exports, module) {
 
   dialogs.forgotpassword = {
 
+    updateIdentity: function (identity) {
+      var src = identity.avatar_filename;
+      var $identity = this.$('.user-identity');
+      $identity.find('img.avatar').attr('src', identity.avatar_filename);
+      $identity.find('i').addClass('icon16-identity-' + identity.provider);
+      $identity.next().find('.identity').text(identity.eun);
+      this.$('.xbtn-send').data('identity', identity);
+    },
+
     options: {
       onHideAfter: function (e) {
         // jquery.Event
@@ -580,6 +589,25 @@ define(function (require, exports, module) {
       },
 
       events: {
+        'click .caret-outer': function (e) {
+          this.$('.dropdown-menu').show();
+        },
+
+        'hover .dropdown-menu > li': function (e) {
+          var t = e.type,
+              $e = $(e.currentTarget);
+
+          $e[(t === 'mouseenter' ? 'add' : 'remove') + 'Class']('active');
+        },
+
+        'click .dropdown-menu > li': function (e) {
+          var ids = this.$('.dropdown-menu').data('identities')
+            , index = $(e.currentTarget).data('index');
+
+          this.updateIdentity(ids[index]);
+          this.$('.dropdown-menu').hide();
+        },
+
         'click .xbtn-cancel': function (e) {
           var dialog_from = this.dialog_from;
           this.hide();
@@ -591,7 +619,7 @@ define(function (require, exports, module) {
           }
         },
 
-        'click .xbtn-verify': function (e) {
+        'click .xbtn-send': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('disabled')) {
@@ -615,6 +643,8 @@ define(function (require, exports, module) {
                   external_username: i.external_username
                 },
                 beforeSend: function (xhr) {
+                  that.$('.send-before').removeClass('hide');
+                  that.$('.send-after').addClass('hide');
                   $e.addClass('disabled');
                 },
                 complete: function (xhr) {
@@ -622,9 +652,12 @@ define(function (require, exports, module) {
                 }
               }
               , function (data) {
+                // 后台暂时没有 limit 限制
                 if (data.action === 'VERIFYING') {
                   that.$('.identity').next().removeClass('hide');
                   $e.text('Done').addClass('success');
+                  that.$('.send-before').addClass('hide');
+                  that.$('.send-after').removeClass('hide');
                 }
               }
               , function (data) {
@@ -635,24 +668,34 @@ define(function (require, exports, module) {
       },
 
       onShowBefore: function (e) {
-        var data = $(e.currentTarget).data('source');
-        if (data && data.identity) {
-          var is = data.identity;
-          if (is) {
-            if (is.avatar_filename === 'default.png') {
-              is.avatar_filename = '/img/default_portraituserface_20.png';
-            }
-            var external_username = is.external_username;
-            var src = is.avatar_filename;
-            var $identity = this.$('.user-identity');
-            $identity.find('img.avatar').attr('src', src);
-            $identity.find('i').addClass('icon16-identity-' + is.provider);
-            if (is.provider === 'twitter') {
-              external_username = '@' + external_username;
-            }
-            $identity.next().text(external_username);
-            this.$('.xbtn-verify').data('identity', is);
+        var that = this
+          , ids = $(e.currentTarget).data('source')
+          , l
+          , first;
+        if (ids && (l = ids.length)) {
+          first = ids[0];
+          var eun = first.external_username;
+          if (first.provider === 'twitter') {
+            eun = '@' + first.external_username;
           }
+          first.eun = eun;
+          if (l >1 ) {
+            that.$('.caret-outer').removeClass('hide');
+            var s = '';
+            for (var i = 0; i < l; i++) {
+              var eun = ids[i].external_username;
+              s += '<li data-index="' + i + '"><i class="pull-right icon16-identity-' + ids[i].provider + '"></i>';
+              if (ids[i].provider === 'twitter') {
+                eun = '@' + ids[i].external_username;
+              }
+              ids[i].eun = eun;
+              s += '<span>' + eun + '</span>'
+              s += '</li>';
+            }
+            that.$('.dropdown-menu').html(s).data('identities', ids);
+          }
+
+          this.updateIdentity(first);
         }
       },
 
@@ -671,16 +714,20 @@ define(function (require, exports, module) {
             + '<img class="avatar" src="" alt="" width="40" height="40" />'
             + '<i class="provider"></i>'
           + '</div>'
-          + '<div class="identity disabled"></div>'
-          + '<div>Confirm sending reset token to your mailbox?</div>'
-          + '<div class="hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
+          + '<div class="clearfix dropdown-toggle" data-toggle="dropdown">'
+            + '<div class="pull-left identity disabled"></div>'
+            + '<ul class="dropdown-menu"></ul>'
+            + '<div class="pull-left caret-outer hide"><b class="caret"></b></div>'
+          + '</div>'
+          + '<div class="send-before">Confirm sending reset token to your mailbox?</div>'
+          + '<div class="send-after hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
           + '<div class="xalert-error hide">'
             + '<p>Requested too much, hold on awhile.</p>'
             + '<p>Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</p>'
           + '</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue xbtn-verify">Verify</button>'
+          + '<button class="pull-right xbtn-blue xbtn-send">Send</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
       }
@@ -727,8 +774,16 @@ define(function (require, exports, module) {
           $e.toggleClass('icon16-pass-hide icon16-pass-show');
         },
         'click .xbtn-forgotpwd': function (e) {
-          var user = Store.get('user');
-          $(e.currentTarget).data('source', {identity: user.identities[0]});
+          var user = Store.get('user')
+            , identities = user.identities
+            , ids = [];
+
+          R.each(identities, function (v, i) {
+            if (v.status === 'CONNECTED') {
+              ids.push(v);
+            }
+          });
+          $(e.currentTarget).data('source', ids);
         },
         'click .xbtn-success': function (e) {
           var that = this;
@@ -806,7 +861,7 @@ define(function (require, exports, module) {
           + '<div class="shadow title">Change Password</div>'
           + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend>Please enter current password and set new one.</legend>'
+              + '<legend>Enter your current <span class="x-sign">EXFE</span> password, and set new one. All your identities share the same password for sign-in and account management.</legend>'
 
               + '<div class="identity">'
                 + '<img class="avatar" src="" width="40" height="40" />'
@@ -833,8 +888,8 @@ define(function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-resetpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="resetpassword">Forgot Password...</button>'
-          + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
+          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button class="pull-right xbtn-blue xbtn-success">Change</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
 
       }
@@ -843,6 +898,7 @@ define(function (require, exports, module) {
 
   };
 
+  /*
   dialogs.resetpassword = {
     options: {
 
@@ -921,6 +977,7 @@ define(function (require, exports, module) {
 
     }
   };
+  */
 
 
   dialogs.addidentity = {
@@ -1042,7 +1099,7 @@ define(function (require, exports, module) {
         if (data) {
           if (data.registration_flag === 'SIGN_IN') {
             that.$('.xalert-info').removeClass('hide');
-            that.$('.xbtn-forgotpwd').removeClass('hide').data('source', data);
+            that.$('.xbtn-forgotpwd').removeClass('hide').data('source', [data.identity]);
           }
           else if (data.registration_flag === 'SIGN_UP') {
             that.availability = true;
@@ -1100,11 +1157,13 @@ define(function (require, exports, module) {
               }
             }
             , function (data) {
+              that.$('.verify-before').addClass('hide');
               if (data.action === 'VERIFYING') {
+                that.$('.verify-after').removeClass('hide');
                 $e.text('Done').addClass('success');
+              } else {
+                that.$('.xalert-error').removeClass('hide');
               }
-            }
-            , function (data) {
             }
           );
         },
@@ -1138,8 +1197,9 @@ define(function (require, exports, module) {
             + '<i class="provider icon16-identity-email"></i>'
           + '</div>'
           + '<div class="identity disabled"></div>'
-          + '<p>Confirm sending verification to your mailbox?</p>'
-          + '<p class="hide">Requested too much, hold on awhile. Receive no verification email? It might be mistakenly filtered as spam. Or try ‘Manual Verification’.</p>',
+          + '<p class="verify-before">Confirm sending verification to your mailbox?</p>'
+          + '<p class="verify-after hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</p>'
+          + '<div class="xalert-error hide"><span class="xalert-fail">Requested too much, hold on awhile.</span><br />Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</div>',
 
         footer: ''
           //+ '<button href="#" class="xbtn-white">Manual Verification</button>'
@@ -1403,7 +1463,7 @@ define(function (require, exports, module) {
         t && (that.switchTabType !== t) && that.switchTab(t);
 
         that.$('.x-signin')[(that.availability ? 'remove' : 'add') + 'Class']('disabled');
-        that.$('.xbtn-forgotpwd').data('source', data);
+        that.$('.xbtn-forgotpwd').data('source', data ? [data.identity] : data);
       });
 
       // TODO: 后期优化掉
