@@ -114,7 +114,7 @@ class UserModels extends DataModel {
                 $rawUser['name'],
                 $rawUser['bio'],
                 null, // default_identity
-                getAvatarUrl('', '', $rawUser['avatar_file_name']),
+                $rawUser['avatar_file_name'] ? getAvatarUrl('', '', $rawUser['avatar_file_name']) : '',
                 $rawUser['timezone']
             );
             if ($withCrossQuantity) {
@@ -166,7 +166,7 @@ class UserModels extends DataModel {
                         $cross_quantity = $this->getRow(
                             "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
                         );
-                        $user->cross_quantity = (int)$cross_quantity['cross_quantity'];
+                        $user->cross_quantity  = (int) $cross_quantity['cross_quantity'];
                     }
                     if (!$user->avatar_filename) {
                         $user->avatar_filename = $user->default_identity->avatar_filename;
