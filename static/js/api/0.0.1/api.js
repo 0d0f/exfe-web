@@ -90,7 +90,7 @@ define('api', [], function (require, exports, module) {
   };
 
   // Not Use Token
-  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity verifyUserIdentity forgotPassword getIdentityById getCrossByInvitationToken';
+  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity forgotPassword getIdentityById getCrossByInvitationToken';
 
   var Api = {
 

@@ -44,8 +44,15 @@ define(function (require) {
       this.selecting = false;
     },
 
+    mouseenter: function (e) {
+      e.preventDefault();
+      this.$('.active').removeClass('active');
+      $(e.currentTarget).addClass('active');
+      this.select();
+    },
+
     tab: function () {
-      var val = this.target.val();
+      //var val = this.target.val();
       //this.emit('select', val);
       return this.hide();
     },
