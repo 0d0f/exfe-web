@@ -230,24 +230,18 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
-        $('#' + this.dom_id + ' .thumbnails > li.identity').live(
-            'mouseover mouseout mousedown',
+        $('#' + this.dom_id + ' .thumbnails > li.identity > .avatar').live(
+            'mouseenter mouseleave mousedown',
             function(event) {
-                var domEvent = event.target;
-                while (domEvent
-                    && !$(domEvent).hasClass('identity')
-                    && domEvent.tagName !== 'BODY') {
-                    domEvent = domEvent.parentNode;
-                }
                 switch (event.type) {
-                    case 'mouseover':
-                        ExfeeWidget.showTip(domEvent);
+                    case 'mouseenter':
+                        ExfeeWidget.showTip(this.parentNode);
                         break;
-                    case 'mouseout':
+                    case 'mouseleave':
                         ExfeePanel.hideTip();
                         break;
                     case 'mousedown':
-                        ExfeeWidget.showPanel(domEvent);
+                        ExfeeWidget.showPanel(this.parentNode);
                 }
             }
         );
@@ -316,7 +310,7 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showTip(objInvitation, objOffset.left, objOffset.top + 40);
+        ExfeePanel.showTip(objInvitation, objOffset.left, objOffset.top + 50);
     },
 
 
@@ -341,7 +335,7 @@ ExfeeWidget = {
             objIdentity.external_username = external_username;
         }
         var objInvitation = this.getInvitationByIdentity(objIdentity);
-        ExfeePanel.showPanel(objInvitation, objOffset.left, objOffset.top);
+        ExfeePanel.showPanel(objInvitation, objOffset.left + 5, objOffset.top + 5);
     },
 
 
