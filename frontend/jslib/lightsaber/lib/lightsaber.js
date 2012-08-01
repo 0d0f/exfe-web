@@ -418,7 +418,10 @@ define('lightsaber', function (require, exports, module) {
       if (url === 'back' || url === 'forward') {
         history[url]();
       } else {
-        location.href = url;
+        // 进入线程, 防止失败
+        setTimeout(function () {
+          location.href = url;
+        }, 13);
       }
       return;
     }
