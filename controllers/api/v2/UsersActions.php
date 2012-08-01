@@ -157,7 +157,6 @@ class UsersActions extends ActionController {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
                 case 'SIGN_IN':
-                case 'SET_PASSWORD':
                 case 'AUTHENTICATE':
                     apiResponse(array(
                         'registration_flag' => $raw_flag['flag'],
@@ -189,7 +188,7 @@ class UsersActions extends ActionController {
             $provider, $external_username
         );
         // init return value
-        $rtResult = array('identity' => $identity);
+        $rtResult = ['identity' => $identity];
         // 身份不存在，提示注册
         if (!$identity) {
             apiError(400, 'identity_does_not_exist', 'Can not verify identity, because identity does not exist.');
@@ -200,38 +199,37 @@ class UsersActions extends ActionController {
         if ($raw_flag) {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
-                case 'SET_PASSWORD':
                 case 'AUTHENTICATE':
                     $user_id  = isset($raw_flag['user_id'])
                               ? $raw_flag['user_id'] : 0;
                     $viResult = $modUser->verifyIdentity(
-                        $identity, $raw_flag['flag'], $user_id
+                        $identity,
+                        $raw_flag['reason'] === 'NO_PASSWORD'
+                      ? 'SET_PASSWORD' : 'VERIFY',
+                        $user_id
                     );
                     if ($viResult) {
                         $gobusFlag = '';
                         switch ($raw_flag['flag']) {
                             case 'VERIFY':
-                                $gobusFlag = 'CONFIRM_IDENTITY';
-                                $rtResult['action'] = 'VERIFYING';
-                                break;
-                            case 'SET_PASSWORD':
-                                $gobusFlag = 'SET_PASSWORD';
+                                $gobusFlag = $raw_flag['reason'] === 'NO_PASSWORD'
+                                           ? 'SET_PASSWORD' : 'CONFIRM_IDENTITY';
                                 $rtResult['action'] = 'VERIFYING';
                                 break;
                             case 'AUTHENTICATE':
-                                $rtResult['url'] = $viResult['url'];
+                                $rtResult['url']    = $viResult['url'];
                                 $rtResult['action'] = 'REDIRECT';
                         }
                         // call Gobus {
                         if ($gobusFlag) {
                             $user = $modUser->getUserById($raw_flag['user_id']);
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                            $hlpGobus->send('identity', 'Verify', array(
+                            $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
                                 'user_name'   => $user->name,
                                 'action'      => $gobusFlag,
                                 'token'       => $viResult['token'],
-                            ));
+                            ]);
                         }
                         // }
                         apiResponse($rtResult);
@@ -274,7 +272,6 @@ class UsersActions extends ActionController {
         if ($raw_flag) {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
-                case 'SET_PASSWORD':
                 case 'AUTHENTICATE':
                     apiError(400, 'identity_is_being_verified', 'Can not reset password, because identity is being verified.');
                 case 'SIGN_IN':
@@ -282,17 +279,22 @@ class UsersActions extends ActionController {
                         $identity, 'SET_PASSWORD', $raw_flag['user_id']
                     );
                     if ($viResult) {
-                        $rtResult['action'] = 'VERIFYING';
-                        // call Gobus {
-                        $user = $modUser->getUserById($raw_flag['user_id']);
-                        $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                        $hlpGobus->send('identity', 'Verify', array(
-                            'to_identity' => $identity,
-                            'user_name'   => $user->name,
-                            'action'      => $gobusFlag,
-                            'token'       => $viResult['token'],
-                        ));
-                        // }
+                        if (isset($viResult['url'])) {
+                            $rtResult['url']    = $viResult['url'];
+                            $rtResult['action'] = 'REDIRECT';
+                        } else {
+                            $rtResult['action'] = 'VERIFYING';
+                            // call Gobus {
+                            $user = $modUser->getUserById($raw_flag['user_id']);
+                            $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                            $hlpGobus->send('user', 'Verify', [
+                                'to_identity' => $identity,
+                                'user_name'   => $user->name,
+                                'action'      => 'SET_PASSWORD',
+                                'token'       => $viResult['token'],
+                            ]);
+                            // }
+                        }
                         apiResponse($rtResult);
                     }
                     apiError(500, 'failed', '');
@@ -337,10 +339,20 @@ class UsersActions extends ActionController {
                 );
                 if ($viResult) {
                     if (isset($viResult['url'])) {
-                        $rtResult['url'] = $viResult['url'];
+                        $rtResult['url']    = $viResult['url'];
                         $rtResult['action'] = 'REDIRECT';
                     } else {
                         $rtResult['action'] = 'VERIFYING';
+                        // call Gobus {
+                        $user     = $modUser->getUserById($user_id);
+                        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                        $hlpGobus->send('user', 'Verify', [
+                            'to_identity' => $identity,
+                            'user_name'   => $user->name,
+                            'action'      => $gobusFlag,
+                            'token'       => $viResult['token'],
+                        ]);
+                        // }
                     }
                     apiResponse($rtResult);
                 }
