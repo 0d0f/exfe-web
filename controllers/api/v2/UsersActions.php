@@ -224,7 +224,7 @@ class UsersActions extends ActionController {
                         if ($gobusFlag) {
                             $user = $modUser->getUserById($raw_flag['user_id']);
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                            $hlpGobus->send('identity', 'Verify', [
+                            $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
                                 'user_name'   => $user->name,
                                 'action'      => $gobusFlag,
@@ -287,7 +287,7 @@ class UsersActions extends ActionController {
                             // call Gobus {
                             $user = $modUser->getUserById($raw_flag['user_id']);
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                            $hlpGobus->send('identity', 'Verify', [
+                            $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
                                 'user_name'   => $user->name,
                                 'action'      => 'SET_PASSWORD',
@@ -346,7 +346,7 @@ class UsersActions extends ActionController {
                         // call Gobus {
                         $user     = $modUser->getUserById($user_id);
                         $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                        $hlpGobus->send('identity', 'Verify', [
+                        $hlpGobus->send('user', 'Verify', [
                             'to_identity' => $identity,
                             'user_name'   => $user->name,
                             'action'      => $gobusFlag,
