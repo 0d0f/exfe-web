@@ -30,13 +30,19 @@ define(function (require, exports, module) {
   // gahter a x
   app.get('/#gather', routes.switchPage, routes.signin, routes.gather);
 
+  // token
+  // `token`
+  app.param('token', routes.resolveTokenParam)
+  app.get('/#token=:token', routes.switchPage, routes.signin, routes.resolveToken);
+
   // profile
-  app.get(/^\/#([^@\/\s\!]+)?@([^@\/\s\.]+)/, routes.switchPage, routes.signin, routes.profile);
+  app.get(/^\/#([^@\/\s\!=]+)?@([^@\/\s\.]+)/, routes.switchPage, routes.signin, routes.profile);
 
   // cross
   // cross token
-  app.param('token', routes.crossTokenParam);
-  app.get('/#!token=:token', routes.switchPage, routes.signin, routes.crossToken);
+  // `ctoken`
+  app.param('ctoken', routes.crossTokenParam);
+  app.get('/#!token=:ctoken', routes.switchPage, routes.signin, routes.crossToken);
 
   // normal cross
   app.param('cross_id', routes.crossParam);
