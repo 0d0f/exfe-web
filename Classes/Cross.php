@@ -23,10 +23,9 @@ class Cross extends Metainfo {
         $this->exfee=$exfee;
     }
 
-    public function __construct($id, $title, $description, $host_identity,$attribute, $exfee, $widget=array(),$time="", $place="",$conversation_count=0 ) {
+    public function __construct($id, $title, $description, $attribute, $exfee, $widget = [], $time = '', $place = '', $conversation_count = 0 ) {
         parent::__construct($id,"Cross");
         $this->setExfee($exfee);
-        $this->host_identity=$host_identity;
 
         $this->attribute = $attribute;
         $this->widget    = $widget;
