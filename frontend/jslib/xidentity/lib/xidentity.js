@@ -45,15 +45,16 @@ define(function (require) {
     },
 
     mouseenter: function (e) {
+      this.selecting = true;
+      e.stopPropagation();
       e.preventDefault();
       this.$('.active').removeClass('active');
       $(e.currentTarget).addClass('active');
       this.select();
+      return false;
     },
 
     tab: function () {
-      //var val = this.target.val();
-      //this.emit('select', val);
       return this.hide();
     },
 
@@ -83,7 +84,7 @@ define(function (require) {
           if (e.type !== 'keydown') break;
           e.preventDefault();
           this.selecting = true;
-          this.next();
+          this.next()
           this.select();
           break;
       }
@@ -128,6 +129,7 @@ define(function (require) {
 
         that.cache || (that.cache = {});
 
+        // `selecting`: up-down or mousemove
         if (!that.selecting && that.source && that.source.length) {
           items = $.grep(that.source, function (item) {
             return that.matcher(item);
