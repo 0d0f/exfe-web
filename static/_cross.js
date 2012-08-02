@@ -227,6 +227,24 @@ ExfeeWidget = {
         this.dom_id   = dom_id;
         this.editable = editable;
         this.callback = callback;
+        $('#' + this.dom_id + ' .invite').hide();
+        $('#' + this.dom_id + ' .total').hide();
+        $('#' + this.dom_id).bind(
+            'mouseenter mouseleave',
+            function(event) {
+                switch (event.type) {
+                    case 'mouseenter':
+                        $('#' + dom_id + ' .invite').fadeIn(100);
+                        $('#' + dom_id + ' .total').fadeIn(100);
+                        break;
+                    case 'mouseleave':
+                        if ($('#' + dom_id + ' .exfee-input').val() === '') {
+                            $('#' + dom_id + ' .invite').fadeOut(100);
+                            $('#' + dom_id + ' .total').fadeOut(100);
+                        }
+                }
+            }
+        );
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
@@ -1481,8 +1499,8 @@ define(function (require, exports, module) {
             strAbsTime  = '', strRelTime = '', format = 'YYYY-MM-DD';
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
-                strAbsTime  = Cross.time.origin;
-                strRelTime  = '&nbsp;';
+                strAbsTime  = 'No specified time, yet.';
+                strRelTime  = Cross.time.origin;
             } else if (Cross.time.begin_at.time) {
                 var objMon  = moment((moment.utc(
                     Cross.time.begin_at.date + ' '
@@ -1500,7 +1518,7 @@ define(function (require, exports, module) {
                             ? 'Today' : moment(strAbsTime, format).fromNow();
             }
         } else {
-            strAbsTime = 'Click here to set time.';
+            strAbsTime = 'No specified time, yet.';
             strRelTime = 'Sometime';
         }
         $('.cross-date h2').html(strRelTime);
@@ -1515,9 +1533,9 @@ define(function (require, exports, module) {
           : 'Somewhere'
         );
         $('.cross-dp.cross-place > address').html(
-            Cross.place.description || Cross.place.title
+            Cross.place.description
           ? Cross.place.description.replace(/\r\n|\r|\n/g, '<br>')
-          : 'Click here to set place.'
+          : 'Add some place details.'
         );
     };
 
@@ -1676,7 +1694,10 @@ define(function (require, exports, module) {
         Exfee             = objCross.exfee;
         readOnly          = read_only;
         savedCross        = summaryCross();
-        $('.cross-date .edit').val(Cross.time.origin);
+        $('.cross-date  .edit').val(Cross.time.origin);
+        $('.cross-place .edit').val(
+            Cross.place.title + (Cross.place.description ? ('\n' + Cross.place.description) : '')
+        );
         ShowCross();
         GetTimeline();
     };
