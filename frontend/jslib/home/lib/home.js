@@ -57,7 +57,11 @@ define(function (require) {
       , j = 0
 
       // 可以触发行为
-      , loaded = false;
+      , loaded = false
+
+      , TRIANGLE = $X.find('div.triangle')
+      , $TRIANGLE = TRIANGLE.find('#triangle')
+      , $SIGNIN = $TRIANGLE.next();
 
     WIN.data('home', true);
 
@@ -76,11 +80,16 @@ define(function (require) {
       .delay(500, 'show-title')
       .delay(233, 'show-circles')
       .delay(233, 'show-start')
+      .delay(233, 'show-triangle')
       .delay(233, 'ender')
       // 入场动画
       .queue('starter', function (next) {
           TOY.addClass('exfe-scaleOn');
           TOY.dequeue('show-title');
+
+          // canvas 画倒三角行
+          createTriangle();
+
         })
       // 显示 title
       .queue('show-title', function (next) {
@@ -102,6 +111,13 @@ define(function (require) {
         PF.animate({
           opacity: 1
         }, 1000/*233*/)
+        TOY.dequeue('show-triangle');
+      })
+      // 显示三角形
+      .queue('show-triangle', function (next) {
+        $('#triangle').animate({
+          top: 0
+        }, 1000);
         TOY.dequeue('ender');
       })
       // 最后，初始化定时器等
@@ -164,14 +180,98 @@ define(function (require) {
     .on('click.home', function (e) {
       var $e = $(e.target);
 
+      if (!loaded) return;
+
       if (!$e.hasClass('gather-wrapper')
           && !$e.parent().hasClass('gather-wrapper')
+          && !$e.hasClass('triangle')
+          && !$e.parent().hasClass('triangle')
+          && !$e.hasClass('exfe-toy')
           && !$e.hasClass('modal')
           && !$('.modal').size()
+          && !$e.hasClass('hmb')
          ) {
-          $('.sign-in').trigger('click.dialog.data-api');
+          $SIGNIN.removeClass('hide');
+          $TRIANGLE
+            .removeClass('trifio')
+            .delay(13, 'trifio')
+            .queue('trifio', function () {
+              $TRIANGLE.addClass('trifio');
+            })
+            .dequeue('trifio');
       }
-    });
+
+      //if (!$e.hasClass('gather-wrapper')
+          //&& !$e.parent().hasClass('gather-wrapper')
+          //&& !$e.hasClass('modal')
+          //&& !$('.modal').size()
+         //) {
+          //$('.sign-in').trigger('click.dialog.data-api');
+      //}
+      })
+    .on('click.home', '.x-home .modal-backdrop', function () {
+        $('.sign-in').data('dialog').hide();
+      })
+    .on('click.home', '.x-home .triangle, .x-home .exfe-toy', function (e) {
+          if ($SIGNIN.hasClass('hide')) {
+            $SIGNIN.removeClass('hide');
+          }
+          var settings = {
+            options: {
+              onHideAfter: function () {
+                this.$('.modal-body').eq(0).css('opacity', 1);
+                this.switchTabType = 'd00';
+
+                // abort ajax
+                if (this._oauth_) {
+                  this._oauth_.abort();
+                }
+                var $e = this.element;
+                this.offSrcNode();
+                this.destory();
+                $e.remove();
+
+                // TODO: 删除 `popmenu` 元素，暂时先放着
+                $('.popmenu').remove();
+
+                $('#js-modal-backdrop').addClass('hide').css('opacity', 0);
+                $TRIANGLE.css({
+                  opacity: .3,
+                  top: 0,
+                  width: '880px'
+                });
+              },
+              backdrop: false,
+              viewData: {
+                // class
+                cls: 'modal-id home-dialog'
+              }
+            },
+          };
+          $('.sign-in').data('dialog-settings', settings);
+          $('.sign-in').trigger('click.dialog.data-api');
+          $('.sign-in').data('dialog-settings', null);
+
+          $SIGNIN.addClass('hide');
+          $TRIANGLE.animate({
+            opacity: 0,
+            top: 500,
+            width: '440px'
+          }, 500);
+          $('.modal-backdrop').removeClass('hide').animate({
+            opacity: 1
+          }, 1000);
+          $('.modal-id').animate({
+            opacity: 1
+          }, 1000, function () {
+            $TRIANGLE.css({
+              opacity: 0,
+              top: 0,
+              width: '880px'
+            });
+          });
+      });
+
 
     // Helpers
     // ------------------
@@ -327,6 +427,19 @@ define(function (require) {
         .eq(n - 1)
         .removeClass('fadeOut')
         .addClass('fadeIn');
+    }
+
+    function createTriangle() {
+      var triangle = document.getElementById('triangle')
+        , ctx = triangle.getContext('2d');
+
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(440, 35);
+      ctx.lineTo(880, 0);
+      ctx.fill();
+      ctx.closePath();
     }
 
   });

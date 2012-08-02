@@ -346,7 +346,6 @@ define(function (require, exports, module) {
                 Store.set('last_external_username', od.external_identity);
 
                 that.hide();
-                // goto profile
                 if (t === 'd01' || t === 'd02') {
                   Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
                   Bus.emit('xapp:usersignin');
@@ -1373,7 +1372,7 @@ define(function (require, exports, module) {
           + '<div class="shadow title">Set Password</div>'
           + '<form class="modal-form form-horizontal">'
             + '<fieldset>'
-              + '<legend>Please set a universal password for your account. You can sign in by any of your identities (if more than one), with the same password.</legend>'
+              + '<legend>Please set <span class="x-sign">EXFE</span> password of your account.<br />All your identities share the same password for sign-in and account management.</legend>'
 
               + '<div class="control-group">'
                 + '<label class="control-label" for="setpassword">Password:</label>'
@@ -1558,6 +1557,7 @@ define(function (require, exports, module) {
         , dialogType = $this.data('dialog-type')
         , dialogTab = $this.data('dialog-tab')
         , dialogFrom = $this.data('dialog-from')
+        , dialogSettings = $this.data('dialog-settings')
         , dataSource = $this.data('source');
 
       e.preventDefault();
@@ -1566,6 +1566,9 @@ define(function (require, exports, module) {
 
         if (dialogType) {
           settings = dialogs[dialogType];
+          if (dialogSettings) {
+            settings = $.extend(true, {}, settings, dialogSettings);
+          }
           data = new (dialogType === 'identification' ? Identification : Dialog)(settings);
           data.options.srcNode = $this;
           if (dialogFrom) data.dialog_from = dialogFrom;
