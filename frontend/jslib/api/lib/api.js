@@ -83,14 +83,14 @@ define('api', [], function (require, exports, module) {
     // Cross Token
     // ep:
     //  http -f post api.local.exfe.com/v2/crosses/GetCrossByInvitationToken?token="249ceff8cbdc3fd20ce95ea391739b59" invitation_token="d8983af0ff726256851e0a4e5c41d6db"
-    getCrossByInvitationToken: '/Crosses/getCrossByInvitationToken'
+    getCrossByInvitationToken: '/Crosses/getCrossByInvitationToken',
 
-    // follow exfe
-    //followExfe: '/Oauth/followExfe'
+    // Resolve Token
+    resolveToken: '/Users/resolveToken'
   };
 
   // Not Use Token
-  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity forgotPassword getIdentityById getCrossByInvitationToken';
+  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity forgotPassword getIdentityById getCrossByInvitationToken resolveToken';
 
   var Api = {
 
