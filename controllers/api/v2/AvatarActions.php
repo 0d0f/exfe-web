@@ -135,8 +135,7 @@ class AvatarActions extends ActionController {
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../../default_avatar_portrait/";
-        $defImg    = "{$curDir}/../../../eimgs/web/80_80_default.png";
-        $icoFile   = "{$curDir}/../../../static/images/icons_v2.png";
+        $icoFile   = "{$curDir}/../../../static/img/icons.png";
         require_once "{$curDir}/../../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
@@ -187,7 +186,8 @@ class AvatarActions extends ActionController {
             }
         } catch (Exception $error) {
             // get fall back image
-            $image  = ImageCreateFromPNG($defImg);
+            $image  = ImageCreateFromPNG("{$resDir}bg_" . fmod(0, 3) . '.png');
+
         }
         // resize source image
         $rqs_width  = (int) $params['width'];
