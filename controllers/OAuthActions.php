@@ -131,7 +131,7 @@ class OAuthActions extends ActionController {
                     );
                     // call Gobus {
                     $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                    $hlpGobus->send('User', 'TwitterFriends', [
+                    $hlpGobus->send('user', 'TwitterFriends', [
                         'ClientToken'  => TWITTER_CONSUMER_KEY,
                         'ClientSecret' => TWITTER_CONSUMER_SECRET,
                         'AccessToken'  => $oauthIfo['oauth_token'],
