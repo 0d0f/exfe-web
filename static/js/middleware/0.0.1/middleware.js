@@ -39,6 +39,8 @@ define('middleware', function (require, exports, module) {
 
     req.session.checked = true;
 
+    next();
+    /*
     Api.request('checkAuthorization'
       , {
         type: 'POST',
@@ -47,11 +49,13 @@ define('middleware', function (require, exports, module) {
         }
       }
       , function (data) {
+        console.dir(data);
         req.session.identities_status = data.identities_status;
         req.session.password = data.password;
         next();
       }
     );
+    */
   };
 
 });
