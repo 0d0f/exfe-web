@@ -373,8 +373,8 @@ define('lightsaber', function (require, exports, module) {
     this.host = location.hostname;
     this.port = location.port || 80;
     this.path = location.pathname;
-    this.hash = location.hash;
-    this.querystring = location.search;
+    this.hash = decodeURIComponent(location.hash);
+    this.querystring = decodeURIComponent(location.search);
     this.url = location.pathname + this.querystring + this.hash;
   };
 

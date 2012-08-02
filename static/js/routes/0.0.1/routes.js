@@ -104,6 +104,47 @@ define('routes', function (require, exports, module) {
     });
   };
 
+  // resolve token
+  routes.resolveTokenParam = function (req, res, next, token) {
+    if (token && token.match(/^[a-zA-Z0-9]{32}$/)) {
+      Api.request('resolveToken'
+        , {
+            type: 'POST'
+          , data: {
+              token: token
+            }
+        }
+        , function (data) {
+            if (data && data.action === 'VERIFIED') {
+              req.session.token = data.token;
+              req.session.user_id = data.user_id;
+              Store.set('signin', {user_id: data.user_id, token: data.token});
+
+              next();
+            } else if (data.action === 'INPUT_NEW_PASSWORD') {
+              // TODO:
+            }
+          }
+        , function (data) {
+            if (data.meta.code === 400) {
+              // 跳回首页
+              res.redirect('/');
+            }
+          }
+      );
+    }
+    else {
+      res.redirect('/');
+    }
+  };
+
+  routes.resolveToken = function (req, res, next) {
+    var XAPP_LOGIN_DONE = 'xapp:logindone';
+    Bus.on(XAPP_LOGIN_DONE, function (type, dfd) {
+      redirectProfile(res);
+    });
+  };
+
   // profile
   routes.profile = function (req, res, next) {
     document.title = 'Profile';
@@ -122,8 +163,8 @@ define('routes', function (require, exports, module) {
 
   // cross
   // cross token
-  routes.crossTokenParam = function (req, res, next, token) {
-    if (token.match(/^[a-zA-Z0-9]{32}$/)) {
+  routes.crossTokenParam = function (req, res, next, ctoken) {
+    if (ctoken && ctoken.match(/^[a-zA-Z0-9]{32}$/)) {
       var userToken = req.session.token
         , params = {};
 
@@ -143,7 +184,7 @@ define('routes', function (require, exports, module) {
           type: 'POST',
           params: params,
           data: {
-            invitation_token: token
+            invitation_token: ctoken
           }
         }
         , function (data) {
@@ -187,14 +228,14 @@ define('routes', function (require, exports, module) {
       , cross = data.cross
       , browsingIdentity = data.browsing_identity
       , read_only = data.read_only
-      , token = req.params.token;
+      , ctoken = req.params.ctoken;
 
     delete req.session.tmpData;
 
     res.render('x.html', function (tpl) {
       $('#js-main > div[role="main"]').append(tpl);
       Bus.emit('xapp:cross:main');
-      Bus.emit('xapp:cross', null, browsingIdentity, cross, read_only, token);
+      Bus.emit('xapp:cross', null, browsingIdentity, cross, read_only, ctoken);
     });
   };
 
@@ -220,7 +261,8 @@ define('routes', function (require, exports, module) {
 
   // Helpers:
   // ----------------------
-  function redirectProfile(res) {
+  function redirectProfile(response) {
+    var user = Store.get('user');
     // TODO: 后面应该封装下
     var identity = Store.get('user').default_identity
       , external_username = identity.external_username;
@@ -229,7 +271,7 @@ define('routes', function (require, exports, module) {
       external_username = '@' + external_username;
     }
 
-    res.redirect('/#' + external_username);
+    response.redirect('/#' + external_username);
   }
 
 });
