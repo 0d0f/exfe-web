@@ -227,6 +227,24 @@ ExfeeWidget = {
         this.dom_id   = dom_id;
         this.editable = editable;
         this.callback = callback;
+        $('#' + this.dom_id + ' .invite').hide();
+        $('#' + this.dom_id + ' .total').hide();
+        $('#' + this.dom_id).bind(
+            'mouseenter mouseleave',
+            function(event) {
+                switch (event.type) {
+                    case 'mouseenter':
+                        $('#' + dom_id + ' .invite').fadeIn(100);
+                        $('#' + dom_id + ' .total').fadeIn(100);
+                        break;
+                    case 'mouseleave':
+                        if ($('#' + dom_id + ' .exfee-input').val() === '') {
+                            $('#' + dom_id + ' .invite').fadeOut(100);
+                            $('#' + dom_id + ' .total').fadeOut(100);
+                        }
+                }
+            }
+        );
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'keydown blur', this.inputEvent
         );
