@@ -34,16 +34,12 @@ class CrossHelper extends ActionController {
                     $attribute["state"]="draft";
 
                 $created_at=$cross["created_at"];
-                $host_identity=$identityData->getIdentityById($cross["host_id"]);
 
-                if($cross["host_id"]==$cross["by_identity_id"])
-                    $by_identity=$host_identity;
-                else
-                    $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
+                $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
 
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
                 $conversation_count=$conversationData->getConversationCounter($cross["exfee_id"],$uid);
-                $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place,$conversation_count);
+                $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $attribute,$exfee, array($background),$begin_at, $place,$conversation_count);
                 $cross->by_identity=$by_identity;
                 $cross->created_at=$created_at." +0000";
                 $relative_id=0;
@@ -73,12 +69,8 @@ class CrossHelper extends ActionController {
         $place=$placeData->getPlace($cross["place_id"]);
 
         $identityData=$this->getModelByName("identity","v2");
-        $host_identity=$identityData->getIdentityById($cross["host_id"]);
-        if($cross["host_id"]==$cross["by_identity_id"])
-            $by_identity=$host_identity;
-        else
-            $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
 
+        $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
 
         $background=new Background($cross["background"]);
 
@@ -94,7 +86,7 @@ class CrossHelper extends ActionController {
         $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), $withRemoved, $withToken);
         $created_at=$cross["created_at"];
 
-        $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $host_identity,$attribute,$exfee, array($background),$begin_at, $place);
+        $cross=new Cross($cross["id"],$cross["title"], $cross["description"],$attribute,$exfee, array($background),$begin_at, $place);
         $cross->by_identity=$by_identity;
         $cross->created_at=$created_at;
         $relative_id=0;
@@ -131,22 +123,23 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function editCross($cross,$by_identity_id) {
-        $exfee_id=intval($cross->exfee_id);
-        // check exfee and update exfee
-        $placeData=$this->getModelByName("place","v2");
-        $crossData=$this->getModelByName("cross","v2");
-        $place=$cross->place;
-        if($place!="" && $place->type=="Place")
-        {
-            $place_id=$placeData->addPlace($place);
-            //$updateobj["updated_at"]=time();
-            ////$updateobj["by_identity_id"]=time();
-            //saveUpdate($cross->id,"place",$updateobj) ;
+    public function editCross($cross, $by_identity_id) {
+        // get current cross object
+        $old_cross = $this->getCross(intval($cross->id));
 
+        $exfee_id  = intval($cross->exfee_id);
+        // check exfee and update exfee
+        $placeData = $this->getModelByName("place","v2");
+        $crossData = $this->getModelByName("cross","v2");
+        $place = $cross->place;
+        if ($place && $place->type === 'Place'
+         && ($place->title       !== '' || $place->description !== ''
+          || $place->lng         !== 0  || $place->lat         !== 0
+          || $place->provider    !== '' || $place->external_id !== 0)) {
+            $place_id=$placeData->addPlace($place);
         }
 
-        $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
+        $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id,$old_cross);
         $exfeeData=$this->getModelByName("exfee","v2");
         $exfeeData->updateExfeeTime($exfee_id);
         return $cross_id;

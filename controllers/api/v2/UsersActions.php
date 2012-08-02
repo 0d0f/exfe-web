@@ -18,7 +18,9 @@ class UsersActions extends ActionController {
             }
         }
         if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
-            apiResponse(array('user' => $objUser));
+            $passwd  = $modUser->getUserPasswdByUserId($params['id']);
+            $objUser->password = !!$passwd['encrypted_password'];
+            apiResponse(['user' => $objUser]);
         }
         apiError(404, 'user_not_found', 'user not found');
     }
@@ -371,17 +373,13 @@ class UsersActions extends ActionController {
         }
         $rsResult = $modUser->resolveToken($token);
         if ($rsResult) {
+            $rtResult = ['user_id' => $rsResult['user_id'],
+                         'token'   => $rsResult['token']];
             switch ($rsResult['action']) {
                 case 'VERIFY':
-                    apiResponse(array(
-                        'user_id' => $rsResult['user_id'],
-                        'token'   => $rsResult['token'],
-                        'action'  => 'VERIFIED',
-                    ));
+                    apiResponse($rtResult + ['action' => 'VERIFIED']);
                 case 'SET_PASSWORD':
-                    apiResponse(array(
-                        'action'  => 'INPUT_NEW_PASSWORD',
-                    ));
+                    apiResponse($rtResult + ['action' => 'INPUT_NEW_PASSWORD']);
             }
         }
         apiError(400, 'invalid_token', 'Invalid Token');
@@ -399,8 +397,9 @@ class UsersActions extends ActionController {
         if (!$password = $_POST['password']) {
             apiError(400, 'no_password', 'password must be provided');
         }
+        $name = mysql_real_escape_string(trim($_POST['name']));
         // set password
-        $stResult = $modUser->resetPasswordByToken($token, $password);
+        $stResult = $modUser->resetPasswordByToken($token, $password, $name);
         if ($stResult) {
             apiResponse(array(
                 'user_id' => $stResult['user_id'],
@@ -451,22 +450,6 @@ class UsersActions extends ActionController {
             }
         }
         apiError(400, 'invalid_invitation_token', 'Invalid Invitation Token');
-    }
-
-
-    public function doCheckAuthorization() {
-        // get models
-        $checkHelper = $this->getHelperByName('check', 'v2');
-        $modUser     = $this->getModelByName('user',   'v2');
-        // get inputs
-        $token       = trim($_POST['token']);
-        // get status
-        $result      = $checkHelper->isAPIAllow('user_edit', $token);
-        // return
-        if ($result['check']) {
-            apiResponse($modUser->getUserIdentityInfoByUserId($result['uid']));
-        }
-        apiError(401, 'no_signin', ''); // 需要登录
     }
 
 

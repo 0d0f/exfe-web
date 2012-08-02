@@ -7,16 +7,6 @@ class UserModels extends DataModel {
     public  $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
-    protected function getUserPasswdByUserId($user_id) {
-        return $user_id ? $this->getRow(
-            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
-             `encrypted_password`, `password_salt`, `current_sign_in_ip`,
-             `reset_password_token`
-             FROM   `users` WHERE `id` = {$user_id}"
-        ) : null;
-    }
-
-
     protected function encryptPassword($password, $password_salt) {
         return md5($password.( // compatible with the old users
             $password_salt === $this->salt ? $this->salt
@@ -102,6 +92,16 @@ class UserModels extends DataModel {
              `expiration_date` = FROM_UNIXTIME({$expiration_date}) {$sql_token}
              WHERE  `id`       = {$id}"
         ) : false;
+    }
+
+
+    public function getUserPasswdByUserId($user_id) {
+        return $user_id ? $this->getRow(
+            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
+             `encrypted_password`, `password_salt`, `current_sign_in_ip`,
+             `reset_password_token`
+             FROM   `users` WHERE `id` = {$user_id}"
+        ) : null;
     }
 
 
@@ -220,27 +220,6 @@ class UserModels extends DataModel {
             }
         }
         return $user_ids;
-    }
-
-
-    public function getUserIdentityInfoByUserId($user_id) {
-        if (!$user_id) {
-            return null;
-        }
-        $passwd  = $this->getUserPasswdByUserId($user_id);
-        $ids     = $this->getAll(
-            "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$user_id}"
-        );
-        $result  = array(
-            'user_id'           => $user_id,
-            'password'          => !!$passwd['encrypted_password'],
-            'identities_status' => array(),
-        );
-        foreach ($ids as $id) {
-            $result['identities_status'][$id['identityid']]
-          = $this->arrUserIdentityStatus[intval($id['status'])];
-        }
-        return $result;
     }
 
 
@@ -473,8 +452,10 @@ class UserModels extends DataModel {
                         $curToken['id']
                     );
                     if ($seResult) {
+                        $siResult = $this->rawSiginin($curToken['user_id']);
                         return array(
-                            'user_id'     => $curToken['user_id'],
+                            'user_id'     => $siResult['user_id'],
+                            'token'       => $siResult['token'],
                             'identity_id' => $curToken['identity_id'],
                             'action'      => $curToken['action'],
                         );
@@ -485,14 +466,14 @@ class UserModels extends DataModel {
     }
 
 
-    public function resetPasswordByToken($token, $password) {
+    public function resetPasswordByToken($token, $password, $name = '') {
         // basic check
         if (!$token || !$password) {
             return null;
         }
         // change password
         if (($curToken = $thie->getTokenInfo($token))) {
-            $cpResult = $this->setUserPassword($curToken['user_id'], $password);
+            $cpResult  = $this->setUserPassword($curToken['user_id'], $password, $name);
             if ($cpResult) {
                 $siResult = $this->rawSiginin($curToken['user_id']);
                 $this->usedToken($curToken);
@@ -767,17 +748,18 @@ class UserModels extends DataModel {
     }
 
 
-    public function setUserPassword($user_id, $password) {
+    public function setUserPassword($user_id, $password, $name = '') {
         if (!$user_id || !$password) {
             return false;
         }
         $password = $this->encryptPassword(
             $password, $passwordSalt = md5(createToken())
         );
+        $sqlName  = $name === '' ? '' : ", `name` = '{$name}'";
         return $this->query(
             "UPDATE `users`
              SET    `encrypted_password` = '{$password}',
-                    `password_salt`      = '{$passwordSalt}'
+                    `password_salt`      = '{$passwordSalt}'{$sqlName}
              WHERE  `id`                 =  {$user_id}"
         );
     }
