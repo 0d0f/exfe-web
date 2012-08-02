@@ -7,13 +7,85 @@ html, body {
   #gradient > .vertical(#5a7a95, #c3e3fd);
 }
 
+.home-dialog {
+  /*@bs: 10px 10px 100px 10px rgba(255, 255, 255, .75);*/
+  /*.box-shadow(@bs);*/
+  .opacity(0);
+}
+
 .x-home {
   text-align: center;
   font-family: "Myriad Pro", "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 
+  //http://www.colorzilla.com/gradient-editor/
+  .modal-backdrop {
+    #gradient > .vertical(rgba(0, 0, 0, .33), rgba(0, 0, 0, .75));
+    /*background: -webkit-gradient(radial, center center, 0, center center, 200, from(rgba(0,0,0,.33)), to(rgba(0,0,0,.75)));*/
+    .opacity(0);
+  }
+
   .opacity0 {
     .opacity(0);
   }
+
+  .triangle {
+    position: relative;
+    visibility: visible;
+    height: 35px;
+
+
+    #triangle {
+      position: relative;
+      margin: 0 auto;
+      top: -35px;
+      .opacity(30);
+    }
+
+    .signin {
+      position: relative;
+      z-index: 2;
+      margin: -40px auto 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #435F77;
+      line-height: 35px;
+      text-shadow: 0 1px 1px rgba(255, 255, 255, .33);
+    }
+  }
+
+    @-webkit-keyframes fio {
+      0% { opacity: .3; }
+      50% { opacity: .75; }
+      100% { opacity: .3; }
+    }
+    @-moz-keyframes fio {
+      0% { opacity: .3; }
+      50% { opacity: .75; }
+      100% { opacity: .3; }
+    }
+    @-o-keyframes fio {
+      0% { opacity: .3; }
+      50% { opacity: .75; }
+      100% { opacity: .3; }
+    }
+    @-ms-keyframes fio {
+      0% { opacity: .3; }
+      50% { opacity: .75; }
+      100% { opacity: .3; }
+    }
+    @keyframes fio {
+      0% { opacity: .3; }
+      50% { opacity: .75; }
+      100% { opacity: .3; }
+    }
+
+    .trifio {
+      -webkit-animation: fio 500ms ease-in-out forwards;
+      -o-animation: fio 500ms ease-in-out forwards;
+      -moz-animation: fio 500ms ease-in-out forwards;
+      -ms-animation: fio 500ms ease-in-out forwards;
+      animation: fio 500ms ease-in-out forwards;
+    }
 
   .page-header {
     position: relative;
