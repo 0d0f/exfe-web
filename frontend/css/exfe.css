@@ -5543,6 +5543,10 @@ body {
   color: #1175a5;
 }
 
+.modal-id .modal-main {
+  min-height: 271px;
+}
+
 .modal-id .authorize {
   height: 40px;
   padding-left: 55px;
