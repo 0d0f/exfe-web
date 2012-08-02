@@ -18,7 +18,9 @@ class UsersActions extends ActionController {
             }
         }
         if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
-            apiResponse(array('user' => $objUser));
+            $passwd  = $modUser->getUserPasswdByUserId($params['id']);
+            $objUser->password = !!$passwd['encrypted_password'];
+            apiResponse(['user' => $objUser]);
         }
         apiError(404, 'user_not_found', 'user not found');
     }
@@ -451,22 +453,6 @@ class UsersActions extends ActionController {
             }
         }
         apiError(400, 'invalid_invitation_token', 'Invalid Invitation Token');
-    }
-
-
-    public function doCheckAuthorization() {
-        // get models
-        $checkHelper = $this->getHelperByName('check', 'v2');
-        $modUser     = $this->getModelByName('user',   'v2');
-        // get inputs
-        $token       = trim($_POST['token']);
-        // get status
-        $result      = $checkHelper->isAPIAllow('user_edit', $token);
-        // return
-        if ($result['check']) {
-            apiResponse($modUser->getUserIdentityInfoByUserId($result['uid']));
-        }
-        apiError(401, 'no_signin', ''); // 需要登录
     }
 
 
