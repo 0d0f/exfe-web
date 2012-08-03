@@ -150,7 +150,16 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
-            apiResponse(array('registration_flag' => 'SIGN_UP'));
+            switch ($identity->provider) {
+                case 'email':
+                    apiResponse(['flag' => 'VERIFY']);
+                    break;
+                case 'twitter':
+                    apiResponse(['flag' => 'AUTHENTICATE']);
+                    break;
+                default:
+                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            }
         }
         // get registration flag
         $raw_flag = $modUser->getRegistrationFlag($identity);
