@@ -152,7 +152,7 @@ class UsersActions extends ActionController {
         if (!$identity) {
             switch ($provider) {
                 case 'email':
-                    apiResponse(['flag' => 'VERIFY']);
+                    apiResponse(['flag' => 'SIGN_UP']);
                     break;
                 case 'twitter':
                     apiResponse(['flag' => 'AUTHENTICATE']);
