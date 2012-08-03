@@ -2,6 +2,8 @@
 
 class OAuthActions extends ActionController {
 
+    // twitter {
+
     public function doTwitterAuthenticate() {
         $workflow    = [];
         $webResponse = false;
@@ -220,7 +222,16 @@ class OAuthActions extends ActionController {
         apiError(500, 'failed', '');
     }
 
+    // }
 
+
+    // facebook {
+
+    public function doFacebookAuthenticate() {
+
+    }
+
+    // }
 
 
 
@@ -230,58 +241,6 @@ class OAuthActions extends ActionController {
      * Working on!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      * Working on!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      *
-    public function doLoginWithFacebook(){
-        $facebookHandler = new FacebookOauth(array(
-                'appId'  =>FACEBOOK_APP_ID,
-                'secret' =>FACEBOOK_SECRET_KEY,
-                'cookie' =>true
-        ));
-        $facebookSession = $facebookHandler->getSession();
-
-        $facebookUserInfo = null;
-        if ($facebookSession) {
-            try {
-                $uid = $facebookHandler->getUser();
-                $facebookUserInfo = $facebookHandler->api('/me');
-            } catch (FacebookApiException $e) {
-                error_log($e);
-            }
-        }
-        if (!$facebookUserInfo) {
-            $params = array();
-            $loginUrl = $facebookHandler->getLoginUrl($params);
-            header("location:".$loginUrl);
-        } else {
-
-            if(gettype($facebookUserInfo) == "object"){
-                $facebookUserInfo = (array)$facebookUserInfo;
-            }
-            $oAuthUserInfo = array(
-                "provider"      =>"facebook",
-                "id"            =>$facebookUserInfo["id"],
-                "name"          =>$facebookUserInfo["name"],
-                "sname"         =>$facebookUserInfo["username"],
-                "desc"          =>array_key_exists("bio", $facebookUserInfo) ? $facebookUserInfo["bio"] : "",
-                "avatar"        =>"https://graph.facebook.com/".$facebookUserInfo["id"]."/picture?type=large",
-                "oauth_token"   =>""
-            );
-
-            $OAuthModel = $this->getModelByName("oAuth");
-            $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
-            $identityID = $result["identityID"];
-            $userID = $result["userID"];
-            if(!$identityID || !$userID){
-                die("OAuth error.");
-            }
-
-            $identityModels = $this->getModelByName("identity");
-            $identityModels->loginByIdentityId($identityID, $userID);
-
-            header("location:/s/login");
-        }
-    }
-
-
     public function doLoginWithGoogle(){
         $scopeArray = array(
             'https://www.google.com/m8/feeds/',
