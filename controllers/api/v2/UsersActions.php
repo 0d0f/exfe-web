@@ -150,7 +150,7 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
-            switch ($identity->provider) {
+            switch ($provider) {
                 case 'email':
                     apiResponse(['flag' => 'VERIFY']);
                     break;
@@ -481,7 +481,7 @@ class UsersActions extends ActionController {
         // adding new identity
         if (($name = trim($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, false, true)) {
-            if (!($user_id = $modUser->addUser($password))
+            if (!($user_id = $modUser->addUser($password, $name))
              || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
                 apiError(403, 'failed', 'failed while signing up new user');
             }
