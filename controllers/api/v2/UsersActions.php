@@ -698,7 +698,7 @@ class UsersActions extends ActionController {
             $iQuantity = 0;
             $enough    = false;
             foreach ($rawCrosses['future'] as $cI => $cItem) {
-                if ($cItem['timestamp'] >= $sevendays) {
+                if ($cItem->timestamp >= $sevendays) {
                     if ($more_pos-- > 0) {
                         continue;
                     }
