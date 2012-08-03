@@ -172,7 +172,7 @@ define(function (require, exports, module) {
       if (v.by_identity.id === identity_id && v.identity.id !== identity_id) return v.identity.name;
     }).filter(function (v) {
       if (v) return true;
-    }).join(' ,');
+    }).join(', ');
 
     html += '<div><i class="icon-invite"></i> ';
     html += 'Invited: ' + is;
