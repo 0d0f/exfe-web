@@ -225,6 +225,9 @@ define(function (require, exports, module) {
 
     $('#profile .user-name').find('h3').html(user.external_username || user.name || user.nickname);
 
+    $('#profile .user-name').find('.changepassword').attr('data-dialog-type', user.password ? 'changepassword' : 'setpassword');
+
+
     var jst_identity_list = $('#jst-identity-list');
     var s = Handlebars.compile(jst_identity_list.html());
     var default_identity = user.default_identity;
