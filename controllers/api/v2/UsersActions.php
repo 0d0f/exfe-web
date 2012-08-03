@@ -152,10 +152,10 @@ class UsersActions extends ActionController {
         if (!$identity) {
             switch ($provider) {
                 case 'email':
-                    apiResponse(['flag' => 'SIGN_UP']);
+                    apiResponse(['registration_flag' => 'SIGN_UP']);
                     break;
                 case 'twitter':
-                    apiResponse(['flag' => 'AUTHENTICATE']);
+                    apiResponse(['registration_flag' => 'AUTHENTICATE']);
                     break;
                 default:
                     apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
