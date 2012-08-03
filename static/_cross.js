@@ -1146,6 +1146,7 @@ define(function (require, exports, module) {
 
     var SaveExfee = function(refresh) {
         if (Cross.id) {
+            $('.cross-opts').show();
             Api.request(
                 'editExfee',
                 {type      : 'POST',
@@ -1153,11 +1154,13 @@ define(function (require, exports, module) {
                  data      : {by_identity_id : curIdentity.id,
                               exfee          : JSON.stringify(Exfee)}},
                 function(data) {
+                    $('.cross-opts').hide();
                     if (refresh) {
                         window.location.reload();
                     }
                 },
                 function(data) {
+                    $('.cross-opts').hide();
                     console.log('Field');
                 }
             );
@@ -1202,6 +1205,7 @@ define(function (require, exports, module) {
                         var objInput = $(event.target),
                             message  = objInput.val();
                         if (!event.shiftKey && message.length) {
+                            $('.cross-opts').show();
                             event.preventDefault();
                             objInput.val('');
                             var post = {
@@ -1220,9 +1224,11 @@ define(function (require, exports, module) {
                                     data      : JSON.stringify(post)
                                 },
                                 function(data) {
+                                    $('.cross-opts').hide();
                                     ShowMessage(data.post);
                                 },
                                 function(data) {
+                                    $('.cross-opts').hide();
                                     console.log(data);
                                 }
                             );
@@ -1743,6 +1749,7 @@ define(function (require, exports, module) {
 
 
     var Gather = function() {
+        $('.cross-opts').show();
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.exfee = ExfeUtilities.clone(Exfee);
         objCross.by_identity = {id : curIdentity.id};
@@ -1750,9 +1757,11 @@ define(function (require, exports, module) {
             'gather',
             {type : 'POST', data : JSON.stringify(objCross)},
             function(data) {
+                $('.cross-opts').hide();
                 document.location = '/#!' + data.cross.id;
             },
             function(data) {
+                $('.cross-opts').hide();
                 console.log(data);
             }
         );
@@ -1760,6 +1769,7 @@ define(function (require, exports, module) {
 
 
     var SaveCross = function() {
+        $('.cross-opts').show();
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.by_identity = {id : curIdentity.id};
         Api.request(
@@ -1768,9 +1778,11 @@ define(function (require, exports, module) {
              resources : {cross_id : Cross.id},
              data      : JSON.stringify(objCross)},
             function(data) {
+                $('.cross-opts').hide();
                 console.log('Saved');
             },
             function(data) {
+                $('.cross-opts').hide();
                 console.log('Field');
             }
         );
