@@ -1557,6 +1557,7 @@ define(function (require, exports, module) {
         , dialogType = $this.data('dialog-type')
         , dialogTab = $this.data('dialog-tab')
         , dialogFrom = $this.data('dialog-from')
+        , dialogSettings = $this.data('dialog-settings')
         , dataSource = $this.data('source');
 
       e.preventDefault();
@@ -1565,6 +1566,9 @@ define(function (require, exports, module) {
 
         if (dialogType) {
           settings = dialogs[dialogType];
+          if (dialogSettings) {
+            settings = $.extend(true, {}, settings, dialogSettings);
+          }
           data = new (dialogType === 'identification' ? Identification : Dialog)(settings);
           data.options.srcNode = $this;
           if (dialogFrom) data.dialog_from = dialogFrom;
