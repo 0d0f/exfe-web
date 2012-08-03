@@ -150,7 +150,16 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
-            apiResponse(array('registration_flag' => 'SIGN_UP'));
+            switch ($provider) {
+                case 'email':
+                    apiResponse(['registration_flag' => 'SIGN_UP']);
+                    break;
+                case 'twitter':
+                    apiResponse(['registration_flag' => 'AUTHENTICATE']);
+                    break;
+                default:
+                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            }
         }
         // get registration flag
         $raw_flag = $modUser->getRegistrationFlag($identity);
@@ -472,7 +481,7 @@ class UsersActions extends ActionController {
         // adding new identity
         if (($name = trim($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, false, true)) {
-            if (!($user_id = $modUser->addUser($password))
+            if (!($user_id = $modUser->addUser($password, $name))
              || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
                 apiError(403, 'failed', 'failed while signing up new user');
             }
@@ -689,7 +698,7 @@ class UsersActions extends ActionController {
             $iQuantity = 0;
             $enough    = false;
             foreach ($rawCrosses['future'] as $cI => $cItem) {
-                if ($cItem['timestamp'] >= $sevendays) {
+                if ($cItem->timestamp >= $sevendays) {
                     if ($more_pos-- > 0) {
                         continue;
                     }
