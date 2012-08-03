@@ -244,25 +244,6 @@ function getAvatarUrl($provider = '', $external_username = '', $raw_avatar = '',
 }
 
 
-function autoLink($text) {
-   $pattern = "/(((http[s]?:\/\/)|(www\.))(([a-z][-a-z0-9]+\.)?[a-z][-a-z0-9]+\.[a-z]+(\.[a-z]{2,2})?)\/?[a-z0-9._\/~#&=;%+?-]+[a-z0-9\/#=?]{1,1})/is";
-   $text = preg_replace($pattern, " <a href='$1'>$1</a>", $text);
-   // fix URLs without protocols
-   $text = preg_replace("/href='www/", "href='http://www", $text);
-
-   return $text;
-}
-
-
-function cleanText($content)
-{
-    $content=htmlspecialchars($content);
-    $content=autoLink($content);
-    return $content;
-
-}
-
-
 /**
  * 简单的打包Array数组
  * @param $inArray
