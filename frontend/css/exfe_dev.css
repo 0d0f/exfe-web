@@ -5547,6 +5547,10 @@ body {
   min-height: 271px;
 }
 
+.modal-id .xalert-error {
+  padding-right: 0;
+}
+
 .modal-id .authorize {
   height: 40px;
   padding-left: 55px;
@@ -5772,6 +5776,7 @@ body {
   line-height: 26px;
 }
 
+.modal-sp .identity,
 .modal-cp .identity {
   position: relative;
   display: table;
@@ -5784,6 +5789,7 @@ body {
   color: #797979;
 }
 
+.modal-sp .identity .avatar,
 .modal-cp .identity .avatar {
   position: relative;
   top: 0;
@@ -5792,14 +5798,17 @@ body {
   margin-right: 15px;
 }
 
+.modal-sp .identity > span,
 .modal-cp .identity > span {
   vertical-align: bottom;
 }
 
+.modal-sp .control-group,
 .modal-cp .control-group {
   padding-left: 10px;
 }
 
+.modal-sp .control-label,
 .modal-cp .control-label {
   padding-left: 6px;
 }
@@ -6108,6 +6117,7 @@ body {
 }
 
 .hbg {
+  background-attachment: fixed;
   background-color: #84a4bf;
   background-image: -moz-linear-gradient(top, #5a7a95, #c3e3fd);
   background-image: -ms-linear-gradient(top, #5a7a95, #c3e3fd);
@@ -7013,6 +7023,32 @@ body {
   position: relative;
   z-index: 3;
   padding-top: 80px;
+}
+
+.cross-opts {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+}
+
+.cross-opts .saving {
+  padding: 2px;
+  font-size: 12px;
+  color: #7f7f7f;
+  text-shadow: 0 1px 1px #fff;
+  background-color: rgba(54, 54, 54, 0.05);
+  background-image: linear-gradient(top, rgba(5, 5, 5, 0.05), rgba(127, 127, 127, 0.05));
+  background-image: -moz-linear-gradient(top, rgba(5, 5, 5, 0.05), rgba(127, 127, 127, 0.05));
+  background-image: -ms-linear-gradient(top, rgba(5, 5, 5, 0.05), rgba(127, 127, 127, 0.05));
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(5, 5, 5, 0.05)), to(rgba(127, 127, 127, 0.05)));
+  background-image: -webkit-linear-gradient(top, rgba(5, 5, 5, 0.05), rgba(127, 127, 127, 0.05));
+  background-image: -o-linear-gradient(top, rgba(5, 5, 5, 0.05), rgba(127, 127, 127, 0.05));
+  background-repeat: repeat-x;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='rgba(5, 5, 5, 0.05)', endColorstr='rgba(127, 127, 127, 0.05)', GradientType=0);
 }
 
 .cross-title {
@@ -8619,4 +8655,8 @@ body {
           touch-callout: none;
   -webkit-user-drag: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.x-invalid {
+  text-align: center;
 }
