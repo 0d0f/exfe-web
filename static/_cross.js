@@ -100,7 +100,7 @@ ExfeUtilities = {
         title = title ? title : '';
         return {
             title : title, description : arrPlace.join('\r'), lng : 0, lat : 0,
-            provider : '', external_id : 0, id : 0, type : 'Place'
+            provider : '', external_id : 0, id : Cross.place.id, type : 'Place'
         };
     }
 
@@ -1872,7 +1872,7 @@ define(function (require, exports, module) {
     });
     // init event: signin
     bus.on('xapp:usersignin', function() {
-        if (!window.Cross) {
+        if (!window.Cross.id) {
             // get current user
             var Signin  = Store.get('signin');
             window.User = Signin ? Store.get('user') : null;
