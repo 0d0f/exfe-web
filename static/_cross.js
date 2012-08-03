@@ -1872,7 +1872,7 @@ define(function (require, exports, module) {
     });
     // init event: signin
     bus.on('xapp:usersignin', function() {
-        if (!window.Cross) {
+        if (!window.Cross.id) {
             // get current user
             var Signin  = Store.get('signin');
             window.User = Signin ? Store.get('user') : null;
