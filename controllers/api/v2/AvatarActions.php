@@ -163,22 +163,20 @@ class AvatarActions extends ActionController {
                 $error = new Exception('Image url must be given.');
                 throw $error;
             }
+            $params['url'] = base64_decode("{$params['url']}==");
             $arrUrl = explode('.', $params['url']);
             $type   = strtolower(array_pop($arrUrl));
             switch ($type) {
                 case 'png':
                     @$image = ImageCreateFromPNG($params['url']);
                     break;
-                case 'jpg':
-                case 'jpeg':
-                    @$image = ImageCreateFromJpeg($params['url']);
-                    break;
                 case 'gif':
                     @$image = ImageCreateFromGif($params['url']);
                     break;
+                case 'jpg':
+                case 'jpeg':
                 default:
-                    $error  = new Exception('Error image type.');
-                    throw $error;
+                    @$image = ImageCreateFromJpeg($params['url']);
             }
             if (!$image) {
                 $error = new Exception('Error while fetching image.');
@@ -187,7 +185,6 @@ class AvatarActions extends ActionController {
         } catch (Exception $error) {
             // get fall back image
             $image  = ImageCreateFromPNG("{$resDir}bg_" . fmod(0, 3) . '.png');
-
         }
         // resize source image
         $rqs_width  = (int) $params['width'];
