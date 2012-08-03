@@ -133,9 +133,10 @@ class CrossHelper extends ActionController {
         $crossData = $this->getModelByName("cross","v2");
         $place = $cross->place;
         if ($place && $place->type === 'Place'
-         && ($place->title       !== '' || $place->description !== ''
-          || $place->lng         !== 0  || $place->lat         !== 0
-          || $place->provider    !== '' || $place->external_id !== 0)) {
+         && ($place->title    !== '' || $place->description !== ''
+          || $place->lng      !== 0  || $place->lat         !== 0
+          || $place->provider !== '' || $place->external_id !== 0
+          || $place->id       !== 0)) {
             $place_id=$placeData->addPlace($place);
         }
 
