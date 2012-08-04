@@ -5576,6 +5576,7 @@ body {
 }
 
 .x {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   font-style: normal !important;
   color: #3a6ea5 !important;
 }
@@ -6218,12 +6219,11 @@ body {
   filter: alpha(opacity=30);
 }
 
-.x-home .triangle .signin {
+.x-home .triangle .start {
   position: relative;
   z-index: 2;
   margin: -40px auto 0;
   font-size: 18px;
-  font-weight: 600;
   line-height: 35px;
   color: #435F77;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.33);
@@ -6338,8 +6338,8 @@ body {
 
 .x-home .page-header h1 {
   font-size: 48px;
-  font-weight: 600;
-  line-height: 50px;
+  font-weight: 500;
+  line-height: 54px;
 }
 
 .x-home .page-header h1 small {
@@ -6348,16 +6348,16 @@ body {
   color: #fafafa;
 }
 
-.x-home .page-header h1 + p {
-  margin-top: 0;
-  line-height: 40px;
-}
-
 .x-home .page-header p {
-  margin-top: 3px;
+  margin-top: 8px;
+  margin-bottom: 0;
   font-size: 36px;
   font-weight: 400;
-  line-height: 50px;
+  line-height: 46px;
+}
+
+.x-home .page-header h1 + p {
+  margin-top: -8px;
 }
 
 .x-home .page-main {

@@ -65,7 +65,7 @@ define(function (require) {
 
       , TRIANGLE = $X.find('div.triangle')
       , $TRIANGLE = TRIANGLE.find('#triangle')
-      , $SIGNIN = $TRIANGLE.next();
+      , $START = $TRIANGLE.next();
 
     WIN.data('home', true);
 
@@ -195,7 +195,7 @@ define(function (require) {
           && !$('.modal').size()
           && !$e.hasClass('hmb')
          ) {
-          $SIGNIN.removeClass('hide');
+          $START.removeClass('hide');
           $TRIANGLE
             .removeClass('trifio')
             .delay(13, 'trifio')
@@ -217,8 +217,8 @@ define(function (require) {
         $('.sign-in').data('dialog').hide();
       })
     .on('click.home', '.x-home .triangle, .x-home .exfe-toy', function (e) {
-          if ($SIGNIN.hasClass('hide')) {
-            $SIGNIN.removeClass('hide');
+          if ($START.hasClass('hide')) {
+            $START.removeClass('hide');
           }
           var settings = {
             options: {
@@ -256,7 +256,7 @@ define(function (require) {
           $('.sign-in').trigger('click.dialog.data-api');
           $('.sign-in').data('dialog-settings', null);
 
-          $SIGNIN.addClass('hide');
+          $START.addClass('hide');
           $TRIANGLE.animate({
             opacity: 0
             //top: 500,
@@ -265,9 +265,9 @@ define(function (require) {
           $('.modal-backdrop').removeClass('hide').animate({
             opacity: 1
           }, 1000);
-          $('.modal-id').animate({
+          $('.modal-id').css('top', TOY.offset().top - ($('.modal-id').height() - TOY.height()) / 2).animate({
             opacity: 1
-          }, 1000, function () {
+          }, 233, function () {
             $TRIANGLE.css({
               opacity: 0,
               top: 0,
