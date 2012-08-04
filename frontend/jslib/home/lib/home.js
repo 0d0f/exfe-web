@@ -1,6 +1,5 @@
 define(function (require) {
   var $ = require('jquery');
-  alert(1);
 
   $(function () {
 
