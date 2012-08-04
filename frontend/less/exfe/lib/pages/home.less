@@ -196,7 +196,12 @@ html, body {
       /*font-size: 32px;*/
       text-align: center;
       /*line-height: 55px;*/
-      color: transparent;
+      /*color: transparent;*/
+
+      span {
+        color: #a0bed8;
+        .opacity(0);
+      }
     }
 
     .circle:before {
@@ -225,73 +230,73 @@ html, body {
 
     @-webkit-keyframes fadeIn {
       0% {
-        color: transparent;
+        opacity: 0;
       }
       100% {
-        color: #a0bed8;
+        opacity: 1;
       }
     }
 
     @-moz-keyframes fadeIn {
       0% {
-        color: transparent;
+        opacity: 0;
       }
       100% {
-        color: #a0bed8;
+        opacity: 1;
       }
     }
 
     @-o-keyframes fadeIn {
       0% {
-        color: transparent;
+        opacity: 0;
       }
       100% {
-        color: #a0bed8;
+        opacity: 1;
       }
     }
 
     @keyframes fadeIn {
       0% {
-        color: transparent;
+        opacity: 0;
       }
       100% {
-        color: #a0bed8;
+        opacity: 1;
       }
     }
 
     @-webkit-keyframes fadeOut {
       0% {
-        color: #a0bed8;
+        opacity: 1;
       }
       100% {
-        color: transparent;
+        opacity: 0;
       }
     }
 
     @-moz-keyframes fadeOut {
       0% {
-        color: #a0bed8;
+        opacity: 1;
       }
       100% {
-        color: transparent;
+        opacity: 0;
       }
     }
 
     @-o-keyframes fadeOut {
       0% {
-        color: #a0bed8;
+        opacity: 1;
       }
       100% {
-        color: transparent;
+        opacity: 0;
       }
     }
 
     @keyframes fadeOut {
       0% {
-        color: #a0bed8;
+        opacity: 1;
       }
       100% {
-        color: transparent;
+        opacity: 0;
       }
     }
 
@@ -529,19 +534,23 @@ html, body {
     }
 
     .fadeIn {
-      .animated();
-      -webkit-animation-name: fadeIn;
-      -moz-animation-name: fadeIn;
-      -o-animation-name: fadeIn;
-      animation-name: fadeIn;
+      .c-ctx > span {
+        .animated();
+        -webkit-animation-name: fadeIn;
+        -moz-animation-name: fadeIn;
+        -o-animation-name: fadeIn;
+        animation-name: fadeIn;
+      }
     }
 
     .fadeOut {
-      .animated();
-      -webkit-animation-name: fadeOut;
-      -moz-animation-name: fadeOut;
-      -o-animation-name: fadeOut;
-      animation-name: fadeOut;
+      .c-ctx > span {
+        .animated();
+        -webkit-animation-name: fadeOut;
+        -moz-animation-name: fadeOut;
+        -o-animation-name: fadeOut;
+        animation-name: fadeOut;
+      }
     }
 
     .animated {
