@@ -5575,6 +5575,11 @@ body {
   text-decoration: none;
 }
 
+.x {
+  font-style: normal !important;
+  color: #3a6ea5 !important;
+}
+
 .x-sign {
   font-style: normal;
   color: #1175a5;
@@ -6416,11 +6421,24 @@ body {
 }
 
 .x-home .page-main .circle {
+  /*display: table;*/
+
   position: absolute;
   width: 55px;
   height: 55px;
-  color: transparent;
+  /*font-size: 32px;*/
+
   text-align: center;
+  /*line-height: 55px;*/
+
+  /*color: transparent;*/
+
+}
+
+.x-home .page-main .circle span {
+  color: #a0bed8;
+  opacity: 0;
+  filter: alpha(opacity=0);
 }
 
 .x-home .page-main .circle:before {
@@ -6458,73 +6476,73 @@ body {
 
 @-webkit-keyframes fadeIn {
   0% {
-    color: transparent;
+    opacity: 0;
   }
   100% {
-    color: #a0bed8;
+    opacity: 1;
   }
 }
 
 @-moz-keyframes fadeIn {
   0% {
-    color: transparent;
+    opacity: 0;
   }
   100% {
-    color: #a0bed8;
+    opacity: 1;
   }
 }
 
 @-o-keyframes fadeIn {
   0% {
-    color: transparent;
+    opacity: 0;
   }
   100% {
-    color: #a0bed8;
+    opacity: 1;
   }
 }
 
 @keyframes fadeIn {
   0% {
-    color: transparent;
+    opacity: 0;
   }
   100% {
-    color: #a0bed8;
+    opacity: 1;
   }
 }
 
 @-webkit-keyframes fadeOut {
   0% {
-    color: #a0bed8;
+    opacity: 1;
   }
   100% {
-    color: transparent;
+    opacity: 0;
   }
 }
 
 @-moz-keyframes fadeOut {
   0% {
-    color: #a0bed8;
+    opacity: 1;
   }
   100% {
-    color: transparent;
+    opacity: 0;
   }
 }
 
 @-o-keyframes fadeOut {
   0% {
-    color: #a0bed8;
+    opacity: 1;
   }
   100% {
-    color: transparent;
+    opacity: 0;
   }
 }
 
 @keyframes fadeOut {
   0% {
-    color: #a0bed8;
+    opacity: 1;
   }
   100% {
-    color: transparent;
+    opacity: 0;
   }
 }
 
@@ -6744,7 +6762,7 @@ body {
   -webkit-animation-fill-mode: both;
 }
 
-.x-home .page-main .fadeIn {
+.x-home .page-main .fadeIn .c-ctx > span {
   -webkit-animation-duration: 610ms;
      -moz-animation-duration: 610ms;
        -o-animation-duration: 610ms;
@@ -6759,7 +6777,7 @@ body {
   -webkit-animation-fill-mode: both;
 }
 
-.x-home .page-main .fadeOut {
+.x-home .page-main .fadeOut .c-ctx > span {
   -webkit-animation-duration: 610ms;
      -moz-animation-duration: 610ms;
        -o-animation-duration: 610ms;
