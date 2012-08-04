@@ -6939,6 +6939,7 @@ body {
   width: 140px;
   height: 32px;
   font: italic 300 22px/32px "Myriad Pro";
+  line-height: 1;
   color: #99aec5;
   text-align: center;
   text-shadow: 0 1px 0 #ffffff;
