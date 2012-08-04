@@ -1,5 +1,6 @@
 define(function (require) {
   var $ = require('jquery');
+  alert(1);
 
   $(function () {
 
@@ -12,10 +13,14 @@ define(function (require) {
       , $X = $('.x-home')
 
       , PH = $X.find('.page-header')
-      , ph_minPaddingTop = 40
-      , ph_maxPaddingTop = 140
+      , ph_minPaddingTop = 17
+      , ph_maxPaddingTop = 77
       , ph_paddingTopDist = ph_maxPaddingTop - ph_minPaddingTop
       , ph_nPaddingTop
+      , ph_minPaddingBottom = 64
+      , ph_maxPaddingBottom = 108
+      , ph_paddingBottomDist = ph_maxPaddingBottom - ph_minPaddingBottom
+      , ph_nPaddingBottom
 
       , TOY = $X.find('#js-exfe-toy')
       , TOY_SHADOW = $X.find('.exfe-toy-shadow')
@@ -33,8 +38,8 @@ define(function (require) {
       , pf_maxPaddingTop = 108
       , pf_paddingTopDist = pf_maxPaddingTop - pf_minPaddingTop
       , pf_nPaddingTop
-      , pf_minPaddingBottom = 60
-      , pf_maxPaddingBottom = 132
+      , pf_minPaddingBottom = 64
+      , pf_maxPaddingBottom = 108
       , pf_paddingBottomDist = pf_maxPaddingBottom - pf_minPaddingBottom
       , pf_nPaddingBottom
 
@@ -236,9 +241,9 @@ define(function (require) {
 
                 $('#js-modal-backdrop').addClass('hide').css('opacity', 0);
                 $TRIANGLE.css({
-                  opacity: .3,
-                  top: 0,
-                  width: '880px'
+                  opacity: .3
+                  //top: 0,
+                  //width: '880px'
                 });
               },
               backdrop: false,
@@ -254,9 +259,9 @@ define(function (require) {
 
           $SIGNIN.addClass('hide');
           $TRIANGLE.animate({
-            opacity: 0,
-            top: 500,
-            width: '440px'
+            opacity: 0
+            //top: 500,
+            //width: '440px'
           }, 500);
           $('.modal-backdrop').removeClass('hide').animate({
             opacity: 1
@@ -280,6 +285,7 @@ define(function (require) {
 
       if (winMin > winHeight) {
         ph_nPaddingTop = ph_minPaddingTop;
+        ph_nPaddingBottom = ph_minPaddingBottom;
 
         nt_w = t_w * proportion;
 
@@ -290,6 +296,7 @@ define(function (require) {
       } else if (winMin <= winHeight && winMax > winHeight) {
         var pr = (winHeight - winMin) / winDist;
         ph_nPaddingTop = ph_minPaddingTop + ph_paddingTopDist * pr;
+        ph_nPaddingBottom = ph_minPaddingBottom + ph_paddingBottomDist * pr;
 
         nt_w = t_w * proportion + t_w * (1 - proportion) * pr;
 
@@ -299,6 +306,7 @@ define(function (require) {
         nr = r * proportion + r * (1 - proportion) * pr;
       } else {
         ph_nPaddingTop = ph_maxPaddingTop;
+        ph_nPaddingBottom = ph_maxPaddingBottom;
 
         nt_w = t_w;
 
@@ -309,7 +317,8 @@ define(function (require) {
       }
 
       PH.css({
-        paddingTop: ph_nPaddingTop
+        paddingTop: ph_nPaddingTop,
+        paddingBottom: ph_nPaddingBottom
       });
 
       TOY

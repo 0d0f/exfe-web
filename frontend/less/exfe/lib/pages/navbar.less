@@ -13,16 +13,13 @@ body {
     width: 100%;
     height: @navbarHeight + 6;
     background: ~'url("@{imgPath}/navbar-bg.png") repeat-x transparent';
-    //#gradient > .vertical(#f8f8f8, #f5f5f5);
-    //@shadow: 0 1px 3px rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
-    //.box-shadow(@shadow);
   }
 
   .navbar-inner {
     padding: 0;
     background: transparent;
-    .box-shadow(none);
     .border-radius(0);
+    .box-shadow(none);
   }
 
   .container {
@@ -45,9 +42,16 @@ body {
     z-index: @zindexDropdown + 1;
   }
 
-  .brand, .nav > li > a {
+  .nav > li.hide {
+    .hide();
+  }
+
+  .brand,
+  .version,
+  .nav > li > a {
     position: relative;
     text-shadow: none;
+    z-index: @zindexDropdown + 2;
   }
 
   .nav > li > a {
@@ -58,8 +62,6 @@ body {
       color: #7f7f7f;
       font-style: normal;
     }
-
-
   }
     .user-name {
       min-width: 72px;
@@ -312,10 +314,6 @@ body {
     font-weight: 300;
     color: #7f7f7f;
     text-decoration: none;
-  }
-
-  .brand, .version, .nav > li > a {
-    z-index: @zindexDropdown + 2;
   }
 
 }
