@@ -170,13 +170,17 @@ class AvatarActions extends ActionController {
                 case 'png':
                     @$image = ImageCreateFromPNG($params['url']);
                     break;
+                case 'jpg':
+                case 'jpeg':
+                    @$image = ImageCreateFromJpeg($params['url']);
+                    break;
                 case 'gif':
                     @$image = ImageCreateFromGif($params['url']);
                     break;
-                case 'jpg':
-                case 'jpeg':
                 default:
-                    @$image = ImageCreateFromJpeg($params['url']);
+                    @$image = ImageCreateFromJpeg($params['url'])  // try jpg
+                          ?: (ImageCreateFromPNG($params['url'])   // try png
+                          ?:  ImageCreateFromGif($params['url'])); // try gif
             }
             if (!$image) {
                 $error = new Exception('Error while fetching image.');
