@@ -17,8 +17,6 @@ define('api', [], function (require, exports, module) {
 
     getRegistrationFlag: '/Users/getRegistrationFlag',
 
-    checkAuthorization: '/Users/checkAuthorization',
-
     // -------------- Must Use Token ---------------------- //
     getUser: '/Users/:user_id',
 
@@ -90,7 +88,7 @@ define('api', [], function (require, exports, module) {
   };
 
   // Not Use Token
-  var ignore = 'signin getRegistrationFlag checkAuthorization verifyIdentity forgotPassword getIdentityById getCrossByInvitationToken resolveToken';
+  //var ignore = 'signin getRegistrationFlag verifyIdentity forgotPassword getIdentityById getCrossByInvitationToken resolveToken';
 
   var Api = {
 
@@ -135,18 +133,21 @@ define('api', [], function (require, exports, module) {
 
       if (!url) { return; }
 
-      if (ignore.split(' ').indexOf(channel) === -1) {
+      //if (ignore.split(' ').indexOf(channel) === -1) {
 
-        if (!Api._token) { return; }
+        //if (!Api._token) { return; }
 
         if (!params) {
           params = {};
         }
 
-        params.token = Api._token;
-      }
+        //params.token = Api._token;
+      //}
 
       if (params) {
+        if (Api._token && !params.token) {
+          params.token = Api._token;
+        }
         params = $.param(params);
         url += params ? '?' + params : '';
       }

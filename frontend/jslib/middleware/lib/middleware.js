@@ -5,6 +5,7 @@ define('middleware', function (require, exports, module) {
 
   var middleware = module.exports = {};
 
+  /*
   middleware.basicAuth = function (req, res, next) {
     if (req.session.checked) {
       next();
@@ -40,22 +41,74 @@ define('middleware', function (require, exports, module) {
     req.session.checked = true;
 
     next();
-    /*
-    Api.request('checkAuthorization'
-      , {
-        type: 'POST',
-        data: {
-          token: token
-        }
-      }
-      , function (data) {
-        console.dir(data);
-        req.session.identities_status = data.identities_status;
-        req.session.password = data.password;
-        next();
-      }
-    );
-    */
   };
+  */
+
+  /**
+   * Rules:
+   *      1. 先检查 localStorage `authorization`
+   *      2. 检查 header.meta.name = 'authorization'
+   *
+   *  本地缓存已经有 `authorization`，则其他 `token` 身份进来的都为 `browsing identity`
+   *
+   */
+  middleware.basicAuth = function (req, res, next) {
+    var session = req.session;
+
+    // 清掉上次 `browsing` 数据
+    //if (session.browsing_authorization) {
+      //delete session.browsing_authorization;
+    //}
+    //if (session.browsing_user) {
+      //delete session.browsing_user;
+    //}
+
+    // Step 1
+    var authorization = Store.get('authorization')
+      , user = Store.get('user');
+
+    // Step 2
+    var authMeta = getAuthFromHeader();
+
+    if (authorization && !authMeta) {
+      session.authorization = authorization;
+      session.user = user;
+    }
+
+    else if (!authorization && authMeta) {
+      session.authorization = authMeta;
+    }
+
+    else if (authorization && authMeta) {
+      session.authorization = authorization;
+      session.browsing_authorization = authMeta;
+    }
+
+    //else if (!authorization && !authMeta) {
+    //}
+
+    next();
+  };
+
+
+  // errorHandler
+  middleware.errorHandler = function (req, res, next) {
+    console.log('error handler');
+  };
+
+  // Helers:
+  // ----------------------------
+  function getAuthFromHeader() {
+    var header = document.getElementsByTagName('head')[0]
+      , meta = document.getElementsByName('authorization')[0]
+      , authMeta = null;
+
+    if (meta) {
+      authMeta = JSON.parse(meta.content);
+      header.removeChild(meta);
+    }
+
+    return authMeta;
+  }
 
 });
