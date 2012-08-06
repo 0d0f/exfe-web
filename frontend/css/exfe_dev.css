@@ -4918,7 +4918,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .xbtn-gather {
-  width: 118px;
+  width: 138px;
   height: 30px;
   font-size: 22px;
   font-weight: 300;
@@ -5312,7 +5312,7 @@ body {
   padding: 6px 3px;
   margin-top: -6px;
   font-weight: bold;
-  color: #597380;
+  color: #7C9CBF;
   text-shadow: 0 1px 1px #fff;
   background-color: rgba(127, 127, 127, 0.05);
   background-image: -moz-linear-gradient(270deg, rgba(5, 5, 5, 0.05), rgba(127, 127, 127, 0.05));
@@ -5443,6 +5443,11 @@ body {
 .navbar .user-panel .body .merge {
   position: relative;
   margin-bottom: 5px;
+}
+
+.navbar .user-panel .body .merge.verify {
+  color: #CC4747;
+  text-align: center;
 }
 
 .navbar .user-panel .body .merge:hover:after {
@@ -5596,7 +5601,7 @@ body {
 
 .modal-id .authorize {
   height: 40px;
-  padding-left: 55px;
+  padding-left: 10px;
   line-height: 40px;
 }
 
