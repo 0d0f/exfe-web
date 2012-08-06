@@ -22,9 +22,10 @@ define(function (require) {
     },
 
     focus: function () {
-      var v = Util.trim(this.target.val());
+      var v = this.query = Util.trim(this.target.val());
       if (v) {
-        //this.emit('search', v);
+        //this.lookup();
+        this.emit('search', v);
       } else {
         this.emit('nothing', v);
       }
@@ -135,7 +136,7 @@ define(function (require) {
             return that.matcher(item);
           });
 
-          if (!items.length) {
+          if (0 === items.length) {
             that.isShown ? that.hide() : that;
           } else {
             that.render(items.slice(0)).show();
@@ -234,9 +235,9 @@ define(function (require) {
           'onAutocomplete:finish': function (data) {
             var identity;
             if (data && (identity = data.identity)) {
-              if (identity['avatar_filename'] === 'default.png') {
-                identity['avatar_filename'] = '/img/default_portraituserface_20.png';
-              }
+              //if (identity['avatar_filename'] === 'default.png') {
+                //identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+              //}
               this.target
                 .prev()
                 .attr('src', identity['avatar_filename'])

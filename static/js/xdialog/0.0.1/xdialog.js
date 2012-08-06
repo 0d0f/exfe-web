@@ -25,12 +25,10 @@ define(function (require, exports, module) {
         var lastIdentity = Store.get('lastIdentity')
           , last_external_username = Store.get('last_external_username');
         if (lastIdentity) {
-          // 暂时处理单用户，默认取第一个
-          //this.$('#identity').val(lastIdentity.external_id);
-          this.$('#identity').val(last_external_username);
-          this.$('.x-signin').removeClass('disabled loading');
           this.availability = true;
 
+          this.$('#identity').val(last_external_username);
+          this.$('.x-signin').removeClass('disabled loading');
           this.$('.help-subject').addClass('icon14-clear');
           this.$('.user-identity')
             .removeClass('hide')
@@ -40,15 +38,11 @@ define(function (require, exports, module) {
             .attr('class', 'provider icon16-identity-' + lastIdentity.provider);
 
           this.$('.xbtn-forgotpwd').data('source', [lastIdentity]);
+
+          this.switchTab('d01');
         }
 
-        if (this.availability) {
-          this.switchTab('d01');
-          this.$('.help-subject')
-            .removeClass('icon14-question');
-        } else {
-          this.$('.help-subject').addClass('icon14-question');
-        }
+        this.$('.help-subject').toggleClass('icon14-question', !this.availability);
       },
 
       onShowBefore: function (e) {
@@ -62,9 +56,10 @@ define(function (require, exports, module) {
       },
 
       onShowAfter: function () {
-        if (this.switchTabType === 'd00' || this.switchTabType === 'd01' || this.switchTabType === 'd02') {
-          var $identity = this.$('#identity');
-          $identity.focusend();
+        if (this.switchTabType === 'd00'
+            || this.switchTabType === 'd01'
+            || this.switchTabType === 'd02') {
+          this.$('#identity').focusend();
         }
       },
 
@@ -236,8 +231,8 @@ define(function (require, exports, module) {
             , s;
 
           if ($e.hasClass('icon14-question')) {
-            if (flag && flag === 'SET_PASSWORD') {
-              s = 'Please sign in through authorization above. To enable password sign-in for this identity, set password from your profile page.'
+            if (flag && flag === 'AUTHENTICATE') {
+              s = '<span class="xalert-fail">Please directly authenticate this identity above.</span><br />To enable password sign-in for this identity, set an <span class="x-sign">EXFE</span> password first in your profile page.';
             } else {
               s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
             }
@@ -253,7 +248,7 @@ define(function (require, exports, module) {
             // 清楚user 缓存
             Store.set('lastIdentity', null);
             Store.set('last_external_username', null);
-            Store.set('signin', null);
+            Store.set('authorization', null);
             Store.set('user', null);
 
             // cleanup `xidentity` source data
@@ -341,13 +336,14 @@ define(function (require, exports, module) {
                 }
               }
               , function (data) {
-                Store.set('signin', data);
+                Store.set('authorization', data);
                 // 最后登陆的 external_identity
                 Store.set('last_external_username', od.external_identity);
 
                 that.hide();
                 if (t === 'd01' || t === 'd02') {
-                  Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
+                  //Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
+                  Bus.emit('app:user:signin', data.token, data.user_id);
                   Bus.emit('xapp:usersignin');
                 } else {
                   var d = new Dialog(dialogs.welcome);
@@ -385,7 +381,7 @@ define(function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
             + '<div class="clearfix">'
-              + '<div class="pull-left authorize">Start with:</div>'
+              + '<div class="pull-left authorize">Authenticate with:</div>'
               + '<div class="pull-left oauth">'
                 + '<a href="#" class="oauth-twitter" data-oauth="twitter">twitter</a>'
               + '</div>'
@@ -393,7 +389,7 @@ define(function (require, exports, module) {
             + '<div class="orspliter">or</div>'
             + '<form class="modal-form">'
               + '<fieldset>'
-                + '<legend>Enter your identity:</legend>'
+                + '<legend>Use your online identity:</legend>'
 
                   + '<div class="clearfix control-group">'
                     + '<label class="control-label" for="identity">Identity: <span class="xalert-message"></span></label>'
@@ -456,7 +452,7 @@ define(function (require, exports, module) {
           + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button href="#" class="xbtn-white d d02 d04 xbtn-startover hide">Start Over</button>'
           + '<button href="#" class="pull-right d d04 xbtn-blue xbtn-verify hide">Verify</button>'
-          + '<a href="#" class="pull-right xbtn-setup d d00 hide">Set Up?</a>'
+          + '<a href="#" class="pull-right xbtn-setup d d00 hide">Sign Up?</a>'
           + '<button href="#" class="pull-right xbtn-blue d d01 d02 x-signin disabled hide">Sign In</button>'
           //+ '<button href="#" class="pull-right xbtn-blue d d04 xbtn-success hide">Done</button>'
           + '<button href="#" class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>'
@@ -466,7 +462,7 @@ define(function (require, exports, module) {
         others: ''
           + '<div class="isee d d03 hide">'
             + '<div class="modal-body">'
-              + '<div class="shadow title">Sign-Up-Free</div>'
+              + '<div class="shadow title">“Sign-Up-Free”</div>'
               + '<p>Tired of signing up all around?</p>'
               + '<p>Just authorize through your existing accounts on other websites, such as Twitter, <span class="strike">Facebook or Google</span>. We hate spam, will NEVER disappoint your trust.</p>'
               + '<p>Otherwise, just enter your email and a recognizable  name, along with a password for sign-in in future.</p>'
@@ -524,7 +520,8 @@ define(function (require, exports, module) {
             window.location = window.location.pathname;
             return;
           }
-          window.location = '/s/profile';
+          //TODO
+          //window.location = '';
         }
       },
 
@@ -812,17 +809,16 @@ define(function (require, exports, module) {
 
           e.preventDefault();
 
-          var $e = $(e.currentTarget);
-          var signinData = Store.get('signin');
-          var user_id = signinData.user_id;
-          var token = signinData.token;
+          var $e = $(e.currentTarget)
+            , authorization = Store.get('authorization')
+            , user_id = authorization.user_id
+            , token = authorization.token;
 
           Api.request('setPassword'
             , {
               type: 'POST',
-              resources: {
-                user_id: user_id
-              },
+              params: { token: token },
+              resources: { user_id: user_id },
               data: {
                 current_password: cppwd,
                 new_password: cpnpwd
@@ -850,7 +846,7 @@ define(function (require, exports, module) {
             }
           );
 
-        },
+        }
       },
 
       onShowBefore: function () {
@@ -908,88 +904,6 @@ define(function (require, exports, module) {
 
   };
 
-  /*
-  dialogs.resetpassword = {
-    options: {
-
-      onHideAfter: function () {
-        var $e = this.element;
-        this.offSrcNode();
-        this.destory();
-        $e.remove();
-      },
-
-      events: {
-        'click .xbtn-cancel': function (e) {
-          var dialog_from = this.dialog_from;
-          this.hide();
-          if (dialog_from) {
-            $('[data-dialog-type="' + dialog_from + '"]').trigger('click.dialog.data-api');
-            // TODO: 先简单处理，后面是否要保存 target 元素
-          }
-        },
-      },
-
-      liItem: ''
-        + '<li>'
-          + '<div class="pull-right user-identity">'
-            + '<img class="avatar" src="" width="40" height="40" />'
-            + '<i class="provider"></i>'
-          + '</div>'
-          + '<a class="identity-name" href="#"></a>'
-        + '</li>',
-
-      backdrop: false,
-
-      viewData: {
-
-        cls: 'mblack modal-rsp',
-
-        title: 'Forgot Password',
-
-        footer: ''
-          + '<a class="pull-right xbtn-cancel">Cancel</a>',
-
-        body: ''
-          + '<div class="shadow title">Forgot Password</div>'
-          + '<div>Reset password by verifying identity:</div>'
-          + '<ul class="unstyled">'
-          +'</ul>'
-
-      },
-
-      onShowBefore: function () {
-        var self = this;
-        var user = Store.get('user');
-        var item = self.options.liItem;
-        var identities = user.identities;
-        var $ul = self.$('ul');
-        var providers = {
-          email: 'email',
-          twitter: 'twitter',
-          phone: 'phone'
-        };
-        $ul.html('');
-        R.each(identities, function (v, i) {
-          if (v.status === 'CONNECTED') {
-            var $item = $(item);
-            $item.find('a').text(v.provider === 'twitter' ? v.name : v.external_id);
-            $item.find('a').attr('data-dialog-from', 'resetpassword');
-            $item.find('a').attr('data-dialog-type', 'verification_' + v.provider);
-            $item.find('a').attr('data-widget', 'dialog');
-            $item.find('a').attr('data-identity-id', v.id);
-            $item.find('img').attr('src', v.avatar_filename);
-            $item.find('i').addClass('icon16-identity-' + providers[v.provider]);
-            $ul.append($item);
-          }
-        });
-      }
-
-    }
-  };
-  */
-
-
   dialogs.addidentity = {
     options: {
 
@@ -1013,7 +927,7 @@ define(function (require, exports, module) {
           }
 
           var $e = $(e.currentTarget);
-          var signinData = Store.get('signin');
+          var signinData = Store.get('authorization');
           var user_id = signinData.user_id;
           var token = signinData.token;
           var that = this;
@@ -1156,9 +1070,7 @@ define(function (require, exports, module) {
           Api.request('verifyUserIdentity'
             , {
               type: 'POST',
-              data: {
-                identity_id: identity_id
-              },
+              data: { identity_id: identity_id },
               beforeSend: function (data) {
                 $e.addClass('disabled');
               },
@@ -1256,9 +1168,7 @@ define(function (require, exports, module) {
           Api.request('verifyUserIdentity'
             , {
               type: 'POST',
-              data: {
-                identity_id: identity_id
-              },
+              data: { identity_id: identity_id },
               beforeSend: function (data) {
                 $e.addClass('disabled');
               },
@@ -1359,6 +1269,66 @@ define(function (require, exports, module) {
 
     options: {
 
+      events: {
+        'click .password-eye': function (e) {
+          var $e = $(e.currentTarget);
+          var $input = $e.prev();
+          $input.prop('type', function (i, val) {
+            return val === 'password' ? 'text' : 'password';
+          });
+          $e.toggleClass('icon16-pass-hide icon16-pass-show');
+        },
+        'click .xbtn-success': function (e) {
+          var that = this;
+          var stpwd = that.$('#stpwd').val();
+
+          // note: 暂时先用 alert
+          if (!stpwd) {
+            if (!stpwd) {
+              alert('Please set EXFE password.');
+            }
+            return;
+          }
+
+          e.preventDefault();
+
+          var $e = $(e.currentTarget)
+            , authorization = Store.get('authorization')
+            , user_id = authorization.user_id
+            , token = authorization.token;
+
+          Api.request('setPassword'
+            , {
+              type: 'POST',
+              params: { token: token },
+              resources: { user_id: user_id },
+              data: { new_password: stpwd },
+              beforeSend: function (xhr) {
+                $e.addClass('disabled loading');
+              },
+              complete: function (xhr) {
+                $e.removeClass('disabled loading');
+              }
+            }
+            , function (data) {
+              $e = that.element;
+              that.offSrcNode();
+              that.destory();
+              $e.remove();
+            }
+            , function (data) {
+              if (data.meta.code === 403) {
+                var errorType = data.meta.errorType;
+                if (errorType === 'invalid_current_password') {
+                  alert('Invalid current password.');
+                }
+              }
+            }
+          );
+
+        }
+      },
+
       backdrop: false,
 
       viewData: {
@@ -1370,26 +1340,35 @@ define(function (require, exports, module) {
 
         body: ''
           + '<div class="shadow title">Set Password</div>'
-          + '<form class="modal-form form-horizontal">'
+          + '<form class="modal-form">'
             + '<fieldset>'
               + '<legend>Please set <span class="x-sign">EXFE</span> password of your account.<br />All your identities share the same password for sign-in and account management.</legend>'
 
+              + '<div class="identity">'
+                + '<img class="avatar" src="" width="40" height="40" />'
+                + '<span></span>'
+              + '</div>'
+
               + '<div class="control-group">'
-                + '<label class="control-label" for="setpassword">Password:</label>'
+                + '<label class="control-label" for="stpwd">Password:</label>'
                 + '<div class="controls">'
-                  + '<input type="password" class="input-large" id="setpassword" />'
-                  + '<input type="text" class="input-large hide" autocomplete="off" id="setpassword-text" />'
-                  + '<div class="xalert-error hide"></div>'
+                  + '<input class="input-large" id="stpwd" placeholder="Set EXFE password" type="password" autocomplete="off" />'
+                  + '<i class="help-inline password-eye icon16-pass-hide"></i>'
                 + '</div>'
               + '</div>'
 
             + '</fieldset>'
-          + '</form>'
-          + '<p>e.g.: To sign in with your Twitter account. Just use “@myTwitterID@Twitter” as your identity, along with your password above.</p>',
+          + '</form>',
 
         footer: ''
           + '<button href="#" class="pull-right xbtn-blue xbtn-success">Done</button>'
 
+      },
+
+      onShowBefore: function () {
+        var user = Store.get('user');
+        this.$('.identity > img').attr('src', user.avatar_filename);
+        this.$('.identity > span').text(user.name);
       }
 
     }
@@ -1421,7 +1400,7 @@ define(function (require, exports, module) {
         }
 
         if (data) {
-
+          // test
           $identityLabel.removeClass('label-error');
           $identityLabelSpan.text('');
 
@@ -1452,12 +1431,14 @@ define(function (require, exports, module) {
           else if (data.registration_flag === 'SIGN_UP') {
             t = 'd02';
           }
-          // RESet Password
-          //else if (data.registration_flag === 'SET_PASSWORD') {
-            //t = 'd00';
-            //$identityLabel.addClass('label-error')
-            //$identityLabelSpan.text('Identity has no password set.');
-          //}
+          // AUTHENTICATE
+          else if (data.registration_flag === 'AUTHENTICATE') {
+            t = 'd00';
+            that.$('.help-subject')
+              .removeClass('icon14-clear')
+              .addClass('icon14-question');
+          }
+          // VERIFY
           else if (data.registration_flag === 'VERIFY') {
             t = 'd04';
           }
@@ -1536,7 +1517,8 @@ define(function (require, exports, module) {
 
       this.switchTabType = t;
 
-      if (this.isShown && (this.switchTabType === 'd00' || this.switchTabType === 'd01' || this.switchTabType === 'd02')) {
+      if (this.isShown
+          && (this.switchTabType === 'd00' || this.switchTabType === 'd01' || this.switchTabType === 'd02')) {
         var $identity = this.$('#identity');
         $identity.focusend();
       }
