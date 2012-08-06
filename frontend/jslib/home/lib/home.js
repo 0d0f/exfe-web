@@ -265,13 +265,16 @@ define(function (require) {
           $('.modal-backdrop').removeClass('hide').animate({
             opacity: 1
           }, 1000);
+          $('.popmenu').addClass('hide');
           $('.modal-id').css('top', TOY.offset().top - ($('.modal-id').height() - TOY.height()) / 2).animate({
             opacity: 1
           }, 233, function () {
+            $('#identity').focus();
+            $('.popmenu').removeClass('hide');
             $TRIANGLE.css({
-              opacity: 0,
-              top: 0,
-              width: '880px'
+              opacity: 0
+              //top: 0,
+              //width: '880px'
             });
           });
       });
