@@ -191,10 +191,9 @@ class OAuthActions extends ActionController {
         $modOauth    = $this->getModelByName('OAuth',    'v2');
         $checkHelper = $this->getHelperByName('check',   'v2');
         // get args
-        $params      = $this->params;
         $identity_id = trim($_POST['identity_id']);
         // basic check
-        $result      = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        $result      = $checkHelper->isAPIAllow('user_edit', $_GET['token']);
         if ($result['check']) {
             $user_id = $result['uid'];
         } else {
@@ -230,6 +229,8 @@ class OAuthActions extends ActionController {
 
     public function doFacebookAuthenticate() {
         $modOauth = $this->getModelByName('OAuth', 'v2');
+echo $modOauth->facebookRedirect();
+return;
         if (($rtResult = $modOauth->facebookRedirect())) {
             apiResponse(['redirect' => $rtResult]);
         }
@@ -237,6 +238,20 @@ class OAuthActions extends ActionController {
             500, 'could_not_connect_to_facebook',
             'Could not connect to Facebook. Refresh the page or try again later.'
         );
+    }
+
+
+    public function doFacebookCallBack() {
+        $modOauth   = $this->getModelByName('OAuth', 'v2');
+        $oauthToken = $modOauth->getFacebookOAuthToken(
+            $modOauth->getFacebookOAuthCode()
+        );
+        if ($oauthToken) {
+            $rawIdentity = $modOauth->getFacebookProfile($oauthToken['access_token']);
+            print_r($rawIdentity);
+            print_r($oauthToken);
+        }
+        apiError(400, 'invalid_callback', '');
     }
 
     // }
