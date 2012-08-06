@@ -22,7 +22,7 @@ define(function (require) {
     },
 
     focus: function () {
-      var v = Util.trim(this.target.val());
+      var v = this.query = Util.trim(this.target.val());
       if (v) {
         //this.lookup();
         this.emit('search', v);
@@ -136,7 +136,7 @@ define(function (require) {
             return that.matcher(item);
           });
 
-          if (!items.length) {
+          if (0 === items.length) {
             that.isShown ? that.hide() : that;
           } else {
             that.render(items.slice(0)).show();
