@@ -215,15 +215,15 @@ define(function (require, exports, module) {
   // 用户信息,包括多身份信息
   var identities_defe = function (user) {
     $('.user-xstats .attended').html(user.cross_quantity);
-    //$('#user-name > span').html(user.external_username || user.name || user.nickname);
 
     var jst_user = $('#jst-user-avatar');
 
     var s = Handlebars.compile(jst_user.html());
     var h = s({avatar_filename: user.avatar_filename});
+
     $('.user-avatar').append(h);
 
-    $('#profile .user-name').find('h3').html(user.external_username || user.name || user.nickname);
+    $('#profile .user-name').find('h3').html(user.name || user.nickname);
 
     $('#profile .user-name').find('.changepassword').attr('data-dialog-type', user.password ? 'changepassword' : 'setpassword');
 
@@ -244,14 +244,14 @@ define(function (require, exports, module) {
   // crossList 信息
   var crossList_defe = function (data) {
     if (!data) return;
-    var user_id = data.user_id;
+    var user_id = data.user_id
+      , token = data.token;
 
     // 返回一个 promise 对象
     return Api.request('crosslist'
       , {
-        resources: {
-          user_id: user_id
-        }
+        params: { token: token },
+        resources: { user_id: user_id }
       }
       , function (data) {
           var now = +new Date;
@@ -324,7 +324,8 @@ define(function (require, exports, module) {
 
   var crosses_inversation_defe = function (data) {
     if (!data) return;
-    var user_id = data.user_id;
+    var user_id = data.user_id
+      , token = data.token;
     //var qdate = Store.get('qdate') || '';
     //qdate && (qdate = '&date=' + qdate);
     var now = new Date();
@@ -333,9 +334,8 @@ define(function (require, exports, module) {
 
     return Api.request('crosses'
       , {
-        resources: {
-          user_id: user_id
-        }
+        params: { token: token },
+        resources: { user_id: user_id }
       }
       , function (data) {
           var _date = new Date();
@@ -399,18 +399,19 @@ define(function (require, exports, module) {
 
   var crosses_update_defe = function (data) {
     if (!data) return;
-    var user_id = data.user_id;
-    var now = new Date();
+    var user_id = data.user_id
+      , token = data.token
+      , now = new Date();
+
     now.setDate(now.getDate() - 3);
     now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
 
     return Api.request('crosses'
       , {
-        resources: {
-          user_id: user_id
-        },
+        resources: { user_id: user_id },
         params: {
-          updated_at: now
+          updated_at: now,
+          token: token
         }
       }
       , function (data) {
@@ -425,6 +426,7 @@ define(function (require, exports, module) {
                     , {
                       resources: {exfee_id: v.exfee.id},
                       params: {
+                        token: token,
                         date: now
                       }
                     }
@@ -463,7 +465,7 @@ define(function (require, exports, module) {
   // 加载新手引导
   var newbieGuide = function (data) {
     if (!data) return;
-    data = Store.get('signin');
+    data = Store.get('authorization');
     if (!data) return;
     var user_id = data.user_id;
     var cross_nums = +$('.user-xstats > .attended').text();
@@ -491,13 +493,10 @@ define(function (require, exports, module) {
   };
 
   // Defer Queue
-  // 可以登陆状态
-  var SIGN_IN_OTHERS = 'app:signinothers';
-  Bus.on(SIGN_IN_OTHERS, function (d) {
+  Bus.on('app:profile:show', function (d) {
     d.then([crossList_defe, crosses_inversation_defe, crosses_update_defe, iosapp, newbieGuide]);
   });
-  var SIGN_IN_SUCCESS = 'app:signinsuccess';
-  Bus.on(SIGN_IN_SUCCESS, function (data) {
+  Bus.on('app:profile:identities', function (data) {
     identities_defe(data);
   });
   // 添加身份
@@ -521,8 +520,8 @@ define(function (require, exports, module) {
     // removed identity
     $BODY.on('click.profile', 'i.icon-minus-sign', function (e) {
       var identity_id = $(this).parent().data('identity-id');
-      var signinData = Store.get('signin');
-      var token = signinData.token;
+      var authorization = Store.get('authorization');
+      var token = authorization.token;
 
       //
       return;
@@ -531,6 +530,7 @@ define(function (require, exports, module) {
         Api.request('deleteIdentity'
           , {
             type: 'POST',
+            params: { token: token },
             data: {
               identity_id: identity_id,
               password: password
@@ -569,10 +569,13 @@ define(function (require, exports, module) {
           !$('.settings-panel').data('hoverout') && $('.xbtn-changepassword').removeClass('hide');
 
           if (!value || value === oldValue) return;
+          var authorization = Store.get('authorization')
+            , token = authorization.token;
 
           Api.request('updateUser'
             , {
               type: 'POST',
+              params: { token: token },
               data: {
                 name: value
               }
@@ -605,9 +608,12 @@ define(function (require, exports, module) {
 
 
           if (!value || value === oldValue) return;
+          var authorization = Store.get('authorization')
+            , token = authorization.token;
 
           Api.request('updateIdentity'
             , {
+              params: { token: token },
               resources: {identity_id: identity_id},
               type: 'POST',
               data: {
@@ -639,9 +645,13 @@ define(function (require, exports, module) {
       var invitationid = p.data('invitationid');
       var cross_box = $('.gr-a [data-id="' + crossid + '"]');
       var exfee_id = p.data('exfeeid');
+      var authorization = Store.get('authorization')
+        , token = authorization.token;
+
 
       Api.request('rsvp'
         , {
+          params: { token: token },
           resources: {exfee_id: exfee_id},
           type: 'POST',
           data: {
@@ -720,7 +730,7 @@ define(function (require, exports, module) {
       var $e = $(this);
       var p = $e.parent();
       var cate = p.data('cate');
-      var data = Store.get('signin');
+      var data = Store.get('authorization');
       var token = data.token;
       var user_id = data.user_id;
       var more_position = p.prev().find(' .cross-box').length;
@@ -728,9 +738,8 @@ define(function (require, exports, module) {
 
       Api.request('crosslist'
         , {
-          resources: {
-            user_id: user_id
-          },
+          params: { token: token },
+          resources: { user_id: user_id },
           data: {
             more_category: more_category,
             more_position: more_position
