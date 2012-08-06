@@ -4,10 +4,8 @@
   <?php include "share/nav.php" ?>
 
   <!-- Container {{{-->
-  <div class="container" id="js-main">
-
-    <div role="main"></div>
-
+  <div class="container" id="app-container">
+    <div role="main" id="app-main"></div>
   </div>
   <!--/Container }}}-->
 

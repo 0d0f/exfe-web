@@ -235,13 +235,17 @@ define('lightsaber', function (require, exports, module) {
     return this;
   };
 
-  // get method request
-  proto.get = function (path) {
-    var args = [].slice.call(arguments);
-    if (!this._usedRouter) {
+  proto.initRouter = function () {
+    if (this._usedRouter === false) {
       this._usedRouter = true;
       this.use(this._router.middleware);
     }
+  };
+
+  // get method request
+  proto.get = function (path) {
+    var args = [].slice.call(arguments);
+    this.initRouter();
     return this._router.route.apply(this._router, args);
   };
 
@@ -345,6 +349,9 @@ define('lightsaber', function (require, exports, module) {
 
     e.stopPropagation()
     e.preventDefault()
+
+    delete e.data;
+
     return false;
   };
 

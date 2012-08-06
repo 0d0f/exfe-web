@@ -21,7 +21,7 @@ function main(args, argv) {
       module = argv[0];
       path = Path.join(jslib, module);
       config = Path.join(path, 'package.json');
-      if (Path.existsSync(config)) {
+      if (Fs.existsSync(config)) {
         source = Fs.readFileSync(Path.join(path, 'lib', module + '.js'), 'utf8');
         package = JSON.parse(Fs.readFileSync(config, 'utf8'));
         newpath = Path.join(jsdist, module, package.version);

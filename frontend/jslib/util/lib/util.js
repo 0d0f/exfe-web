@@ -102,7 +102,19 @@ define('util', [], function (require, exports, module) {
 
     }(),
 
-    tokenRegExp: /token=([a-zA-Z0-9]{32})/
+    tokenRegExp: /token=([a-zA-Z0-9]{32})/,
+
+    printExtUserName: function (identity) {
+      var username = identity.external_username
+        , provider = identity.provider;
+
+      if (provider === 'twitter') {
+        username = '@' + username;
+      }
+
+      return username;
+    }
+
   };
 
   return Util;
