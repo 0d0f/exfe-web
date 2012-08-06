@@ -35,6 +35,7 @@ class OAuthActions extends ActionController {
     }
 
 
+    // @todo: removed this
     public function doTwitterRedirect() {
         $this->doTwitterAuthenticate();
     }
@@ -60,7 +61,7 @@ class OAuthActions extends ActionController {
             );
             if ($objTwitterIdentity) {
                 if (!$oauthIfo['workflow'] || $oauthIfo['workflow']['callback']) {
-                    $modUser     = $this->getModelByName('User', 'v2');
+                    $modUser     = $this->getModelByName('User',     'v2');
                     $modIdentity = $this->getModelByName('Identity', 'v2');
                     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
                         'twitter', $objTwitterIdentity->external_username, true
@@ -228,7 +229,14 @@ class OAuthActions extends ActionController {
     // facebook {
 
     public function doFacebookAuthenticate() {
-
+        $modOauth = $this->getModelByName('OAuth', 'v2');
+        if (($rtResult = $modOauth->facebookRedirect())) {
+            apiResponse(['redirect' => $rtResult]);
+        }
+        apiError(
+            500, 'could_not_connect_to_facebook',
+            'Could not connect to Facebook. Refresh the page or try again later.'
+        );
     }
 
     // }
