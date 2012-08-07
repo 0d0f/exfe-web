@@ -1347,8 +1347,9 @@ define(function (require, exports, module) {
         $('.cross-description .show').bind('click', EditCross);
         $('.cross-description .xbtn-more').bind('click', function(event) {
             event.stopPropagation();
-            $('.cross-description .show').toggleClass('more', true);
-            $('.cross-description .xbtn-more').hide();
+            var moreOrLess = !$(this).hasClass('xbtn-less');
+            $('.cross-description').toggleClass('more', moreOrLess);
+            $(this).toggleClass('xbtn-less', moreOrLess);
         });
         $('.shuffle-background').bind('click', fixBackground);
         $('.cross-rsvp .show .change').bind('click', EditCross);
@@ -1375,8 +1376,9 @@ define(function (require, exports, module) {
         });
         $('.cross-place .xbtn-more').bind('click', function(event) {
             event.stopPropagation();
-            $('.cross-place address.show').toggleClass('more', true);
-            $('.cross-place .xbtn-more').hide();
+            var moreOrLess = !$(this).hasClass('xbtn-less');
+            $('.cross-dp.cross-place > address').toggleClass('more', moreOrLess);
+            $(this).toggleClass('xbtn-less', moreOrLess);
         });
         $('.ids-popmenu > ol > li').live(
             'mouseenter mousedown',
@@ -1497,14 +1499,15 @@ define(function (require, exports, module) {
 
 
     var ShowDescription = function() {
-        $('.cross-description .show').toggleClass('more', true);
+        $('.cross-description').toggleClass('more', true);
+        $('.cross-description .xbtn-more').toggleClass('xbtn-less', false);
         $('.cross-description .show').html(
             Cross.description
           ? Marked.parse(Cross.description)
           : 'Click here to describe something about this X.'
         );
         if ($('.cross-description .show').height() > 180) {
-            $('.cross-description .show').toggleClass('more', false);
+            $('.cross-description').toggleClass('more', false);
             $('.cross-description .xbtn-more').show();
         } else {
             $('.cross-description .xbtn-more').hide();
@@ -1564,7 +1567,8 @@ define(function (require, exports, module) {
           ? Cross.place.title
           : 'Somewhere'
         );
-        $('.cross-dp.cross-place > address').toggleClass('more', true);
+        $('.cross-dp.cross-place > address').toggleClass('more', true)
+        $('.cross-dp.cross-place .xbtn-more').toggleClass('xbtn-less', false);
         $('.cross-dp.cross-place > address').html(
             Cross.place.description
           ? Cross.place.description.replace(/\r\n|\r|\n/g, '<br>')
