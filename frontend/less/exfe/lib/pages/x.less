@@ -152,8 +152,20 @@
         margin-bottom: 0;
       }
 
-      .xbnt-more:hover {
+
+      .xbtn-more:hover {
         background: rgba(230, 230, 230, .88);
+        .m {
+          display: inline-block;
+        }
+      }
+      .xbtn-less:hover {
+        .m {
+          display: none;
+        }
+        .l {
+          display: inline-block;
+        }
       }
     }
 
@@ -305,7 +317,7 @@
   cursor: pointer;
 
   .m {
-    display: inline-block;
+    display: none;
   }
 
   .l {
@@ -347,7 +359,7 @@
   }
 
   .l {
-    display: inline-block;
+    display: none;
   }
   .rb {
     display: none;

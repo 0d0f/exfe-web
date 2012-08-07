@@ -7168,8 +7168,20 @@ body {
   resize: none;
 }
 
-.cross-description .xbnt-more:hover {
+.cross-description .xbtn-more:hover {
   background: rgba(230, 230, 230, 0.88);
+}
+
+.cross-description .xbtn-more:hover .m {
+  display: inline-block;
+}
+
+.cross-description .xbtn-less:hover .m {
+  display: none;
+}
+
+.cross-description .xbtn-less:hover .l {
+  display: inline-block;
 }
 
 .cross-dp h2 {
@@ -7320,7 +7332,7 @@ body {
 }
 
 .xbtn-more .m {
-  display: inline-block;
+  display: none;
 }
 
 .xbtn-more .l {
@@ -7376,7 +7388,7 @@ body {
 }
 
 .xbtn-less .l {
-  display: inline-block;
+  display: none;
 }
 
 .xbtn-less .rb {
@@ -8027,6 +8039,7 @@ body {
 .x-gather .choose-identity {
   position: absolute;
   left: 80px;
+  z-index: 2;
   width: 80px;
   height: 80px;
 }
@@ -8066,6 +8079,8 @@ body {
 }
 
 .x-gather .form-horizontal {
+  position: relative;
+  z-index: 2;
   margin-bottom: 0;
 }
 
