@@ -123,8 +123,8 @@
       }
 
       textarea {
-        width: 714px;
-        height: 100px;
+        width: 704px;
+        height: 90px;
         resize: none;
         font-size: 42px;
         font-weight: 300;
@@ -187,6 +187,12 @@
     }
 
     .cross-date {
+
+      h2 {
+        max-height: 80px;
+        overflow: hidden;
+      }
+
       input {
         width: 270px;
       }
@@ -266,6 +272,7 @@
   // cross background gradient
   .cross-background {
     #gradient > .vertical-three-colors(#E6E6E6, #FAFAFA, 50%, #FAFAFA);
+     background-position: 0 0;
 
     .cross-background-blur {
       .hide();
