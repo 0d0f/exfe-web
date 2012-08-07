@@ -43,6 +43,7 @@ define('TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET', 'xxxxxxx');
 
 define('FACEBOOK_APP_ID', '210626042352165');
 define('FACEBOOK_SECRET_KEY', 'd6aa2f4e5f19dfbbd933304033f28db2');
+define('FACEBOOK_OAUTH_CALLBACK', SITE_URL.'/oAuth/facebookCallBack');
 
 define('GOOGLE_CLIENT_ID', '968124746422.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET', 'Z8POTJnYqNOVciDHNmjBsxLs');
