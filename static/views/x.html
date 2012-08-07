@@ -3,6 +3,10 @@
     <!-- Cross-Form -->
     <div class="cross-form hide">
 
+      <div class="bg-gatherax">
+        Gather a <span class="x">·X·</span>
+      </div>
+
       <!-- Choose Identity -->
       <div class="pull-left choose-identity">
         <div class="placeholder" href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Identify yourself as host</div>
@@ -87,6 +91,11 @@
               <span>Saving...</span>
             </div>
           </li>
+          <li>
+            <div class="lock-tag">
+              <i class="icon14-lock"></i>
+            </div>
+          </li>
         </ul>
       </div>
       <!-- Cross-Operactions -->
@@ -94,7 +103,7 @@
       <!-- Cross-Title -->
       <div class="cross-title" editarea="title">
         <h1 class="show"></h1>
-        <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+        <textarea class="edit editing" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
       </div>
 
       <div class="row">
@@ -103,16 +112,23 @@
         <div class="gr-a">
 
           <!-- Cross-Content -->
+          <!--添加 `more` class 显示更多-->
           <div class="cross-description" editarea="description">
             <div class="show"></div>
-            <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+            <div class="xbtn-more">
+              <span class="m">More</span>
+              <span class="l">Less</span>
+              <span class="rb"></span>
+              <span class="lt"></span>
+            </div>
+            <textarea class="edit editing" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
           </div>
 
           <!-- Cross-rsvp -->
-          <div class="cross-rsvp">
+          <div class="cross-rsvp clearfix">
             <div class="show">
-              <span class="attendance"></span>
-              <span class="accepted"></span>
+              <span class="pull-left attendance"></span>
+              <ul class="pull-left unstyled nav-pills accepted"></ul>
               <span class="by">
                 <img class="avatar" src="" width="20" height="20" />
               </span>
@@ -120,11 +136,11 @@
             </div>
             <div class="edit">
               <div class="rsvp-group">
-                <button class="xbtn-rsvp accept">Accept</button>
+                <button class="xbtn-rsvp accept">I’m in</button>
                 <button class="xbtn-rsvp decline">Unavailable</button>
                 <span class="interested">Interested</span>
               </div>
-              <span class="by"></span>
+              <!--<div class="by">Invitation from <strong>dm.</strong></div>-->
             </div>
           </div>
 
@@ -166,16 +182,22 @@
 
             <!-- Cross-Time -->
             <div class="cross-dp cross-date" editarea="time">
+              <!--<i class="icon-ics"></i>-->
               <h2></h2>
               <div class="cross-time show"></div>
-              <input type="text" class="edit" placeholder="1984-06-04 09:00 AM" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
+              <!--<div class="timezone"><i class="icon16-timezone"></i></div>-->
+              <input type="text" class="edit editing" placeholder="1984-06-04 09:00 AM" style="display:none"> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Place -->
             <div class="cross-dp cross-place" editarea="place">
               <h2 class="show"></h2>
               <address class="show"></address>
-              <textarea class="edit" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
+              <div class="xbtn-more">
+                <span class="rb"></span>
+                <span class="lt"></span>
+              </div>
+              <textarea class="edit editing" style="display:none"></textarea> <!-- @todo @caifangdun move this style to css file -->
             </div>
 
             <!-- Cross-Map
@@ -192,7 +214,7 @@
                 <span class="attended">0</span>
                 <div class="confirmed">
                   <div class="total">of <span></span></div>
-                  <div>confirmed</div>
+                  <div>accepted</div>
                 </div>
               </div>
 
