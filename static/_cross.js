@@ -1302,6 +1302,7 @@ define(function (require, exports, module) {
                 },
                 function() {
                     $('.cross-place .show').hide();
+                    $('.cross-place .xbtn-more').hide();
                     $('.cross-place .edit').show().focus();
                 },
             ],
@@ -1347,6 +1348,7 @@ define(function (require, exports, module) {
         $('.cross-description .xbtn-more').bind('click', function(event) {
             event.stopPropagation();
             $('.cross-description .show').toggleClass('more', true);
+            $('.cross-description .xbtn-more').hide();
         });
         $('.shuffle-background').bind('click', fixBackground);
         $('.cross-rsvp .show .change').bind('click', EditCross);
@@ -1370,6 +1372,11 @@ define(function (require, exports, module) {
                 //event.preventDefault();
                 event.which = 4;
             }
+        });
+        $('.cross-place .xbtn-more').bind('click', function(event) {
+            event.stopPropagation();
+            $('.cross-place address.show').toggleClass('more', true);
+            $('.cross-place .xbtn-more').hide();
         });
         $('.ids-popmenu > ol > li').live(
             'mouseenter mousedown',
@@ -1550,11 +1557,18 @@ define(function (require, exports, module) {
           ? Cross.place.title
           : 'Somewhere'
         );
+        $('.cross-dp.cross-place > address').toggleClass('more', true);
         $('.cross-dp.cross-place > address').html(
             Cross.place.description
           ? Cross.place.description.replace(/\r\n|\r|\n/g, '<br>')
           : 'Add some place details.'
         );
+        if ($('.cross-dp.cross-place > address').height() > 80) {
+            $('.cross-dp.cross-place > address').toggleClass('more', false);
+            $('.cross-dp.cross-place .xbtn-more').show();
+        } else {
+            $('.cross-dp.cross-place .xbtn-more').hide();
+        }
     };
 
 
