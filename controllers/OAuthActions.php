@@ -248,8 +248,161 @@ return;
         );
         if ($oauthToken) {
             $rawIdentity = $modOauth->getFacebookProfile($oauthToken['access_token']);
-            print_r($rawIdentity);
             print_r($oauthToken);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // if ($rawIdentity) {
+            //     $modUser     = $this->getModelByName('User',     'v2');
+            //     $modIdentity = $this->getModelByName('Identity', 'v2');
+            //     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            //         'twitter', $oauthToken->external_username, true
+            //     );
+            //     // 身份不存在，创建新身份并连接新用户
+            //     if (!$objIdentity) {
+            //         $user_id = $modUser->addUser(
+            //             '',
+            //             $oauthToken->name
+            //          ?: $oauthToken->external_username
+            //         );
+            //         if (!$user_id) {
+            //             echo 'Can not signin with this Twitter identity, please retry later!';
+            //             return;
+            //         }
+            //         $identity_id = $modIdentity->addIdentity(
+            //             ['provider'          => 'twitter',
+            //              'external_id'       => $oauthToken->external_id,
+            //              'name'              => $oauthToken->name,
+            //              'bio'               => $oauthToken->bio,
+            //              'external_username' => $oauthToken->external_username,
+            //              'avatar_filename'   => $oauthToken->avatar_filename],
+            //             $user_id,
+            //             3
+            //         );
+            //         if (!$identity_id) {
+            //             echo 'Can not signin with this Twitter identity, please retry later!';
+            //             return;
+            //         }
+            //         $objIdentity = $modIdentity->getIdentityById($identity_id, null, true);
+            //     }
+            //     if (!$objIdentity) {
+            //         echo 'Can not signin with this Twitter identity, please retry later!';
+            //         return;
+            //     }
+            //     // 身份未连接
+            //     if (!$objIdentity->connected_user_id) {
+            //         // 身份被 revoked，重新连接用户
+            //         if ($objIdentity->revoked_user_id) {
+            //             $user_id = $objIdentity->revoked_user_id;
+            //         // 孤立身份，创建新用户并连接到该身份
+            //         } else {
+            //             $user_id = $modUser->addUser(
+            //                 '',
+            //                 $oauthToken->name
+            //              ?: $oauthToken->external_username
+            //             );
+            //         }
+            //         if (!$user_id) {
+            //             echo 'Can not signin with this Twitter identity, please retry later!';
+            //             return;
+            //         }
+            //         $rstChangeStatus = $modUser->setUserIdentityStatus(
+            //             $user_id, $objIdentity->id, 3
+            //         );
+            //         $objIdentity->connected_user_id = $user_id;
+            //         if (!$rstChangeStatus) {
+            //             echo 'Can not signin with this Twitter identity, please retry later!';
+            //             return;
+            //         }
+            //     }
+            //     // 更新 OAuth Token
+            //     $modIdentity->updateOAuthTokenById($objIdentity->id, [
+            //         'oauth_token'        => $oauthIfo['oauth_token'],
+            //         'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
+            //     ]);
+            //     // 使用该身份登录
+            //     $rstSignin = $modUser->rawSiginin(
+            //         $objIdentity->connected_user_id
+            //     );
+            //     // call Gobus {
+            //     $hlpGobus = $this->getHelperByName('gobus', 'v2');
+            //     $hlpGobus->send('user', 'TwitterFriends', [
+            //         'ClientToken'  => TWITTER_CONSUMER_KEY,
+            //         'ClientSecret' => TWITTER_CONSUMER_SECRET,
+            //         'AccessToken'  => $oauthIfo['oauth_token'],
+            //         'AccessSecret' => $oauthIfo['oauth_token_secret'],
+            //     ]);
+            //     // }
+            //     if ($oauthIfo['workflow']['callback']['oauth_device'] === 'iOS') {
+            //         header(
+            //             "location: {$oauthIfo['workflow']['callback']['oauth_device_callback']}"
+            //           . "?token={$rstSignin['token']}&name={$oauthToken->name}"
+            //           . "&userid={$rstSignin['user_id']}&external_id="
+            //           . "{$oauthToken->external_id}&provider=twitter"
+            //         );
+            //         return;
+            //     }
+            //     // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
+            //     // true / false [String]
+            //     $twitterConn = new tmhOAuth([
+            //       'consumer_key'    => TWITTER_CONSUMER_KEY,
+            //       'consumer_secret' => TWITTER_CONSUMER_SECRET,
+            //       'user_token'      => $oauthIfo['oauth_token'],
+            //       'user_secret'     => $oauthIfo['oauth_token_secret'],
+            //     ]);
+            //     $twitterConn->request(
+            //         'GET',
+            //         $twitterConn->url('1/friendships/exists'),
+            //         ['screen_name_a' => $objIdentity->external_username,
+            //          'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
+            //     );
+            //     $modOauth->addtoSession([
+            //         'twitter_signin'    => $rstSignin,
+            //         'twitter_following' => $twitterConn->response['response'] === 'true'
+            //     ]);
+            //     header('location: /');
+            //     return;
+            // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
         apiError(400, 'invalid_callback', '');
     }
