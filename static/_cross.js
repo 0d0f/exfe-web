@@ -227,20 +227,20 @@ ExfeeWidget = {
         this.dom_id   = dom_id;
         this.editable = editable;
         this.callback = callback;
-        $('#' + this.dom_id + ' .invite').hide();
-        $('#' + this.dom_id + ' .total').hide();
+        $('#' + this.dom_id + ' .invite').css('visibility', 'hidden');
+        $('#' + this.dom_id + ' .total').css('visibility', 'hidden');
         $('#' + this.dom_id).bind(
             'mouseenter mouseleave',
             function(event) {
                 switch (event.type) {
                     case 'mouseenter':
-                        $('#' + dom_id + ' .invite').fadeIn(100);
-                        $('#' + dom_id + ' .total').fadeIn(100);
+                        $('#' + dom_id + ' .invite').css('visibility', 'visible');
+                        $('#' + dom_id + ' .total').css('visibility', 'visible');
                         break;
                     case 'mouseleave':
                         if ($('#' + dom_id + ' .exfee-input').val() === '') {
-                            $('#' + dom_id + ' .invite').fadeOut(100);
-                            $('#' + dom_id + ' .total').fadeOut(100);
+                            $('#' + dom_id + ' .invite').css('visibility', 'hidden');
+                            $('#' + dom_id + ' .total').css('visibility', 'hidden');
                         }
                 }
             }
@@ -1146,7 +1146,7 @@ define(function (require, exports, module) {
 
     var SaveExfee = function(refresh) {
         if (Cross.id) {
-            $('.cross-opts').show();
+            $('.cross-opts .saving').show();
             Api.request(
                 'editExfee',
                 {type      : 'POST',
@@ -1154,13 +1154,13 @@ define(function (require, exports, module) {
                  data      : {by_identity_id : curIdentity.id,
                               exfee          : JSON.stringify(Exfee)}},
                 function(data) {
-                    $('.cross-opts').hide();
+                    $('.cross-opts .saving').hide();
                     if (refresh) {
                         window.location.reload();
                     }
                 },
                 function(data) {
-                    $('.cross-opts').hide();
+                    $('.cross-opts .saving').hide();
                     console.log('Field');
                 }
             );
@@ -1205,7 +1205,7 @@ define(function (require, exports, module) {
                         var objInput = $(event.target),
                             message  = objInput.val();
                         if (!event.shiftKey && message.length) {
-                            $('.cross-opts').show();
+                            $('.cross-opts .saving').show();
                             event.preventDefault();
                             objInput.val('');
                             var post = {
@@ -1224,11 +1224,11 @@ define(function (require, exports, module) {
                                     data      : JSON.stringify(post)
                                 },
                                 function(data) {
-                                    $('.cross-opts').hide();
+                                    $('.cross-opts .saving').hide();
                                     ShowMessage(data.post);
                                 },
                                 function(data) {
-                                    $('.cross-opts').hide();
+                                    $('.cross-opts .saving').hide();
                                     console.log(data);
                                 }
                             );
@@ -1277,6 +1277,7 @@ define(function (require, exports, module) {
                 },
                 function() {
                     $('.cross-description .show').hide();
+                    $('.cross-description .xbtn-more').hide();
                     $('.cross-description .edit').show().focus();
                 }
             ],
@@ -1301,6 +1302,7 @@ define(function (require, exports, module) {
                 },
                 function() {
                     $('.cross-place .show').hide();
+                    $('.cross-place .xbtn-more').hide();
                     $('.cross-place .edit').show().focus();
                 },
             ],
@@ -1343,6 +1345,11 @@ define(function (require, exports, module) {
             ChangeTitle($(event.target).val(), 'cross');
         });
         $('.cross-description .show').bind('click', EditCross);
+        $('.cross-description .xbtn-more').bind('click', function(event) {
+            event.stopPropagation();
+            $('.cross-description .show').toggleClass('more', true);
+            $('.cross-description .xbtn-more').hide();
+        });
         $('.shuffle-background').bind('click', fixBackground);
         $('.cross-rsvp .show .change').bind('click', EditCross);
         $('.cross-rsvp .edit .accept').bind('click', function() {
@@ -1365,6 +1372,11 @@ define(function (require, exports, module) {
                 //event.preventDefault();
                 event.which = 4;
             }
+        });
+        $('.cross-place .xbtn-more').bind('click', function(event) {
+            event.stopPropagation();
+            $('.cross-place address.show').toggleClass('more', true);
+            $('.cross-place .xbtn-more').hide();
         });
         $('.ids-popmenu > ol > li').live(
             'mouseenter mousedown',
@@ -1461,8 +1473,15 @@ define(function (require, exports, module) {
     var ShowTitle = function(from) {
         var title = Cross.title.length ? Cross.title : 'Enter intent';
         $('.cross-title .show').html(title);
+        if (from === 'cross') {
+            $('.cross-title').removeClass('single-line').removeClass('double-line');
+        } else {
+            $('.cross-title').addClass('single-line').removeClass('double-line');
+            if ($('.cross-title .show').height() > 50) {
+                $('.cross-title').addClass('double-line').removeClass('single-line');
+            }
+        }
         document.title = 'EXFE - ' + title;
-        // @todo 不同长度的 title 使用不同的样式
         switch (from) {
             case 'gather':
                 $('.cross-title .edit').val(Cross.title);
@@ -1478,11 +1497,18 @@ define(function (require, exports, module) {
 
 
     var ShowDescription = function() {
+        $('.cross-description .show').toggleClass('more', true);
         $('.cross-description .show').html(
             Cross.description
           ? Marked.parse(Cross.description)
           : 'Click here to describe something about this X.'
         );
+        if ($('.cross-description .show').height() > 180) {
+            $('.cross-description .show').toggleClass('more', false);
+            $('.cross-description .xbtn-more').show();
+        } else {
+            $('.cross-description .xbtn-more').hide();
+        }
         $('.cross-description .edit').html(Cross.description);
     };
 
@@ -1538,11 +1564,18 @@ define(function (require, exports, module) {
           ? Cross.place.title
           : 'Somewhere'
         );
+        $('.cross-dp.cross-place > address').toggleClass('more', true);
         $('.cross-dp.cross-place > address').html(
             Cross.place.description
           ? Cross.place.description.replace(/\r\n|\r|\n/g, '<br>')
           : 'Add some place details.'
         );
+        if ($('.cross-dp.cross-place > address').height() > 80) {
+            $('.cross-dp.cross-place > address').toggleClass('more', false);
+            $('.cross-dp.cross-place .xbtn-more').show();
+        } else {
+            $('.cross-dp.cross-place .xbtn-more').hide();
+        }
     };
 
 
@@ -1558,13 +1591,16 @@ define(function (require, exports, module) {
                 break;
             }
         }
-        if (!Cross.widget[i].image) {
-            fixBackground();
+        if (Cross.widget[i].image) {
+            $('.x-gather').toggleClass('no-bg', false);
+            $('.cross-background').css(
+                'background-image',
+                'url(/static/img/xbg/' + Cross.widget[i].image + ')'
+            );
+        } else {
+            $('.x-gather').toggleClass('no-bg', true);
+            $('.cross-background').css('background-image', '');
         }
-        $('.cross-background').css(
-            'background-image',
-            'url(/static/img/xbg/' + Cross.widget[i].image + ')'
-        );
     };
 
 
@@ -1636,7 +1672,7 @@ define(function (require, exports, module) {
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
-                    strSummary += '<span>'
+                    strSummary += '<li><span>'
                                 +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
                                 +   '">'
@@ -1645,10 +1681,10 @@ define(function (require, exports, module) {
                                      ? objSummary.accepted_invitations[i].mates
                                      : '')
                                 +   '</span>'
-                                + '</span>';
+                                + '</span></li>';
                 }
-                strSummary += objSummary.accepted
-                            ? (objSummary.accepted + ' accepted.') : '';
+                strSummary += objSummary.accepted ? ('<li><span>'
+                            + objSummary.accepted + ' accepted.</span></li>') : '';
                 var objAccepted = $('.cross-rsvp .show .accepted');
                 if (objAccepted.html() !== strSummary) {
                     objAccepted.html(strSummary);
@@ -1732,6 +1768,7 @@ define(function (require, exports, module) {
     var ResetCross = function() {
         window.Cross = ExfeUtilities.clone(rawCross);
         window.Exfee = ExfeUtilities.clone(rawExfee);
+        fixBackground();
         fixTitle();
         fixTime();
         fixExfee();
@@ -1749,7 +1786,7 @@ define(function (require, exports, module) {
 
 
     var Gather = function() {
-        $('.cross-opts').show();
+        $('.cross-opts .saving').show();
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.exfee = ExfeUtilities.clone(Exfee);
         objCross.by_identity = {id : curIdentity.id};
@@ -1757,11 +1794,11 @@ define(function (require, exports, module) {
             'gather',
             {type : 'POST', data : JSON.stringify(objCross)},
             function(data) {
-                $('.cross-opts').hide();
+                $('.cross-opts .saving').hide();
                 document.location = '/#!' + data.cross.id;
             },
             function(data) {
-                $('.cross-opts').hide();
+                $('.cross-opts .saving').hide();
                 console.log(data);
             }
         );
@@ -1769,7 +1806,7 @@ define(function (require, exports, module) {
 
 
     var SaveCross = function() {
-        $('.cross-opts').show();
+        $('.cross-opts .saving').show();
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.by_identity = {id : curIdentity.id};
         Api.request(
@@ -1778,11 +1815,11 @@ define(function (require, exports, module) {
              resources : {cross_id : Cross.id},
              data      : JSON.stringify(objCross)},
             function(data) {
-                $('.cross-opts').hide();
+                $('.cross-opts .saving').hide();
                 console.log('Saved');
             },
             function(data) {
-                $('.cross-opts').hide();
+                $('.cross-opts .saving').hide();
                 console.log('Field');
             }
         );
