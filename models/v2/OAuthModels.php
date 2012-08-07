@@ -178,8 +178,10 @@ class OAuthModels extends DataModel {
             if (($arrItem = explode('=', $item))) {
                 switch ($arrItem[0]) {
                     case 'access_token':
+                        $rtResult['oauth_token']   = $arrItem[1];
+                        break;
                     case 'expires':
-                        $rtResult[$arrItem[0]] = $arrItem[1];
+                        $rtResult['oauth_expires'] = (int) $arrItem[1] + time();
                 }
             }
         }
@@ -200,15 +202,17 @@ class OAuthModels extends DataModel {
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = (array) json_decode($data))) {
-            return [
-                'provider'          => 'facebook',
-                'external_id'       => $rawIdentity['id'],
-                'external_username' => $rawIdentity['username'],
-                'name'              => $rawIdentity['name'],
-                'avatar_filename'   => "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large",
-                'bio'               => array_key_exists('bio', $rawIdentity)
-                                     ? $rawIdentity['bio'] : '',
-            ];
+            return new Identity(
+                0,
+                $rawIdentity['name'],
+                '',
+                array_key_exists('bio', $rawIdentity) ? $rawIdentity['bio'] : '',
+                'facebook',
+                0,
+                $rawIdentity['id'],
+                $rawIdentity['username'],
+                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large"
+            );
         }
         return null;
     }
