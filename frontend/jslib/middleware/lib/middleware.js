@@ -80,8 +80,10 @@ define('middleware', function (require, exports, module) {
     }
 
     else if (authorization && authMeta) {
-      session.authorization = authorization;
-      session.browsing_authorization = authMeta;
+      if (session.authorization.token !== authMeta.token
+          && session.authorization.user_id !== authMeta.user_id) {
+        Store.set('authorization', session.authorization = authMeta);
+      }
     }
 
     //else if (!authorization && !authMeta) {

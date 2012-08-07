@@ -667,8 +667,7 @@ define(function (require, exports, module) {
                   that.$('.send-after').removeClass('hide');
                 }
               }
-              , function (data) {
-              }
+              //, function (data) {}
             );
           }
         }
@@ -927,9 +926,9 @@ define(function (require, exports, module) {
           }
 
           var $e = $(e.currentTarget);
-          var signinData = Store.get('authorization');
-          var user_id = signinData.user_id;
-          var token = signinData.token;
+          var authorization = Store.get('authorization');
+          var user_id = authorization.user_id;
+          var token = authorization.token;
           var that = this;
 
           var identity = Util.parseId(new_identity);
@@ -937,6 +936,7 @@ define(function (require, exports, module) {
           if (identity.provider) {
             Api.request('addIdentity', {
                 type: 'POST',
+                params: { token: token },
                 data: {
                   external_id: identity.external_identity,
                   provider: identity.provider,
@@ -1067,9 +1067,12 @@ define(function (require, exports, module) {
           }
           var that = this;
           var identity_id = $e.data('identity_id');
+          var authorization = Store.get('authorization');
+          var token = authorization.token;
           Api.request('verifyUserIdentity'
             , {
               type: 'POST',
+              params: { token: token },
               data: { identity_id: identity_id },
               beforeSend: function (data) {
                 $e.addClass('disabled');
@@ -1165,9 +1168,13 @@ define(function (require, exports, module) {
             return;
           }
           var identity_id = $e.data('identity_id');
+          var authorization = Store.get('authorization');
+          var token = authorization.token;
+
           Api.request('verifyUserIdentity'
             , {
               type: 'POST',
+              params: { token: token },
               data: { identity_id: identity_id },
               beforeSend: function (data) {
                 $e.addClass('disabled');
