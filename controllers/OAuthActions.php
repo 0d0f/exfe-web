@@ -35,12 +35,6 @@ class OAuthActions extends ActionController {
     }
 
 
-    // @todo: removed this
-    public function doTwitterRedirect() {
-        $this->doTwitterAuthenticate();
-    }
-
-
     public function doTwitterCallBack() {
         $modOauth = $this->getModelByName('OAuth', 'v2');
         $oauthIfo = $modOauth->getSession();
@@ -171,8 +165,6 @@ class OAuthActions extends ActionController {
                     header('location: /');
                     return;
                 }
-                echo 'Request error!';
-                return;
             }
         }
         $modOauth->resetSession();
@@ -228,11 +220,28 @@ class OAuthActions extends ActionController {
     // facebook {
 
     public function doFacebookAuthenticate() {
+        $workflow    = [];
+        $webResponse = false;
+        if ($_GET['device'] && $_GET['device_callback']) {
+            $workflow    = ['callback' => [
+                'oauth_device'          => $_GET['device'],
+                'oauth_device_callback' => $_GET['device_callback'],
+            ]];
+            $webResponse = true;
+        }
         $modOauth = $this->getModelByName('OAuth', 'v2');
-echo $modOauth->facebookRedirect();
-return;
-        if (($rtResult = $modOauth->facebookRedirect())) {
-            apiResponse(['redirect' => $rtResult]);
+        $urlOauth = $modOauth->facebookRedirect($workflow);
+        if ($urlOauth) {
+            if ($webResponse) {
+                header("Location: {$urlOauth}");
+                return;
+            }
+            apiResponse(array('redirect' => $urlOauth));
+        }
+        if ($webResponse) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'Could not connect to Facebook. Refresh the page or try again later.';
+            return;
         }
         apiError(
             500, 'could_not_connect_to_facebook',
