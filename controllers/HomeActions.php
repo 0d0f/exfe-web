@@ -11,9 +11,9 @@ class HomeActions extends ActionController {
         $twitterSignin = null;
         if ($oauthIfo && $oauthIfo['twitter_signin']) {
             $twitterSignin = [
-                'signin'    => $oauthIfo['twitter_signin'],
-                'following' => $oauthIfo['twitter_following'],
-                'type'      => 'twitter',
+                'authorization' => $oauthIfo['twitter_signin'],
+                'following'     => $oauthIfo['twitter_following'],
+                'type'          => 'twitter',
             ];
         }
         $modOauth->resetSession();
