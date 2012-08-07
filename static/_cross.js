@@ -1558,13 +1558,16 @@ define(function (require, exports, module) {
                 break;
             }
         }
-        if (!Cross.widget[i].image) {
-            fixBackground();
+        if (Cross.widget[i].image) {
+            $('.x-gather').toggleClass('no-bg', false);
+            $('.cross-background').css(
+                'background-image',
+                'url(/static/img/xbg/' + Cross.widget[i].image + ')'
+            );
+        } else {
+            $('.x-gather').toggleClass('no-bg', true);
+            $('.cross-background').css('background-image', '');
         }
-        $('.cross-background').css(
-            'background-image',
-            'url(/static/img/xbg/' + Cross.widget[i].image + ')'
-        );
     };
 
 
@@ -1732,6 +1735,7 @@ define(function (require, exports, module) {
     var ResetCross = function() {
         window.Cross = ExfeUtilities.clone(rawCross);
         window.Exfee = ExfeUtilities.clone(rawExfee);
+        fixBackground();
         fixTitle();
         fixTime();
         fixExfee();
