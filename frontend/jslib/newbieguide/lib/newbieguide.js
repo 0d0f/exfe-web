@@ -5,7 +5,7 @@ define(function (require) {
   // Profile Page, Newbie Guide
 
   var newbieGuide = [
-    '<div class="newbie nbg-0">Gather a <span class="x-sign">X</span> here</div>',
+    '<div class="newbie nbg-0">Gather a <span class="x">·X·</span> here</div>',
 
     '<div class="newbie nbg-1">'
       + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
@@ -24,15 +24,15 @@ define(function (require) {
 
     '<div class="newbie nbg-2">'
       + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
-      + '<h4>Here lists all your <span class="x-sign">X</span>.</h4>'
-      + '<p><span class="x-sign">X</span> (cross) is a gathering of people.</p>'
-      + '<p>Too short list?</p>'
+      + '<h4>Here lists all your <span class="x">·X·</span>.</h4>'
+      + '<p><span class="x">·X·</span> (cross) is a gathering of people.</p>'
+      + '<p>Nothing in your list?</p>'
       + '<p>Invite friends for something like</p>'
       + '<p>meals, meetings, sports, datings,</p>'
       + '<p>parties, webinars, hangouts, trips, etc.</p>'
-      + '<p><span class="x-sign">X</span> is private by default,</p><p>'
+      + '<p><span class="x">·X·</span> is private by default,</p><p>'
       + '</p><p>accessible to only attendees.</p>'
-      //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x-sign">X</span></span> now!</p>'
+      //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x">·X·</span></span> now!</p>'
     + '</div>',
 
     '<div class="newbie nbg-3">'

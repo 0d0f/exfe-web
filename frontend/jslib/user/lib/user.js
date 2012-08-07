@@ -253,10 +253,12 @@ define('user', function (require, exports, module) {
               + '{{/ifConnected}}'
               + '{{/each}}'
             + '{{/if}}'
+            + '{{#unless ../setup}}'
             + '<div class="spliterline"></div>'
             + '<div class="merge">'
               + '<a href="#" data-source="{{browsing.default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In</a> with browsing identity<br />(sign out from current account).'
             + '</div>'
+            + '{{/unless}}'
           + '</div>'
           + '<div class="footer">'
           + '</div>'
@@ -303,6 +305,7 @@ define('user', function (require, exports, module) {
     delete user.verifying;
   }
 
+  // `sign in` or `set up` 只显示其一
   function updateBrowsingUserMenu(data) {
     var $appUserMenu = $('#app-user-menu')
       , $appUserName = $('#app-user-name')
