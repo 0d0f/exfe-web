@@ -7139,8 +7139,8 @@ body {
 }
 
 .cross-title textarea {
-  width: 714px;
-  height: 100px;
+  width: 704px;
+  height: 90px;
   font-size: 42px;
   font-weight: 300;
   line-height: 50px;
@@ -7197,6 +7197,11 @@ body {
 
 .cross-time {
   margin-bottom: 20px;
+}
+
+.cross-date h2 {
+  max-height: 80px;
+  overflow: hidden;
 }
 
 .cross-date input {
@@ -7279,6 +7284,7 @@ body {
   background-image: -ms-linear-gradient(#e6e6e6, #fafafa 50%, #fafafa);
   background-image: -o-linear-gradient(#e6e6e6, #fafafa 50%, #fafafa);
   background-image: linear-gradient(#e6e6e6, #fafafa 50%, #fafafa);
+  background-position: 0 0;
   background-repeat: no-repeat;
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#e6e6e6', endColorstr='#fafafa', GradientType=0);
 }
@@ -8853,11 +8859,12 @@ body {
   margin-top: -70px;
   margin-bottom: 40px;
   margin-left: 135px;
+  cursor: pointer;
 }
 
 .newbie.nbg-2 {
   width: 300px;
-  padding: 15px 0 17px;
+  padding: 24px 0 17px;
   margin: 7px auto 0;
   text-align: center;
 }
