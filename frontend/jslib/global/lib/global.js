@@ -111,5 +111,7 @@ define(function (require, exports, module) {
       window.location.href = '/';
     });
 
+    $BODY.on();
+
   //});
 });

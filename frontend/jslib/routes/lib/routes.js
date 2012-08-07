@@ -206,7 +206,7 @@ define('routes', function (require, exports, module) {
         data: { invitation_token: ctoken }
       }
       , function (data) {
-        var auth = data.signin
+        var auth = data.authorization
           , browsing_identity = data.browsing_identity
           , action = data.action
           , cross = data.cross
@@ -216,16 +216,21 @@ define('routes', function (require, exports, module) {
 
         Bus.emit('app:page:usermenu', true);
 
-        if (auth) {
+        if (auth || !browsing_identity) {
 
           if (!session.initMenuBar) {
             //session.initMenuBar = true;
-            Bus.emit('app:usermenu:updatenormal', user);
+            if (auth) {
+              Bus.emit('app:user:signin', auth.token, auth.user_id);
+            }
+            else {
+              Bus.emit('app:usermenu:updatenormal', user);
+              Bus.emit('app:usermenu:crosslist'
+                , authorization.token
+                , authorization.user_id
+              );
+            }
 
-            Bus.emit('app:usermenu:crosslist'
-              , auth.token
-              , auth.user_id
-            );
           }
         }
         else if (browsing_identity) {
