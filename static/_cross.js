@@ -1884,7 +1884,7 @@ define(function (require, exports, module) {
     // init event: main
     bus.on('xapp:cross:main', function() {
         // get current user
-        var Signin  = Store.get('signin');
+        var Signin  = Store.get('authorization');
         window.User = Signin ? Store.get('user') : null;
         if (User) {
             Api.setToken(Signin.token);
@@ -1925,9 +1925,9 @@ define(function (require, exports, module) {
     });
     // init event: signin
     bus.on('xapp:usersignin', function() {
-        if (!window.Cross.id) {
+        if (window.Cross && !window.Cross.id) {
             // get current user
-            var Signin  = Store.get('signin');
+            var Signin  = Store.get('authorization');
             window.User = Signin ? Store.get('user') : null;
             if (User) {
                 Api.setToken(Signin.token);
