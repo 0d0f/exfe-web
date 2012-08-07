@@ -1277,6 +1277,7 @@ define(function (require, exports, module) {
                 },
                 function() {
                     $('.cross-description .show').hide();
+                    $('.cross-description .xbtn-more').hide();
                     $('.cross-description .edit').show().focus();
                 }
             ],
@@ -1343,6 +1344,10 @@ define(function (require, exports, module) {
             ChangeTitle($(event.target).val(), 'cross');
         });
         $('.cross-description .show').bind('click', EditCross);
+        $('.cross-description .xbtn-more').bind('click', function(event) {
+            event.stopPropagation();
+            $('.cross-description .show').toggleClass('more', true);
+        });
         $('.shuffle-background').bind('click', fixBackground);
         $('.cross-rsvp .show .change').bind('click', EditCross);
         $('.cross-rsvp .edit .accept').bind('click', function() {
@@ -1478,11 +1483,18 @@ define(function (require, exports, module) {
 
 
     var ShowDescription = function() {
+        $('.cross-description .show').toggleClass('more', true);
         $('.cross-description .show').html(
             Cross.description
           ? Marked.parse(Cross.description)
           : 'Click here to describe something about this X.'
         );
+        if ($('.cross-description .show').height() > 180) {
+            $('.cross-description .show').toggleClass('more', false);
+            $('.cross-description .xbtn-more').show();
+        } else {
+            $('.cross-description .xbtn-more').hide();
+        }
         $('.cross-description .edit').html(Cross.description);
     };
 
