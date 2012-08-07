@@ -7413,7 +7413,7 @@ body {
 }
 
 .more {
-  max-height: none;
+  max-height: none !important;
 }
 
 .x-cross {
