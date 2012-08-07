@@ -52,6 +52,8 @@ define('lightsaber', function (require, exports, module) {
   // html5 history support
   proto.historySupport = (history !== null ? history.pushState : void 0) !== null;
 
+  $.browser.opera && (proto.historySupport = false);
+
   proto.init = function () {
     this.route = ROOT;
     this.stack = [];
