@@ -1473,8 +1473,15 @@ define(function (require, exports, module) {
     var ShowTitle = function(from) {
         var title = Cross.title.length ? Cross.title : 'Enter intent';
         $('.cross-title .show').html(title);
+        if (from === 'cross') {
+            $('.cross-title').removeClass('single-line').removeClass('double-line');
+        } else {
+            $('.cross-title').addClass('single-line').removeClass('double-line');
+            if ($('.cross-title .show').height() > 50) {
+                $('.cross-title').addClass('double-line').removeClass('single-line');
+            }
+        }
         document.title = 'EXFE - ' + title;
-        // @todo 不同长度的 title 使用不同的样式
         switch (from) {
             case 'gather':
                 $('.cross-title .edit').val(Cross.title);
