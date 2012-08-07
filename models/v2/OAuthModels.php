@@ -2,7 +2,7 @@
 
 require_once dirname(dirname(__FILE__)) . '/../lib/OAuth.php';
 require_once dirname(dirname(__FILE__)) . '/../lib/TwitterOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/../lib/FacebookOAuth.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/facebook.php';
 require_once dirname(dirname(__FILE__)) . '/../lib/tmhOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/../lib/FoursquareAPI.class.php';
 
@@ -139,57 +139,78 @@ class OAuthModels extends DataModel {
     // }
 
 
-    // twitter {
+    // facebook {
 
-    public function fb() {
-        $facebookHandler = new FacebookOauth([
-            'appId'  => FACEBOOK_APP_ID,
-            'secret' => FACEBOOK_SECRET_KEY,
-            'cookie' => true
-        ]);
-        $facebookSession = $facebookHandler->getSession();
+    public function facebookRedirect() {
+        return 'https://graph.facebook.com/oauth/authorize?client_id='
+             . FACEBOOK_APP_ID         . '&redirect_uri='
+             . FACEBOOK_OAUTH_CALLBACK . '&type=web_server';
+    }
 
-        $facebookUserInfo = null;
-        if ($facebookSession) {
-            try {
-                $uid = $facebookHandler->getUser();
-                $facebookUserInfo = $facebookHandler->api('/me');
-            } catch (FacebookApiException $e) {
-                error_log($e);
+
+    public function getFacebookOAuthCode() {
+        return $_GET['code'];
+    }
+
+
+    public function getFacebookOAuthToken($oauthCode) {
+        if (!$oauthCode) {
+            return null;
+        }
+        $objCurl = curl_init(
+            'https://graph.facebook.com/oauth/access_token?client_id='
+          . FACEBOOK_APP_ID         . '&redirect_uri='
+          . FACEBOOK_OAUTH_CALLBACK . '&client_secret='
+          . FACEBOOK_SECRET_KEY     . "&code={$oauthCode}"
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        if (!($data = curl_exec($objCurl))) {
+            curl_close($objCurl);
+            return null;
+        }
+        if (curl_getinfo($objCurl, CURLINFO_HTTP_CODE) !== 200) {
+            curl_close($objCurl);
+            return null;
+        }
+        $rtResult  = [];
+        foreach (($rawResult = explode('&', $data)) as $item) {
+            if (($arrItem = explode('=', $item))) {
+                switch ($arrItem[0]) {
+                    case 'access_token':
+                    case 'expires':
+                        $rtResult[$arrItem[0]] = $arrItem[1];
+                }
             }
         }
-        if (!$facebookUserInfo) {
-            $params = array();
-            $loginUrl = $facebookHandler->getLoginUrl($params);
-            header("location:".$loginUrl);
-        } else {
+        curl_close($objCurl);
+        return count($rtResult) > 1 ? $rtResult : null;
+    }
 
-            if(gettype($facebookUserInfo) == "object"){
-                $facebookUserInfo = (array)$facebookUserInfo;
-            }
-            $oAuthUserInfo = array(
-                "provider"      =>"facebook",
-                "id"            =>$facebookUserInfo["id"],
-                "name"          =>$facebookUserInfo["name"],
-                "sname"         =>$facebookUserInfo["username"],
-                "desc"          =>array_key_exists("bio", $facebookUserInfo) ? $facebookUserInfo["bio"] : "",
-                "avatar"        =>"https://graph.facebook.com/".$facebookUserInfo["id"]."/picture?type=large",
-                "oauth_token"   =>""
-            );
 
-            $OAuthModel = $this->getModelByName("oAuth");
-            $result = $OAuthModel->verifyOAuthUser($oAuthUserInfo);
-            $identityID = $result["identityID"];
-            $userID = $result["userID"];
-            if(!$identityID || !$userID){
-                die("OAuth error.");
-            }
-
-            $identityModels = $this->getModelByName("identity");
-            $identityModels->loginByIdentityId($identityID, $userID);
-
-            header("location:/s/login");
+    public function getFacebookProfile($oauthToken) {
+        if (!$oauthToken) {
+            return null;
         }
+        $objCurl = curl_init(
+            "https://graph.facebook.com/me?access_token={$oauthToken}"
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($rawIdentity = (array) json_decode($data))) {
+            return [
+                'provider'          => 'facebook',
+                'external_id'       => $rawIdentity['id'],
+                'external_username' => $rawIdentity['username'],
+                'name'              => $rawIdentity['name'],
+                'avatar_filename'   => "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large",
+                'bio'               => array_key_exists('bio', $rawIdentity)
+                                     ? $rawIdentity['bio'] : '',
+            ];
+        }
+        return null;
     }
 
     // }
