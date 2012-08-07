@@ -7319,7 +7319,8 @@ body {
           box-shadow: none;
 }
 
-.xbtn-more {
+.xbtn-more,
+.xbtn-less {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -7331,15 +7332,18 @@ body {
   cursor: pointer;
 }
 
-.xbtn-more .m {
+.xbtn-more .m,
+.xbtn-less .m {
   display: none;
 }
 
-.xbtn-more .l {
+.xbtn-more .l,
+.xbtn-less .l {
   display: none;
 }
 
-.xbtn-more .rb {
+.xbtn-more .rb,
+.xbtn-less .rb {
   position: relative;
   left: -1px;
   display: inline-block;
@@ -7349,7 +7353,8 @@ body {
   border-left: 7px solid transparent;
 }
 
-.xbtn-more .rb:before {
+.xbtn-more .rb:before,
+.xbtn-less .rb:before {
   position: absolute;
   top: -1.5px;
   left: -8.5px;
@@ -7361,7 +7366,8 @@ body {
   content: '';
 }
 
-.xbtn-more .lt {
+.xbtn-more .lt,
+.xbtn-less .lt {
   position: relative;
   left: -1px;
   display: none;
@@ -7371,7 +7377,8 @@ body {
   border-right: 7px solid transparent;
 }
 
-.xbtn-more .lt:before {
+.xbtn-more .lt:before,
+.xbtn-less .lt:before {
   position: absolute;
   top: -7px;
   left: -0.5px;
