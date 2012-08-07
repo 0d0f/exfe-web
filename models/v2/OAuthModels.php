@@ -141,7 +141,8 @@ class OAuthModels extends DataModel {
 
     // facebook {
 
-    public function facebookRedirect() {
+    public function facebookRedirect($workflow) {
+        $this->setSession('facebook', '', '', $workflow);
         return 'https://graph.facebook.com/oauth/authorize?client_id='
              . FACEBOOK_APP_ID         . '&redirect_uri='
              . FACEBOOK_OAUTH_CALLBACK . '&type=web_server';
