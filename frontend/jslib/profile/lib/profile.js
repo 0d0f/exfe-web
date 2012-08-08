@@ -474,7 +474,7 @@ define(function (require, exports, module) {
     //Store.set('newbie_guide', 0);
     var newbie_status = Store.get('newbie_guide:' + user_id);
 
-    if (!newbie_status && cross_nums <= 3) {
+    if (!newbie_status && cross_nums <= 3 && !$('#app-browsing-identity').size()) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
@@ -779,7 +779,7 @@ define(function (require, exports, module) {
   // 头像上传控件
   var uploader = null;
   // uploader
-  $BODY.on('click.profile.uploader', '.user-avatar .avatar, .identity-list > li > .avatar', function (e) {
+  $BODY.on('click.data-link', '.user-avatar .avatar, .identity-list > li > .avatar', function (e) {
     var $e = $(this),
         $img = $e.find('img');
 

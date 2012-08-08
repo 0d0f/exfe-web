@@ -13,8 +13,8 @@
 
           <div class="user-infos">
             <div class="user-name">
-              <h3 class="pull-left"></h3>
-              <div class="xbtn changepassword" data-widget="dialog"><i class="icon14-lock"></i><span>Change Password...</span></div>
+              <h3 class="pull-left" data-link></h3>
+              <div class="xbtn changepassword" data-link data-widget="dialog"><i class="icon14-lock"></i><span>Change Password...</span></div>
             </div>
             <ul class="unstyled identity-list">
             </ul>
@@ -69,21 +69,21 @@
         {{#each identities}}
         <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
           <i class="icon-move"></i>
-          <span class="avatar"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
+          <span class="avatar" data-link><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
           </span><span class="identity"><span class="identityname">{{printName name external_username}}</span><span class="external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
-          {{#makeDefault __default__ status}}<a class="makedefault" href="#">Make default</a>{{/makeDefault}}
+          {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link>Make default</a>{{/makeDefault}}
           {{#ifOauthVerifying provider status}}
           <span class="xlabel">
             <i class="icon16-warning"></i>
             <span>Authorization failed.</span>
-            <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter">Re-Authorize</button>
+            <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter" data-link>Re-Authorize</button>
           </span>
           {{/ifOauthVerifying}}
           {{#ifVerifying provider status}}
           <span class="xlabel">
             <i class="icon16-warning"></i>
             <span>Pending verification, 5 days left.</span>
-            <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email">Re-Verify...</button>
+            <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email" data-link>Re-Verify...</button>
           </span>
           {{/ifVerifying}}
         </li>
@@ -91,7 +91,7 @@
         </script>
         <script id="jst-user-avatar" type="text/x-handlebars-template">
         {{#if avatar_filename}}
-        <span class="avatar"><img src="{{avatar_filename}}" alt="" width="80" height="80" /></span>
+        <span class="avatar" data-link><img src="{{avatar_filename}}" alt="" width="80" height="80" /></span>
         {{else}}
         <div class="add-avatar">
           <span class="plus">+</span>
@@ -113,7 +113,7 @@
 
           {{#if hasGatherAX}}
           <div class="gatherax-box">
-            <a href="/#gather">
+            <a href="/#gather" data-link>
               {{#if totalCrosses}}
               <i class="icon16-invitation"></i>
               {{else}}
@@ -126,14 +126,14 @@
 
           {{#if hasMore}}
           <div class="more" data-cate="{{cate}}">
-            <a href="#">more...</a>
+            <a href="#" data-link>more...</a>
           </div>
           {{/if}}
         </div>
         </script>
         <script id="jst-cross-box" type="text/x-handlebars-template">
         <div class="cross-box">
-        <a href="/#!{{id}}" data-id="{{id}}">
+        <a href="/#!{{id}}" data-id="{{id}}" data-link>
           <h5>{{title}}</h5>
           <time>{{printTime time}}</time>
           <address>{{place.title}} 
@@ -153,7 +153,7 @@
           <div class="cross-list">
             {{#crosses}}
             <div class="cross-box">
-              <a href="/#!{{crossItem "id"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}">
+              <a href="/#!{{crossItem "id"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}" data-link>
                 <h5>{{crossItem "title"}}</h5>
                 <div>{{printTime2 "time"}}{{#ifPlace}} <span class="gray">at</span> {{crossItem "place"}}{{/ifPlace}} <span class="gray">by</span> {{by_identity.name}}</div>
                 <div class="xbtn xbtn-accept">Accept</div>
@@ -170,7 +170,7 @@
             {{#each updates}}
             {{#if updated}}
             <div class="cross-box">
-              <a href="/#!{{id}}" data-id="{{id}}">
+              <a href="/#!{{id}}" data-id="{{id}}" data-link>
                 <time class="pull-right">{{printTime3 time}}</time>
                 <h5>{{title}}</h5>
 

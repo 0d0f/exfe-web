@@ -375,7 +375,8 @@ define(function (require, exports, module) {
         // class
         cls: 'modal-id',
 
-        title: 'Identification',
+        //title: 'Identification',
+        title: 'Start',
 
         // TODO: oAuth 地址设置
         body: ''
@@ -449,15 +450,15 @@ define(function (require, exports, module) {
             + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
-          + '<button href="#" class="xbtn-white d d02 d04 xbtn-startover hide">Start Over</button>'
-          + '<button href="#" class="pull-right d d04 xbtn-blue xbtn-verify hide">Verify</button>'
+          + '<button class="xbtn-white d d01 xbtn-forgotpwd hide" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button class="xbtn-white d d02 d04 xbtn-startover hide">Start Over</button>'
+          + '<button class="pull-right d d04 xbtn-blue xbtn-verify hide">Verify</button>'
           + '<a href="#" class="pull-right xbtn-setup d d00 hide">Sign Up?</a>'
-          + '<button href="#" class="pull-right xbtn-blue d d01 d02 x-signin disabled hide">Sign In</button>'
-          //+ '<button href="#" class="pull-right xbtn-blue d d04 xbtn-success hide">Done</button>'
-          + '<button href="#" class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>'
-          + '<button href="#" class="pull-right xbtn-white d hide">OK</button>'
-          + '<button href="#" class="pull-right xbtn-white d xbtn-oauth hide">Back</button>',
+          + '<button class="pull-right xbtn-blue d d01 d02 x-signin disabled hide">Sign In</button>'
+          //+ '<button class="pull-right xbtn-blue d d04 xbtn-success hide">Done</button>'
+          + '<button class="pull-right xbtn-white d d03 xbtn-isee hide">I See</button>'
+          + '<button class="pull-right xbtn-white d hide">OK</button>'
+          + '<button class="pull-right xbtn-white d xbtn-oauth hide">Back</button>',
 
         others: ''
           + '<div class="isee d d03 hide">'
@@ -553,13 +554,14 @@ define(function (require, exports, module) {
           + '<div class="shadow title"></div>'
           + '<div class="center shadow title" style="margin-bottom: 0;">Thanks for using <span class="x-sign">EXFE</span>.</div>'
           + '<p class="center">A utility for hanging out with friends.</p>'
+          + '<p></p>'
           + '<p class="provider-email hide"><span class="x-sign">X</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a X”.</p>'
           + '<p class="provider-other hide"><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
           + '<p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>'
           + '<p class="provider-email hide" style="color: #191919;"><sup>*</sup>A welcome email has been sent to your mailbox. Please check to verify your new identity.<sup>*</sup></p>',
 
         footer: ''
-          + '<button href="#" class="pull-right xbtn-blue">GO</button>'
+          + '<button class="pull-right xbtn-blue">GO</button>'
       }
     }
   };
@@ -893,7 +895,7 @@ define(function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button class="xbtn-white xbtn-forgotpwd" data-dialog-from="changepassword" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Change</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
 
@@ -1008,8 +1010,8 @@ define(function (require, exports, module) {
             + '</form>',
 
         footer: ''
-          + '<button href="#" class="xbtn-white xbtn-forgotpwd" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
-          + '<button href="#" class="pull-right xbtn-blue xbtn-success disabled">Add</button>'
+          + '<button class="xbtn-white xbtn-forgotpwd" data-dialog-from="identification" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
+          + '<button class="pull-right xbtn-blue xbtn-success disabled">Add</button>'
       }
 
     },
@@ -1127,7 +1129,7 @@ define(function (require, exports, module) {
           + '<div class="xalert-error hide"><span class="xalert-fail">Requested too much, hold on awhile.</span><br />Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</div>',
 
         footer: ''
-          //+ '<button href="#" class="xbtn-white">Manual Verification</button>'
+          //+ '<button class="xbtn-white">Manual Verification</button>'
           + '<button class="pull-right xbtn-blue xbtn-verify">Verify</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
@@ -1368,7 +1370,7 @@ define(function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button href="#" class="pull-right xbtn-blue xbtn-success">Done</button>'
+          + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
 
       },
 
@@ -1381,6 +1383,224 @@ define(function (require, exports, module) {
     }
 
   };
+
+
+  // Set Up Account
+  // --------------------------------------------------------------------------
+  dialogs.setup = {
+
+    options: {
+
+      events: {
+
+        'click .xbtn-success': function (e) {
+          var isUserToken = this._tokenType === 'user';
+
+          var api_url = isUserToken ? 'resetPassword' : 'setupUserByInvitationToken';
+          var reqData = {};
+
+          reqData.name = $.trim(this.$('#name').val());
+          reqData.password = this.$('#password').val();
+
+          if (isUserToken) {
+            reqData.token = this._originToken;
+          }
+          else {
+            reqData.invitation_token = this._originToken;
+          }
+
+          Api.request(api_url,
+            {
+              type: 'POST',
+              data: reqData
+            },
+            function (data) {
+              Bus.emit('app:user:signin:after', function () {
+                window.location.href = '/';
+              });
+              Bus.emit('app:user:signin', data.token, data.user_id);
+            }
+          );
+        }
+
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        // class
+        cls: 'mblack modal-su',
+
+        title: 'Set Up Account',
+
+        body: ''
+          + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
+          + '<div>Please set up your account.</div>'
+            + '<form class="modal-form">'
+              + '<fieldset>'
+                + '<legend>Got one already? <span class="underline">Sign in</span> to add this identity directly.</legend>'
+
+                  + '<div class="clearfix control-group">'
+                    + '<div class="pull-right user-identity">'
+                      + '<img class="avatar" src="" alt="" width="40" height="40" />'
+                      + '<i class="provider"></i>'
+                    + '</div>'
+                    + '<div class="identity disabled"></div>'
+                  + '</div>'
+
+                  + '<div class="control-group">'
+                    + '<label class="control-label" for="name">Display name: <span></span></label>'
+                    + '<div class="controls">'
+                      + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Desired recognizable name" />'
+                    + '</div>'
+                  + '</div>'
+
+                  + '<div class="control-group">'
+                    + '<label class="control-label" for="password">Password: <span></span></label>'
+                    + '<div class="controls">'
+                      + '<input type="password" class="input-large" id="password" autocomplete="off" placeholder="Set EXFE password" />'
+                      + '<i class="help-inline icon16-pass-hide" id="password-eye"></i>'
+                    + '</div>'
+                  + '</div>'
+
+              + '</fieldset>'
+            + '</form>',
+
+        footer: ''
+          + '<button class="xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in existing account…</button>'
+          + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
+          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+      },
+
+      onShowBefore: function (e) {
+        var data = $(e.currentTarget).data('source');
+        if (!data) return;
+        var identity = data.identity;
+        this._tokenType = data.tokenType;
+        this._originToken = data.originToken;
+        this.$('.identity').text(Util.printExtUserName(identity));
+        this.$('.avatar')
+          .attr('src', identity.avatar_filename)
+          .next().addClass('icon16-identity-' + identity.provider);
+
+      }
+
+    }
+
+  };
+
+
+  // Browsing Identity
+  // --------------------------------------------------------------------------
+  dialogs.browsing_identity = {
+
+    options: {
+
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
+      events: {
+
+        'click .xbtn-go': function (e) {
+          window.location.href = '/';
+        }
+
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        // class
+        cls: 'mblack modal-bi',
+
+        title: 'Browsing Identity',
+
+        body: ''
+          + '<div class="shadow title">Browsing Identity</div>'
+          + '<div class="user hide">'
+            + '<div>You will be redirected to the link as your currently signed in account below:</div>'
+            + '<div class="identity">'
+              + '<img class="avatar" src="" width="40" height="40" />'
+              + '<span></span>'
+            + '</div>'
+            + '<div class="clearfix"><button class="pull-right xbtn-white xbtn-go">Go</button></div>'
+            + '<div class="spliterline"></div>'
+          + '</div>'
+          + '<div class="browsing-tips">While you’re currently browsing this page as identity below. To continue using this identity, please choose an option.</div>'
+          + '<div class="pull-right user-identity browsing-identity">'
+            + '<img class="avatar" src="" alt="" width="40" height="40">'
+            + '<i class="provider"></i>'
+          + '</div>'
+          + '<div class="identity disabled bidentity"></div>',
+
+        footer: ''
+          //+ '<button class="pull-right xbtn-blue xbtn-merge hide">Merge with account above</button>'
+          + '<button class="xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
+          + '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
+
+      },
+
+      onShowBefore: function (e) {
+        var settings = $(e.currentTarget).data('settings');
+        if (!settings) return;
+        var user = settings.normal
+          , browsing_user = settings.browsing
+          , setup = settings.setup
+          , action = settings.action;
+
+        this._user = user;
+        this._browsing_user = browsing_user;
+        this._setup = setup;
+        this._action = action;
+        this._tokenType = settings.tokenType;
+
+        if (this._user) {
+
+          this.$('.user')
+            .removeClass('hide')
+            .find('img')
+            .attr('src', user.avatar_filename)
+            .next().text(user.name || user.nickname);
+        }
+
+        var beun = Util.printExtUserName(browsing_user.default_identity);
+
+        this.$('.browsing-identity')
+          .next().text(beun)
+        .end()
+          .find('img')
+          .attr('src', browsing_user.default_identity.avatar_filename)
+          .next().addClass('icon16-identity-' + browsing_user.default_identity.provider)
+
+        if (!this._setup) { // test
+        //if (this._setup) {
+          this.$('.xbtn-sui')
+            .removeClass('hide')
+            .data('source', {
+              identity: browsing_user.default_identity,
+              originToken: settings.originToken,
+              tokenType: settings.tokenType
+            }
+          );
+        }
+        else {
+          this.$('.xbtn-sias')
+            .removeClass('hide')
+            .data('source', beun);
+        }
+      }
+
+    }
+
+  };
+
+
 
   // Identification 弹出窗口类
   var Identification = Dialog.extend({
