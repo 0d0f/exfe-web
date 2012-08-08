@@ -78,9 +78,9 @@ define('routes', function (require, exports, module) {
   // resolve token
   routes.resolveToken = function (req, res, next) {
     req.origin = 'resolveToken';
-    var token = req.params[0];
+    var originToken = req.params[0];
 
-    if (token) {
+    if (originToken) {
       var session = req.session
         , authorization = session.authorization
         , browsing_authorization
@@ -89,7 +89,7 @@ define('routes', function (require, exports, module) {
       Api.request('resolveToken',
         {
           type: 'POST',
-          data: { token: token }
+          data: { token: originToken }
         }
         // data:
         //    user_id
@@ -102,6 +102,7 @@ define('routes', function (require, exports, module) {
 
           if (authorization) {
             session.browsing_authorization = browsing_authorization = data;
+            session.originToken = originToken;
           }
           else {
             // 正常登录
@@ -110,6 +111,7 @@ define('routes', function (require, exports, module) {
             }
             else if (action === 'INPUT_NEW_PASSWORD') {
               session.browsing_authorization = browsing_authorization = data;
+              session.originToken = originToken;
             }
           }
 
@@ -121,6 +123,7 @@ define('routes', function (require, exports, module) {
 
             browsing_authorization = null;
             delete session.browsing_authorization;
+            delete session.originToken;
           }
 
           Bus.emit('app:api:getuser'
@@ -133,7 +136,7 @@ define('routes', function (require, exports, module) {
 
                 if (browsing_authorization) {
                   session.browsing_user = user;
-                  eun += '/token=' + token;
+                  eun += '/token=' + originToken;
                 }
 
                 res.redirect('/#' + eun);
@@ -142,7 +145,7 @@ define('routes', function (require, exports, module) {
           );
         }
         , function (data) {
-          res.redirect('/#invalid/token=' + token);
+          res.redirect('/#invalid/token=' + originToken);
         }
       );
 
@@ -239,6 +242,8 @@ define('routes', function (require, exports, module) {
               , browsing: { default_identity: browsing_identity, name: browsing_identity.name }
               , action: action
               , setup: action === 'setup'
+              , originToken: ctoken
+              , tokenType: 'cross'
             }
             , 'browsing_identity');
         }
@@ -307,13 +312,19 @@ define('routes', function (require, exports, module) {
       // `browser identity` 浏览身份登录
       else if (browsing_authorization) {
 
+        $(document.body).attr('data-browsing');
+
         Bus.emit('app:usermenu:updatebrowsing',
           {   normal: user
             , browsing: browsing_user
             , action: action
             , setup: action === 'setup'
+            , originToken: session.originToken
+            , tokenType: 'user'
           }
           , 'browsing_identity');
+
+        delete session.originToken;
 
         res.render('profile.html', function (tpl) {
           $('#app-main').append(tpl);
@@ -329,6 +340,9 @@ define('routes', function (require, exports, module) {
         res.redirect('/');
       }
 
+    } else {
+      // 跳回首页
+      res.redirect('/');
     }
   };
 
@@ -351,10 +365,27 @@ define('routes', function (require, exports, module) {
   // Helpers:
   // ----------------------------
   function redirectToProfile(req, res) {
-    var user = Store.get('user')
-      , external_username = Util.printExtUserName(user.default_identity);
+    var session = req.session;
+    var user = Store.get('user');
 
-    res.redirect('/#' + external_username);
+    function done(user, res) {
+      var external_username = Util.printExtUserName(user.default_identity);
+      res.redirect('/#' + external_username);
+    }
+
+    if (user) {
+      done(user, res);
+      return;
+    }
+
+    var authorization = session.authorization;
+    //Bus.once('app:user:signin:after', function (user) {
+      //done(user, res);
+    //});
+    Bus.emit('app:user:signin', authorization.token, authorization.user_id, true);
+  }
+
+  function setBrowsingIdentity() {
   }
 
 });

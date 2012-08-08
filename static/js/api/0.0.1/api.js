@@ -84,7 +84,13 @@ define('api', [], function (require, exports, module) {
     getCrossByInvitationToken: '/Crosses/getCrossByInvitationToken',
 
     // Resolve Token
-    resolveToken: '/Users/resolveToken'
+    resolveToken: '/Users/resolveToken',
+
+    // Reset Password - `user token`
+    resetPassword: '/Users/resetPassword',
+
+    // SetupUserByInvitationToken - `cross token`
+    setupUserByInvitationToken: '/Users/setupUserByInvitationToken'
   };
 
   // Not Use Token
