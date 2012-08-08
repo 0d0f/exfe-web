@@ -471,7 +471,7 @@ class UserModels extends DataModel {
             return null;
         }
         // change password
-        if (($curToken = $thie->getTokenInfo($token))) {
+        if (($curToken = $this->getTokenInfo($token))) {
             $cpResult  = $this->setUserPassword($curToken['user_id'], $password, $name);
             if ($cpResult) {
                 $siResult = $this->rawSiginin($curToken['user_id']);
