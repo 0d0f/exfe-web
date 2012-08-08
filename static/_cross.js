@@ -1479,7 +1479,7 @@ define(function (require, exports, module) {
             $('.cross-title .show').removeClass('single-line').removeClass('double-line');
         } else {
             $('.cross-title .show').addClass('single-line').removeClass('double-line');
-            alert($('.cross-title .show').height());
+            // alert($('.cross-title .show').height());
             if ($('.cross-title .show').height() > 50) {
                 $('.cross-title .show').addClass('double-line').removeClass('single-line');
             }
