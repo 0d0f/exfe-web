@@ -14,9 +14,9 @@ define('user', function (require, exports, module) {
 
 
   // `status` 可以跳转到 profile
-  function signIn(token, user_id, done, fail) {
+  function signIn(token, user_id, redirect) {
     getUser(token, user_id
-      , done || function (data) {
+      , function (data) {
           var last_external_username = Store.get('last_external_username')
             , identity
             , user = data.user;
@@ -36,8 +36,15 @@ define('user', function (require, exports, module) {
             Store.set('last_external_username', Util.printExtUserName(identity));
           }
 
+          Store.set('authorization', { token: token, user_id: user_id });
           Store.set('user', user);
           Store.set('lastIdentity', identity);
+
+          if (redirect || ('' === window.location.hash
+                           || /^#?(invalid)?/.test(window.location.hash))) {
+            window.location.href = '/#' + Util.printExtUserName(user.default_identity);
+            return;
+          }
 
           Bus.emit('app:page:usermenu', true);
 
@@ -47,8 +54,10 @@ define('user', function (require, exports, module) {
             , token
             , user_id
           );
+
+          Bus.emit('app:user:signin:after', user);
         }
-      , fail || function (err) {}
+      , function (err) {}
     );
   }
 
@@ -110,6 +119,8 @@ define('user', function (require, exports, module) {
               }
             }
           });
+
+          if (!list) { return; }
 
           list = list.slice(0, limit);
 
@@ -253,7 +264,7 @@ define('user', function (require, exports, module) {
               + '{{/ifConnected}}'
               + '{{/each}}'
             + '{{/if}}'
-            + '{{#unless ../setup}}'
+            + '{{#unless setup}}'
             + '<div class="spliterline"></div>'
             + '<div class="merge">'
               + '<a href="#" data-source="{{browsing.default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In</a> with browsing identity<br />(sign out from current account).'
@@ -283,6 +294,8 @@ define('user', function (require, exports, module) {
       , $userPanel = $dropdownWrapper.find('.user-panel')
       , tplFun
       , profileLink = '/#' + Util.printExtUserName(user.default_identity);
+
+    $('#app-browsing-identity').remove();
 
     $appUserName.attr('href', profileLink);
 
@@ -314,6 +327,15 @@ define('user', function (require, exports, module) {
       , $userPanel = $dropdownWrapper.find('.user-panel')
       , browsing_user = data.browsing
       , tplFun;
+
+    $('#app-browsing-identity').remove();
+    $(document.body).append(
+      $('<div id="app-browsing-identity">')
+        .data('settings', data)
+        .attr('data-widget', 'dialog')
+        .attr('data-dialog-type', 'browsing_identity')
+        .attr('data-token-type', data.tokenType)
+    );
 
     $appUserName.attr('href', location.href);
 

@@ -111,7 +111,19 @@ define(function (require, exports, module) {
       window.location.href = '/';
     });
 
-    $BODY.on();
+    // TODO:后面再优化
+    $BODY.on('click.data-link dblclick.data-link', '[data-link]', function (e) {
+      var $db = $('#app-browsing-identity');
+
+      if ($db.size()) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+        $db.trigger('click');
+        return false;
+      }
+
+    });
 
   //});
 });

@@ -20,6 +20,8 @@
   <?php include 'ftconfig.php'; ?>
   </script>
 
+  <script src="/static/js/global/0.0.1/global.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
   <script src="/static/js/api/0.0.1/api.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/dialog/0.0.1/dialog.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/typeahead/0.0.1/typeahead.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
@@ -33,9 +35,6 @@
 
   <!-- cross -->
   <script src="/static/_cross.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-
-  <script src="/static/js/global/0.0.1/global.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
-
   <script src="/static/js/user/0.0.1/user.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <!-- lightsaber -->

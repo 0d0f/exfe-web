@@ -270,7 +270,7 @@ define(function (require) {
             opacity: 1
           }, 233, function () {
             $('#identity').focus();
-            $('.popmenu').removeClass('hide');
+            //$('.popmenu').removeClass('hide');
             $TRIANGLE.css({
               opacity: 0
               //top: 0,

@@ -223,8 +223,10 @@
 
 // set password
 .modal-sp,
-// set password
-.modal-cp {
+// change password
+.modal-cp,
+// browsing identity
+.modal-bi {
   .identity {
     display: table;
     position: relative;
@@ -256,6 +258,64 @@
 
   .control-label {
     padding-left: 6px;
+  }
+}
+
+// browsing-identity
+.modal-bi {
+  .xbtn-go {
+    margin-top: -13px;
+  }
+
+  .spliterline {
+    width: 100%;
+    height: 1px;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    #gradient > .horizontal-three-colors(#e6e6e6, #b2b2b2, 50%, #e6e6e6);
+    .box-shadow(0 1px 1px rgba(255, 255, 255, .75));
+  }
+
+  .browsing-tips {
+    padding-bottom: 15px;
+  }
+
+  .bidentity {
+    color: #4c4c4c;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 278px;
+    height: 26px;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 28px;
+    padding-top: 0;
+  }
+
+  .xbtn-merge {
+    padding: 0 5px;
+  }
+}
+
+
+// set up acccount
+.modal-su {
+
+  .identity {
+    margin-top: 10px;
+    width: 233px;
+    line-height: 28px;
+    font-size: 18px;
+    font-style: italic;
+    color: #4c4c4c;
+  }
+
+  .user-identity {
+    margin-right: 20px;
+  }
+
+  .xbtn-siea {
+    padding: 0 2px;
   }
 }
 

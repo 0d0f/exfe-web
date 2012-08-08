@@ -26,10 +26,10 @@ define(function (require) {
       + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
       + '<h4>Here lists all your <span class="x">·X·</span>.</h4>'
       + '<p><span class="x">·X·</span> (cross) is a gathering of people.</p>'
-      + '<p>Nothing in your list?</p>'
-      + '<p>Invite friends for something like</p>'
-      + '<p>meals, meetings, sports, datings,</p>'
-      + '<p>parties, webinars, hangouts, trips, etc.</p>'
+      + '<p>Nothing in your list?<br />'
+      + 'Invite friends for something like<br />'
+      + 'meals, meetings, sports, datings,<br />'
+      + 'parties, webinars, hangouts, trips, etc.</p>'
       + '<p><span class="x">·X·</span> is private by default,</p><p>'
       + '</p><p>accessible to only attendees.</p>'
       //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x">·X·</span></span> now!</p>'
@@ -62,20 +62,19 @@ define(function (require) {
     }
   });
 
-  $BODY.on('click.newbie', '.nbg-1 > .arrow', function (e) {
+  $BODY.on('click.newbie', '.nbg-1', function (e) {
     e.preventDefault();
     var $e = $(this);
-    $e.find('div').toggleClass('rb lt');
-    $e.parent()
-      .find('.toggle')
+    $e.find('.arrow div').toggleClass('rb lt');
+    $e.find('.toggle')
       .toggleClass('hide');
   });
 
   $BODY.on('click.newbie', '.newbie > .newbie-close', function (e) {
     e.preventDefault();
-    data = Store.get('signin');
-    if (!data) return;
-    var user_id = data.user_id;
+    var authorization = Store.get('authorization');
+    if (!authorization) return;
+    var user_id = authorization.user_id;
     Store.set('newbie_guide:' + user_id, 1);
     var p = $(this).parent();
     p.fadeOut(function () {
