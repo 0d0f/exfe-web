@@ -1476,11 +1476,12 @@ define(function (require, exports, module) {
         var title = Cross.title.length ? Cross.title : 'Enter intent';
         $('.cross-title .show').html(title);
         if (from === 'cross') {
-            $('.cross-title').removeClass('single-line').removeClass('double-line');
+            $('.cross-title .show').removeClass('single-line').removeClass('double-line');
         } else {
-            $('.cross-title').addClass('single-line').removeClass('double-line');
+            $('.cross-title .show').addClass('single-line').removeClass('double-line');
+            alert($('.cross-title .show').height());
             if ($('.cross-title .show').height() > 50) {
-                $('.cross-title').addClass('double-line').removeClass('single-line');
+                $('.cross-title .show').addClass('double-line').removeClass('single-line');
             }
         }
         document.title = 'EXFE - ' + title;
