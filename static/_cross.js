@@ -1764,7 +1764,7 @@ define(function (require, exports, module) {
                 UpdateCross(data.cross, false);
             },
             function(data) {
-                Bus.emit('app:cross:forbidden', cross_id);
+                bus.emit('app:cross:forbidden', cross_id);
                 console.log(data);
             }
         );
