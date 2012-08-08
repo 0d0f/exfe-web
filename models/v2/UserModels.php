@@ -98,8 +98,7 @@ class UserModels extends DataModel {
     public function getUserPasswdByUserId($user_id) {
         return $user_id ? $this->getRow(
             "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
-             `encrypted_password`, `password_salt`, `current_sign_in_ip`,
-             `reset_password_token`
+             `encrypted_password`, `password_salt`, `current_sign_in_ip`
              FROM   `users` WHERE `id` = {$user_id}"
         ) : null;
     }
