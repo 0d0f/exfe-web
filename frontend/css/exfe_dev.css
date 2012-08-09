@@ -5466,7 +5466,7 @@ body {
   margin-bottom: 5px;
 }
 
-.navbar .user-panel .body .merge.verify {
+.navbar .user-panel .body .verify {
   color: #CC4747;
   text-align: center;
 }
@@ -9066,6 +9066,22 @@ body {
 
 .x-invalid p {
   margin-bottom: 80px;
+  font-size: 21px;
+  line-height: 27px;
+}
+
+.x-forbidden {
+  text-align: center;
+}
+
+.x-forbidden .title {
+  padding: 40px 0 20px;
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 40px;
+}
+
+.x-forbidden .please-signin {
   font-size: 21px;
   line-height: 27px;
 }
