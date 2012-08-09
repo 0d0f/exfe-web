@@ -5947,6 +5947,18 @@ body {
   padding: 0 2px;
 }
 
+.modal-wc label {
+  margin-bottom: 0;
+}
+
+.modal-wc .why,
+.modal-wc .answer {
+  font-size: 11px;
+  line-height: 16px;
+  color: #7f7f7f;
+  cursor: pointer;
+}
+
 /*
 .modal-rsp {
   .identity-name {
