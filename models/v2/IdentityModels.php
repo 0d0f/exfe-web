@@ -285,7 +285,7 @@ class IdentityModels extends DataModel {
             "SELECT `oauth_token` FROM `identities` WHERE `id` = $identity_id"
         );
         return $dbResult && $dbResult['oauth_token']
-             ? json_decode($dbResult['oauth_token']) : null;
+             ? json_decode($dbResult['oauth_token'], true) : null;
     }
 
 
