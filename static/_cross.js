@@ -527,7 +527,8 @@ ExfeeWidget = {
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'twitter';
             objIdentity.avatar_filename   = getAvatarUrl('twitter', objIdentity.external_username);
-        } else if (/^[a-z0-9_]{1,15}@facebook$/i.test(string)) {
+        } else if (/^[a-z0-9\.]{5,}@facebook$/i.test(string)) {
+        // https://www.facebook.com/help/?faq=105399436216001#What-are-the-guidelines-around-creating-a-custom-username?
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/@facebook$/ig, '');
             objIdentity.name              = objIdentity.external_username;
