@@ -5458,12 +5458,14 @@ body {
 .navbar .user-panel .body .merge > a {
   display: inline;
   font-weight: bold;
-  text-decoration: underline;
+  /*text-decoration: underline;*/
+
 }
 
 .navbar .user-panel .body .merge {
   position: relative;
   margin-bottom: 5px;
+  cursor: pointer;
 }
 
 .navbar .user-panel .body .verify {

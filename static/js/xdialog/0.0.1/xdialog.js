@@ -1673,8 +1673,8 @@ define(function (require, exports, module) {
           .attr('src', browsing_user.default_identity.avatar_filename)
           .next().addClass('icon16-identity-' + browsing_user.default_identity.provider)
 
-        if (!this._setup) { // test
-        //if (this._setup) {
+        //if (!this._setup) { // test
+        if (this._setup) {
           this.$('.xbtn-sui')
             .removeClass('hide')
             .data('source', {
