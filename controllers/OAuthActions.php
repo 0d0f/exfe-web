@@ -159,8 +159,9 @@ class OAuthActions extends ActionController {
                          'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                     );
                     $modOauth->addtoSession([
-                        'twitter_signin'    => $rstSignin,
-                        'twitter_following' => $twitterConn->response['response'] === 'true'
+                        'twitter_signin'      => $rstSignin,
+                        'twitter_identity_id' => $objIdentity->id,
+                        'twitter_following'   => $twitterConn->response['response'] === 'true'
                     ]);
                     header('location: /');
                     return;
