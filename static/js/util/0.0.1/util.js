@@ -34,8 +34,8 @@ define('util', [], function (require, exports, module) {
         } else /*if (c <= 0xdfff)*/ { // low-surrogate code
           throw "Error: Invalid UTF-16 sequence. Missing high-surrogate code.";
         }
-        return u8len;
       }
+      return u8len;
     },
 
     // Remove whitespace

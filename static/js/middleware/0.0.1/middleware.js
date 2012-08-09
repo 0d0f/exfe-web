@@ -77,18 +77,20 @@ define('middleware', function (require, exports, module) {
 
     else if (!authorization && authMeta) {
       Store.set('authorization', session.authorization = authMeta.authorization);
-      Store.set('oauth', {
+      Store.set('oauth', session.oauth = {
         type: authMeta.type,
-        following: authMeta.following
+        following: authMeta.following,
+        identity_id: authMeta.identity_id
       });
     }
 
     else if (authorization && authMeta) {
       if (session.authorization.token !== authMeta.token
           && session.authorization.user_id !== authMeta.user_id) {
-        Store.set('oauth', {
+        Store.set('oauth', session.oauth = {
           type: authMeta.type,
-          following: authMeta.following
+          following: authMeta.following,
+          identity_id: authMeta.identity_id
         });
         Store.set('user', session.user = null);
         Store.set('authorization', session.authorization = authMeta.authorization);

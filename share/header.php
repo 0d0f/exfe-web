@@ -9,8 +9,9 @@
   <title>EXFE.COM</title>
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="EXFE, X, cross, exfee, gather, Gather a X, hangout, gathering, invite, RSVP" />
+  <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
   <meta name="description" content="EXFE, an utility for hanging out with friends." />
+  <meta name="copyright" content="Copyright 2012 EXFE Inc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 <?php if (($twitterSignin = $this->getVar('twitter_signin'))) { ?>
   <meta name="authorization" content="<?php echo htmlentities(json_encode($twitterSignin)); ?>" />
