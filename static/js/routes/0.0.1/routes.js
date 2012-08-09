@@ -232,6 +232,14 @@ define('routes', function (require, exports, module) {
           , cross = data.cross
           , read_only = data.read_only;
 
+        //
+        function render() {
+          res.render('x.html', function (tpl) {
+            $('#app-main').append(tpl);
+            Bus.emit('xapp:cross:main');
+            Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken);
+          });
+        }
         Bus.emit('app:page:home', false);
 
         Bus.emit('app:page:usermenu', true);
@@ -241,7 +249,12 @@ define('routes', function (require, exports, module) {
           if (!session.initMenuBar) {
             //session.initMenuBar = true;
             if (auth) {
+              Bus.once('app:user:signin:after', function () {
+                render();
+              });
               Bus.emit('app:user:signin', auth.token, auth.user_id);
+
+              return;
             }
             else {
               Bus.emit('app:usermenu:updatenormal', user);
@@ -266,13 +279,17 @@ define('routes', function (require, exports, module) {
             , 'browsing_identity');
         }
 
+        /*
         res.render('x.html', function (tpl) {
           $('#app-main').append(tpl);
           Bus.emit('xapp:cross:main');
           Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken);
         });
+        */
+        render();
       }
     );
+
 
   };
 
