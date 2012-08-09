@@ -35,7 +35,7 @@ define("EXFE_PASSWORD_SALT","f(#)u&^c!k*G@F%W81_&0=ro-ifl+c");
 /*********OAuth config***********/
 define('TWITTER_CONSUMER_KEY', 'nCjPcQsjbQAh6NavknHHw');
 define('TWITTER_CONSUMER_SECRET', 'cSgxIjIh92uFO5C85BWoxOGawkjGCoOf1HfOVzT8');
-define('TWITTER_OAUTH_CALLBACK', SITE_URL.'/oAuth/twitterCallBack');
+define('TWITTER_OAUTH_CALLBACK', SITE_URL.'/OAuth/twitterCallBack');
 define('TWITTER_API_URL', 'http://api.twitter.com/1');
 define('TWITTER_OFFICE_ACCOUNT', 'exfe_com');
 define('TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN', 'xxxxxxx');
@@ -43,11 +43,11 @@ define('TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET', 'xxxxxxx');
 
 define('FACEBOOK_APP_ID', '210626042352165');
 define('FACEBOOK_SECRET_KEY', 'd6aa2f4e5f19dfbbd933304033f28db2');
-define('FACEBOOK_OAUTH_CALLBACK', SITE_URL.'/oAuth/facebookCallBack');
+define('FACEBOOK_OAUTH_CALLBACK', SITE_URL.'/OAuth/facebookCallBack');
 
 define('GOOGLE_CLIENT_ID', '968124746422.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET', 'Z8POTJnYqNOVciDHNmjBsxLs');
-define('GOOGLE_REDIRECT_URIS', SITE_URL.'/oAuth/googleOAuthCallback');
+define('GOOGLE_REDIRECT_URIS', SITE_URL.'/OAuth/googleOAuthCallback');
 
 define('FOURSQUARE_CLIENT_KEY', 'TGQU0UKUHS3H5WYG0KAWPRU2FY0RYVYSD3JJPXJTCKXTGG3K');
 define('FOURSQUARE_CLIENT_SECRET', 'DEOLYIPX0J1EWCSCY03CMO3DH52H54KKA2HPSXHTATWAXWDJ');
