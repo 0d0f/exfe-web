@@ -1746,6 +1746,13 @@ define(function (require, exports, module) {
         $('.cross-place .edit').val(
             Cross.place.title + (Cross.place.description ? ('\n' + Cross.place.description) : '')
         );
+
+        for (var i = 0; i < Exfee.invitations.length; i++) {
+            if (ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
+                curIdentity = ExfeUtilities.clone(Exfee.invitations[i].identity);
+                break;
+            }
+        }
         ShowCross();
         GetTimeline();
     };
@@ -1756,12 +1763,6 @@ define(function (require, exports, module) {
             'getCross',
             {resources : {cross_id : cross_id}},
             function(data) {
-                for (var i = 0; i < data.cross.exfee.invitations.length; i++) {
-                    if (ExfeeWidget.isMyIdentity(data.cross.exfee.invitations[i].identity)) {
-                        curIdentity = ExfeUtilities.clone(data.cross.exfee.invitations[i].identity);
-                        break;
-                    }
-                }
                 UpdateCross(data.cross, false);
             },
             function(data) {
@@ -1919,9 +1920,9 @@ define(function (require, exports, module) {
         if (Cross_id > 0) {
             GetCross(Cross_id);
         } else if (Cross_id === null) {
-            curIdentity = browsingIdentity;
-            UpdateCross(cross, read_only);
+            curIdentity = browsingIdentity ? browsingIdentity : curIdentity;
             Api.setToken(invitation_token);
+            UpdateCross(cross, read_only);
         } else {
             NewCross(true);
         }
