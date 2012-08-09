@@ -365,20 +365,19 @@ html, body {
     @-moz-keyframes bounceIn {
       0% {
         opacity: 0;
-        -moz-transform: scale(0.01);
+        -moz-transform: scale(.3);
       }
-      /*50% {*/
-        /*opacity: 1;*/
-        /*-moz-transform: scale(1.26);*/
-      /*}*/
-      70% {
+
+      33% {
         opacity: 1;
-        -moz-transform: scale(1.1);
+        -moz-transform: scale(1.18);
       }
-      90% {
+
+      35% {
         opacity: 1;
-        -moz-transform: scale(1);
+        -moz-transform: scale(1.26);
       }
+
       100% {
         opacity: 1;
         -moz-transform: scale(1);
@@ -388,20 +387,19 @@ html, body {
     @-o-keyframes bounceIn {
       0% {
         opacity: 0;
-        -o-transform: scale(0.01);
+        -o-transform: scale(.3);
       }
-      /*50% {*/
-        /*opacity: 1;*/
-        /*-o-transform: scale(1.26);*/
-      /*}*/
-      70% {
+
+      33% {
         opacity: 1;
-        -o-transform: scale(1.1);
+        -o-transform: scale(1.18);
       }
-      90% {
+
+      35% {
         opacity: 1;
-        -o-transform: scale(1);
+        -o-transform: scale(1.26);
       }
+
       100% {
         opacity: 1;
         -o-transform: scale(1);
@@ -411,16 +409,19 @@ html, body {
     @keyframes bounceIn {
       0% {
         opacity: 0;
-        transform: scale(0.01);
+        transform: scale(.3);
       }
-      /*80% {*/
-        /*opacity: 1;*/
-        /*transform: scale(1.26);*/
-      /*}*/
-      70% {
+
+      33% {
         opacity: 1;
-        transform: scale(1.1);
+        transform: scale(1.18);
       }
+
+      35% {
+        opacity: 1;
+        transform: scale(1.26);
+      }
+
       100% {
         opacity: 1;
         transform: scale(1);
@@ -433,17 +434,6 @@ html, body {
         -webkit-transform: scale(1);
       }
 
-      /*
-      25% {
-        -webkit-transform: scale(.95);
-      }
-
-      50% {
-        opacity: 1;
-        -webkit-transform: scale(.5);
-      }
-      */
-
       100% {
         opacity: 0;
         -webkit-transform: scale(.01);
@@ -452,19 +442,9 @@ html, body {
 
     @-moz-keyframes bounceOut {
       0% {
+        opacity: 1;
         -moz-transform: scale(1);
       }
-
-      /*
-      25% {
-        -moz-transform: scale(.95);
-      }
-
-      50% {
-        opacity: 1;
-        -moz-transform: scale(1.1);
-      }
-      */
 
       100% {
         opacity: 0;
@@ -477,17 +457,6 @@ html, body {
         -o-transform: scale(1);
       }
 
-      /*
-      25% {
-        -o-transform: scale(.95);
-      }
-
-      50% {
-        opacity: 1;
-        -o-transform: scale(1.1);
-      }
-      */
-
       100% {
         opacity: 0;
         -o-transform: scale(.01);
@@ -498,17 +467,6 @@ html, body {
       0% {
         transform: scale(1);
       }
-
-      /*
-      25% {
-        transform: scale(.95);
-      }
-
-      50% {
-        opacity: 1;
-        transform: scale(1.1);
-      }
-      */
 
       100% {
         opacity: 0;
