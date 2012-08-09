@@ -434,7 +434,7 @@ class UserModels extends DataModel {
                         $curToken['user_id'], $curToken['identity_id'], 3
                     );
                     if ($stResult) {
-                        $siResult = $this->rawSiginin($curToken['user_id']);
+                        $siResult = $this->rawSignin($curToken['user_id']);
                         if ($siResult) {
                             $this->usedToken($curToken);
                             return array(
@@ -451,7 +451,7 @@ class UserModels extends DataModel {
                         $curToken['id']
                     );
                     if ($seResult) {
-                        $siResult = $this->rawSiginin($curToken['user_id']);
+                        $siResult = $this->rawSignin($curToken['user_id']);
                         return array(
                             'user_id'     => $siResult['user_id'],
                             'token'       => $siResult['token'],
@@ -474,7 +474,7 @@ class UserModels extends DataModel {
         if (($curToken = $this->getTokenInfo($token))) {
             $cpResult  = $this->setUserPassword($curToken['user_id'], $password, $name);
             if ($cpResult) {
-                $siResult = $this->rawSiginin($curToken['user_id']);
+                $siResult = $this->rawSignin($curToken['user_id']);
                 $this->usedToken($curToken);
                 return array(
                     'user_id'     => $siResult['user_id'],
@@ -515,7 +515,7 @@ class UserModels extends DataModel {
             ));
             if ((($status === 2 && $id_quantity === 1) || $status === 3)
              && $password === $passwdInDb['encrypted_password']) {
-                $rsResult = $this->rawSiginin($user_id, $passwdInDb);
+                $rsResult = $this->rawSignin($user_id, $passwdInDb);
                 if ($rsResult) {
                     return $rsResult + ['identity_id' => $rawUser['identityid']];
                 }
@@ -525,7 +525,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function rawSiginin($user_id, $passwdInDb = null) {
+    public function rawSignin($user_id, $passwdInDb = null) {
         if ($user_id) {
             $passwdInDb = $passwdInDb ?: $this->getUserPasswdByUserId($user_id);
             if ($passwdInDb) {

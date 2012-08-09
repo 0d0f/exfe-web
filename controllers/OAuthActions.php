@@ -125,7 +125,7 @@ class OAuthActions extends ActionController {
                         'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
                     ]);
                     // 使用该身份登录
-                    $rstSignin = $modUser->rawSiginin(
+                    $rstSignin = $modUser->rawSignin(
                         $objIdentity->connected_user_id
                     );
                     // call Gobus {
@@ -328,7 +328,7 @@ class OAuthActions extends ActionController {
                     'oauth_expires' => $oauthToken['oauth_expires'],
                 ]);
                 // 使用该身份登录
-                $rstSignin = $modUser->rawSiginin(
+                $rstSignin = $modUser->rawSignin(
                     $objIdentity->connected_user_id
                 );
                 // @todo by @Leask
