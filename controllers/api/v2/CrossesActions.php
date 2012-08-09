@@ -82,7 +82,7 @@ class CrossesActions extends ActionController {
                 } else {
                     // 身份连接状态 CONNECTED: 正常登录
                     if (isset($user_infos['CONNECTED'])) {
-                        $result['signin'] = $modUser->rawSiginin(
+                        $result['authorization'] = $modUser->rawSignin(
                             $user_infos['CONNECTED'][0]['user_id']
                         );
                     // 身份连接状态 REVOKED: Token 身份登录
