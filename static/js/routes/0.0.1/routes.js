@@ -401,6 +401,13 @@ define('routes', function (require, exports, module) {
   };
 
 
+  // signout
+  routes.signout = function (req, res, next) {
+    Store.remove('authorization');
+    window.location.href = '/';
+  };
+
+
 
   // Helpers:
   // ----------------------------
