@@ -40,6 +40,15 @@ define('user', function (require, exports, module) {
           Store.set('user', user);
           Store.set('lastIdentity', identity);
 
+          // cleanup `browsing identity` DOM
+          var $browsing = $('#app-browsing-identity');
+          if ($browsing.size() && $browsing.attr('data-page') === 'profile') {
+            $browsing.remove();
+            window.location.href = '/';
+            return;
+          }
+
+
           if (redirect || ('' === window.location.hash
                            || /^#?(invalid)?/.test(window.location.hash))) {
             window.location.href = '/#' + Util.printExtUserName(user.default_identity);
@@ -210,7 +219,7 @@ define('user', function (require, exports, module) {
             + '</div>'
             + '{{/unless}}'
             + '{{#if verifying}}'
-            + '<div class="merge verify">'
+            + '<div class="verify">'
               + '<strong>Verify</strong> your identity'
             + '</div>'
             + '{{/if}}'
@@ -335,6 +344,7 @@ define('user', function (require, exports, module) {
         .attr('data-widget', 'dialog')
         .attr('data-dialog-type', 'browsing_identity')
         .attr('data-token-type', data.tokenType)
+        .attr('data-page', data.page)
     );
 
     $appUserName.attr('href', location.href);

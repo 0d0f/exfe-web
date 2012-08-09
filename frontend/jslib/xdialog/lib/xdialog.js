@@ -791,6 +791,7 @@ define(function (require, exports, module) {
               ids.push(v);
             }
           });
+          if (0 === ids.length) ids.push(user.default_identity);
           $(e.currentTarget).data('source', ids);
         },
         'click .xbtn-success': function (e) {
@@ -1578,8 +1579,8 @@ define(function (require, exports, module) {
           .attr('src', browsing_user.default_identity.avatar_filename)
           .next().addClass('icon16-identity-' + browsing_user.default_identity.provider)
 
-        if (!this._setup) { // test
-        //if (this._setup) {
+        //if (!this._setup) { // test
+        if (this._setup) {
           this.$('.xbtn-sui')
             .removeClass('hide')
             .data('source', {
