@@ -283,7 +283,7 @@ class IdentityModels extends DataModel {
     public function getOAuthTokenById($identity_id) {
         $dbResult = $this->getRow(
             "SELECT `oauth_token` FROM `identities` WHERE `id` = $identity_id"
-        )
+        );
         return $dbResult && $dbResult['oauth_token']
              ? json_decode($dbResult['oauth_token']) : null;
     }
