@@ -211,7 +211,7 @@ define('routes', function (require, exports, module) {
     var session = req.session
       , authorization = session.authorization
       , user = session.user
-      , authToken = authorization.token
+      , authToken = authorization && authorization.token
       , ctoken = req.params[0]
       , params = {};
 
