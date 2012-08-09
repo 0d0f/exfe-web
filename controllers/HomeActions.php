@@ -14,6 +14,7 @@ class HomeActions extends ActionController {
                 'authorization' => $oauthIfo['twitter_signin'],
                 'identity_id'   => $oauthIfo['twitter_identity_id'],
                 'following'     => $oauthIfo['twitter_following'],
+                'new'           => $oauthIfo['twitter_new'],
                 'type'          => 'twitter',
             ];
         }
