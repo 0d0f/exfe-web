@@ -59,6 +59,10 @@ define(function (require, exports, module) {
   app.get(/^\/#invalid\/token=([a-zA-Z0-9]{32})$/, routes.invalid);
 
 
+  // signout
+  app.get('/#signout', routes.signout);
+
+
   // app running
   app.run();
 
