@@ -260,8 +260,7 @@ class OAuthActions extends ActionController {
             $modOauth->getFacebookOAuthCode()
         );
         if ($oauthToken) {
-            $rawIdentity = $modOauth->getFacebookProfile($oauthToken['access_token']);
-            // print_r($oauthToken);
+            $rawIdentity = $modOauth->getFacebookProfile($oauthToken['oauth_token']);
             if ($rawIdentity) {
                 $modUser     = $this->getModelByName('User',     'v2');
                 $modIdentity = $this->getModelByName('Identity', 'v2');
@@ -325,8 +324,8 @@ class OAuthActions extends ActionController {
                 }
                 // 更新 OAuth Token
                 $modIdentity->updateOAuthTokenById($objIdentity->id, [
-                    'oauth_token'   => $oauthIfo['oauth_token'],
-                    'oauth_expires' => $oauthIfo['oauth_expires'],
+                    'oauth_token'   => $oauthToken['oauth_token'],
+                    'oauth_expires' => $oauthToken['oauth_expires'],
                 ]);
                 // 使用该身份登录
                 $rstSignin = $modUser->rawSiginin(
