@@ -348,7 +348,12 @@ define(function (require, exports, module) {
                 } else {
                   var d = new Dialog(dialogs.welcome);
                   d.render();
-                  d.show(od);
+                  d.show({
+                    identity: {
+                      name: od.name,
+                      provider: od.provider
+                    }
+                  });
                 }
               }
               , function (data) {
@@ -426,7 +431,7 @@ define(function (require, exports, module) {
                     //+ '<div class="controls">'
                     + '<div class="control-label">'
                       + '<label class="checkbox">'
-                        + '<input type="checkbox" id="auto-signin" value="1" checked>'
+                        + '<input type="checkbox" id="auto-signin" value="1" checked />'
                         + 'Sign in automatically'
                       + '</label>'
                     + '</div>'
@@ -516,22 +521,48 @@ define(function (require, exports, module) {
 
     options: {
       events: {
-        'click .xbtn-blue': function (e) {
-          if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
-            window.location = window.location.pathname;
-            return;
+        'click .xbtn-go': function (e) {
+          var that = this;
+
+          if (this._provider === 'email') {
+            if (/^\/![a-zA-z0-9]+$/.test(window.location.pathname)) {
+              window.location = window.location.pathname;
+              return;
+            }
           }
-          //TODO
-          //window.location = '';
+          else if (this.$('#follow').prop('checked') && this._token) {
+            $.ajax({
+              url: '/OAuth/followExfe?token=' + this._token,
+              type: 'POST',
+              data: {
+                //token: this._token,
+                identity_id: this._identity_id
+              }
+            });
+          }
+
+          that.hide();
+        },
+
+        'click .why': function (e) {
+          this.$('.answer').toggleClass('hide');
         }
       },
 
-      onShowAfter: function (data) {
-        this.$('.title').eq(0).html('Hi, ' + data.name + '.');
-        if (data.provider === 'email') {
+      onShowBefore: function (data) {
+        var identity = data.identity
+          , title = this.$('.title').eq(0);
+
+        this._provider = identity.provider;
+        this._identity_id = identity.id;
+        this._token = data.token;
+
+        if (identity.provider === 'email') {
           this.$('.provider-email').removeClass('hide');
+          title.text('Hi, ' + identity.name + '.');
         } else {
           this.$('.provider-other').removeClass('hide');
+          title.text('Hi, ' + Util.printExtUserName(identity) + '.');
         }
       },
 
@@ -542,11 +573,11 @@ define(function (require, exports, module) {
         $e.remove();
       },
 
-      backdrop: true,
+      backdrop: false,
 
       viewData: {
         // class
-        cls: 'modal-large modal-wc',
+        cls: 'mblack modal-large modal-wc',
 
         title: 'Welcome',
 
@@ -554,14 +585,21 @@ define(function (require, exports, module) {
           + '<div class="shadow title"></div>'
           + '<div class="center shadow title" style="margin-bottom: 0;">Thanks for using <span class="x-sign">EXFE</span>.</div>'
           + '<p class="center">A utility for hanging out with friends.</p>'
-          + '<p></p>'
-          + '<p class="provider-email hide"><span class="x-sign">X</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a X”.</p>'
-          + '<p class="provider-other hide"><span class="x-sign">X</span> (cross) is a gathering of people, on purpose or not. We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
-          + '<p><span class="x-sign">EXFE</span> your friends, gather a <span class="x-sign">X</span>.</p>'
-          + '<p class="provider-email hide" style="color: #191919;"><sup>*</sup>A welcome email has been sent to your mailbox. Please check to verify your new identity.<sup>*</sup></p>',
+          + '<p class="provider-email hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a <span class="x">·X·</span>.</p>'
+          + '<p class="provider-other hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you need to call up friends to do something, just gather a <span class="x">·X·</span>.</p>'
+          + '<p><span class="x-sign">EXFE</span> your friends.</p>'
+          + '<p class="provider-email hide" style="color: #191919;">*A welcome email has been sent to your mailbox. Please check to verify your address.*</p>'
+          + '<div class="provider-other hide">'
+            + '<label class="pull-left checkbox">'
+              + '<input type="checkbox" id="follow" value="1" checked />'
+              + 'Follow @<span class="x-sign">EXFE</span> on Twitter.'
+            + '</label>'
+            + '&nbsp;<span class="underline why">why?</span>'
+            + '<p class="pull-left answer hide">So we could send you invitation through Direct Message.</p>'
+          + '</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue">GO</button>'
+          + '<button class="pull-right xbtn-white xbtn-go">GO</button>'
       }
     }
   };
@@ -1325,6 +1363,16 @@ define(function (require, exports, module) {
               that.offSrcNode();
               that.destory();
               $e.remove();
+
+              // 设置密码, 刷新本地缓存，及 `user-menu`
+              // TODO: 先简单处理，后面再细想
+              var user = Store.get('user');
+              user.password = true;
+              Store.set('user', user);
+              $('.changepassword')
+                .data('dialog', null)
+                .attr('data-dialog-type', 'changepassword');
+              $('.set-up').remove();
             }
             , function (data) {
               if (data.meta.code === 403) {
@@ -1394,20 +1442,66 @@ define(function (require, exports, module) {
 
       events: {
 
+        'blur #name': function (e) {
+          var val = Util.trim($(e.currentTarget).val());
+          var $name = this.$('[for="name"]');
+          var $text = $name.find('span');
+          if (!val) {
+            $name.addClass('label-error');
+            $text.text('');
+          } else if (Util.utf8length(val) > 30) {
+            $text.text('Too long.');
+            $name.addClass('label-error');
+          } else if (Util.zh_CN.test(val)) {
+            $name.addClass('label-error');
+            $text.text('Invalid character.');
+          } else {
+            $name.removeClass('label-error');
+            $text.text('');
+          }
+        },
+
+        'blur #password': function (e) {
+          var val = Util.trim($(e.currentTarget).val());
+          var $pass = this.$('[for="password"]');
+          var $text = $pass.find('span');
+          if (!val) {
+            $pass.addClass('label-error');
+            $text.text('Password incorrect.');
+          } else {
+            $pass.removeClass('label-error');
+            $text.text('');
+          }
+        },
+
+        'click #password-eye': function (e) {
+          var $e = $(e.currentTarget);
+          var $input = $e.prev();
+          $input.prop('type', function (i, val) {
+            return val === 'password' ? 'text' : 'password';
+          });
+          $e.toggleClass('icon16-pass-hide icon16-pass-show');
+        },
+
         'click .xbtn-success': function (e) {
           var isUserToken = this._tokenType === 'user';
 
           var api_url = isUserToken ? 'resetPassword' : 'setupUserByInvitationToken';
           var reqData = {};
 
-          reqData.name = $.trim(this.$('#name').val());
-          reqData.password = this.$('#password').val();
+          reqData.name = $.trim(this.$('#name').blur().val());
+          reqData.password = this.$('#password').blur().val();
 
           if (isUserToken) {
             reqData.token = this._originToken;
           }
           else {
             reqData.invitation_token = this._originToken;
+          }
+
+          if (this.$('[for="name"]').hasClass('label-error')
+              && this.$('[for="password"]').hasClass('label-error')) {
+            return;
           }
 
           Api.request(api_url,
@@ -1579,8 +1673,8 @@ define(function (require, exports, module) {
           .attr('src', browsing_user.default_identity.avatar_filename)
           .next().addClass('icon16-identity-' + browsing_user.default_identity.provider)
 
-        //if (!this._setup) { // test
-        if (this._setup) {
+        if (!this._setup) { // test
+        //if (this._setup) {
           this.$('.xbtn-sui')
             .removeClass('hide')
             .data('source', {

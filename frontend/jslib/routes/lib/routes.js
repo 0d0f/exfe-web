@@ -2,6 +2,7 @@
  * Routes
  */
 define('routes', function (require, exports, module) {
+  var R = require('rex');
   var Api = require('api');
   var Bus = require('bus');
   var Util = require('util');
@@ -283,7 +284,8 @@ define('routes', function (require, exports, module) {
       , user = session.user
       , browsing_authorization = session.browsing_authorization
       , browsing_user = session.browsing_user
-      , action = session.action;
+      , action = session.action
+      , oauth = session.oauth;
 
     Bus.emit('app:page:home', false);
 
@@ -323,6 +325,26 @@ define('routes', function (require, exports, module) {
           var dfd = $.Deferred();
           dfd.resolve(authorization);
           Bus.emit('app:profile:show', dfd);
+
+          // 弹出 OAuth Welcome
+          if (oauth && oauth.new_identity && !oauth.follow) {
+            var identities = user.identities;
+            var identity = R.filter(identities, function (v) {
+              if (v.id === oauth.identity_id) {
+                return true;
+              }
+            })[0];
+
+            $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-oauth-type="' + oauth.type + '"></div>')
+            .appendTo(document.body)
+              .trigger({
+                type: 'click',
+                identity: identity,
+                token: authorization.token,
+                new_identity: oauth.new_identity
+              })
+              .remove();
+          }
         });
       }
 
@@ -397,7 +419,7 @@ define('routes', function (require, exports, module) {
     }
 
     var authorization = session.authorization;
-    //Bus.once('app:user:signin:after', function (user) {
+    //Bus.once('app:user:signin:after' function (user) {
       //done(user, res);
     //});
     Bus.emit('app:user:signin', authorization.token, authorization.user_id, true);
