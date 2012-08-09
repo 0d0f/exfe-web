@@ -163,7 +163,11 @@ define('routes', function (require, exports, module) {
       , user = session.user;
 
     if (!authorization) {
-      res.redirect('/');
+      //res.redirect('/');
+      Bus.emit('app:page:home', false);
+      Bus.emit('app:page:usermenu', false);
+      Bus.emit('app:cross:forbidden', req.params[0]);
+      return;
     }
 
     Bus.emit('app:page:home', false);
@@ -187,6 +191,18 @@ define('routes', function (require, exports, module) {
       Bus.emit('xapp:cross', cross_id);
     });
   };
+
+  // cross forbidden
+  // TODO: 整合 cross 逻辑
+  Bus.on('app:cross:forbidden', function (cross_id) {
+    $('#app-main').load('/static/views/forbidden.html', function () {
+      var authorization = Store.get('authorization');
+      if (!authorization) {
+        $('.please-signin').removeClass('hide');
+      }
+    });
+  });
+
 
 
   // cross-token
@@ -244,6 +260,7 @@ define('routes', function (require, exports, module) {
               , setup: action === 'setup'
               , originToken: ctoken
               , tokenType: 'cross'
+              , page: 'cross'
             }
             , 'browsing_identity');
         }
@@ -321,6 +338,7 @@ define('routes', function (require, exports, module) {
             , setup: action === 'setup'
             , originToken: session.originToken
             , tokenType: 'user'
+            , page: 'profile'
           }
           , 'browsing_identity');
 
