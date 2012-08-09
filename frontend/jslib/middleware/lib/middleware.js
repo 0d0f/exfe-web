@@ -77,6 +77,7 @@ define('middleware', function (require, exports, module) {
 
     else if (!authorization && authMeta) {
       Store.set('authorization', session.authorization = authMeta.authorization);
+      Store.set('user', session.user = null);
       Store.set('oauth', session.oauth = {
         type: authMeta.type,
         following: authMeta.following,
@@ -92,7 +93,7 @@ define('middleware', function (require, exports, module) {
           following: authMeta.following,
           identity_id: authMeta.identity_id
         });
-        Store.set('user', (session.user = null));
+        Store.set('user', session.user = null);
         Store.set('authorization', session.authorization = authMeta.authorization);
       }
     }
