@@ -74,6 +74,35 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function getInvitationByExfeeIdAndToken($exfee_id, $token) {
+        if ($exfee_id && $token) {
+            $rawInvitation = $this->getRow(
+                "SELECT * FROM `invitations`
+                 WHERE `cross_id` = $exfee_id
+                 AND   `token` LIKE '_{$token}____________________________'"
+            );
+            if ($rawInvitation) {
+                $hlpIdentity = $this->getHelperByName('identity', 'v2');
+                $objIdentity = $hlpIdentity->getIdentityById($rawInvitation['identity_id']);
+                $oByIdentity = $hlpIdentity->getIdentityById($rawInvitation['by_identity_id']);
+                return new Invitation(
+                    $rawInvitation['id'],
+                    $objIdentity,
+                    $oByIdentity,
+                    $this->rsvp_status[$rawInvitation['state']],
+                    $rawInvitation['via'],
+                    '',
+                    $rawInvitation['created_at'],
+                    $rawInvitation['updated_at'],
+                    $rawInvitation['host'],
+                    $rawInvitation['mates']
+                );
+            }
+        }
+        return null;
+    }
+
+
     public function usedToken($token) {
         return $this->query(
             "UPDATE `invitations`
@@ -409,8 +438,18 @@ class ExfeeModels extends DataModel {
 
 
     public function getCrossIdByExfeeId($exfee_id) {
-        $result = $this->getRow("SELECT `id` FROM `crosses` WHERE `exfee_id` = $exfee_id");
+        $result = $this->getRow(
+            "SELECT `id` FROM `crosses` WHERE `exfee_id` = {$exfee_id}"
+        );
         return intval($result['id']);
+    }
+
+
+    public function getExfeeIdByCrossId($cross_id) {
+        $result = $this->getRow(
+            "SELECT `exfee_id` FROM `crosses` WHERE `id` = $cross_id"
+        );
+        return intval($result['exfee_id']);
     }
 
 }

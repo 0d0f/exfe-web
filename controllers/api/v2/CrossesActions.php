@@ -124,6 +124,29 @@ class CrossesActions extends ActionController {
     }
 
 
+    public function doGetInvitationByToken() {
+        // load models
+        $modExfee = $this->getModelByName('Exfee', 'v2');
+        // get args
+        $params   = $this->params;
+        if (!($cross_id = (int) $params['id'])) {
+            apiError(404, 'invalid_cross_id', 'Invalid Cross Id');
+        }
+        if (!($token    = trim($_POST['token']))) {
+            apiError(404, 'invalid_invitation_token', 'Invalid Invitation Token');
+        }
+        // get exfee_id
+        $exfee_id   = $modExfee->getExfeeIdByCrossId($cross_id);
+        // get invitation
+        $invitation = $modExfee->getInvitationByExfeeIdAndToken($exfee_id, $token);
+        // return
+        if ($invitation) {
+            apiResponse(['invitation' => $invitation]);
+        }
+        apiError(404, 'invitation_not_found', 'Invitation Not Found');
+    }
+
+
     public function doGather() {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
