@@ -1533,23 +1533,24 @@ define(function (require, exports, module) {
             strAbsTime  = '', strRelTime = '', format = 'YYYY-MM-DD';
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
-                strAbsTime  = 'No specified time, yet.';
-                strRelTime  = Cross.time.origin;
+                strAbsTime = 'No specified time, yet.';
+                strRelTime = Cross.time.origin;
             } else if (Cross.time.begin_at.time) {
-                var objMon  = moment((moment.utc(
+                var objMon = moment((moment.utc(
                     Cross.time.begin_at.date + ' '
                   + Cross.time.begin_at.time, format + ' HH:mm:ss'
-                ).unix()    + (timevalid ? 0 : (crossOffset - timeOffset))) * 1000);
-                strAbsTime  = objMon.format('h:mmA on ddd, MMM D')
-                            + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
-                strRelTime  = objMon.fromNow();
-                strRelTime  = strRelTime.indexOf('a few seconds') !== -1
-                            ? 'Now'   : strRelTime;
+                ).unix()   + (timevalid ? 0 : (crossOffset - timeOffset))) * 1000);
+                strAbsTime = objMon.format('h:mmA on ddd, MMM D')
+                           + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
+                strRelTime = objMon.fromNow();
+                strRelTime = strRelTime.indexOf('a few seconds') !== -1
+                           ? 'Now'   : strRelTime;
             } else {
-                strAbsTime  = Cross.time.begin_at.date
-                            + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));
-                strRelTime  = Cross.time.begin_at.date === moment().format(format)
-                            ? 'Today' : moment(strAbsTime, format).fromNow();
+                strAbsTime = Cross.time.begin_at.date
+                           + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));
+                var objRel = moment(strAbsTime, format);
+                strRelTime = Cross.time.begin_at.date === moment().format(format)
+                           ? 'Today' : (objRel ? objRel.fromNow() : '');
             }
         } else {
             strAbsTime = 'No specified time, yet.';
