@@ -18,5 +18,5 @@
 <?php } ?>
   <link rel="shortcut icon" href="/static/img/favicon_16.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon_32.png" />
-  <link rel="stylesheet" media="screen" type="text/css" href="/static/css/exfe.min.css?t=<?php echo STATIC_CODE_TIMESTAMP; ?>" />
-  <script src="/static/js/modernizr/2.5.3/modernizr.js?t=<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <link rel="stylesheet" media="screen" type="text/css" href="/static/css/exfe.min.css?<?php echo STATIC_CODE_TIMESTAMP; ?>" />
+  <script src="/static/js/modernizr/2.5.3/modernizr.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
