@@ -254,7 +254,8 @@ define('user', function (require, exports, module) {
               + '<span>{{default_identity.external_username}}</span>'
             + '</div>'
             + '{{#if ../setup}}'
-            + '<div class="merge set-up" data-source="{{default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02">'
+            //+ '<div class="merge set-up" data-source="{{default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02">'
+            + '<div class="merge set-up" data-widget="dialog" data-dialog-type="setup">'
               + '<a href="#">Set Up</a> new <span class="x-sign">EXFE</span> account with the browsing identity.'
             + '</div>'
             + '{{/if}}'
@@ -350,6 +351,7 @@ define('user', function (require, exports, module) {
         .attr('data-page', data.page)
     );
 
+
     $appUserName.attr('href', location.href);
 
     $nameSpan
@@ -361,6 +363,15 @@ define('user', function (require, exports, module) {
     $userPanel.size() && $userPanel.remove();
 
     $dropdownWrapper.append(tplFun(data));
+
+    $('#app-user-menu')
+      .find('.set-up')
+      .data('source', {
+        identity: browsing_user.default_identity,
+        originToken: data.originToken,
+        tokenType: data.tokenType
+      }
+    );
   }
 
   Bus.on('app:page:home', switchPage);
