@@ -48,10 +48,11 @@ define('user', function (require, exports, module) {
             return;
           }
 
-          if (redirect || (('' === window.location.hash
-                           || /^#?(invalid)?/.test(window.location.hash))
-                        && !/^#gather/.test(window.location.hash)
-                        && !/^#!/.test(window.location.hash)
+          var hash = decodeURIComponent(window.location.hash);
+          if (redirect || (('' === hash
+                           || /^#?(invalid)?/.test(hash))
+                        && !/^#gather/.test(hash)
+                        && !/^#!/.test(hash)
                           )
             ) {
             setTimeout(function () {
