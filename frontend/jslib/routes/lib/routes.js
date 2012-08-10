@@ -364,7 +364,8 @@ define('routes', function (require, exports, module) {
             {   normal: user
               , browsing: { default_identity: browsing_identity, name: browsing_identity.name }
               , action: action
-              , setup: action === 'setup'
+              //, setup: action === 'setup'
+              , setup: !(action === 'setup')
               , originToken: ctoken
               , tokenType: 'cross'
               , page: 'cross'
