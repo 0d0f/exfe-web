@@ -36,16 +36,6 @@ class UserModels extends DataModel {
     }
 
 
-    protected function destroySimilarTokens($identity_id, $action) {
-        return $identity_id && $action ? $this->query(
-            "UPDATE `tokens`
-             SET    `expiration_date` =  NOW()
-             WHERE  `identity_id`     =  {$identity_id}
-             AND    `action`          = '{$action}'"
-        ) : false;
-    }
-
-
     protected function usedToken($token) {
         $usResult = $token
                  && $token['id']
@@ -91,6 +81,16 @@ class UserModels extends DataModel {
             "UPDATE `tokens` SET
              `expiration_date` = FROM_UNIXTIME({$expiration_date}) {$sql_token}
              WHERE  `id`       = {$id}"
+        ) : false;
+    }
+
+
+    public function destroySimilarTokens($identity_id, $action) {
+        return $identity_id && $action ? $this->query(
+            "UPDATE `tokens`
+             SET    `expiration_date` =  NOW()
+             WHERE  `identity_id`     =  {$identity_id}
+             AND    `action`          = '{$action}'"
         ) : false;
     }
 
