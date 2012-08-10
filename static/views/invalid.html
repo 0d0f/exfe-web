@@ -1,0 +1,11 @@
+      <section id="invalid" class="x-invalid">
+        <h1>Invalid Link</h1>
+        <p>Sorry, your link is invalid or expired.</p>
+        <button id="invalid-ok" class="xbtn xbtn-ok">OK</button>
+        <script>
+          $('#invalid-ok')
+            .one('click.invalid', function () {
+              window.location.href = '/';
+            });
+        </script>
+      </section>
