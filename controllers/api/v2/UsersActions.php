@@ -410,10 +410,10 @@ class UsersActions extends ActionController {
         // set password
         $stResult = $modUser->resetPasswordByToken($token, $password, $name);
         if ($stResult) {
-            apiResponse(array(
+            apiResponse(['authorization' => [
                 'user_id' => $stResult['user_id'],
                 'token'   => $stResult['token'],
-            ));
+            ]]);
         }
         apiError(400, 'invalid_token', 'Invalid Token');
     }
