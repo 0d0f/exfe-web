@@ -1,0 +1,57 @@
+      <section id="invite" class="x-gather x-forbidden x-invite no-bg">
+        <!-- Cross-background -->
+        <div class="cross-background">
+          <div class="cross-background-blur"></div>
+          <div class="cross-background-side"></div>
+        </div>
+
+        <img class="big-x" width="340" height="340" alt="" src="/static/img/exfe.png" />
+
+        <!-- Cross-Container -->
+        <div class="cross-container">
+          <h1 class="title">You are opening a private invitation.</h1>
+          <p class="please-signin">Please authenticate as attendee first.</p>
+        </div>
+
+        <form class="form-horizontal">
+          <fieldset>
+
+            <div class="control-group">
+              <div class="control-label">To:</div>
+              <div class="controls invite-to">
+                <strong></strong>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label">From:</div>
+              <div class="controls invite-from">
+                <img width="20" height="20" alt="" src="" />
+                <strong></strong>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="control-label">Details:</div>
+              <div class="controls">
+                <p class="help-block">Private invitation, available after authorizing identity through Twitter.</p>
+              </div>
+            </div>
+
+          <div class="form-actions">
+            <button class="xbtn xbtn-authenticate" type="submit">
+             <img class="pull-right" src="/static/img/twitter_40.png" alt="" width="40" height="40" />
+            Authenticate
+            </button>
+            <p class="redirecting hide">Redirection...</p>
+            <p class="xalert-fail hide">Failed to connect with Twitter server.</p>
+            <label class="checkbox hide" for="follow">
+              <input id="follow" class="follow" type="checkbox" value="1" checked />
+              And add into my <span class="x-sign">EXFE</span> account as new identity.
+            </label>
+          </div>
+
+          </fieldset>
+        </form>
+
+      </section>

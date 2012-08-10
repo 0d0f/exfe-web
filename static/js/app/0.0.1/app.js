@@ -44,6 +44,11 @@ define(function (require, exports, module) {
   app.get(/^\/#!([1-9][0-9]*)$/, routes.cross);
 
 
+  // opening a private invitation X.
+  // cross - `/#!233/mk7`
+  app.get(/^\/#!([1-9][0-9]*)\/([a-zA-Z0-9]{3})$/, routes.crossInvitation);
+
+
   // cross-token - `/#!token=63435bc8d599a857c215c9a628f2b4f8`
   app.get(/^\/#!token=([a-zA-Z0-9]{32})$/, routes.crossToken);
 
