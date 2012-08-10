@@ -196,11 +196,14 @@ define('routes', function (require, exports, module) {
   // cross forbidden
   // TODO: 整合 cross 逻辑
   Bus.on('app:cross:forbidden', function (cross_id) {
+    $('#app-main').load('/static/views/invite.html', function () { // test
+      /*
     $('#app-main').load('/static/views/forbidden.html', function () {
       var authorization = Store.get('authorization');
       if (!authorization) {
         $('.please-signin').removeClass('hide');
       }
+    */
     });
   });
 
