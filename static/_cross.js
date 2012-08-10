@@ -1331,7 +1331,7 @@ define(function (require, exports, module) {
 
     var Editable = function() {
         $('body').bind('click', EditCross);
-        $('.cross-title .show').bind('click', EditCross);
+        $('.cross-title').bind('click', EditCross);
         $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
             if (event.type === 'keydown') {
                 switch (event.which) {
@@ -1345,7 +1345,7 @@ define(function (require, exports, module) {
             }
             ChangeTitle($(event.target).val(), 'cross');
         });
-        $('.cross-description .show').bind('click', EditCross);
+        $('.cross-description').bind('click', EditCross);
         $('.cross-description .xbtn-more').bind('click', function(event) {
             event.stopPropagation();
             var moreOrLess = !$(this).hasClass('xbtn-less');
