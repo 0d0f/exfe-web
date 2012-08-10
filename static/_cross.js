@@ -1476,14 +1476,11 @@ define(function (require, exports, module) {
     var ShowTitle = function(from) {
         var title = Cross.title.length ? Cross.title : 'Enter intent';
         $('.cross-title .show').html(title);
-        if (from === 'cross') {
-            $('.cross-title .show').removeClass('single-line').removeClass('double-line');
+        $('.cross-title .show').removeClass('single-line').removeClass('double-line');
+        if ($('.cross-title .show').height() > 50) {
+            $('.cross-title .show').addClass('double-line').removeClass('single-line');
         } else {
             $('.cross-title .show').addClass('single-line').removeClass('double-line');
-            // alert($('.cross-title .show').height());
-            if ($('.cross-title .show').height() > 50) {
-                $('.cross-title .show').addClass('double-line').removeClass('single-line');
-            }
         }
         document.title = 'EXFE - ' + title;
         switch (from) {
