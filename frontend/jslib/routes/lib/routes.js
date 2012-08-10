@@ -196,17 +196,107 @@ define('routes', function (require, exports, module) {
   // cross forbidden
   // TODO: 整合 cross 逻辑
   Bus.on('app:cross:forbidden', function (cross_id) {
-    $('#app-main').load('/static/views/invite.html', function () { // test
-      /*
     $('#app-main').load('/static/views/forbidden.html', function () {
       var authorization = Store.get('authorization');
       if (!authorization) {
         $('.please-signin').removeClass('hide');
       }
-    */
     });
   });
 
+
+  // Opening a private invitation X.
+  routes.crossInvitation = function (req, res, next) {
+    var session = req.session
+      , authorization = session.authorization
+      , user = session.user
+      , user_id = user && user.id
+      , cross_id = req.params[0]
+      // invitation token
+      , shortToken = req.params[1];
+
+    Bus.emit('app:page:home', false);
+
+    Bus.emit('app:page:usermenu', true);
+
+    if (authorization) {
+      //session.initMenuBar = true;
+      Bus.emit('app:usermenu:updatenormal', user);
+
+      Bus.emit('app:usermenu:crosslist'
+        , authorization.token
+        , authorization.user_id
+      );
+    }
+
+    Api.request('getInvitationByToken',
+      {
+        type: 'POST',
+        resources: { cross_id: cross_id },
+        data: { token: shortToken }
+      }
+      , function (data) {
+        var invitation = data.invitation
+          , identity = invitation.identity
+          , by_identity = invitation.by_identity;
+
+        if (user_id === identity.connected_user_id) {
+          res.redirect('/#!' + cross_id);
+          return;
+        }
+
+        res.render('invite.html', function (tpl) {
+          $('#app-main').append(tpl);
+
+          $('.invite-to')
+            .find('strong')
+            .text(Util.printExtUserName(identity));
+
+          $('.invite-from')
+            .find('img')
+            .attr('src', by_identity.avatar_filename)
+            .next()
+            .text(Util.printExtUserName(by_identity));
+
+          var $redirecting = $('.x-invite').find('.redirecting')
+            , $fail = $redirecting.next();
+
+          var clicked = false;
+          $('.xbtn-authenticate').on('click', function (e) {
+            if (clicked) return;
+            $.ajax({
+              url: '/OAuth/twitterAuthenticate',
+              dataType: 'JSON',
+              beforeSend: function (xhr) {
+                clicked = true;
+                $fail.addClass('hide');
+                $redirecting.removeClass('hide');
+              },
+              success: function (data) {
+                clicked = false;
+                var code = data.meta.code;
+                if (code === 200) {
+                  window.location.href = data.response.redirect;
+                } else {
+                  $redirecting.addClass('hide');
+                  $fail.removeClass('hide');
+                }
+              }
+            });
+          });
+
+
+          // v2 做
+          /*
+          if (authorization) {
+            $('label[for="follow"]').removeClass('hide');
+          }
+          */
+        });
+
+      }
+    );
+  };
 
 
   // cross-token

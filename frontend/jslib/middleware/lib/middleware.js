@@ -86,8 +86,8 @@ define('middleware', function (require, exports, module) {
     }
 
     else if (authorization && authMeta) {
-      if (session.authorization.token !== authMeta.authorization.token
-          && session.authorization.user_id !== authMeta.authorization.user_id) {
+      if (authorization.token !== authMeta.authorization.token
+          && authorization.user_id !== authMeta.authorization.user_id) {
         Store.set('oauth', session.oauth = {
           type: authMeta.type,
           following: authMeta.following,
@@ -108,6 +108,7 @@ define('middleware', function (require, exports, module) {
   // errorHandler
   middleware.errorHandler = function (req, res, next) {
     console.log('error handler');
+    res.redirect('/404');
   };
 
   // Helers:

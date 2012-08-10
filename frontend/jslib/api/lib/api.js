@@ -90,7 +90,10 @@ define('api', [], function (require, exports, module) {
     resetPassword: '/Users/resetPassword',
 
     // SetupUserByInvitationToken - `cross token`
-    setupUserByInvitationToken: '/Users/setupUserByInvitationToken'
+    setupUserByInvitationToken: '/Users/setupUserByInvitationToken',
+
+    // Opening a private invitation X.
+    getInvitationByToken: '/Crosses/:cross_id/getInvitationByToken'
   };
 
   // Not Use Token
