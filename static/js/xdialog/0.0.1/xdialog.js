@@ -1317,6 +1317,13 @@ define(function (require, exports, module) {
 
     options: {
 
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
       events: {
         'click .password-eye': function (e) {
           var $e = $(e.currentTarget);
@@ -1359,10 +1366,7 @@ define(function (require, exports, module) {
               }
             }
             , function (data) {
-              $e = that.element;
-              that.offSrcNode();
-              that.destory();
-              $e.remove();
+              that.hide();
 
               // 设置密码, 刷新本地缓存，及 `user-menu`
               // TODO: 先简单处理，后面再细想
@@ -1440,6 +1444,13 @@ define(function (require, exports, module) {
 
     options: {
 
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
       events: {
 
         'blur #name': function (e) {
@@ -1484,6 +1495,7 @@ define(function (require, exports, module) {
         },
 
         'click .xbtn-success': function (e) {
+          var that = this;
           var isUserToken = this._tokenType === 'user';
 
           var api_url = isUserToken ? 'resetPassword' : 'setupUserByInvitationToken';
@@ -1510,6 +1522,8 @@ define(function (require, exports, module) {
               data: reqData
             },
             function (data) {
+              that.hide();
+
               var authorization = data.authorization
               Bus.emit('app:user:signin:after', function () {
                 window.location.href = '/';
@@ -1517,6 +1531,7 @@ define(function (require, exports, module) {
               Bus.emit('app:user:signin', authorization.token, authorization.user_id);
             }
           );
+
         }
 
       },
