@@ -333,6 +333,7 @@ define('routes', function (require, exports, module) {
             Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken);
           });
         }
+
         Bus.emit('app:page:home', false);
 
         Bus.emit('app:page:usermenu', true);
@@ -380,6 +381,9 @@ define('routes', function (require, exports, module) {
         });
         */
         render();
+      }
+      , function (data) {
+        window.location.href = '/404';
       }
     );
 
