@@ -455,7 +455,7 @@ class UsersActions extends ActionController {
                     $user_id, $invitation['identity_id'], 3
                 );
                 // signin
-                apiResponse(['signin' => $modUser->rawSignin($user_id)]);
+                apiResponse(['authorization' => $modUser->rawSignin($user_id)]);
             }
         }
         apiError(400, 'invalid_invitation_token', 'Invalid Invitation Token');
