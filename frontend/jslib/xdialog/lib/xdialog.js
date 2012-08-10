@@ -1510,10 +1510,11 @@ define(function (require, exports, module) {
               data: reqData
             },
             function (data) {
+              var authorization = data.authorization
               Bus.emit('app:user:signin:after', function () {
                 window.location.href = '/';
               });
-              Bus.emit('app:user:signin', data.token, data.user_id);
+              Bus.emit('app:user:signin', authorization.token, authorization.user_id);
             }
           );
         }
