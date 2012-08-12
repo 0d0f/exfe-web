@@ -6343,6 +6343,7 @@ body {
 .x-home .triangle {
   position: relative;
   height: 35px;
+  cursor: pointer;
   visibility: visible;
 }
 
@@ -8804,9 +8805,7 @@ body {
 .newbie {
   position: relative;
   z-index: 1000;
-  font-weight: 300;
-  word-spacing: -1px;
-  color: #b2b2b2;
+  color: #7f7f7f;
   background: #EFF6F9;
   border: 1px dashed #b2b2b2;
 }
@@ -8949,16 +8948,15 @@ body {
 }
 
 .newbie.nbg-2 {
-  width: 300px;
-  padding: 24px 0 17px;
+  width: 280px;
+  padding: 20px 10px 15px;
   margin: 7px auto 0;
-  text-align: center;
 }
 
 .newbie.nbg-2 h4 {
-  padding-bottom: 15px;
   font-size: 24px;
   font-weight: 300;
+  line-height: 30px;
 }
 
 .newbie.nbg-2 .gatherax {
@@ -8985,6 +8983,7 @@ body {
   padding-bottom: 15px;
   margin: 0;
   font-size: 24px;
+  font-weight: 300;
   line-height: 30px;
 }
 
@@ -9052,12 +9051,13 @@ body {
 }
 
 .x-invalid {
+  color: #191919;
   text-align: center;
 }
 
 .x-invalid h1 {
+  padding-top: 40px;
   padding-bottom: 20px;
-  margin-top: 40px;
   font-size: 34px;
   font-weight: 300;
   line-height: 40px;
@@ -9070,6 +9070,7 @@ body {
 }
 
 .x-forbidden {
+  color: #191919;
   text-align: center;
 }
 
@@ -9083,6 +9084,7 @@ body {
 .x-forbidden .please-signin {
   font-size: 21px;
   line-height: 27px;
+  color: #333;
 }
 
 .x-forbidden .big-x {
