@@ -249,7 +249,9 @@ define('routes', function (require, exports, module) {
           $('#app-main').append(tpl);
 
           $('.invite-to')
-            .find('strong')
+            .find('img')
+            .attr('src', identity.avatar_filename)
+            .next()
             .text(Util.printExtUserName(identity));
 
           $('.invite-from')

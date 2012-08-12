@@ -1,11 +1,22 @@
-      <section id="invalid" class="x-invalid">
-        <h1>Invalid Link</h1>
-        <p>Sorry, your link is invalid or expired.</p>
-        <button id="invalid-ok" class="xbtn xbtn-ok">OK</button>
-        <script>
-          $('#invalid-ok')
-            .one('click.invalid', function () {
-              window.location.href = '/';
-            });
-        </script>
+      <section id="invalid" class="x-gather x-forbidden  x-invalid no-bg">
+        <!-- Cross-background -->
+        <div class="cross-background">
+          <div class="cross-background-blur"></div>
+          <div class="cross-background-side"></div>
+        </div>
+
+        <img class="big-x" width="340" height="340" alt="" src="/static/img/exfe.png" />
+
+        <!-- Cross-Container -->
+        <div class="cross-container">
+          <h1>Invalid Link</h1>
+          <p>Sorry, your link is invalid or expired.</p>
+          <button id="invalid-ok" class="xbtn xbtn-ok">OK</button>
+          <script>
+            $('#invalid-ok')
+              .one('click.invalid', function () {
+                window.location.href = '/';
+              });
+          </script>
+        </div>
       </section>
