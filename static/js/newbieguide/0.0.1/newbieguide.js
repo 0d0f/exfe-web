@@ -24,14 +24,16 @@ define(function (require) {
 
     '<div class="newbie nbg-2">'
       + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
-      + '<h4>Here lists all your <span class="x">·X·</span>.</h4>'
+      + '<h4>List of <span class="x">·X·</span></h4>'
       + '<p><span class="x">·X·</span> (cross) is a gathering of people.</p>'
-      + '<p>Nothing in your list?<br />'
-      + 'Invite friends for something like<br />'
-      + 'meals, meetings, sports, datings,<br />'
-      + 'parties, webinars, hangouts, trips, etc.</p>'
-      + '<p><span class="x">·X·</span> is private by default,</p><p>'
-      + '</p><p>accessible to only attendees.</p>'
+      + '<p><span class="x">·X·</span> is private by default, everything inside is<br />'
+      + 'accessible to only attendees, including your<br />'
+      + 'identity details.</p>'
+      + '<p>Got empty list? Invite friends for something<br />'
+      + 'like meals, meetings, parties, hangouts,<br />'
+      + 'datings, sports, trips, etc. For any intent you<br />'
+      + 'need to gather people, <span class="x-sign">EXFE</span> them!'
+      + '</p>'
       //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x">·X·</span></span> now!</p>'
     + '</div>',
 
