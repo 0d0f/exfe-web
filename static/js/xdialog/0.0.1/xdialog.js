@@ -29,7 +29,6 @@ define(function (require, exports, module) {
 
           this.$('#identity').val(last_external_username);
           this.$('.x-signin').removeClass('disabled loading');
-          this.$('.help-subject').addClass('icon14-clear');
           this.$('.user-identity')
             .removeClass('hide')
             .find('.avatar')
@@ -238,12 +237,11 @@ define(function (require, exports, module) {
             }
             $e.parent().find('.xalert-error').html(s).removeClass('hide');
           } else {
-            this.switchTab('d00');
+            $e.toggleClass('icon14-question icon14-clear');
+
             this.resetInputs();
 
             this.$('.user-identity').addClass('hide');
-
-            $e.toggleClass('icon14-question icon14-clear');
 
             // 清楚user 缓存
             Store.set('lastIdentity', null);
@@ -254,6 +252,8 @@ define(function (require, exports, module) {
             // cleanup `xidentity` source data
             // TODO: 后期移调
             this.$('[data-typeahead-type="identity"]').data('typeahead').source = null;
+
+            this.switchTab('d00');
           }
 
         },

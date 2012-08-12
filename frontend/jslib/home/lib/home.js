@@ -180,7 +180,7 @@ define(function (require) {
       });
 
     DOC
-    .off('click.home')
+    .off('click.home hover.home')
     .on('click.home', function (e) {
       var $e = $(e.target);
 
@@ -277,6 +277,19 @@ define(function (require) {
               //width: '880px'
             });
           });
+      })
+      .on('hover.home', '.triangle', function (e) {
+        var type = e.type;
+        if (type === 'mouseenter') {
+          $START.removeClass('hide');
+          $TRIANGLE
+            .removeClass('trifio')
+            .delay(13, 'trifio')
+            .queue('trifio', function () {
+              $TRIANGLE.addClass('trifio');
+            })
+            .dequeue('trifio');
+        }
       });
 
 
