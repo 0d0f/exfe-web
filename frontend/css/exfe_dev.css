@@ -4864,25 +4864,24 @@ input[type="submit"].btn.btn-mini {
   height: 16px;
   font-size: 12px;
   line-height: 12px;
-  color: #191919;
+  color: #BF2F32;
   text-shadow: none;
-  background-color: #eda9a8;
-  background-image: -ms-linear-gradient(top, #feebeb, #d44644);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#feebeb), to(#d44644));
-  background-image: -webkit-linear-gradient(top, #feebeb, #d44644);
-  background-image: -moz-linear-gradient(top, #feebeb, #d44644);
-  background-image: -o-linear-gradient(top, #feebeb, #d44644);
-  background-image: linear-gradient(top, #feebeb, #d44644);
+  background-color: #fcf2f2;
+  background-image: -o-linear-gradient(top, #fafafa, #ffe6e6);
+  background-image: linear-gradient(top, #fafafa, #ffe6e6);
+  background-image: -moz-linear-gradient(top, #fafafa, #ffe6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#ffe6e6));
+  background-image: -webkit-linear-gradient(top, #fafafa, #ffe6e6);
+  background-image: -ms-linear-gradient(top, #fafafa, #ffe6e6);
   background-repeat: repeat-x;
   border: 1px solid rgba(127, 127, 127, 0.15);
-  border-top: none;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-color: #d44644 #d44644 #a52826;
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
           border-radius: 3px;
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#feebeb', endColorstr='#d44644', GradientType=0);
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#ffe6e6', GradientType=0);
+  -webkit-box-shadow: 0 1px 1px #ffffff;
+     -moz-box-shadow: 0 1px 1px #ffffff;
+          box-shadow: 0 1px 1px #ffffff;
 }
 
 .btn-cancel {
@@ -7937,7 +7936,6 @@ body {
   height: 14px;
   padding: 2px;
   line-height: 14px;
-  background-color: #d5d5d5;
   -webkit-border-radius: 9px;
      -moz-border-radius: 9px;
           border-radius: 9px;
@@ -7975,28 +7973,64 @@ body {
 
 .exfeepanel .rsvp-actions {
   position: relative;
-  margin: 14px 0;
+  margin: 15px 0;
   text-align: center;
 }
 
+.exfeepanel .icon-plus-blue,
+.exfeepanel .icon14-mates-minus,
+.exfeepanel .icon14-mates-add,
+.exfeepanel .icon-minus-red {
+  cursor: pointer;
+}
+
+.exfeepanel .rsvp-info {
+  line-height: 16px;
+}
+
+.exfeepanel .rsvp-info .by {
+  font-size: 10px;
+  line-height: 12px;
+  color: #797979;
+}
+
+.exfeepanel .rsvp-info .by span {
+  color: #212121;
+}
+
 .exfeepanel .invited {
-  position: absolute;
+  position: relative;
   top: 50%;
   right: 0;
+  margin-top: 5px;
+  /*line-height: 14px;*/
+
 }
 
-.exfeepanel .invited > span,
-.exfeepanel .invited > i {
-  display: block;
-  margin-top: -50%;
+.exfeepanel .invited .mates-num {
+  margin-top: -17px;
+  color: #1175A5;
+  text-align: right;
 }
 
-.exfeepanel .mates {
+.exfeepanel .attendance {
+  display: inline-block;
+  width: 94px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border: 2px solid #1175A5;
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+          border-radius: 5px;
+}
+
+.exfeepanel .mates-edit {
   width: 48px;
   height: 14px;
 }
 
-.exfeepanel .mates .num {
+.exfeepanel .mates-edit .num {
   display: inline-block;
   width: 20px;
   height: 14px;
@@ -8144,6 +8178,7 @@ body {
   margin-right: 13px;
   font-size: 12px;
   color: #797979;
+  cursor: pointer;
 }
 
 .x-gather .cross-form .helps {
