@@ -9,16 +9,14 @@ define(function (require) {
 
     '<div class="newbie nbg-1">'
       + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
-      + '<p>Identities listed above are your representative online. Email,'
-        + 'mobile #, web accounts from Twitter, <span>Facebook, Google and others</span>'
-        + '(still working on these), any of these would be.</p>'
+      + '<p>Here list your identities. Identity is your online representative, i.e. email, <span class="strike">mobile number</span> and account from Twitter, <span class="strike">Facebook, Google, etc.</span> (soon to support) You can gather with different group of people as different identity, or use them as alternative way of notification.</p>'
       + '<p class="toggle hide">Please set up following items for easier use of <span class="x-sign">EXFE</span>:</p>'
-      + '<ul class="toggle unstyled hide">'
-        + '<li>· Set account password for security.</li>'
-        + '<li>· Set a portrait that your friends can recognize.</li>'
-        + '<li>· Add more frequently used identities that may use for gathering.</li>'
+      + '<ul class="toggle hide">'
+        + '<li>Set an <span class="x-sign">EXFE</span> password for security.</li>'
+        + '<li>Set a portrait that friends can recognize you.</li>'
+        + '<li>Add more frequently used identities that may use for gathering or notification.</li>'
         + '</ul>'
-      + '<p class="toggle hide"><span class="x-sign">EXFE</span> is ready for your iPhone, and Android soon.</p>'
+      + '<p class="toggle hide"><span class="x-sign">EXFE</span> is available on iPhone, and Android soon.</p>'
       + '<div class="pull-right arrow"><div class="rb"></div></div>'
     + '</div>',
 

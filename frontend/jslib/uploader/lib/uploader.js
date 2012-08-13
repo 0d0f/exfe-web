@@ -5,6 +5,7 @@ define('uploader', [], function (require, exports, module) {
 
   var $ = require('jquery');
   var Api = require('api');
+  var Store = require('store');
   var Config = require('config');
   var Dialog = require('dialog');
   var FileHTML5 = require('filehtml5');
@@ -293,6 +294,7 @@ define('uploader', [], function (require, exports, module) {
             bitmap.updateContext = function (ctx) {
               ctx.translate(canvas.width * self.R[0], canvas.height * self.R[1]);
               ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
 
             // add to canvas
@@ -311,6 +313,7 @@ define('uploader', [], function (require, exports, module) {
             };
             bitmap80.updateContext = function (ctx) {
               ctx.scale(self.SCALE, self.SCALE);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
             stage80.addChild(bitmap80);
             stage80.update();
@@ -402,6 +405,7 @@ define('uploader', [], function (require, exports, module) {
             bitmap.updateContext = function (ctx) {
               ctx.translate(canvas.width * self.R[0], canvas.height * self.R[1]);
               ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
 
             // add to canvas
@@ -420,6 +424,7 @@ define('uploader', [], function (require, exports, module) {
             };
             bitmap80.updateContext = function (ctx) {
               ctx.scale(self.SCALE, self.SCALE);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
             stage80.addChild(bitmap80);
             stage80.update();
@@ -498,6 +503,7 @@ define('uploader', [], function (require, exports, module) {
         },
 
         'hover .overlay': function (e) {
+          if (!this._data.original) { return; }
           var enter = e.type === 'mouseenter';
           if ($(e.currentTarget).hasClass('dropbox')) {
             this.$('.back')[enter ? 'show' : 'hide']();
@@ -569,12 +575,15 @@ define('uploader', [], function (require, exports, module) {
         },
 
         'click .xbtn-yes': function (e) {
-          var data = {};
+          var data = {}
+            , authorization = Store.get('authorization')
+            , token = authorization.token;
 
           if (this._data.identity_id) {
             data.identity_id = this._data.identity_id;
           }
-          this.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), data);
+
+          this.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + token, data);
           return false;
         },
 
@@ -599,10 +608,10 @@ define('uploader', [], function (require, exports, module) {
           ob.rotation = 90 * this.ri;
           ob.scaleX = bitmap.scaleX / this.sss;
           ob.scaleY = bitmap.scaleY / this.sss;
-
           ob.updateContext = function (ctx) {
             ctx.translate(oc.width * self.R[0], oc.height * self.R[1]);
             ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+            ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
           };
 
           os.addChild(ob);
@@ -616,16 +625,20 @@ define('uploader', [], function (require, exports, module) {
           setTimeout(function () {
 
             var data = {
-              'original': img0,
-              '80_80': img1
-            };
+                'original': img0,
+                '80_80': img1
+              }
+            , authorization = Store.get('authorization')
+            , token = authorization.token;
+
+            that._data = data;
 
             if (that._data.identity_id) {
               data.identity_id = that._data.identity_id;
             }
 
             // 头像上传
-            that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + Api.getToken(), data);
+            that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + token, data);
           }, 15.6);
         }
       },
@@ -650,7 +663,7 @@ define('uploader', [], function (require, exports, module) {
 
             + '<div class="uploader-form">'
               + '<div class="xalert-error hide"></div>'
-              + '<button class="pull-right xbtn xbtn-blue upload-done hide">Done</button>'
+              + '<button class="pull-right xbtn xbtn-blue upload-done hide">Save</button>'
               + '<button class="pull-right xbtn xbtn-white upload-clear hide">Clear</button>'
             + '</div>'
           + '</div>'
@@ -688,8 +701,8 @@ define('uploader', [], function (require, exports, module) {
           + '</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn xbtn-white xbtn-yes hide">Yes</button>'
-          + '<button class="pull-right xbtn xbtn-blue xbtn-no hide">No</button>',
+          + '<button class="pull-right xbtn xbtn-pink xbtn-yes hide">Yes</button>'
+          + '<button class="pull-right xbtn xbtn-white xbtn-no hide">No</button>',
 
         others: ''
           + '<div class="help-portrait hide">'
