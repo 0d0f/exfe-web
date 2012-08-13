@@ -396,7 +396,6 @@
         width: 14px;
         padding: 2px;
         line-height: 14px;
-        background-color: #d5d5d5;
         .border-radius(9px);
         z-index: 1;
       }
@@ -427,23 +426,59 @@
 
     .rsvp-actions {
       position: relative;
-      margin: 14px 0;
+      margin: 15px 0;
       text-align: center;
     }
 
-    .invited {
-      position: absolute;
-      top: 50%;
-      right: 0;
 
-      > span, > i {
-        display: block;
-        //position: absolute;
-        margin-top: -50%;
+    .icon-plus-blue,
+    .icon14-mates-minus,
+    .icon14-mates-add,
+    .icon-minus-red {
+      cursor: pointer;
+    }
+
+    .rsvp-info {
+      line-height: 16px;
+      .by {
+        line-height: 12px;
+        color: #797979;
+        font-size: 10px;
+        span {
+          color: #212121;
+        }
       }
     }
 
-    .mates {
+    .invited {
+      position: relative;
+      top: 50%;
+      right: 0;
+      margin-top: 5px;
+      /*line-height: 14px;*/
+
+      .mates-num {
+        margin-top: -17px;
+        color: #1175A5;
+        text-align: right;
+      }
+
+      .mates-info,
+      .mates-edit {
+      }
+    }
+
+    .attendance {
+      border: 2px solid #1175A5;
+      .border-radius(5px);
+      display: inline-block;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      width: 94px;
+    }
+
+    .mates-edit {
       width: 48px;
       height: 14px;
 
