@@ -37,7 +37,7 @@ class CheckHelper extends ActionController {
             case 'cross':
             case 'cross_edit':
                 $exfee_id=$crossData->getExfeeByCrossId($args["cross_id"]);
-                $userids=$exfeeData->getUserIdsByExfeeId($exfee_id);
+                $userids=$exfeeData->getUserIdsByExfeeId($exfee_id, true);
                 if (in_array($uid, $userids)) {
                     if ($api=="cross_edit") {
                         $by_identity_id=$args["by_identity_id"];
@@ -65,7 +65,7 @@ class CheckHelper extends ActionController {
                 }
                 break;
             case 'conversation':
-                $userids = $exfeeData->getUserIdsByExfeeId($args['exfee_id']);
+                $userids = $exfeeData->getUserIdsByExfeeId($args['exfee_id'], true);
                 if (in_array($uid, $userids)) {
                     return array('check' => true, 'uid' => $uid);
                 }

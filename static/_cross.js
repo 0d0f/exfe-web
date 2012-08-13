@@ -37,7 +37,7 @@ ExfeUtilities = {
 
 
     parseTimestring : function(strTime) {
-        var sptTime = strTime.split(/-|\ +|:/),
+        var sptTime = strTime ? strTime.split(/-|\ +|:/) : [],
             arrTime = [],
             fmtFrom = 'YYYY MM DD hh mm ss a',
             rawTime = null,
@@ -89,7 +89,7 @@ ExfeUtilities = {
 
 
     parsePlacestring : function(strPlace) {
-        var rawPlace = strPlace.split(/\r\n|\r|\n/),
+        var rawPlace = strPlace ? strPlace.split(/\r\n|\r|\n/) : [],
             arrPlace = [];
         for (var i = 0; i < rawPlace.length; i++) {
             if (rawPlace[i]) {
