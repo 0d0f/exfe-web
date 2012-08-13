@@ -127,7 +127,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getUserIdsByExfeeId($exfee_id) {
+    public function getUserIdsByExfeeId($exfee_id, $notConnected = false) {
         $hlpUser      = $this->getHelperByName('User', 'v2');
         $identity_ids = array();
         $sql = "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
@@ -139,7 +139,7 @@ class ExfeeModels extends DataModel {
                 }
             }
         }
-        return $hlpUser->getUserIdsByIdentityIds($identity_ids);
+        return $hlpUser->getUserIdsByIdentityIds($identity_ids, $notConnected);
     }
 
 
