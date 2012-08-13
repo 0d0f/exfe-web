@@ -271,13 +271,15 @@ ExfeeWidget = {
     },
 
 
-    showAll : function() {
+    showAll : function(skipMe) {
         var intAccepted = 0, intTotal = 0;
         $('#' + this.dom_id + ' .thumbnails').html('');
         for (var i = 0; i < Exfee.invitations.length; i++) {
             if (Exfee.invitations[i].rsvp_status !== 'REMOVED') {
                 var intCell = Exfee.invitations[i].mates + 1;
-                this.showOne(Exfee.invitations[i]);
+                if (!skipMe || !ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
+                    this.showOne(Exfee.invitations[i]);
+                }
                 if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
                     intAccepted += intCell;
                 }
@@ -686,7 +688,7 @@ ExfeeWidget = {
                     }
                     if (caughtIdentities.length) {
                         ExfeeCache.cacheIdentities(caughtIdentities);
-                        window.GatherExfeeWidget.showAll();
+                        window.GatherExfeeWidget.showAll(true);
                         window.CrossExfeeWidget.showAll();
                     }
                 }
@@ -1353,7 +1355,6 @@ define(function (require, exports, module) {
             $(this).toggleClass('xbtn-less', moreOrLess);
         });
         $('.cross-background').bind('dblclick', function(event) {
-            event.preventDefault();
             fixBackground(event.shiftKey);
         });
         $('.cross-rsvp .show .change').bind('click', EditCross);
@@ -1402,7 +1403,7 @@ define(function (require, exports, module) {
 
     var fixTitle = function() {
         if (!Cross.title.length) {
-            Cross.title = curIdentity ? 'Meet ' + curIdentity.name : 'Gather a X';
+            Cross.title = curIdentity ? ('Meet ' + curIdentity.name) : 'Gather a X';
         }
     };
 
@@ -1592,7 +1593,7 @@ define(function (require, exports, module) {
 
 
     var ShowExfee = function() {
-        window.GatherExfeeWidget.showAll();
+        window.GatherExfeeWidget.showAll(true);
         window.CrossExfeeWidget.showAll();
     };
 
