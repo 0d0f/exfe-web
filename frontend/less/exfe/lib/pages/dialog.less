@@ -13,7 +13,7 @@
     /*vertical-align: middle;*/
     height: 40px;
     line-height: 40px;
-    padding-left: 10px;
+    color: #333333;
   }
 
   .oauth {
@@ -75,6 +75,7 @@
     width: 340px;
     position: absolute;
     top: 50px;
+    color: #333333;
   }
 
   .authentication {
@@ -101,6 +102,25 @@
   .verify-after {
     margin-top: 16px;
   }
+
+  .identity {
+    .normal() {
+      font-style: normal;
+    }
+
+    &:-moz-placeholder {
+      .normal();
+    }
+
+    &:-ms-input-placeholder {
+      .normal();
+    }
+
+    &::-webkit-input-placeholder {
+      .normal();
+    }
+  }
+
 }
 
 // modal forgot password

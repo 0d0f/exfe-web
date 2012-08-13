@@ -73,7 +73,7 @@
 .modal-main {
   /*min-height: 271px;*/
   min-height: 241px;
-  padding: 30px 30px 59px;
+  padding: 30px 30px 79px;
   border-left: 1px solid rgba(255, 255, 255, .8);
   border-right: 1px solid rgba(255, 255, 255, .8);
   border-bottom: 1px solid rgba(255, 255, 255, .8);
@@ -153,6 +153,10 @@
 
 }
 
+.modal-content {
+  color: #333333;
+}
+
 .modal-footer {
   padding: 0;
   position: absolute;
@@ -224,6 +228,7 @@
     height: 1px;
     background: #b2b2b2;
     margin-top: 9.5px;
+    .box-shadow(0 1px 1px #fafafa);
   }
 
   .form-title:before {
@@ -234,6 +239,7 @@
     width: 1px;
     height: 80px;
     #gradient > .vertical-three-colors(#b2b2b2, #b2b2b2, 50%, #e6e6e6);
+    .box-shadow(1px 0 1px #fafafa);
   }
 
   .form-title:after {
@@ -244,6 +250,7 @@
     width: 1px;
     height: 89.5px;
     #gradient > .vertical-three-colors(#b2b2b2, #b2b2b2, 45%, #e6e6e6);
+    .box-shadow(-1px 0 1px #fafafa);
   }
 
   legend {
@@ -277,6 +284,8 @@
     font-size: 16px;
     margin-bottom: 0;
     .border-radius(0);
+
+    .placeholder(#b2b2b2);
   }
 
   .label-error {

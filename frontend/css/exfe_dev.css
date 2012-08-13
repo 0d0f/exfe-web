@@ -1310,15 +1310,15 @@ select:focus:required:invalid:focus {
 }
 
 :-moz-placeholder {
-  color: #e6e6e6;
+  color: #b2b2b2;
 }
 
 :-ms-input-placeholder {
-  color: #e6e6e6;
+  color: #b2b2b2;
 }
 
 ::-webkit-input-placeholder {
-  color: #e6e6e6;
+  color: #b2b2b2;
 }
 
 .help-block,
@@ -3852,6 +3852,10 @@ input[type="submit"].btn.btn-mini {
   white-space: nowrap;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 .show-inline {
   display: inline;
 }
@@ -3976,7 +3980,7 @@ input[type="submit"].btn.btn-mini {
 
 .modal-main {
   min-height: 241px;
-  padding: 30px 30px 59px;
+  padding: 30px 30px 79px;
   border-right: 1px solid rgba(255, 255, 255, 0.8);
   border-bottom: 1px solid rgba(255, 255, 255, 0.8);
   border-left: 1px solid rgba(255, 255, 255, 0.8);
@@ -4055,6 +4059,10 @@ input[type="submit"].btn.btn-mini {
   line-height: 20px;
 }
 
+.modal-content {
+  color: #333333;
+}
+
 .modal-footer {
   position: absolute;
   bottom: 25px;
@@ -4131,6 +4139,9 @@ input[type="submit"].btn.btn-mini {
   height: 1px;
   margin-top: 9.5px;
   background: #b2b2b2;
+  -webkit-box-shadow: 0 1px 1px #fafafa;
+     -moz-box-shadow: 0 1px 1px #fafafa;
+          box-shadow: 0 1px 1px #fafafa;
 }
 
 .modal-form .form-title:before {
@@ -4149,6 +4160,9 @@ input[type="submit"].btn.btn-mini {
   background-repeat: no-repeat;
   content: '';
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#b2b2b2', endColorstr='#e6e6e6', GradientType=0);
+  -webkit-box-shadow: 1px 0 1px #fafafa;
+     -moz-box-shadow: 1px 0 1px #fafafa;
+          box-shadow: 1px 0 1px #fafafa;
 }
 
 .modal-form .form-title:after {
@@ -4167,6 +4181,9 @@ input[type="submit"].btn.btn-mini {
   background-repeat: no-repeat;
   content: '';
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#b2b2b2', endColorstr='#e6e6e6', GradientType=0);
+  -webkit-box-shadow: -1px 0 1px #fafafa;
+     -moz-box-shadow: -1px 0 1px #fafafa;
+          box-shadow: -1px 0 1px #fafafa;
 }
 
 .modal-form legend {
@@ -4201,6 +4218,21 @@ input[type="submit"].btn.btn-mini {
   -webkit-border-radius: 0;
      -moz-border-radius: 0;
           border-radius: 0;
+}
+
+.modal-form input[type="text"]:-moz-placeholder,
+.modal-form input[type="password"]:-moz-placeholder {
+  color: #b2b2b2;
+}
+
+.modal-form input[type="text"]:-ms-input-placeholder,
+.modal-form input[type="password"]:-ms-input-placeholder {
+  color: #b2b2b2;
+}
+
+.modal-form input[type="text"]::-webkit-input-placeholder,
+.modal-form input[type="password"]::-webkit-input-placeholder {
+  color: #b2b2b2;
 }
 
 .modal-form .label-error {
@@ -5672,9 +5704,13 @@ body {
 }
 
 .modal-id .authorize {
+  /*display: table-cell;*/
+
+  /*vertical-align: middle;*/
+
   height: 40px;
-  padding-left: 10px;
   line-height: 40px;
+  color: #333333;
 }
 
 .modal-id .oauth {
@@ -5740,6 +5776,7 @@ body {
   position: absolute;
   top: 50px;
   width: 340px;
+  color: #333333;
 }
 
 .modal-id .authentication {
@@ -5764,6 +5801,18 @@ body {
 
 .modal-id .verify-after {
   margin-top: 16px;
+}
+
+.modal-id .identity:-moz-placeholder {
+  font-style: normal;
+}
+
+.modal-id .identity:-ms-input-placeholder {
+  font-style: normal;
+}
+
+.modal-id .identity::-webkit-input-placeholder {
+  font-style: normal;
 }
 
 .modal-fp .dropdown-toggle {
@@ -8433,15 +8482,17 @@ body {
   margin-right: 10px;
   font-size: 21px;
   font-weight: normal;
-  line-height: 25px;
 }
 
 .settings-panel .user-infos .user-name input[type="text"] {
   width: 278px;
   height: 28px;
+  padding: 0 5px;
+  margin-bottom: -3px;
+  margin-left: -6px;
   font-size: 21px;
   font-weight: normal;
-  line-height: 25px;
+  line-height: 28px;
 }
 
 .settings-panel .user-infos .changepassword {
@@ -8625,6 +8676,7 @@ body {
 }
 
 .crosses {
+  font-size: 12px;
   line-height: 18px;
 }
 
@@ -8663,6 +8715,7 @@ body {
 
 .crosses .gatherax-box {
   margin-left: -9.5px;
+  font-size: 14px;
 }
 
 .crosses .gatherax-box a {
