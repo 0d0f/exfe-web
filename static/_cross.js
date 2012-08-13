@@ -928,7 +928,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +         '<p>'
                          +           '<span class="xalert-error">Remove yourself?</span>'
                          +           '<br />'
-                         +           '<span class="xalter-info">You will <strong>NOT</strong> be able to access any information in this <span class="x-sign">X</span>. Confirm leaving?</span>'
+                         +           '<span class="xalter-info">You will <strong>NOT</strong> be able to access any information in this <span class="x">·X·</span>. Confirm leaving?</span>'
                          +           '<button class="pull-right btn-cancel">Cancel</button>'
                          +         '</p>'
                          +       '</div>'
