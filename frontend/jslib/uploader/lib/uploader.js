@@ -241,11 +241,21 @@ define('uploader', [], function (require, exports, module) {
     options: {
       limit: 1,
 
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
       onShowBefore: function () {
         docBind(this);
       },
 
       onShowAfter: function (data) {
+
+        console.dir(data);
+
         this._data = data;
 
         this._canvasOffset = this.$('#avatar240').offset();
@@ -631,11 +641,11 @@ define('uploader', [], function (require, exports, module) {
             , authorization = Store.get('authorization')
             , token = authorization.token;
 
-            that._data = data;
-
             if (that._data.identity_id) {
               data.identity_id = that._data.identity_id;
             }
+
+            that._data = data;
 
             // 头像上传
             that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + token, data);
