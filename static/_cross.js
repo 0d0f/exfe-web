@@ -1256,7 +1256,6 @@ define(function (require, exports, module) {
             return;
         }
         var domWidget  = event ? event.target : null,
-            editArea   = $(domWidget).attr('editarea'),
             editMethod = {
             title : [
                 function() {
@@ -1319,20 +1318,26 @@ define(function (require, exports, module) {
         };
         if (event) {
             event.stopPropagation();
-        }
-        while (domWidget && !editArea && domWidget.tagName !== 'BODY') {
-            domWidget = domWidget.parentNode;
-            editArea  = $(domWidget).attr('editarea');
+            if ((event.type === 'click' && Editing)
+              || event.type === 'dblclick') {
+                Editing = $(domWidget).attr('editarea');
+                while (domWidget && !Editing && domWidget.tagName !== 'BODY') {
+                    domWidget = domWidget.parentNode;
+                    Editing   = $(domWidget).attr('editarea');
+                }
+            } else {
+                Editing = '';
+            }
         }
         for (var i in editMethod) {
-            editMethod[i][~~(i === editArea)]();
+            editMethod[i][~~(i === Editing)]();
         }
     };
 
 
     var Editable = function() {
-        $('body').bind('click', EditCross);
-        $(document.body).on('click.data-link', '.cross-title', EditCross);
+        $('body').bind('click dblclick', EditCross);
+        // $(document.body).on('click.data-link', '.cross-title', EditCross);
         $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
             if (event.type === 'keydown') {
                 switch (event.which) {
@@ -1346,7 +1351,6 @@ define(function (require, exports, module) {
             }
             ChangeTitle($(event.target).val(), 'cross');
         });
-        $('.cross-description').bind('click', EditCross);
         $('.cross-description .xbtn-more').bind('click', function(event) {
             event.stopPropagation();
             var moreOrLess = !$(this).hasClass('xbtn-less');
@@ -1356,7 +1360,6 @@ define(function (require, exports, module) {
         $('.cross-background').bind('dblclick', function(event) {
             fixBackground(event.shiftKey);
         });
-        $('.cross-rsvp .show .change').bind('click', EditCross);
         $('.cross-rsvp .edit .accept').bind('click', function() {
             ExfeeWidget.rsvpMe('ACCEPTED');
             ShowRsvp();
@@ -1374,7 +1377,6 @@ define(function (require, exports, module) {
         });
         $('.cross-place .edit').bind('keydown', function(event) {
             if (event.shiftKey && event.which === 13) {
-                //event.preventDefault();
                 event.which = 4;
             }
         });
@@ -1396,7 +1398,6 @@ define(function (require, exports, module) {
                 }
             }
         );
-        // $('.cross-edit').bind('click', SaveCross);
     };
 
 
@@ -1912,6 +1913,7 @@ define(function (require, exports, module) {
         // init gather form
         GatherFormInit();
         // init edit area
+        Editing = '';
         Editable();
         // init marked
         Marked = require('marked');
