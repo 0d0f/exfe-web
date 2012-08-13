@@ -241,11 +241,21 @@ define('uploader', [], function (require, exports, module) {
     options: {
       limit: 1,
 
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
       onShowBefore: function () {
         docBind(this);
       },
 
       onShowAfter: function (data) {
+
+        console.dir(data);
+
         this._data = data;
 
         this._canvasOffset = this.$('#avatar240').offset();
@@ -294,6 +304,7 @@ define('uploader', [], function (require, exports, module) {
             bitmap.updateContext = function (ctx) {
               ctx.translate(canvas.width * self.R[0], canvas.height * self.R[1]);
               ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
 
             // add to canvas
@@ -312,6 +323,7 @@ define('uploader', [], function (require, exports, module) {
             };
             bitmap80.updateContext = function (ctx) {
               ctx.scale(self.SCALE, self.SCALE);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
             stage80.addChild(bitmap80);
             stage80.update();
@@ -403,6 +415,7 @@ define('uploader', [], function (require, exports, module) {
             bitmap.updateContext = function (ctx) {
               ctx.translate(canvas.width * self.R[0], canvas.height * self.R[1]);
               ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
 
             // add to canvas
@@ -421,6 +434,7 @@ define('uploader', [], function (require, exports, module) {
             };
             bitmap80.updateContext = function (ctx) {
               ctx.scale(self.SCALE, self.SCALE);
+              ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
             };
             stage80.addChild(bitmap80);
             stage80.update();
@@ -604,10 +618,10 @@ define('uploader', [], function (require, exports, module) {
           ob.rotation = 90 * this.ri;
           ob.scaleX = bitmap.scaleX / this.sss;
           ob.scaleY = bitmap.scaleY / this.sss;
-
           ob.updateContext = function (ctx) {
             ctx.translate(oc.width * self.R[0], oc.height * self.R[1]);
             ctx.rotate(this.rotation * Stage.DEG_TO_RAD);
+            ctx.webkitImageSmoothingEnabled = ctx.mozImageSmoothingEnabled = false;
           };
 
           os.addChild(ob);
@@ -627,11 +641,11 @@ define('uploader', [], function (require, exports, module) {
             , authorization = Store.get('authorization')
             , token = authorization.token;
 
-            that._data = data;
-
             if (that._data.identity_id) {
               data.identity_id = that._data.identity_id;
             }
+
+            that._data = data;
 
             // 头像上传
             that.filehtml5.startUpload(Config.api_url + '/avatar/update?token=' + token, data);
