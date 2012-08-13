@@ -577,7 +577,6 @@ ExfeeWidget = {
 
 
     showCompleteItems : function(objInput, key, identities) {
-        // @todo: 使用 typeahead 替代这段代码
         var objCompleteList  = $('.ids-popmenu > ol'),
             strCompleteItems = '';
         key = key ? key.toLowerCase() : '';
