@@ -1352,7 +1352,10 @@ define(function (require, exports, module) {
             $('.cross-description').toggleClass('more', moreOrLess);
             $(this).toggleClass('xbtn-less', moreOrLess);
         });
-        $('.shuffle-background').bind('click', fixBackground);
+        $('.cross-background').bind('dblclick', function(event) {
+            event.preventDefault();
+            fixBackground(event.shiftKey);
+        });
         $('.cross-rsvp .show .change').bind('click', EditCross);
         $('.cross-rsvp .edit .accept').bind('click', function() {
             ExfeeWidget.rsvpMe('ACCEPTED');
@@ -1419,19 +1422,24 @@ define(function (require, exports, module) {
     };
 
 
-    var fixBackground = function() {
-        var backgrounds = require('config').backgrounds;
+    var fixBackground = function(purge) {
+        var backgrounds = ExfeUtilities.clone(require('config').backgrounds);
+        backgrounds.push('');
         for (var i = 0; i < Cross.widget.length; i++) {
             if (Cross.widget[i].type === 'Background') {
                 break;
             }
         }
-        var strBgImg = Cross.widget[i].image;
-        do {
-            Cross.widget[i].image = backgrounds[
-                parseInt(Math.random() * backgrounds.length)
-            ];
-        } while (strBgImg === Cross.widget[i].image);
+        if (purge) {
+            Cross.widget[i].image = '';
+        } else {
+            var strBgImg = Cross.widget[i].image;
+            do {
+                Cross.widget[i].image = backgrounds[
+                    parseInt(Math.random() * backgrounds.length)
+                ];
+            } while (strBgImg === Cross.widget[i].image);
+        }
         ShowBackground();
     };
 
