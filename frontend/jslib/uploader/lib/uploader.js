@@ -716,8 +716,10 @@ define('uploader', [], function (require, exports, module) {
           + '<div class="help-portrait hide">'
             + '<div class="modal-body">'
               + '<div class="shadow title">Use default portrait?</div>'
-              + '<p>You have no portrait set, thus a default one will be assigned automatically. It means you will lose your primary visual identification, consequently poor recognizability confuse your friends.</p>'
-              + '<p>Confirm using default portrait?</p>'
+              + '<div class="modal-content">'
+                + '<p>You have no portrait set, thus a default one will be assigned automatically. It means you will lose your primary visual identification, consequently poor recognizability confuse your friends.</p>'
+                + '<p>Confirm using default portrait?</p>'
+              + '</div>'
             + '</div>'
           + '</div>'
 
