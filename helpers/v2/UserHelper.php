@@ -10,8 +10,8 @@ class UserHelper extends ActionController {
     }
 
 
-    public function getUserIdsByIdentityIds($identity_ids) {
-        return $this->modUser->getUserIdsByIdentityIds($identity_ids);
+    public function getUserIdsByIdentityIds($identity_ids, $notConnected = false) {
+        return $this->modUser->getUserIdsByIdentityIds($identity_ids, $notConnected);
     }
 
 
