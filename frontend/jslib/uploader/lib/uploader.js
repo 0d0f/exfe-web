@@ -254,8 +254,6 @@ define('uploader', [], function (require, exports, module) {
 
       onShowAfter: function (data) {
 
-        console.dir(data);
-
         this._data = data;
 
         this._canvasOffset = this.$('#avatar240').offset();
