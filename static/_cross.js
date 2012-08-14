@@ -1343,9 +1343,11 @@ define(function (require, exports, module) {
         };
         if (event) {
             event.stopPropagation();
+            var firstEditArea = $(domWidget).attr('editarea');
+            Editing = firstEditArea === 'rsvp' ? 'rsvp' : Editing;
             if ((event.type === 'click' && Editing)
               || event.type === 'dblclick') {
-                Editing = $(domWidget).attr('editarea');
+                Editing = firstEditArea;
                 while (domWidget && !Editing && domWidget.tagName !== 'BODY') {
                     domWidget = domWidget.parentNode;
                     Editing   = $(domWidget).attr('editarea');
