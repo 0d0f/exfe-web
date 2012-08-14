@@ -969,20 +969,29 @@ define('exfeepanel', [], function (require, exports, module) {
         showRsvp : function() {
             var by_identity = this.invitation.by_identity
                             ? this.invitation.by_identity : curIdentity,
-                next_rsvp   = '';
+                next_rsvp   = '',
+                objSetTo    = $('.exfee_pop_up .rsvp-info .setto i');
             switch (this.invitation.rsvp_status) {
-                case 'NORESPONSE':
-                    next_rsvp = 'ACCEPTED';
-                    break;
                 case 'ACCEPTED':
                     next_rsvp = 'DECLINED';
+                    objSetTo.toggleClass('icon-rsvp-accepted-blue', false);
+                    objSetTo.toggleClass('icon-rsvp-declined-red',  true);
+                    objSetTo.toggleClass('icon-rsvp-noresponse',    false);
                     break;
                 case 'DECLINED':
                     next_rsvp = 'NORESPONSE';
+                    objSetTo.toggleClass('icon-rsvp-accepted-blue', false);
+                    objSetTo.toggleClass('icon-rsvp-declined-red',  false);
+                    objSetTo.toggleClass('icon-rsvp-noresponse',    true);
                     break;
+                case 'NORESPONSE':
                 default:
-                    return;
+                    next_rsvp = 'ACCEPTED';
+                    objSetTo.toggleClass('icon-rsvp-accepted-blue', true);
+                    objSetTo.toggleClass('icon-rsvp-declined-red',  false);
+                    objSetTo.toggleClass('icon-rsvp-noresponse',    false);
             }
+            $('.exfee_pop_up .rsvp-info .setto').attr('rsvp', next_rsvp);
             $('.exfee_pop_up .rsvp-string').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
@@ -1032,7 +1041,6 @@ define('exfeepanel', [], function (require, exports, module) {
             } else {
                 $('.exfee_pop_up .invited').hide();
             }
-            // @todo: $('.exfee_pop_up .rsvp-edit .rsvp-btn').html(next_rsvp).attr('rsvp', next_rsvp);
             if (this.invitation.host) {
                 $('.exfee_pop_up .identities-list .delete i').hide();
                 $('.exfee_pop_up .identities-list .delete button').hide();
@@ -1058,9 +1066,9 @@ define('exfeepanel', [], function (require, exports, module) {
 
 
         bindEvents : function() {
-            $('.exfee_pop_up .mates-add').bind('click',    this.matesAdd);
-            $('.exfee_pop_up .mates-minus').bind('click',  this.matesMinus);
-            $('.exfee_pop_up .rsvp-edit .rsvp-btn').bind('click', this.rsvp); // @todo
+            $('.exfee_pop_up .mates-add').bind('click',        this.matesAdd);
+            $('.exfee_pop_up .mates-minus').bind('click',      this.matesMinus);
+            $('.exfee_pop_up .rsvp-info .setto').bind('click', this.rsvp);
             $('.exfee_pop_up .invited').bind('hover', function(event) {
                 switch (event.type) {
                     case 'mouseenter':
