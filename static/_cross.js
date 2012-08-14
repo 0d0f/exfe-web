@@ -1280,8 +1280,7 @@ define(function (require, exports, module) {
         if (!$('.cross-container').length || readOnly) {
             return;
         }
-        var domWidget  = event ? event.target : null,
-            editMethod = {
+        var editMethod = {
             title : [
                 function() {
                     $('.cross-title .show').show();
@@ -1341,21 +1340,19 @@ define(function (require, exports, module) {
                 },
             ]
         };
+ console.log(event.type);
         if (event) {
-            event.stopPropagation();
-            var firstEditArea = $(domWidget).attr('editarea');
+            var firstEditArea = $(this).attr('editarea');
+
             Editing = firstEditArea === 'rsvp' ? 'rsvp' : Editing;
             if ((event.type === 'click' && Editing)
               || event.type === 'dblclick') {
                 Editing = firstEditArea;
-                while (domWidget && !Editing && domWidget.tagName !== 'BODY') {
-                    domWidget = domWidget.parentNode;
-                    Editing   = $(domWidget).attr('editarea');
-                }
             } else {
                 Editing = '';
             }
         }
+
         for (var i in editMethod) {
             editMethod[i][~~(i === Editing)]();
         }
@@ -1363,8 +1360,8 @@ define(function (require, exports, module) {
 
 
     var Editable = function() {
-        $('body').bind('click dblclick', EditCross);
-        // $(document.body).on('click.data-link', '.cross-title', EditCross);
+        $('body').on('click dblclick', '[editarea]', EditCross);
+        //@todo test  .data-link
         $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
             if (event.type === 'keydown') {
                 switch (event.which) {
@@ -1548,6 +1545,11 @@ define(function (require, exports, module) {
             $('.cross-description .xbtn-more').hide();
         }
         $('.cross-description .edit').html(Cross.description);
+        if (Editing || Cross.description) {
+            $('.cross-description').show();
+        } else {
+            $('.cross-description').hide();
+        }
     };
 
 
