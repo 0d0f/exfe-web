@@ -890,7 +890,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
                          +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="60" height="60" />'
-                         +         '<span class="rb"><i class=""></i></span>'
+                         +         '<i class="icon10-plus-1 lt"></i>'
                          +       '</span>'
                          +       '<h4>' + invitation.identity.name + '</h4>'
                          +     '</div>'
@@ -907,11 +907,16 @@ define('exfeepanel', [], function (require, exports, module) {
                          +          '<i class="pull-left mates-add icon14-mates-add"></i>'
                          +        '</div>'
                          +      '</div>'
-                         +      '<div class="rsvp-info">'
-                         +        '<div class="attendance"></div>'
+                         +      '<div class="rsvp-info hide">'
+                         +        '<div class="pull-right pointer underline setto">'
+                         +          '<span>set to</span> <i class="icon-rsvp-declined-red"></i>'
+                         +        '</div>'
+                         +        '<div class="rsvp-string"></div>'
                          +        '<div class="by">by <span class="name"></span></div>'
                          +      '</div>'
-                         +      '<div class="attendance"></div>'
+                         +      '<div class="rsvp-status">'
+                         +        '<div class="rsvp-string attendance"></div>'
+                         +      '</div>'
                          +     '</div>'
                          +     '<div class="identities">'
                          +       '<ul class="identities-list">'
@@ -978,7 +983,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 default:
                     return;
             }
-            $('.exfee_pop_up .rsvp-info .attendance').html(
+            $('.exfee_pop_up .rsvp-string').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
             if (by_identity) {
@@ -994,7 +999,7 @@ define('exfeepanel', [], function (require, exports, module) {
             if (this.invitation.rsvp_status === 'ACCEPTED') {
                 $('.exfee_pop_up .invited').show();
                 if (this.mates_edit) {
-                    $('.exfee_pop_up .rsvp-actions > .attendance').hide();
+                    $('.exfee_pop_up .rsvp-status').hide();
                     $('.exfee_pop_up .rsvp-info').hide();
                     $('.exfee_pop_up .invited .together-with').show();
                     if (this.invitation.mates) {
@@ -1007,8 +1012,8 @@ define('exfeepanel', [], function (require, exports, module) {
                     }
                     $('.exfee_pop_up .invited .mates-num').hide();
                 } else {
-                    $('.exfee_pop_up .rsvp-actions > .attendance').hide();
-                    $('.exfee_pop_up .rsvp-info').show();
+                    $('.exfee_pop_up .rsvp-status').show();
+                    $('.exfee_pop_up .rsvp-info').hide();
                     $('.exfee_pop_up .mates-edit').hide();
                     $('.exfee_pop_up .invited .together-with').hide();
                     if (this.invitation.mates) {
@@ -1060,6 +1065,14 @@ define('exfeepanel', [], function (require, exports, module) {
                         ExfeePanel.mates_edit = false;
                 }
                 ExfeePanel.showRsvp();
+            });
+            $('.exfee_pop_up .rsvp-status').bind('mouseenter', function() {
+                $('.exfee_pop_up .rsvp-info').show();
+                $(this).hide();
+            });
+            $('.exfee_pop_up .rsvp-info').bind('mouseleave', function() {
+                $('.exfee_pop_up .rsvp-status').show();
+                $(this).hide();
             });
             $('.exfee_pop_up .identities-list .delete i').bind('click',      function(event) {
                 event.stopPropagation();
