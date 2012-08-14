@@ -7235,8 +7235,7 @@ body {
 .cross-container {
   position: relative;
   z-index: 3;
-  /*padding-top: 80px;*/
-
+  padding-top: 80px;
 }
 
 .cross-opts {
@@ -7279,7 +7278,7 @@ body {
 }
 
 .cross-title {
-  padding: 80px 0 20px;
+  padding: 0 0 20px;
   margin: 0 40px 0;
 }
 
@@ -7445,8 +7444,14 @@ body {
   display: none;
 }
 
+.no-bg .cross-container {
+  padding-top: 50px;
+}
+
 .no-bg .cross-title {
-  padding: 50px 0 30px;
+  /*padding: 50px 0 30px;*/
+
+  padding: 0 0 30px;
 }
 
 .single-line {
@@ -8320,6 +8325,29 @@ body {
 
 #gather-title {
   width: 460px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+#gather-exfee-input {
+  background: rgba(255, 255, 255, 0.66);
+}
+
+#gather-title:-moz-placeholder,
+#gather-exfee-input:-moz-placeholder,
+#cross-exfee-input:-moz-placeholder {
+  color: #b2b2b2;
+}
+
+#gather-title:-ms-input-placeholder,
+#gather-exfee-input:-ms-input-placeholder,
+#cross-exfee-input:-ms-input-placeholder {
+  color: #b2b2b2;
+}
+
+#gather-title::-webkit-input-placeholder,
+#gather-exfee-input::-webkit-input-placeholder,
+#cross-exfee-input::-webkit-input-placeholder {
+  color: #b2b2b2;
 }
 
 #gather-exfee {
