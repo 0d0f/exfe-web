@@ -7612,12 +7612,45 @@ body {
           border-radius: 3px;
 }
 
-.avatar .rb {
+.avatar .rt,
+.avatar .rb,
+.avatar .lb,
+.avatar .lt {
   position: absolute;
+  z-index: 1001;
+}
+
+.avatar .rt {
+  top: 1px;
+  right: 1px;
+}
+
+.avatar .rb {
   right: -3px;
   bottom: -3px;
-  z-index: 1;
-  display: block;
+}
+
+.avatar .lb {
+  bottom: 1px;
+  left: 1px;
+}
+
+.avatar .lt {
+  top: 1px;
+  left: 1px;
+}
+
+.avatar .rb {
+  /*display: block;*/
+
+  /*position: absolute;*/
+
+  /*right: -3px;*/
+
+  /*bottom: -3px;*/
+
+  /*z-index: 1;*/
+
 }
 
 .cross-rsvp {
@@ -7764,34 +7797,6 @@ body {
   text-align: center;
   text-overflow: clip;
   white-space: nowrap;
-}
-
-.cross-identities .rt,
-.cross-identities .rb,
-.cross-identities .lb,
-.cross-identities .lt {
-  position: absolute;
-  z-index: 1001;
-}
-
-.cross-identities .rt {
-  top: 1px;
-  right: 1px;
-}
-
-.cross-identities .rb {
-  right: -3px;
-  bottom: -3px;
-}
-
-.cross-identities .lb {
-  bottom: 1px;
-  left: 1px;
-}
-
-.cross-identities .lt {
-  top: 1px;
-  left: 1px;
 }
 
 .cross-identities .avatar > img {
@@ -8039,8 +8044,6 @@ body {
 }
 
 .exfeepanel .rsvp-info {
-  position: relative;
-  left: -40px;
   line-height: 16px;
 }
 
@@ -8055,11 +8058,11 @@ body {
 }
 
 .exfeepanel .rsvp-info .setto {
-  position: absolute;
-  top: 8px;
-  right: 0;
+  margin-top: 8px;
+  margin-right: 30px;
   font-size: 10px;
   line-height: 12px;
+  color: #7f7f7f;
 }
 
 .exfeepanel .invited {

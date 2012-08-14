@@ -28,17 +28,31 @@
     .border-radius(3px);
   }
 
-  .rb {
-    display: block;
+  .rt, .rb, .lb, .lt {
     position: absolute;
+    z-index: 1001;
+  }
+
+  .rt {
+    top: 1px;
+    right: 1px;
+  }
+
+  .rb {
     right: -3px;
     bottom: -3px;
-    //height: 14px;
-    //width: 14px;
-    //padding: 2px;
-    //line-height: 14px;
-    z-index: 1;
   }
+
+  .lb {
+    bottom: 1px;
+    left: 1px;
+  }
+
+  .lt {
+    top: 1px;
+    left: 1px;
+  }
+
 }
 
 .cross-rsvp {
@@ -192,31 +206,6 @@
         .text-overflow-clip;
       }
 
-    }
-
-    .rt, .rb, .lb, .lt {
-      position: absolute;
-      z-index: 1001;
-    }
-
-    .rt {
-      top: 1px;
-      right: 1px;
-    }
-
-    .rb {
-      right: -3px;
-      bottom: -3px;
-    }
-
-    .lb {
-      bottom: 1px;
-      left: 1px;
-    }
-
-    .lt {
-      top: 1px;
-      left: 1px;
     }
 
     .avatar > img {
