@@ -299,8 +299,8 @@ ExfeeWidget = {
           +     '" external_username="' + invitation.identity.external_username.toLowerCase() + '">'
           +     '<span class="avatar">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
-          +         '<span class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></span>'
-          +         '<span class="lt">' + (invitation.mates ? invitation.mates : '') + '</span>'
+          +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
+          +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
        // +         '<span class="rb"><i class="icon-time"></i></span>'
           +     '</span>'
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
@@ -890,7 +890,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
                          +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="60" height="60" />'
-                         +         '<i class="icon10-plus-1 lt"></i>'
+                         +         '<i class="lt"></i>'
                          +       '</span>'
                          +       '<h4>' + invitation.identity.name + '</h4>'
                          +     '</div>'
@@ -986,6 +986,11 @@ define('exfeepanel', [], function (require, exports, module) {
             $('.exfee_pop_up .rsvp-string').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
+            for (var i = 1; i < 10; i++) {
+                $('.exfee_pop_up .avatar-name .lt').toggleClass(
+                    'icon10-plus-' + i, this.invitation.mates === i
+                );
+            }
             if (by_identity) {
                 if (this.invitation.identity.id === by_identity.id) {
                     $('.exfee_pop_up .rsvp-info .by').hide();
