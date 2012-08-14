@@ -8039,6 +8039,8 @@ body {
 }
 
 .exfeepanel .rsvp-info {
+  position: relative;
+  left: -40px;
   line-height: 16px;
 }
 
@@ -8050,6 +8052,14 @@ body {
 
 .exfeepanel .rsvp-info .by span {
   color: #212121;
+}
+
+.exfeepanel .rsvp-info .setto {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  font-size: 10px;
+  line-height: 12px;
 }
 
 .exfeepanel .invited {
