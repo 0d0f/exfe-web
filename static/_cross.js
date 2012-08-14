@@ -890,7 +890,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
                          +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="60" height="60" />'
-                         +         '<span class="rb"><i class=""></i></span>'
+                         +         '<i class="icon10-plus-1 lt"></i>'
                          +       '</span>'
                          +       '<h4>' + invitation.identity.name + '</h4>'
                          +     '</div>'
