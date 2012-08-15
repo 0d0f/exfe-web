@@ -222,6 +222,8 @@ ExfeeWidget = {
 
     api_url          : '',
 
+    focus            : {},
+
 
     make : function(dom_id, editable, callback) {
         this.dom_id   = dom_id;
@@ -238,11 +240,24 @@ ExfeeWidget = {
                         $('#' + dom_id + ' .total').css('visibility', 'visible');
                         break;
                     case 'mouseleave':
-                        if ($('#' + dom_id + ' .exfee-input').val() === '') {
+                        if (!ExfeeWidget.focus[dom_id]
+                         && $('#' + dom_id + ' .exfee-input').val() === '') {
                             $('#' + dom_id + ' .invite').css('visibility', 'hidden');
                             $('#' + dom_id + ' .total').css('visibility', 'hidden');
                         }
                 }
+            }
+        );
+        $('body').bind('click', function() {
+            if (!ExfeeWidget.focus[dom_id]
+             && $('#' + dom_id + ' .exfee-input').val() === '') {
+                $('#' + dom_id + ' .invite').css('visibility', 'hidden');
+                $('#' + dom_id + ' .total').css('visibility', 'hidden');
+            }
+        });
+        $('#' + this.dom_id + ' .input-xlarge').bind(
+            'focus blur', function(event) {
+                ExfeeWidget.focus[dom_id] = event.type === 'focus';
             }
         );
         $('#' + this.dom_id + ' .input-xlarge').bind(
@@ -1140,7 +1155,6 @@ define('exfeepanel', [], function (require, exports, module) {
                 ExfeePanel.showRsvp();
             }
         },
-
 
     };
 
