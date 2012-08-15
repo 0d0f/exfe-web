@@ -147,7 +147,7 @@ class ExfeeModels extends DataModel {
         // init
         $hlpIdentity = $this->getHelperByName('identity', 'v2');
         // adding new identity
-        if (!$invitation->identity->id) {
+        if (!$hlpIdentity->checkIdentityById($invitation->identity->id)) {
             $invitation->identity->id = $hlpIdentity->addIdentity(
                 ['provider'          => $invitation->identity->provider,
                  'external_id'       => $invitation->identity->external_id,
@@ -336,7 +336,7 @@ class ExfeeModels extends DataModel {
         $delExfee = array();
         foreach ($invitations as $toI => $toItem) {
             // adding new identity
-            if (!$toItem->identity->id) {
+            if (!$hlpIdentity->checkIdentityById($toItem->identity->id)) {
                 $toItem->identity->id = $hlpIdentity->addIdentity(
                     ['provider'          => $toItem->identity->provider,
                      'external_id'       => $toItem->identity->external_id,

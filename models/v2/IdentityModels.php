@@ -72,6 +72,14 @@ class IdentityModels extends DataModel {
     }
 
 
+    public function checkIdentityById($id) {
+        $rawIdentity = $this->getRow(
+            "SELECT `id` FROM `identities` WHERE `id` = {$id}"
+        );
+        return $rawIdentity ? (int) $rawIdentity['id'] : false;
+    }
+
+
     public function getIdentityById($id, $user_id = null, $withRevoked = false) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `id` = {$id}"
@@ -206,11 +214,11 @@ class IdentityModels extends DataModel {
         }
         // check current identity
         $curIdentity = $this->getRow(
-            "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND " + (
+            "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND " . (
                 $external_id
               ? "`external_identity` = '{$external_id}'"
               : "`external_username` = '{$external_username}'"
-            ) + ' LIMIT 1'
+            ) . ' LIMIT 1'
         );
         if (intval($curIdentity['id']) > 0) {
             return intval($curIdentity['id']);
