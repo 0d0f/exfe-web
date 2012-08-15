@@ -1282,7 +1282,8 @@ define(function (require, exports, module) {
         if (!$('.cross-container').length || readOnly) {
             return;
         }
-        var domWidget  = event ? event.target : null,
+        var oldEditing = Editing,
+            domWidget  = event ? event.target : null,
             editMethod = {
             title : [
                 function() {
@@ -1344,7 +1345,11 @@ define(function (require, exports, module) {
             ],
             background : [
                 function() {},
-                function() { fixBackground(event ? event.shiftKey : false); }
+                function() {
+                    if (event && event.type === 'dblclick' && (oldEditing || !Cross.id)) {
+                        fixBackground(event ? event.shiftKey : false);
+                    }
+                }
             ]
         };
         if (event) {
@@ -1361,8 +1366,13 @@ define(function (require, exports, module) {
                 Editing = '';
             }
         }
-        for (var i in editMethod) {
-            editMethod[i][~~(i === Editing)]();
+        if (Editing === 'background') {
+            editMethod['background'][1]();
+            Editing = oldEditing;
+        } else {
+            for (var i in editMethod) {
+                editMethod[i][~~(i === Editing)]();
+            }
         }
     };
 
