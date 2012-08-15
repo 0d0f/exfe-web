@@ -5314,7 +5314,7 @@ input[type="submit"].btn.btn-mini {
 }
 
 .xalert-info {
-  color: #1175A5;
+  color: #3a6ea5;
 }
 
 .xalert-normal {
@@ -5623,7 +5623,7 @@ body {
   font-size: 21px;
   font-weight: 300;
   line-height: 24px;
-  color: #1175A5;
+  color: #3a6ea5;
 }
 
 .navbar .user-panel .meta .attended-x {
@@ -7345,7 +7345,7 @@ body {
   font-size: 34px;
   font-weight: 300;
   line-height: 40px;
-  color: #1175A5;
+  color: #3a6ea5;
   -ms-word-break: break-all;
       word-break: break-word;
   word-break: break-all;
@@ -7394,7 +7394,7 @@ body {
   font-size: 18px;
   line-height: 32px;
   text-align: center;
-  border: 2px solid #1175A5;
+  border: 2px solid #3a6ea5;
   -webkit-border-radius: 10px;
      -moz-border-radius: 10px;
           border-radius: 10px;
@@ -7766,7 +7766,7 @@ body {
   margin-left: -85px;
   font-size: 36px;
   line-height: 42px;
-  color: #1175A5;
+  color: #3a6ea5;
   text-align: right;
 }
 
@@ -7803,7 +7803,7 @@ body {
   bottom: -4px;
   left: -4px;
   display: none;
-  border: 4px solid #1175A5;
+  border: 4px solid #3a6ea5;
   -webkit-border-radius: 5px;
      -moz-border-radius: 5px;
           border-radius: 5px;
@@ -7882,7 +7882,7 @@ body {
   font-size: 12px;
   line-height: 14px;
   color: #eaeaea;
-  background: #1175A5;
+  background: #3a6ea5;
 }
 
 .invite-list .avatar-invite {
@@ -8075,7 +8075,7 @@ body {
 }
 
 .exfeepanel .invited .mates-num {
-  color: #1175A5;
+  color: #3a6ea5;
   text-align: right;
 }
 
@@ -8085,7 +8085,7 @@ body {
   height: 24px;
   line-height: 24px;
   text-align: center;
-  border: 2px solid #1175A5;
+  border: 2px solid #3a6ea5;
   -webkit-border-radius: 5px;
      -moz-border-radius: 5px;
           border-radius: 5px;
@@ -8429,7 +8429,7 @@ body {
 }
 
 .blue {
-  color: #1175A5;
+  color: #3a6ea5;
 }
 
 .settings-panel {
@@ -8461,7 +8461,7 @@ body {
   font-size: 21px;
   font-weight: 300;
   line-height: 26px;
-  color: #1175A5;
+  color: #3a6ea5;
   text-shadow: 0 1px 2px rgba(20, 24, 26, 0.25);
 }
 
@@ -8892,7 +8892,7 @@ body {
 }
 
 .invitations h3 {
-  color: #1175A5;
+  color: #3a6ea5;
 }
 
 .invitations .cross-box {
@@ -8901,7 +8901,7 @@ body {
 
 .invitations .cross-box h5 {
   overflow: hidden;
-  color: #1175A5;
+  color: #3a6ea5;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
