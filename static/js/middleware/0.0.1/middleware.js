@@ -5,45 +5,6 @@ define('middleware', function (require, exports, module) {
 
   var middleware = module.exports = {};
 
-  /*
-  middleware.basicAuth = function (req, res, next) {
-    if (req.session.checked) {
-      next();
-      return;
-    }
-
-    var signin, token, user_id, content;
-
-    var meta_signin = document.getElementsByName('signin-token')[0];
-    if (meta_signin) {
-      content = JSON.parse(meta_signin.content);
-      Store.set('signin', signin = content.signin);
-      document.getElementsByTagName('head')[0].removeChild(meta_signin);
-      // TODO: 总感觉放这里不合适，后面再想想看 {{{
-      Bus.emit('xapp:usertoken', signin.token, signin.user_id, 2);
-      Bus.emit('xapp:usersignin');
-      // }}}
-    }
-
-    signin = signin || Store.get('signin');
-    token = (signin && signin.token) || false;
-    user_id = (signin && signin.user_id) || false;
-
-    if (!token) {
-      next();
-      return;
-    }
-
-    req.session.user_id = user_id;
-
-    req.session.token = token;
-
-    req.session.checked = true;
-
-    next();
-  };
-  */
-
   /**
    * Rules:
    *      1. 先检查 localStorage `authorization`
@@ -105,9 +66,9 @@ define('middleware', function (require, exports, module) {
   };
 
 
+
   // errorHandler
   middleware.errorHandler = function (req, res, next) {
-    console.log('error handler');
     res.redirect('/404');
   };
 

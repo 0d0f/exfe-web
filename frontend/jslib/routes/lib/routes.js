@@ -525,6 +525,34 @@ define('routes', function (require, exports, module) {
 
 
 
+  // Get User Data
+  routes.refreshAuthUser = function (req, res, next) {
+    var session = req.session
+      , authorization = session.authorization;
+
+    if (!authorization) {
+      next();
+      return;
+    }
+
+    // Get User
+    Bus.emit('app:api:getuser'
+      , authorization.token
+      , authorization.user_id
+      , function (data) {
+          var user = data.user;
+          Store.set('user', session.user = user);
+
+          next();
+        }
+        // 继续使用本地缓存
+      , function (data) {
+          next();
+        }
+    );
+  };
+
+
   // Helpers:
   // ----------------------------
   function redirectToProfile(req, res) {
@@ -542,13 +570,11 @@ define('routes', function (require, exports, module) {
     }
 
     var authorization = session.authorization;
-    //Bus.once('app:user:signin:after' function (user) {
+    //alert(1);
+    //Bus.once('app:user:signin:after', function (user) {
       //done(user, res);
     //});
     Bus.emit('app:user:signin', authorization.token, authorization.user_id, true);
-  }
-
-  function setBrowsingIdentity() {
   }
 
 });

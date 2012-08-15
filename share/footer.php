@@ -13,6 +13,7 @@
   <script src="/static/js/store/1.3.3/store.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/marked/0.2.5/marked.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/handlebars/1.0.0/handlebars.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+  <script src="/static/js/handlebarsext/0.0.1/handlebarsext.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/jqfocusend/0.0.1/jqfocusend.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/js/jqoffset/0.0.1/jqoffset.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
