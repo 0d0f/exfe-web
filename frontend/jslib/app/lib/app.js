@@ -8,7 +8,6 @@ define(function (require, exports, module) {
   var middleware = require('middleware')
     , routes = require('routes');
 
-
   var lightsaber = require('lightsaber');
 
 
@@ -33,7 +32,7 @@ define(function (require, exports, module) {
 
 
   // gather a x - `/#gather`
-  app.get('/#gather', routes.gather);
+  app.get('/#gather', routes.refreshAuthUser, routes.gather);
 
 
   // resolve-token - `/#token=5c9a628f2b4f863435bc8d599a857c21`
@@ -41,23 +40,23 @@ define(function (require, exports, module) {
 
 
   // cross - `/#!233`
-  app.get(/^\/#!([1-9][0-9]*)$/, routes.cross);
+  app.get(/^\/#!([1-9][0-9]*)$/, routes.refreshAuthUser, routes.cross);
 
 
   // opening a private invitation X.
   // cross - `/#!233/mk7`
-  app.get(/^\/#!([1-9][0-9]*)\/([a-zA-Z0-9]{3})$/, routes.crossInvitation);
+  app.get(/^\/#!([1-9][0-9]*)\/([a-zA-Z0-9]{3})$/, routes.refreshAuthUser, routes.crossInvitation);
 
 
   // cross-token - `/#!token=63435bc8d599a857c215c9a628f2b4f8`
-  app.get(/^\/#!token=([a-zA-Z0-9]{32})$/, routes.crossToken);
+  app.get(/^\/#!token=([a-zA-Z0-9]{32})$/, routes.refreshAuthUser, routes.crossToken);
 
 
   // profile
   //        email:    cfd@exfe.com        - `/#cfd@exfe.com`
   //      twitter:    @cfddream           - `/#@cfddream`
   //     facebook:    cfddream@facebook   - `/#cfddream@facebook`
-  app.get(/^\/#([^@\/\s\!=]+)?@([^@\/\s]+)(?:\/?(.*))$/, routes.profile);
+  app.get(/^\/#([^@\/\s\!=]+)?@([^@\/\s]+)(?:\/?(.*))$/, routes.refreshAuthUser, routes.profile);
 
 
   // invalid link

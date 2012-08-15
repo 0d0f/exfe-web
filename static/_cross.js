@@ -908,7 +908,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +        '</div>'
                          +      '</div>'
                          +      '<div class="rsvp-info hide">'
-                         +        '<div class="pull-left">'
+                         +        '<div class="pull-left rsvp-content">'
                          +          '<div class="rsvp-string"></div>'
                          +          '<div class="by">by <span class="name"></span></div>'
                          +        '</div>'
