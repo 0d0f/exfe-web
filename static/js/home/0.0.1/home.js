@@ -213,9 +213,9 @@ define(function (require) {
           //$('.sign-in').trigger('click.dialog.data-api');
       //}
       })
-    .on('click.home', '.x-home .modal-backdrop', function () {
-        $('.sign-in').data('dialog').hide();
-      })
+    //.on('click.home', '.x-home .modal-backdrop', function () {
+        //$('.sign-in').data('dialog').hide();
+      //})
     .on('click.home', '.x-home .triangle, .x-home .exfe-toy', function (e) {
           if ($START.hasClass('hide')) {
             $START.removeClass('hide');
