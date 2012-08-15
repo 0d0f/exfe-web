@@ -1376,13 +1376,19 @@ define(function (require, exports, module) {
             }
             ChangeTitle($(event.target).val(), 'cross');
         });
+        $('.cross-description').bind('click', function() {
+            if (!Editing) {
+                $('.cross-description').toggleClass('more', true);
+                $('.cross-description .xbtn-more').toggleClass('xbtn-less', true);
+            }
+        });
         $('.cross-description .xbtn-more').bind('click', function(event) {
             event.stopPropagation();
             var moreOrLess = !$(this).hasClass('xbtn-less');
             $('.cross-description').toggleClass('more', moreOrLess);
             $(this).toggleClass('xbtn-less', moreOrLess);
         });
-        $('.cross-background').bind('dblclick', function(event) {
+        $('.cross-container').bind('dblclick', function(event) {
             fixBackground(event.shiftKey);
         });
         $('.cross-rsvp .edit .accept').bind('click', function() {
@@ -1532,6 +1538,7 @@ define(function (require, exports, module) {
 
 
     var ShowDescription = function() {
+        var expended = $('.cross-description .xbtn-more').hasClass('xbtn-less');
         $('.cross-description').toggleClass('more', true);
         $('.cross-description .xbtn-more').toggleClass('xbtn-less', false);
         var domDesc = Cross.description
@@ -1543,6 +1550,10 @@ define(function (require, exports, module) {
         if ($('.cross-description .show').height() > 180) {
             $('.cross-description').toggleClass('more', false);
             $('.cross-description .xbtn-more').show();
+            if (expended) {
+                $('.cross-description').toggleClass('more', true);
+                $('.cross-description .xbtn-more').toggleClass('xbtn-less', true);
+            }
         } else {
             $('.cross-description .xbtn-more').hide();
         }
