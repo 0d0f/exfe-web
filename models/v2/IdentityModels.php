@@ -206,11 +206,11 @@ class IdentityModels extends DataModel {
         }
         // check current identity
         $curIdentity = $this->getRow(
-            "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND " + (
+            "SELECT `id` FROM `identities` WHERE `provider` = '{$provider}' AND " . (
                 $external_id
               ? "`external_identity` = '{$external_id}'"
               : "`external_username` = '{$external_username}'"
-            ) + ' LIMIT 1'
+            ) . ' LIMIT 1'
         );
         if (intval($curIdentity['id']) > 0) {
             return intval($curIdentity['id']);
