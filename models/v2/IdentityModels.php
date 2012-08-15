@@ -72,6 +72,14 @@ class IdentityModels extends DataModel {
     }
 
 
+    public function checkIdentityById($id) {
+        $rawIdentity = $this->getRow(
+            "SELECT `id` FROM `identities` WHERE `id` = {$id}"
+        );
+        return $rawIdentity ? (int) $rawIdentity['id'] : false;
+    }
+
+
     public function getIdentityById($id, $user_id = null, $withRevoked = false) {
         return $this->packageIdentity($this->getRow(
             "SELECT * FROM `identities` WHERE `id` = {$id}"

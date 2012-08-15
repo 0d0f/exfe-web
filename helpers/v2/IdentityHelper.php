@@ -19,6 +19,11 @@ class IdentityHelper extends ActionController {
     }
 
 
+    public function checkIdentityById($id) {
+        return $this->modIdentity->checkIdentityById($id);
+    }
+
+
     public function getIdentityById($id) {
         return $this->modIdentity->getIdentityById($id);
     }
