@@ -1280,7 +1280,8 @@ define(function (require, exports, module) {
         if (!$('.cross-container').length || readOnly) {
             return;
         }
-        var editMethod = {
+        var domWidget  = event ? event.target : null,
+            editMethod = {
             title : [
                 function() {
                     $('.cross-title .show').show();
@@ -1340,19 +1341,20 @@ define(function (require, exports, module) {
                 },
             ]
         };
- console.log(event.type);
         if (event) {
-            var firstEditArea = $(this).attr('editarea');
-
+            var firstEditArea = $(domWidget).attr('editarea');
             Editing = firstEditArea === 'rsvp' ? 'rsvp' : Editing;
-            if ((event.type === 'click' && Editing)
+            if ((event.type === 'click' && (Editing || !Cross.id))
               || event.type === 'dblclick') {
                 Editing = firstEditArea;
+                while (domWidget && !Editing && domWidget.tagName !== 'BODY') {
+                    domWidget = domWidget.parentNode;
+                    Editing   = $(domWidget).attr('editarea');
+                }
             } else {
                 Editing = '';
             }
         }
-
         for (var i in editMethod) {
             editMethod[i][~~(i === Editing)]();
         }
@@ -1360,8 +1362,7 @@ define(function (require, exports, module) {
 
 
     var Editable = function() {
-        $('body').on('click dblclick', '[editarea]', EditCross);
-        //@todo test  .data-link
+        $('body').on('click dblclick.data-link', EditCross);
         $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
             if (event.type === 'keydown') {
                 switch (event.which) {
@@ -1524,8 +1525,8 @@ define(function (require, exports, module) {
                 $('#gather-title').val(Cross.title);
                 break;
             default:
-                $('#gather-title').val(Cross.title);
                 $('.cross-title .edit').val(Cross.title);
+                $('#gather-title').val(Cross.title);
         }
     };
 
@@ -1533,18 +1534,19 @@ define(function (require, exports, module) {
     var ShowDescription = function() {
         $('.cross-description').toggleClass('more', true);
         $('.cross-description .xbtn-more').toggleClass('xbtn-less', false);
-        $('.cross-description .show').html(
-            Cross.description
-          ? Marked.parse(Cross.description)
-          : 'Click here to describe something about this X.'
-        );
+        var domDesc = Cross.description
+                    ? Marked.parse(Cross.description)
+                    : 'Click here to describe something about this X.';
+        if ($('.cross-description .show').html() !== domDesc) {
+            $('.cross-description .show').html(domDesc);
+        }
         if ($('.cross-description .show').height() > 180) {
             $('.cross-description').toggleClass('more', false);
             $('.cross-description .xbtn-more').show();
         } else {
             $('.cross-description .xbtn-more').hide();
         }
-        $('.cross-description .edit').html(Cross.description);
+        $('.cross-description .edit').val(Cross.description);
         if (Editing || Cross.description) {
             $('.cross-description').show();
         } else {
