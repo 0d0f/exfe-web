@@ -301,7 +301,6 @@ ExfeeWidget = {
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
           +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
-       // +         '<span class="rb"><i class="icon-time"></i></span>'
           +     '</span>'
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
           + '</li>'
@@ -1006,7 +1005,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 if (this.invitation.identity.id === by_identity.id) {
                     $('.exfee_pop_up .rsvp-info .by').hide();
                 } else {
-                    $('.exfee_pop_up .rsvp-info .by name').html(by_identity.name);
+                    $('.exfee_pop_up .rsvp-info .by .name').html(by_identity.name);
                     $('.exfee_pop_up .rsvp-info .by').show();
                 }
             } else {
@@ -1042,6 +1041,8 @@ define('exfeepanel', [], function (require, exports, module) {
                 }
             } else {
                 $('.exfee_pop_up .invited').hide();
+                $('.exfee_pop_up .rsvp-status').show();
+                $('.exfee_pop_up .rsvp-info').hide();
             }
             if (this.invitation.host) {
                 $('.exfee_pop_up .identities-list .delete i').hide();
@@ -1282,7 +1283,8 @@ define(function (require, exports, module) {
         if (!$('.cross-container').length || readOnly) {
             return;
         }
-        var domWidget  = event ? event.target : null,
+        var oldEditing = Editing,
+            domWidget  = event ? event.target : null,
             editMethod = {
             title : [
                 function() {
@@ -1332,7 +1334,7 @@ define(function (require, exports, module) {
                     $('.cross-place .show').hide();
                     $('.cross-place .xbtn-more').hide();
                     $('.cross-place .edit').show().focus();
-                },
+                }
             ],
             rsvp : [
                 function() {
@@ -1340,7 +1342,15 @@ define(function (require, exports, module) {
                 },
                 function() {
                     ShowRsvp(true);
-                },
+                }
+            ],
+            background : [
+                function() {},
+                function() {
+                    if (event && event.type === 'dblclick' && (oldEditing || !Cross.id)) {
+                        fixBackground(event ? event.shiftKey : false);
+                    }
+                }
             ]
         };
         if (event) {
@@ -1357,8 +1367,13 @@ define(function (require, exports, module) {
                 Editing = '';
             }
         }
-        for (var i in editMethod) {
-            editMethod[i][~~(i === Editing)]();
+        if (Editing === 'background') {
+            editMethod['background'][1]();
+            Editing = oldEditing;
+        } else {
+            for (var i in editMethod) {
+                editMethod[i][~~(i === Editing)]();
+            }
         }
     };
 
@@ -1389,9 +1404,6 @@ define(function (require, exports, module) {
             var moreOrLess = !$(this).hasClass('xbtn-less');
             $('.cross-description').toggleClass('more', moreOrLess);
             $(this).toggleClass('xbtn-less', moreOrLess);
-        });
-        $('.cross-container').bind('dblclick', function(event) {
-            fixBackground(event.shiftKey);
         });
         $('.cross-rsvp .edit .accept').bind('click', function() {
             ExfeeWidget.rsvpMe('ACCEPTED');
