@@ -7101,7 +7101,7 @@ body {
   font-size: 22px;
   font-style: italic;
   font-weight: 300;
-  line-height: 32px;
+  line-height: 1;
   color: #99aec5;
   text-align: center;
   text-shadow: 0 1px 0 #ffffff;
@@ -8842,6 +8842,18 @@ body {
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='rgba(230, 230, 230, 0)', endColorstr='rgba(179, 179, 179, 0.5)', GradientType=1);
 }
 
+.siderbar .cross-list {
+  margin-top: 5px;
+}
+
+.siderbar .cross-box {
+  margin-bottom: 8px;
+}
+
+.siderbar .cross-box:last-child {
+  margin-bottom: 0;
+}
+
 .siderbar .cross-box > a {
   display: block;
   padding: 5px 9px;
@@ -8851,13 +8863,9 @@ body {
 }
 
 .siderbar .cross-box > a:hover {
-  background-color: rgba(230, 230, 230, 0.25);
-  background-image: -moz-linear-gradient(270deg, rgba(250, 250, 250, 0.5), rgba(230, 230, 230, 0.25));
-  background-image: -ms-linear-gradient(270deg, rgba(250, 250, 250, 0.5), rgba(230, 230, 230, 0.25));
-  background-image: -webkit-linear-gradient(270deg, rgba(250, 250, 250, 0.5), rgba(230, 230, 230, 0.25));
-  background-image: -o-linear-gradient(270deg, rgba(250, 250, 250, 0.5), rgba(230, 230, 230, 0.25));
-  background-image: linear-gradient(270deg, rgba(250, 250, 250, 0.5), rgba(230, 230, 230, 0.25));
-  background-repeat: repeat-x;
+  /*#gradient > .directional(rgba(250, 250, 250, .5), rgba(230, 230, 230, .25), 270deg);*/
+
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .siderbar time {
@@ -8941,11 +8949,13 @@ body {
 }
 
 .updates .cross-box > a {
-  border-bottom: 1px dashed rgba(179, 179, 179, 0.5);
+  /*border-bottom: 1px dashed rgba(179, 179, 179, .5)*/
+
 }
 
 .updates .cross-box:last-child > a {
-  border-bottom: 1px dashed rgba(0, 0, 0, 0);
+  /*border-bottom: 1px dashed rgba(0, 0, 0, 0);*/
+
 }
 
 .ios-app {
@@ -9116,8 +9126,9 @@ body {
   line-height: 30px;
 }
 
-.newbie.nbg-2 .gatherax {
-  cursor: pointer;
+.newbie.nbg-2 .nbg-f {
+  padding-top: 5px;
+  text-align: center;
 }
 
 .newbie.nbg-2 .bb {
