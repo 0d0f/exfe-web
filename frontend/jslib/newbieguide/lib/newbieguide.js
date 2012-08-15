@@ -32,7 +32,7 @@ define(function (require) {
       + 'datings, sports, trips, etc. For any intent you<br />'
       + 'need to gather people, <span class="x-sign">EXFE</span> them!'
       + '</p>'
-      //+ '<p><span class="gatherax"><span class="bb">Gather a </span><span class="bb x">·X·</span></span> now!</p>'
+      + '<div class="nbg-f"><span class="pointer gatherax"><span class="bb">Gather a </span><span class="bb x">·X·</span></span> now!</div>'
     + '</div>',
 
     '<div class="newbie nbg-3">'
