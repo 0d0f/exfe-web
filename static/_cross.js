@@ -1006,7 +1006,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 if (this.invitation.identity.id === by_identity.id) {
                     $('.exfee_pop_up .rsvp-info .by').hide();
                 } else {
-                    $('.exfee_pop_up .rsvp-info .by name').html(by_identity.name);
+                    $('.exfee_pop_up .rsvp-info .by .name').html(by_identity.name);
                     $('.exfee_pop_up .rsvp-info .by').show();
                 }
             } else {
@@ -1042,6 +1042,8 @@ define('exfeepanel', [], function (require, exports, module) {
                 }
             } else {
                 $('.exfee_pop_up .invited').hide();
+                $('.exfee_pop_up .rsvp-status').show();
+                $('.exfee_pop_up .rsvp-info').hide();
             }
             if (this.invitation.host) {
                 $('.exfee_pop_up .identities-list .delete i').hide();
