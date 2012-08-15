@@ -1330,7 +1330,7 @@ define(function (require, exports, module) {
                     $('.cross-place .show').hide();
                     $('.cross-place .xbtn-more').hide();
                     $('.cross-place .edit').show().focus();
-                },
+                }
             ],
             rsvp : [
                 function() {
@@ -1338,7 +1338,11 @@ define(function (require, exports, module) {
                 },
                 function() {
                     ShowRsvp(true);
-                },
+                }
+            ],
+            background : [
+                function() {},
+                function() { fixBackground(event ? event.shiftKey : false); }
             ]
         };
         if (event) {
@@ -1387,9 +1391,6 @@ define(function (require, exports, module) {
             var moreOrLess = !$(this).hasClass('xbtn-less');
             $('.cross-description').toggleClass('more', moreOrLess);
             $(this).toggleClass('xbtn-less', moreOrLess);
-        });
-        $('.cross-container').bind('dblclick', function(event) {
-            fixBackground(event.shiftKey);
         });
         $('.cross-rsvp .edit .accept').bind('click', function() {
             ExfeeWidget.rsvpMe('ACCEPTED');
