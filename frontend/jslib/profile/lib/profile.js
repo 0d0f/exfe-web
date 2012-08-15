@@ -162,7 +162,7 @@ define(function (require, exports, module) {
       if (v.identity.id === identity_id) return true;
     })[0];
     var html = '';
-    if (i.rsvp_status !== 'INTERESTED') {
+    if (i && i.rsvp_status !== 'INTERESTED') {
       var html = '<div><i class="';
       html += 'icon-rsvp-' + i.rsvp_status.toLowerCase() + '"></i> ';
       html += i.rsvp_status.charAt(0) + i.rsvp_status.substr(1).toLowerCase() + ': ' + i.identity.name + '</div>';
