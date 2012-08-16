@@ -224,6 +224,10 @@ ExfeeWidget = {
 
     focus            : {},
 
+    soft_limit       : 12,
+
+    hard_limit       : 20,
+
 
     make : function(dom_id, editable, callback) {
         this.dom_id   = dom_id;
@@ -323,6 +327,11 @@ ExfeeWidget = {
     },
 
 
+    showLimitWarning : function(display) {
+        $('.exfee-warning').toggleClass('hide', display === false);
+    },
+
+
     showTip : function(target) {
         var objTarget         = $(target),
             objOffset         = objTarget.offset(),
@@ -405,7 +414,8 @@ ExfeeWidget = {
 
 
     addExfee : function(identity, host, rsvp) {
-        if (identity) {
+        var items = ExfeeWidget.summary().items;
+        if (items < ExfeeWidget.soft_limit && identity) {
             var idx = this.checkExistence(identity);
             if (idx === false) {
                 Exfee.invitations.push({
@@ -418,7 +428,9 @@ ExfeeWidget = {
                 Exfee.invitations[idx].rsvp_status = 'NORESPONSE';
             }
             this.callback();
+            return true;
         }
+        return false;
     },
 
 
@@ -462,12 +474,13 @@ ExfeeWidget = {
 
 
     summary : function() {
-        var rtnResult = {accepted : 0, total : 0, accepted_invitations : []};
+        var rtnResult = {items : 0, accepted : 0, total : 0, accepted_invitations : []};
         for (var i = 0; i < Exfee.invitations.length; i++) {
             if (Exfee.invitations[i].rsvp_status === 'REMOVED'
              || Exfee.invitations[i].rsvp_status === 'NOTIFICATION') {
                 continue;
             }
+            rtnResult.items++;
             var num = 1 + Exfee.invitations[i].mates;
             rtnResult.total += num;
             if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
@@ -717,34 +730,35 @@ ExfeeWidget = {
         var strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
             arrValid   = [],
-            arrInvalid = [];
+            arrInvalid = [],
+            strItem    = '',
+            strTail    = '';
         if (ExfeeWidget.last_inputed[objInput[0].id] === strInput && !force) {
             return;
         } else {
             ExfeeWidget.last_inputed[objInput[0].id]  =  strInput;
         }
         for (var i = 0; i < arrInput.length; i++) {
-            if (!(arrInput[i] = ExfeUtilities.trim(arrInput[i]))) {
-                delete arrInput[i];
-            }
-        }
-        for (i = 0; i < arrInput.length; i++) {
-            var item = ExfeeWidget.parseAttendeeInfo(arrInput[i]);
-            if (item && (parseInt(i) < arrInput.length - 1 || force)) {
-                arrValid.push(item);
-            } else {
-                arrInvalid.push(ExfeUtilities.trim(arrInput[i]));
+            if ((strItem = ExfeUtilities.trim(arrInput[i]))) {
+                var item = ExfeeWidget.parseAttendeeInfo(strItem);
+                if (item && (~~i < arrInput.length - 1 || force) && this.addExfee(item)) {
+                    arrValid.push(item);
+                } else {
+                    arrInvalid.push(arrInput[i]);
+                }
             }
         }
         var newInput = arrInvalid.join('; ');
         if (newInput !== strInput) {
             objInput.val(newInput);
         }
-        for (i = 0; i < arrValid.length; i++) {
-            this.addExfee(arrValid[i]);
-        }
         this.ajaxIdentity(arrValid);
-        this.checkComplete(objInput, arrInvalid.pop());
+        if (ExfeeWidget.summary().items >= ExfeeWidget.soft_limit) {
+            this.showLimitWarning();
+        } else {
+            this.showLimitWarning(false);
+        }
+        this.checkComplete(objInput, strTail);
     },
 
 
@@ -1273,7 +1287,9 @@ define(function (require, exports, module) {
             }
         });
         $('.cross-conversation .comment-form .pointer').bind('click', function() {
-            postConversation($('.cross-conversation .comment-form textarea').val());
+            var objInput = $('.cross-conversation .comment-form textarea');
+            postConversation(objInput.val());
+            objInput.val('');
         });
         $('.cross-conversation .comment-form textarea').bind('keydown', function(event) {
             switch (event.which) {
@@ -1287,7 +1303,7 @@ define(function (require, exports, module) {
                     }
                     break;
             }
-        })
+        });
     };
 
 
@@ -1744,7 +1760,7 @@ define(function (require, exports, module) {
                        +   '</span>'
                        +   '<div class="comment">'
                        +     '<p>'
-                       +       '<span class="author"><strong>DM.</strong>:&nbsp;</span>'
+                       +       '<span class="author"><strong>' + message.by_identity.name + '</strong>:&nbsp;</span>'
                        +          strContent
                        +       '<span class="pull-right date">'
                        +         '<time>' + moment(message.created_at, 'YYYY-MM-DD HH:mm:ss Z').fromNow() + '</time>'
@@ -1775,7 +1791,7 @@ define(function (require, exports, module) {
                     || myInvitation.rsvp_status === 'INTERESTED'
                     || myInvitation.rsvp_status === 'DECLINED') {
                 var attendance = '', by = '';
-                switch(myInvitation.rsvp_status) {
+                switch (myInvitation.rsvp_status) {
                     case 'ACCEPTED':
                         attendance = 'Accepted';
                         by         = 'Confirmed by ';
