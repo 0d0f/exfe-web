@@ -1230,6 +1230,36 @@ define(function (require, exports, module) {
     };
 
 
+    var postConversation = function(strMessage) {
+        if (strMessage) {
+            var post = {
+                by_identity_id : curIdentity.id,
+                content        : strMessage.substr(0, 233),
+                id             : 0,
+                relative       : [],
+                type           : 'Post',
+                via            : 'exfe.com'
+            };
+            Api.request(
+                'addConversation',
+                {
+                    resources : {exfee_id : Exfee.id},
+                    type      : 'POST',
+                    data      : JSON.stringify(post)
+                },
+                function(data) {
+                    $('.cross-opts .saving').hide();
+                    ShowMessage(data.post);
+                },
+                function(data) {
+                    $('.cross-opts .saving').hide();
+                    console.log(data);
+                }
+            );
+        }
+    }
+
+
     var ButtonsInit = function() {
         $('#cross-form-discard').bind('click', function() {
             window.location = '/';
@@ -1241,46 +1271,22 @@ define(function (require, exports, module) {
                 alert('Require Signin!');
             }
         });
-        $('.cross-conversation .comment-form textarea').bind(
-            'keydown',
-            function(event) {
-                switch (event.which) {
-                    case 13: // enter
-                        var objInput = $(event.target),
-                            message  = objInput.val();
-                        if (!event.shiftKey && message.length) {
-                            $('.cross-opts .saving').show();
-                            event.preventDefault();
-                            objInput.val('');
-                            var post = {
-                                by_identity_id : curIdentity.id,
-                                content        : message.substr(0, 233),
-                                id             : 0,
-                                relative       : [],
-                                type           : 'Post',
-                                via            : 'exfe.com'
-                            };
-                            Api.request(
-                                'addConversation',
-                                {
-                                    resources : {exfee_id : Exfee.id},
-                                    type      : 'POST',
-                                    data      : JSON.stringify(post)
-                                },
-                                function(data) {
-                                    $('.cross-opts .saving').hide();
-                                    ShowMessage(data.post);
-                                },
-                                function(data) {
-                                    $('.cross-opts .saving').hide();
-                                    console.log(data);
-                                }
-                            );
-                        }
-                        break;
-                }
+        $('.cross-conversation .comment-form .pointer').bind('click', function() {
+            postConversation($('.cross-conversation .comment-form textarea').val());
+        });
+        $('.cross-conversation .comment-form textarea').bind('keydown', function(event) {
+            switch (event.which) {
+                case 13: // enter
+                    var objInput = $(this);
+                    if (!event.shiftKey) {
+                        $('.cross-opts .saving').show();
+                        event.preventDefault();
+                        postConversation(objInput.val());
+                        objInput.val('');
+                    }
+                    break;
             }
-        )
+        })
     };
 
 
