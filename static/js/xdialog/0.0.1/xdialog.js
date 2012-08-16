@@ -408,6 +408,11 @@ define(function (require, exports, module) {
                       + '<i class="help-subject"></i>'
                       + '<i class="help-inline small-loading hide"></i>'
                       + '<div class="xalert xalert-error hide" style="margin-top: 5px;"></div>'
+
+                      + '<div class="xalert xalert-error authenticate hide">'
+                        + '<span class="xalert-fail">Please directly authenticate this identity above.</span><br />To enable password sign-in for this identity, set an <span class="x-sign">EXFE</span> password first in your profile page.'
+                      + '</div>'
+
                     + '</div>'
                   + '</div>'
 
@@ -1654,8 +1659,11 @@ define(function (require, exports, module) {
 
         footer: ''
           //+ '<button class="pull-right xbtn-blue xbtn-merge hide">Merge with account above</button>'
-          + '<button class="xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
-          + '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
+          //+ '<button class="xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
+          //+ '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
+          // note: 暂时没有`merge` 功能，按钮放右边
+          + '<button class="pull-right xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
+          + '<button class="pull-right xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
 
       },
 
@@ -1738,6 +1746,7 @@ define(function (require, exports, module) {
         if (that.switchTabType === 'd24') {
           t = 'd01';
         }
+        that.$('.authenticate').addClass('hide');
 
         if (data) {
           // test
@@ -1775,8 +1784,9 @@ define(function (require, exports, module) {
           else if (data.registration_flag === 'AUTHENTICATE') {
             t = 'd00';
             that.$('.help-subject')
-              .removeClass('icon14-clear')
-              .addClass('icon14-question');
+              .removeClass('icon14-question')
+              .addClass('icon14-clear');
+            that.$('.authenticate').removeClass('hide');
           }
           // VERIFY
           else if (data.registration_flag === 'VERIFY') {
@@ -1800,6 +1810,7 @@ define(function (require, exports, module) {
       // TODO: 后期优化掉
       Bus.off('widget-dialog-identification-nothing');
       Bus.on('widget-dialog-identification-nothing', function () {
+        that.$('.authenticate').addClass('hide');
         that.$('.user-identity').addClass('hide');
         that.$('[for="identity"]').removeClass('label-error')
           .find('span').text('');
