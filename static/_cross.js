@@ -1272,7 +1272,9 @@ define(function (require, exports, module) {
             }
         });
         $('.cross-conversation .comment-form .pointer').bind('click', function() {
-            postConversation($('.cross-conversation .comment-form textarea').val());
+            var objInput = $('.cross-conversation .comment-form textarea');
+            postConversation(objInput.val());
+            objInput.val('');
         });
         $('.cross-conversation .comment-form textarea').bind('keydown', function(event) {
             switch (event.which) {
