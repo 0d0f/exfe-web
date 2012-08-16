@@ -150,6 +150,12 @@ define(function (require, exports, module) {
   Handlebars.registerHelper('printTime3', function (time, options) {
     //time  = Handlebars.helpers['crossItem'].call(this, time, options);
     var b = time.begin_at;
+
+    // 没有 date & 没有 date_word 显示空
+    if (!b.date) {
+      return b.date_word || '';
+    }
+
     // Cross 时区
     var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
     // 创建一个 moment date-object
@@ -589,7 +595,7 @@ define(function (require, exports, module) {
         }
     });
 
-    $BODY.on('dblclick.profile', '.identity-list li.editable .username > em', function (e) {
+    $BODY.on('dblclick.profile', '.identity-list li.editable .identity > span.identityname em', function (e) {
       var value = $.trim($(this).html());
       var $input = $('<input type="text" value="' + value + '" class="username-input" />');
       $input.data('oldValue', value);
