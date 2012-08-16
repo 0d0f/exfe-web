@@ -74,11 +74,11 @@ class CrossModels extends DataModel {
             if ($place_id > 0 && $old_cross
              && ($old_cross->place->title       !== $cross->place->title
               || $old_cross->place->description !== $cross->place->description
-              || $old_cross->place->lng         !== $cross->place->lng
-              || $old_cross->place->lat         !== $cross->place->lat
+              || $old_cross->place->lng         !=  $cross->place->lng
+              || $old_cross->place->lat         !=  $cross->place->lat
               || $old_cross->place->provider    !== $cross->place->provider
-              || $old_cross->place->external_id !== $cross->place->external_id
-              || $old_cross->place->id          !== $place_id)) {
+              || $old_cross->place->external_id !=  $cross->place->external_id
+              || $old_cross->place->id          !=  $place_id)) {
                 array_push($updatefields, "place_id = $place_id");
                 $cross_updated['place'] = $updated;
             }
