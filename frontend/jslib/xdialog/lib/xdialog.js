@@ -512,7 +512,7 @@ define(function (require, exports, module) {
 
         body: ''
           + '<div class="shadow title">“Rome wasn\'t built in a day.”</div>'
-          + '<p><span class="x-sign">EXFE</span> [ˈɛksfi] is still in <span class="pilot">pilot</span> stage (with <span class="sandbox">SANDBOX</span> tag). We’re building up blocks of it, thus some bugs and unfinished pages. Any feedback, please email <span class="feedback">feedback@exfe.com</span>. Our apologies for any trouble you may encounter, much appreciated.</p>'
+          + '<p><span class="x-sign">EXFE</span> [ˈɛksfi] is still in <span class="pilot">pilot</span> stage (with <span class="sandbox">SANDBOX</span> tag). We’re building up blocks, consequently some bugs or unfinished pages may happen. Our apologies for any trouble you may encounter. Any feedback, please email <span class="feedback">feedback@exfe.com</span>. Much appreciated.</p>'
       }
     }
   };
@@ -586,19 +586,19 @@ define(function (require, exports, module) {
           + '<div class="center shadow title" style="margin-bottom: 0;">Thanks for using <span class="x-sign">EXFE</span>.</div>'
           + '<p class="center">A utility for hanging out with friends.</p>'
           + '<div class="modal-content">'
-          + '<p class="provider-email hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a <span class="x">·X·</span>.</p>'
-          + '<p class="provider-other hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you need to call up friends to do something, just gather a <span class="x">·X·</span>.</p>'
-          + '<p><span class="x-sign">EXFE</span> your friends.</p>'
-          + '<p class="provider-email hide" style="color: #191919;">*A welcome email has been sent to your mailbox. Please check to verify your address.*</p>'
-          + '<div class="provider-other hide">'
-            + '<label class="pull-left checkbox pointer">'
-              + '<input type="checkbox" id="follow" value="1" checked />'
-              + 'Follow @<span class="x-sign">EXFE</span> on Twitter.'
-            + '</label>'
-            + '&nbsp;<span class="underline why">why?</span>'
-            + '<p class="pull-left answer hide">So we could send you invitation through Direct Message.</p>'
+            + '<p class="provider-email hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a <span class="x">·X·</span>.</p>'
+            + '<p class="provider-other hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you need to call up friends to do something, just gather a <span class="x">·X·</span>.</p>'
+            + '<p><span class="x-sign">EXFE</span> your friends.</p>'
+            + '<p class="provider-email hide" style="color: #191919;">*A welcome email has been sent to your mailbox. Please check to verify your address.*</p>'
+            + '<div class="provider-other hide">'
+              + '<label class="pull-left checkbox pointer">'
+                + '<input type="checkbox" id="follow" value="1" checked />'
+                + 'Follow @<span class="x-sign">EXFE</span> on Twitter.'
+              + '</label>'
+              + '&nbsp;<span class="underline why">why?</span>'
+              + '<p class="pull-left answer hide">So we could send you invitation through Direct Message.</p>'
+            + '</div>'
           + '</div>',
-          + '</div>'
 
         footer: ''
           + '<button class="pull-right xbtn-white xbtn-go">GO</button>'
