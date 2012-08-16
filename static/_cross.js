@@ -224,6 +224,10 @@ ExfeeWidget = {
 
     focus            : {},
 
+    soft_limit       : 12,
+
+    hard_limit       : 20,
+
 
     make : function(dom_id, editable, callback) {
         this.dom_id   = dom_id;
@@ -405,7 +409,8 @@ ExfeeWidget = {
 
 
     addExfee : function(identity, host, rsvp) {
-        if (identity) {
+        var items = this.summary().items;
+        if (items < ExfeeWidget.soft_limit && identity) {
             var idx = this.checkExistence(identity);
             if (idx === false) {
                 Exfee.invitations.push({
@@ -418,7 +423,9 @@ ExfeeWidget = {
                 Exfee.invitations[idx].rsvp_status = 'NORESPONSE';
             }
             this.callback();
+            return true;
         }
+        return false;
     },
 
 
@@ -462,12 +469,13 @@ ExfeeWidget = {
 
 
     summary : function() {
-        var rtnResult = {accepted : 0, total : 0, accepted_invitations : []};
+        var rtnResult = {items : 0, accepted : 0, total : 0, accepted_invitations : []};
         for (var i = 0; i < Exfee.invitations.length; i++) {
             if (Exfee.invitations[i].rsvp_status === 'REMOVED'
              || Exfee.invitations[i].rsvp_status === 'NOTIFICATION') {
                 continue;
             }
+            rtnResult.items++;
             var num = 1 + Exfee.invitations[i].mates;
             rtnResult.total += num;
             if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
@@ -717,34 +725,30 @@ ExfeeWidget = {
         var strInput   = objInput.val(),
             arrInput   = strInput.split(/,|;|\r|\n|\t/),
             arrValid   = [],
-            arrInvalid = [];
+            arrInvalid = [],
+            strItem    = '',
+            strTail    = '';
         if (ExfeeWidget.last_inputed[objInput[0].id] === strInput && !force) {
             return;
         } else {
             ExfeeWidget.last_inputed[objInput[0].id]  =  strInput;
         }
         for (var i = 0; i < arrInput.length; i++) {
-            if (!(arrInput[i] = ExfeUtilities.trim(arrInput[i]))) {
-                delete arrInput[i];
-            }
-        }
-        for (i = 0; i < arrInput.length; i++) {
-            var item = ExfeeWidget.parseAttendeeInfo(arrInput[i]);
-            if (item && (parseInt(i) < arrInput.length - 1 || force)) {
-                arrValid.push(item);
-            } else {
-                arrInvalid.push(ExfeUtilities.trim(arrInput[i]));
+            if ((strItem = ExfeUtilities.trim(arrInput[i]))) {
+                var item = ExfeeWidget.parseAttendeeInfo(strItem);
+                if (item && (~~i < arrInput.length - 1 || force) && this.addExfee(item)) {
+                    arrValid.push(item);
+                } else {
+                    arrInvalid.push(arrInput[i]);
+                }
             }
         }
         var newInput = arrInvalid.join('; ');
         if (newInput !== strInput) {
             objInput.val(newInput);
         }
-        for (i = 0; i < arrValid.length; i++) {
-            this.addExfee(arrValid[i]);
-        }
         this.ajaxIdentity(arrValid);
-        this.checkComplete(objInput, arrInvalid.pop());
+        this.checkComplete(objInput, strTail);
     },
 
 
@@ -1288,7 +1292,7 @@ define(function (require, exports, module) {
                     }
                     break;
             }
-        })
+        });
     };
 
 
