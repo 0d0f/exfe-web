@@ -327,6 +327,11 @@ ExfeeWidget = {
     },
 
 
+    showLimitWarning : function(display) {
+        $('.exfee-warning').toggleClass('hide', display === false);
+    },
+
+
     showTip : function(target) {
         var objTarget         = $(target),
             objOffset         = objTarget.offset(),
@@ -409,7 +414,7 @@ ExfeeWidget = {
 
 
     addExfee : function(identity, host, rsvp) {
-        var items = this.summary().items;
+        var items = ExfeeWidget.summary().items;
         if (items < ExfeeWidget.soft_limit && identity) {
             var idx = this.checkExistence(identity);
             if (idx === false) {
@@ -748,6 +753,11 @@ ExfeeWidget = {
             objInput.val(newInput);
         }
         this.ajaxIdentity(arrValid);
+        if (ExfeeWidget.summary().items >= ExfeeWidget.soft_limit) {
+            this.showLimitWarning();
+        } else {
+            this.showLimitWarning(false);
+        }
         this.checkComplete(objInput, strTail);
     },
 
@@ -1719,7 +1729,7 @@ define(function (require, exports, module) {
                        +   '</span>'
                        +   '<div class="comment">'
                        +     '<p>'
-                       +       '<span class="author"><strong>DM.</strong>:&nbsp;</span>'
+                       +       '<span class="author"><strong>' + message.by_identity.name + '</strong>:&nbsp;</span>'
                        +          strContent
                        +       '<span class="pull-right date">'
                        +         '<time>' + moment(message.created_at, 'YYYY-MM-DD HH:mm:ss Z').fromNow() + '</time>'
@@ -1750,7 +1760,7 @@ define(function (require, exports, module) {
                     || myInvitation.rsvp_status === 'INTERESTED'
                     || myInvitation.rsvp_status === 'DECLINED') {
                 var attendance = '', by = '';
-                switch(myInvitation.rsvp_status) {
+                switch (myInvitation.rsvp_status) {
                     case 'ACCEPTED':
                         attendance = 'Accepted';
                         by         = 'Confirmed by ';
