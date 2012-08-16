@@ -35,7 +35,9 @@
   <script src="/static/js/profile/0.0.1/profile.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <!-- cross -->
+  <script src="/static/js/placepanel/0.0.1/placepanel.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
   <script src="/static/_cross.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
+
   <script src="/static/js/user/0.0.1/user.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
 
   <!-- lightsaber -->

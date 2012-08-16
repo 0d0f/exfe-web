@@ -1365,10 +1365,6 @@ define(function (require, exports, module) {
             ],
             place : [
                 function() {
-                    //$('.cross-place .show').show();
-                    //$('.cross-place .edit').hide();
-                    //ChangePlace($('.cross-place .edit').val());
-                    //AutoSaveCross();
                     if (placepanel) {
                       AutoSaveCross();
                       placepanel.hide();
@@ -1381,11 +1377,10 @@ define(function (require, exports, module) {
                       placepanel = new PlacePanel({
                         options: {
                           events: {
-                            'click textarea': function (e) {
-                              console.log('click');
+                            'keyup textarea': function (e) {
+                              ChangePlace($(e.currentTarget).val());
                             },
                             'keypress textarea': function (e) {
-                              console.log(1);
                               ChangePlace($(e.currentTarget).val());
                             }
                           }
@@ -1394,11 +1389,11 @@ define(function (require, exports, module) {
                       $('div.placepanel').attr('editarea', 'placepanel').css({
                         left: offset.left - 320 - 20,
                         top: offset.top
-                      });
+                      })
+                      .find('textarea')
+                        .val(Cross.place.title + (Cross.place.description ? ('\n' + Cross.place.description) : ''))
+                        .focusend();
                     }
-                    //$('.cross-place .show').hide();
-                    //$('.cross-place .xbtn-more').hide();
-                    //$('.cross-place .edit').show().focus();
                 }
             ],
             rsvp : [
