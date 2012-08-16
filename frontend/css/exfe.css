@@ -7715,6 +7715,7 @@ body {
 .avatar-comment > .comment {
   position: relative;
   min-height: 40px;
+  word-wrap: break-word;
 }
 
 .avatar-comment > .comment p {
@@ -9320,4 +9321,45 @@ body {
 .tip-lock {
   font-size: 12px;
   line-height: 18px;
+}
+
+.placepanel {
+  position: absolute;
+  z-index: 1060;
+  width: 278px;
+  padding: 20px;
+  background-color: #e6e6e6;
+  background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -o-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.placepanel .textfield {
+  position: relative;
+}
+
+.placepanel .textfield .icon24-place {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.placepanel .textfield textarea {
+  width: 233px;
+  height: 102px;
+  padding: 5px;
+  margin: 0;
+  background: #fbfbfb;
+  border: 1px solid #d5d5d5;
+  resize: none;
 }
