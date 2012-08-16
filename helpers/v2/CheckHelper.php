@@ -71,7 +71,7 @@ class CheckHelper extends ActionController {
                 }
                 break;
             case 'conversation_add':
-                $userids = $exfeeData->getUserIdsByExfeeId($args['exfee_id']);
+                $userids = $exfeeData->getUserIdsByExfeeId($args['exfee_id'], true);
                 $idntIds = $exfeeData->getIdentityIdsByExfeeId($args['exfee_id']);
                 if (in_array($uid, $userids)
                  && in_array($args['identity_id'], $idntIds)) {
