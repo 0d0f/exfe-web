@@ -248,7 +248,7 @@ define('user', function (require, exports, module) {
           + '</div>'
           + '<div class="body">'
             + '{{#with browsing}}'
-            + '<div>You are browsing this page as {{capitalize default_identity.providek}} identity:</div>'
+            + '<div>You are browsing this page as {{capitalize default_identity.provider}} identity:</div>'
             + '<div class="identity">'
               + '<span class="pull-right avatar">'
                 + '<img src="{{default_identity.avatar_filename}}" width="20" height="20" alt="" />'
