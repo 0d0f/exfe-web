@@ -1165,6 +1165,7 @@ define('exfeepanel', [], function (require, exports, module) {
 define(function (require, exports, module) {
 
     var $        = require('jquery'),
+        PlacePanel = require('placepanel'),
         Timeline = [],
         rawCross = {
             title : '', description : '', by_identity : {id : 0},
@@ -1298,6 +1299,9 @@ define(function (require, exports, module) {
     };
 
 
+    // 地点实例
+    var placepanel = null;
+
     var EditCross = function(event) {
         // @todo by @Leask: 暂时确保在 Cross 页
         if (!$('.cross-container').length || readOnly) {
@@ -1345,15 +1349,40 @@ define(function (require, exports, module) {
             ],
             place : [
                 function() {
-                    $('.cross-place .show').show();
-                    $('.cross-place .edit').hide();
-                    ChangePlace($('.cross-place .edit').val());
-                    AutoSaveCross();
+                    //$('.cross-place .show').show();
+                    //$('.cross-place .edit').hide();
+                    //ChangePlace($('.cross-place .edit').val());
+                    //AutoSaveCross();
+                    if (placepanel) {
+                      AutoSaveCross();
+                      placepanel.hide();
+                      placepanel = null;
+                    }
                 },
                 function() {
-                    $('.cross-place .show').hide();
-                    $('.cross-place .xbtn-more').hide();
-                    $('.cross-place .edit').show().focus();
+                    if (!placepanel) {
+                      var offset = $('div.cross-place').offset();
+                      placepanel = new PlacePanel({
+                        options: {
+                          events: {
+                            'click textarea': function (e) {
+                              console.log('click');
+                            },
+                            'keypress textarea': function (e) {
+                              console.log(1);
+                              ChangePlace($(e.currentTarget).val());
+                            }
+                          }
+                        }
+                      });
+                      $('div.placepanel').attr('editarea', 'placepanel').css({
+                        left: offset.left - 320 - 20,
+                        top: offset.top
+                      });
+                    }
+                    //$('.cross-place .show').hide();
+                    //$('.cross-place .xbtn-more').hide();
+                    //$('.cross-place .edit').show().focus();
                 }
             ],
             rsvp : [
@@ -1390,6 +1419,8 @@ define(function (require, exports, module) {
         if (Editing === 'background') {
             editMethod['background'][1]();
             Editing = oldEditing;
+        } else if (Editing === 'placepanel') {
+          return;
         } else {
             for (var i in editMethod) {
                 editMethod[i][~~(i === Editing)]();
