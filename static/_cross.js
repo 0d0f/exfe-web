@@ -240,32 +240,21 @@ ExfeeWidget = {
             function(event) {
                 switch (event.type) {
                     case 'mouseenter':
-                        $('#' + dom_id + ' .invite').css('visibility', 'visible');
-                        $('#' + dom_id + ' .total').css('visibility', 'visible');
+                        $('#' + dom_id + ' .invite-form').css('visibility', 'visible');
+                        $('#' + dom_id + ' .total').css('visibility',       'visible');
                         break;
                     case 'mouseleave':
-                        if (!ExfeeWidget.focus[dom_id]
+                        if (!ExfeeWidget.focus[dom_id + '-input']
                          && $('#' + dom_id + ' .exfee-input').val() === '') {
-                            $('#' + dom_id + ' .invite').css('visibility', 'hidden');
-                            $('#' + dom_id + ' .total').css('visibility', 'hidden');
+                            $('#' + dom_id + ' .invite-form').css('visibility', 'hidden');
+                            $('#' + dom_id + ' .total').css('visibility',       'hidden');
+                            ExfeeWidget.showLimitWarning(false);
                         }
                 }
             }
         );
-        $('body').bind('click', function() {
-            if (!ExfeeWidget.focus[dom_id]
-             && $('#' + dom_id + ' .exfee-input').val() === '') {
-                $('#' + dom_id + ' .invite').css('visibility', 'hidden');
-                $('#' + dom_id + ' .total').css('visibility', 'hidden');
-            }
-        });
         $('#' + this.dom_id + ' .input-xlarge').bind(
-            'focus blur', function(event) {
-                ExfeeWidget.focus[dom_id] = event.type === 'focus';
-            }
-        );
-        $('#' + this.dom_id + ' .input-xlarge').bind(
-            'keydown blur', this.inputEvent
+            'focus keydown blur', this.inputEvent
         );
         $('#' + this.dom_id + ' .thumbnails > li.identity > .avatar').live(
             'mouseenter mouseleave mousedown',
@@ -781,6 +770,9 @@ ExfeeWidget = {
     inputEvent : function(event) {
         var objInput = $(event.target);
         switch (event.type) {
+            case 'focus':
+                ExfeeWidget.focus[event.target.id] = true;
+                break;
             case 'keydown':
                 switch (event.which) {
                     case 9:  // tab
@@ -838,6 +830,7 @@ ExfeeWidget = {
                 }
                 break;
             case 'blur':
+                ExfeeWidget.focus[event.target.id] = false;
                 ExfeeWidget.displayCompletePanel(objInput, false);
         }
     },
@@ -1387,11 +1380,25 @@ define(function (require, exports, module) {
                         fixBackground(event ? event.shiftKey : false);
                     }
                 }
+            ],
+            exfee : [
+                function() {
+                    if (!$('#cross-exfee .exfee-input').val()) {
+                        $('#cross-exfee .invite-form').css('visibility', 'hidden');
+                        $('#cross-exfee .total').css('visibility',       'hidden');
+                    }
+                    ExfeeWidget.showLimitWarning(false);
+                },
+                function() {}
             ]
         };
         if (event) {
             var firstEditArea = $(domWidget).attr('editarea');
-            Editing = firstEditArea === 'rsvp' ? 'rsvp' : Editing;
+            switch (firstEditArea) {
+                case 'rsvp':
+                case 'exfee':
+                    Editing = firstEditArea;
+            }
             if ((event.type === 'click' && (Editing || !Cross.id))
               || event.type === 'dblclick') {
                 Editing = firstEditArea;
