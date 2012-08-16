@@ -32,7 +32,10 @@
           <div class="control-group cross-exfee" id="gather-exfee">
             <label class="control-label" for="gather-exfee-input">Exfee</label>
             <div class="controls">
-              <input type="text" class="input-xlarge exfee-input" id="gather-exfee-input" placeholder="Invite people by name, email, etc." />
+              <div class="gather-invite">
+                <input type="text" class="input-xlarge exfee-input" id="gather-exfee-input" placeholder="Invite people by name, email, etc." />
+                <i class="pointer icon16-exfee-plus"></i>
+              </div>
             </div>
 
             <!--<div class="cross-identities exfee_pop_up_save">-->
@@ -160,6 +163,7 @@
               <div class="comment">
                 <div class="comment-form">
                   <textarea></textarea>
+                  <i class="pointer icon24-enter"></i>
                 </div>
               </div>
             </div>
@@ -224,9 +228,14 @@
 
                 <ul class="clearfix unstyled thumbnails"></ul>
 
-                <div class="invite">
-                    <i class="icon-plus-sign"></i>
+                <div class="invite-form">
+                    <!--<i class="pointer icon16-exfee-plus-blue"></i>-->
+                    <i class="pointer icon16-exfee-plus"></i>
                     <input name="identity" type="text" class="input-xlarge exfee-input" id="cross-exfee-input" placeholder="Invite people by name, email, etc." />
+                </div>
+                <div class="exfee-warning">
+                  <i class="icon16-warning"></i>
+                  <span class="xalert-fail">12 exfees maximum</span>
                 </div>
 
               </div>

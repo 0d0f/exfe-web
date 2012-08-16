@@ -2029,21 +2029,21 @@ define(function (require, exports, module) {
     // 后期会和身份tip一起弄个插件
     $(document.body).on('hover', 'div.lock-tag', function (e) {
       var t = e.type
-        , offset = $(this).offset()
+        , offset = $(this).offset();
 
       if (t === 'mouseenter') {
-        $('<div class="exfeetip tip-lock">'
+        $('<div class="exfeetip tip-lock" id="app-tip-lock">'
           + '<div class="inner">'
             + '<div>This <span class="x">·X·</span> is a private.</div>'
             + '<div>Accessible to only attendees.</div>'
           + '</div>'
         + '</div>').css({
-            left: offset.left - 130,
-            top: offset.top + 20
+            left: offset.left - 135,
+            top: offset.top + 25
           }).appendTo(document.body);
       }
       else {
-        $('.tip-lock').remove();
+        $('#app-tip-lock').remove();
       }
     });
 
