@@ -427,14 +427,17 @@
       cursor: pointer;
     }
 
+    // http://sofish.de/1909
     .rsvp-info {
       display: table;
       height: 28px;
       line-height: 16px;
 
       .rsvp-content {
-        margin-left: 40px;
-        margin-right: 20px;
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: 40px;
+        padding-right: 20px;
       }
 
       .by {
@@ -589,5 +592,4 @@
         color: #424242;
       }
     }
-
   }

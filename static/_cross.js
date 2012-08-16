@@ -312,7 +312,7 @@ ExfeeWidget = {
           +              '" provider="' + invitation.identity.provider.toLowerCase()
           +           '" external_id="' + invitation.identity.external_id.toLowerCase()
           +     '" external_username="' + invitation.identity.external_username.toLowerCase() + '">'
-          +     '<span class="avatar">'
+          +     '<span class="pointer avatar">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
           +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
@@ -922,7 +922,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +        '</div>'
                          +      '</div>'
                          +      '<div class="rsvp-info hide">'
-                         +        '<div class="pull-left rsvp-content">'
+                         +        '<div class="rsvp-content">'
                          +          '<div class="rsvp-string"></div>'
                          +          '<div class="by">by <span class="name"></span></div>'
                          +        '</div>'
@@ -2022,6 +2022,29 @@ define(function (require, exports, module) {
     // init event: end
     bus.on('xapp:cross:end', function() {
         clearTimeout(window.showtimeTimer);
+    });
+
+
+    // lock tip
+    // 后期会和身份tip一起弄个插件
+    $(document.body).on('hover', 'div.lock-tag', function (e) {
+      var t = e.type
+        , offset = $(this).offset()
+
+      if (t === 'mouseenter') {
+        $('<div class="exfeetip tip-lock">'
+          + '<div class="inner">'
+            + '<div>This <span class="x">·X·</span> is a private.</div>'
+            + '<div>Accessible to only attendees.</div>'
+          + '</div>'
+        + '</div>').css({
+            left: offset.left - 130,
+            top: offset.top + 20
+          }).appendTo(document.body);
+      }
+      else {
+        $('.tip-lock').remove();
+      }
     });
 
 });
