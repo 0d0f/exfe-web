@@ -1,8 +1,30 @@
 .placepanel {
+  position: absolute;
+  z-index: @zindexModal + 10;
   width: 278px;
   padding: 20px;
-  background: #fbfbfb;
+  #gradient > .directional(#fafafa, #e6e6e6, 255deg);
   border: 1px solid rgba(255, 255, 255, 0.8);
   .box-shadow(0 1px 4px rgba(0, 0, 0, 0.25));
   .border-radius(2px);
+
+  .textfield {
+    position: relative;
+
+    .icon24-place {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    textarea {
+      width: 233px;
+      height: 102px;
+      margin: 0;
+      padding: 5px;
+      background: #fbfbfb;
+      border: 1px solid #d5d5d5;
+      resize: none;
+    }
+  }
 }

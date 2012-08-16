@@ -48,9 +48,9 @@ define(function (require, exports, module) {
     return context;
   });
 
-  Handlebars.registerHelper('printName', function (name, external_id) {
+  Handlebars.registerHelper('printName', function (name, external_username) {
     if (!name) {
-      name = external_id.match(/([^@]+)@[^@]+/)[1];
+      name = external_username.match(/([^@]+)@[^@]+/)[1];
     }
     return name;
   });
