@@ -1,6 +1,9 @@
 TODO
 ----
 
+### 23:20:36 08/10/2012
+  * http://miekd.com/articles/using-css-sprites-to-optimize-your-website-for-retina-displays/
+
 ## 10:53:58 08/02/2012
   * a streaming HTML5 File https://github.com/maxogden/domnode-filestream
 
