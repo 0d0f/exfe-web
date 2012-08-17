@@ -54,14 +54,18 @@ class ExfeeActions extends ActionController {
         // do it
         $exfee = json_decode($_POST['exfee']);
         if ($exfee && isset($exfee->invitations) && is_array($exfee->invitations)
-         && $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id, $result['uid'])) {
+        && ($udResult = $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id, $result['uid']))) {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
                     array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
                 );
             }
-            apiResponse(array('exfee' => $modExfee->getExfeeById($exfee_id)));
+            $rtResult = ['exfee' => $modExfee->getExfeeById($exfee_id)];
+            if ($udResult['over_quota']) {
+                $rtResult['over_quota'] = true;
+            }
+            apiResponse($rtResult);
         }
         apiError(400, 'editing failed', '');
     }
