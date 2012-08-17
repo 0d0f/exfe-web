@@ -454,12 +454,23 @@ define(function (require, exports, module) {
                 dv = up[k];
                 t = +new Date(dv.updated_at.replace(/\-/g, '/'));
                 if (t > mt) {
-                  b |= true;
+                  if (k === 'exfee') {
+                    if (dv.identity_id === v.by_identity.id) {
+                      b |= false;
+                    }
+                    else {
+                      b |= true;
+                    }
+                  }
+                  else {
+                    b |= true;
+                  }
                 }
                 else {
                   b |= false;
                   up[k] = false;
                 }
+
               }
             }
 
