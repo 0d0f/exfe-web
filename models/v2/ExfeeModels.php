@@ -310,15 +310,25 @@ class ExfeeModels extends DataModel {
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
         }
+        // init
+        $items      = 0;
+        $over_quota = false;
         // add invitations
         foreach ($invitations as $iI => $iItem) {
+            if ($iItem->rsvp_status !== 'REMOVED'
+             && $iItem->rsvp_status !== 'NOTIFICATION') {
+                if (++$items > EXFEE_QUOTA_SOFT_LIMIT) {
+                    $over_quota = true;
+                    continue;
+                }
+            }
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
         }
         $this->updateExfeeTime($exfee_id);
         // call Gobus
         $this->sendToGobus($exfee_id, $by_identity_id);
-        //
-        return $exfee_id;
+        // return
+        return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
     }
 
 
@@ -330,9 +340,11 @@ class ExfeeModels extends DataModel {
             return null;
         }
         // get old cross
-        $hlpCross  = $this->getHelperByName('cross', 'v2');
-        $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
-        $old_cross = $hlpCross->getCross($cross_id, false, true);
+        $hlpCross   = $this->getHelperByName('cross', 'v2');
+        $cross_id   = $this->getCrossIdByExfeeId($exfee_id);
+        $old_cross  = $hlpCross->getCross($cross_id, false, true);
+        $items      = $old_cross->exfee->items;
+        $over_quota = false;
         // raw actions
         $chkInvit = array();
         $delExfee = array();
@@ -371,14 +383,21 @@ class ExfeeModels extends DataModel {
             }
             // add new invitation if it's a new invitation
             if (!$exists) {
+                if ($toItem->rsvp_status !== 'REMOVED'
+                 && $toItem->rsvp_status !== 'NOTIFICATION') {
+                    if (++$items > EXFEE_QUOTA_SOFT_LIMIT) {
+                        $over_quota = true;
+                        continue;
+                    }
+                }
                 $this->addInvitationIntoExfee($toItem, $exfee_id, $by_identity_id, $user_id);
             }
         }
         $this->updateExfeeTime($exfee_id);
         // call Gobus
         $this->sendToGobus($exfee_id, $by_identity_id, $delExfee, $old_cross);
-        //
-        return $exfee_id;
+        // return
+        return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
     }
 
 
