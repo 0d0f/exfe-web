@@ -48,9 +48,9 @@ define(function (require, exports, module) {
     return context;
   });
 
-  Handlebars.registerHelper('printName', function (name, external_id) {
+  Handlebars.registerHelper('printName', function (name, external_username) {
     if (!name) {
-      name = external_id.match(/([^@]+)@[^@]+/)[1];
+      name = external_username.match(/([^@]+)@[^@]+/)[1];
     }
     return name;
   });
@@ -412,6 +412,8 @@ define(function (require, exports, module) {
     now.setDate(now.getDate() - 3);
     now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
 
+    console.log(now);
+
     return Api.request('crosses'
       , {
         resources: { user_id: user_id },
@@ -424,6 +426,8 @@ define(function (require, exports, module) {
         var crosses = data.crosses;
         var updatesAjax = [];
         var updates = [];
+        console.dir(crosses);
+        /*
         if (crosses.length) {
           R.each(crosses, function (v, i) {
             if (v.updated) {
@@ -453,16 +457,17 @@ define(function (require, exports, module) {
           });
         }
 
-          if (updatesAjax.length) {
-            var dw = $.when;
-            dw = dw.apply(null, updatesAjax);
-            dw.then(function (data) {
-              var uh = $('#jst-updates').html();
-              var s = Handlebars.compile(uh);
-              var h = s({updates: crosses});
-              $('#profile .ios-app').before(h);
-            });
-          }
+        if (updatesAjax.length) {
+          var dw = $.when;
+          dw = dw.apply(null, updatesAjax);
+          dw.then(function (data) {
+            var uh = $('#jst-updates').html();
+            var s = Handlebars.compile(uh);
+            var h = s({updates: crosses});
+            $('#profile .ios-app').before(h);
+          });
+        }
+        */
 
       }
     );
