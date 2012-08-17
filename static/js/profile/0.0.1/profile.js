@@ -112,6 +112,15 @@ define(function (require, exports, module) {
     return Handlebars.helpers['printTime4'].call(this, time);
   });
 
+  Handlebars.registerHelper('printTime5', function (time) {
+    var s = Handlebars.helpers['printTime4'].call(this, time);
+    return s || 'To be decided';
+  });
+
+  Handlebars.registerHelper('printPlace', function (place) {
+    return place || 'To be decided';
+  });
+
   Handlebars.registerHelper('printTime4', function (time) {
     // 终端时区
     var c = Moment();
@@ -436,9 +445,9 @@ define(function (require, exports, module) {
 
           updates = R.filter(crosses, function (v, i) {
             var up = v.updated, b = false;
-            if (0 === v.conversation_count) {
-              v.conversation_count = b;
-            }
+            //if (0 === v.conversation_count) {
+              //v.conversation_count = b;
+            //}
             if (up) {
               var k, dv, t;
               for (k in up) {
