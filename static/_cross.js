@@ -1328,24 +1328,28 @@ define(function (require, exports, module) {
             editMethod = {
             title : [
                 function() {
+                    $('.cross-title').removeClass('cross-hover');
                     $('.cross-title .show').show();
                     $('.cross-title .edit').hide();
                     ChangeTitle($('.cross-title .edit').val(), 'cross');
                     AutoSaveCross();
                 },
                 function() {
+                    $('.cross-title').addClass('cross-hover');
                     $('.cross-title .show').hide();
                     $('.cross-title .edit').show().focus();
                 }
             ],
             description : [
                 function() {
+                    $('.cross-description').parent().removeClass('cross-hover');
                     $('.cross-description .show').show();
                     $('.cross-description .edit').hide();
                     ChangeDescription($('.cross-description .edit').val());
                     AutoSaveCross();
                 },
                 function() {
+                    $('.cross-description').parent().addClass('cross-hover');
                     $('.cross-description .show').hide();
                     $('.cross-description .xbtn-more').hide();
                     $('.cross-description .edit').show().focus();
@@ -1353,12 +1357,14 @@ define(function (require, exports, module) {
             ],
             time : [
                 function() {
+                    $('.cross-date').removeClass('cross-hover');
                     $('.cross-date .show').show();
                     $('.cross-date .edit').hide();
                     ChangeTime($('.cross-date .edit').val());
                     AutoSaveCross();
                 },
                 function() {
+                    $('.cross-date').addClass('cross-hover');
                     $('.cross-date .show').hide();
                     $('.cross-date .edit').show().focus();
                 }
@@ -1366,6 +1372,7 @@ define(function (require, exports, module) {
             place : [
                 function() {
                     if (placepanel) {
+                      $('.cross-place').removeClass('cross-hover');
                       AutoSaveCross();
                       placepanel.hide();
                       placepanel = null;
@@ -1373,6 +1380,7 @@ define(function (require, exports, module) {
                 },
                 function() {
                     if (!placepanel) {
+                      $('.cross-place').addClass('cross-hover');
                       var offset = $('div.cross-place').offset();
                       placepanel = new PlacePanel({
                         options: {
