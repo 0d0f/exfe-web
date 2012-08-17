@@ -436,7 +436,7 @@ define(function (require, exports, module) {
 
           updates = R.filter(crosses, function (v, i) {
             var up = v.updated, b = false;
-            if ('0' === v.conversation_count) {
+            if (0 === v.conversation_count) {
               v.conversation_count = b;
             }
             if (up) {
