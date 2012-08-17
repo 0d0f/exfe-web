@@ -479,6 +479,10 @@ define(function (require, exports, module) {
             }
           });
 
+          if (0 === updates.length) {
+            return;
+          }
+
           var uh = $('#jst-updates').html();
           var s = Handlebars.compile(uh);
           var h = s({updates: updates});
