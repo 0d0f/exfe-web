@@ -894,15 +894,15 @@ define('exfeepanel', [], function (require, exports, module) {
 
         showTip : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
-                strPanel = '<div class="exfeetip exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; display: none; z-index: 11">'
-                         +   '<div class="inner">'
+                strPanel = '<div class="tooltip tip-exfee  exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px;">'
+                         +   '<div class="tooltip-inner">'
                          +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
-                         +       '<i class="icon-user"></i><span>' + invitation.identity.external_username + '</span>'
+                         +       '<i class="icon16-identity-' + invitation.identity.provider + '"></i><span>' + invitation.identity.external_username + '</span>'
                          +     '</div>'
                          +   '</div>'
                          + '</div>';
-            if (this.tipId !== strTipId || !$('.exfeetip').length) {
+            if (this.tipId !== strTipId || !$('.tip-exfee').length) {
                 this.tipId  =  strTipId;
                 this.hideTip();
                 this.objBody.append(strPanel);
@@ -914,7 +914,7 @@ define('exfeepanel', [], function (require, exports, module) {
         showPanel : function(invitation, x, y) {
             var strTipId = this.newId(invitation),
                 strPanel = '<div class="exfeepanel exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; z-index: 10">'
-                         +   '<div class="inner">'
+                         +   '<div class="tooltip-inner">'
                          +     '<div class="avatar-name">'
                          +       '<span class="pull-left avatar">'
                          +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="60" height="60" />'
@@ -987,7 +987,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
 
         hideTip : function() {
-            $('.exfeetip').hide().remove();
+            $('.tip-exfee').hide().remove();
         },
 
 
@@ -1455,10 +1455,25 @@ define(function (require, exports, module) {
             }
             ChangeTitle($(event.target).val(), 'cross');
         });
-        $('.cross-description').bind('click', function() {
-            if (!Editing) {
-                $('.cross-description').toggleClass('more', true);
-                $('.cross-description .xbtn-more').toggleClass('xbtn-less', true);
+        // 防止点击选中文字，触发 click
+        var _dest = 0;
+        $('.cross-description').bind('mousedown mouseup', function (e) {
+          if (e.type === 'mousedown') {
+            _dest = e.clientX + e.clientY;
+          }
+          else {
+            _dest -= e.clientX + e.clientY;
+          }
+        });
+        $('.cross-description').bind('click', function(e) {
+            if (!Editing && !_dest) {
+                _dest = 0;
+                var that = $(this)
+                  , status = !that.hasClass('more');
+                that
+                  .toggleClass('more', status)
+                  .find('.xbtn-more')
+                  .toggleClass('xbtn-less', status);
             }
         });
         $('.cross-description .xbtn-more').bind('click', function(event) {
@@ -2080,7 +2095,7 @@ define(function (require, exports, module) {
         , offset = $(this).offset();
 
       if (t === 'mouseenter') {
-        $('<div class="exfeetip tip-lock" id="app-tip-lock">'
+        $('<div class="tooltip tip-lock" id="app-tip-lock">'
           + '<div class="inner">'
             + '<div>This <span class="x">·X·</span> is a private.</div>'
             + '<div>Accessible to only attendees.</div>'

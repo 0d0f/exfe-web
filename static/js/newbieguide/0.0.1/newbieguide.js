@@ -16,7 +16,7 @@ define(function (require) {
         + '<li>Set a portrait that friends can recognize you.</li>'
         + '<li>Add more frequently used identities that may use for gathering or notification.</li>'
         + '</ul>'
-      + '<p class="toggle hide"><span class="x-sign">EXFE</span> is available on iPhone, and Android soon.</p>'
+      //+ '<p class="toggle hide"><span class="x-sign">EXFE</span> is available on iPhone, and Android soon.</p>'
       + '<div class="pull-right arrow"><div class="rb"></div></div>'
     + '</div>',
 
