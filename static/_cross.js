@@ -1521,9 +1521,10 @@ define(function (require, exports, module) {
             $('.cross-description').toggleClass('more', moreOrLess);
             $(this).toggleClass('xbtn-less', moreOrLess);
         });
-        $('.cross-rsvp').bind('hover', function(event) {
+        $('.cross-rsvp').bind('mouseenter mouseover mouseleave', function(event) {
             switch (event.type) {
                 case 'mouseenter':
+                case 'mouseover':
                     $('.cross-rsvp .show .accepted').hide();
                     $('.cross-rsvp .show .change').show();
                     if ($('.cross-rsvp .show .by strong').html()) {
