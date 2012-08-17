@@ -281,7 +281,7 @@ define('user', function (require, exports, module) {
               //+ '{{/each}}'
             //+ '{{/if}}'
             + '{{#unless setup}}'
-            + '<div class="spliterline"></div>'
+            + '<div class="spliterline hide"></div>'
             + '<div class="merge" data-source="{{browsing.default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">'
               + '<a href="#">Sign In</a> with browsing identity<br />'
               + '{{#if normal}}'

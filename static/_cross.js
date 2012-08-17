@@ -1857,7 +1857,7 @@ define(function (require, exports, module) {
                 if (byMe) {
                     $('.cross-rsvp .edit .by').hide();
                 } else {
-                    $('.cross-rsvp .edit .by .avatar').attr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .edit .by .avatar img').attr('src', myInvitation.by_identity.avatar_filename);
                     $('.cross-rsvp .edit .by strong').html(myInvitation.by_identity.name);
                     $('.cross-rsvp .edit .by').show();
                 }
@@ -1882,14 +1882,14 @@ define(function (require, exports, module) {
                     $('.cross-rsvp .show .by').hide();
                     $('.cross-rsvp .show .by strong').html('');
                 } else {
-                    $('.cross-rsvp .show .by .avatar').attr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .show .by .avatar img').attr('src', myInvitation.by_identity.avatar_filename);
                     $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
                     $('.cross-rsvp .show .by').show();
                 }
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
-                    strSummary += '<li><span>'
+                    strSummary += '<li><span class="avatar">'
                                 +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
                                 +   '">'
