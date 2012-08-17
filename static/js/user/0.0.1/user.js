@@ -254,7 +254,7 @@ define('user', function (require, exports, module) {
                 + '<img src="{{default_identity.avatar_filename}}" width="20" height="20" alt="" />'
               + '</span>'
               + '<i class="icon16-identity-{{default_identity.provider}}"></i>'
-              + '<span>{{default_identity.external_username}}</span>'
+              + '<span class="oblique">{{default_identity.external_username}}</span>'
             + '</div>'
             + '{{#if ../setup}}'
             //+ '<div class="merge set-up" data-source="{{default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02">'
