@@ -198,7 +198,7 @@ define(function (require, exports, module) {
     html += '<div><i class="icon-invite"></i> ';
     html += 'Invited: ' + is;
     html += '</div>';
-    return html;
+    return is ? html : '';
   });
 
   Handlebars.registerHelper('ifPlace', function (options) {
