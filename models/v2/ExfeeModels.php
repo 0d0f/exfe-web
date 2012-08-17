@@ -267,7 +267,8 @@ class ExfeeModels extends DataModel {
             }
             $msgArg['to_identities'][] = $invitation->identity;
             // get mobile identities
-            if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+            if ($invitation->identity->connected_user_id > 0
+            && !$chkMobUs[$invitation->identity->connected_user_id]) {
                 $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
                     $invitation->identity->connected_user_id
                 );
@@ -281,7 +282,8 @@ class ExfeeModels extends DataModel {
             foreach ($to_identities as $identity) {
                 $msgArg['to_identities'][] = $identity;
                 // get mobile identities
-                if (!$chkMobUs[$identity->connected_user_id]) {
+                if ($identity->connected_user_id
+                && !$chkMobUs[$identity->connected_user_id]) {
                     $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
                         $identity->connected_user_id
                     );

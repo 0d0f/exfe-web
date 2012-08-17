@@ -198,7 +198,7 @@ ExfeeWidget = {
 
     dom_id           : '',
 
-    rsvp_status      : ['Not responded', 'Accepted', 'Declined', 'Interested'],
+    rsvp_status      : ['Pending', 'Accepted', 'Unavailable', 'Interested'],
 
     editable         : false,
 
@@ -240,33 +240,25 @@ ExfeeWidget = {
             function(event) {
                 switch (event.type) {
                     case 'mouseenter':
-                        $('#' + dom_id + ' .invite').css('visibility', 'visible');
-                        $('#' + dom_id + ' .total').css('visibility', 'visible');
+                        $('#' + dom_id + ' .invite-form').css('visibility', 'visible');
+                        $('#' + dom_id + ' .total').css('visibility',       'visible');
                         break;
                     case 'mouseleave':
-                        if (!ExfeeWidget.focus[dom_id]
+                        if (!ExfeeWidget.focus[dom_id + '-input']
                          && $('#' + dom_id + ' .exfee-input').val() === '') {
-                            $('#' + dom_id + ' .invite').css('visibility', 'hidden');
-                            $('#' + dom_id + ' .total').css('visibility', 'hidden');
+                            $('#' + dom_id + ' .invite-form').css('visibility', 'hidden');
+                            $('#' + dom_id + ' .total').css('visibility',       'hidden');
+                            ExfeeWidget.showLimitWarning(false);
                         }
                 }
             }
         );
-        $('body').bind('click', function() {
-            if (!ExfeeWidget.focus[dom_id]
-             && $('#' + dom_id + ' .exfee-input').val() === '') {
-                $('#' + dom_id + ' .invite').css('visibility', 'hidden');
-                $('#' + dom_id + ' .total').css('visibility', 'hidden');
-            }
+        $('#' + this.dom_id + ' .input-xlarge').bind(
+            'focus keydown blur', this.inputEvent
+        );
+        $('#' + this.dom_id + ' .pointer').bind('click', function() {
+            ExfeeWidget.checkInput($('#' + dom_id + ' .input-xlarge'), true);
         });
-        $('#' + this.dom_id + ' .input-xlarge').bind(
-            'focus blur', function(event) {
-                ExfeeWidget.focus[dom_id] = event.type === 'focus';
-            }
-        );
-        $('#' + this.dom_id + ' .input-xlarge').bind(
-            'keydown blur', this.inputEvent
-        );
         $('#' + this.dom_id + ' .thumbnails > li.identity > .avatar').live(
             'mouseenter mouseleave mousedown',
             function(event) {
@@ -745,6 +737,7 @@ ExfeeWidget = {
                     arrValid.push(item);
                 } else {
                     arrInvalid.push(arrInput[i]);
+                    strTail = arrInput[i];
                 }
             }
         }
@@ -758,6 +751,12 @@ ExfeeWidget = {
         } else {
             this.showLimitWarning(false);
         }
+        var bolCorrect = !!ExfeeWidget.parseAttendeeInfo(strTail);
+        objInput.parent().find('.pointer').toggleClass(
+            'icon16-exfee-plus-blue', bolCorrect
+        ).toggleClass(
+            'icon16-exfee-plus',     !bolCorrect
+        );
         this.checkComplete(objInput, strTail);
     },
 
@@ -781,6 +780,9 @@ ExfeeWidget = {
     inputEvent : function(event) {
         var objInput = $(event.target);
         switch (event.type) {
+            case 'focus':
+                ExfeeWidget.focus[event.target.id] = true;
+                break;
             case 'keydown':
                 switch (event.which) {
                     case 9:  // tab
@@ -838,6 +840,7 @@ ExfeeWidget = {
                 }
                 break;
             case 'blur':
+                ExfeeWidget.focus[event.target.id] = false;
                 ExfeeWidget.displayCompletePanel(objInput, false);
         }
     },
@@ -952,7 +955,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '<ul class="identities-list">'
                          +         '<li>'
                          +           '<i class="pull-left icon16-identity-' + invitation.identity.provider + '"></i>'
-                         +           '<span class="identity">' + invitation.identity.external_username + '</span>'
+                         +           '<span class="oblique identity">' + invitation.identity.external_username + '</span>'
                          +           '<div class="identity-btn delete">'
                          +               '<i class="icon-minus-red"></i>'
                          +               '<button class="btn-leave">Leave</button>'
@@ -1419,11 +1422,25 @@ define(function (require, exports, module) {
                         fixBackground(event ? event.shiftKey : false);
                     }
                 }
+            ],
+            exfee : [
+                function() {
+                    if (!$('#cross-exfee .exfee-input').val()) {
+                        $('#cross-exfee .invite-form').css('visibility', 'hidden');
+                        $('#cross-exfee .total').css('visibility',       'hidden');
+                    }
+                    ExfeeWidget.showLimitWarning(false);
+                },
+                function() {}
             ]
         };
         if (event) {
             var firstEditArea = $(domWidget).attr('editarea');
-            Editing = firstEditArea === 'rsvp' ? 'rsvp' : Editing;
+            switch (firstEditArea) {
+                case 'rsvp':
+                case 'exfee':
+                    Editing = firstEditArea;
+            }
             if ((event.type === 'click' && (Editing || !Cross.id))
               || event.type === 'dblclick') {
                 Editing = firstEditArea;
@@ -1811,34 +1828,39 @@ define(function (require, exports, module) {
                             ? myInvitation.by_identity : curIdentity,
                 byMe        = myInvitation.identity.id === by_identity.id;
             if (myInvitation.rsvp_status === 'NORESPONSE' || buttons) {
-                $('.cross-rsvp .edit .by').html(
-                    byMe
-                  ? '&nbsp;'
-                  : ('Invitation from ' + myInvitation.by_identity.name)
-                );
+                if (byMe) {
+                    $('.cross-rsvp .show .by').hide();
+                } else {
+                    $('.cross-rsvp .show .by .sb').html('Invitation from');
+                    $('.cross-rsvp .show .by .avatar').sttr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .show .by').show();
+                }
                 $('.cross-rsvp .show').hide();
                 $('.cross-rsvp .edit').fadeIn(233);
                 return;
             } else if (myInvitation.rsvp_status === 'ACCEPTED'
                     || myInvitation.rsvp_status === 'INTERESTED'
                     || myInvitation.rsvp_status === 'DECLINED') {
-                var attendance = '', by = '';
+                var attendance = '';
                 switch (myInvitation.rsvp_status) {
                     case 'ACCEPTED':
                         attendance = 'Accepted';
-                        by         = 'Confirmed by ';
                         break;
                     case 'DECLINED':
-                        //attendance = 'Declined';
-                        by         = 'Declined by ';
                         attendance = 'Unavailable';
-                        //by         = 'Unavailable by ';
                         break;
                     case 'INTERESTED':
                         attendance = 'Interested';
                 }
-                by = byMe || myInvitation.rsvp_status === 'INTERESTED'
-                   ? '&nbsp;' : (by + myInvitation.by_identity.name);
+                if (byMe || myInvitation.rsvp_status === 'INTERESTED') {
+                    $('.cross-rsvp .show .by').hide();
+                } else {
+                    $('.cross-rsvp .show .by .sb').html('Set by');
+                    $('.cross-rsvp .show .by .avatar').sttr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .show .by').show();
+                }
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
@@ -1860,7 +1882,6 @@ define(function (require, exports, module) {
                     objAccepted.html(strSummary);
                 }
                 $('.cross-rsvp .show .attendance').html(attendance);
-                $('.cross-rsvp .show .by').html(by);
                 $('.cross-rsvp .show').fadeIn(233);
                 $('.cross-rsvp .edit').hide();
                 return;

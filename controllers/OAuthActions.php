@@ -93,7 +93,7 @@ class OAuthActions extends ActionController {
                     }
                     // 身份未连接
                     $new_identity = false;
-                    if (!$objIdentity->connected_user_id) {
+                    if ($objIdentity->connected_user_id <= 0) {
                         $new_identity = true;
                         // 身份被 revoked，重新连接用户
                         if ($objIdentity->revoked_user_id) {
@@ -297,7 +297,7 @@ class OAuthActions extends ActionController {
                     return;
                 }
                 // 身份未连接
-                if (!$objIdentity->connected_user_id) {
+                if ($objIdentity->connected_user_id <= 0) {
                     // 身份被 revoked，重新连接用户
                     if ($objIdentity->revoked_user_id) {
                         $user_id = $objIdentity->revoked_user_id;
