@@ -10,7 +10,7 @@ class IdentityModels extends DataModel {
         if ($rawIdentity) {
             $rawUserIdentity   = null;
             $status            = null;
-            $connected_user_id = 0;
+            $connected_user_id = - (int) $rawIdentity['id'];
             $revoked_user_id   = 0;
             if ($user_id) {
                 $chkUserIdentity = $this->getRow(
