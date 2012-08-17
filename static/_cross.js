@@ -288,7 +288,8 @@ ExfeeWidget = {
         var intAccepted = 0, intTotal = 0;
         $('#' + this.dom_id + ' .thumbnails').html('');
         for (var i = 0; i < Exfee.invitations.length; i++) {
-            if (Exfee.invitations[i].rsvp_status !== 'REMOVED') {
+            if (Exfee.invitations[i].rsvp_status !== 'REMOVED'
+             && Exfee.invitations[i].rsvp_status !== 'NOTIFICATION') {
                 var intCell = Exfee.invitations[i].mates + 1;
                 if (!skipMe || !ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
                     this.showOne(Exfee.invitations[i]);

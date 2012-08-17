@@ -1,14 +1,15 @@
 <?php
+
 class Cross extends Metainfo {
 
-    public $title         = null;
-    public $description   = null;
-    public $time          = null;
-    public $place         = null;
-    public $attribute     = null;
-    public $exfee         = null;
-    public $widget        = null;
-    public $host_identity = null;
+    public $title              = null;
+    public $description        = null;
+    public $time               = null;
+    public $place              = null;
+    public $attribute          = null;
+    public $exfee              = null;
+    public $widget             = null;
+    public $host_identity      = null;
     public $conversation_count = null;
 
     public function setRelation($relative_id,$relation)

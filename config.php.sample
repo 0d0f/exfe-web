@@ -6,6 +6,9 @@ $dbuser="root";
 $dbpasswd="";
 $dbname="exfe_dev";
 
+define("EXFEE_QUOTA_SOFT_LIMIT", 12);
+define("EXFEE_QUOTA_HARD_LIMIT", 20);
+
 $site_url="http://local.exfe.com";
 define("SITE_URL", "http://local.exfe.com");
 
