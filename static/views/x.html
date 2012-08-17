@@ -104,7 +104,7 @@
       <!-- Cross-Operactions -->
 
       <!-- Cross-Title -->
-      <div class="cross-title" editarea="title" data-link>
+      <div class="cross-hover pointer cross-title" editarea="title" data-link>
         <h1 class="show"></h1>
         <textarea class="edit editing hide"></textarea>
       </div>
@@ -116,26 +116,31 @@
 
           <!-- Cross-Content -->
           <!--添加 `more` class 显示更多-->
-          <div class="cross-description" editarea="description" data-link>
-            <div class="show"></div>
-            <div class="xbtn-more">
-              <span class="m">More</span>
-              <span class="l">Less</span>
-              <span class="rb"></span>
-              <span class="lt"></span>
+          <div class="cross-hover pointer">
+            <div class="cross-description" editarea="description" data-link>
+              <div class="show"></div>
+              <div class="xbtn-more">
+                <span class="m">More</span>
+                <span class="l">Less</span>
+                <span class="rb"></span>
+                <span class="lt"></span>
+              </div>
+              <textarea class="edit editing hide"></textarea>
             </div>
-            <textarea class="edit editing hide"></textarea>
           </div>
 
           <!-- Cross-rsvp -->
-          <div class="cross-rsvp clearfix">
-            <div class="show">
+          <div class="cross-rsvp">
+            <div class="clearfix show">
               <span class="pull-left attendance"></span>
               <ul class="pull-left unstyled nav-pills accepted"></ul>
-              <span class="by">
-                <img class="avatar" src="" width="20" height="20" />
-              </span>
-              <span class="change" editarea="rsvp" data-link>Change attendance</span>
+              <div class="set-by">
+                <div class="by">
+                  <span class="sb">Set by</span> <strong></strong>
+                  <img class="avatar" src="" width="20" height="20" />
+                </div>
+                <div class="underline pointer change" editarea="rsvp" data-link>Change attendance</div>
+              </div>
             </div>
             <div class="edit">
               <div class="rsvp-group">
@@ -143,7 +148,7 @@
                 <button class="xbtn-rsvp decline" data-link>Unavailable</button>
                 <span class="interested" data-link>Interested</span>
               </div>
-              <!--<div class="by">Invitation from <strong>dm.</strong></div>-->
+              <!--<div class="by"><span class="sb">Invitation from</span> <strong>dm.</strong></div>-->
             </div>
           </div>
 
@@ -185,7 +190,7 @@
           <div>
 
             <!-- Cross-Time -->
-            <div class="cross-dp cross-date" editarea="time" data-link>
+            <div class="cross-hover pointer cross-dp cross-date" editarea="time" data-link>
               <!--<i class="icon-ics"></i>-->
               <h2></h2>
               <div class="cross-time show"></div>
@@ -194,7 +199,7 @@
             </div>
 
             <!-- Cross-Place -->
-            <div class="cross-dp cross-place" editarea="place" data-link>
+            <div class="cross-hover pointer cross-dp cross-place" editarea="place" data-link>
               <h2 class="show"></h2>
               <address class="show"></address>
               <div class="xbtn-more">
