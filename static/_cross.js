@@ -240,8 +240,10 @@ ExfeeWidget = {
             function(event) {
                 switch (event.type) {
                     case 'mouseenter':
-                        $('#' + dom_id + ' .invite-form').css('visibility', 'visible');
                         $('#' + dom_id + ' .total').css('visibility',       'visible');
+                        if (!readOnly) {
+                            $('#' + dom_id + ' .invite-form').css('visibility', 'visible');
+                        }
                         break;
                     case 'mouseleave':
                         if (!ExfeeWidget.focus[dom_id + '-input']
@@ -956,10 +958,11 @@ define('exfeepanel', [], function (require, exports, module) {
                          +         '<li>'
                          +           '<i class="pull-left icon16-identity-' + invitation.identity.provider + '"></i>'
                          +           '<span class="oblique identity">' + invitation.identity.external_username + '</span>'
+                         +           (readOnly ? '' : (
                          +           '<div class="identity-btn delete">'
                          +               '<i class="icon-minus-red"></i>'
                          +               '<button class="btn-leave">Leave</button>'
-                         +           '</div>'
+                         +           '</div>'))
                          +         '</li>'
                          +       '</ul>'
                          +       '<div class="identity-actions">'
@@ -1522,19 +1525,21 @@ define(function (require, exports, module) {
             $(this).toggleClass('xbtn-less', moreOrLess);
         });
         $('.cross-rsvp').bind('mouseenter mouseover mouseleave', function(event) {
-            switch (event.type) {
-                case 'mouseenter':
-                case 'mouseover':
-                    $('.cross-rsvp .show .accepted').hide();
-                    $('.cross-rsvp .show .change').show();
-                    if ($('.cross-rsvp .show .by strong').html()) {
-                        $('.cross-rsvp .show .by').show();
-                    }
-                    break;
-                case 'mouseleave':
-                    $('.cross-rsvp .show .accepted').show();
-                    $('.cross-rsvp .show .change').hide();
-                    $('.cross-rsvp .show .by').hide();
+            if (!readOnly) {
+                switch (event.type) {
+                    case 'mouseenter':
+                    case 'mouseover':
+                        $('.cross-rsvp .show .accepted').hide();
+                        $('.cross-rsvp .show .change').show();
+                        if ($('.cross-rsvp .show .by strong').html()) {
+                            $('.cross-rsvp .show .by').show();
+                        }
+                        break;
+                    case 'mouseleave':
+                        $('.cross-rsvp .show .accepted').show();
+                        $('.cross-rsvp .show .change').hide();
+                        $('.cross-rsvp .show .by').hide();
+                }
             }
         });
         $('.cross-rsvp .edit .accept').bind('click', function() {
@@ -1806,9 +1811,14 @@ define(function (require, exports, module) {
 
 
     var ShowTimeline = function(timeline) {
-        $('#conversation-form span.avatar img').attr(
-            'src', curIdentity.avatar_filename
-        );
+        if (readOnly) {
+            $('#conversation-form').hide();
+        } else {
+            $('#conversation-form span.avatar img').attr(
+                'src', curIdentity.avatar_filename
+            );
+            $('#conversation-form').show();
+        }
         $('.cross-conversation').slideDown(233);
         Timeline = timeline;
         for (var i = Timeline.length - 1; i >= 0; i--) {
@@ -1948,7 +1958,6 @@ define(function (require, exports, module) {
         $('.cross-place .edit').val(
             Cross.place.title + (Cross.place.description ? ('\n' + Cross.place.description) : '')
         );
-
         for (var i = 0; i < Exfee.invitations.length; i++) {
             if (ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
                 curIdentity = ExfeUtilities.clone(Exfee.invitations[i].identity);
