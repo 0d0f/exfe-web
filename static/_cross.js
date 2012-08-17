@@ -198,7 +198,7 @@ ExfeeWidget = {
 
     dom_id           : '',
 
-    rsvp_status      : ['Not responded', 'Accepted', 'Declined', 'Interested'],
+    rsvp_status      : ['Pending', 'Accepted', 'Unavailable', 'Interested'],
 
     editable         : false,
 
@@ -256,6 +256,9 @@ ExfeeWidget = {
         $('#' + this.dom_id + ' .input-xlarge').bind(
             'focus keydown blur', this.inputEvent
         );
+        $('#' + this.dom_id + ' .pointer').bind('click', function() {
+            ExfeeWidget.checkInput($('#' + dom_id + ' .input-xlarge'), true);
+        });
         $('#' + this.dom_id + ' .thumbnails > li.identity > .avatar').live(
             'mouseenter mouseleave mousedown',
             function(event) {
@@ -734,6 +737,7 @@ ExfeeWidget = {
                     arrValid.push(item);
                 } else {
                     arrInvalid.push(arrInput[i]);
+                    strTail = arrInput[i];
                 }
             }
         }
@@ -747,6 +751,12 @@ ExfeeWidget = {
         } else {
             this.showLimitWarning(false);
         }
+        var bolCorrect = !!ExfeeWidget.parseAttendeeInfo(strTail);
+        objInput.parent().find('.pointer').toggleClass(
+            'icon16-exfee-plus-blue', bolCorrect
+        ).toggleClass(
+            'icon16-exfee-plus',     !bolCorrect
+        );
         this.checkComplete(objInput, strTail);
     },
 
@@ -1822,8 +1832,8 @@ define(function (require, exports, module) {
                         by         = 'Confirmed by ';
                         break;
                     case 'DECLINED':
-                        attendance = 'Declined';
-                        by         = 'Declined by ';
+                        attendance = 'Unavailable';
+                        by         = 'Unavailable by ';
                         break;
                     case 'INTERESTED':
                         attendance = 'Interested';
