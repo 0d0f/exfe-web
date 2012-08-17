@@ -54,7 +54,7 @@ class GobusActions extends ActionController {
         $raw_by_identity = $modIdentity->getIdentityByProviderExternalId(
             $provider, $external_id
         );
-        if (!$raw_by_identity || !$raw_by_identity->connected_user_id) {
+        if (!$raw_by_identity || $raw_by_identity->connected_user_id <= 0) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
@@ -130,7 +130,7 @@ class GobusActions extends ActionController {
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
             // @todo: $msgArg['depended'] = false;
-            if ($invitation->identity->connected_user_id
+            if ($invitation->identity->connected_user_id > 0
              && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
                 $mobIdentities = $modUser->getMobileIdentitiesByUserId(

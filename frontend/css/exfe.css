@@ -3670,6 +3670,10 @@ input[type="submit"].btn.btn-mini {
   cursor: pointer;
 }
 
+.oblique {
+  font-style: oblique;
+}
+
 .show-inline {
   display: inline;
 }
@@ -5001,6 +5005,9 @@ input[type="submit"].btn.btn-mini {
 }
 
 .xbtn-rsvp.decline {
+  font-weight: 300;
+  color: #fafafa;
+  text-shadow: 0 1px 1px #7f7f7f;
   background-color: #bdbdbd;
   background-color: transparent;
   background-image: -ms-linear-gradient(top, #e6e6e6, #7f7f7f);
@@ -5013,8 +5020,8 @@ input[type="submit"].btn.btn-mini {
   border-bottom: none;
   border-color: #7f7f7f #7f7f7f #595959;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#e6e6e6', endColorstr='#7f7f7f', GradientType=0);
+  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
 
 .xbtn-savegather {
@@ -5353,8 +5360,15 @@ body {
 
 .navbar .user-panel .body .identity {
   padding: 5px;
-  font-style: oblique;
   color: #4c4c4c;
+}
+
+.navbar .user-panel .body .identity i {
+  vertical-align: middle;
+}
+
+.navbar .user-panel .body .identity .oblique {
+  padding-left: 7px;
 }
 
 .navbar .user-panel .body .set-up > a,
@@ -7117,7 +7131,7 @@ body {
 }
 
 .cross-title textarea {
-  width: 790px;
+  width: 788px;
   height: 90px;
   margin: 0;
   font-size: 42px;
@@ -7222,7 +7236,7 @@ body {
 
 .cross-rsvp .attendance {
   display: inline-block;
-  width: 100px;
+  width: 116px;
   height: 32px;
   margin-left: 20px;
   font-size: 18px;
@@ -7437,7 +7451,7 @@ body {
   position: relative;
 }
 
-.cross-hover:before {
+.cross-hover:hover:before {
   position: absolute;
   top: -10px;
   right: -10px;
@@ -8485,7 +8499,6 @@ body {
 .settings-panel .user-infos .identity-list .external {
   margin-right: 5px;
   margin-left: 10px;
-  font-style: oblique;
 }
 
 .settings-panel .user-infos .identity-list .xlabel {
