@@ -112,6 +112,15 @@ define(function (require, exports, module) {
     return Handlebars.helpers['printTime4'].call(this, time);
   });
 
+  Handlebars.registerHelper('printTime5', function (time) {
+    var s = Handlebars.helpers['printTime4'].call(this, time);
+    return s || 'To be decided';
+  });
+
+  Handlebars.registerHelper('printPlace', function (place) {
+    return place || 'To be decided';
+  });
+
   Handlebars.registerHelper('printTime4', function (time) {
     // 终端时区
     var c = Moment();
@@ -189,7 +198,7 @@ define(function (require, exports, module) {
     html += '<div><i class="icon-invite"></i> ';
     html += 'Invited: ' + is;
     html += '</div>';
-    return html;
+    return is ? html : '';
   });
 
   Handlebars.registerHelper('ifPlace', function (options) {
@@ -436,21 +445,32 @@ define(function (require, exports, module) {
 
           updates = R.filter(crosses, function (v, i) {
             var up = v.updated, b = false;
-            if (0 === v.conversation_count) {
-              v.conversation_count = b;
-            }
+            //if (0 === v.conversation_count) {
+              //v.conversation_count = b;
+            //}
             if (up) {
               var k, dv, t;
               for (k in up) {
                 dv = up[k];
                 t = +new Date(dv.updated_at.replace(/\-/g, '/'));
                 if (t > mt) {
-                  b |= true;
+                  if (k === 'exfee') {
+                    if (dv.identity_id === v.by_identity.id) {
+                      b |= false;
+                    }
+                    else {
+                      b |= true;
+                    }
+                  }
+                  else {
+                    b |= true;
+                  }
                 }
                 else {
                   b |= false;
                   up[k] = false;
                 }
+
               }
             }
 
@@ -458,6 +478,10 @@ define(function (require, exports, module) {
               return true;
             }
           });
+
+          if (0 === updates.length) {
+            return;
+          }
 
           var uh = $('#jst-updates').html();
           var s = Handlebars.compile(uh);
