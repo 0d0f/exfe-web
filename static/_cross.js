@@ -1814,32 +1814,37 @@ define(function (require, exports, module) {
                             ? myInvitation.by_identity : curIdentity,
                 byMe        = myInvitation.identity.id === by_identity.id;
             if (myInvitation.rsvp_status === 'NORESPONSE' || buttons) {
-                $('.cross-rsvp .edit .by').html(
-                    byMe
-                  ? '&nbsp;'
-                  : ('Invitation from ' + myInvitation.by_identity.name)
-                );
+                if (byMe) {
+                    $('.cross-rsvp .edit .by .sb').html('&nbsp;');
+                    $('.cross-rsvp .edit .by strong').html('&nbsp;');
+                } else {
+                    $('.cross-rsvp .edit .by .sb').html('Invitation from');
+                    $('.cross-rsvp .edit .by strong').html(myInvitation.by_identity.name);
+                }
                 $('.cross-rsvp .show').hide();
                 $('.cross-rsvp .edit').fadeIn(233);
                 return;
             } else if (myInvitation.rsvp_status === 'ACCEPTED'
                     || myInvitation.rsvp_status === 'INTERESTED'
                     || myInvitation.rsvp_status === 'DECLINED') {
-                var attendance = '', by = '';
+                var attendance = '';
                 switch (myInvitation.rsvp_status) {
                     case 'ACCEPTED':
                         attendance = 'Accepted';
-                        by         = 'Confirmed by ';
                         break;
                     case 'DECLINED':
                         attendance = 'Unavailable';
-                        by         = 'Unavailable by ';
                         break;
                     case 'INTERESTED':
                         attendance = 'Interested';
                 }
-                by = byMe || myInvitation.rsvp_status === 'INTERESTED'
-                   ? '&nbsp;' : (by + myInvitation.by_identity.name);
+                if (byMe || myInvitation.rsvp_status === 'INTERESTED') {
+                    $('.cross-rsvp .edit .by .sb').html('&nbsp;');
+                    $('.cross-rsvp .edit .by strong').html('&nbsp;');
+                } else {
+                    $('.cross-rsvp .edit .by .sb').html('Set by');
+                    $('.cross-rsvp .edit .by strong').html(myInvitation.by_identity.name);
+                }
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
