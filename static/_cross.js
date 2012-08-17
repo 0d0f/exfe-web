@@ -1815,11 +1815,12 @@ define(function (require, exports, module) {
                 byMe        = myInvitation.identity.id === by_identity.id;
             if (myInvitation.rsvp_status === 'NORESPONSE' || buttons) {
                 if (byMe) {
-                    $('.cross-rsvp .edit .by .sb').html('&nbsp;');
-                    $('.cross-rsvp .edit .by strong').html('&nbsp;');
+                    $('.cross-rsvp .show .by').hide();
                 } else {
-                    $('.cross-rsvp .edit .by .sb').html('Invitation from');
-                    $('.cross-rsvp .edit .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .show .by .sb').html('Invitation from');
+                    $('.cross-rsvp .show .by .avatar').sttr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .show .by').show();
                 }
                 $('.cross-rsvp .show').hide();
                 $('.cross-rsvp .edit').fadeIn(233);
@@ -1839,11 +1840,12 @@ define(function (require, exports, module) {
                         attendance = 'Interested';
                 }
                 if (byMe || myInvitation.rsvp_status === 'INTERESTED') {
-                    $('.cross-rsvp .edit .by .sb').html('&nbsp;');
-                    $('.cross-rsvp .edit .by strong').html('&nbsp;');
+                    $('.cross-rsvp .show .by').hide();
                 } else {
-                    $('.cross-rsvp .edit .by .sb').html('Set by');
-                    $('.cross-rsvp .edit .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .show .by .sb').html('Set by');
+                    $('.cross-rsvp .show .by .avatar').sttr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .show .by').show();
                 }
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
@@ -1866,7 +1868,6 @@ define(function (require, exports, module) {
                     objAccepted.html(strSummary);
                 }
                 $('.cross-rsvp .show .attendance').html(attendance);
-                $('.cross-rsvp .show .by').html(by);
                 $('.cross-rsvp .show').fadeIn(233);
                 $('.cross-rsvp .edit').hide();
                 return;
