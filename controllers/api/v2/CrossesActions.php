@@ -210,7 +210,8 @@ class CrossesActions extends ActionController {
                 }
                 $msgArg['to_identities'][] = $invitation->identity;
                 // get mobile identities
-                if (!$chkMobUs[$invitation->identity->connected_user_id]) {
+                if ($invitation->identity->connected_user_id > 0
+                && !$chkMobUs[$invitation->identity->connected_user_id]) {
                     $mobIdentities = $modUser->getMobileIdentitiesByUserId(
                         $invitation->identity->connected_user_id
                     );
