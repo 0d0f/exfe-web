@@ -49,6 +49,10 @@
               <h3><i class="icon16-invitation"></i>Invitations</h3>
             </div>
 
+            <div class="siderbar updates hide">
+              <h3><i class="icon16-updates"></i>Recent updates</h3>
+            </div>
+
             <!--
             <div class="ios-app hide">
               <a class="pull-right exfe-dismiss" href="#">Dismiss</a>
@@ -72,7 +76,7 @@
         <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
           <i class="icon-move"></i>
           <span class="avatar" data-link><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
-          </span><span class="identity"><span class="identityname"><em>{{printName name external_username}}</em></span><span class="external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
+          </span><span class="identity"><span class="identityname">{{printName name external_username}}</span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
           {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link>Make default</a>{{/makeDefault}}
           {{#ifOauthVerifying provider status}}
           <span class="xlabel">
@@ -166,8 +170,6 @@
         </script>
         <script id="jst-updates" type="text/x-handlebars-template">
         {{#if updates}}
-        <div class="siderbar updates">
-          <h3><i class="icon16-updates"></i>Recent updates</h3>
           <div class="cross-list">
             {{#each updates}}
             {{#if updated}}
@@ -192,22 +194,20 @@
                 {{{rsvpAction exfee.invitations updated.exfee.identity_id}}}
                 {{/if}}
 
-                {{#if updated.conversation.item}}
-                {{#with updated.conversation.item}}
+                {{#if conversation_count}}
+                {{#if updated.conversation}}
                 <div><span class="blue">{{by_identity.name}}</span>:
-                {{content}}</div>
-                <div><i class="icon-conversation"></i> <span class="blue">{{__conversation_nums}}</span>
+                {{updated.conversation.content}}</div>
+                <div><i class="icon-conversation"></i> <span class="blue">{{conversation_count}}</span>
                   new post in conversation.
                 </div>
-                {{/with}}
+                {{/if}}
                 {{/if}}
 
               </a>
             </div>
             {{/if}}
             {{/each}}
-          </div>
-        </div>
         {{/if}}
         </script>
       </section>

@@ -164,6 +164,12 @@ define(function (require, exports, module) {
   });
 
   Handlebars.registerHelper('rsvpAction', function (identities, identity_id) {
+    var rsvp = {
+      'ACCEPTED': 'Accepted',
+      'INTERESTED': 'Interested',
+      'DECLINED': 'Unavailable',
+      'NORESPONSE': 'Pending'
+    };
     var i = R.filter(identities, function (v) {
       if (v.identity.id === identity_id) return true;
     })[0];
@@ -171,7 +177,7 @@ define(function (require, exports, module) {
     if (i && i.rsvp_status !== 'INTERESTED') {
       var html = '<div><i class="';
       html += 'icon-rsvp-' + i.rsvp_status.toLowerCase() + '"></i> ';
-      html += i.rsvp_status.charAt(0) + i.rsvp_status.substr(1).toLowerCase() + ': ' + i.identity.name + '</div>';
+      html += rsvp[i.rsvp_status] + ': ' + i.identity.name + '</div>';
     }
 
     var is = R.map(identities, function (v) {
@@ -407,12 +413,12 @@ define(function (require, exports, module) {
     if (!data) return;
     var user_id = data.user_id
       , token = data.token
-      , now = new Date();
+      , now = new Date()
+      , mt = 0;
 
     now.setDate(now.getDate() - 3);
+    mt = +now;
     now = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
-
-    console.log(now);
 
     return Api.request('crosses'
       , {
@@ -423,53 +429,42 @@ define(function (require, exports, module) {
         }
       }
       , function (data) {
-        var crosses = data.crosses;
-        var updatesAjax = [];
-        var updates = [];
-        console.dir(crosses);
-        /*
-        if (crosses.length) {
-          R.each(crosses, function (v, i) {
-            if (v.updated) {
-                v.updated.conversation && updatesAjax.push(
-                  Api.request('conversation'
-                    , {
-                      resources: {exfee_id: v.exfee.id},
-                      params: {
-                        token: token,
-                        date: now
-                      }
-                    }
-                    , function (data) {
-                      var conversation = data.conversation;
-                      if (conversation && conversation.length) {
-                        var c = conversation[conversation.length - 1];
-                        if (c.by_identity.connected_user_id === user_id) return;
-                        c.__conversation_nums = conversation.length;
-                        v.updated.conversation.item = c;
-                      }
-                    }
-                  )
-                );
+          var crosses = data.crosses;
+          var updates;
 
+          if (0 === crosses.length) { return; }
+
+          updates = R.filter(crosses, function (v, i) {
+            var up = v.updated, b = false;
+            if ('0' === v.conversation_count) {
+              v.conversation_count = b;
+            }
+            if (up) {
+              var k, dv, t;
+              for (k in up) {
+                dv = up[k];
+                t = +new Date(dv.updated_at.replace(/\-/g, '/'));
+                if (t > mt) {
+                  b |= true;
+                }
+                else {
+                  b |= false;
+                  up[k] = false;
+                }
+              }
             }
 
+            if (b) {
+              return true;
+            }
           });
-        }
 
-        if (updatesAjax.length) {
-          var dw = $.when;
-          dw = dw.apply(null, updatesAjax);
-          dw.then(function (data) {
-            var uh = $('#jst-updates').html();
-            var s = Handlebars.compile(uh);
-            var h = s({updates: crosses});
-            $('#profile .ios-app').before(h);
-          });
-        }
-        */
+          var uh = $('#jst-updates').html();
+          var s = Handlebars.compile(uh);
+          var h = s({updates: updates});
+          $('.siderbar.updates').append(h).removeClass('hide');
 
-      }
+        }
     );
   };
 
