@@ -7117,8 +7117,9 @@ body {
 }
 
 .cross-title textarea {
-  width: 704px;
+  width: 790px;
   height: 90px;
+  margin: 0;
   font-size: 42px;
   font-weight: 300;
   line-height: 50px;
@@ -7436,7 +7437,7 @@ body {
   position: relative;
 }
 
-.cross-hover:hover:before {
+.cross-hover:before {
   position: absolute;
   top: -10px;
   right: -10px;
