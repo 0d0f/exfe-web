@@ -5360,6 +5360,7 @@ body {
 
 .navbar .user-panel .body .identity {
   padding: 5px;
+  margin-bottom: 7px;
   color: #4c4c4c;
 }
 
@@ -7280,11 +7281,9 @@ body {
   color: #4c4c4c;
 }
 
-.cross-rsvp .by {
-  /*color: #4C4C4C;*/
-
-  /*margin-top: 7px 0 0 30px;*/
-
+.cross-rsvp .edit .by {
+  margin-top: 7px;
+  color: #4C4C4C;
 }
 
 .cross-rsvp .change {
