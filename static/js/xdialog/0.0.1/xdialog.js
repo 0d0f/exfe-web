@@ -230,12 +230,8 @@ define(function (require, exports, module) {
             , s;
 
           if ($e.hasClass('icon14-question')) {
-            if (flag && flag === 'AUTHENTICATE') {
-              s = '<span class="xalert-fail">Please directly authenticate this identity above.</span><br />To enable password sign-in for this identity, set an <span class="x-sign">EXFE</span> password first in your profile page.';
-            } else {
-              s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
-            }
-            $e.parent().find('.xalert-error').html(s).removeClass('hide');
+            s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
+            $e.parent().find('.xalert-error:eq(0)').html(s).removeClass('hide');
           } else {
             $e.toggleClass('icon14-question icon14-clear');
 
@@ -409,7 +405,7 @@ define(function (require, exports, module) {
                       + '<i class="help-inline small-loading hide"></i>'
                       + '<div class="xalert xalert-error hide" style="margin-top: 5px;"></div>'
 
-                      + '<div class="xalert xalert-error authenticate hide">'
+                      + '<div class="xalert xalert-error authenticate hide" style="margin-top: 5px;">'
                         + '<span class="xalert-fail">Please directly authenticate this identity above.</span><br />To enable password sign-in for this identity, set an <span class="x-sign">EXFE</span> password first in your profile page.'
                       + '</div>'
 
@@ -1746,19 +1742,18 @@ define(function (require, exports, module) {
         if (that.switchTabType === 'd24') {
           t = 'd01';
         }
-        that.$('.authenticate').addClass('hide');
+
+        that.$('.help-subject')
+          .removeClass('icon14-question')
+          .addClass('icon14-clear')
+          .parent()
+          .find('.xalert-error')
+          .addClass('hide');
 
         if (data) {
           // test
           $identityLabel.removeClass('label-error');
           $identityLabelSpan.text('');
-
-          that.$('.help-subject')
-            .removeClass('icon14-question')
-            .addClass('icon14-clear')
-            .parent()
-            .find('.xalert-error')
-            .addClass('hide');
 
           if (data.identity) {
             that._identity = data.identity;
