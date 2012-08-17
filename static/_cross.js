@@ -1521,6 +1521,18 @@ define(function (require, exports, module) {
             $('.cross-description').toggleClass('more', moreOrLess);
             $(this).toggleClass('xbtn-less', moreOrLess);
         });
+        $('.cross-rsvp').bind('hover', function(event) {
+            switch (event.type) {
+                case 'mouseenter':
+                    $('.cross-rsvp .show .accepted').hide();
+                    $('.cross-rsvp .show .change').show();
+                    break;
+                case 'mouseleave':
+                    $('.cross-rsvp .show .accepted').show();
+                    $('.cross-rsvp .show .change').hide();
+
+            }
+        });
         $('.cross-rsvp .edit .accept').bind('click', function() {
             ExfeeWidget.rsvpMe('ACCEPTED');
             ShowRsvp();
@@ -1829,12 +1841,11 @@ define(function (require, exports, module) {
                 byMe        = myInvitation.identity.id === by_identity.id;
             if (myInvitation.rsvp_status === 'NORESPONSE' || buttons) {
                 if (byMe) {
-                    $('.cross-rsvp .show .by').hide();
+                    $('.cross-rsvp .edit .by').hide();
                 } else {
-                    $('.cross-rsvp .show .by .sb').html('Invitation from');
-                    $('.cross-rsvp .show .by .avatar').sttr('src', myInvitation.by_identity.avatar_filename);
-                    $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
-                    $('.cross-rsvp .show .by').show();
+                    $('.cross-rsvp .edit .by .avatar').attr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .edit .by strong').html(myInvitation.by_identity.name);
+                    $('.cross-rsvp .edit .by').show();
                 }
                 $('.cross-rsvp .show').hide();
                 $('.cross-rsvp .edit').fadeIn(233);
@@ -1856,8 +1867,7 @@ define(function (require, exports, module) {
                 if (byMe || myInvitation.rsvp_status === 'INTERESTED') {
                     $('.cross-rsvp .show .by').hide();
                 } else {
-                    $('.cross-rsvp .show .by .sb').html('Set by');
-                    $('.cross-rsvp .show .by .avatar').sttr('src', myInvitation.by_identity.avatar_filename);
+                    $('.cross-rsvp .show .by .avatar').attr('src', myInvitation.by_identity.avatar_filename);
                     $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
                     $('.cross-rsvp .show .by').show();
                 }
