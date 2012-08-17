@@ -5376,7 +5376,7 @@ body {
   text-align: center;
 }
 
-.navbar .user-panel .body .merge:hover:after {
+.navbar .user-panel .body .merge:after {
   position: absolute;
   top: -5px;
   right: -8px;
