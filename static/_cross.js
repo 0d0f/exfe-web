@@ -898,7 +898,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +   '<div class="tooltip-inner">'
                          +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
-                         +       '<i class="icon16-identity-' + invitation.identity.provider + '"></i><span>' + invitation.identity.external_username + '</span>'
+                         +       '<i class="icon16-identity-' + invitation.identity.provider + '"></i><span class="oblique">' + invitation.identity.external_username + '</span>'
                          +     '</div>'
                          +   '</div>'
                          + '</div>';
@@ -1328,28 +1328,28 @@ define(function (require, exports, module) {
             editMethod = {
             title : [
                 function() {
-                    $('.cross-title').removeClass('cross-hover');
+                    $('.cross-title').removeAttr('editable');
                     $('.cross-title .show').show();
                     $('.cross-title .edit').hide();
                     ChangeTitle($('.cross-title .edit').val(), 'cross');
                     AutoSaveCross();
                 },
                 function() {
-                    $('.cross-title').addClass('cross-hover');
+                    $('.cross-title').attr('editable', true);
                     $('.cross-title .show').hide();
                     $('.cross-title .edit').show().focus();
                 }
             ],
             description : [
                 function() {
-                    $('.cross-description').parent().removeClass('cross-hover');
+                    $('.cross-description-outer').removeAttr('editable');
                     $('.cross-description .show').show();
                     $('.cross-description .edit').hide();
                     ChangeDescription($('.cross-description .edit').val());
                     AutoSaveCross();
                 },
                 function() {
-                    $('.cross-description').parent().addClass('cross-hover');
+                    $('.cross-description-outer').attr('editable', true);
                     $('.cross-description .show').hide();
                     $('.cross-description .xbtn-more').hide();
                     $('.cross-description .edit').show().focus();
@@ -1357,22 +1357,22 @@ define(function (require, exports, module) {
             ],
             time : [
                 function() {
-                    $('.cross-date').removeClass('cross-hover');
+                    $('.cross-date').removeAttr('editable');
                     $('.cross-date .show').show();
                     $('.cross-date .edit').hide();
                     ChangeTime($('.cross-date .edit').val());
                     AutoSaveCross();
                 },
                 function() {
-                    $('.cross-date').addClass('cross-hover');
+                    $('.cross-date').attr('editable', true);
                     $('.cross-date .show').hide();
                     $('.cross-date .edit').show().focus();
                 }
             ],
             place : [
                 function() {
-                    if (placepanel) {
-                      $('.cross-place').removeClass('cross-hover');
+                  if (placepanel) {
+                      $('.cross-place').removeAttr('editable');
                       AutoSaveCross();
                       placepanel.hide();
                       placepanel = null;
@@ -1380,7 +1380,7 @@ define(function (require, exports, module) {
                 },
                 function() {
                     if (!placepanel) {
-                      $('.cross-place').addClass('cross-hover');
+                      $('.cross-place').attr('editable', true);
                       var offset = $('div.cross-place').offset();
                       placepanel = new PlacePanel({
                         options: {
@@ -1463,6 +1463,20 @@ define(function (require, exports, module) {
             }
             ChangeTitle($(event.target).val(), 'cross');
         });
+        $('.cross-title, .cross-description-outer, .cross-date, .cross-place')
+          .bind('hover', function (e) {
+            var t = e.type;
+            if (Editing) {
+              if (t === 'mouseenter' && !$(this).attr('editable')) {
+                $(this)
+                  .addClass('cross-hover');
+              }
+              else {
+                $(this)
+                  .removeClass('cross-hover');
+              }
+            }
+          });
         // 防止点击选中文字，触发 click
         var _dest = 0;
         $('.cross-description').bind('mousedown mouseup', function (e) {
@@ -1815,8 +1829,10 @@ define(function (require, exports, module) {
                         by         = 'Confirmed by ';
                         break;
                     case 'DECLINED':
-                        attendance = 'Declined';
+                        //attendance = 'Declined';
                         by         = 'Declined by ';
+                        attendance = 'Unavailable';
+                        //by         = 'Unavailable by ';
                         break;
                     case 'INTERESTED':
                         attendance = 'Interested';
