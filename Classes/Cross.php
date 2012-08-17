@@ -32,7 +32,7 @@ class Cross extends Metainfo {
 
         $this->title       = $title;
         $this->description = $description;
-        $this->conversation_count =$conversation_count;
+        $this->conversation_count = (int) $conversation_count;
 
         if($time=="")
             $this->time        = new CrossTime();
