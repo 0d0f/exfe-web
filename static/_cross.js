@@ -233,8 +233,8 @@ ExfeeWidget = {
         this.dom_id   = dom_id;
         this.editable = editable;
         this.callback = callback;
-        $('#' + this.dom_id + ' .invite').css('visibility', 'hidden');
-        $('#' + this.dom_id + ' .total').css('visibility', 'hidden');
+        $('#' + this.dom_id + ' .invite-form').css('visibility', 'hidden');
+        $('#' + this.dom_id + ' .total').css('visibility',       'hidden');
         $('#' + this.dom_id).bind(
             'mouseenter mouseleave',
             function(event) {
@@ -1512,11 +1512,14 @@ define(function (require, exports, module) {
                 case 'mouseenter':
                     $('.cross-rsvp .show .accepted').hide();
                     $('.cross-rsvp .show .change').show();
+                    if ($('.cross-rsvp .show .by strong').html()) {
+                        $('.cross-rsvp .show .by').show();
+                    }
                     break;
                 case 'mouseleave':
                     $('.cross-rsvp .show .accepted').show();
                     $('.cross-rsvp .show .change').hide();
-
+                    $('.cross-rsvp .show .by').hide();
             }
         });
         $('.cross-rsvp .edit .accept').bind('click', function() {
@@ -1852,6 +1855,7 @@ define(function (require, exports, module) {
                 }
                 if (byMe || myInvitation.rsvp_status === 'INTERESTED') {
                     $('.cross-rsvp .show .by').hide();
+                    $('.cross-rsvp .show .by strong').html('');
                 } else {
                     $('.cross-rsvp .show .by .avatar').attr('src', myInvitation.by_identity.avatar_filename);
                     $('.cross-rsvp .show .by strong').html(myInvitation.by_identity.name);
@@ -1877,6 +1881,8 @@ define(function (require, exports, module) {
                 if (objAccepted.html() !== strSummary) {
                     objAccepted.html(strSummary);
                 }
+                $('.cross-rsvp .show .by').hide();
+                $('.cross-rsvp .show .change').hide();
                 $('.cross-rsvp .show .attendance').html(attendance);
                 $('.cross-rsvp .show').fadeIn(233);
                 $('.cross-rsvp .edit').hide();
