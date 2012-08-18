@@ -572,14 +572,14 @@ ExfeeWidget = {
     },
 
 
-    displayIdentity : function(identity) {
+    displayIdentity : function(identity, shortStyle) {
         switch (identity ? identity.provider : '') {
             case 'email':
                 return identity.external_id;
             case 'twitter':
-                return '@' + identity.external_username + '@twitter';
+                return '@' + identity.external_username + (shortStyle ? '' : '@twitter');
             case 'facebook':
-                return identity.external_username + '@facebook';
+                return identity.external_username + (shortStyle ? '' : '@facebook');
             default:
                 return '';
         }
@@ -903,7 +903,8 @@ define('exfeepanel', [], function (require, exports, module) {
                          +   '<div class="tooltip-inner">'
                          +     '<h5>' + invitation.identity.name + '</h5>'
                          +     '<div>'
-                         +       '<i class="icon16-identity-' + invitation.identity.provider + '"></i><span class="oblique">' + invitation.identity.external_username + '</span>'
+                         +       '<i class="icon16-identity-' + invitation.identity.provider + '"></i>'
+                         +       '<span class="oblique">' + ExfeeWidget.displayIdentity(invitation.identity, true) + '</span>'
                          +     '</div>'
                          +   '</div>'
                          + '</div>';
@@ -954,11 +955,13 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '<ul class="identities-list">'
                          +         '<li>'
                          +           '<i class="pull-left icon16-identity-' + invitation.identity.provider + '"></i>'
-                         +           '<span class="oblique identity">' + invitation.identity.external_username + '</span>'
+                         +           '<span class="oblique identity">'
+                         +             ExfeeWidget.displayIdentity(invitation.identity, true)
+                         +           '</span>'
                          +           (readOnly ? '' : (
                                      '<div class="identity-btn delete">'
-                         +               '<i class="icon-minus-red"></i>'
-                         +               '<button class="btn-leave">Leave</button>'
+                         +             '<i class="icon-minus-red"></i>'
+                         +             '<button class="btn-leave">Leave</button>'
                          +           '</div>'))
                          +         '</li>'
                          +       '</ul>'
