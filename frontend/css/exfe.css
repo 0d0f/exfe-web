@@ -7706,8 +7706,8 @@ body {
 }
 
 .cross-identities .unconfirmed {
-  opacity: 0.25;
-  filter: alpha(opacity=25);
+  opacity: 0.33;
+  filter: alpha(opacity=33);
 }
 
 .cross-identities .identity-more > div {
@@ -8399,6 +8399,7 @@ body {
   display: inline-block;
   height: 16px;
   padding: 1px 10px 1px 6px;
+  margin-top: 7px;
   font-size: 12px;
   line-height: 18px;
   color: #191919;
