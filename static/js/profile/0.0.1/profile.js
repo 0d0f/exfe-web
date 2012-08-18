@@ -246,7 +246,11 @@ define(function (require, exports, module) {
 
     $('#profile .user-name').find('h3').html(user.name || user.nickname);
 
-    $('#profile .user-name').find('.changepassword').attr('data-dialog-type', user.password ? 'changepassword' : 'setpassword');
+    $('#profile .user-name')
+      .find('.changepassword')
+      .attr('data-dialog-type', user.password ? 'changepassword' : 'setpassword')
+      .find('span')
+      .text( user.password ? 'Change Password...' : 'Set Password...');
 
 
     var jst_identity_list = $('#jst-identity-list');
