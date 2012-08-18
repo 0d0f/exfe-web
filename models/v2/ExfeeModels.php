@@ -349,7 +349,7 @@ class ExfeeModels extends DataModel {
         // get old cross
         $hlpCross   = $this->getHelperByName('cross', 'v2');
         $cross_id   = $this->getCrossIdByExfeeId($exfee_id);
-        $old_cross  = $hlpCross->getCross($cross_id, false, true);
+        $old_cross  = $hlpCross->getCross($cross_id, true, true);
         $items      = $old_cross->exfee->items;
         $over_quota = false;
         // raw actions
@@ -423,7 +423,7 @@ class ExfeeModels extends DataModel {
         // get old cross
         $hlpCross  = $this->getHelperByName('cross', 'v2');
         $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
-        $old_cross = $hlpCross->getCross($cross_id, false, true);
+        $old_cross = $hlpCross->getCross($cross_id, true, true);
         // raw actions
         $arrResult = array();
         $actResult = true;
