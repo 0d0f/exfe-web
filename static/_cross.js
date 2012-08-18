@@ -700,16 +700,13 @@ ExfeeWidget = {
                 function(data) {
                     var caughtIdentities = [];
                     for (var i = 0; i < data.identities.length; i++) {
-                        if (data.identities[i].id) {
-                            var idx = ExfeeWidget.checkExistence(data.identities[i]);
-                            if (idx !== false) {
-                                Exfee.invitations[idx].identity = data.identities[i];
-                            }
-                            caughtIdentities.push(data.identities[i]);
+                        var idx = ExfeeWidget.checkExistence(data.identities[i]);
+                        if (idx !== false) {
+                            Exfee.invitations[idx].identity = data.identities[i];
                         }
+                        caughtIdentities.push(data.identities[i]);
                     }
                     if (caughtIdentities.length) {
-                        console.log(caughtIdentities);
                         ExfeeCache.cacheIdentities(caughtIdentities);
                         window.GatherExfeeWidget.showAll(true);
                         window.CrossExfeeWidget.showAll(false, true);
