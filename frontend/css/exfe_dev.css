@@ -4972,6 +4972,7 @@ input[type="submit"].btn.btn-mini {
 
 .xbtn-rsvp {
   width: 140px;
+  padding: 0;
   font-size: 22px;
   font-weight: 300;
   line-height: 32px;
@@ -4997,7 +4998,6 @@ input[type="submit"].btn.btn-mini {
   background-image: -moz-linear-gradient(top, #d5e8f2, #1175a5);
   background-repeat: repeat-x;
   border-top: 1px solid rgba(213, 233, 242, 0.95);
-  border-bottom: none;
   border-color: #1175a5 #1175a5 #0a4460;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   filter: progid:dximagetransform.microsoft.gradient(enabled=false);
@@ -5011,13 +5011,12 @@ input[type="submit"].btn.btn-mini {
   background-color: #bdbdbd;
   background-color: transparent;
   background-image: -ms-linear-gradient(top, #e6e6e6, #7f7f7f);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e6e6e6), to(#7f7f7f));
-  background-image: -webkit-linear-gradient(top, #e6e6e6, #7f7f7f);
   background-image: -o-linear-gradient(top, #e6e6e6, #7f7f7f);
-  background-image: linear-gradient(top, #e6e6e6, #7f7f7f);
+  background-image: -webkit-linear-gradient(top, #e6e6e6, #7f7f7f);
   background-image: -moz-linear-gradient(top, #e6e6e6, #7f7f7f);
+  background-image: linear-gradient(top, #e6e6e6, #7f7f7f);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e6e6e6), to(#7f7f7f));
   background-repeat: repeat-x;
-  border-bottom: none;
   border-color: #7f7f7f #7f7f7f #595959;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#e6e6e6', endColorstr='#7f7f7f', GradientType=0);
@@ -7268,13 +7267,13 @@ body {
   font-size: 16px;
   color: #7f7f7f;
   text-decoration: underline;
-  cursor: pointer;
+  vertical-align: text-top;
 }
 
 .cross-rsvp .set-by {
   padding-left: 15px;
   line-height: 18px;
-  text-align: center;
+  text-align: left;
 }
 
 .cross-rsvp .sb {
@@ -7282,7 +7281,7 @@ body {
 }
 
 .cross-rsvp .edit .by {
-  margin: 7px 0 0 30px;
+  margin: 3px 0 0 30px;
   color: #4C4C4C;
 }
 
@@ -7527,17 +7526,12 @@ body {
 }
 
 .cross-rsvp {
-  /*height: 70px;*/
-
-  margin-top: 30px;
-}
-
-.rsvp-group {
-  padding-top: 10px;
+  height: 55px;
+  margin-top: 40px;
 }
 
 .cross-conversation {
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .cross-conversation h3 {
