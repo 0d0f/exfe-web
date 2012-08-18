@@ -1989,18 +1989,16 @@ define(function (require, exports, module) {
     var ResetCross = function() {
         window.Cross = ExfeUtilities.clone(rawCross);
         window.Exfee = ExfeUtilities.clone(rawExfee);
+    };
+
+
+    var NewCross = function() {
+        readOnly = false;
+        ResetCross();
         fixBackground();
         fixTitle();
         fixTime();
         fixExfee();
-    };
-
-
-    var NewCross = function(NoReset) {
-        readOnly = false;
-        if (!NoReset) {
-            ResetCross();
-        }
         ShowCross();
         ShowGatherForm();
     };
@@ -2138,7 +2136,7 @@ define(function (require, exports, module) {
             Api.setToken(invitation_token);
             UpdateCross(cross, read_only);
         } else {
-            NewCross(true);
+            NewCross();
         }
     });
     // init event: signin
