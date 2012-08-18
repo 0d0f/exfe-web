@@ -884,7 +884,7 @@ define('exfeepanel', [], function (require, exports, module) {
 
         invitation : {},
 
-        mates_edit : false,
+        editing    : '',
 
         pre_delete : false,
 
@@ -940,7 +940,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +          '<i class="pull-left mates-add icon14-mates-add"></i>'
                          +        '</div>'
                          +      '</div>'
-                         +      '<div class="rsvp-info hide">'
+                         +      '<div class="rsvp-info">'
                          +        '<div class="rsvp-content">'
                          +          '<div class="attendance"></div>'
                          +          '<div class="by">by <span class="name"></span></div>'
@@ -977,7 +977,7 @@ define('exfeepanel', [], function (require, exports, module) {
             this.invitation = ExfeUtilities.clone(invitation);
             if (this.panelId   !== strTipId || !$('.exfeepanel').length) {
                 this.panelId    =  strTipId;
-                this.mates_edit =  false;
+                this.editing    =  '';
                 this.pre_delete =  false;
                 this.hideTip();
                 this.hidePanel();
@@ -1025,7 +1025,7 @@ define('exfeepanel', [], function (require, exports, module) {
                     objSetTo.toggleClass('icon-rsvp-noresponse',    false);
             }
             $('.exfee_pop_up .rsvp-info .setto').attr('rsvp', next_rsvp);
-            $('.exfee_pop_up .rsvp-string').html(
+            $('.exfee_pop_up .rsvp-info .attendance').html(
                 this.arrRsvp[this.invitation.rsvp_status][0]
             );
             for (var i = 1; i < 10; i++) {
@@ -1033,24 +1033,29 @@ define('exfeepanel', [], function (require, exports, module) {
                     'icon10-plus-' + i, this.invitation.mates === i
                 );
             }
-            if (by_identity) {
-                if (this.invitation.identity.id === by_identity.id) {
-                    $('.exfee_pop_up .rsvp-info .by').hide();
-                } else {
-                    $('.exfee_pop_up .rsvp-info .by .name').html(by_identity.name);
-                    $('.exfee_pop_up .rsvp-info .by').show();
-                }
+            $('.exfee_pop_up .rsvp-info .by .name').html(by_identity.name);
+            $('.exfee_pop_up .invited .mates-num').html('+' + this.invitation.mates);
+            $('.exfee_pop_up .mates-edit .num').html(this.invitation.mates);
+            if (by_identity && this.invitation.identity.id !== by_identity.id && this.editing === 'rsvp') {
+                $('.exfee_pop_up .rsvp-info .by').show();
             } else {
                 $('.exfee_pop_up .rsvp-info .by').hide();
             }
-            if (this.invitation.rsvp_status === 'ACCEPTED') {
-                $('.exfee_pop_up .invited').show();
-                if (this.mates_edit) {
-                    $('.exfee_pop_up .rsvp-status').hide();
+            switch (this.editing) {
+                case 'rsvp':
+                    // rsvp
+                    $('.exfee_pop_up .rsvp-info').show();
+                    $('.exfee_pop_up .rsvp-info .setto').show();
+                    // mates
+                    $('.exfee_pop_up .invited').hide();
+                    break;
+                case 'mates':
+                    // rsvp
                     $('.exfee_pop_up .rsvp-info').hide();
+                    // mates
+                    $('.exfee_pop_up .invited').show();
                     $('.exfee_pop_up .invited .together-with').show();
                     if (this.invitation.mates) {
-                        $('.exfee_pop_up .mates-edit .num').html(this.invitation.mates);
                         $('.exfee_pop_up .mates-edit').show();
                         $('.exfee_pop_up .invited .mates-info').hide();
                     } else {
@@ -1058,23 +1063,22 @@ define('exfeepanel', [], function (require, exports, module) {
                         $('.exfee_pop_up .invited .mates-info').show();
                     }
                     $('.exfee_pop_up .invited .mates-num').hide();
-                } else {
-                    $('.exfee_pop_up .rsvp-status').show();
-                    $('.exfee_pop_up .rsvp-info').hide();
+                    break;
+                default:
+                    // rsvp
+                    $('.exfee_pop_up .rsvp-info').show();
+                    $('.exfee_pop_up .rsvp-info .setto').hide();
+                    // mates
+                    $('.exfee_pop_up .invited').show();
                     $('.exfee_pop_up .mates-edit').hide();
                     $('.exfee_pop_up .invited .together-with').hide();
                     if (this.invitation.mates) {
-                        $('.exfee_pop_up .invited .mates-num').html('+' + this.invitation.mates).show();
+                        $('.exfee_pop_up .invited .mates-num').show();
                         $('.exfee_pop_up .invited .mates-info').hide();
                     } else {
                         $('.exfee_pop_up .invited .mates-num').hide();
                         $('.exfee_pop_up .invited .mates-info').show();
                     }
-                }
-            } else {
-                $('.exfee_pop_up .invited').hide();
-                $('.exfee_pop_up .rsvp-status').show();
-                $('.exfee_pop_up .rsvp-info').hide();
             }
             if (this.invitation.host) {
                 $('.exfee_pop_up .identities-list .delete i').hide();
