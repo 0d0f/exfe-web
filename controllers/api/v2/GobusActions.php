@@ -29,6 +29,10 @@ class GobusActions extends ActionController {
             'external_username' => $external_username,
         ));
         // return
+        if (!$id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
         apiResponse(['identity_id' => $id]);
     }
 
