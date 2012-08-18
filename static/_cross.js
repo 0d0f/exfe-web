@@ -1111,20 +1111,22 @@ define('exfeepanel', [], function (require, exports, module) {
             $('.exfee_pop_up .invited').bind('hover', function(event) {
                 switch (event.type) {
                     case 'mouseenter':
-                        ExfeePanel.mates_edit = true;
+                        ExfeePanel.editing = 'mates';
                         break;
                     case 'mouseleave':
-                        ExfeePanel.mates_edit = false;
+                        ExfeePanel.editing = '';
                 }
                 ExfeePanel.showRsvp();
             });
-            $('.exfee_pop_up .rsvp-status').bind('mouseenter', function() {
-                $('.exfee_pop_up .rsvp-info').show();
-                $(this).hide();
-            });
-            $('.exfee_pop_up .rsvp-info').bind('mouseleave', function() {
-                $('.exfee_pop_up .rsvp-status').show();
-                $(this).hide();
+            $('.exfee_pop_up .rsvp-info').bind('hover', function(event) {
+                switch (event.type) {
+                    case 'mouseenter':
+                        ExfeePanel.editing = 'rsvp';
+                        break;
+                    case 'mouseleave':
+                        ExfeePanel.editing = '';
+                }
+                ExfeePanel.showRsvp();
             });
             $('.exfee_pop_up .identities-list .delete i').bind('click',      function(event) {
                 event.stopPropagation();
