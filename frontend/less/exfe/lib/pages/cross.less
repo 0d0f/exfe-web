@@ -408,7 +408,8 @@
 
     .rsvp-actions {
       position: relative;
-      margin: 15px 0;
+      height: 38px;
+      margin: 20px 0 10px;
       text-align: center;
     }
 
@@ -422,16 +423,10 @@
 
     // http://sofish.de/1909
     .rsvp-info {
+      width: 100%s
       display: table;
-      height: 28px;
-      line-height: 16px;
-
-      .rsvp-content {
-        display: table-cell;
-        vertical-align: middle;
-        padding-left: 40px;
-        padding-right: 20px;
-      }
+      height: 26px;
+      /*line-height: 16px;*/
 
       .by {
         line-height: 12px;
@@ -443,9 +438,8 @@
       }
 
       .setto {
-        display: table-cell;
-        vertical-align: middle;
-        line-height: 12px;
+        text-align: right;
+        line-height: 26px;
         font-size: 10px;
         color: #7f7f7f;
       }
@@ -453,10 +447,11 @@
 
     .invited {
       position: relative;
-      top: 50%;
+      /*top: 50%;*/
       right: 0;
-      height: 28px;
-      /*line-height: 14px;*/
+      /*height: 26px;*/
+      line-height: 14px;
+      padding: 6px 0;
 
       .mates-num {
         color: @exfeBlue;
@@ -468,12 +463,16 @@
       }
     }
 
+    .rsvp-content {
+      display: inline-block;
+    }
+
     .attendance {
       border: 2px solid @exfeBlue;
       .border-radius(5px);
       display: inline-block;
-      height: 24px;
-      line-height: 24px;
+      height: 22px;
+      line-height: 22px;
       text-align: center;
       width: 94px;
     }
