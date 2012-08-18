@@ -7888,7 +7888,8 @@ body {
 
 .exfeepanel .rsvp-actions {
   position: relative;
-  margin: 15px 0;
+  height: 38px;
+  margin: 20px 0 10px;
   text-align: center;
 }
 
@@ -7900,16 +7901,11 @@ body {
 }
 
 .exfeepanel .rsvp-info {
-  display: table;
-  height: 28px;
-  line-height: 16px;
-}
+  width: 100%s
+      display: table;
+  height: 26px;
+  /*line-height: 16px;*/
 
-.exfeepanel .rsvp-info .rsvp-content {
-  display: table-cell;
-  padding-right: 20px;
-  padding-left: 40px;
-  vertical-align: middle;
 }
 
 .exfeepanel .rsvp-info .by {
@@ -7923,20 +7919,17 @@ body {
 }
 
 .exfeepanel .rsvp-info .setto {
-  display: table-cell;
   font-size: 10px;
-  line-height: 12px;
+  line-height: 26px;
   color: #7f7f7f;
-  vertical-align: middle;
+  text-align: right;
 }
 
 .exfeepanel .invited {
   position: relative;
-  top: 50%;
   right: 0;
-  height: 28px;
-  /*line-height: 14px;*/
-
+  padding: 6px 0;
+  line-height: 14px;
 }
 
 .exfeepanel .invited .mates-num {
@@ -7944,11 +7937,15 @@ body {
   text-align: right;
 }
 
+.exfeepanel .rsvp-content {
+  display: inline-block;
+}
+
 .exfeepanel .attendance {
   display: inline-block;
   width: 94px;
-  height: 24px;
-  line-height: 24px;
+  height: 22px;
+  line-height: 22px;
   text-align: center;
   border: 2px solid #3a6ea5;
   -webkit-border-radius: 5px;
