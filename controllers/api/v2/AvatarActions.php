@@ -139,7 +139,7 @@ class AvatarActions extends ActionController {
         require_once "{$curDir}/../../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
-        $config    = array(
+        $config      = array(
             'width'          => 40,
             'height'         => 40,
             'host-right'     => 1,
