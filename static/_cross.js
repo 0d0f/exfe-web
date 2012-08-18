@@ -709,6 +709,7 @@ ExfeeWidget = {
                         }
                     }
                     if (caughtIdentities.length) {
+                        console.log(caughtIdentities);
                         ExfeeCache.cacheIdentities(caughtIdentities);
                         window.GatherExfeeWidget.showAll(true);
                         window.CrossExfeeWidget.showAll(false, true);
@@ -961,7 +962,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +           '<i class="pull-left icon16-identity-' + invitation.identity.provider + '"></i>'
                          +           '<span class="oblique identity">' + invitation.identity.external_username + '</span>'
                          +           (readOnly ? '' : (
-                         +           '<div class="identity-btn delete">'
+                                     '<div class="identity-btn delete">'
                          +               '<i class="icon-minus-red"></i>'
                          +               '<button class="btn-leave">Leave</button>'
                          +           '</div>'))
