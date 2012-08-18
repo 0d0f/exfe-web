@@ -284,7 +284,7 @@ ExfeeWidget = {
     },
 
 
-    showAll : function(skipMe) {
+    showAll : function(skipMe, fadeUnconfirmed) {
         var intAccepted = 0, intTotal = 0;
         $('#' + this.dom_id + ' .thumbnails').html('');
         for (var i = 0; i < Exfee.invitations.length; i++) {
@@ -292,7 +292,7 @@ ExfeeWidget = {
              && Exfee.invitations[i].rsvp_status !== 'NOTIFICATION') {
                 var intCell = Exfee.invitations[i].mates + 1;
                 if (!skipMe || !ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
-                    this.showOne(Exfee.invitations[i]);
+                    this.showOne(Exfee.invitations[i], fadeUnconfirmed);
                 }
                 if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
                     intAccepted += intCell;
@@ -305,13 +305,14 @@ ExfeeWidget = {
     },
 
 
-    showOne : function(invitation) {
+    showOne : function(invitation, fadeUnconfirmed) {
         $('#' + this.dom_id + ' .thumbnails').append(
             '<li class="identity" id="' + invitation.identity.id
           +              '" provider="' + invitation.identity.provider.toLowerCase()
           +           '" external_id="' + invitation.identity.external_id.toLowerCase()
           +     '" external_username="' + invitation.identity.external_username.toLowerCase() + '">'
-          +     '<span class="pointer avatar">'
+          +     '<span class="pointer avatar'
+          +         (fadeUnconfirmed && invitation.rsvp_status !== 'ACCEPTED' ? ' unconfirmed' : '') + '">'
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
           +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
@@ -708,9 +709,10 @@ ExfeeWidget = {
                         }
                     }
                     if (caughtIdentities.length) {
+                        console.log(caughtIdentities);
                         ExfeeCache.cacheIdentities(caughtIdentities);
                         window.GatherExfeeWidget.showAll(true);
-                        window.CrossExfeeWidget.showAll();
+                        window.CrossExfeeWidget.showAll(false, true);
                     }
                 }
             );
@@ -960,7 +962,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +           '<i class="pull-left icon16-identity-' + invitation.identity.provider + '"></i>'
                          +           '<span class="oblique identity">' + invitation.identity.external_username + '</span>'
                          +           (readOnly ? '' : (
-                         +           '<div class="identity-btn delete">'
+                                     '<div class="identity-btn delete">'
                          +               '<i class="icon-minus-red"></i>'
                          +               '<button class="btn-leave">Leave</button>'
                          +           '</div>'))
@@ -1788,7 +1790,7 @@ define(function (require, exports, module) {
 
     var ShowExfee = function() {
         window.GatherExfeeWidget.showAll(true);
-        window.CrossExfeeWidget.showAll();
+        window.CrossExfeeWidget.showAll(false, true);
     };
 
 
@@ -1988,18 +1990,16 @@ define(function (require, exports, module) {
     var ResetCross = function() {
         window.Cross = ExfeUtilities.clone(rawCross);
         window.Exfee = ExfeUtilities.clone(rawExfee);
+    };
+
+
+    var NewCross = function() {
+        readOnly = false;
+        ResetCross();
         fixBackground();
         fixTitle();
         fixTime();
         fixExfee();
-    };
-
-
-    var NewCross = function(NoReset) {
-        readOnly = false;
-        if (!NoReset) {
-            ResetCross();
-        }
         ShowCross();
         ShowGatherForm();
     };
@@ -2137,7 +2137,7 @@ define(function (require, exports, module) {
             Api.setToken(invitation_token);
             UpdateCross(cross, read_only);
         } else {
-            NewCross(true);
+            NewCross();
         }
     });
     // init event: signin
