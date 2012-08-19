@@ -147,14 +147,15 @@ define(function (require, exports, module) {
 
       if ($db.size()) {
         // profile 操作, 后端暂不支持browsing-identity 修改身份内容,弹 D4 窗口
-        if (actionType === 'nota' && tokenType === 'user') {
+        //if (actionType === 'nota' && tokenType === 'user') {
           //e.stopImmediatePropagation();
           //e.stopPropagation();
           //e.preventDefault();
           //$('[data-user-action="' + action + '"]').trigger('click');
           //return false;
-        }
-        else if (actionType === '') {
+        //}
+        //else if (actionType === '') {
+        if (actionType === '' || actionType === 'nota' && tokenType === 'user') {
           e.stopImmediatePropagation();
           e.stopPropagation();
           e.preventDefault();
