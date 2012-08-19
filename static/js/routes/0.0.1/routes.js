@@ -308,7 +308,10 @@ define('routes', function (require, exports, module) {
       , user = session.user
       , authToken = authorization && authorization.token
       , ctoken = req.params[0]
+      , accept = req.params[1]
       , params = {};
+
+      console.log(accept);
 
     if (authToken) {
       params.token = authToken;
@@ -332,7 +335,7 @@ define('routes', function (require, exports, module) {
           res.render('x.html', function (tpl) {
             $('#app-main').append(tpl);
             Bus.emit('xapp:cross:main');
-            Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken);
+            Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken, !!accept);
           });
         }
 
@@ -543,6 +546,10 @@ define('routes', function (require, exports, module) {
           var user = data.user;
           Store.set('user', session.user = user);
 
+          next();
+        }
+        // 继续使用本地缓存
+      , function (data) {
           next();
         }
     );
