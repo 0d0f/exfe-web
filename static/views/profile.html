@@ -13,8 +13,8 @@
 
           <div class="user-infos">
             <div class="user-name">
-              <h3 class="pull-left" data-link></h3>
-              <div class="xbtn changepassword" data-link data-widget="dialog"><i class="icon14-lock"></i><span></span></div>
+              <h3 class="pull-left" data-link="nota"></h3>
+              <div class="xbtn changepassword" data-link="nota" data-widget="dialog"><i class="icon14-lock"></i><span></span></div>
             </div>
             <ul class="unstyled identity-list">
             </ul>
@@ -75,21 +75,21 @@
         {{#each identities}}
         <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
           <i class="icon-move"></i>
-          <span class="avatar" data-link><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
+          <span class="avatar" data-link="nota"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
           </span><span class="identity"><span class="identityname">{{printName name external_username}}</span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
-          {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link>Make default</a>{{/makeDefault}}
+          {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link="nota">Make default</a>{{/makeDefault}}
           {{#ifOauthVerifying provider status}}
           <span class="xlabel">
             <i class="icon16-warning"></i>
             <span>Authorization failed.</span>
-            <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter" data-link>Re-Authorize</button>
+            <button class="xbtn xbtn-reauthorize" data-widget="dialog" data-dialog-type="verification_twitter" data-link="nota">Re-Authorize</button>
           </span>
           {{/ifOauthVerifying}}
           {{#ifVerifying provider status}}
           <span class="xlabel">
             <i class="icon16-warning"></i>
             <span>Pending verification, 5 days left.</span>
-            <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email" data-link>Re-Verify...</button>
+            <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email" data-link="nota">Re-Verify...</button>
           </span>
           {{/ifVerifying}}
         </li>
@@ -97,7 +97,7 @@
         </script>
         <script id="jst-user-avatar" type="text/x-handlebars-template">
         {{#if avatar_filename}}
-        <span class="avatar" data-link><img src="{{avatar_filename}}" alt="" width="80" height="80" /></span>
+        <span class="avatar" data-link="nota"><img src="{{avatar_filename}}" alt="" width="80" height="80" /></span>
         {{else}}
         <div class="add-avatar">
           <span class="plus">+</span>

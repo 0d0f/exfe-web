@@ -372,6 +372,7 @@ define('routes', function (require, exports, module) {
               , originToken: ctoken
               , tokenType: 'cross'
               , page: 'cross'
+              , readOnly: read_only
             }
             , 'browsing_identity');
         }
