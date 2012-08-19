@@ -116,6 +116,7 @@ class IdentitiesActions extends ActionController {
         // get models
         $modUser     = $this->getModelByName('user',     'v2');
         $modIdentity = $this->getModelByName('identity', 'v2');
+        $modRelation = $this->getModelByName('relation', 'v2');
         // check signin
         $checkHelper = $this->getHelperByName('check', 'v2');
         $params = $this->params;
@@ -152,7 +153,7 @@ class IdentitiesActions extends ActionController {
                     if ($r[strlen($r) - 1] === '*') {
                         // 根据返回的数据拆解 Key 和匹配的数据。
                         $arr_explode = explode('|', $r);
-                        if (sizeof($arr_explode) ===2) {
+                        if (sizeof($arr_explode) === 2) {
                             $str = rtrim($arr_explode[1], '*');
                             $arrResult[$str] = $arr_explode[0];
                         }
@@ -174,12 +175,25 @@ class IdentitiesActions extends ActionController {
         // get identity objects
         $rtResult = array();
         foreach ($arrResult as $arI => $arItem) {
-            $arrArI      = explode(':', $arI);
-            $identity_id = (int) array_pop($arrArI);
-            if ($identity_id) {
-                $rtResult[] = $modIdentity->getIdentityByIdFromCache(
-                    $identity_id
-                );
+            $arrArI = explode(':', $arI);
+            if (($identity_id = (int) $arrArI[1])) {
+                switch ($arrArI[0]) {
+                    case 'id':
+                        $objIdentity = $modRelation->getRelationIdentityById(
+                            $identity_id
+                        );
+                        break;
+                    case 'rid':
+                        $objIdentity = $modIdentity->getIdentityByIdFromCache(
+                            $identity_id
+                        );
+                        break;
+                    default:
+                        $objIdentity = null;
+                }
+                if ($objIdentity) {
+                    $rtResult[] = $objIdentity;
+                }
             }
         }
         // return

@@ -166,10 +166,38 @@ class GobusActions extends ActionController {
 
 
     public function doAddFriends() {
+        // get model
+        $modUser     = $this->getModelByName('User',     'v2');
+        $modRelation = $this->getModelByName('Relation', 'v2');
         // get raw data
-        $id         = isset($_POST['id'])         ? intval($_POST['id'])              : null;
-        $identities = isset($_POST['identities']) ? json_decode($_POST['identities']) : null;
-
+        if (!($str_args = @file_get_contents('php://input'))) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'No input!';
+            return;
+        }
+        // decode json
+        $obj_args = json_decode($str_args);
+        if (!$obj_args || !$obj_args->user_id || !is_array($obj_args->identities)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'JSON error!';
+            return;
+        }
+        // save relations
+        $error = false;
+        foreach ($obj_args->identities as $identity) {
+            if (!$modRelation->saveExternalRelations($obj_args->user_id, $identity)) {
+                $error = true;
+            }
+        }
+        if ($error) {
+            header('HTTP/1.1 500 Internal Server Error');
+        }
+        // build identities indexes
+        if (!$modUser->buildIdentitiesIndexes($obj_args->user_id)) {
+            header('HTTP/1.1 500 Internal Server Error');
+        }
+        // return
+        apiResponse(['user_id' => $obj_args->user_id]);
     }
 
 }
