@@ -2131,7 +2131,7 @@ define(function (require, exports, module) {
         window.showtimeTimer = setInterval(ShowTime, 50);
     });
     // init event
-    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only, invitation_token) {
+    bus.on('xapp:cross', function(Cross_id, browsingIdentity, cross, read_only, invitation_token, accepted) {
         // get cross
         if (Cross_id > 0) {
             GetCross(Cross_id);
@@ -2139,6 +2139,10 @@ define(function (require, exports, module) {
             curIdentity = browsingIdentity ? browsingIdentity : curIdentity;
             Api.setToken(invitation_token);
             UpdateCross(cross, read_only);
+            if (accepted) {
+                ExfeeWidget.rsvpMe('ACCEPTED');
+                ShowRsvp();
+            }
         } else {
             NewCross();
         }
