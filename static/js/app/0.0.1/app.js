@@ -50,6 +50,8 @@ define(function (require, exports, module) {
 
   // cross-token - `/#!token=63435bc8d599a857c215c9a628f2b4f8`
   app.get(/^\/#!token=([a-zA-Z0-9]{32})$/, routes.refreshAuthUser, routes.crossToken);
+  // email-cross-token - `/#!token=63435bc8d599a857c215c9a628f2b4f8/accept`
+  app.get(/^\/#!token=([a-zA-Z0-9]{32})\/(accept)\/?$/, routes.refreshAuthUser, routes.crossToken);
 
 
   // profile
