@@ -1443,7 +1443,7 @@ define(function (require, exports, module) {
 
   // Set Up Account
   // --------------------------------------------------------------------------
-  dialogs.setup = {
+  dialogs.setup_email = {
 
     options: {
 
@@ -1550,39 +1550,38 @@ define(function (require, exports, module) {
 
         body: ''
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
-          + '<div>Please set up your account.</div>'
-            + '<form class="modal-form">'
-              + '<fieldset>'
-                + '<legend>Got one already? <span class="underline">Sign in</span> to add this identity directly.</legend>'
+          + '<form class="modal-form">'
+            + '<fieldset>'
+              + '<legend>You’re browsing with identity below, please set up your account for easier further use. Got one already? <span class="underline">Sign in</span> to add this identity directly.</legend>'
 
-                  + '<div class="clearfix control-group">'
-                    + '<div class="pull-right user-identity">'
-                      + '<img class="avatar" src="" alt="" width="40" height="40" />'
-                      + '<i class="provider"></i>'
-                    + '</div>'
-                    + '<div class="identity disabled"></div>'
+                + '<div class="clearfix control-group">'
+                  + '<div class="pull-right user-identity">'
+                    + '<img class="avatar" src="" alt="" width="40" height="40" />'
+                    + '<i class="provider"></i>'
                   + '</div>'
+                  + '<div class="identity disabled"></div>'
+                + '</div>'
 
-                  + '<div class="control-group">'
-                    + '<label class="control-label" for="name">Display name: <span></span></label>'
-                    + '<div class="controls">'
-                      + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Desired recognizable name" />'
-                    + '</div>'
+                + '<div class="control-group">'
+                  + '<label class="control-label" for="name">Display name: <span></span></label>'
+                  + '<div class="controls">'
+                    + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Desired recognizable name" />'
                   + '</div>'
+                + '</div>'
 
-                  + '<div class="control-group">'
-                    + '<label class="control-label" for="password">Password: <span></span></label>'
-                    + '<div class="controls">'
-                      + '<input type="password" class="input-large" id="password" autocomplete="off" placeholder="Set EXFE password" />'
-                      + '<i class="help-inline icon16-pass-hide pointer" id="password-eye"></i>'
-                    + '</div>'
+                + '<div class="control-group">'
+                  + '<label class="control-label" for="password">Password: <span></span></label>'
+                  + '<div class="controls">'
+                    + '<input type="password" class="input-large" id="password" autocomplete="off" placeholder="Set EXFE password" />'
+                    + '<i class="help-inline icon16-pass-hide pointer" id="password-eye"></i>'
                   + '</div>'
+                + '</div>'
 
-              + '</fieldset>'
-            + '</form>',
+            + '</fieldset>'
+          + '</form>',
 
         footer: ''
-          + '<button class="xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in existing account…</button>'
+          + '<button class="xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Add…</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
       },
@@ -1597,7 +1596,100 @@ define(function (require, exports, module) {
         this.$('.avatar')
           .attr('src', identity.avatar_filename)
           .next().addClass('icon16-identity-' + identity.provider);
+        this.$('.xbtn-siea').data('source', Util.printExtUserName(identity));
+      }
 
+    }
+
+  };
+
+
+  // Set Up Twitter
+  dialogs.setup_twitter = {
+
+    options: {
+
+      onHideAfter: function () {
+        // abort ajax
+        if (this._oauth_) {
+          this._oauth_.abort();
+        }
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
+      events: {
+        'click .authorize': function (e) {
+            this._oauth_ = $.ajax({
+              url: '/OAuth/twitterAuthenticate',
+              dataType: 'JSON',
+              beforeSend: function (xhr) {
+              },
+              success: function (data) {
+                var code = data.meta.code;
+                if (code === 200) {
+                  window.location.href = data.response.redirect;
+                } else {
+                }
+              }
+            });
+        }
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        // class
+        cls: 'mblack modal-su',
+
+        title: 'Set Up Account',
+
+        body: ''
+          + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
+          + '<form class="modal-form">'
+            + '<fieldset>'
+              + '<legend>You’re browsing with identity below, please authorize through Twitter to set up your <span class="x-sign">EXFE</span> account.</legend>'
+
+                + '<div class="clearfix control-group">'
+                  + '<div class="pull-right user-identity">'
+                    + '<img class="avatar" src="" alt="" width="40" height="40" />'
+                    + '<i class="provider"></i>'
+                  + '</div>'
+                  + '<div class="identity disabled"></div>'
+                + '</div>'
+
+                + '<div class="clearfix">'
+                  + '<button class="pull-right xbtn-blue authorize">Authorize</button>'
+                  + '<a class="pull-right underline pointer cancel" data-dismiss="dialog">Cancel</a>'
+                + '</div>'
+
+                + '<div class="spliterline"></div>'
+
+                + '<div>'
+                  + 'Got existing <span class="x-sign">EXFE</span> account already?<br /> Just <span class="underline">sign in to add</span> this identity into your account.'
+                + '</div>'
+
+            + '</fieldset>'
+          + '</form>',
+
+        footer: ''
+          + '<button class="pull-right xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Add…</button>'
+      },
+
+      onShowBefore: function (e) {
+        var data = $(e.currentTarget).data('source');
+        if (!data) return;
+        var identity = data.identity;
+        this._tokenType = data.tokenType;
+        this._originToken = data.originToken;
+        this.$('.identity').text(Util.printExtUserName(identity));
+        this.$('.avatar')
+          .attr('src', identity.avatar_filename)
+          .next().addClass('icon16-identity-' + identity.provider);
+        this.$('.xbtn-siea').data('source', Util.printExtUserName(identity));
       }
 
     }
@@ -1659,7 +1751,7 @@ define(function (require, exports, module) {
           //+ '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
           // note: 暂时没有`merge` 功能，按钮放右边
           + '<button class="pull-right xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
-          + '<button class="pull-right xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
+          + '<button class="pull-right xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup_email">Set up identity</button>'
 
       },
 
@@ -1699,6 +1791,8 @@ define(function (require, exports, module) {
         if (this._setup) {
           this.$('.xbtn-sui')
             .removeClass('hide')
+            //.attr('data-dialog-type', 'setup_' + browsing_user.default_identity.provider)
+            .attr('data-dialog-type', 'setup_twitter')
             .data('source', {
               identity: browsing_user.default_identity,
               originToken: settings.originToken,
@@ -1711,6 +1805,64 @@ define(function (require, exports, module) {
             .removeClass('hide')
             .data('source', beun);
         }
+      }
+
+    }
+
+  };
+
+
+  // Read-only Browsing
+  dialogs.read_only = {
+
+    options: {
+
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        // class
+        cls: 'mblack modal-ro',
+
+        title: 'Read-only Browsing',
+
+        body: ''
+          + '<div class="shadow title">Read-only Browsing</div>'
+          + '<form class="modal-form">'
+            + '<fieldset>'
+              + '<legend>You’re browsing this page in read-only mode with identity below. To change anything on this page, please <span class="underline">sign in</span> first.</legend>'
+
+                + '<div class="clearfix control-group">'
+                  + '<div class="pull-right user-identity">'
+                    + '<img class="avatar" src="" alt="" width="40" height="40" />'
+                    + '<i class="provider"></i>'
+                  + '</div>'
+                  + '<div class="identity disabled"></div>'
+                + '</div>'
+
+            + '</fieldset>'
+          + '</form>',
+
+        footer: ''
+          + '<button class="pull-right xbtn-blue" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In...</button>'
+          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Cancel</a>'
+      },
+
+      onShowBefore: function (e) {
+        var settings = $(e.currentTarget).data('settings');
+        if (!settings) return;
+        var beun = Util.printExtUserName(settings.default_identity);
+        this.$('.identity').text(beun);
+        this.$('.avatar').attr('src', settings.avatar_filename);
+        this.$('.xbtn-blue').data('source', beun);
+        this.$('.provider').addClass('icon16-identity-' + settings.default_identity.provider)
       }
 
     }

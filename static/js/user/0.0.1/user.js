@@ -172,7 +172,7 @@ define('user', function (require, exports, module) {
               s = '<li class="tag"><i class="icon10-24hr"></i>';
             }
 
-            s += '<a data-id="'
+            s += '<a data-link data-id="'
                   + this.id +
                 '" href="/#!'
                   + this.id +
@@ -209,10 +209,10 @@ define('user', function (require, exports, module) {
         + '<div class="dropdown-menu user-panel">'
           + '<div class="header">'
             + '<div class="meta">'
-              + '<a class="pull-right avatar" href="{{profileLink}}">'
+              + '<a class="pull-right avatar" href="{{profileLink}}" data-link>'
                 + '<img width="40" height="40" alt="" src="{{avatar_filename}}" />'
               + '</a>'
-              + '<a class="attended" href="{{profileLink}}">'
+              + '<a class="attended" href="{{profileLink}}" data-link>'
                 + '<span class="attended-nums">{{cross_quantity}}</span>'
                 + '<span class="attended-x"><em class="x">·X·</em> attended</span>'
               + '</a>'
@@ -232,7 +232,7 @@ define('user', function (require, exports, module) {
             + '<div class="list"></div>'
           + '</div>'
           + '<div class="footer">'
-            + '<a href="/#gather" class="xbtn xbtn-gather" id="js-gatherax">Gather a <span class="x">·X·</span></a>'
+            + '<a href="/#gather" class="xbtn xbtn-gather" id="js-gatherax" data-link>Gather a <span class="x">·X·</span></a>'
             + '<div class="spliterline"></div>'
             + '<div class="actions">'
               + '<a href="#" class="pull-right" id="app-signout">Sign out</a>'
@@ -258,7 +258,7 @@ define('user', function (require, exports, module) {
             + '</div>'
             + '{{#if ../setup}}'
             //+ '<div class="merge set-up" data-source="{{default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d02">'
-            + '<div class="merge set-up" data-widget="dialog" data-dialog-type="setup">'
+            + '<div class="merge set-up" data-user-action="setup" data-widget="dialog" data-dialog-type="setup_{{default_identity.provider}}">'
               + '<a href="#">Set Up</a> new <span class="x-sign">EXFE</span> account with the browsing identity.'
             + '</div>'
             + '{{/if}}'
@@ -282,7 +282,7 @@ define('user', function (require, exports, module) {
             //+ '{{/if}}'
             + '{{#unless setup}}'
             + '<div class="spliterline hide"></div>'
-            + '<div class="merge" data-source="{{browsing.default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">'
+            + '<div class="merge" data-user-action="signin" data-source="{{browsing.default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">'
               + '<a href="#">Sign In</a> with browsing identity<br />'
               + '{{#if normal}}'
                 + '(sign out from current account).'
@@ -354,7 +354,10 @@ define('user', function (require, exports, module) {
         .attr('data-widget', 'dialog')
         .attr('data-dialog-type', 'browsing_identity')
         .attr('data-token-type', data.tokenType)
+        .attr('data-token', data.originToken)
         .attr('data-page', data.page)
+        .attr('data-action', data.setup ? 'setup' : 'signin')
+        .attr('data-ready-only', data.readOnly)
     );
 
 

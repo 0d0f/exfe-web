@@ -113,16 +113,81 @@ define(function (require, exports, module) {
 
     // TODO:后面再优化
     $BODY.on('click.data-link dblclick.data-link', '[data-link]', function (e) {
-      var $db = $('#app-browsing-identity');
+      var actionType = $(this).data('link');
 
-      if ($db.size()) {
+      // 判断权限
+      var authorization = Store.get('authorization')
+        , token = authorization && authorization.token;
+
+
+      var $db = $('#app-browsing-identity')
+        , read_only = $db.data('read-only')
+        , settings = $db.data('settings')
+        , $readOnly = $('#app-read-only')
+        , tokenType = $db.data('token-type')
+        , btoken = $db.data('token')
+        , action = $db.data('action');
+
+      // read only
+      if ($db.size() && read_only && actionType === 'nota') {
         e.stopImmediatePropagation();
         e.stopPropagation();
         e.preventDefault();
-        $db.trigger('click');
+
+        if (!$readOnly.size()) {
+          $('#app-main').append(
+            $readOnly = $('<div id="app-read-only" data-widget="dialog" data-dialog-type="read_only"></div>')
+              .data('settings', settings.browsing)
+          );
+        }
+
+        $readOnly.trigger('click');
         return false;
       }
 
+      if ($db.size()) {
+        // profile 操作, 后端暂不支持browsing-identity 修改身份内容,弹 D4 窗口
+        //if (actionType === 'nota' && tokenType === 'user') {
+          //e.stopImmediatePropagation();
+          //e.stopPropagation();
+          //e.preventDefault();
+          //$('[data-user-action="' + action + '"]').trigger('click');
+          //return false;
+        //}
+        //else if (actionType === '') {
+        if (actionType === '' || actionType === 'nota' && tokenType === 'user') {
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+          e.preventDefault();
+          $db.trigger('click');
+          return false;
+        }
+      } else if (!token) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+        if (!$readOnly.size()) {
+          $('#app-main').append(
+            $readOnly = $('<div id="app-read-only" data-widget="dialog" data-dialog-type="read_only"></div>')
+              .data('settings', Store.get('user'))
+          );
+        }
+        $readOnly.trigger('click');
+        return false;
+      }
+
+    });
+
+    // 只弹两次
+    var LIMIT = 2;
+    Bus.on('app:cross:edited', function () {
+      if (0 === LIMIT) {
+        return;
+      };
+      LIMIT--;
+      var $db = $('#app-browsing-identity')
+        , action = $db.data('action');
+      $('[data-user-action="' + action + '"]').trigger('click');
     });
 
   //});

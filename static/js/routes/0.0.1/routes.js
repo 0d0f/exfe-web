@@ -311,8 +311,6 @@ define('routes', function (require, exports, module) {
       , accept = req.params[1]
       , params = {};
 
-      console.log(accept);
-
     if (authToken) {
       params.token = authToken;
     }
@@ -374,6 +372,7 @@ define('routes', function (require, exports, module) {
               , originToken: ctoken
               , tokenType: 'cross'
               , page: 'cross'
+              , readOnly: read_only
             }
             , 'browsing_identity');
         }
