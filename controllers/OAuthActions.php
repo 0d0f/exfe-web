@@ -131,11 +131,13 @@ class OAuthActions extends ActionController {
                     );
                     // call Gobus {
                     $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                    $hlpGobus->send('user', 'TwitterFriends', [
-                        'ClientToken'  => TWITTER_CONSUMER_KEY,
-                        'ClientSecret' => TWITTER_CONSUMER_SECRET,
-                        'AccessToken'  => $oauthIfo['oauth_token'],
-                        'AccessSecret' => $oauthIfo['oauth_token_secret'],
+                    $hlpGobus->send('user', 'GetFriends', [
+                        'user_id'       => $user_id,
+                        'provider'      => 'twitter',
+                        'client_token'  => TWITTER_CONSUMER_KEY,
+                        'client_secret' => TWITTER_CONSUMER_SECRET,
+                        'access_token'  => $oauthIfo['oauth_token'],
+                        'access_secret' => $oauthIfo['oauth_token_secret'],
                     ]);
                     // }
                     if ($oauthIfo['workflow']['callback']['oauth_device'] === 'iOS') {
