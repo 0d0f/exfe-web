@@ -1178,7 +1178,7 @@ define('exfeepanel', [], function (require, exports, module) {
             var rsvp = $(this).attr('rsvp');
             if (rsvp) {
                 ExfeePanel.invitation.rsvp_status = rsvp;
-                ExfeePanel.invitation.by_identity = ExfeeWidget.clone(curIdentity);
+                ExfeePanel.invitation.by_identity = ExfeUtilities.clone(curIdentity);
                 ExfeeWidget.rsvpExfee(ExfeePanel.invitation.identity, rsvp);
                 ExfeePanel.showRsvp();
             }
