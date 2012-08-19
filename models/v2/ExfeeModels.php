@@ -398,7 +398,11 @@ class ExfeeModels extends DataModel {
                         } else {
                             $updateToken = false;
                         }
-                        $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                        if ($fmItem->rsvp_status !== $toItem->rsvp_status
+                         || $fmItem->host        !== $toItem->host
+                         || $fmItem->mates       !== $toItem->mates) {
+                            $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                        }
                         $chkInvit[$fmI] = true;
                     }
                 }
