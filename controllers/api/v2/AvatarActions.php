@@ -159,36 +159,11 @@ class AvatarActions extends ActionController {
         );
         // get source image
         $params = $this->params;
-        try {
-            if (!$params['url']) {
-                $error = new Exception('Image url must be given.');
-                throw $error;
-            }
-            $params['url'] = base64_decode("{$params['url']}==");
-            $arrUrl = explode('.', $params['url']);
-            $type   = strtolower(array_pop($arrUrl));
-            switch ($type) {
-                case 'png':
-                    @$image = ImageCreateFromPNG($params['url']);
-                    break;
-                case 'jpg':
-                case 'jpeg':
-                    @$image = ImageCreateFromJpeg($params['url']);
-                    break;
-                case 'gif':
-                    @$image = ImageCreateFromGif($params['url']);
-                    break;
-                default:
-                    @$image = ImageCreateFromJpeg($params['url'])  // try jpg
-                          ?: (ImageCreateFromPNG($params['url'])   // try png
-                          ?:  ImageCreateFromGif($params['url'])); // try gif
-            }
-            if (!$image) {
-                $error = new Exception('Error while fetching image.');
-                throw $error;
-            }
-        } catch (Exception $error) {
-            // get fall back image
+        $image  = $objLibImage->loadImageByUrl(
+            $params['url'] ? base64_decode("{$params['url']}==") : ''
+        );
+        // get fall back image
+        if (!$image) {
             $image  = ImageCreateFromPNG("{$resDir}bg_" . fmod(0, 3) . '.png');
         }
         // resize source image
