@@ -1228,11 +1228,12 @@ define(function (require, exports, module) {
                     $('.cross-opts .saving').hide();
                     if (refresh) {
                         window.location.reload();
+                    } else {
+                        bus.emit('app:cross:edited');
                     }
                 },
                 function(data) {
                     $('.cross-opts .saving').hide();
-                    console.log('Field');
                 }
             );
         }
@@ -1267,6 +1268,7 @@ define(function (require, exports, module) {
                 type           : 'Post',
                 via            : 'exfe.com'
             };
+            $('.cross-opts .saving').show();
             Api.request(
                 'addConversation',
                 {
@@ -1277,10 +1279,10 @@ define(function (require, exports, module) {
                 function(data) {
                     $('.cross-opts .saving').hide();
                     ShowMessage(data.post);
+                    bus.emit('app:cross:edited');
                 },
                 function(data) {
                     $('.cross-opts .saving').hide();
-                    console.log(data);
                 }
             );
         }
@@ -1941,9 +1943,6 @@ define(function (require, exports, module) {
             {resources : {exfee_id : Exfee.id}},
             function(data) {
                 ShowTimeline(data.conversation);
-            },
-            function(data) {
-                console.log(data);
             }
         );
     };
@@ -1984,7 +1983,6 @@ define(function (require, exports, module) {
             },
             function(data) {
                 bus.emit('app:cross:forbidden', cross_id);
-                console.log(data);
             }
         );
     };
@@ -2022,7 +2020,6 @@ define(function (require, exports, module) {
             },
             function(data) {
                 $('.cross-opts .saving').hide();
-                console.log(data);
             }
         );
     };
@@ -2039,11 +2036,10 @@ define(function (require, exports, module) {
              data      : JSON.stringify(objCross)},
             function(data) {
                 $('.cross-opts .saving').hide();
-                console.log('Saved');
+                bus.emit('app:cross:edited');
             },
             function(data) {
                 $('.cross-opts .saving').hide();
-                console.log('Field');
             }
         );
     };
