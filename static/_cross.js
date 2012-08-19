@@ -1310,7 +1310,6 @@ define(function (require, exports, module) {
                 case 13: // enter
                     var objInput = $(this);
                     if (!event.shiftKey) {
-                        $('.cross-opts .saving').show();
                         event.preventDefault();
                         postConversation(objInput.val());
                         objInput.val('');
@@ -2132,8 +2131,10 @@ define(function (require, exports, module) {
         if (Cross_id > 0) {
             GetCross(Cross_id);
         } else if (Cross_id === null) {
-            curIdentity = browsingIdentity ? browsingIdentity : curIdentity;
-            Api.setToken(invitation_token);
+            if (browsingIdentity) {
+                curIdentity = browsingIdentity;
+                Api.setToken(invitation_token);
+            }
             UpdateCross(cross, read_only);
             if (accepted) {
                 ExfeeWidget.rsvpMe('ACCEPTED');
