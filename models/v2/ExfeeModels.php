@@ -272,17 +272,19 @@ class ExfeeModels extends DataModel {
             if ($invitation->identity->id === $by_identity_id) {
                 $msgArg['by_identity'] = $invitation->identity;
             }
-            $msgArg['to_identities'][] = $invitation->identity;
-            // get mobile identities
-            if ($invitation->identity->connected_user_id > 0
-            && !$chkMobUs[$invitation->identity->connected_user_id]) {
-                $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
-                    $invitation->identity->connected_user_id
-                );
-                foreach ($mobIdentities as $mI => $mItem) {
-                    $msgArg['to_identities'][] = $mItem;
+            if ($invitation->rsvp_status !== 'REMOVED') {
+                $msgArg['to_identities'][] = $invitation->identity;
+                // get mobile identities
+                if ($invitation->identity->connected_user_id > 0
+                && !$chkMobUs[$invitation->identity->connected_user_id]) {
+                    $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
+                        $invitation->identity->connected_user_id
+                    );
+                    foreach ($mobIdentities as $mI => $mItem) {
+                        $msgArg['to_identities'][] = $mItem;
+                    }
+                    $chkMobUs[$invitation->identity->connected_user_id] = true;
                 }
-                $chkMobUs[$invitation->identity->connected_user_id] = true;
             }
         }
         if ($to_identities) {
