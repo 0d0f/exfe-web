@@ -806,12 +806,10 @@ class UserModels extends DataModel {
     public function buildIdentitiesIndexes($user_id) {
         mb_internal_encoding('UTF-8');
         if (!$user_id) {
-            return;
+            return false;
         }
         $identities = $this->getAll(
-            "SELECT `name`, `external_identity`, `r_identityid`
-             FROM   `user_relations`
-             WHERE  `userid` = {$user_id}"
+            "SELECT * FROM `user_relations` WHERE `userid` = {$user_id}"
         );
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
@@ -830,11 +828,16 @@ class UserModels extends DataModel {
                     }
                     $redis->zAdd(
                         "u:{$user_id}", 0,
-                        "{$identity_part}|id:{$identity['r_identityid']}*"
+                        "{$identity_part}|" . (
+                            (int) $identity['r_identityid']
+                          ? "rid:{$identity['r_identityid']}"
+                          :  "id:{$identity['id']}"
+                        ) . '*'
                     );
                 }
             }
         }
+        return true;
     }
 
 
