@@ -439,6 +439,7 @@ ExfeeWidget = {
         var idx = this.checkExistence(identity);
         if (idx !== false) {
             Exfee.invitations[idx].rsvp_status = rsvp;
+            Exfee.invitations[idx].by_identity = ExfeUtilities.clone(curIdentity);
             var refresh = false;
             if (rsvp === 'REMOVED' && curIdentity
              && ExfeeWidget.compareIdentity(Exfee.invitations[idx].identity, curIdentity)) {
