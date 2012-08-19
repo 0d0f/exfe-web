@@ -56,7 +56,7 @@ class UserModels extends DataModel {
     }
 
 
-    protected function insertNewToken($token, $action, $identity_id, $user_id, $expiration_date = 4320) { // exp in minutes: 60 * 24 * 3 = 3 days
+    protected function insertNewToken($token, $action, $identity_id, $user_id, $expiration_date = 2880) { // exp in minutes: 60 * 24 * 2 = 2 days
         if ($token && $action && $identity_id && $user_id && $expiration_date) {
             $expiration_date += Time();
             return $this->query(
