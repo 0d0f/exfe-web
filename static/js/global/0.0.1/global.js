@@ -180,9 +180,10 @@ define(function (require, exports, module) {
     // 只弹两次
     var LIMIT = 2;
     Bus.on('app:cross:edited', function () {
-      if (0 === LIMIT--) {
+      if (0 === LIMIT) {
         return;
       };
+      LIMIT--;
       var $db = $('#app-browsing-identity')
         , action = $db.data('action');
       $('[data-user-action="' + action + '"]').trigger('click');
