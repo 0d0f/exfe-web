@@ -92,14 +92,15 @@ class OAuthActions extends ActionController {
                         return;
                     }
                     // 身份未连接
-                    $new_identity = false;
+                    $identity_status = 'connected';
                     if ($objIdentity->connected_user_id <= 0) {
-                        $new_identity = true;
                         // 身份被 revoked，重新连接用户
                         if ($objIdentity->revoked_user_id) {
+                            $identity_status = 'revoked';
                             $user_id = $objIdentity->revoked_user_id;
                         // 孤立身份，创建新用户并连接到该身份
                         } else {
+                            $identity_status = 'new';
                             $user_id = $modUser->addUser(
                                 '',
                                 $objTwitterIdentity->name
@@ -161,10 +162,10 @@ class OAuthActions extends ActionController {
                          'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                     );
                     $modOauth->addtoSession([
-                        'twitter_signin'       => $rstSignin,
-                        'twitter_identity_id'  => $objIdentity->id,
-                        'twitter_new_identity' => $new_identity,
-                        'twitter_following'    => $twitterConn->response['response'] === 'true'
+                        'twitter_signin'          => $rstSignin,
+                        'twitter_identity_id'     => $objIdentity->id,
+                        'twitter_identity_status' => $identity_status,
+                        'twitter_following'       => $twitterConn->response['response'] === 'true'
                     ]);
                     header('location: /');
                     return;
