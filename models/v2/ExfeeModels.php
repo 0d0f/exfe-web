@@ -386,11 +386,17 @@ class ExfeeModels extends DataModel {
                         $exists = true;
                         // update existing invitaion
                         $toItem->id = $fmItem->id;
-                        if ($this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
+                        // delete exfee
+                        if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
+                         && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
                             $delExfee[]  = $fmItem->identity;
+                        }
+                        // update exfee token
+                        if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
+                         && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
+                            $updateToken = true;
+                        } else {
                             $updateToken = false;
-                        } else { // update exfee token
-                            $updateToken = $this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4;
                         }
                         $this->updateInvitation($toItem, $by_identity_id, $updateToken);
                         $chkInvit[$fmI] = true;
