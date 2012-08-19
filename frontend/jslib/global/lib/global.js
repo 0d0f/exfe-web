@@ -146,13 +146,13 @@ define(function (require, exports, module) {
       }
 
       if ($db.size()) {
-        // profile 操作
+        // profile 操作, 后端暂不支持browsing-identity 修改身份内容,弹 D4 窗口
         if (actionType === 'nota' && tokenType === 'user') {
-          e.stopImmediatePropagation();
-          e.stopPropagation();
-          e.preventDefault();
-          $('[data-user-action="' + action + '"]').trigger('click');
-          return false;
+          //e.stopImmediatePropagation();
+          //e.stopPropagation();
+          //e.preventDefault();
+          //$('[data-user-action="' + action + '"]').trigger('click');
+          //return false;
         }
         else if (actionType === '') {
           e.stopImmediatePropagation();
@@ -161,11 +161,28 @@ define(function (require, exports, module) {
           $db.trigger('click');
           return false;
         }
+      } else if (!token) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+        if (!$readOnly.size()) {
+          $('#app-main').append(
+            $readOnly = $('<div id="app-read-only" data-widget="dialog" data-dialog-type="read_only"></div>')
+              .data('settings', Store.get('user'))
+          );
+        }
+        $readOnly.trigger('click');
+        return false;
       }
 
     });
 
+    // 只弹两次
+    var LIMIT = 2;
     Bus.on('app:cross:edited', function () {
+      if (0 === LIMIT--) {
+        return;
+      };
       var $db = $('#app-browsing-identity')
         , action = $db.data('action');
       $('[data-user-action="' + action + '"]').trigger('click');
