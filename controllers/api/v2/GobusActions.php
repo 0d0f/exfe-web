@@ -4,7 +4,7 @@ class GobusActions extends ActionController {
 
     public function doUpdateIdentity() {
         // get raw data
-        $id                = isset($_POST['id'])                ? intval(htmlspecialchars($_POST['id']))                                  : null;
+        $id                = isset($_POST['id'])                ? intval($_POST['id'])                                                    : null;
         $provider          = isset($_POST['provider'])          ? mysql_real_escape_string(htmlspecialchars($_POST['provider']))          : null;
         $external_id       = isset($_POST['external_id'])       ? mysql_real_escape_string(htmlspecialchars($_POST['external_id']))       : null;
         $name              = isset($_POST['name'])              ? mysql_real_escape_string(htmlspecialchars($_POST['name']))              : '';
@@ -162,6 +162,14 @@ class GobusActions extends ActionController {
         // }
         // return
         apiResponse(['post' => $post]);
+    }
+
+
+    public function doAddFriends() {
+        // get raw data
+        $id         = isset($_POST['id'])         ? intval($_POST['id'])              : null;
+        $identities = isset($_POST['identities']) ? json_decode($_POST['identities']) : null;
+
     }
 
 }
