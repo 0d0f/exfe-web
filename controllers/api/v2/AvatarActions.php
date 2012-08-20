@@ -13,9 +13,18 @@ class AvatarActions extends ActionController {
     public function doGet() {
         $params  = $this->params;
         $modUser = $this->getModelByName('user', 'v2');
-        if ($params['provider'] && $params['external_username']
-         && $modUser->getUserAvatarByProviderAndExternalUsername($params['provider'], $params['external_username'])) {
-            return;
+        if ($params['provider'] && $params['external_username']) {
+            $img_result = $modUser->getUserAvatarByProviderAndExternalUsername($params['provider'], $params['external_username']);
+            if ($img_result) {
+                switch ($img_result['type']) {
+                    case 'url':
+                        header("Location: {$img_result['url']}");
+                        return;
+                    case 'name':
+                        $modUser->makeDefaultAvatar($img_result['name']);
+                        return;
+                }
+            }
         }
         $modUser->makeDefaultAvatar($params['external_username']);
     }
@@ -133,6 +142,8 @@ class AvatarActions extends ActionController {
 
 
     public function doRender() {
+        // init models
+        $modUser = $this->getModelByName('user', 'v2');
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../../default_avatar_portrait/";
@@ -160,12 +171,39 @@ class AvatarActions extends ActionController {
         // get source image
         $params = $this->params;
         $params['url'] = $params['url'] ? base64_decode("{$params['url']}==") : '';
-        if (DEBUG) {
-            error_log("Start loading image: {$params['url']}");
-        }
-        $image  = $objLibImage->loadImageByUrl($params['url']);
-        if (DEBUG) {
-            error_log("Finished loading image: {$params['url']}");
+        $image  = null;
+        if (strpos($params['url'], API_URL) !== -1) {
+            $arr_args = explode('?', $params['url']);
+            $arr_args = explode('&', $arr_args[1]);
+            $args     = [];
+            foreach ($arr_args as $item) {
+                $arr_item = explode('=', $item);
+                switch ($arr_item[0]) {
+                    case 'provider':
+                    case 'external_username':
+                        $args[$arr_item[0]] = $arr_item[1];
+                }
+            }
+            if (count($args) === 2) {
+                $img_result = $modUser->getUserAvatarByProviderAndExternalUsername($args['provider'], $args['external_username']);
+                if ($img_result) {
+                    switch ($img_result['type']) {
+                        case 'url':
+                            $image = $objLibImage->loadImageByUrl($img_result['url']);
+                            break;
+                        case 'name':
+                            $image = $modUser->makeDefaultAvatar($img_result['name'], true);
+                    }
+                }
+            }
+        } else {
+            if (DEBUG) {
+                error_log("Start loading image: {$params['url']}");
+            }
+            $image  = $objLibImage->loadImageByUrl($params['url']);
+            if (DEBUG) {
+                error_log("Finished loading image: {$params['url']}");
+            }
         }
         // get fall back image
         if (!$image) {
