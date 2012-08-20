@@ -793,8 +793,14 @@ class UserModels extends DataModel {
                  AND    `user_identity`.`status`     = 3"
             );
             if ($rawUser && $rawUser['avatar_file_name']) {
+                if (DEBUG) {
+                    error_log("Redirect to: {$rawUser['avatar_file_name']}");
+                }
                 header("Location: {$rawUser['avatar_file_name']}");
             } else {
+                if (DEBUG) {
+                    error_log("Make default avatar for: {$rawIdentity['name']}");
+                }
                 $this->makeDefaultAvatar($rawIdentity['name']);
             }
             return true;
