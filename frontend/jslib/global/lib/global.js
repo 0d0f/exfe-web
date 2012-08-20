@@ -158,7 +158,7 @@ define(function (require, exports, module) {
             //return false;
           //}
           //else if (actionType === '') {
-          if (actionType === '' || actionType === 'nota' && tokenType === 'user') {
+          if (actionType === '' || (actionType === 'nota' && tokenType === 'user')) {
             e.stopImmediatePropagation();
             e.stopPropagation();
             e.preventDefault();
@@ -184,16 +184,28 @@ define(function (require, exports, module) {
 
     // 只弹两次
     var LIMIT = 2;
-    Bus.on('app:cross:edited', function () {
+    Bus.on('app:cross:edited', function (data) {
       if (0 === LIMIT) {
         return;
       };
       LIMIT--;
       var $db = $('#app-browsing-identity')
+        , settings = $db.data('settings')
+        , $readOnly = $('#app-read-only')
         , action = $db.data('action');
 
-      if (action === 'setup') {
-        $('[data-user-action="' + action + '"]').trigger('click');
+      if (!data) {
+        if (action === 'setup') {
+          $('[data-user-action="' + action + '"]').trigger('click');
+        }
+      } else {
+          if (!$readOnly.size()) {
+            $('#app-main').append(
+              $readOnly = $('<div id="app-read-only" data-widget="dialog" data-dialog-type="read_only"></div>')
+                .data('settings', (settings && settings.browsing) || Store.get('user'))
+            );
+          }
+          $readOnly.trigger('click');
       }
     });
 
