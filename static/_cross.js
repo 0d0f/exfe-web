@@ -1902,11 +1902,7 @@ define(function (require, exports, module) {
                                 +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
                                 +   '">'
-                                +   '<span>'
-                                +     (objSummary.accepted_invitations[i].mates
-                                     ? objSummary.accepted_invitations[i].mates
-                                     : '')
-                                +   '</span>'
+                                +   (objSummary.accepted_invitations[i].mates ? '<i class="icon10-plus-' + objSummary.accepted_invitations[i].mates + '"></i>' : '')
                                 + '</span></li>';
                 }
                 strSummary += objSummary.accepted ? ('<li><span>'
