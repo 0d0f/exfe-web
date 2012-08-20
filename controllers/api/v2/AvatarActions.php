@@ -172,7 +172,7 @@ class AvatarActions extends ActionController {
         $params = $this->params;
         $params['url'] = $params['url'] ? base64_decode("{$params['url']}==") : '';
         $image  = null;
-        if (strpos($params['url'], API_URL) !== -1) {
+        if (strpos($params['url'], API_URL) !== false) {
             $arr_args = explode('?', $params['url']);
             $arr_args = explode('&', $arr_args[1]);
             $args     = [];
