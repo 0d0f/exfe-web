@@ -159,9 +159,14 @@ class AvatarActions extends ActionController {
         );
         // get source image
         $params = $this->params;
-        $image  = $objLibImage->loadImageByUrl(
-            $params['url'] ? base64_decode("{$params['url']}==") : ''
-        );
+        $params['url'] = $params['url'] ? base64_decode("{$params['url']}==") : '';
+        if (DEBUG) {
+            error_log("Start loading image: {$params['url']}");
+        }
+        $image  = $objLibImage->loadImageByUrl($params['url']);
+        if (DEBUG) {
+            error_log("Finished loading image: {$params['url']}");
+        }
         // get fall back image
         if (!$image) {
             $image  = ImageCreateFromPNG("{$resDir}bg_" . fmod(0, 3) . '.png');
