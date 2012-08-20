@@ -59,11 +59,16 @@ class GobusActions extends ActionController {
         $raw_by_identity = $modIdentity->getIdentityByProviderExternalId(
             $provider, $external_id
         );
-        if (!$raw_by_identity || $raw_by_identity->connected_user_id <= 0) {
+        if (!$raw_by_identity) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
-         // get user object
+        if ($raw_by_identity->connected_user_id <= 0) {
+            header('HTTP/1.1 400 Internal Server Error');
+            apiResponse(['code' => 233, 'error' => 'User not connected.']);
+            return;
+        }
+        // get user object
         $user = $modUser->getUserById($raw_by_identity->connected_user_id);
         if (!$user) {
             header('HTTP/1.1 500 Internal Server Error');
