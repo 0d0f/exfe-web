@@ -8493,6 +8493,10 @@ body {
   margin-left: 10px;
 }
 
+.settings-panel .user-infos .identity-list .identityname em {
+  font-style: normal;
+}
+
 .settings-panel .user-infos .identity-list .identityname input[type="text"] {
   width: 118px;
   height: 18px;
