@@ -71,8 +71,8 @@ class CrossesActions extends ActionController {
                             $result['action'] = 'singin';
                         }
                     // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
-                    } elseif (isset($user_infos['VERIFYING'])
-                           || isset($user_infos['RELATED']) || !$user_infos) {
+                    } else if (isset($user_infos['VERIFYING'])
+                            || isset($user_infos['RELATED']) || !$user_infos) {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
@@ -86,14 +86,14 @@ class CrossesActions extends ActionController {
                             $user_infos['CONNECTED'][0]['user_id']
                         );
                     // 身份连接状态 REVOKED: Token 身份登录
-                    } elseif (isset($user_infos['REVOKED'])) {
+                    } else if (isset($user_infos['REVOKED'])) {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
                         $result['action'] = 'singin';
                     // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
-                    } elseif (isset($user_infos['VERIFYING'])
-                           || isset($user_infos['RELATED']) || !$user_infos) {
+                    } else if (isset($user_infos['VERIFYING'])
+                            || isset($user_infos['RELATED']) || !$user_infos) {
                         $result['browsing_identity'] = $modIdentity->getIdentityById(
                             $invitation['identity_id']
                         );
