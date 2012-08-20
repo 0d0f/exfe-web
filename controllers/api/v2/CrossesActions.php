@@ -45,82 +45,92 @@ class CrossesActions extends ActionController {
             // get cross by token
             $result = [
                 'cross'     => $hlpCross->getCross($invitation['cross_id']),
-                'read_only' => true
+                'read_only' => true,
             ];
-            // 受邀 token 有效
-            if ($invitation['valid']) {
-                $modExfee->usedToken($invToken);
+            // 已登录  初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // TRUE (any)   CONNECTED / REVOKED （同用户）   正常登录    M50D3
+            if ($user_id
+             && ((isset($user_infos['CONNECTED']) && ($inv_user_id = $user_infos['CONNECTED'][0]['user_id']))
+              || (isset($user_infos['REVOKED'])   && ($inv_user_id = $user_infos['REVOKED'][0]['user_id'])))
+             && $user_id === $inv_user_id) {
                 $result['read_only'] = false;
-                // 已登录
-                if ($user_id) {
-                    // 身份连接状态 CONNECTED / REVOKED
-                    if (isset($user_infos['CONNECTED'])
-                     || isset($user_infos['REVOKED'])) {
-                        if (isset($user_infos['CONNECTED'])) {
-                            $inv_user_id = $user_infos['CONNECTED'][0]['user_id'];
-                        } else if (isset($user_infos['REVOKED'])) {
-                            $inv_user_id = $user_infos['REVOKED'][0]['user_id'];
-                        }
-                        // 同用户: 正常登录
-                        if ($inv_user_id === $user_id) {
-                        // 不同用户: Token 身份登录
-                        } else {
-                            $result['browsing_identity'] = $modIdentity->getIdentityById(
-                                $invitation['identity_id']
-                            );
-                            $result['action'] = 'singin';
-                        }
-                    // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
-                    } else if (isset($user_infos['VERIFYING'])
-                            || isset($user_infos['RELATED']) || !$user_infos) {
-                        $result['browsing_identity'] = $modIdentity->getIdentityById(
-                            $invitation['identity_id']
-                        );
-                        $result['action'] = 'setup';
-                    }
-                // 未登录
-                } else {
-                    // 身份连接状态 CONNECTED: 正常登录
-                    if (isset($user_infos['CONNECTED'])) {
-                        $result['authorization'] = $modUser->rawSignin(
-                            $user_infos['CONNECTED'][0]['user_id']
-                        );
-                    // 身份连接状态 REVOKED: Token 身份登录
-                    } else if (isset($user_infos['REVOKED'])) {
-                        $result['browsing_identity'] = $modIdentity->getIdentityById(
-                            $invitation['identity_id']
-                        );
-                        $result['action'] = 'singin';
-                    // 身份连接状态 VERIFYING / RELATED / null: Token 身份登录
-                    } else if (isset($user_infos['VERIFYING'])
-                            || isset($user_infos['RELATED']) || !$user_infos) {
-                        $result['browsing_identity'] = $modIdentity->getIdentityById(
-                            $invitation['identity_id']
-                        );
-                        $result['action'] = 'setup';
-                    }
-                }
-            // 受邀 token 无效
-            } else {
-                // 已登录 && 身份连接状态 CONNECTED / REVOKED && 同用户: 正常登录
-                if ($user_id
-                 && ((isset($user_infos['CONNECTED']) && ($inv_user_id = $user_infos['CONNECTED'][0]['user_id']))
-                 ||  (isset($user_infos['REVOKED'])   && ($inv_user_id = $user_infos['REVOKED'][0]['user_id'])))
-                 && $user_id === $inv_user_id) {
-                    $result['read_only'] = false;
-                // 其他情况: 只读浏览
-                } else {
-                    $result['browsing_identity'] = $modIdentity->getIdentityById(
-                        $invitation['identity_id']
-                    );
-                    $result['action'] = 'singin';
-                }
+                apiResponse($result);
             }
-            apiResponse($result);
-        // 受邀 token 不存在
-        } else {
-            apiError(404, 'invalid_invitation_token', 'Invalid Invitation Token');
+            // 已登录  初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // (any)    FALSE   (any)   只读浏览    M50D4 Sign In
+            if (!$invitation['valid']) {
+                $result['browsing_identity'] = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $result['action'] = 'singin';
+                apiResponse($result);
+            }
+            // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // (any)   TRUE    (null)  浏览身份登录  M50D4 Set Up *
+            if ($invitation['valid']
+             && !$user_infos) {
+                $result['browsing_identity'] = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $result['read_only'] = false;
+                $result['action'] = 'setup';
+                apiResponse($result);
+            }
+            // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // FALSE   TRUE    CONNECTED   正常登录    M50D3
+            if (!$user_id
+             && $invitation['valid']
+             && isset($user_infos['CONNECTED'])) {
+                $result['authorization'] = $modUser->rawSignin(
+                    $user_infos['CONNECTED'][0]['user_id']
+                );
+                $result['read_only'] = false;
+                apiResponse($result);
+            }
+            // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // FALSE   TRUE    VERIFYING / RELATED / REVOKED   浏览身份登录  M50D4 Set Up *
+            if (!$user_id
+             && $invitation['valid']
+             && (isset($user_infos['VERIFYING'])
+              || isset($user_infos['RELATED'])
+              || isset($user_infos['REVOKED']))) {
+                $result['browsing_identity'] = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $result['read_only'] = false;
+                $result['action'] = 'setup';
+                apiResponse($result);
+            }
+            // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // TRUE    TRUE    CONNECTED（不同用户） 浏览身份登录  M50D4 Sign In
+            if ($user_id
+             && $invitation['valid']
+             && isset($user_infos['CONNECTED'])
+             && $user_id !== $user_infos['CONNECTED'][0]['user_id']) {
+                $result['browsing_identity'] = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $result['read_only'] = false;
+                $result['action'] = 'singin';
+                apiResponse($result);
+            }
+            // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
+            // TRUE    TRUE    VERIFYING / RELATED / REVOKED   浏览身份登录  M50D4 Set Up *
+            if ($user_id
+             && $invitation['valid']
+             && (isset($user_infos['VERIFYING'])
+              || isset($user_infos['RELATED'])
+              || isset($user_infos['REVOKED']))) {
+                $result['browsing_identity'] = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $result['read_only'] = false;
+                $result['action'] = 'setup';
+                apiResponse($result);
+            }
         }
+        // 受邀 token 不存在 / 无效
+        apiError(404, 'invalid_invitation_token', 'Invalid Invitation Token');
     }
 
 
