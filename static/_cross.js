@@ -1242,6 +1242,7 @@ define(function (require, exports, module) {
                 },
                 function(data) {
                     $('.cross-opts .saving').hide();
+                    bus.emit('app:cross:edited', {error : 'no_permission'});
                 }
             );
         }
@@ -1291,6 +1292,7 @@ define(function (require, exports, module) {
                 },
                 function(data) {
                     $('.cross-opts .saving').hide();
+                    bus.emit('app:cross:edited', {error : 'no_permission'});
                 }
             );
         }
@@ -2043,6 +2045,7 @@ define(function (require, exports, module) {
             },
             function(data) {
                 $('.cross-opts .saving').hide();
+                bus.emit('app:cross:edited', {error : 'no_permission'});
             }
         );
     };
