@@ -1552,7 +1552,7 @@ define(function (require, exports, module) {
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
           + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend>You’re browsing with identity below, please set up your account for easier further use. Got one already? <span class="underline">Sign in</span> to add this identity directly.</legend>'
+              + '<legend>You’re browsing as identity underneath, please set up your account for easier further use. Got existing account already? <span class="underline">Sign in</span> directly to add this identity.</legend>'
 
                 + '<div class="clearfix control-group">'
                   + '<div class="pull-right user-identity">'
@@ -1738,7 +1738,7 @@ define(function (require, exports, module) {
             + '<div class="clearfix"><button class="pull-right xbtn-white xbtn-go">Go</button></div>'
             + '<div class="spliterline"></div>'
           + '</div>'
-          + '<div class="browsing-tips">While you’re currently browsing this page as identity below. To continue using this identity, please choose an option.</div>'
+          + '<div class="browsing-tips">You’re currently browsing this page as identity underneath, please choose an option to continue.</div>'
           + '<div class="pull-right user-identity browsing-identity">'
             + '<img class="avatar" src="" alt="" width="40" height="40">'
             + '<i class="provider"></i>'
