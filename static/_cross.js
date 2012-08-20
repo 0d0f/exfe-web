@@ -933,7 +933,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +      '<div class="pull-right invited">'
                          +        '<div class="mates-num hide"></div>'
                          +        '<div class="pull-left together-with hide">Together with&nbsp;</div>'
-                         +        '<div class="pull-left mates-info">'
+                         +        '<div class="pull-right mates-info">'
                          +          '<i class="mates-add icon-plus-blue"></i>'
                          +        '</div>'
                          +        '<div class="pull-left mates-edit hide">'
@@ -968,7 +968,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +       '</ul>'
                          +       '<div class="identity-actions">'
                          +         '<p>'
-                         +           '<span class="xalert-error">Remove yourself?</span>'
+                         +           '<span class="xalert-fail">Remove yourself?</span>'
                          +           '<br />'
                          +           '<span class="xalter-info">You will <strong>NOT</strong> be able to access any information in this <span class="x">·X·</span>. Confirm leaving?</span>'
                          +           '<button class="pull-right btn-cancel">Cancel</button>'
@@ -1898,7 +1898,7 @@ define(function (require, exports, module) {
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
                 for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
-                    strSummary += '<li><span class="avatar">'
+                    strSummary += '<li><span class="avatar alt40">'
                                 +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
                                 +   '">'
