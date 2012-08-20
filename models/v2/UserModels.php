@@ -793,20 +793,9 @@ class UserModels extends DataModel {
                  AND    `user_identity`.`status`     = 3"
             );
             if ($rawUser && $rawUser['avatar_file_name']) {
-                if (DEBUG) {
-                    error_log("Redirect to: {$rawUser['avatar_file_name']}");
-                }
-                header("Location: {$rawUser['avatar_file_name']}");
-            } else {
-                if (DEBUG) {
-                    error_log("Make default avatar for: {$rawIdentity['name']}");
-                }
-                $this->makeDefaultAvatar($rawIdentity['name']);
-                if (DEBUG) {
-                    error_log("Made");
-                }
+                return ['url' => $rawUser['avatar_file_name'], 'type' => 'url'];
             }
-            return true;
+            return ['name' => $rawIdentity['name'], 'type' => 'name'];
         }
         return false;
     }
@@ -860,7 +849,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function makeDefaultAvatar($name) {
+    public function makeDefaultAvatar($name, $asimage = false) {
         // image config
         $specification = array(
             'width'       => 80,
@@ -902,6 +891,10 @@ class UserModels extends DataModel {
             $ftSize--;
         } while ($fWidth > (80 - 2));
         imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, 65, $fColor, $ftFile, $name);
+        // return
+        if ($asimage) {
+            return $image;
+        }
         // show image
         header('Pragma: no-cache');
         header('Cache-Control: no-cache');
