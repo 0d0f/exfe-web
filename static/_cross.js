@@ -235,12 +235,14 @@ ExfeeWidget = {
         this.callback = callback;
         $('#' + this.dom_id + ' .invite-form').css('visibility', 'hidden');
         $('#' + this.dom_id + ' .total').css('visibility',       'hidden');
+        $('#' + this.dom_id + ' .avatar .rb').hide();
         $('#' + this.dom_id).bind(
             'mouseenter mouseleave',
             function(event) {
                 switch (event.type) {
                     case 'mouseenter':
-                        $('#' + dom_id + ' .total').css('visibility',       'visible');
+                        $('#' + dom_id + ' .total').css('visibility', 'visible');
+                        $('#' + dom_id + ' .avatar .rb').show();
                         if (!readOnly) {
                             $('#' + dom_id + ' .invite-form').css('visibility', 'visible');
                         }
@@ -250,6 +252,7 @@ ExfeeWidget = {
                          && $('#' + dom_id + ' .exfee-input').val() === '') {
                             $('#' + dom_id + ' .invite-form').css('visibility', 'hidden');
                             $('#' + dom_id + ' .total').css('visibility',       'hidden');
+                            $('#' + dom_id + ' .avatar .rb').hide();
                             ExfeeWidget.showLimitWarning(false);
                         }
                 }
@@ -309,6 +312,10 @@ ExfeeWidget = {
 
 
     showOne : function(invitation, fadeUnconfirmed) {
+        var icons = {ACCEPTED   : 'icon14-rsvp-accepted-blue',
+                     DECLINED   : 'icon14-rsvp-declined-red',
+                     INTERESTED : 'icon14-rsvp-interested',
+                     NORESPONSE : 'icon14-rsvp-noresponse'};
         $('#' + this.dom_id + ' .thumbnails').append(
             '<li class="identity" id="' + invitation.identity.id
           +              '" provider="' + invitation.identity.provider.toLowerCase()
@@ -319,6 +326,9 @@ ExfeeWidget = {
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
           +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
+          +         '<div class="rb' + (ExfeeWidget.focus[this.dom_id + '-input'] ? '' : ' hide') + '">'
+          +             '<i class="' + icons[invitation.rsvp_status] + '"></i>'
+          +         '</div>'
           +     '</span>'
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
           + '</li>'
@@ -1451,6 +1461,10 @@ define(function (require, exports, module) {
                     if (!$('#cross-exfee .exfee-input').val()) {
                         $('#cross-exfee .invite-form').css('visibility', 'hidden');
                         $('#cross-exfee .total').css('visibility',       'hidden');
+                        $('#cross-exfee .thumbnails .avatar .rb').hide();
+                    }
+                    if (!$('#gather-exfee .exfee-input').val()) {
+                        $('#gather-exfee .thumbnails .avatar .rb').hide();
                     }
                     ExfeeWidget.showLimitWarning(false);
                 },
