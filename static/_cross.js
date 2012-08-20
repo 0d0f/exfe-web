@@ -1478,7 +1478,8 @@ define(function (require, exports, module) {
 
 
     var Editable = function() {
-        $('body').on('click dblclick.data-link', EditCross);
+        $('body').on('click', EditCross);
+        $('body').on('dblclick.data-link', '[editarea]', EditCross);
         $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
             if (event.type === 'keydown') {
                 switch (event.which) {

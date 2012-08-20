@@ -357,7 +357,7 @@ define('user', function (require, exports, module) {
         .attr('data-token', data.originToken)
         .attr('data-page', data.page)
         .attr('data-action', data.setup ? 'setup' : 'signin')
-        .attr('data-ready-only', data.readOnly)
+        .attr('data-read-only', data.readOnly)
     );
 
 
