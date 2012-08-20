@@ -35,7 +35,7 @@ define(function (require) {
       + '<div class="nbg-f"><span class="pointer gatherax"><span class="bb">Gather a </span><span class="bb x">·X·</span></span> now!</div>'
     + '</div>',
 
-    '<div class="newbie nbg-3">'
+    '<div class="newbie nbg-3 hide">'
       + '<div class="newbie-close"><i class="icon14-clear"></i></div>'
       + '<p>No invitation for you,<br /> yet.</p>'
     + '</div>'
@@ -48,7 +48,11 @@ define(function (require) {
 
   $(newbieGuide[2]).appendTo($('.gr-a'));
 
-  $(newbieGuide[3]).appendTo($('.gr-b .invitations').removeClass('hide'));
+  var nbg3 = $(newbieGuide[3]).appendTo($('.gr-b .invitations').removeClass('hide'));
+
+  if (!$('.gr-b .invitations').find('.cross-list').size()) {
+    nbg3.removeClass('hide');
+  }
 
   var $BODY = $(document.body);
 
