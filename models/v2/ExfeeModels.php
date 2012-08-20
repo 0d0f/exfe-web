@@ -398,7 +398,11 @@ class ExfeeModels extends DataModel {
                         } else {
                             $updateToken = false;
                         }
-                        $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                        if ($fmItem->rsvp_status !== $toItem->rsvp_status
+                         || $fmItem->host        !== $toItem->host
+                         || $fmItem->mates       !== $toItem->mates) {
+                            $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                        }
                         $chkInvit[$fmI] = true;
                     }
                 }
@@ -458,7 +462,7 @@ class ExfeeModels extends DataModel {
             $updated_sql="and exfee_updated_at>'$updated_at'";
 
         $identities_list=implode($identities,",");
-        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) {$updated_sql} order by created_at limit 100;";
+        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) AND `state` <> 4 {$updated_sql} order by created_at limit 100;";
         //TODO: cross_id will be renamed to exfee_id
         $exfee_id_list=$this->getColumn($sql);
         return $exfee_id_list;
