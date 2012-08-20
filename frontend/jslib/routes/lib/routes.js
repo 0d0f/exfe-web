@@ -347,18 +347,21 @@ define('routes', function (require, exports, module) {
             //session.initMenuBar = true;
             if (auth) {
               Bus.once('app:user:signin:after', function () {
-                render();
+                res.redirect('/#!' + cross.id);
+                //render();
               });
               Bus.emit('app:user:signin', auth.token, auth.user_id);
 
               return;
             }
             else {
-              Bus.emit('app:usermenu:updatenormal', user);
-              Bus.emit('app:usermenu:crosslist'
-                , authorization.token
-                , authorization.user_id
-              );
+              // 没有 browsing-identity
+              res.redirect('/#!' + cross.id);
+              //Bus.emit('app:usermenu:updatenormal', user);
+              //Bus.emit('app:usermenu:crosslist'
+                //, authorization.token
+                //, authorization.user_id
+              //);
             }
 
           }
