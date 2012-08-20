@@ -285,7 +285,7 @@ define('user', function (require, exports, module) {
             + '<div class="merge" data-user-action="signin" data-source="{{browsing.default_identity.external_username}}" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">'
               + '<a href="#">Sign In</a> with browsing identity<br />'
               + '{{#if normal}}'
-                + '(sign out from current account).'
+                + '(sign out from current account)'
               + '{{/if}}'
             + '</div>'
             + '{{/unless}}'
