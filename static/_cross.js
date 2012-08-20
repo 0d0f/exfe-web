@@ -1495,7 +1495,7 @@ define(function (require, exports, module) {
         $('.cross-title, .cross-description-outer, .cross-date, .cross-place')
           .bind('hover', function (e) {
             var t = e.type;
-            if (Editing) {
+            if (Editing && Editing !== 'rsvp') {
               if (t === 'mouseenter' && !$(this).attr('editable')) {
                 $(this)
                   .addClass('cross-hover');
