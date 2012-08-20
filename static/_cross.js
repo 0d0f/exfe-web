@@ -285,19 +285,22 @@ ExfeeWidget = {
 
 
     showAll : function(skipMe, fadeUnconfirmed) {
-        var intAccepted = 0, intTotal = 0;
+        var intAccepted = 0,
+            intTotal    = 0,
+            order       = ['ACCEPTED', 'INTERESTED', 'NORESPONSE', 'DECLINED'];
         $('#' + this.dom_id + ' .thumbnails').html('');
-        for (var i = 0; i < Exfee.invitations.length; i++) {
-            if (Exfee.invitations[i].rsvp_status !== 'REMOVED'
-             && Exfee.invitations[i].rsvp_status !== 'NOTIFICATION') {
-                var intCell = Exfee.invitations[i].mates + 1;
-                if (!skipMe || !ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
-                    this.showOne(Exfee.invitations[i], fadeUnconfirmed);
+        for (var j = 0; j < order.length; j++) {
+            for (var i = 0; i < Exfee.invitations.length; i++) {
+                if (Exfee.invitations[i].rsvp_status === order[j]) {
+                    var intCell = Exfee.invitations[i].mates + 1;
+                    if (!skipMe || !ExfeeWidget.isMyIdentity(Exfee.invitations[i].identity)) {
+                        this.showOne(Exfee.invitations[i], fadeUnconfirmed);
+                    }
+                    if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
+                        intAccepted += intCell;
+                    }
+                    intTotal += intCell;
                 }
-                if (Exfee.invitations[i].rsvp_status === 'ACCEPTED') {
-                    intAccepted += intCell;
-                }
-                intTotal += intCell;
             }
         }
         $('#' + this.dom_id + ' .attended').html(intAccepted);
