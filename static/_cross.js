@@ -1486,7 +1486,8 @@ define(function (require, exports, module) {
 
 
     var Editable = function() {
-        $('body').on('click dblclick.data-link', EditCross);
+        $('body').on('click', EditCross);
+        $('body').on('dblclick.data-link', '[editarea]', EditCross);
         $('.cross-title .edit').bind('focus keydown keyup blur', function(event) {
             if (event.type === 'keydown') {
                 switch (event.which) {
@@ -2180,7 +2181,7 @@ define(function (require, exports, module) {
       if (t === 'mouseenter') {
         $('<div class="tooltip tip-lock" id="app-tip-lock">'
           + '<div class="inner">'
-            + '<div>This <span class="x">·X·</span> is a private.</div>'
+            + '<div>This <span class="x">·X·</span> is private.</div>'
             + '<div>Accessible to only attendees.</div>'
           + '</div>'
         + '</div>').css({
