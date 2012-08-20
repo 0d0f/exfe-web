@@ -65,7 +65,7 @@ class GobusActions extends ActionController {
         }
         if ($raw_by_identity->connected_user_id <= 0) {
             header('HTTP/1.1 400 Internal Server Error');
-            apiResponse(['code' => 233, 'error' => 'User not connected.']);
+            echo json_encode(['code' => 233, 'error' => 'User not connected.']);
             return;
         }
         // get user object
