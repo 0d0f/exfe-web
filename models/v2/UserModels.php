@@ -802,6 +802,9 @@ class UserModels extends DataModel {
                     error_log("Make default avatar for: {$rawIdentity['name']}");
                 }
                 $this->makeDefaultAvatar($rawIdentity['name']);
+                if (DEBUG) {
+                    error_log("Made");
+                }
             }
             return true;
         }
