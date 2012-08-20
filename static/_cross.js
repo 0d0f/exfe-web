@@ -439,6 +439,7 @@ ExfeeWidget = {
         var idx = this.checkExistence(identity);
         if (idx !== false) {
             Exfee.invitations[idx].rsvp_status = rsvp;
+            Exfee.invitations[idx].by_identity = ExfeUtilities.clone(curIdentity);
             var refresh = false;
             if (rsvp === 'REMOVED' && curIdentity
              && ExfeeWidget.compareIdentity(Exfee.invitations[idx].identity, curIdentity)) {
@@ -1177,6 +1178,7 @@ define('exfeepanel', [], function (require, exports, module) {
             var rsvp = $(this).attr('rsvp');
             if (rsvp) {
                 ExfeePanel.invitation.rsvp_status = rsvp;
+                ExfeePanel.invitation.by_identity = ExfeeWidget.clone(curIdentity);
                 ExfeeWidget.rsvpExfee(ExfeePanel.invitation.identity, rsvp);
                 ExfeePanel.showRsvp();
             }
@@ -1310,7 +1312,6 @@ define(function (require, exports, module) {
                 case 13: // enter
                     var objInput = $(this);
                     if (!event.shiftKey) {
-                        $('.cross-opts .saving').show();
                         event.preventDefault();
                         postConversation(objInput.val());
                         objInput.val('');
@@ -2132,8 +2133,10 @@ define(function (require, exports, module) {
         if (Cross_id > 0) {
             GetCross(Cross_id);
         } else if (Cross_id === null) {
-            curIdentity = browsingIdentity ? browsingIdentity : curIdentity;
-            Api.setToken(invitation_token);
+            if (browsingIdentity) {
+                curIdentity = browsingIdentity;
+                Api.setToken(invitation_token);
+            }
             UpdateCross(cross, read_only);
             if (accepted) {
                 ExfeeWidget.rsvpMe('ACCEPTED');

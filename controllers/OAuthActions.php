@@ -92,14 +92,15 @@ class OAuthActions extends ActionController {
                         return;
                     }
                     // 身份未连接
-                    $new_identity = false;
+                    $identity_status = 'connected';
                     if ($objIdentity->connected_user_id <= 0) {
-                        $new_identity = true;
                         // 身份被 revoked，重新连接用户
                         if ($objIdentity->revoked_user_id) {
+                            $identity_status = 'revoked';
                             $user_id = $objIdentity->revoked_user_id;
                         // 孤立身份，创建新用户并连接到该身份
                         } else {
+                            $identity_status = 'new';
                             $user_id = $modUser->addUser(
                                 '',
                                 $objTwitterIdentity->name
@@ -130,11 +131,13 @@ class OAuthActions extends ActionController {
                     );
                     // call Gobus {
                     $hlpGobus = $this->getHelperByName('gobus', 'v2');
-                    $hlpGobus->send('user', 'TwitterFriends', [
-                        'ClientToken'  => TWITTER_CONSUMER_KEY,
-                        'ClientSecret' => TWITTER_CONSUMER_SECRET,
-                        'AccessToken'  => $oauthIfo['oauth_token'],
-                        'AccessSecret' => $oauthIfo['oauth_token_secret'],
+                    $hlpGobus->send('user', 'GetFriends', [
+                        'user_id'       => $user_id,
+                        'provider'      => 'twitter',
+                        'client_token'  => TWITTER_CONSUMER_KEY,
+                        'client_secret' => TWITTER_CONSUMER_SECRET,
+                        'access_token'  => $oauthIfo['oauth_token'],
+                        'access_secret' => $oauthIfo['oauth_token_secret'],
                     ]);
                     // }
                     if ($oauthIfo['workflow']['callback']['oauth_device'] === 'iOS') {
@@ -161,10 +164,10 @@ class OAuthActions extends ActionController {
                          'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                     );
                     $modOauth->addtoSession([
-                        'twitter_signin'       => $rstSignin,
-                        'twitter_identity_id'  => $objIdentity->id,
-                        'twitter_new_identity' => $new_identity,
-                        'twitter_following'    => $twitterConn->response['response'] === 'true'
+                        'twitter_signin'          => $rstSignin,
+                        'twitter_identity_id'     => $objIdentity->id,
+                        'twitter_identity_status' => $identity_status,
+                        'twitter_following'       => $twitterConn->response['response'] === 'true'
                     ]);
                     header('location: /');
                     return;
