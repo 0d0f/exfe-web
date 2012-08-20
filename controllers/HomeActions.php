@@ -9,14 +9,16 @@ class HomeActions extends ActionController {
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
         $twitterSignin = null;
-        if ($oauthIfo && $oauthIfo['twitter_signin']) {
-            $twitterSignin = [
-                'authorization'   => $oauthIfo['twitter_signin'],
-                'identity_id'     => $oauthIfo['twitter_identity_id'],
-                'following'       => $oauthIfo['twitter_following'],
-                'identity_status' => $oauthIfo['twitter_identity_status'],
-                'type'            => 'twitter',
-            ];
+        if ($oauthIfo) {
+            $twitterSignin
+          = $oauthIfo['twitter_signin']
+          ? ['authorization'   => $oauthIfo['twitter_signin'],
+             'identity_id'     => $oauthIfo['twitter_identity_id'],
+             'following'       => $oauthIfo['twitter_following'],
+             'identity_status' => $oauthIfo['twitter_identity_status'],
+             'type'            => 'twitter']
+          : ['authorization'   => null,
+             'type'            => 'twitter'];
         }
         $modOauth->resetSession();
         // show page
