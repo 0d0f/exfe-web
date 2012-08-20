@@ -25,7 +25,7 @@
   line-height: 0;
 
   img {
-    .border-radius(3px);
+    .border-radius(4px);
   }
 
   .rt, .rb, .lb, .lt {
@@ -39,8 +39,10 @@
   }
 
   .rb {
-    right: -3px;
-    bottom: -3px;
+    right: 0px;
+    bottom: 0px;
+    border-radius: 5px 0 5px 0;
+    background: rgba(255, 255, 255, .8);
   }
 
   .lb {
@@ -53,6 +55,12 @@
     left: 1px;
   }
 
+}
+
+.alt40 {
+  img {
+    .border-radius(2px);
+  }
 }
 
 .cross-rsvp {
@@ -215,6 +223,7 @@
 
     .avatar > img {
       z-index: 1000;
+      .border-radius(4px 4px 6px 4px);
     }
 
     .avatar:after {
@@ -225,8 +234,24 @@
       right: -4px;
       bottom: -4px;
       left: -4px;
-      border: 4px solid @exfeBlue;
-      .border-radius(5px);
+      border: 4px solid lighten(@exfeBlue, 34%);
+      .border-radius(7px);
+    }
+
+    .select:before {
+      .hide;
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      bottom: -2px;
+      left: -2px;
+      border: 2px solid lighten(@exfeBlue, 34%);
+      .border-radius(7px);
+    }
+
+    .select:before {
+      .show;
     }
 
     .select:after {
@@ -342,7 +367,7 @@
     position: absolute;
     z-index: 1021;
     width: 195px;
-    padding: 0 10px 7px;
+    padding: 0 10px 20px;
     color: #424242;
     #gradient > .directional(#fafafa, #e6e6e6, 255deg);
     .box-shadow(0 1px 4px rgba(0,0,0,.25));
@@ -455,6 +480,7 @@
       /*height: 26px;*/
       line-height: 14px;
       padding: 6px 0;
+      min-width: 40px;
 
       .mates-num {
         color: @exfeBlue;

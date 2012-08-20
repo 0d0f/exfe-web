@@ -7500,9 +7500,9 @@ body {
 }
 
 .avatar img {
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
 }
 
 .avatar .rt,
@@ -7519,8 +7519,10 @@ body {
 }
 
 .avatar .rb {
-  right: -3px;
-  bottom: -3px;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 5px 0 5px 0;
 }
 
 .avatar .lb {
@@ -7531,6 +7533,12 @@ body {
 .avatar .lt {
   top: 1px;
   left: 1px;
+}
+
+.alt40 img {
+  -webkit-border-radius: 2px;
+     -moz-border-radius: 2px;
+          border-radius: 2px;
 }
 
 .cross-rsvp {
@@ -7687,6 +7695,9 @@ body {
 
 .cross-identities .avatar > img {
   z-index: 1000;
+  -webkit-border-radius: 4px 4px 6px 4px;
+     -moz-border-radius: 4px 4px 6px 4px;
+          border-radius: 4px 4px 6px 4px;
 }
 
 .cross-identities .avatar:after {
@@ -7696,11 +7707,29 @@ body {
   bottom: -4px;
   left: -4px;
   display: none;
-  border: 4px solid #3a6ea5;
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-          border-radius: 5px;
+  border: 4px solid #abc5e1;
+  -webkit-border-radius: 7px;
+     -moz-border-radius: 7px;
+          border-radius: 7px;
   content: '';
+}
+
+.cross-identities .select:before {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  display: none;
+  border: 2px solid #abc5e1;
+  -webkit-border-radius: 7px;
+     -moz-border-radius: 7px;
+          border-radius: 7px;
+  content: '';
+}
+
+.cross-identities .select:before {
+  display: block;
 }
 
 .cross-identities .select:after {
@@ -7812,7 +7841,7 @@ body {
   position: absolute;
   z-index: 1021;
   width: 195px;
-  padding: 0 10px 7px;
+  padding: 0 10px 20px;
   color: #424242;
   background-color: #e6e6e6;
   background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
@@ -7927,6 +7956,7 @@ body {
 .exfeepanel .invited {
   position: relative;
   right: 0;
+  min-width: 40px;
   padding: 6px 0;
   line-height: 14px;
 }
@@ -8258,28 +8288,6 @@ body {
 .x-profile .gr-b {
   width: 300px;
   padding-right: 27px;
-}
-
-.avatar {
-  position: relative;
-  display: inline-block;
-  line-height: 0;
-}
-
-.avatar img {
-  /*image-rendering: optimizeSpeed;*/
-
-  /*image-rendering: -moz-crisp-edges;*/
-
-  /*image-rendering: -webkit-optimize-contrast;*/
-
-  /*image-rendering: optimize-contrast;*/
-
-  /*-ms-interpolation-mode: nearest-neighbor;*/
-
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
 }
 
 .black21 {
