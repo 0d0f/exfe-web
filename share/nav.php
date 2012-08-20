@@ -10,7 +10,7 @@
       <div class="container" id="app-menus">
 
         <!--  EXFE LOGO -->
-        <a href="/" class="brand" data-link="nota"><img src="/static/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
+        <a href="/" class="brand" data-link><img src="/static/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
         <a href="#" class="version" data-widget="dialog" data-dialog-type="sandbox">SANDBOX</a>
 
         <div class="nav-collapse" role="navigation">
