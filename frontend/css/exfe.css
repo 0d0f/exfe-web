@@ -4654,6 +4654,14 @@ input[type="submit"].btn.btn-mini {
   background-position: -176px -54px;
 }
 
+.icon24-place {
+  background-position: -200px -54px;
+}
+
+.icon24-time {
+  background-position: -224px -54px;
+}
+
 .navbar .dropdown-menu:before {
   display: none;
   border: none;
