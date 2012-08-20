@@ -75,7 +75,7 @@
         {{#each identities}}
         <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
           <i class="icon-move"></i>
-          <span class="avatar" data-link="nota"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
+          <span class="avatar alt40" data-link="nota"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
           </span><span class="identity"><span class="identityname">{{printName name external_username}}</span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
           {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link="nota">Make default</a>{{/makeDefault}}
           {{#ifOauthVerifying provider status}}
@@ -162,7 +162,7 @@
               <a href="/#!{{crossItem "id"}}" data-exfeeid="{{crossItem "exfeeid"}}" data-invitationid="{{crossItem "invitationid"}}" data-id="{{crossItem "id"}}" data-link>
                 <h5>{{crossItem "title"}}</h5>
                 <div>{{printTime2 "time"}}{{#ifPlace}} <span class="gray">at</span> {{crossItem "place"}}{{/ifPlace}} <span class="gray">by</span> {{by_identity.name}}</div>
-                <div class="xbtn xbtn-accept">I'm in</div>
+                <div class="xbtn xbtn-accept" data-link="nota">I'm in</div>
               </a>
             </div>
             {{/crosses}}
