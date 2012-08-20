@@ -1860,7 +1860,7 @@ define(function (require, exports, module) {
         if (!settings) return;
         var beun = Util.printExtUserName(settings.default_identity);
         this.$('.identity').text(beun);
-        this.$('.avatar').attr('src', settings.avatar_filename);
+        this.$('.avatar').attr('src', settings.default_identity.avatar_filename);
         this.$('.xbtn-blue').data('source', beun);
         this.$('.provider').addClass('icon16-identity-' + settings.default_identity.provider)
       }
