@@ -948,7 +948,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +          '<div class="by">by <span class="name"></span></div>'
                          +        '</div>'
                          +        '<div class="pull-right pointer underline setto">'
-                         +          '<span>set to</span> <i class="icon-rsvp-declined-red"></i>'
+                         +          (readOnly ? '' : '<span>set to</span> <i class="icon-rsvp-declined-red"></i>')
                          +        '</div>'
                          +      '</div>'
                          +     '</div>'
@@ -1081,7 +1081,11 @@ define('exfeepanel', [], function (require, exports, module) {
                         $('.exfee_pop_up .invited .mates-info').hide();
                     } else {
                         $('.exfee_pop_up .invited .mates-num').hide();
-                        $('.exfee_pop_up .invited .mates-info').show();
+                        if (readOnly) {
+                            $('.exfee_pop_up .invited .mates-info').hide();
+                        } else {
+                            $('.exfee_pop_up .invited .mates-info').show();
+                        }
                     }
             }
             if (this.invitation.host) {
@@ -1113,14 +1117,16 @@ define('exfeepanel', [], function (require, exports, module) {
             $('.exfee_pop_up .mates-minus').bind('click',      this.matesMinus);
             $('.exfee_pop_up .rsvp-info .setto').bind('click', this.rsvp);
             $('.exfee_pop_up .invited').bind('hover', function(event) {
-                switch (event.type) {
-                    case 'mouseenter':
-                        ExfeePanel.editing = 'mates';
-                        break;
-                    case 'mouseleave':
-                        ExfeePanel.editing = '';
+                if (!readOnly) {
+                    switch (event.type) {
+                        case 'mouseenter':
+                            ExfeePanel.editing = 'mates';
+                            break;
+                        case 'mouseleave':
+                            ExfeePanel.editing = '';
+                    }
+                    ExfeePanel.showRsvp();
                 }
-                ExfeePanel.showRsvp();
             });
             $('.exfee_pop_up .rsvp-info').bind('hover', function(event) {
                 switch (event.type) {
