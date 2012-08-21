@@ -594,11 +594,11 @@ define('xdialog', function (require, exports, module) {
             + '<p><span class="x-sign">EXFE</span> your friends.</p>'
             + '<p class="provider-email hide" style="color: #191919;">*A welcome email has been sent to your mailbox. Please check to verify your address.*</p>'
             + '<div class="provider-other hide">'
+              + '&nbsp;&nbsp;<span class="underline why">why?</span>'
               + '<label class="pull-left checkbox pointer">'
                 + '<input type="checkbox" id="follow" value="1" checked />'
                 + 'Follow @<span class="x-sign">EXFE</span> on Twitter.'
               + '</label>'
-              + '&nbsp;<span class="underline why">why?</span>'
               + '<p class="pull-left answer hidden">So we could send you invitation PRIVATELY through Direct Message. We hate spam, will NEVER disappoint your trust.</p>'
             + '</div>'
           + '</div>',
