@@ -135,7 +135,7 @@ class OAuthActions extends ActionController {
                     $hlpGobus->send('user', 'GetFriends', [
                         'user_id'       => $objIdentity->connected_user_id,
                         'provider'      => 'twitter',
-                        'external_id'   => $objIdentity->external_username,
+                        'external_id'   => $objIdentity->external_id,
                         'client_token'  => TWITTER_CONSUMER_KEY,
                         'client_secret' => TWITTER_CONSUMER_SECRET,
                         'access_token'  => $oauthIfo['oauth_token'],
