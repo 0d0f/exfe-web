@@ -73,12 +73,10 @@ class IdentitiesActions extends ActionController {
                             break;
                         case 'twitter':
                             if ($identityItem->external_username) {
-                                $twitterConn = new tmhOAuth(array(
+                                $twitterConn = new tmhOAuth([
                                     'consumer_key'    => TWITTER_CONSUMER_KEY,
                                     'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                                    'user_token'      => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN,
-                                    'user_secret'     => TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET
-                                ));
+                                ]);
                                 $responseCode = $twitterConn->request(
                                     'GET',
                                     $twitterConn->url('1/users/show'),
