@@ -43,8 +43,6 @@ define('TWITTER_CONSUMER_SECRET', 'cSgxIjIh92uFO5C85BWoxOGawkjGCoOf1HfOVzT8');
 define('TWITTER_OAUTH_CALLBACK', SITE_URL.'/OAuth/twitterCallBack');
 define('TWITTER_API_URL', 'http://api.twitter.com/1');
 define('TWITTER_OFFICE_ACCOUNT', 'exfe_com');
-define('TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN', 'xxxxxxx');
-define('TWITTER_OFFICE_ACCOUNT_ACCESS_TOKEN_SECRET', 'xxxxxxx');
 
 define('FACEBOOK_APP_ID', '210626042352165');
 define('FACEBOOK_SECRET_KEY', 'd6aa2f4e5f19dfbbd933304033f28db2');
