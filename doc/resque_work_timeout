@@ -1,7 +1,0 @@
-检测Resque中jobs所需connect空闲关闭（包括APN/email等）
-
-1 jobs/connect.php 其中定义共享connect所需的全局变量和时间计数器
-2 jobs/apn_job.php 中 function connect()  用来建立连接
-3 jobs/apn_job.php 每次发送push之前判断connect是否已经建立，如果没有存在的连接，就建立新连接并增加计数器
-4 每次进行push都要更新计数器时间
-5 lib/Resque/Worker.php 中增加checkConnect用来判断是否超时。目前是5分钟
