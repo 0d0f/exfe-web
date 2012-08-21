@@ -1710,7 +1710,7 @@ define(function (require, exports, module) {
 
 
     var ShowTitle = function(from) {
-        var title = Cross.title.length ? Cross.title : 'Enter intent';
+        var title = Cross.title.length ? ExfeUtilities.escape(Cross.title) : 'Enter intent';
         $('.cross-title .show').html(title);
         $('.cross-title .show').removeClass('single-line').removeClass('double-line');
         if ($('.cross-title .show').height() > 50) {
@@ -1738,7 +1738,7 @@ define(function (require, exports, module) {
         $('.cross-description').toggleClass('more', true);
         $('.cross-description .xbtn-more').toggleClass('xbtn-less', false);
         var domDesc = Cross.description
-                    ? ExfeUtilities.escape(Cross.description).replace(/\n/g, '<br>') // ? Marked.parse(Cross.description)
+                    ? ExfeUtilities.escape(Cross.description).replace(/\r\n|\r|\n/g, '<br>') // ? Marked.parse(Cross.description)
                     : 'Click here to describe something about this X.';
         if ($('.cross-description .show').html() !== domDesc) {
             $('.cross-description .show').html(domDesc);
@@ -1781,7 +1781,7 @@ define(function (require, exports, module) {
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
                 strAbsTime = 'No specified time, yet.';
-                strRelTime = Cross.time.origin;
+                strRelTime = ExfeUtilities.escape(Cross.time.origin);
             } else if (Cross.time.begin_at.time) {
                 var objMon = moment((moment.utc(
                     Cross.time.begin_at.date + ' '
@@ -1811,14 +1811,14 @@ define(function (require, exports, module) {
     var ShowPlace = function() {
         $('.cross-dp.cross-place > h2').html(
             Cross.place.title
-          ? Cross.place.title
+          ? ExfeUtilities.escape(Cross.place.title)
           : 'Somewhere'
         );
         $('.cross-dp.cross-place > address').toggleClass('more', true)
         $('.cross-dp.cross-place .xbtn-more').toggleClass('xbtn-less', false);
         $('.cross-dp.cross-place > address').html(
             Cross.place.description
-          ? Cross.place.description.replace(/\r\n|\r|\n/g, '<br>')
+          ? ExfeUtilities.escape(Cross.place.description).replace(/\r\n|\r|\n/g, '<br>')
           : 'Add some place details.'
         );
         if ($('.cross-dp.cross-place > address').height() > 80) {
