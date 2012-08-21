@@ -2,6 +2,9 @@ define(function (require, exports, module) {
   var $ = require('jquery')
     , Bus = require('bus')
     , Store = require('store')
+    , Dialog = require('dialog')
+    , dialogs = require('xdialog').dialogs
+    , Identification = require('xdialog').Identification
     , $BODY = $(document.body);
 
   //$(function () {
@@ -209,5 +212,42 @@ define(function (require, exports, module) {
       }
     });
 
+  /* MODAL DATA-API
+   * -------------- */
+
+  $(function () {
+   $BODY.on('click.dialog.data-api', '[data-widget="dialog"]', function (e) {
+      var $this = $(this)
+        , data = $this.data('dialog')
+        , settings
+        , dialogType = $this.data('dialog-type')
+        , dialogTab = $this.data('dialog-tab')
+        , dialogFrom = $this.data('dialog-from')
+        , dialogSettings = $this.data('dialog-settings')
+        , dataSource = $this.data('source');
+
+      e.preventDefault();
+
+      if (!data)  {
+
+        if (dialogType) {
+          settings = dialogs[dialogType];
+          if (dialogSettings) {
+            settings = $.extend(true, {}, settings, dialogSettings);
+          }
+          data = new (dialogType === 'identification' ? Identification : Dialog)(settings);
+          data.options.srcNode = $this;
+          if (dialogFrom) data.dialog_from = dialogFrom;
+          data.render();
+          $this.data('dialog', data);
+        }
+
+      }
+
+      if (dialogTab) data.switchTab(dialogTab);
+      data.show(e);
+
+    });
+  });
   //});
 });
