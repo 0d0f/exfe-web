@@ -12,4 +12,5 @@ Front-End Standards 前端标准规范
 
 ### Dialogs:
   * Button
-    - disabled opacity(50%)
+    - class="disabled"
+      - opacity(50%)
