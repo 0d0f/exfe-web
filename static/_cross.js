@@ -5,6 +5,16 @@ ExfeUtilities = {
     },
 
 
+    escape : function(html, encode) {
+        return html
+              .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+    },
+
+
     clone : function(variable) {
         switch (Object.prototype.toString.call(variable)) {
             case '[object Object]':       // Object instanceof Object
@@ -1728,7 +1738,7 @@ define(function (require, exports, module) {
         $('.cross-description').toggleClass('more', true);
         $('.cross-description .xbtn-more').toggleClass('xbtn-less', false);
         var domDesc = Cross.description
-                    ? Marked.parse(Cross.description)
+                    ? ExfeUtilities.escape(Cross.description).replace(/\n/g, '<br>') // ? Marked.parse(Cross.description)
                     : 'Click here to describe something about this X.';
         if ($('.cross-description .show').html() !== domDesc) {
             $('.cross-description .show').html(domDesc);
