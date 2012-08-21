@@ -1,5 +1,7 @@
 <?php
+
 class MuteModels extends DataModel {
+
     public function ifIdentityMute($object,$object_id,$identity_id)
     {
         if($identity_id>0)
@@ -14,6 +16,7 @@ class MuteModels extends DataModel {
         return FALSE;
     }
 
+
     public function ifMute($object,$object_id,$sender_id)
     {
         $sql="select status from mute where object='$object' and object_id=$object_id and sender_id=$sender_id;";
@@ -26,6 +29,8 @@ class MuteModels extends DataModel {
         return FALSE;
 
     }
+
+
     public function setMute($object,$object_id,$sender_id,$status)
     {
         $sql="select object,status from mute where object='$object' and object_id=$object_id and sender_id=$sender_id;";
@@ -54,4 +59,3 @@ class MuteModels extends DataModel {
     }
 
 }
-
