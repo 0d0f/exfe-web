@@ -4469,7 +4469,7 @@ input[type="submit"].btn.btn-mini {
   background-position: -42px -12px;
 }
 
-.icon14-rsvo-interested {
+.icon14-rsvp-interested {
   background-position: -56px -12px;
 }
 
@@ -7772,6 +7772,7 @@ body {
 
 .invite-form {
   position: relative;
+  margin-top: 10px;
 }
 
 .invite-form input[type="text"] {
