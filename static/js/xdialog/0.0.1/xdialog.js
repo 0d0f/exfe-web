@@ -232,7 +232,7 @@ define('xdialog', function (require, exports, module) {
             , s;
 
           if ($e.hasClass('icon14-question')) {
-            s = 'Identity is your online representative, such as Email, mobile #, or your account from other websites like Twitter.';
+            s = 'Identity is your online representative, such as email, <span class="strike">mobile no.</span>, and your account username on other websites like Twitter, Facebook, etc.';
             $e.parent().find('.xalert-error:eq(0)').html(s).removeClass('hide');
           } else {
             $e.toggleClass('icon14-question icon14-clear');
@@ -408,7 +408,7 @@ define('xdialog', function (require, exports, module) {
                       + '<div class="xalert xalert-error hide" style="margin-top: 5px;"></div>'
 
                       + '<div class="xalert xalert-error authenticate hide" style="margin-top: 5px;">'
-                        + '<span class="xalert-fail">Please directly authenticate this identity above.</span><br />To enable password sign-in for this identity, set an <span class="x-sign">EXFE</span> password first in your profile page.'
+                        + '<span class="xalert-fail">Please directly authenticate identity above.</span><br />To enable password sign-in for this identity, set an <span class="x-sign">EXFE</span> password first in your profile page.'
                       + '</div>'
 
                     + '</div>'
