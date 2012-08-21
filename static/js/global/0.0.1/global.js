@@ -214,8 +214,6 @@ define(function (require, exports, module) {
 
   /* MODAL DATA-API
    * -------------- */
-
-  $(function () {
    $BODY.on('click.dialog.data-api', '[data-widget="dialog"]', function (e) {
       var $this = $(this)
         , data = $this.data('dialog')
@@ -248,6 +246,5 @@ define(function (require, exports, module) {
       data.show(e);
 
     });
-  });
   //});
 });

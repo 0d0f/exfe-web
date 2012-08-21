@@ -170,6 +170,7 @@ body {
     }
 
     .xbtn-gather {
+      margin-top: 15px;
       text-align: center;
       line-height: 30px;
     }
@@ -178,11 +179,8 @@ body {
       color: #4c4c4c;
     }
 
-    .footer {
-      margin-top: 12px;
-    }
-
     .actions a {
+      line-height: 18px;
       font-size: 12px;
       color: #7f7f7f;
     }
@@ -238,11 +236,42 @@ body {
     }
 
     .spliterline {
-      margin: 10px auto;
+      margin: 12px auto 6px;
       width: 198px;
       height: 1px;
       #gradient > .horizontal-three-colors(#e6e6e6, #b2b2b2, 50%, #e6e6e6);
       .box-shadow(0 1px 1px rgba(250, 250, 250, .75));
+    }
+
+    .orspliter {
+      position: relative;
+      padding: 2px auto 7px;
+      width: 202px;
+      height: 16px;
+      text-align: center;
+      font-size: 12px;
+      line-height: 16px;
+      color: #b2b2b2;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 11px;
+        left: -85px;
+        width: 85px;
+        border-top: 1px dashed #d5d5d5;
+        .box-shadow(0 1px 1px #fafafa);
+      }
+
+      &:after {
+        content: '';
+        position: absolute;
+        top: 11px;
+        right: -85px;
+        width: 85px;
+        border-top: 1px dashed #d5d5d5;
+        .box-shadow(0 1px 1px #fafafa);
+      }
     }
 
     .meta {
@@ -279,7 +308,7 @@ body {
     }
 
     .actions {
-      margin-top: -10px;
+      padding: 0 5px;
     }
 
     .crosses {

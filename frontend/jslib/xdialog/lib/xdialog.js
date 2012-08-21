@@ -1653,7 +1653,7 @@ define('xdialog', function (require, exports, module) {
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
           + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend>You’re browsing with identity below, please authorize through Twitter to set up your <span class="x-sign">EXFE</span> account.</legend>'
+              + '<legend>You’re browsing as identity underneath, please authorize through Twitter to set up your <span class="x-sign">EXFE</span> account.</legend>'
 
                 + '<div class="clearfix control-group">'
                   + '<div class="pull-right user-identity">'
@@ -1732,7 +1732,7 @@ define('xdialog', function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Browsing Identity</div>'
           + '<div class="user hide">'
-            + '<div>You will be redirected to the link as your currently signed in account below:</div>'
+            + '<div>You will be redirected to the link as your currently signed in account underneath:</div>'
             + '<div class="identity">'
               + '<img class="avatar" src="" width="40" height="40" />'
               + '<span></span>'
@@ -1839,9 +1839,16 @@ define('xdialog', function (require, exports, module) {
           + '<div class="shadow title">Read-only Browsing</div>'
           + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend>You’re browsing this page in read-only mode with identity below. To change anything on this page, please <span class="underline">sign in</span> first.</legend>'
+              + '<legend>You’re browsing this page in read-only mode as <span></span> underneath. To change anything on this page, please <span class="underline">sign in</span> first.</legend>'
 
-                + '<div class="clearfix control-group">'
+                + '<div class="user hide">'
+                  + '<div class="identity">'
+                    + '<img class="avatar" src="" width="40" height="40" />'
+                    + '<span></span>'
+                  + '</div>'
+                + '</div>'
+
+                + '<div class="clearfix control-group browsing-identity hide">'
                   + '<div class="pull-right user-identity">'
                     + '<img class="avatar" src="" alt="" width="40" height="40" />'
                     + '<i class="provider"></i>'
@@ -1858,13 +1865,22 @@ define('xdialog', function (require, exports, module) {
       },
 
       onShowBefore: function (e) {
-        var settings = $(e.currentTarget).data('settings');
+        var settings = $(e.currentTarget).data('settings')
         if (!settings) return;
+        var isBrowsing = settings.isBrowsing
         var beun = Util.printExtUserName(settings.default_identity);
-        this.$('.identity').text(beun);
-        this.$('.avatar').attr('src', settings.default_identity.avatar_filename);
+        this.$('legend span').eq(0).text(isBrowsing ? 'identity' : 'user');
         this.$('.xbtn-blue').data('source', beun);
-        this.$('.provider').addClass('icon16-identity-' + settings.default_identity.provider)
+        if (isBrowsing) {
+          var bi = this.$('.browsing-identity').removeClass('hide');
+          bi.find('.identity').text(beun);
+          bi.find('.avatar').attr('src', settings.default_identity.avatar_filename);
+          bi.find('.provider').addClass('icon16-identity-' + settings.default_identity.provider)
+        } else {
+          var u = this.$('.user').removeClass('hide')
+          u.find('span').text(settings.name);
+          u.find('.avatar').attr('src', settings.avatar_filename);
+        }
       }
 
     }
