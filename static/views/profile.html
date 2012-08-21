@@ -76,7 +76,7 @@
         <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
           <i class="icon-move"></i>
           <span class="avatar alt40" data-link="nota"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
-          </span><span class="identity"><span class="identityname">{{printName name external_username}}</span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
+          </span><span class="identity"><span class="identityname"><em>{{printName name external_username}}</em></span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
           {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link="nota">Make default</a>{{/makeDefault}}
           {{#ifOauthVerifying provider status}}
           <span class="xlabel">

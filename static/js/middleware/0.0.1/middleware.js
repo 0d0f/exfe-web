@@ -54,7 +54,9 @@ define('middleware', function (require, exports, module) {
         Store.set('oauth', session.oauth = {
           type: authMeta.type,
           following: authMeta.following,
-          identity_id: authMeta.identity_id
+          identity_id: authMeta.identity_id,
+          // status: connected, new, revoked
+          identity_status: authMeta.identity_status
         });
         Store.set('user', session.user = null);
         Store.set('authorization', session.authorization = authMeta.authorization);
