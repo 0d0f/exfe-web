@@ -41,7 +41,7 @@ class OAuthActions extends ActionController {
         if (!$oauthIfo || (isset($oauthIfo['oauth_token'])
          && $oauthIfo['oauth_token'] !== $_REQUEST['oauth_token'])) {
             $modOauth->addtoSession(['twitter_signin' => false]);
-            header('location: /');
+            $this->displayView();
             return;
         }
         $rstAcsToken = $modOauth->getTwitterAccessToken(
@@ -169,7 +169,7 @@ class OAuthActions extends ActionController {
                         'twitter_identity_status' => $identity_status,
                         'twitter_following'       => $twitterConn->response['response'] === 'true'
                     ]);
-                    header('location: /');
+                    $this->displayView();
                     return;
                 }
             }
