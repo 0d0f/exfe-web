@@ -1763,6 +1763,12 @@ define(function (require, exports, module) {
 
 
     var ShowTime = function() {
+        ShowCrossTime();
+        ShowMessageTime();
+    };
+
+
+    var ShowCrossTime = function() {
         function getTimezoneOffset(timezone) {
             if ((timezone = ExfeUtilities.trim(timezone))) {
                 var arrTimezone = timezone.split(':');
@@ -1883,12 +1889,20 @@ define(function (require, exports, module) {
                        +       '<span class="author"><strong>' + message.by_identity.name + '</strong>:&nbsp;</span>'
                        +          strContent
                        +       '<span class="pull-right date">'
-                       +         '<time>' + moment(message.created_at, 'YYYY-MM-DD HH:mm:ss Z').fromNow() + '</time>'
+                       +         '<time data-origin-time="' + message.created_at + '">' + moment(message.created_at, 'YYYY-MM-DD HH:mm:ss Z').fromNow() + '</time>'
                        +       '</span>'
                        +     '</p>'
                        +   '</div>'
                        + '</div>';
         $('.conversation-timeline').prepend(strMessage);
+    };
+
+
+    var ShowMessageTime = function() {
+        $('[data-origin-time]').each(function() {
+            var that = $(this);
+            that.html(moment(that.data('origin-time'), 'YYYY-MM-DD HH:mm:ss Z').fromNow());
+        });
     };
 
 
