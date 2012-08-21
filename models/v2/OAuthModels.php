@@ -263,40 +263,6 @@ class OAuthModels extends DataModel {
         }
         return array("identityID" => $identityID, "userID" => $userID);
     }
-
-
-    public function buildFriendsIndex($userID, $friendsList) {
-
-        $redisHandler = new Redis();
-        $redisHandler->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        mb_internal_encoding("UTF-8");
-        foreach($friendsList as $value)
-        {
-            $identity = mb_strtolower($value["user_name"]);
-            $identityPart = "";
-            for ($i=0; $i<mb_strlen($identity); $i++)
-            {
-                $identityPart .= mb_substr($identity, $i, 1);
-                $redisHandler->zAdd('u:'.$userID, 0, $identityPart);
-            }
-            $identityDetailID = $value["provider"].":".$value["customer_id"];
-            $redisHandler->zAdd('u:'.$userID, 0, $identityPart."|".$identityDetailID."*");
-            $identityDetail = $redisHandler->HGET("identities",$identityDetailID);
-            if($identityDetail == false) {
-                $identityDetail = array(
-                    "external_identity" => $value["customer_id"],
-                    "name"              => $value["display_name"],
-                    "bio"               => $value["bio"],
-                    "avatar_file_name"  => $value["avatar_img"],
-                    "external_username" => $value["user_name"],
-                    "provider"          => $value["provider"]
-                );
-                $identity = json_encode_nounicode($identityDetail);
-                $redisHandler->HSET("identities", $identityDetailID, $identity);
-            }
-
-        }
-    }
     */
 
 }
