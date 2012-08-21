@@ -448,7 +448,8 @@ define('routes', function (require, exports, module) {
           Bus.emit('app:profile:show', dfd);
 
           // 弹出 OAuth Welcome
-          if (oauth && oauth.new_identity && !oauth.follow) {
+          // revoked, new 暂时都弹 welcome 窗口
+          if (oauth && oauth.identity_status !== 'connected') {
             var identities = user.identities;
             var identity = R.filter(identities, function (v) {
               if (v.id === oauth.identity_id) {
@@ -461,8 +462,7 @@ define('routes', function (require, exports, module) {
               .trigger({
                 type: 'click',
                 identity: identity,
-                token: authorization.token,
-                new_identity: oauth.new_identity
+                token: authorization.token
               })
               .remove();
           }
