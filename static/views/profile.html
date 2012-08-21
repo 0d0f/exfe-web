@@ -125,7 +125,7 @@
               {{else}}
               <span class="message">Oh~ Nothing upcoming. <em class="x-sign">EXFE</em> your friends, </span>
               {{/if}}
-              <span class="underline">Gather a <em class="x">·X·</em></span>
+              <span>Gather a <em class="x">·X·</em></span>
             </a>
           </div>
           {{/if}}
@@ -144,13 +144,13 @@
           <time>{{printTime time}}</time>
           <address>{{place.title}} 
           {{#if place.description}}
-            <span class="gray">({{place.description}})</span>
+            <span class="gray333">({{place.description}})</span>
           {{/if}}
           </address>
           <div><span>{{{confirmed_nums exfee.invitations}}}</span> 
-            <span class="gray">of</span> 
+            <span class="gray333">of</span> 
             {{{total exfee.invitations}}} 
-            <span class="gray">accepted</span>: <span>{{{confirmed_identities exfee.invitations}}}</span>
+            <span class="gray333">accepted</span>: <span>{{{confirmed_identities exfee.invitations}}}</span>
           </div>
         </a>
         </div>
