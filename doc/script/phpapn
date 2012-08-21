@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /www/exfe/current/jobs
-QUEUE=iOSAPN VERBOSE=1 INTERVAL=10 MULTI=true PIDFILE=/var/run/resque/worker_apn.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php APN > /var/log/resque/worker_apn.log

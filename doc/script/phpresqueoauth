@@ -1,3 +1,0 @@
-#!/bin/sh
-cd /www/exfe/current/jobs
-QUEUE=oauth VERBOSE=1 INTERVAL=6 PIDFILE=/var/run/resque/worker_exfe_oauth.pid /usr/local/bin/php -f /www/exfe/current/jobs/resque.php oauth > /var/log/resque/worker_exfe_oauth.log

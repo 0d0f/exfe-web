@@ -1,2 +1,0 @@
-cd /www/exfe/jobs/
-QUEUE=* VERBOSE=1 PIDFILE=/var/run/resque/worker_exfeapn.pid /usr/bin/php5 -f /www/exfe/jobs/resque.php apn > /var/log/resque/worker_exfeapn.log
