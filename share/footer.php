@@ -1,7 +1,7 @@
 <?php
 
 function addScript($scripts) {
-    $mini = DEBUG ? '' : '.mini';
+    $mini = DEBUG ? '' : '.min';
     foreach ($scripts as $item) {
         echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$mini}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
     }
@@ -33,12 +33,12 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['global',        '0.0.1'],
     ['api',           '0.0.1'],
     ['dialog',        '0.0.1'],
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.1'],
+    ['global',        '0.0.1'],
 ]);
 
 // profile
