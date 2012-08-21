@@ -1,4 +1,4 @@
-define(function (require, exports, module) {
+define('xdialog', function (require, exports, module) {
   var $ = require('jquery');
   var R = require('rex');
   var Bus = require('bus');
@@ -10,6 +10,8 @@ define(function (require, exports, module) {
   var Dialog = require('dialog');
 
   var dialogs = {};
+
+  exports.dialogs = dialogs;
 
   // TODO: js html 分离
   dialogs.identification = {
@@ -546,7 +548,7 @@ define(function (require, exports, module) {
         },
 
         'click .why': function (e) {
-          this.$('.answer').toggleClass('hide');
+          this.$('.answer').toggleClass('hidden');
         }
       },
 
@@ -587,8 +589,8 @@ define(function (require, exports, module) {
           + '<div class="center shadow title" style="margin-bottom: 0;">Thanks for using <span class="x-sign">EXFE</span>.</div>'
           + '<p class="center">A utility for hanging out with friends.</p>'
           + '<div class="modal-content">'
-            + '<p class="provider-email hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a <span class="x">·X·</span>.</p>'
-            + '<p class="provider-other hide"><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you need to call up friends to do something, just gather a <span class="x">·X·</span>.</p>'
+            + '<p>We save you from calling up every one RSVP, losing in endless emails and messages off the point.</p>'
+            + '<p><span class="x">·X·</span> (cross) is a gathering of people, for any intent. When you get an idea to call up friends to do something together, just “Gather a <span class="x">·X·</span>.</p>'
             + '<p><span class="x-sign">EXFE</span> your friends.</p>'
             + '<p class="provider-email hide" style="color: #191919;">*A welcome email has been sent to your mailbox. Please check to verify your address.*</p>'
             + '<div class="provider-other hide">'
@@ -597,7 +599,7 @@ define(function (require, exports, module) {
                 + 'Follow @<span class="x-sign">EXFE</span> on Twitter.'
               + '</label>'
               + '&nbsp;<span class="underline why">why?</span>'
-              + '<p class="pull-left answer hide">So we could send you invitation through Direct Message.</p>'
+              + '<p class="pull-left answer hidden">So we could send you invitation PRIVATELY through Direct Message. We hate spam, will NEVER disappoint your trust.</p>'
             + '</div>'
           + '</div>',
 
@@ -1870,6 +1872,37 @@ define(function (require, exports, module) {
   };
 
 
+  // revoked identity
+  dialogs.revoked = {
+
+    options: {
+
+      onHideAfter: function () {
+        var $e = this.element;
+        this.offSrcNode();
+        this.destory();
+        $e.remove();
+      },
+
+      backdrop: false,
+
+      viewData: {
+
+        // class
+        cls: 'mblack modal-re',
+
+        title: 'Revoked Identity',
+
+        body: ''
+          + '<div class="shadow title">Revoked Identity</div>'
+
+      }
+
+    }
+
+  };
+
+
 
   // Identification 弹出窗口类
   var Identification = Dialog.extend({
@@ -2026,42 +2059,6 @@ define(function (require, exports, module) {
 
   });
 
-  /* MODAL DATA-API
-   * -------------- */
-
-  $(function () {
-   $BODY.on('click.dialog.data-api', '[data-widget="dialog"]', function (e) {
-      var $this = $(this)
-        , data = $this.data('dialog')
-        , settings
-        , dialogType = $this.data('dialog-type')
-        , dialogTab = $this.data('dialog-tab')
-        , dialogFrom = $this.data('dialog-from')
-        , dialogSettings = $this.data('dialog-settings')
-        , dataSource = $this.data('source');
-
-      e.preventDefault();
-
-      if (!data)  {
-
-        if (dialogType) {
-          settings = dialogs[dialogType];
-          if (dialogSettings) {
-            settings = $.extend(true, {}, settings, dialogSettings);
-          }
-          data = new (dialogType === 'identification' ? Identification : Dialog)(settings);
-          data.options.srcNode = $this;
-          if (dialogFrom) data.dialog_from = dialogFrom;
-          data.render();
-          $this.data('dialog', data);
-        }
-
-      }
-
-      if (dialogTab) data.switchTab(dialogTab);
-      data.show(e);
-
-    });
-  });
+  exports.Identification = Identification;
 
 });
