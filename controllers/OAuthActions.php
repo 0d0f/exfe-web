@@ -60,8 +60,10 @@ class OAuthActions extends ActionController {
                     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
                         'twitter', $objTwitterIdentity->external_username, true
                     );
+                    $identity_status = 'connected';
                     // 身份不存在，创建新身份并连接新用户
                     if (!$objIdentity) {
+                        $identity_status = 'new';
                         $user_id = $modUser->addUser(
                             '',
                             $objTwitterIdentity->name
@@ -92,7 +94,6 @@ class OAuthActions extends ActionController {
                         return;
                     }
                     // 身份未连接
-                    $identity_status = 'connected';
                     if ($objIdentity->connected_user_id <= 0) {
                         // 身份被 revoked，重新连接用户
                         if ($objIdentity->revoked_user_id) {
