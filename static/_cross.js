@@ -1744,7 +1744,7 @@ define(function (require, exports, module) {
             $('.cross-description .xbtn-more').hide();
         }
         $('.cross-description .edit').val(Cross.description);
-        if (Editing || Cross.description) {
+        if ((Editing && Editing !== 'rsvp') || Cross.description) {
             $('.cross-description').show();
         } else {
             $('.cross-description').hide();
