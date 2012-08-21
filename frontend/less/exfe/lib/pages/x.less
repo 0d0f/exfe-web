@@ -157,20 +157,25 @@
       }
 
 
-      .xbtn-more:hover {
-        background: rgba(230, 230, 230, .88);
-        .m {
-          display: inline-block;
+      &:hover {
+
+        .xbtn-more {
+          background: rgba(230, 230, 230, .88);
+          .m {
+            display: inline-block;
+          }
+        }
+
+        .xbtn-less {
+          .m {
+            display: none;
+          }
+          .l {
+            display: inline-block;
+          }
         }
       }
-      .xbtn-less:hover {
-        .m {
-          display: none;
-        }
-        .l {
-          display: inline-block;
-        }
-      }
+
     }
 
     .cross-dp {
