@@ -46,6 +46,17 @@ class IdentityModels extends DataModel {
                 $rawIdentity['external_username'],
                 $rawIdentity['avatar_file_name']
             );
+            if (!$rawIdentity['name']) {
+                switch ($rawIdentity['provider']) {
+                    case 'email':
+                        $objParsed = $this->parseEmail($rawIdentity['external_username']);
+                        $rawIdentity['name'] = $objParsed['name'];
+                        break;
+                    case 'twitter':
+                    default:
+                        $rawIdentity['name'] = $rawIdentity['external_username'];
+                }
+            }
             $objIdentity = new Identity(
                 $rawIdentity['id'],
                 $rawIdentity['name'],
