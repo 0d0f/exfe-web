@@ -420,7 +420,7 @@ define(function (require, exports, module) {
       }
     );
 
-    return dfd.then(newbieGuide);
+    return dfd.done(newbieGuide);
   };
 
   var crosses_update_defe = function (data) {
@@ -529,7 +529,7 @@ define(function (require, exports, module) {
 
   // Defer Queue
   Bus.on('app:profile:show', function (d) {
-    d.then([crossList_defe, crosses_inversation_defe, crosses_update_defe, iosapp]);
+    d.done([crossList_defe, crosses_inversation_defe, crosses_update_defe, iosapp]);
   });
   Bus.on('app:profile:identities', function (data) {
     identities_defe(data);
