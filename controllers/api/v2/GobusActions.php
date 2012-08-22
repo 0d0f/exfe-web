@@ -181,6 +181,10 @@ class GobusActions extends ActionController {
         if (!($str_args = @file_get_contents('php://input'))) {
             header('HTTP/1.1 500 Internal Server Error');
             echo 'No input!';
+            if (DEBUG) {
+                error_log('No input!');
+                error_log($str_args);
+            }
             return;
         }
         // decode json
@@ -188,6 +192,10 @@ class GobusActions extends ActionController {
         if (!$obj_args || !$obj_args->user_id || !is_array($obj_args->identities)) {
             header('HTTP/1.1 500 Internal Server Error');
             echo 'JSON error!';
+            if (DEBUG) {
+                error_log('JSON error!');
+                error_log($str_args);
+            }
             return;
         }
         // save relations
@@ -199,10 +207,18 @@ class GobusActions extends ActionController {
         }
         if ($error) {
             header('HTTP/1.1 500 Internal Server Error');
+            if (DEBUG) {
+                error_log('Save error!');
+                error_log($str_args);
+            }
         }
         // build identities indexes
         if (!$modUser->buildIdentitiesIndexes($obj_args->user_id)) {
             header('HTTP/1.1 500 Internal Server Error');
+            if (DEBUG) {
+                error_log('Index error!');
+                error_log($str_args);
+            }
         }
         // return
         apiResponse(['user_id' => $obj_args->user_id]);
