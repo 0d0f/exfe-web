@@ -182,6 +182,7 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             echo 'No input!';
             if (DEBUG) {
+                error_log('No input!');
                 error_log($str_args);
             }
             return;
@@ -192,6 +193,7 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             echo 'JSON error!';
             if (DEBUG) {
+                error_log('JSON error!');
                 error_log($str_args);
             }
             return;
@@ -213,6 +215,7 @@ class GobusActions extends ActionController {
         if (!$modUser->buildIdentitiesIndexes($obj_args->user_id)) {
             header('HTTP/1.1 500 Internal Server Error');
             if (DEBUG) {
+                error_log('Index error!');
                 error_log($str_args);
             }
         }
