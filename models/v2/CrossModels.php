@@ -105,7 +105,7 @@ class CrossModels extends DataModel {
                 $cross_updated['time'] = $updated;
             }
 
-            if ($background && $old_cross && $background !== $old_background) {
+            if ($background !== $old_background) {
                 array_push($updatefields, "background = '{$background}'");
                 $cross_updated['background'] = $updated;
             }
