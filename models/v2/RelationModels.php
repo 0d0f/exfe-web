@@ -47,7 +47,7 @@ class RelationModels extends DataModel {
             $identity->external_id       = strtolower($identity->external_id);
             $identity->external_username = strtolower($identity->external_username);
             $curRelation = $this->getRow(
-                "SELECT `userid`
+                "SELECT `id`
                  FROM   `user_relations`
                  WHERE  `userid`            = {$userid}
                  AND    `external_username` = {$identity->external_username}"
@@ -65,6 +65,7 @@ class RelationModels extends DataModel {
                 );
                 return intval($isResult);
             }
+            return (int) $curRelation['id'];
         }
         return 0;
     }
