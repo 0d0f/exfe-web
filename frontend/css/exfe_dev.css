@@ -7577,6 +7577,9 @@ body {
 .avatar .rb {
   right: 0;
   bottom: 0;
+}
+
+.avatar .rb-bg {
   background: rgba(255, 255, 255, 0.8);
   border-radius: 5px 0 5px 0;
 }
