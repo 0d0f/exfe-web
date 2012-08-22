@@ -614,8 +614,10 @@ ExfeeWidget = {
         if ((this.completing = display)) {
             var ostInput = objInput.offset();
             $('.ids-popmenu').css({
-                left :  ostInput.left + 'px',
-                top  : (ostInput.top  + objInput.height() + 10) + 'px'
+                left         :  ostInput.left + 'px',
+                top          : (ostInput.top  + objInput.height() + 10) + 'px',
+                'max-height' : '352px',
+                'overflow-y' : 'hidden'
             }).slideDown(50);
         } else {
             $('.ids-popmenu').slideUp(50);
