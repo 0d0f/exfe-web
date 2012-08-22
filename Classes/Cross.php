@@ -9,7 +9,6 @@ class Cross extends Metainfo {
     public $attribute          = null;
     public $exfee              = null;
     public $widget             = null;
-    public $host_identity      = null;
     public $conversation_count = null;
 
     public function setRelation($relative_id,$relation)
