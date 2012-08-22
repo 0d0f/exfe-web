@@ -49,23 +49,23 @@ class RelationModels extends DataModel {
             $curRelation = $this->getRow(
                 "SELECT `id`
                  FROM   `user_relations`
-                 WHERE  `userid`            = {$userid}
-                 AND    `external_username` = {$identity->external_username}"
+                 WHERE  `userid`            =  {$userid}
+                 AND    `external_username` = '{$identity->external_username}'"
             );
-            if (!$curRelation) {
-                $isResult = $this->query(
-                    "INSERT INTO `user_relations` SET
-                     `userid`            =  {$userid},
-                     `r_identityid`      =  0,
-                     `name`              = '{$identity->name}',
-                     `external_identity` = '{$identity->external_id}',
-                     `external_username` = '{$identity->external_username}',
-                     `provider`          = '{$identity->provider}',
-                     `avatar_filename`   = '{$identity->avatar_filename}'"
-                );
-                return intval($isResult);
+            if ($curRelation) {
+                return (int) $curRelation['id'];
             }
-            return (int) $curRelation['id'];
+            $isResult = $this->query(
+                "INSERT INTO `user_relations` SET
+                 `userid`            =  {$userid},
+                 `r_identityid`      =  0,
+                 `name`              = '{$identity->name}',
+                 `external_identity` = '{$identity->external_id}',
+                 `external_username` = '{$identity->external_username}',
+                 `provider`          = '{$identity->provider}',
+                 `avatar_filename`   = '{$identity->avatar_filename}'"
+            );
+            return intval($isResult);
         }
         return 0;
     }
