@@ -4172,7 +4172,7 @@ input[type="submit"].btn.btn-mini {
   position: absolute;
   left: 1px;
   z-index: 10501;
-  width: 280px;
+  width: 278px;
   margin-top: 0;
   line-height: 18px;
   color: #4c4c4c;
@@ -5368,6 +5368,11 @@ body {
   cursor: pointer;
 }
 
+.navbar .user-panel .xbtn {
+  display: block;
+  margin: 0 auto;
+}
+
 .navbar .user-panel .xbtn-gather {
   margin-top: 15px;
   line-height: 30px;
@@ -5523,11 +5528,6 @@ body {
 .navbar .user-panel .meta .attended-x {
   line-height: 16px;
   color: #4c4c4c;
-}
-
-.navbar .user-panel .xbtn {
-  display: block;
-  margin: 0 auto;
 }
 
 .navbar .user-panel .actions {
