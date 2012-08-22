@@ -4,7 +4,7 @@ define("TIME_OUTPUT_FORMAT", "0");
 define("TIME_OUTPUT_ORIGIN", "1");
 
 class CrossTime extends EFObject{
-    
+
     public $begin_at=null;
     public $origin=null;
     public $outputformat=null;
@@ -13,7 +13,7 @@ class CrossTime extends EFObject{
         parent::__construct(0,"CrossTime");
         $this->begin_at=new EFTime($date_word,$date,$time_word,$time,$timezone);
         $this->outputformat=$outputformat;
-        $this->origin=$origin;
+        $this->origin=$origin ?: '';
     }
 
     public function stringInZone($targetTimezone)
