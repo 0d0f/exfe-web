@@ -614,10 +614,10 @@ ExfeeWidget = {
         if ((this.completing = display)) {
             var ostInput = objInput.offset();
             $('.ids-popmenu').css({
-                left         :  ostInput.left + 'px',
-                top          : (ostInput.top  + objInput.height() + 10) + 'px',
+                'left'       :  ostInput.left + 'px',
+                'top'        : (ostInput.top  + objInput.height() + 10) + 'px',
                 'max-height' : '352px',
-                'overflow-y' : 'hidden'
+                'overflow-y' : 'scroll'
             }).slideDown(50);
         } else {
             $('.ids-popmenu').slideUp(50);
@@ -835,15 +835,14 @@ ExfeeWidget = {
                     case 38: // up
                     case 40: // down
                         event.preventDefault();
-                        var objCmpBox  = $('.ids-popmenu > ol'),
-                            cboxHeight = 207,
-                            cellHeight = 51,
-                            shrMargin  = 3,
+                        var objCmpBox  = $('.ids-popmenu'),
+                            cboxHeight = 352,
+                            cellHeight = 50,
                             curScroll  = objCmpBox.scrollTop();
                         if (!ExfeeWidget.completing) {
                             return;
                         }
-                        var objSelected = objCmpBox.find('.active'),
+                        var objSelected = objCmpBox.find('ol .active'),
                             curItem     = ~~objSelected.index(),
                             maxIdx      = ExfeeWidget.complete_exfee.length - 1;
                         switch (event.which) {
@@ -863,7 +862,7 @@ ExfeeWidget = {
                         if (curScrlTop < 0) {
                             objCmpBox.scrollTop(curCellTop);
                         } else if (curScrlTop + cellHeight > cboxHeight) {
-                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + shrMargin);
+                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight);
                         }
                 }
                 break;
