@@ -812,9 +812,9 @@ class UserModels extends DataModel {
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
         foreach($identities as $identity) {
-            $identity_array = explode(' ', mb_strtolower(trim(
+            $identity_array = explode(' ', mb_strtolower(str_replace('|', ' ', trim(
                 "{$identity['name']} {$identity['external_identity']}"
-            )));
+            ))));
             if ($identity_array) {
                 foreach($identity_array as $iaI) {
                     $identity_part = '';
