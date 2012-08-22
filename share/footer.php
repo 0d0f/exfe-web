@@ -62,3 +62,7 @@ addScript([
     ['routes',        '0.0.1'],
     ['app',           '0.0.1'],
 ]);
+
+if (DEBUG) {
+  echo "<script>document.getElementById('app-menubar').style.border = '5px solid red';</script>";
+}
