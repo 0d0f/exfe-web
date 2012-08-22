@@ -262,7 +262,13 @@ define(function (require, exports, module) {
       }
     });
 
-    var h = s({identities: user.identities});
+    var identities = R.filter(user.identities, function (v) {
+      if (v.provider === 'email' || v.provider === 'twitter') {
+        return true;
+      }
+    });
+
+    var h = s({identities: identities});
     $('.identity-list').append(h);
   };
 
