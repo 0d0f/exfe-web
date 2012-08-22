@@ -862,7 +862,7 @@ ExfeeWidget = {
                         if (curScrlTop < 0) {
                             objCmpBox.scrollTop(curCellTop);
                         } else if (curScrlTop + cellHeight > cboxHeight) {
-                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight);
+                            objCmpBox.scrollTop(curCellTop + cellHeight - cboxHeight + 1);
                         }
                 }
                 break;
