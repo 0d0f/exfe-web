@@ -52,13 +52,24 @@ class CrossModels extends DataModel {
             }
         }
 
+        $cross_time->outputformat        = (int) $cross_time->outputformat;
+        $cross->title                    = mysql_real_escape_string($cross->title);
+        $cross->description              = mysql_real_escape_string($cross->description);
+        $cross_time->origin              = mysql_real_escape_string($cross_time->origin);
+        $cross_time->begin_at->timezone  = mysql_real_escape_string($cross_time->begin_at->timezone);
+        $cross_time->begin_at->date_word = mysql_real_escape_string($cross_time->begin_at->date_word);
+        $cross_time->begin_at->time_word = mysql_real_escape_string($cross_time->begin_at->time_word);
+        $cross_time->begin_at->date      = mysql_real_escape_string($cross_time->begin_at->date);
+        $cross_time->begin_at->time      = mysql_real_escape_string($cross_time->begin_at->time);
+        $background                      = mysql_real_escape_string($background);
+
         $begin_at_time_in_old_format = $cross_time->begin_at->date . ($cross_time->begin_at->date ? (' ' . $cross_time->begin_at->time) : '');
 
         if(intval($cross->id) === 0) {
-            $sql = "insert into crosses (created_at, time_type, updated_at,
+            $sql = "insert into crosses (created_at, updated_at,
                 state, title, description,exfee_id, begin_at, place_id,
                 timezone, origin_begin_at, background,date_word,time_word,`date`,`time`,outputformat,by_identity_id) values( NOW(),
-                '{$time_type}', NOW(), '1', '{$cross->title}',
+                NOW(), '1', '{$cross->title}',
                 '{$cross->description}',{$exfee_id},'{$begin_at_time_in_old_format}',
                 {$place_id}, '{$cross_time->begin_at->timezone}',
                 '{$cross_time->origin}', '{$background}','{$cross_time->begin_at->date_word}','{$cross_time->begin_at->time_word}','{$cross_time->begin_at->date}','{$cross_time->begin_at->time}','{$cross_time->outputformat}',$by_identity_id);";
