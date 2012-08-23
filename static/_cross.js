@@ -1960,7 +1960,7 @@ define(function (require, exports, module) {
                 strSummary += objSummary.accepted ? ('<li><span>'
                             + objSummary.accepted + ' accepted.</span></li>') : '';
                 var objAccepted = $('.cross-rsvp .show .accepted');
-                if (objAccepted.html() !== strSummary) {
+                if (objAccepted.text() !== $(strSummary).text()) {
                     objAccepted.html(strSummary);
                 }
                 $('.cross-rsvp .show .by').hide();
