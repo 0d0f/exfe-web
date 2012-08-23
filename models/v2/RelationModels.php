@@ -56,18 +56,17 @@ class RelationModels extends DataModel {
             if ($curRelation) {
                 return (int) $curRelation['id'];
             }
-            $isResult = $this->query(
-                "INSERT INTO `user_relations` SET
-                 `userid`            =  {$userid},
-                 `r_identityid`      =  0,
-                 `name`              = '{$identity->name}',
-                 `external_identity` = '{$identity->external_id}',
-                 `external_username` = '{$identity->external_username}',
-                 `provider`          = '{$identity->provider}',
-                 `avatar_filename`   = '{$identity->avatar_filename}'"
-            );
+            $strSQL   = "INSERT INTO `user_relations` SET
+                         `userid`            =  {$userid},
+                         `r_identityid`      =  0,
+                         `name`              = '{$identity->name}',
+                         `external_identity` = '{$identity->external_id}',
+                         `external_username` = '{$identity->external_username}',
+                         `provider`          = '{$identity->provider}',
+                         `avatar_filename`   = '{$identity->avatar_filename}'";
+            $isResult = $this->query($strSQL);
             if (!($isId = (int) $isResult) && DEBUG) {
-                error_log(json_encode(['user_id' => $userid, 'identity' => $identity]));
+                error_log(json_encode(['user_id' => $userid, 'identity' => $identity, 'sql' => $strSQL]));
             }
             return $isId;
         }
