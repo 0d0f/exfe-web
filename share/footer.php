@@ -62,3 +62,7 @@ addScript([
     ['routes',        '0.0.1'],
     ['app',           '0.0.1'],
 ]);
+
+if (DEBUG) {
+  echo "<script>document.querySelector('.brand').style.border = '3px solid red';</script>";
+}
