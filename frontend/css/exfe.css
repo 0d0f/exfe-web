@@ -5611,8 +5611,13 @@ body {
   color: #333333;
 }
 
+.modal-id .authorize,
+.modal-id legend {
+  margin-left: 10px;
+}
+
 .modal-id .oauth {
-  margin-left: 32px;
+  margin-left: 26px;
 }
 
 .modal-id .oauth > a {
@@ -6457,7 +6462,7 @@ body {
 }
 
 .x-home .page-header h1 + p {
-  margin-top: -8px;
+  margin-top: -4px;
 }
 
 .x-home .page-main {
@@ -7580,8 +7585,11 @@ body {
 }
 
 .avatar .rb-bg {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 5px 0 5px 0;
+  -webkit-box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.05);
+          box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.05);
 }
 
 .avatar .lb {
@@ -7801,7 +7809,7 @@ body {
   margin-bottom: 5px;
 }
 
-.cross-identities .unconfirmed {
+.cross-identities .unconfirmed > img {
   opacity: 0.33;
   filter: alpha(opacity=33);
 }
@@ -8202,7 +8210,7 @@ body {
 }
 
 .x-gather .cross-form .helps {
-  margin-left: 20px;
+  margin-left: 80px;
 }
 
 .x-gather .cross-form .help-block {
@@ -8278,13 +8286,10 @@ body {
   margin-left: 0;
 }
 
-.x-gather .form-horizontal .control-buttos {
-  margin-right: 45px;
-}
-
 .x-gather .form-horizontal .form-actions {
   padding: 0;
   margin: 0;
+  line-height: 24px;
   background: none;
   border-top: none;
 }
@@ -8878,7 +8883,9 @@ body {
 }
 
 .updates {
+  width: 296px;
   background: rgba(230, 230, 230, 0.25);
+  border: none;
 }
 
 .updates h3 {
@@ -8919,7 +8926,7 @@ body {
   z-index: 1001;
   padding: 10px 20px 10px 10px;
   margin-top: -6px;
-  margin-left: -200px;
+  margin-left: -235px;
   font-size: 24px;
   border-right: none;
 }
