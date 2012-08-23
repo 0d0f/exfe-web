@@ -6462,7 +6462,7 @@ body {
 }
 
 .x-home .page-header h1 + p {
-  margin-top: -8px;
+  margin-top: -4px;
 }
 
 .x-home .page-main {
@@ -8926,7 +8926,7 @@ body {
   z-index: 1001;
   padding: 10px 20px 10px 10px;
   margin-top: -6px;
-  margin-left: -200px;
+  margin-left: -235px;
   font-size: 24px;
   border-right: none;
 }
