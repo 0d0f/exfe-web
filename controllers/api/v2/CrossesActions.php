@@ -38,6 +38,10 @@ class CrossesActions extends ActionController {
         $invitation  = $modExfee->getRawInvitationByToken($invToken);
         // 受邀 token 存在
         if ($invitation && $invitation['state'] !== 4) {
+            // used token
+            if ($invitation['valid']) {
+                $modExfee->usedToken($invToken);
+            }
             // get user info by invitation token
             $user_infos = $modUser->getUserIdentityInfoByIdentityId(
                 $invitation['identity_id']
