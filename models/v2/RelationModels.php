@@ -16,8 +16,8 @@ class RelationModels extends DataModel {
                 if ($identity) {
                     switch ($identity->provider) {
                         case 'email':
-                            $identity->external_id       = strtolower($identity->external_id);
-                            $identity->external_username = strtolower($identity->external_username);
+                            $identity->external_id       = mysql_real_escape_string(htmlspecialchars(strtolower($identity->external_id)));
+                            $identity->external_username = mysql_real_escape_string(htmlspecialchars(strtolower($identity->external_username)));
                             $isResult = $this->query(
                                 "INSERT INTO `user_relations` SET
                                  `userid`            =  {$userid},
@@ -43,8 +43,8 @@ class RelationModels extends DataModel {
          && $identity->provider
          && $identity->external_id
          && $identity->external_username) {
-            $identity->external_id       = strtolower(trim($identity->external_id));
-            $identity->external_username = strtolower(trim($identity->external_username));
+            $identity->external_id       = mysql_real_escape_string(htmlspecialchars(strtolower(trim($identity->external_id))));
+            $identity->external_username = mysql_real_escape_string(htmlspecialchars(strtolower(trim($identity->external_username))));
             $identity->name              = trim($identity->name) ?: $identity->external_username;
             $curRelation = $this->getRow(
                 "SELECT `id`
