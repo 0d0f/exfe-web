@@ -56,7 +56,8 @@ ExfeUtilities = {
                 begin_at : {
                     date_word : '', date : '',
                     time_word : '', time : '',
-                    timezone  : this.getTimezone(), id : 0, type : 'EFTime'
+                    timezone  : Cross.id ? Cross.time.begin_at.timezone : this.getTimezone(),
+                    id : 0, type : 'EFTime'
                 },
                 origin : strTime, outputformat : 1, id : 0, type : 'CrossTime'
             },
