@@ -63,6 +63,6 @@ addScript([
     ['app',           '0.0.1'],
 ]);
 
-if (DEBUG) {
+if (SITE_URL !== 'https://exfe.com') {
   echo "<script>document.querySelector('.brand').style.border = '3px solid red';</script>";
 }
