@@ -775,6 +775,7 @@ ExfeeWidget = {
         }
         this.ajaxIdentity(arrValid);
         if (ExfeeWidget.summary().items >= ExfeeWidget.soft_limit && strInput) {
+            strTail = '';
             this.showLimitWarning();
         } else {
             this.showLimitWarning(false);
