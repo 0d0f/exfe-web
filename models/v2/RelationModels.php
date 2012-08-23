@@ -45,7 +45,7 @@ class RelationModels extends DataModel {
          && $identity->external_username) {
             $identity->external_id       = mysql_real_escape_string(htmlspecialchars(strtolower(trim($identity->external_id))));
             $identity->external_username = mysql_real_escape_string(htmlspecialchars(strtolower(trim($identity->external_username))));
-            $identity->name              = trim($identity->name) ?: $identity->external_username;
+            $identity->name              = mysql_real_escape_string(htmlspecialchars(trim($identity->name))) ?: $identity->external_username;
             $curRelation = $this->getRow(
                 "SELECT `id`
                  FROM   `user_relations`
