@@ -194,14 +194,18 @@
                 {{{rsvpAction exfee.invitations updated.exfee.identity_id}}}
                 {{/if}}
 
-                {{#if conversation_count}}
                 {{#if updated.conversation}}
                 <div><span class="blue">{{by_identity.name}}</span>:
                 {{updated.conversation.content}}</div>
+                {{/if}}
+                {{#if conversation_count}}
                 <div><i class="icon-conversation"></i> <span class="blue">{{conversation_count}}</span>
                   new post in conversation.
                 </div>
                 {{/if}}
+
+                {{#if updated.description}}
+                <div>Description updated by {{printIdentityNameFromInvitations updated.description.identity_id exfee.invitations}}</div>
                 {{/if}}
 
               </a>
