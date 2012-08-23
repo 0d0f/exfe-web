@@ -4,14 +4,14 @@ class GobusActions extends ActionController {
 
     public function doUpdateIdentity() {
         // get raw data
-        $id                = isset($_POST['id'])                ? intval($_POST['id'])                                                    : null;
-        $provider          = isset($_POST['provider'])          ? mysql_real_escape_string(htmlspecialchars($_POST['provider']))          : null;
-        $external_id       = isset($_POST['external_id'])       ? mysql_real_escape_string(htmlspecialchars($_POST['external_id']))       : null;
-        $name              = isset($_POST['name'])              ? mysql_real_escape_string(htmlspecialchars($_POST['name']))              : '';
-        $nickname          = isset($_POST['nickname'])          ? mysql_real_escape_string(htmlspecialchars($_POST['nickname']))          : '';
-        $bio               = isset($_POST['bio'])               ? mysql_real_escape_string(htmlspecialchars($_POST['bio']))               : '';
-        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string(htmlspecialchars($_POST['avatar_filename']))   : '';
-        $external_username = isset($_POST['external_username']) ? mysql_real_escape_string(htmlspecialchars($_POST['external_username'])) : '';
+        $id                = isset($_POST['id'])                ? intval($_POST['id'])                                  : null;
+        $provider          = isset($_POST['provider'])          ? mysql_real_escape_string($_POST['provider'])          : null;
+        $external_id       = isset($_POST['external_id'])       ? mysql_real_escape_string($_POST['external_id'])       : null;
+        $name              = isset($_POST['name'])              ? mysql_real_escape_string($_POST['name'])              : '';
+        $nickname          = isset($_POST['nickname'])          ? mysql_real_escape_string($_POST['nickname'])          : '';
+        $bio               = isset($_POST['bio'])               ? mysql_real_escape_string($_POST['bio'])               : '';
+        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string($_POST['avatar_filename'])   : '';
+        $external_username = isset($_POST['external_username']) ? mysql_real_escape_string($_POST['external_username']) : '';
         // check data
         if (!$id || !$provider || !$external_id) {
             header('HTTP/1.1 500 Internal Server Error');
