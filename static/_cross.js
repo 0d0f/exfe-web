@@ -948,7 +948,7 @@ define('exfeepanel', [], function (require, exports, module) {
                 strPanel = '<div class="exfeepanel exfee_pop_up" style="left: ' + x + 'px; top: ' + y + 'px; z-index: 10">'
                          +   '<div class="tooltip-inner">'
                          +     '<div class="avatar-name">'
-                         +       '<span class="pull-left avatar">'
+                         +       '<span class="pull-left pointer avatar">'
                          +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="60" height="60" />'
                          +         '<i class="lt"></i>'
                          +       '</span>'
@@ -1180,6 +1180,11 @@ define('exfeepanel', [], function (require, exports, module) {
                 ExfeePanel.pre_delete = false;
                 ExfeePanel.showRsvp();
             });
+
+            // open window show avatar
+            $('.exfee_pop_up').on('click', 'span.avatar > img', function (e) {
+              window.open($(this).attr('src').replace(/\/(80_80)_/, '/original_'));
+            })
         },
 
 
