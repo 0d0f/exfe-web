@@ -16,8 +16,8 @@ class RelationModels extends DataModel {
                 if ($identity) {
                     switch ($identity->provider) {
                         case 'email':
-                            $identity->external_id       = strtolower($identity->external_id);
-                            $identity->external_username = strtolower($identity->external_username);
+                            $identity->external_id       = mysql_real_escape_string(htmlspecialchars(strtolower($identity->external_id)));
+                            $identity->external_username = mysql_real_escape_string(htmlspecialchars(strtolower($identity->external_username)));
                             $isResult = $this->query(
                                 "INSERT INTO `user_relations` SET
                                  `userid`            =  {$userid},
@@ -42,30 +42,36 @@ class RelationModels extends DataModel {
         if ($userid && $identity
          && $identity->provider
          && $identity->external_id
-         && $identity->external_username
-         && $identity->name) {
-            $identity->external_id       = strtolower($identity->external_id);
-            $identity->external_username = strtolower($identity->external_username);
+         && $identity->external_username) {
+            $identity->external_id       = mysql_real_escape_string(htmlspecialchars(strtolower(trim($identity->external_id))));
+            $identity->external_username = mysql_real_escape_string(htmlspecialchars(strtolower(trim($identity->external_username))));
+            $identity->name              = mysql_real_escape_string(htmlspecialchars(trim($identity->name))) ?: $identity->external_username;
             $curRelation = $this->getRow(
                 "SELECT `id`
                  FROM   `user_relations`
                  WHERE  `userid`            =  {$userid}
+                 AND    `provider`          = '$identity->provider'
                  AND    `external_username` = '{$identity->external_username}'"
             );
             if ($curRelation) {
                 return (int) $curRelation['id'];
             }
-            $isResult = $this->query(
-                "INSERT INTO `user_relations` SET
-                 `userid`            =  {$userid},
-                 `r_identityid`      =  0,
-                 `name`              = '{$identity->name}',
-                 `external_identity` = '{$identity->external_id}',
-                 `external_username` = '{$identity->external_username}',
-                 `provider`          = '{$identity->provider}',
-                 `avatar_filename`   = '{$identity->avatar_filename}'"
-            );
-            return intval($isResult);
+            $strSQL   = "INSERT INTO `user_relations` SET
+                         `userid`            =  {$userid},
+                         `r_identityid`      =  0,
+                         `name`              = '{$identity->name}',
+                         `external_identity` = '{$identity->external_id}',
+                         `external_username` = '{$identity->external_username}',
+                         `provider`          = '{$identity->provider}',
+                         `avatar_filename`   = '{$identity->avatar_filename}'";
+            $isResult = $this->query($strSQL);
+            if (!($isId = (int) $isResult) && DEBUG) {
+                error_log(json_encode(['user_id' => $userid, 'identity' => $identity, 'sql' => $strSQL]));
+            }
+            return $isId;
+        }
+        if (DEBUG) {
+            error_log(json_encode(['user_id' => $userid, 'identity' => $identity]));
         }
         return 0;
     }
