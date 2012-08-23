@@ -209,7 +209,6 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             if (DEBUG) {
                 error_log('Save error!');
-                error_log($str_args);
             }
         }
         // build identities indexes
