@@ -774,7 +774,8 @@ ExfeeWidget = {
             objInput.val(newInput);
         }
         this.ajaxIdentity(arrValid);
-        if (ExfeeWidget.summary().items >= ExfeeWidget.soft_limit) {
+        if (ExfeeWidget.summary().items >= ExfeeWidget.soft_limit && strInput) {
+            strTail = '';
             this.showLimitWarning();
         } else {
             this.showLimitWarning(false);
