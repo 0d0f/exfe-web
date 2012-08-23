@@ -260,7 +260,7 @@ class ExfeeModels extends DataModel {
         $hlpGobus = $this->getHelperByName('gobus', 'v2');
         // get cross
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
-        $cross    = $hlpCross->getCross($cross_id, true);
+        $cross    = $hlpCross->getCross($cross_id, true, true);
         $msgArg   = array('cross' => $cross, 'to_identities' => array());
         // get old cross
         if ($old_cross) {
@@ -302,6 +302,9 @@ class ExfeeModels extends DataModel {
                     $chkMobUs[$identity->connected_user_id] = true;
                 }
             }
+        }
+        if (DEBUG) {
+            error_log(json_encode($msgArg));
         }
         $hlpGobus->send('cross', 'Update', $msgArg);
     }
