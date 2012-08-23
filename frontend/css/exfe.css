@@ -4747,8 +4747,8 @@ input[type="submit"].btn.btn-mini {
 }
 
 .btn-leave {
-  width: 55px;
   height: 16px;
+  min-width: 55px;
   font-size: 12px;
   line-height: 12px;
   color: #BF2F32;
