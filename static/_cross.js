@@ -42,6 +42,7 @@ ExfeUtilities = {
         var rawTimeStr  = Date().toString(),
             numTimezone = rawTimeStr.replace(/^.+([+-]\d{2})(\d{2}).+$/i, '$1:$2'),
             strTimezone = rawTimeStr.replace(/^.*\(([a-z]*)\).*$/i, '$1');
+            strTimezone = strTimezone === 'UTC' || strTimezone === 'GMT' ? '' : strTimezone;
         return numTimezone + (strTimezone === rawTimeStr ? '' : (' ' + strTimezone));
     },
 
