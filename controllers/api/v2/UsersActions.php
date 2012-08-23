@@ -237,7 +237,7 @@ class UsersActions extends ActionController {
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
                             $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
-                                'user_name'   => $user->name,
+                                'user_name'   => $user->name ?: '',
                                 'action'      => $gobusFlag,
                                 'token'       => $viResult['token'],
                             ]);
@@ -300,7 +300,7 @@ class UsersActions extends ActionController {
                             $hlpGobus = $this->getHelperByName('gobus', 'v2');
                             $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
-                                'user_name'   => $user->name,
+                                'user_name'   => $user->name ?: '',
                                 'action'      => 'SET_PASSWORD',
                                 'token'       => $viResult['token'],
                             ]);
@@ -359,7 +359,7 @@ class UsersActions extends ActionController {
                         $hlpGobus = $this->getHelperByName('gobus', 'v2');
                         $hlpGobus->send('user', 'Verify', [
                             'to_identity' => $identity,
-                            'user_name'   => $user->name,
+                            'user_name'   => $user->name ?: '',
                             'action'      => 'CONFIRM_IDENTITY',
                             'token'       => $viResult['token'],
                         ]);
