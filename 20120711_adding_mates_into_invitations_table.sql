@@ -1,1 +1,0 @@
-ALTER TABLE `invitations` ADD COLUMN `mates` TINYINT NOT NULL DEFAULT 0;
