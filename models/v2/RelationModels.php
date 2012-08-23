@@ -42,14 +42,15 @@ class RelationModels extends DataModel {
         if ($userid && $identity
          && $identity->provider
          && $identity->external_id
-         && $identity->external_username
-         && $identity->name) {
-            $identity->external_id       = strtolower($identity->external_id);
-            $identity->external_username = strtolower($identity->external_username);
+         && $identity->external_username) {
+            $identity->external_id       = strtolower(trim($identity->external_id));
+            $identity->external_username = strtolower(trim($identity->external_username));
+            $identity->name              = trim($identity->name) ?: $identity->external_username;
             $curRelation = $this->getRow(
                 "SELECT `id`
                  FROM   `user_relations`
                  WHERE  `userid`            =  {$userid}
+                 AND    `provider`          = '$identity->provider'
                  AND    `external_username` = '{$identity->external_username}'"
             );
             if ($curRelation) {
@@ -65,7 +66,13 @@ class RelationModels extends DataModel {
                  `provider`          = '{$identity->provider}',
                  `avatar_filename`   = '{$identity->avatar_filename}'"
             );
-            return intval($isResult);
+            if (!($isId = (int) $isResult) && DEBUG) {
+                error_log(json_encode(['user_id' => $userid, 'identity' => $identity]));
+            }
+            return $isId;
+        }
+        if (DEBUG) {
+            error_log(json_encode(['user_id' => $userid, 'identity' => $identity]));
         }
         return 0;
     }
