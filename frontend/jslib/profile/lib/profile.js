@@ -462,6 +462,9 @@ define(function (require, exports, module) {
             if (up) {
               var k, dv, t;
               for (k in up) {
+                if (k === 'background') {
+                  continue;
+                }
                 dv = up[k];
                 t = +new Date(dv.updated_at.replace(/\-/g, '/'));
                 if (t > mt) {
