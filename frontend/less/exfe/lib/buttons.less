@@ -4,22 +4,22 @@
 
 .xbtn-white {
   .xButtonBackground(#fafafa, #e6e6e6);
-  .box-shadow(0 1px 1px rgba(255, 255, 255, 1));
+  .box-shadow(0 1px 1px #ffffff);
   .border-radius(5px);
-  border: 1px solid rgba(127,127,127,.15);
+  border: 1px solid #000;
 }
 
 .xbtn-blue {
   position: relative;
-  .xButtonBackground(#fff, #cedde5);
+  #gradient > .vertical(#fafafa, #dbeaf9);
   .box-shadow(0 1px 1px #fff);
   .border-radius(5px);
-  border: 1px solid rgba(127,127,127,.15);
+  border: 1px solid rgba(0, 0, 0, .1);
 }
 
 .xbtn-pink {
   .xButtonBackground(#fafafa, #ffe6e6);
-  .box-shadow(0 1px 1px rgba(255, 255, 255, 1));
+  .box-shadow(0 1px 1px #ffffff);
   .border-radius(5px);
   color: #CB4747;
   border: 1px solid rgba(127,127,127,.15);
@@ -69,10 +69,10 @@
   text-align: center;
   line-height: 30px;
   color: #050505;
-  text-shadow: 0 1px 1px #fafafa;
-  #gradient > .vertical(#d4e7f1, #1276a7);
-  background-color: #d4e7f1;
-  .box-shadow(0 1px 1px #fff);
+  text-shadow: 0 1px 1px #ffffff;
+  #gradient > .vertical(#dbeaf9, @exfeBlue);
+  background-color: #dbeaf9;
+  .box-shadow(0 1px 1px #ffffff);
   .border-radius(5px);
   border: 1px solid rgba(127,127,127,.15);
 }
@@ -133,11 +133,12 @@
   font-size: 12px;
   line-height: 20px;
   padding: 0 10px;
-  .xButtonBackground(#d5e7f0, #1f78a5);
   text-shadow: 0 1px 1px #fff;
   .box-shadow(0 1px 2px rgba(0, 0, 0, .25));
   .border-radius(3px);
-  background-color: #d5e7f0;
+  font-weight: 300;
+  color: #050505;
+  #gradient > .vertical(#dbeaf9, @exfeBlue);
 }
 
 .upload-done, .upload-clear {
@@ -153,26 +154,19 @@
   font-weight: 300;
   line-height: 32px;
   padding: 0;
-  text-shadow: 0 1px 1px rgba(213, 233, 242, 1);
   .border-radius(5px);
   .box-shadow(0 1px 2px rgba(0, 0, 0, .25));
 
   &.accept {
-    /*#gradient > .directional(#d5e8f2, #1175a5, 270deg);*/
-    .xButtonBackground(#d5e8f2, #1175a5);
-    background-color: transparent;
-    border-top: 1px solid rgba(213, 233,242, .95);
-    /*border-bottom: none;*/
+    color: #050505;
+    text-shadow: 0 1px 1px #d5e8f2;
+    #gradient > .vertical(#dbeaf9, @exfeBlue);
   }
 
   &.decline {
-    /*#gradient > .directional(#e6e6e6, #7f7f7f, 270deg);*/
     color: #fafafa;
-    font-weight: 300;
     text-shadow: 0 1px 1px #7f7f7f;
-    .xButtonBackground(#e6e6e6, #7f7f7f);
-    background-color: transparent;
-    /*border-bottom: none;*/
+    #gradient > .vertical(#e6e6e6, #7f7f7f);
   }
 
 }
@@ -181,15 +175,11 @@
   width: 88px;
   height: 24px;
   /*#gradient > .directional(#d5e8f2, #1175a5, 270deg);*/
-  .xButtonBackground(#d5e8f2, #1175a5);
-  text-shadow: 0 1px 1px rgba(213, 233, 242, 1);
-  background-color: transparent;
-  .box-shadow(0 1px 2px rgba(0, 0, 0, .25));
   .border-radius(5px);
   color: #050505;
-  /*border: 1px solid rgba(230, 230, 230, .5);*/
-  border-top: 1px solid rgba(213, 233,242, .95);
-  border-bottom: none;
+  text-shadow: 0 1px 1px #d5e8f2;
+  #gradient > .vertical(#dbeaf9, @exfeBlue);
+  border: 1px solid rgba(230, 230, 230, .5);
 }
 
 .xbtn-ok {
