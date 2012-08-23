@@ -788,7 +788,7 @@ ExfeeWidget = {
         ).toggleClass(
             'icon16-exfee-plus',     !bolCorrect
         );
-        this.checkComplete(objInput, strTail);
+        this.checkComplete(objInput, strTail.replace(/^@/, ''));
     },
 
 
