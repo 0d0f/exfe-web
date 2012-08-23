@@ -42,6 +42,7 @@ ExfeUtilities = {
         var rawTimeStr  = Date().toString(),
             numTimezone = rawTimeStr.replace(/^.+([+-]\d{2})(\d{2}).+$/i, '$1:$2'),
             strTimezone = rawTimeStr.replace(/^.*\(([a-z]*)\).*$/i, '$1');
+            strTimezone = strTimezone === 'UTC' || strTimezone === 'GMT' ? '' : strTimezone;
         return numTimezone + (strTimezone === rawTimeStr ? '' : (' ' + strTimezone));
     },
 
@@ -55,7 +56,8 @@ ExfeUtilities = {
                 begin_at : {
                     date_word : '', date : '',
                     time_word : '', time : '',
-                    timezone  : this.getTimezone(), id : 0, type : 'EFTime'
+                    timezone  : Cross.id ? Cross.time.begin_at.timezone : this.getTimezone(),
+                    id : 0, type : 'EFTime'
                 },
                 origin : strTime, outputformat : 1, id : 0, type : 'CrossTime'
             },
