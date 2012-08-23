@@ -64,5 +64,5 @@ addScript([
 ]);
 
 if (DEBUG) {
-  echo "<script>document.getElementById('app-menubar').style.border = '5px solid red';</script>";
+  echo "<script>document.querySelector('.brand').style.border = '3px solid red';</script>";
 }
