@@ -48,7 +48,6 @@ class UpgradeCrosstime extends DataModel {
                  WHERE  `id`              = '{$item['id']}'"
             );
         }
-        $this->query('ALTER TABLE `crosses` DROP COLUMN `begin_at`');
         //
         echo "Done. 😃\r\n";
     }
