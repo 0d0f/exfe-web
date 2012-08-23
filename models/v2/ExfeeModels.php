@@ -303,6 +303,9 @@ class ExfeeModels extends DataModel {
                 }
             }
         }
+        if (DEBUG) {
+            error_log(json_encode($msgArg));
+        }
         $hlpGobus->send('cross', 'Update', $msgArg);
     }
 
