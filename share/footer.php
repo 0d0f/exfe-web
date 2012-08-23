@@ -64,5 +64,5 @@ addScript([
 ]);
 
 if (SITE_URL !== 'https://exfe.com') {
-  echo "<script>document.querySelector('.brand').style.border = '3px solid red';</script>";
+  echo "<script>document.querySelector('body').style.borderTop = '6px solid #D32232';</script>";
 }
