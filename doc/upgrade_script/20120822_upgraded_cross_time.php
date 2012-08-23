@@ -11,11 +11,11 @@ class UpgradeCrosstime extends DataModel {
         // loop
         foreach ($crosses as $item) {
             // 分解老格式时间
-            $item['begin_at']    = explode(' ', $item['begin_at']);
-            $item['begin_at'][0] = $item['begin_at'][0] === '0000-00-00' ? '' : $item['begin_at'][0];
-            $item['begin_at'][1] = $item['begin_at'][1] === '00:00:00'   ? '' : $item['begin_at'][1];
+            $item['begin_at'] = explode(' ', $item['begin_at']);
+            $date             = $item['begin_at'][0] === '0000-00-00' ? '' : $item['begin_at'][0];
+            $time             = $item['begin_at'][1] === '00:00:00'   ? '' : $item['begin_at'][1];
             // 如果存在时间字段
-            if ($item['begin_at'][1]) {
+            if ($time) {
                 // 处理时区
                 $item['begin_at']  = strtotime("{$item['begin_at'][0]} {$item['begin_at'][1]}");
                 $arrTimezone       = explode(':', $item['timezone']);
@@ -37,13 +37,13 @@ class UpgradeCrosstime extends DataModel {
                 }
             } else {
                 // 初始化新 Origin
-                $strOrigin = $item['begin_at'][0];
+                $strOrigin = $date;
             }
             // 更新数据
             $this->query(
                 "UPDATE `crosses`
-                 SET    `date`            = '{$item['begin_at'][0]}',
-                        `time`            = '{$item['begin_at'][1]}',
+                 SET    `date`            = '{$date}',
+                        `time`            = '{$time}',
                         `origin_begin_at` = '{$strOrigin}'
                  WHERE  `id`              = '{$item['id']}'"
             );
