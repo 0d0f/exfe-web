@@ -1720,7 +1720,7 @@ define(function (require, exports, module) {
         } else {
             $('.cross-title .show').addClass('single-line').removeClass('double-line');
         }
-        document.title = 'EXFE - ' + title;
+        document.title = 'EXFE - ' + Cross.title;
         switch (from) {
             case 'gather':
                 $('.cross-title .edit').val(Cross.title);
