@@ -39,9 +39,6 @@ class UpgradeCrosstime extends DataModel {
                 // 初始化新 Origin
                 $strOrigin = $item['begin_at'][0];
             }
-            print_r([$item['begin_at'], $strOrigin]);
-
-            continue;
             // 更新数据
             $this->query(
                 "UPDATE `crosses`
