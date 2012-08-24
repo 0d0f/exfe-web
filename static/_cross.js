@@ -1339,7 +1339,7 @@ define(function (require, exports, module) {
             if (curIdentity) {
                 Gather();
             } else {
-                alert('Require Signin!');
+                $('.choose-identity .placeholder').trigger('click');
             }
         });
         $('.cross-conversation .comment-form .pointer').bind('click', function() {
