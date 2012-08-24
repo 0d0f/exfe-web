@@ -43,6 +43,9 @@ define(function (require) {
 
       this.emit('select', val);
       this.selecting = false;
+      if (1 === this.element.find('li').length) {
+        this.hide();
+      }
     },
 
     mouseenter: function (e) {
@@ -108,8 +111,8 @@ define(function (require) {
 
         item: ''
           + '<li data-value="{{external_id}}">'
-            + '<i class="pull-right icon16-identity-{{provider}}"></i>'
-            + '<span>{{external_id}}</span>'
+            + '<i class="icon16-identity-{{provider}}"></i>'
+            + '<span class="pull-left">{{external_id}}</span>'
           + '</li>'
       },
 
@@ -138,7 +141,7 @@ define(function (require) {
 
           if (0 === items.length) {
             that.isShown ? that.hide() : that;
-          } else {
+          } else if (1 < items.length || q !== items[0].external_id) {
             that.render(items.slice(0)).show();
           }
         }

@@ -1934,6 +1934,8 @@ define('xdialog', function (require, exports, module) {
       Bus.on('widget-dialog-identification-auto', function (data) {
         var $identityLabel = that.$('[for="identity"]'),
             $identityLabelSpan = $identityLabel.find('span');
+        var $passwordLabel = that.$('[for="password"]'),
+            $passwordLabelSpan = $passwordLabel.find('span');
 
         that.availability = false;
         that.identityFlag = null;
@@ -1971,10 +1973,14 @@ define('xdialog', function (require, exports, module) {
           if (data.registration_flag === 'SIGN_IN') {
             t = 'd01';
             that.$('.xbtn-forgotpwd').removeClass('hide');
+            $passwordLabel.removeClass('label-error');
+            $passwordLabelSpan.text('');
           }
           // SIGN_UP 新身份
           else if (data.registration_flag === 'SIGN_UP') {
             t = 'd02';
+            $passwordLabel.removeClass('label-error');
+            $passwordLabelSpan.text('');
           }
           // AUTHENTICATE
           else if (data.registration_flag === 'AUTHENTICATE') {
@@ -2060,6 +2066,7 @@ define('xdialog', function (require, exports, module) {
 
       this.$('.x-signin')[(this.availability ? 'remove' : 'add') + 'Class']('disabled');
       this.$('.xalert-error').addClass('hide');
+
       //this.$('.xalert-info').addClass('hide');
 
       this.switchTabType = t;
