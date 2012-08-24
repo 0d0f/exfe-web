@@ -382,14 +382,7 @@ class UsersActions extends ActionController {
         }
         $rsResult = $modUser->resolveToken($token);
         if ($rsResult) {
-            $rtResult = ['user_id' => $rsResult['user_id'],
-                         'token'   => $rsResult['token']];
-            switch ($rsResult['action']) {
-                case 'VERIFY':
-                    apiResponse($rtResult + ['action' => 'VERIFIED']);
-                case 'SET_PASSWORD':
-                    apiResponse($rtResult + ['action' => 'INPUT_NEW_PASSWORD']);
-            }
+            apiResponse($rtResult);
         }
         apiError(400, 'invalid_token', 'Invalid Token');
     }
