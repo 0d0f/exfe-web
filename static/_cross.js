@@ -1339,7 +1339,10 @@ define(function (require, exports, module) {
         });
         $('#cross-form-gather').bind('click', function() {
             if (curIdentity) {
-                Gather();
+                if (!$(this).hasClass('disabled')) {
+                    $(this).toggleClass('disabled', true);
+                    Gather();
+                }
             } else {
                 $('.choose-identity .placeholder').trigger('click');
             }
@@ -2074,10 +2077,12 @@ define(function (require, exports, module) {
             {type : 'POST', data : JSON.stringify(objCross)},
             function(data) {
                 $('.cross-opts .saving').hide();
+                $('#cross-form-gather').toggleClass('disabled', false);
                 document.location = '/#!' + data.cross.id;
             },
             function(data) {
                 $('.cross-opts .saving').hide();
+                $('#cross-form-gather').toggleClass('disabled', false);
             }
         );
     };
