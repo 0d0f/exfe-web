@@ -200,6 +200,23 @@ define('routes', function (require, exports, module) {
       var authorization = Store.get('authorization');
       if (!authorization) {
         $('.please-signin').removeClass('hide');
+        var start = $('#app-signin a').clone().addClass('hide');
+        var settings = {
+          options: {
+            keyboard: false,
+            backdrop: false,
+
+            viewData: {
+              // class
+              cls: 'mblack modal-id',
+            }
+          }
+        };
+        $('.sign-in').data('dialog-settings', settings);
+        $('.sign-in').trigger('click.dialog.data-api');
+        $('.sign-in').data('dialog-settings', null);
+        $('.popmenu').addClass('hide');
+        $('.modal-id').css('top', 260);
       }
     });
   });
