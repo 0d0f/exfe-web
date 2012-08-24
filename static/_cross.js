@@ -648,6 +648,7 @@ ExfeeWidget = {
                 continue;
             }
             var index = ExfeeWidget.complete_exfee.push(ExfeUtilities.clone(identities[i])) - 1;
+            var provider = identities[i].provider;
             strCompleteItems += '<li' + (index ? '' : ' class="active"') + '>'
                               +   '<span class="pull-left avatar">'
                               +     '<img src="' + identities[i].avatar_filename + '" alt="" width="40" height="40">'
@@ -656,7 +657,8 @@ ExfeeWidget = {
                               +   '<div class="identity">'
                               +     '<div class="name">' + identities[i].name + '</div>'
                               +     '<div>'
-                              +       '<span class="externalid">' + this.displayIdentity(identities[i]) + '</span>'
+                              +       '<span class="oblique external">' + this.displayIdentity(identities[i], true) + '</span>'
+                              +       (provider === 'email' ? '' :  ' <span class="provider">@' + provider.charAt(0).toUpperCase() + provider.substr(1) + '</span>')
                               +     '</div>'
                               +   '</div>'
                               + '</li>';
