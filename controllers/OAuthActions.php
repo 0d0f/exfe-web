@@ -9,7 +9,7 @@ class OAuthActions extends ActionController {
         $webResponse = false;
         if ($_GET['device'] && $_GET['device_callback']) {
             $workflow    = ['callback' => [
-                'oauth_device'          => $_GET['device'],
+                'oauth_device'          => strtolower($_GET['device']),
                 'oauth_device_callback' => $_GET['device_callback'],
             ]];
             $webResponse = true;
@@ -21,11 +21,11 @@ class OAuthActions extends ActionController {
                 header("Location: {$urlOauth}");
                 return;
             }
-            apiResponse(array('redirect' => $urlOauth));
+            apiResponse(['redirect' => $urlOauth]);
         }
+        $modOauth->resetSession();
         if ($webResponse) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo 'Could not connect to Twitter. Refresh the page or try again later.';
+            header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
             return;
         }
         apiError(
@@ -38,10 +38,19 @@ class OAuthActions extends ActionController {
     public function doTwitterCallBack() {
         $modOauth = $this->getModelByName('OAuth', 'v2');
         $oauthIfo = $modOauth->getSession();
+        $workflow = $oauthIfo ?  $oauthIfo['workflow'] : null;
+        $isMobile = $workflow ? ($workflow['callback']
+                 && $workflow['callback']['oauth_device']
+                 && $workflow['callback']['oauth_device_callback']) : false;
         if (!$oauthIfo || (isset($oauthIfo['oauth_token'])
          && $oauthIfo['oauth_token'] !== $_REQUEST['oauth_token'])) {
-            $modOauth->addtoSession(['twitter_signin' => false]);
-            header('location: /');
+            if ($isMobile) {
+                $modOauth->resetSession();
+                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+            } else {
+                $modOauth->addtoSession(['twitter_signin' => false]);
+                header('location: /');
+            }
             return;
         }
         $rstAcsToken = $modOauth->getTwitterAccessToken(
@@ -70,7 +79,13 @@ class OAuthActions extends ActionController {
                          ?: $objTwitterIdentity->external_username
                         );
                         if (!$user_id) {
-                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            if ($isMobile) {
+                                $modOauth->resetSession();
+                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                            } else {
+                                $modOauth->addtoSession(['twitter_signin' => false]);
+                                header('location: /');
+                            }
                             return;
                         }
                         $identity_id = $modIdentity->addIdentity(
@@ -80,17 +95,28 @@ class OAuthActions extends ActionController {
                              'bio'               => $objTwitterIdentity->bio,
                              'external_username' => $objTwitterIdentity->external_username,
                              'avatar_filename'   => $objTwitterIdentity->avatar_filename],
-                            $user_id,
-                            3
+                            $user_id, 3
                         );
                         if (!$identity_id) {
-                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            if ($isMobile) {
+                                $modOauth->resetSession();
+                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                            } else {
+                                $modOauth->addtoSession(['twitter_signin' => false]);
+                                header('location: /');
+                            }
                             return;
                         }
                         $objIdentity = $modIdentity->getIdentityById($identity_id, null, true);
                     }
                     if (!$objIdentity) {
-                        echo 'Can not signin with this Twitter identity, please retry later!';
+                        if ($isMobile) {
+                            $modOauth->resetSession();
+                            header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                        } else {
+                            $modOauth->addtoSession(['twitter_signin' => false]);
+                            header('location: /');
+                        }
                         return;
                     }
                     // 身份未连接
@@ -109,7 +135,13 @@ class OAuthActions extends ActionController {
                             );
                         }
                         if (!$user_id) {
-                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            if ($isMobile) {
+                                $modOauth->resetSession();
+                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                            } else {
+                                $modOauth->addtoSession(['twitter_signin' => false]);
+                                header('location: /');
+                            }
                             return;
                         }
                         $rstChangeStatus = $modUser->setUserIdentityStatus(
@@ -117,7 +149,13 @@ class OAuthActions extends ActionController {
                         );
                         $objIdentity->connected_user_id = $user_id;
                         if (!$rstChangeStatus) {
-                            echo 'Can not signin with this Twitter identity, please retry later!';
+                            if ($isMobile) {
+                                $modOauth->resetSession();
+                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                            } else {
+                                $modOauth->addtoSession(['twitter_signin' => false]);
+                                header('location: /');
+                            }
                             return;
                         }
                     }
@@ -142,9 +180,9 @@ class OAuthActions extends ActionController {
                         'access_secret' => $oauthIfo['oauth_token_secret'],
                     ]);
                     // }
-                    if ($oauthIfo['workflow']['callback']['oauth_device'] === 'iOS') {
+                    if ($isMobile) {
                         header(
-                            "location: {$oauthIfo['workflow']['callback']['oauth_device_callback']}"
+                            "location: {$workflow['callback']['oauth_device_callback']}"
                           . "?token={$rstSignin['token']}&name={$objTwitterIdentity->name}"
                           . "&userid={$rstSignin['user_id']}&external_id="
                           . "{$objTwitterIdentity->external_id}&provider=twitter"
@@ -154,10 +192,10 @@ class OAuthActions extends ActionController {
                     // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
                     // true / false [String]
                     $twitterConn = new tmhOAuth([
-                      'consumer_key'    => TWITTER_CONSUMER_KEY,
-                      'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                      'user_token'      => $oauthIfo['oauth_token'],
-                      'user_secret'     => $oauthIfo['oauth_token_secret'],
+                        'consumer_key'    => TWITTER_CONSUMER_KEY,
+                        'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                        'user_token'      => $oauthIfo['oauth_token'],
+                        'user_secret'     => $oauthIfo['oauth_token_secret'],
                     ]);
                     $twitterConn->request(
                         'GET',
@@ -177,10 +215,10 @@ class OAuthActions extends ActionController {
             }
         }
         $modOauth->resetSession();
-        header('location:' .(
-            $oauthIfo['workflow']['callback']['oauth_device'] === 'iOS'
-         ? "{$oauthIfo['workflow']['callback']['oauth_device_callback']}?err=OAutherror"
-         : '/'
+        header('location: ' . (
+            $isMobile
+          ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
+          : '/'
         ));
     }
 
