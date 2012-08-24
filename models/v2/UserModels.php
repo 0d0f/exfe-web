@@ -437,28 +437,32 @@ class UserModels extends DataModel {
                     if ($stResult) {
                         $siResult = $this->rawSignin($curToken['user_id']);
                         if ($siResult) {
-                            $this->usedToken($curToken);
-                            return array(
+                            if ($siResult['password']) {
+                                $this->usedToken($curToken);
+                                $curToken['action'] = 'VERIFIED';
+                            } else {
+                                $this->extendTokenExpirationDate($curToken['id']);
+                                $curToken['action'] = 'INPUT_NEW_PASSWORD';
+                            }
+                            return [
                                 'user_id'     => $siResult['user_id'],
                                 'token'       => $siResult['token'],
                                 'identity_id' => $curToken['identity_id'],
                                 'action'      => $curToken['action'],
-                            );
+                            ];
                         }
                     }
                     break;
                 case 'SET_PASSWORD':
-                    $seResult = $this->extendTokenExpirationDate(
-                        $curToken['id']
-                    );
-                    if ($seResult) {
-                        $siResult = $this->rawSignin($curToken['user_id']);
-                        return array(
+                    $this->extendTokenExpirationDate($curToken['id']);
+                    $siResult = $this->rawSignin($curToken['user_id']);
+                    if ($siResult) {
+                        return [
                             'user_id'     => $siResult['user_id'],
                             'token'       => $siResult['token'],
                             'identity_id' => $curToken['identity_id'],
-                            'action'      => $curToken['action'],
-                        );
+                            'action'      => 'INPUT_NEW_PASSWORD',
+                        ];
                     }
             }
         }
@@ -540,10 +544,11 @@ class UserModels extends DataModel {
                     );
                 }
                 if ($siResult) {
-                    return array(
-                        'user_id' => $user_id,
-                        'token'   => $passwdInDb['auth_token']
-                    );
+                    return [
+                        'user_id'  => $user_id,
+                        'token'    => $passwdInDb['auth_token'],
+                        'password' => !!$passwdInDb['encrypted_password']
+                    ];
                 }
             }
         }
