@@ -5,6 +5,7 @@ define(function (require, exports, module) {
     , Dialog = require('dialog')
     , dialogs = require('xdialog').dialogs
     , Identification = require('xdialog').Identification
+    , IdentityPop = require('xidentity')
     , $BODY = $(document.body);
 
   //$(function () {
@@ -249,4 +250,45 @@ define(function (require, exports, module) {
 
     });
   //});
+
+    var identities = Store.get('identities');
+    !identities && (identities = []);
+
+    $BODY.on('focus.typeahead.data-api', '[data-typeahead-type="identity"]', function (e) {
+      var $this = $(this);
+
+      if ($this.data('typeahead')) return;
+      e.preventDefault();
+      $this.data('typeahead', new IdentityPop({
+
+        options: {
+          source: identities,
+          useCache: true,
+          target: $this,
+          // 当输入框没有值时，触发
+          onNothing: function () {
+            this.target.parent().removeClass('identity-avatar');
+            Bus.emit('widget-dialog-identification-nothing');
+          },
+
+          'onAutocomplete:finish': function (data) {
+            var identity;
+            if (data && (identity = data.identity)) {
+              //if (identity['avatar_filename'] === 'default.png') {
+                //identity['avatar_filename'] = '/img/default_portraituserface_20.png';
+              //}
+              this.target
+                .prev()
+                .attr('src', identity['avatar_filename'])
+                .parent()
+                .addClass('identity-avatar');
+            } else {
+              this.target.parent().removeClass('identity-avatar');
+            }
+            Bus.emit('widget-dialog-identification-auto', data);
+          }
+        }
+      }));
+
+    });
 });

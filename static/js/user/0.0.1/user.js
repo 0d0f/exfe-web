@@ -40,6 +40,9 @@ define('user', function (require, exports, module) {
           Store.set('user', user);
           Store.set('lastIdentity', identity);
 
+          // 刷新登录列表
+          refreshIdentities(user.identities);
+
           // cleanup `browsing identity` DOM
           var $browsing = $('#app-browsing-identity');
           if ($browsing.size() && $browsing.attr('data-page') === 'profile') {
@@ -409,5 +412,31 @@ define('user', function (require, exports, module) {
     $appSignin.toggleClass('hide', signed);
   }
 
+
+  function refreshIdentities(identities) {
+    var _identities = Store.get('identities') || []
+      // clone identities
+      , cidentities = _identities.slice(0);
+
+    if (0 === identities.length) {
+      _identities = identities;
+    }
+    else {
+      R.each(identities, function (v) {
+        var has = R.find(cidentities, function (v2) {
+          if (v2.id === v.id) {
+            return true;
+          }
+        });
+
+        if (!has) {
+          _identities.push(v);
+        }
+      });
+    }
+
+    // 身份搜索
+    Store.set('identities', _identities);
+  }
 
 });
