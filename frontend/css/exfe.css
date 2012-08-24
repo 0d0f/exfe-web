@@ -8491,7 +8491,11 @@ body {
 }
 
 .settings-panel .user-infos .identity-list > li i {
-  vertical-align: text-bottom;
+  vertical-align: text-top;
+}
+
+.settings-panel .user-infos .identity-list > li .icon16-warning {
+  vertical-align: top;
 }
 
 .settings-panel .user-infos .identity-list .icon-move {
