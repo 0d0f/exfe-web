@@ -4172,13 +4172,12 @@ input[type="submit"].btn.btn-mini {
   width: 278px;
   margin-top: 0;
   line-height: 18px;
-  color: #4c4c4c;
   background-color: #e6e6e6;
-  background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
   background-image: -o-linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
   background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
   background-repeat: repeat-x;
   border: 1px solid #fff;
   -webkit-border-radius: 0;
@@ -4206,6 +4205,7 @@ input[type="submit"].btn.btn-mini {
 
 .ids-popmenu .identity {
   overflow: hidden;
+  color: #4c4c4c;
   text-overflow: clip;
   white-space: nowrap;
 }
@@ -4216,13 +4216,13 @@ input[type="submit"].btn.btn-mini {
   line-height: 24px;
 }
 
-.ids-popmenu .identity .externalid {
-  font-style: oblique;
+.ids-popmenu .identity .hightlight {
   color: #191919;
 }
 
 .ids-popmenu .identity .provider {
-  line-height: 20px;
+  font-size: 12px;
+  color: #7f7f7f;
 }
 
 .ids-popmenu .active {
@@ -7563,8 +7563,8 @@ body {
 }
 
 .avatar .rb {
-  right: 0;
-  bottom: 0;
+  right: -3px;
+  bottom: -3px;
 }
 
 .avatar .rb-bg {
