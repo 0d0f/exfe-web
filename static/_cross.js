@@ -1463,7 +1463,7 @@ define(function (require, exports, module) {
                         top: offset.top
                       })
                       .find('textarea')
-                        .val(Cross.place.title + (Cross.place.description ? ('\n' + Cross.place.description) : ''))
+                        .val((Cross.place.title ? Cross.place.title : '') + (Cross.place.description ? ('\n' + Cross.place.description) : ''))
                         .focusend();
                     }
                 }
