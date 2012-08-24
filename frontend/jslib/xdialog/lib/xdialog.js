@@ -242,10 +242,11 @@ define('xdialog', function (require, exports, module) {
             this.$('.user-identity').addClass('hide');
 
             // 清楚user 缓存
-            Store.set('lastIdentity', null);
-            Store.set('last_external_username', null);
-            Store.set('authorization', null);
-            Store.set('user', null);
+            Store.remove('lastIdentity');
+            Store.remove('last_external_username');
+            Store.remove('authorization');
+            Store.remove('user');
+            Store.remove('identities');
 
             // cleanup `xidentity` source data
             // TODO: 后期移调
