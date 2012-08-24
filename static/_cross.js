@@ -661,7 +661,7 @@ ExfeeWidget = {
                               +   '<div class="identity">'
                               +     '<div class="name">' + highlight(identities[i].name) + '</div>'
                               +     '<div>'
-                              +       '<span class="oblique external">' + highlight(identities[i].external_username) + '</span>'
+                              +       '<span class="oblique external">' + highlight(this.displayIdentity(identities[i], true)) + '</span>'
                               +       (provider === 'email' ? '' :  ' <span class="provider">@' + provider.charAt(0).toUpperCase() + provider.substr(1) + '</span>')
                               +     '</div>'
                               +   '</div>'
