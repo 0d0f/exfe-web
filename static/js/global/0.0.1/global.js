@@ -168,6 +168,7 @@ define(function (require, exports, module) {
             $db.trigger('click');
             return false;
           }
+        /*
         } else if (!token) {
           e.stopImmediatePropagation();
           e.stopPropagation();
@@ -180,6 +181,7 @@ define(function (require, exports, module) {
           }
           $readOnly.trigger('click');
           return false;
+        */
         }
 
       }

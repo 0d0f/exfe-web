@@ -103,7 +103,7 @@ define('typeahead', [], function (require, exports, module) {
 
     show: function () {
       var pos = $.extend({}, this.target.offset(), {
-        height: this.target[0].offsetHeight
+        height: this.target.outerHeight()
       });
 
       this.element.css({
