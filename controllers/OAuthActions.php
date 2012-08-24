@@ -179,7 +179,7 @@ class OAuthActions extends ActionController {
         $modOauth->resetSession();
         header('location:' .(
             $oauthIfo['workflow']['callback']['oauth_device'] === 'iOS'
-         ? "{$oauthIfo['workflow']['callback']['oauth_device_callback']}?err=OAuth error."
+         ? "{$oauthIfo['workflow']['callback']['oauth_device_callback']}?err=OAutherror"
          : '/'
         ));
     }
