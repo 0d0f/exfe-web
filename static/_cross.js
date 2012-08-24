@@ -628,6 +628,10 @@ ExfeeWidget = {
 
 
     showCompleteItems : function(objInput, key, identities) {
+        var highlight = function(string) {
+            var objRe = new RegExp('(' + key + ')');
+            return string ? string.replace(objRe, '<span class="highlight">$1</span>') : '';
+        };
         var objCompleteList  = $('.ids-popmenu > ol'),
             strCompleteItems = '';
         key = key ? key.toLowerCase() : '';
@@ -655,9 +659,9 @@ ExfeeWidget = {
                               +     '<span class="rb"><i class="icon16-identity-' + identities[i].provider + '"></i></span>'
                               +   '</span>'
                               +   '<div class="identity">'
-                              +     '<div class="name">' + identities[i].name + '</div>'
+                              +     '<div class="name">' + highlight(identities[i].name) + '</div>'
                               +     '<div>'
-                              +       '<span class="oblique external">' + this.displayIdentity(identities[i], true) + '</span>'
+                              +       '<span class="oblique external">' + highlight(identities[i].external_username) + '</span>'
                               +       (provider === 'email' ? '' :  ' <span class="provider">@' + provider.charAt(0).toUpperCase() + provider.substr(1) + '</span>')
                               +     '</div>'
                               +   '</div>'
