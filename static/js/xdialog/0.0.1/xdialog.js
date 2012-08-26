@@ -1342,6 +1342,7 @@ define('xdialog', function (require, exports, module) {
         'click .xbtn-success': function (e) {
           var that = this;
           var stpwd = that.$('#stpwd').val();
+          var xbtn = that.options.srcNode;
 
           // note: 暂时先用 alert
           if (!stpwd) {
@@ -1372,17 +1373,18 @@ define('xdialog', function (require, exports, module) {
               }
             }
             , function (data) {
-              that.hide();
 
               // 设置密码, 刷新本地缓存，及 `user-menu`
               // TODO: 先简单处理，后面再细想
               var user = Store.get('user');
               user.password = true;
               Store.set('user', user);
-              $('.changepassword')
+              xbtn
                 .data('dialog', null)
-                .attr('data-dialog-type', 'changepassword');
+                .data('dialog-type', 'changepassword')
+                .find('span').text('Change Password...');
               $('.set-up').remove();
+              that.hide();
             }
             , function (data) {
               if (data.meta.code === 403) {
@@ -1794,8 +1796,7 @@ define('xdialog', function (require, exports, module) {
         if (this._setup) {
           this.$('.xbtn-sui')
             .removeClass('hide')
-            //.attr('data-dialog-type', 'setup_' + browsing_user.default_identity.provider)
-            .attr('data-dialog-type', 'setup_twitter')
+            .attr('data-dialog-type', 'setup_' + browsing_user.default_identity.provider)
             .data('source', {
               identity: browsing_user.default_identity,
               originToken: settings.originToken,
