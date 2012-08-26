@@ -350,6 +350,8 @@ define('user', function (require, exports, module) {
       , browsing_user = data.browsing
       , tplFun;
 
+    console.dir(data);
+
     data.browsing.isBrowsing = true;
 
     $('#app-browsing-identity').remove();
@@ -361,7 +363,7 @@ define('user', function (require, exports, module) {
         .attr('data-token-type', data.tokenType)
         .attr('data-token', data.originToken)
         .attr('data-page', data.page)
-        .attr('data-action', data.setup ? 'setup' : 'signin')
+        .attr('data-action', data.action)
         .attr('data-read-only', data.readOnly)
     );
 
