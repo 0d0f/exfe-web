@@ -495,7 +495,7 @@ define('routes', function (require, exports, module) {
           {   normal: user
             , browsing: browsing_user
             , action: action
-            , setup: action === 'setup'
+            , setup: action === 'INPUT_NEW_PASSWORD'
             , originToken: session.originToken
             , tokenType: 'user'
             , page: 'profile'

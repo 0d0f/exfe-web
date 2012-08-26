@@ -382,7 +382,7 @@ class UsersActions extends ActionController {
         }
         $rsResult = $modUser->resolveToken($token);
         if ($rsResult) {
-            apiResponse($rtResult);
+            apiResponse($rsResult);
         }
         apiError(400, 'invalid_token', 'Invalid Token');
     }
