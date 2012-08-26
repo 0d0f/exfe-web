@@ -614,12 +614,21 @@ define('xdialog', function (require, exports, module) {
   dialogs.forgotpassword = {
 
     updateIdentity: function (identity) {
+      var provider = identity.provider;
       var src = identity.avatar_filename;
       var $identity = this.$('.user-identity');
+      this.$('.tab').addClass('hide');
+      if (provider === 'email') {
+        this.$('.tab1').removeClass('hide');
+        this.$('.xbtn-done').data('identity', identity);
+      }
+      else {
+        this.$('.tab2').removeClass('hide');
+        this.$('.authenticate').data('identity', identity);
+      }
       $identity.find('img.avatar').attr('src', identity.avatar_filename);
       $identity.find('i').addClass('icon16-identity-' + identity.provider);
       $identity.next().find('.identity').text(identity.eun);
-      this.$('.xbtn-send').data('identity', identity);
     },
 
     options: {
@@ -640,6 +649,9 @@ define('xdialog', function (require, exports, module) {
       },
 
       events: {
+        'click .authenticate': function (e) {
+        },
+
         'click .caret-outer': function (e) {
           this.$('.dropdown-toggle').addClass('open');
           e.stopPropagation();
@@ -672,7 +684,7 @@ define('xdialog', function (require, exports, module) {
           }
         },
 
-        'click .xbtn-send': function (e) {
+        'click .xbtn-done': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('disabled')) {
@@ -696,8 +708,8 @@ define('xdialog', function (require, exports, module) {
                   external_username: i.external_username
                 },
                 beforeSend: function (xhr) {
-                  that.$('.send-before').removeClass('hide');
-                  that.$('.send-after').addClass('hide');
+                  that.$('.done-before').removeClass('hide');
+                  that.$('.done-after').addClass('hide');
                   $e.addClass('disabled');
                 },
                 complete: function (xhr) {
@@ -709,8 +721,8 @@ define('xdialog', function (require, exports, module) {
                 if (data.action === 'VERIFYING') {
                   that.$('.identity').next().removeClass('hide');
                   $e.text('Done').addClass('success');
-                  that.$('.send-before').addClass('hide');
-                  that.$('.send-after').removeClass('hide');
+                  that.$('.done-before').addClass('hide');
+                  that.$('.done-after').removeClass('hide');
                 }
               }
               //, function (data) {}
@@ -771,15 +783,18 @@ define('xdialog', function (require, exports, module) {
             + '<ul class="dropdown-menu"></ul>'
             + '<div class="pull-left caret-outer hide"><b class="caret"></b></div>'
           + '</div>'
-          + '<div class="send-before">Confirm sending reset token to your mailbox?</div>'
-          + '<div class="send-after hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
-          + '<div class="xalert-error hide">'
+          + '<div class="done-before tab tab1 hide">Confirm sending reset token to your mailbox?</div>'
+          + '<div class="done-after tab hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
+          + '<div class="xalert-error tab hide">'
             + '<p>Requested too much, hold on awhile.</p>'
             + '<p>Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</p>'
-          + '</div>',
+          + '</div>'
+
+          + '<div class="authenticate-before tab tab2 hide">You will be directed to Twitter website to authenticate identity above, you can reset password then.</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue xbtn-send">Send</button>'
+          + '<button class="pull-right xbtn-white xbtn-done tab tab1 hide">Done</button>'
+          + '<button class="pull-right xbtn-blue authenticate tab tab2 hide">Authenticate</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
       }
