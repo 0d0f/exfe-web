@@ -101,7 +101,7 @@ define(function (require) {
     $('.nbg-0')
       .stop(true, true)
       .addClass('bouncey')
-      .delay(2100)
+      .delay(1000)
       .queue(function () {
         $(this).removeClass('bouncey');
       });
