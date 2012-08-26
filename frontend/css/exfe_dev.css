@@ -8918,104 +8918,157 @@ body {
   border-right: none;
 }
 
-.newbie.nbg-0 .keyframes-bounce 0% {
-  margin-left: -200px;
+.newbie.nbg-0 .keyframes-bounce {
+  /*0%{margin-left: -235px;}*/
+
+  /*50%{margin-left: -241px;}*/
+
+  /*100%{margin-left: -235px;}*/
+
 }
 
-.newbie.nbg-0 .keyframes-bounce 50% {
-  margin-left: -206px;
-}
-
+.newbie.nbg-0 .keyframes-bounce 0%,
+.newbie.nbg-0 .keyframes-bounce 20%,
+.newbie.nbg-0 .keyframes-bounce 50%,
+.newbie.nbg-0 .keyframes-bounce 80%,
 .newbie.nbg-0 .keyframes-bounce 100% {
-  margin-left: -200px;
+  margin-left: -235px;
+}
+
+.newbie.nbg-0 .keyframes-bounce 40% {
+  margin-left: -265px;
+}
+
+.newbie.nbg-0 .keyframes-bounce 60% {
+  margin-left: -250px;
 }
 
 @-webkit-keyframes bounce {
-  0% {
-    margin-left: -200px;
-  }
-  50% {
-    margin-left: -206px;
-  }
+  0%,
+  20%,
+  50%,
+  80%,
   100% {
-    margin-left: -200px;
+    margin-left: -235px;
   }
+  40% {
+    margin-left: -265px;
+  }
+  60% {
+    margin-left: -250px;
+  }
+  /*0%{margin-left: -235px;}*/
+  /*50%{margin-left: -241px;}*/
+  /*100%{margin-left: -235px;}*/
 }
 
 @-moz-keyframes bounce {
-  0% {
-    margin-left: -200px;
-  }
-  50% {
-    margin-left: -206px;
-  }
+  0%,
+  20%,
+  50%,
+  80%,
   100% {
-    margin-left: -200px;
+    margin-left: -235px;
   }
+  40% {
+    margin-left: -265px;
+  }
+  60% {
+    margin-left: -250px;
+  }
+  /*0%{margin-left: -235px;}*/
+  /*50%{margin-left: -241px;}*/
+  /*100%{margin-left: -235px;}*/
 }
 
 @-ms-keyframes bounce {
-  0% {
-    margin-left: -200px;
-  }
-  50% {
-    margin-left: -206px;
-  }
+  0%,
+  20%,
+  50%,
+  80%,
   100% {
-    margin-left: -200px;
+    margin-left: -235px;
   }
+  40% {
+    margin-left: -265px;
+  }
+  60% {
+    margin-left: -250px;
+  }
+  /*0%{margin-left: -235px;}*/
+  /*50%{margin-left: -241px;}*/
+  /*100%{margin-left: -235px;}*/
 }
 
 @-o-keyframes bounce {
-  0% {
-    margin-left: -200px;
-  }
-  50% {
-    margin-left: -206px;
-  }
+  0%,
+  20%,
+  50%,
+  80%,
   100% {
-    margin-left: -200px;
+    margin-left: -235px;
   }
+  40% {
+    margin-left: -265px;
+  }
+  60% {
+    margin-left: -250px;
+  }
+  /*0%{margin-left: -235px;}*/
+  /*50%{margin-left: -241px;}*/
+  /*100%{margin-left: -235px;}*/
 }
 
 @keyframes bounce {
-  0% {
-    margin-left: -200px;
-  }
-  50% {
-    margin-left: -206px;
-  }
+  0%,
+  20%,
+  50%,
+  80%,
   100% {
-    margin-left: -200px;
+    margin-left: -235px;
   }
+  40% {
+    margin-left: -265px;
+  }
+  60% {
+    margin-left: -250px;
+  }
+  /*0%{margin-left: -235px;}*/
+  /*50%{margin-left: -241px;}*/
+  /*100%{margin-left: -235px;}*/
 }
 
 .newbie.nbg-0.bouncey {
-  -webkit-animation-duration: 700ms;
-     -moz-animation-duration: 700ms;
-      -ms-animation-duration: 700ms;
-       -o-animation-duration: 700ms;
-          animation-duration: 700ms;
-  -webkit-animation-iteration-count: 3 /*infinite*/;
-     -moz-animation-iteration-count: 3 /*infinite*/;
-      -ms-animation-iteration-count: 3 /*infinite*/;
-       -o-animation-iteration-count: 3 /*infinite*/;
-          animation-iteration-count: 3 /*infinite*/;
+  -webkit-animation-delay: 0.233s;
+     -moz-animation-delay: 0.233s;
+      -ms-animation-delay: 0.233s;
+       -o-animation-delay: 0.233s;
+          animation-delay: 0.233s;
+  -webkit-animation-duration: 1s;
+     -moz-animation-duration: 1s;
+      -ms-animation-duration: 1s;
+       -o-animation-duration: 1s;
+          animation-duration: 1s;
   -webkit-animation-name: bounce;
      -moz-animation-name: bounce;
       -ms-animation-name: bounce;
        -o-animation-name: bounce;
           animation-name: bounce;
-  -webkit-transition-timing-function: ease-in-out;
-     -moz-transition-timing-function: ease-in-out;
-      -ms-transition-timing-function: ease-in-out;
-       -o-transition-timing-function: ease-in-out;
-          transition-timing-function: ease-in-out;
-  -o-animation-direction: alternate;
-     animation-direction: alternate;
-  -webkit-animation-direction: alternate;
-      -ms-animation-direction: alternate;
-     -moz-animation-direction: alternate;
+  -webkit-animation-timing-function: ease;
+     -moz-animation-timing-function: ease;
+      -ms-animation-timing-function: ease;
+       -o-animation-timing-function: ease;
+          animation-timing-function: ease;
+  -ms-animation-fill-mode: both;
+  backface-visibility: hidden;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+  -webkit-backface-visibility: hidden;
+  -moz-animation-fill-mode: both;
+  -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+   -ms-backface-visibility: hidden;
+  -o-animation-fill-mode: both;
 }
 
 .newbie.nbg-0:before {

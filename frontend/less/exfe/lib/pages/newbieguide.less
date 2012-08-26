@@ -16,9 +16,12 @@
     z-index: @zindexDropdown + 1;
 
     .keyframes-bounce {
-      0%{margin-left: -200px;}
-      50%{margin-left: -206px;}
-      100%{margin-left: -200px;}
+      0%, 20%, 50%, 80%, 100% {margin-left: -235px}
+      40% {margin-left: -265px}
+      60% {margin-left: -250px}
+      /*0%{margin-left: -235px;}*/
+      /*50%{margin-left: -241px;}*/
+      /*100%{margin-left: -235px;}*/
     }
 
     @-webkit-keyframes bounce {
@@ -43,34 +46,39 @@
 
     &.bouncey {
       -webkit-animation-name: bounce;
-      -webkit-animation-duration: 700ms;
-      -webkit-animation-iteration-count: 3 /*infinite*/;
-      -webkit-animation-direction: alternate;
-      -webkit-transition-timing-function: ease-in-out;
+      -webkit-animation-delay: 0.233s;
+      -webkit-animation-duration: 1s;
+      -webkit-animation-fill-mode: both;
+      -webkit-animation-timing-function: ease;
+      -webkit-backface-visibility: hidden;
 
       -moz-animation-name: bounce;
-      -moz-animation-duration: 700ms;
-      -moz-animation-iteration-count: 3 /*infinite*/;
-      -moz-animation-direction: alternate;
-      -moz-transition-timing-function: ease-in-out;
+      -moz-animation-delay: 0.233s;
+      -moz-animation-duration: 1s;
+      -moz-animation-fill-mode: both;
+      -moz-animation-timing-function: ease;
+      -moz-backface-visibility: hidden;
 
       -ms-animation-name: bounce;
-      -ms-animation-duration: 700ms;
-      -ms-animation-iteration-count: 3 /*infinite*/;
-      -ms-animation-direction: alternate;
-      -ms-transition-timing-function: ease-in-out;
+      -ms-animation-delay: 0.233s;
+      -ms-animation-duration: 1s;
+      -ms-animation-fill-mode: both;
+      -ms-animation-timing-function: ease;
+      -ms-backface-visibility: hidden;
 
       -o-animation-name: bounce;
-      -o-animation-duration: 700ms;
-      -o-animation-iteration-count: 3 /*infinite*/;
-      -o-animation-direction: alternate;
-      -o-transition-timing-function: ease-in-out;
+      -o-animation-delay: 0.233s;
+      -o-animation-duration: 1s;
+      -o-animation-fill-mode: both;
+      -o-animation-timing-function: ease;
+      -o-backface-visibility: hidden;
 
       animation-name: bounce;
-      animation-duration: 700ms;
-      animation-iteration-count: 3 /*infinite*/;
-      animation-direction: alternate;
-      transition-timing-function: ease-in-out;
+      animation-delay: 0.233s;
+      animation-duration: 1s;
+      animation-fill-mode: both;
+      animation-timing-function: ease;
+      backface-visibility: hidden;
     }
 
     &:before {
