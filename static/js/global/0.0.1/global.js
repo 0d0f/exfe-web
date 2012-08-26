@@ -44,6 +44,7 @@ define(function (require, exports, module) {
 
       if (e.type === 'mouseleave' && !clicked) {
         timer = setTimeout(function () {
+          _i_ = false;
           $userPanel
             .stop()
             .animate({top: h}, 200, function () {
@@ -72,7 +73,7 @@ define(function (require, exports, module) {
       if (!_i_) {
         $userPanel.css('top', h);
         self.find('.user-panel').addClass('show');
-        //_i_ = true;
+        _i_ = true;
       }
 
       self.prev().removeClass('hide');
