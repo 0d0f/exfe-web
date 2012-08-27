@@ -6,7 +6,7 @@ class IdentityModels extends DataModel {
 
 
     protected function packageIdentity($rawIdentity, $user_id = null, $withRevoked = false) {
-        $hlpUser = $this->getHelperByName('user', 'v2');
+        $hlpUser = $this->getHelperByName('user');
         if ($rawIdentity) {
             $rawUserIdentity   = null;
             $status            = null;
@@ -261,7 +261,7 @@ class IdentityModels extends DataModel {
         if ($id) {
             if ($user_id) {
                 // load models
-                $hlpUder  = $this->getHelperByName('user', 'v2');
+                $hlpUder  = $this->getHelperByName('user');
                 // do update
                 $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
                 $userInfo['name']             = $userInfo['name']             == '' ? $name : $userInfo['name'];
@@ -277,7 +277,7 @@ class IdentityModels extends DataModel {
                 if ($status === 2) {
                     // welcome and verify user via Gobus {
                     if ($provider === 'email') {
-                        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                        $hlpGobus = $this->getHelperByName('gobus');
                         $objIdentity = $this->getIdentityById($id);
                         $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
                         if ($vfyResult) {

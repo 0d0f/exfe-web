@@ -18,7 +18,7 @@ class ExfeeModels extends DataModel {
     public function getExfeeById($id, $withRemoved = false, $withToken = false) {
         // init
         $exfee_updated_at="";
-        $hlpIdentity = $this->getHelperByName('identity', 'v2');
+        $hlpIdentity = $this->getHelperByName('identity');
         // get invitations
         $withRemoved = $withRemoved ? '' : 'AND `state` <> 4' ;
         $rawExfee = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id} {$withRemoved}");
@@ -82,7 +82,7 @@ class ExfeeModels extends DataModel {
                  AND   `token` LIKE '_{$token}____________________________'"
             );
             if ($rawInvitation) {
-                $hlpIdentity = $this->getHelperByName('identity', 'v2');
+                $hlpIdentity = $this->getHelperByName('identity');
                 $objIdentity = $hlpIdentity->getIdentityById($rawInvitation['identity_id']);
                 $oByIdentity = $hlpIdentity->getIdentityById($rawInvitation['by_identity_id']);
                 return new Invitation(
@@ -128,7 +128,7 @@ class ExfeeModels extends DataModel {
 
 
     public function getUserIdsByExfeeId($exfee_id, $notConnected = false) {
-        $hlpUser      = $this->getHelperByName('User', 'v2');
+        $hlpUser      = $this->getHelperByName('User');
         $identity_ids = array();
         $sql = "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
         $rawExfee     = $this->getAll($sql);
@@ -145,7 +145,7 @@ class ExfeeModels extends DataModel {
 
     public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id, $user_id = 0) {
         // init
-        $hlpIdentity = $this->getHelperByName('identity', 'v2');
+        $hlpIdentity = $this->getHelperByName('identity');
         // adding new identity
         if (!$hlpIdentity->checkIdentityById($invitation->identity->id)) {
             $avatar_filename = $invitation->identity->avatar_filename;
@@ -188,7 +188,7 @@ class ExfeeModels extends DataModel {
         $dbResult = $this->query($sql);
         // save relations
         if ($user_id) {
-            $hlpRelation = $this->getHelperByName('Relation', 'v2');
+            $hlpRelation = $this->getHelperByName('Relation');
             $hlpRelation->saveRelations($user_id, $invitation->identity->id);
         }
         // return
@@ -255,9 +255,9 @@ class ExfeeModels extends DataModel {
 
     public function sendToGobus($exfee_id, $by_identity_id, $to_identities = null, $old_cross = null) {
         // get helpers
-        $hlpCross = $this->getHelperByName('cross', 'v2');
-        $hlpUser  = $this->getHelperByName('user',  'v2');
-        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+        $hlpCross = $this->getHelperByName('cross');
+        $hlpUser  = $this->getHelperByName('user');
+        $hlpGobus = $this->getHelperByName('gobus');
         // get cross
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
         $cross    = $hlpCross->getCross($cross_id, true, true);
@@ -348,13 +348,13 @@ class ExfeeModels extends DataModel {
 
     public function updateExfeeById($exfee_id, $invitations, $by_identity_id, $user_id = 0) {
         // get helper
-        $hlpIdentity = $this->getHelperByName('identity', 'v2');
+        $hlpIdentity = $this->getHelperByName('identity');
         // base check
         if (!$exfee_id || !is_array($invitations) || !$by_identity_id) {
             return null;
         }
         // get old cross
-        $hlpCross   = $this->getHelperByName('cross', 'v2');
+        $hlpCross   = $this->getHelperByName('cross');
         $cross_id   = $this->getCrossIdByExfeeId($exfee_id);
         $old_cross  = $hlpCross->getCross($cross_id, true, true);
         $items      = $old_cross->exfee->items;
@@ -438,7 +438,7 @@ class ExfeeModels extends DataModel {
             return null;
         }
         // get old cross
-        $hlpCross  = $this->getHelperByName('cross', 'v2');
+        $hlpCross  = $this->getHelperByName('cross');
         $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
         $old_cross = $hlpCross->getCross($cross_id, true, true);
         // raw actions

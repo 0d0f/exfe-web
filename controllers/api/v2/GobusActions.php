@@ -18,7 +18,7 @@ class GobusActions extends ActionController {
             return;
         }
         // do update
-        $modIdentity = $this->getModelByName('Identity', 'v2');
+        $modIdentity = $this->getModelByName('Identity');
         $id = $modIdentity->updateIdentityByGobus($id, array(
             'provider'          => $provider,
             'external_id'       => $external_id,
@@ -39,10 +39,10 @@ class GobusActions extends ActionController {
 
     public function doPostConversation() {
         // get model
-        $modUser         = $this->getModelByName('User', 'v2');
-        $modIdentity     = $this->getModelByName('Identity', 'v2');
-        $modCnvrstn      = $this->getModelByName('Conversation', 'v2');
-        $hlpCross        = $this->getHelperByName('Cross', 'v2');
+        $modUser         = $this->getModelByName('User');
+        $modIdentity     = $this->getModelByName('Identity');
+        $modCnvrstn      = $this->getModelByName('Conversation');
+        $hlpCross        = $this->getHelperByName('Cross');
         // get raw data
         $cross_id        = (int)$_POST['cross_id'];
         $iom             = trim($_POST['iom']);
@@ -127,9 +127,9 @@ class GobusActions extends ActionController {
         // get the new post
         $post     = $modCnvrstn->getPostById($post_id);
         // call Gobus {
-        $hlpGobus = $this->getHelperByName('gobus',       'v2');
-        $modExfee = $this->getModelByName('exfee',        'v2');
-        $modConv  = $this->getModelByName('conversation', 'v2');
+        $hlpGobus = $this->getHelperByName('gobus');
+        $modExfee = $this->getModelByName('exfee');
+        $modConv  = $this->getModelByName('conversation');
         $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
         $msgArg   = array(
@@ -175,8 +175,8 @@ class GobusActions extends ActionController {
 
     public function doAddFriends() {
         // get model
-        $modUser     = $this->getModelByName('User',     'v2');
-        $modRelation = $this->getModelByName('Relation', 'v2');
+        $modUser     = $this->getModelByName('User');
+        $modRelation = $this->getModelByName('Relation');
         // get raw data
         if (!($str_args = @file_get_contents('php://input'))) {
             header('HTTP/1.1 500 Internal Server Error');

@@ -4,7 +4,7 @@ class HomeActions extends ActionController {
 
     public function doIndex() {
         // load models
-        $modOauth      = $this->getModelByName('OAuth', 'v2');
+        $modOauth      = $this->getModelByName('OAuth');
         $modBackground = $this->getModelByName('background');
         // check oauth session
         $oauthIfo      = $modOauth->getSession();

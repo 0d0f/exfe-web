@@ -14,7 +14,7 @@ class OAuthActions extends ActionController {
             ]];
             $webResponse = true;
         }
-        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $modOauth = $this->getModelByName('OAuth');
         $urlOauth = $modOauth->getTwitterRequestToken($workflow);
         if ($urlOauth) {
             if ($webResponse) {
@@ -36,7 +36,7 @@ class OAuthActions extends ActionController {
 
 
     public function doTwitterCallBack() {
-        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $modOauth = $this->getModelByName('OAuth');
         $oauthIfo = $modOauth->getSession();
         $workflow = $oauthIfo ?  $oauthIfo['workflow'] : null;
         $isMobile = $workflow ? ($workflow['callback']
@@ -64,8 +64,8 @@ class OAuthActions extends ActionController {
             );
             if ($objTwitterIdentity) {
                 if (!$oauthIfo['workflow'] || $oauthIfo['workflow']['callback']) {
-                    $modUser     = $this->getModelByName('User',     'v2');
-                    $modIdentity = $this->getModelByName('Identity', 'v2');
+                    $modUser     = $this->getModelByName('User');
+                    $modIdentity = $this->getModelByName('Identity');
                     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
                         'twitter', $objTwitterIdentity->external_username, true
                     );
@@ -169,7 +169,7 @@ class OAuthActions extends ActionController {
                         $objIdentity->connected_user_id
                     );
                     // call Gobus {
-                    $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                    $hlpGobus = $this->getHelperByName('gobus');
                     $hlpGobus->send('user', 'GetFriends', [
                         'user_id'       => $objIdentity->connected_user_id,
                         'provider'      => 'twitter',
@@ -225,10 +225,10 @@ class OAuthActions extends ActionController {
 
     public function doFollowExfe() {
         // load models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
-        $modOauth    = $this->getModelByName('OAuth',    'v2');
-        $checkHelper = $this->getHelperByName('check',   'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
+        $modOauth    = $this->getModelByName('OAuth');
+        $checkHelper = $this->getHelperByName('check');
         // get args
         $identity_id = trim($_POST['identity_id']);
         // basic check
@@ -276,7 +276,7 @@ class OAuthActions extends ActionController {
             ]];
             $webResponse = true;
         }
-        $modOauth = $this->getModelByName('OAuth', 'v2');
+        $modOauth = $this->getModelByName('OAuth');
         $urlOauth = $modOauth->facebookRedirect($workflow);
         if ($urlOauth) {
             if ($webResponse) {
@@ -298,15 +298,15 @@ class OAuthActions extends ActionController {
 
 
     public function doFacebookCallBack() {
-        $modOauth   = $this->getModelByName('OAuth', 'v2');
+        $modOauth   = $this->getModelByName('OAuth');
         $oauthToken = $modOauth->getFacebookOAuthToken(
             $modOauth->getFacebookOAuthCode()
         );
         if ($oauthToken) {
             $rawIdentity = $modOauth->getFacebookProfile($oauthToken['oauth_token']);
             if ($rawIdentity) {
-                $modUser     = $this->getModelByName('User',     'v2');
-                $modIdentity = $this->getModelByName('Identity', 'v2');
+                $modUser     = $this->getModelByName('User');
+                $modIdentity = $this->getModelByName('Identity');
                 $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
                     'facebook', $rawIdentity->external_username, true
                 );
@@ -376,7 +376,7 @@ class OAuthActions extends ActionController {
                 );
                 // @todo by @Leask
                 // call Gobus {
-                // $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                // $hlpGobus = $this->getHelperByName('gobus');
                 // $hlpGobus->send('user', 'TwitterFriends', [
                 //     'ClientToken'  => TWITTER_CONSUMER_KEY,
                 //     'ClientSecret' => TWITTER_CONSUMER_SECRET,

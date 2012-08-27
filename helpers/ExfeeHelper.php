@@ -6,7 +6,7 @@ class ExfeeHelper extends ActionController {
 
 
 	public function __construct() {
-		$this->modExfee = $this->getModelByName('exfee', 'v2');
+		$this->modExfee = $this->getModelByName('exfee');
 	}
 
 

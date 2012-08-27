@@ -35,7 +35,7 @@ class ConversationModels extends DataModel {
     public function getPostById($post_id) {
         $rawPost = $this->getRawPostById($post_id);
         if ($rawPost) {
-            $hlpIdentity = $this->getHelperByName('identity', 'v2');
+            $hlpIdentity = $this->getHelperByName('identity');
             $identity    = $hlpIdentity->getIdentityById($rawPost['identity_id']);
             return new Post(
                 $rawPost['id'], $identity, $rawPost['content'],

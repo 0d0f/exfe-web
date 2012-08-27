@@ -6,7 +6,7 @@ require_once dirname(dirname(__FILE__)).'/../../lib/tmhOAuth.php';
 class IdentitiesActions extends ActionController {
 
     public function doIndex() {
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modIdentity = $this->getModelByName('identity');
         $params = $this->params;
         if (!$params['id']) {
             apiError(400, 'no_identity_id', 'identity_id must be provided');
@@ -20,8 +20,8 @@ class IdentitiesActions extends ActionController {
 
     public function doGet() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser       = $this->getModelByName('user');
+        $modIdentity   = $this->getModelByName('identity');
         // get inputs
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : array();
         // ready
@@ -112,11 +112,11 @@ class IdentitiesActions extends ActionController {
 
     public function doComplete() {
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
-        $modRelation = $this->getModelByName('relation', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
+        $modRelation = $this->getModelByName('relation');
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -201,7 +201,7 @@ class IdentitiesActions extends ActionController {
 
     public function doUpdate() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -210,8 +210,8 @@ class IdentitiesActions extends ActionController {
             apiError(401, 'no_signin', '');
         }
         // get models
-        $modUser     = $this->getModelByName('user', 'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get user
         if (!($objUser = $modUser->getUserById($user_id))) {
             apiError(500, 'update_failed');

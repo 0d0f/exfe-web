@@ -4,12 +4,12 @@ class CrossHelper extends ActionController {
 
     public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false,$uid = 0)
     {
-        $crossData=$this->getModelByName("cross","v2");
+        $crossData=$this->getModelByName("cross");
         $crosses=$crossData->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
         //build and return a cross object array
-        $exfeeData=$this->getModelByName("exfee","v2");
-        $identityData=$this->getModelByName("identity","v2");
-        $conversationData=$this->getModelByName("conversation","v2");
+        $exfeeData=$this->getModelByName("exfee");
+        $identityData=$this->getModelByName("identity");
+        $conversationData=$this->getModelByName("conversation");
         $cross_list=array();
         $cross_ids=array();
 
@@ -60,15 +60,15 @@ class CrossHelper extends ActionController {
 
     public function getCross($cross_id, $withToken = false, $withRemoved = false)
     {
-        $crossData=$this->getModelByName("cross","v2");
+        $crossData=$this->getModelByName("cross");
         $cross=$crossData->getCross($cross_id);
         if($cross==NULL)
             return;
 
-        $placeData=$this->getModelByName("place","v2");
+        $placeData=$this->getModelByName("place");
         $place=$placeData->getPlace($cross["place_id"]);
 
-        $identityData=$this->getModelByName("identity","v2");
+        $identityData=$this->getModelByName("identity");
 
         $by_identity=$identityData->getIdentityById($cross["by_identity_id"]);
 
@@ -82,7 +82,7 @@ class CrossHelper extends ActionController {
         else if($cross["state"]==0)
             $attribute["state"]="draft";
 
-        $exfeeData=$this->getModelByName("exfee","v2");
+        $exfeeData=$this->getModelByName("exfee");
         $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), $withRemoved, $withToken);
         $created_at=$cross["created_at"];
 
@@ -104,14 +104,14 @@ class CrossHelper extends ActionController {
         $place_id=0;
         if($cross->place)
         {
-            $placeData=$this->getModelByName("place","v2");
+            $placeData=$this->getModelByName("place");
             $place_id=$placeData->addPlace($cross->place);
         }
 
-        $exfeeData=$this->getModelByName("exfee","v2");
+        $exfeeData=$this->getModelByName("exfee");
         $exfee_id=$exfeeData->getNewExfeeId();
 
-        $crossData=$this->getModelByName("cross","v2");
+        $crossData=$this->getModelByName("cross");
         if($exfee_id>0)
         {
             $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
@@ -129,8 +129,8 @@ class CrossHelper extends ActionController {
 
         $exfee_id  = intval($cross->exfee_id);
         // check exfee and update exfee
-        $placeData = $this->getModelByName("place","v2");
-        $crossData = $this->getModelByName("cross","v2");
+        $placeData = $this->getModelByName("place");
+        $crossData = $this->getModelByName("cross");
         $place = $cross->place;
         if ($place && $place->type === 'Place'
          && ($place->title    !== '' || $place->description !== ''
@@ -141,7 +141,7 @@ class CrossHelper extends ActionController {
         }
 
         $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id,$old_cross);
-        $exfeeData=$this->getModelByName("exfee","v2");
+        $exfeeData=$this->getModelByName("exfee");
         $exfeeData->updateExfeeTime($exfee_id);
         return $cross_id;
 
