@@ -67,7 +67,7 @@ class OAuthModels extends DataModel {
             );
             $rawTwitterUserInfo = $twitterConn->get('account/verify_credentials');
             if ($rawTwitterUserInfo) {
-                $hlpIdentity = $this->getHelperByName('Identity', 'v2');
+                $hlpIdentity = $this->getHelperByName('Identity');
                 $rawTwitterUserInfo
               = gettype($rawTwitterUserInfo) === 'object'
               ? (array) $rawTwitterUserInfo : $rawTwitterUserInfo;

@@ -11,7 +11,7 @@ class ConversationActions extends ActionController {
         if($updated_at!='')
             $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
-        $checkHelper=$this->getHelperByName("check","v2");
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("conversation",$params["token"],array("user_id"=>$uid,"exfee_id"=>$exfee_id));
         if($result["check"]!==true)
         {
@@ -21,11 +21,11 @@ class ConversationActions extends ActionController {
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
 
-        $helperData=$this->getHelperByName("conversation","v2");
+        $helperData=$this->getHelperByName('conversation');
         $conversation=$helperData->getConversationByExfeeId($exfee_id,$updated_at);
         if($clear!='false') {
             //clear counter
-            $conversationData=$this->getModelByName("conversation","v2");
+            $conversationData=$this->getModelByName('conversation');
             $conversationData->clearConversationCounter($exfee_id,$result["uid"]);
         }
         apiResponse(array("conversation"=>$conversation));
@@ -34,8 +34,8 @@ class ConversationActions extends ActionController {
 
     public function doAdd() {
         // get models
-        $modConv  = $this->getModelByName('conversation', 'v2');
-        $hlpCheck = $this->getHelperByName('check',       'v2');
+        $modConv  = $this->getModelByName('conversation');
+        $hlpCheck = $this->getHelperByName('check');
         // get exfee_id
         $params   = $this->params;
         $exfee_id = $params['id'];
@@ -65,10 +65,10 @@ class ConversationActions extends ActionController {
         // get post
         $post = $modConv->getPostById($post_id);
         // call Gobus {
-        $hlpGobus = $this->getHelperByName('gobus', 'v2');
-        $hlpCross = $this->getHelperByName('cross', 'v2');
-        $modUser  = $this->getModelByName('user',   'v2');
-        $modExfee = $this->getModelByName('exfee',  'v2');
+        $hlpGobus = $this->getHelperByName('gobus');
+        $hlpCross = $this->getHelperByName('cross');
+        $modUser  = $this->getModelByName('user');
+        $modExfee = $this->getModelByName('exfee');
         $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
         $msgArg   = array(
@@ -117,9 +117,9 @@ class ConversationActions extends ActionController {
         $exfee_id=$params["id"];
         $post_id=$params["post_id"];
 
-        $modelData=$this->getModelByName("conversation","v2");
+        $modelData=$this->getModelByName('conversation');
         $userid=$modelData->getUserIdById($post_id);
-        $checkHelper=$this->getHelperByName("check","v2");
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("conversation_del",$params["token"],array("user_id"=>$userid));
         if($result["check"]!==true)
         {

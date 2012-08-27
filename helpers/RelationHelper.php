@@ -6,7 +6,7 @@ class RelationHelper extends ActionController {
 
 
 	public function __construct() {
-		$this->modRelation = $this->getModelByName('Relation', 'v2');
+		$this->modRelation = $this->getModelByName('Relation');
 	}
 
 

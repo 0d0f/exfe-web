@@ -5,14 +5,14 @@ class AvatarActions extends ActionController {
 
     public function doDefault() {
         $params  = $this->params;
-        $modUser = $this->getModelByName('user', 'v2');
+        $modUser = $this->getModelByName('user');
         $modUser->makeDefaultAvatar($params['name']);
     }
 
 
     public function doGet() {
         $params  = $this->params;
-        $modUser = $this->getModelByName('user', 'v2');
+        $modUser = $this->getModelByName('user');
         if ($params['provider'] && $params['external_username']) {
             $img_result = $modUser->getUserAvatarByProviderAndExternalUsername($params['provider'], $params['external_username']);
             if ($img_result) {
@@ -32,7 +32,7 @@ class AvatarActions extends ActionController {
 
     public function doUpdate() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -41,8 +41,8 @@ class AvatarActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // collecting post data
         $identity_id = isset($_POST['identity_id'])
                      ? (int) $_POST['identity_id'] : 0;
@@ -143,7 +143,7 @@ class AvatarActions extends ActionController {
 
     public function doRender() {
         // init models
-        $modUser = $this->getModelByName('user', 'v2');
+        $modUser = $this->getModelByName('user');
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../../default_avatar_portrait/";

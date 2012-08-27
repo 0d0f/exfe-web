@@ -3,10 +3,10 @@
 class CheckHelper extends ActionController {
 
     function isAPIAllow($api, $token, $args = array()) {
-        $userData     = $this->getModelByName('user',     'v2');
-        $identityData = $this->getModelByName('identity', 'v2');
-        $exfeeData    = $this->getModelByName('exfee',    'v2');
-        $crossData    = $this->getModelByName('cross',    'v2');
+        $userData     = $this->getModelByName('user');
+        $identityData = $this->getModelByName('identity');
+        $exfeeData    = $this->getModelByName('exfee');
+        $crossData    = $this->getModelByName('cross');
 
         $uid = intval($userData->getUserIdByToken($token));
 

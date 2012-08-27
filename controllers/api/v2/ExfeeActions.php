@@ -5,8 +5,8 @@ class ExfeeActions extends ActionController {
     public function doIndex() {
         // get libs
         $params   = $this->params;
-        $modExfee = $this->getModelByName('exfee',  'v2');
-        $hlpCheck = $this->getHelperByName('check', 'v2');
+        $modExfee = $this->getModelByName('exfee');
+        $hlpCheck = $this->getHelperByName('check');
         // basic check
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
@@ -31,8 +31,8 @@ class ExfeeActions extends ActionController {
     public function doEdit() {
         // get libs
         $params   = $this->params;
-        $modExfee = $this->getModelByName('exfee',  'v2');
-        $hlpCheck = $this->getHelperByName('check', 'v2');
+        $modExfee = $this->getModelByName('exfee');
+        $hlpCheck = $this->getHelperByName('check');
         // basic check
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
@@ -74,8 +74,8 @@ class ExfeeActions extends ActionController {
     public function doRsvp() {
         // get libs
         $params   = $this->params;
-        $modExfee = $this->getModelByName('exfee',  'v2');
-        $hlpCheck = $this->getHelperByName('check', 'v2');
+        $modExfee = $this->getModelByName('exfee');
+        $hlpCheck = $this->getHelperByName('check');
         // basic check
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
