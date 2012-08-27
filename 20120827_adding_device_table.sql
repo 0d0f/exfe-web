@@ -3,6 +3,7 @@ CREATE TABLE `devices` (
     `name`               varchar(255) COLLATE  utf8_unicode_ci DEFAULT NULL,
     `brand`              varchar(255) COLLATE  utf8_unicode_ci DEFAULT NULL,
     `model`              varchar(255) COLLATE  utf8_unicode_ci DEFAULT NULL,
+    `os_name`            varchar(255) COLLATE  utf8_unicode_ci DEFAULT NULL,
     `os_version`         varchar(255) COLLATE  utf8_unicode_ci DEFAULT NULL,
     `browser_version`    varchar(255) COLLATE  utf8_unicode_ci DEFAULT NULL,
     `description`        text         COLLATE  utf8_unicode_ci DEFAULT NULL,
