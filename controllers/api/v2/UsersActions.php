@@ -489,41 +489,67 @@ class UsersActions extends ActionController {
 
 
     public function doSignout() {
-        $modUser      = $this->getModelByName('user');
-        $params       = $this->params;
-        $user_id      = intval($params['id']);
-        $token        = $params['token'];
-        $device_token = $_POST['device_token'];
-        if ($user_id && $token && $device_token) {
-            $soResult = $modUser->disConnectiOSDeviceToken($user_id, $token, $device_token);
-            if ($soResult) {
-                apiResponse(array('logout_identity_list' => $soResult));
-            }
+        // get models
+        $hlpCheck  = $this->getHelperByName('check');
+        $modDevice = $this->getModelByName('device');
+        // collecting post data
+        $params    = $this->params;
+        $user_id   = intval($params['id']);
+        $udid      = $_POST['udid'];
+        $check     = $hlpCheck->isAPIAllow(
+            'user_signout', $params['token'], ['user_id' => $user_id]
+        );
+        if (!$check['check']) {
+            apiError(403, 'forbidden');
         }
-        apiError(500, 'failed', "can't disconnect this device"); // 失败
+        // disconnect
+        $rtResult  = ['user_id' => $user_id];
+        $rtResult += $udid && $modDevice->disconnectDeviceUseridAndUdid($user_id, $udid)
+                   ? ['udid'    => $udid] : [];
+        // return
+        apiResponse($rtResult);
     }
 
 
     public function doRegdevice() {
-        // check if this token allow
-        $params    = $this->params;
+        // get models
         $hlpCheck  = $this->getHelperByName('check');
         $modDevice = $this->getModelByName('device');
+        // collecting post data
+        $params    = $this->params;
         $user_id   = intval($params['id']);
-        $check     = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
+        $check     = $hlpCheck->isAPIAllow(
+            'user_regdevice', $params['token'], ['user_id' => $user_id]
+        );
         if (!$check['check']) {
             apiError(403, 'forbidden');
         }
-        $udid      = $_POST['udid'];
-        $pushToken = $_POST['push_token'];
-        $provider  = $_POST['provider'];
-        $devicename  = $_POST['devicename'];
-        $identity_id = $modUser->regDevice($devicetoken, $devicename, $provider, $user_id);
-        $identity_id = intval($identity_id);
-        if ($identity_id) {
-            apiResponse(array('device_token' => $devicetoken, 'identity_id' => $identity_id));
+        $udid       = $_POST['udid'];
+        $push_token = $_POST['push_token'];
+        $name       = $_POST['name'];
+        $brand      = $_POST['brand'];
+        $model      = $_POST['model'];
+        $os_name    = $_POST['os_name'];
+        $os_version = $_POST['os_version'];
+        if (!$udid) {
+            apiError(400, 'no_udid');
+        }
+        if (!$push_token) {
+            apiError(400, 'no_push_token');
+        }
+        // connect
+        $rdResult = $modDevice->regDeviceByUseridAndUdid(
+            $user_id, $udid, $push_token, $name, $brand, $model, $os_name, $os_version
+        );
+        // return
+        if ($rdResult) {
+            apiResponse([
+                'udid'       => $udid,
+                'push_token' => $push_token,
+                'user_id'    => $user_id,
+            ]);
         } else {
-            apiError(500, 'reg device token error');
+            apiError(500, 'reg device error');
         }
     }
 
