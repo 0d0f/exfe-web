@@ -548,10 +548,10 @@ class UserModels extends DataModel {
                 }
                 if ($siResult) {
                     return [
-                        'user_id'   => $user_id,
-                        'user_name' => $passwdInDb['user_name'],
-                        'token'     => $passwdInDb['auth_token'],
-                        'password'  => !!$passwdInDb['encrypted_password']
+                        'user_id'  => $user_id,
+                        'name'     => $passwdInDb['name'],
+                        'token'    => $passwdInDb['auth_token'],
+                        'password' => !!$passwdInDb['encrypted_password']
                     ];
                 }
             }
