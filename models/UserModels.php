@@ -879,7 +879,7 @@ class UserModels extends DataModel {
         }
         // init path
         $curDir = dirname(__FILE__);
-        $resDir = "{$curDir}/../../default_avatar_portrait/";
+        $resDir = "{$curDir}/../default_avatar_portrait/";
         $fLatin = "{$resDir}OpenSans-Regular.ttf";
         $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
