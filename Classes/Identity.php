@@ -44,7 +44,7 @@ class Identity extends EFObject {
         $this->external_username = $external_username;
         $this->avatar_filename   = $avatar_filename;
         $this->created_at        = $created_at;
-        $this->updated_at        = $updated_at;
+        $this->updated_at        = $updated_at ?: $created_at;
     }
 
 }
