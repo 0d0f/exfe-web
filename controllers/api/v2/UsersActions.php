@@ -510,20 +510,36 @@ class UsersActions extends ActionController {
         $hlpCheck  = $this->getHelperByName('check');
         $modDevice = $this->getModelByName('device');
         $user_id   = intval($params['id']);
-        $check     = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
+        $check     = $hlpCheck->isAPIAllow(
+            'user_regdevice', $params['token'], ['user_id' => $user_id]
+        );
         if (!$check['check']) {
             apiError(403, 'forbidden');
         }
-        $udid      = $_POST['udid'];
-        $pushToken = $_POST['push_token'];
-        $provider  = $_POST['provider'];
-        $devicename  = $_POST['devicename'];
-        $identity_id = $modUser->regDevice($devicetoken, $devicename, $provider, $user_id);
-        $identity_id = intval($identity_id);
-        if ($identity_id) {
-            apiResponse(array('device_token' => $devicetoken, 'identity_id' => $identity_id));
+        $udid       = $_POST['udid'];
+        $push_token = $_POST['push_token'];
+        $name       = $_POST['name'];
+        $brand      = $_POST['brand'];
+        $model      = $_POST['model'];
+        $os_name    = $_POST['os_name'];
+        $os_version = $_POST['os_version'];
+        if (!$udid) {
+            apiError(400, 'no_udid');
+        }
+        if (!$push_token) {
+            apiError(400, 'no_push_token');
+        }
+        $rdResult = $modDevice->regDevice(
+            $udid, $push_token, $name, $brand, $model, $os_name, $os_version
+        );
+        if ($rdResult) {
+            apiResponse([
+                'udid'       => $udid,
+                'push_token' => $push_token,
+                'user_id'    => $user_id,
+            ]);
         } else {
-            apiError(500, 'reg device token error');
+            apiError(500, 'reg device error');
         }
     }
 
