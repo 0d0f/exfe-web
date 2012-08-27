@@ -506,16 +506,17 @@ class UsersActions extends ActionController {
 
     public function doRegdevicetoken() {
         // check if this token allow
-        $params   = $this->params;
-        $hlpCheck = $this->getHelperByName('check');
-        $modUser  = $this->getModelByName('user');
-        $user_id  = intval($params['id']);
-        $check    = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
+        $params    = $this->params;
+        $hlpCheck  = $this->getHelperByName('check');
+        $modDevice = $this->getModelByName('device');
+        $user_id   = intval($params['id']);
+        $check     = $hlpCheck->isAPIAllow('user_regdevicetoken', $params['token'], array('user_id' => $user_id));
         if (!$check['check']) {
             apiError(403, 'forbidden');
         }
-        $devicetoken = $_POST['devicetoken'];
-        $provider    = $_POST['provider'];
+        $udid      = $_POST['udid'];
+        $pushToken = $_POST['push_token'];
+        $provider  = $_POST['provider'];
         $devicename  = $_POST['devicename'];
         $identity_id = $modUser->regDeviceToken($devicetoken, $devicename, $provider, $user_id);
         $identity_id = intval($identity_id);
