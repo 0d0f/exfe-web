@@ -36,7 +36,7 @@ define(function (require, exports, module) {
 
 
   // resolve-token - `/#token=5c9a628f2b4f863435bc8d599a857c21`
-  app.get(/^\/#token=([a-zA-Z0-9]{32})$/, routes.resolveToken);
+  app.get(/^\/#token=([a-zA-Z0-9]{32})$/, routes.resolveToken, routes.resolveRequest, routes.resolveShow);
 
 
   // cross - `/#!233`
@@ -73,5 +73,5 @@ define(function (require, exports, module) {
   app.run();
 
   // global
-  //window.app = app;
+  window.App = app;
 });

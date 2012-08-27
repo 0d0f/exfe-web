@@ -5929,6 +5929,21 @@ body {
   margin: 10px 0 0;
 }
 
+.modal-su input[type="text"]:-moz-placeholder,
+.modal-su input[type="password"]:-moz-placeholder {
+  text-align: center;
+}
+
+.modal-su input[type="text"]:-ms-input-placeholder,
+.modal-su input[type="password"]:-ms-input-placeholder {
+  text-align: center;
+}
+
+.modal-su input[type="text"]::-webkit-input-placeholder,
+.modal-su input[type="password"]::-webkit-input-placeholder {
+  text-align: center;
+}
+
 .modal-wc label {
   margin-bottom: 0;
 }
