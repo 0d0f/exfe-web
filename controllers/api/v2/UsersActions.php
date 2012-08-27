@@ -3,8 +3,8 @@
 class UsersActions extends ActionController {
 
     public function doIndex() {
-        $modUser     = $this->getModelByName('User',   'v2');
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $modUser     = $this->getModelByName('User');
+        $checkHelper = $this->getHelperByName('check');
         $params      = $this->params;
         if (!$params['id']) {
             apiError(400, 'no_user_id', 'user_id must be provided');
@@ -28,7 +28,7 @@ class UsersActions extends ActionController {
 
     public function doAddIdentity() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -37,8 +37,8 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser     = $this->getModelByName('User', 'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('User');
+        $modIdentity = $this->getModelByName('identity');
         // collecting post data
         if (!($external_username = trim($_POST['external_username']))) {
             apiError(400, 'no_external_username', '');
@@ -63,7 +63,7 @@ class UsersActions extends ActionController {
 
     public function doDeleteIdentity() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -72,8 +72,8 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
@@ -100,7 +100,7 @@ class UsersActions extends ActionController {
 
     public function doSetDefaultIdentity() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -109,8 +109,8 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
@@ -136,8 +136,8 @@ class UsersActions extends ActionController {
 
     public function doGetRegistrationFlag() {
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get inputs
         $params = $this->params;
         if (!$external_username = trim($params['external_username'])) {
@@ -185,8 +185,8 @@ class UsersActions extends ActionController {
 
     public function doVerifyIdentity() {
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get inputs
         if (!$external_username = trim($_POST['external_username'])) {
             apiError(400, 'no_external_username', 'external_username must be provided');
@@ -234,7 +234,7 @@ class UsersActions extends ActionController {
                         // call Gobus {
                         if ($gobusFlag) {
                             $user = $modUser->getUserById($raw_flag['user_id']);
-                            $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                            $hlpGobus = $this->getHelperByName('gobus');
                             $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
                                 'user_name'   => $user->name ?: '',
@@ -258,8 +258,8 @@ class UsersActions extends ActionController {
 
     public function doForgotPassword() {
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get inputs
         if (!$external_username = trim($_POST['external_username'])) {
             apiError(400, 'no_external_username', 'external_username must be provided');
@@ -297,7 +297,7 @@ class UsersActions extends ActionController {
                             $rtResult['action'] = 'VERIFYING';
                             // call Gobus {
                             $user = $modUser->getUserById($raw_flag['user_id']);
-                            $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                            $hlpGobus = $this->getHelperByName('gobus');
                             $hlpGobus->send('user', 'Verify', [
                                 'to_identity' => $identity,
                                 'user_name'   => $user->name ?: '',
@@ -319,7 +319,7 @@ class UsersActions extends ActionController {
 
     public function doVerifyUserIdentity() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -328,8 +328,8 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
@@ -356,7 +356,7 @@ class UsersActions extends ActionController {
                         $rtResult['action'] = 'VERIFYING';
                         // call Gobus {
                         $user     = $modUser->getUserById($user_id);
-                        $hlpGobus = $this->getHelperByName('gobus', 'v2');
+                        $hlpGobus = $this->getHelperByName('gobus');
                         $hlpGobus->send('user', 'Verify', [
                             'to_identity' => $identity,
                             'user_name'   => $user->name ?: '',
@@ -374,8 +374,8 @@ class UsersActions extends ActionController {
 
     public function doResolveToken() {
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get inputs
         if (!$token = trim($_POST['token'])) {
             apiError(400, 'no_token', 'token must be provided');
@@ -390,8 +390,8 @@ class UsersActions extends ActionController {
 
     public function doResetPassword() {
         // get models
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get inputs
         if (!$token = trim($_POST['token'])) {
             apiError(400, 'no_token', 'token must be provided');
@@ -414,8 +414,8 @@ class UsersActions extends ActionController {
 
     public function doSetupUserByInvitationToken() {
         // get models
-        $modUser  = $this->getModelByName('user',  'v2');
-        $modExfee = $this->getModelByName('exfee', 'v2');
+        $modUser  = $this->getModelByName('user');
+        $modExfee = $this->getModelByName('exfee');
         // get name
         if (!($name = trim($_POST['name']))) {
             apiError(400, 'no_user_name', 'No user name');
@@ -457,8 +457,8 @@ class UsersActions extends ActionController {
 
     public function doSignin() {
         // get models
-        $modUser       = $this->getModelByName('user',     'v2');
-        $modIdentity   = $this->getModelByName('identity', 'v2');
+        $modUser       = $this->getModelByName('user');
+        $modIdentity   = $this->getModelByName('identity');
         // collecting post data
         if (!$external_username = $_POST['external_username']) {
             apiError(403, 'no_external_username', 'external_username must be provided');
@@ -534,7 +534,7 @@ class UsersActions extends ActionController {
         if($updated_at!='')
             $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
-        $checkHelper=$this->getHelperByName("check","v2");
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
         if($result["check"]!==true)
         {
@@ -542,9 +542,9 @@ class UsersActions extends ActionController {
                 apiError(401,"invalid_auth","");
         }
 
-        $exfeeHelper= $this->getHelperByName('exfee', 'v2');
+        $exfeeHelper= $this->getHelperByName('exfee');
         $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
-        $crossHelper= $this->getHelperByName('cross', 'v2');
+        $crossHelper= $this->getHelperByName('cross');
         if($updated_at!='')
             $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,true,$uid);
         else
@@ -555,9 +555,9 @@ class UsersActions extends ActionController {
 
     public function doCrossList() {
         // init helpers
-        $hlpCheck   = $this->getHelperByName('check', 'v2');
-        $hlpExfee   = $this->getHelperByName('exfee', 'v2');
-        $hlpCross   = $this->getHelperByName('cross', 'v2');
+        $hlpCheck   = $this->getHelperByName('check');
+        $hlpExfee   = $this->getHelperByName('exfee');
+        $hlpCross   = $this->getHelperByName('cross');
         // auth check
         $params     = $this->params;
         $user_id    = (int)$params['id'];
@@ -746,7 +746,7 @@ class UsersActions extends ActionController {
 
     public function doUpdate() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -755,7 +755,7 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser = $this->getModelByName('user', 'v2');
+        $modUser = $this->getModelByName('user');
         // collecting post data
         $user = array();
         if (isset($_POST['name'])) {
@@ -773,7 +773,7 @@ class UsersActions extends ActionController {
 
     public function doSetPassword() {
         // check signin
-        $checkHelper = $this->getHelperByName('check', 'v2');
+        $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
@@ -784,7 +784,7 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // get models
-        $modUser = $this->getModelByName('user', 'v2');
+        $modUser = $this->getModelByName('user');
         // collecting post data
         if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
             apiError(403, 'invalid_current_password', ''); // 密码错误

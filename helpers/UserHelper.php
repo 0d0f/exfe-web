@@ -6,7 +6,7 @@ class UserHelper extends ActionController {
 
 
     public function __construct() {
-        $this->modUser = $this->getModelByName('User', 'v2');
+        $this->modUser = $this->getModelByName('User');
     }
 
 

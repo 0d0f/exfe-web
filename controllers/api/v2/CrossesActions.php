@@ -4,7 +4,7 @@ class CrossesActions extends ActionController {
 
     public function doIndex() {
         $params=$this->params;
-        $checkHelper=$this->getHelperByName("check","v2");
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
         if($result["check"]!==true)
         {
@@ -13,7 +13,7 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
-        $crossHelper=$this->getHelperByName("cross","v2");
+        $crossHelper=$this->getHelperByName('cross');
         $cross=$crossHelper->getCross($params["id"]);
         if($cross===NULL)
             apiError(400,"param_error","The X you're requesting is not found.");
@@ -24,11 +24,11 @@ class CrossesActions extends ActionController {
     public function doGetCrossByInvitationToken() {
         // @todo: REVOKED身份合并后状态不变
         // load models
-        $hlpCheck    = $this->getHelperByName('check',   'v2');
-        $hlpCross    = $this->getHelperByName('cross',   'v2');
-        $modExfee    = $this->getModelByName('exfee',    'v2');
-        $modUser     = $this->getModelByName('user',     'v2');
-        $modIdentity = $this->getModelByName('identity', 'v2');
+        $hlpCheck    = $this->getHelperByName('check');
+        $hlpCross    = $this->getHelperByName('cross');
+        $modExfee    = $this->getModelByName('exfee');
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
         // get signin status
         $params      = $this->params;
         $signinStat  = $hlpCheck->isAPIAllow('user_edit', trim($params['token']));
@@ -140,7 +140,7 @@ class CrossesActions extends ActionController {
 
     public function doGetInvitationByToken() {
         // load models
-        $modExfee = $this->getModelByName('Exfee', 'v2');
+        $modExfee = $this->getModelByName('Exfee');
         // get args
         $params   = $this->params;
         if (!($cross_id = (int) $params['id'])) {
@@ -166,7 +166,7 @@ class CrossesActions extends ActionController {
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
         $by_identity_id=$cross->by_identity->id;
-        $checkHelper=$this->getHelperByName("check","v2");
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)
         {
@@ -175,12 +175,12 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
-        $crossHelper=$this->getHelperByName("cross","v2");
+        $crossHelper=$this->getHelperByName('cross');
         $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
 
         if(intval($cross_id)>0)
         {
-            $crossHelper=$this->getHelperByName("cross","v2");
+            $crossHelper=$this->getHelperByName('cross');
             $cross=$crossHelper->getCross($cross_id);
             apiResponse(array("cross"=>$cross));
         }
@@ -195,7 +195,7 @@ class CrossesActions extends ActionController {
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
         $by_identity_id=$cross->by_identity->id;
-        $checkHelper=$this->getHelperByName("check","v2");
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"],"by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)
         {
@@ -207,16 +207,16 @@ class CrossesActions extends ActionController {
         $by_identity_id = (int) $result['by_identity_id'];
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
-        $crossHelper=$this->getHelperByName("cross","v2");
+        $crossHelper=$this->getHelperByName('cross');
         $msgArg = array('old_cross' => $crossHelper->getCross(intval($params["id"])), 'to_identities' => array());
         $cross_id=$crossHelper->editCross($cross,$by_identity_id);
         if(intval($cross_id)>0)
         {
-            $crossHelper=$this->getHelperByName("cross","v2");
+            $crossHelper=$this->getHelperByName('cross');
             $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus {
-            $hlpGobus = $this->getHelperByName('gobus', 'v2');
-            $modUser  = $this->getModelByName('user',   'v2');
+            $hlpGobus = $this->getHelperByName('gobus');
+            $modUser  = $this->getModelByName('user');
             $chkMobUs = array();
             foreach ($cross->exfee->invitations as $invitation) {
                 if ($invitation->identity->id === $by_identity_id) {

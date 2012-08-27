@@ -3,7 +3,7 @@
 class RelationModels extends DataModel {
 
     public function saveRelations($userid, $r_identityid) {
-        $hlpIdentity = $this->getHelperByName('Identity', 'v2');
+        $hlpIdentity = $this->getHelperByName('Identity');
         if ($userid && $r_identityid) {
             $curRelation = $this->getRow(
                 "SELECT `userid`
@@ -38,7 +38,7 @@ class RelationModels extends DataModel {
 
 
     public function saveExternalRelations($userid, $identity) {
-        $hlpIdentity = $this->getHelperByName('Identity', 'v2');
+        $hlpIdentity = $this->getHelperByName('Identity');
         if ($userid && $identity
          && $identity->provider
          && $identity->external_id
