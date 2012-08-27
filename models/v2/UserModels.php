@@ -161,6 +161,7 @@ class UserModels extends DataModel {
                         }
                     }
                     $user->default_identity = $user->default_identity ?: $user->identities[0];
+                    $user->name             = $user->name             ?: $user->default_identity->name;
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
                             "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
