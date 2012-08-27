@@ -440,17 +440,18 @@ class UserModels extends DataModel {
                         if ($siResult) {
                             if ($siResult['password']) {
                                 $this->usedToken($curToken);
-                                $curToken['action'] = 'VERIFIED';
+                                $nextAction = 'VERIFIED';
                             } else {
                                 $this->extendTokenExpirationDate($curToken['id']);
-                                $curToken['action'] = 'INPUT_NEW_PASSWORD';
+                                $nextAction = 'INPUT_NEW_PASSWORD';
                             }
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'token'       => $siResult['token'],
                                 'identity_id' => $curToken['identity_id'],
-                                'action'      => $curToken['action'],
+                                'token'       => $siResult['token'],
+                                'token_type'  => $curToken['action'],
+                                'action'      => $nextAction,
                             ];
                         }
                     }
@@ -462,8 +463,9 @@ class UserModels extends DataModel {
                         return [
                             'user_id'     => $siResult['user_id'],
                             'user_name'   => $siResult['name'],
-                            'token'       => $siResult['token'],
                             'identity_id' => $curToken['identity_id'],
+                            'token'       => $siResult['token'],
+                            'token_type'  => $curToken['action'],
                             'action'      => 'INPUT_NEW_PASSWORD',
                         ];
                     }
