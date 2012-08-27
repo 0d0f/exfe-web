@@ -95,7 +95,9 @@ class CheckHelper extends ActionController {
             case 'user_signup':
                 return array("check"=>true);
                 break;
+            case 'user_signout':
             case 'user_edit':
+            case 'user_regdevice':
                 return array('check' => true, 'uid' => $uid);
                 break;
         }
