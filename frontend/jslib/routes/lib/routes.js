@@ -77,6 +77,7 @@ define('routes', function (require, exports, module) {
 
 
   // resolve token
+  /*
   routes.resolveToken = function (req, res, next) {
     req.origin = 'resolveToken';
     var originToken = req.params[0];
@@ -84,8 +85,13 @@ define('routes', function (require, exports, module) {
     if (originToken) {
       var session = req.session
         , authorization = session.authorization
+        , user = session.user
         , browsing_authorization
         , action;
+
+      Bus.emit('app:page:home', false);
+
+      Bus.emit('app:page:usermenu', true);
 
       Api.request('resolveToken',
         {
@@ -94,53 +100,85 @@ define('routes', function (require, exports, module) {
         }
         // data:
         //    user_id
+        //    user_name
         //    token
         //    action
+        //    identity_id
         , function (data) {
-
           action = session.action = data.action;
           delete data.action;
 
-          if (authorization) {
-            session.browsing_authorization = browsing_authorization = data;
-            session.originToken = originToken;
-          }
-          else {
-            // 正常登录
-            if (action === 'VERIFY') {
-              Store.set('authorization', session.authorization = data);
-            }
-            else if (action === 'INPUT_NEW_PASSWORD') {
-              session.browsing_authorization = browsing_authorization = data;
-              session.originToken = originToken;
-            }
-          }
-
           // 如果 browsing 与 之前登录过的身份相等，则清除 browsing
           if (authorization
-              && browsing_authorization
-              && authorization.token === browsing_authorization.token
-              && authorization.user_id === browsing_authorization.user_id) {
+              && data
+              && authorization.token === data.token
+              && authorization.user_id === data.user_id) {
 
-            browsing_authorization = null;
-            delete session.browsing_authorization;
-            delete session.originToken;
+            res.redirect('/#' + Util.printExtUserName(user.default_identity));
+            return;
+          }
+
+          // authorization || action === 'INPUT_NEW_PASSWORD'
+          session.browsing_authorization = browsing_authorization = data;
+          session.originToken = originToken;
+
+          // 正常的验证身份（有密码)
+          if (action === 'VERIFIED') {
+            Bus.emit('app:api:getuser'
+              , data.token
+              , data.user_id
+              , function done(data) {
+                  var user = data.user
+                  , eun = Util.printExtUserName(user.default_identity);
+
+                  if (authorization) {
+                    session.browsing_user = user;
+                    res.redirect('/#' + eun + '/token=' + originToken);
+                  }
+                  else {
+                    Store.set('authorization', session.browsing_authorization);
+                    Store.set('user', user);
+                    delete session.browsing_authorization;
+                    delete session.originToken;
+                    res.redirect('/#' + eun);
+                  }
+                }
+            )
+            return;
           }
 
           Bus.emit('app:api:getuser'
             , data.token
             , data.user_id
-            , function done(data) {
-                var user = data.user
-                  // external_username
-                  , eun = Util.printExtUserName(user.default_identity);
+            , function done(data2) {
+              var eun = Util.printExtUserName(data2.user.default_identity);
+              var forwardUrl = '';
+              if (authorization) {
+                forwardUrl = '/#' + eun + '/token=' + originToken;
+              }
+              else {
+                forwardUrl = '/#' + eun;
+              }
 
-                if (browsing_authorization) {
-                  session.browsing_user = user;
-                  eun += '/token=' + originToken;
+              Bus.emit('app:usermenu:updatebrowsing',
+                {   normal: user
+                  , browsing: data2.user
+                  , action: action
+                  , setup: action === 'INPUT_NEW_PASSWORD'
+                  , originToken: originToken
+                  , tokenType: 'user'
+                  , page: 'resolve'
+                  , readOnly: true
+                  , user_name: data.user_name
+                  , forward: forwardUrl
                 }
+                , 'browsing_identity');
 
-                res.redirect('/#' + eun);
+                res.render('resolve.html', function (tpl) {
+                  $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
+                  $('.modal-su').css('top', 260);
+                  $('#app-main').append(tpl);
+                });
               }
             //, function fail(err) {}
           );
@@ -155,6 +193,183 @@ define('routes', function (require, exports, module) {
       res.redirect('/#invalid');
     }
   };
+  */
+
+  routes.resolveToken = function (req, res, next) {
+    req.origin = 'resolveToken';
+    var originToken = req.params[0];
+
+    Bus.emit('app:page:home', false);
+    Bus.emit('app:page:usermenu', true);
+
+    if (originToken) {
+      next();
+    }
+    else {
+      res.redirect('/#invalid/token=' + originToken);
+    }
+  };
+
+  routes.resolveRequest = function (req, res, next) {
+    var session = req.session
+      , originToken = req.params[0]
+      , authorization = session.authorization
+      , user = session.user
+      , browsing_authorization
+      , token_type
+      , action
+      , tab = 0
+      , user_name;
+
+    var dfd = Api.request('resolveToken',
+        { type: 'POST', data: { token: originToken } }
+        , function (data) {
+          // token_type
+          //  verify
+          //  forgot password: SET_PASSWORD
+          token_type = data.token_type;
+          action = data.action;
+          user_name = data.user_name;
+          session.browsing_authorization = browsing_authorization = data;
+          session.originToken = originToken;
+
+          // 如果 token 进来的身份和之前已经登录过的 user 相等，则正常登录 2333ms 跳到 profile
+          //res.redirect('/#' + Util.printExtUserName(user.default_identity));
+          if (authorization
+              && authorization.token === data.token
+              && authorization.user_id === data.user_id) {
+          // 如果之前没有 user 登录，及 token_type 为 `VERIFIED`, 则正常登录, 2333ms 跳到 profile
+            tab = 0;
+            delete session.browsing_authorization;
+            delete session.originToken;
+          }
+          else if (!authorization
+                && token_type === 'VERIFY'
+                && action === 'VERIFIED') {
+
+            Store.set('authorization', authorization = session.authorization = session.browsing_authorization);
+            delete session.browsing_authorization;
+            delete session.originToken;
+
+            tab = 1;
+          }
+          else if (authorization && token_type === 'VERIFY' && action === 'VERIFIED') {
+
+            tab = 2;
+          }
+          else if (!authorization && token_type === 'VERIFY' && action === 'INPUT_NEW_PASSWORD') {
+
+            tab = 3;
+          }
+          else if (authorization && token_type === 'VERIFY' && action === 'INPUT_NEW_PASSWORD') {
+
+            tab = 4;
+          }
+          else if (!authorization && token_type === 'SET_PASSWORD') {
+
+            tab = 5;
+          }
+          else if (authorization && token_type === 'SET_PASSWORD') {
+
+            tab = 6;
+          }
+          else {
+
+            tab = 7;
+          }
+
+          session.resolveTab = tab;
+
+          Bus.emit('app:api:getuser'
+            , data.token
+            , data.user_id
+            , function done(data2) {
+              if (tab === 0 || tab === 1) {
+                Store.set('user', user = session.user = data2.user);
+                Bus.emit('app:usermenu:updatenormal', user);
+                Bus.emit('app:usermenu:crosslist'
+                  , authorization.token
+                  , authorization.user_id
+                );
+              } else {
+                session.browsing_user = data2.user;
+                var eun = Util.printExtUserName(data2.user.default_identity);
+                var forwardUrl = '';
+                if (authorization) {
+                  forwardUrl = '/#' + eun + '/token=' + originToken;
+                }
+                else {
+                  forwardUrl = '/#' + eun;
+                }
+                Bus.emit('app:usermenu:updatebrowsing',
+                  {   normal: user
+                    , browsing: data2.user
+                    , action: action
+                    , setup: action === 'INPUT_NEW_PASSWORD'
+                    , originToken: originToken
+                    , tokenType: 'user'
+                    , page: 'resolve'
+                    , readOnly: true
+                    , user_name: user_name
+                    , forward: forwardUrl
+                  }
+                  , 'browsing_identity');
+              }
+              next();
+            }
+          );
+        }
+        , function () {
+          res.redirect('/#invalid/token=' + originToken);
+        }
+      );
+  };
+
+  routes.resolveShow = function (req, res, next) {
+    var session = req.session
+      , tab = session.resolveTab
+      , tpl_url;
+
+    switch (tab) {
+      case 0:
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        tpl_url = 'identity_verified.html';
+        res.render(tpl_url, function (tpl) {
+          var $main = $('#app-main');
+          $main.append(tpl);
+          if (tab === 0 || tab === 1) {
+            $main.find('.tab01').removeClass('hide');
+            $main.find('.tab01 > p').animate({opacity: 0}, 2333, function () {
+              res.redirect('/');
+            });
+          } else if (tab === 2) {
+            $('#app-browsing-identity').trigger('click.data-api');
+          } else if (tab === 3) {
+            $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
+            $('.modal-su').css('top', 230);
+          } else {
+            $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
+            $('.modal-su').css('top', 230);
+          }
+        });
+        break;
+      case 5:
+      case 6:
+        tpl_url = 'forgot_password.html';
+        res.render(tpl_url, function (tpl) {
+          var $main = $('#app-main');
+          $main.append(tpl);
+          $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
+          $('.modal-su').css('top', 230);
+        });
+        break;
+      default:
+        break;
+    }
+  }
 
 
   // cross
@@ -374,11 +589,6 @@ define('routes', function (require, exports, module) {
             else {
               // 没有 browsing-identity
               res.redirect('/#!' + cross.id);
-              //Bus.emit('app:usermenu:updatenormal', user);
-              //Bus.emit('app:usermenu:crosslist'
-                //, authorization.token
-                //, authorization.user_id
-              //);
             }
 
           }
@@ -397,13 +607,6 @@ define('routes', function (require, exports, module) {
             , 'browsing_identity');
         }
 
-        /*
-        res.render('x.html', function (tpl) {
-          $('#app-main').append(tpl);
-          Bus.emit('xapp:cross:main');
-          Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken);
-        });
-        */
         render();
       }
       , function (data) {
@@ -447,15 +650,12 @@ define('routes', function (require, exports, module) {
       // 正常登录
       if (authorization && !browsing_authorization) {
 
-        if (!session.initMenuBar) {
-          //session.initMenuBar = true;
-          Bus.emit('app:usermenu:updatenormal', user);
+        Bus.emit('app:usermenu:updatenormal', user);
 
-          Bus.emit('app:usermenu:crosslist'
-            , authorization.token
-            , authorization.user_id
-          );
-        }
+        Bus.emit('app:usermenu:crosslist'
+          , authorization.token
+          , authorization.user_id
+        );
 
         res.render('profile.html', function (tpl) {
           $('#app-main').append(tpl);
@@ -592,7 +792,6 @@ define('routes', function (require, exports, module) {
     }
 
     var authorization = session.authorization;
-    //alert(1);
     //Bus.once('app:user:signin:after', function (user) {
       //done(user, res);
     //});

@@ -335,6 +335,10 @@ define('xdialog', function (require, exports, module) {
                 }
               }
               , function (data) {
+                // 清除浏览身份
+                delete App.request.session.browsing_authorization;
+                delete App.request.session.browsing_user;
+
                 Store.set('authorization', data);
                 // 最后登陆的 external_identity
                 Store.set('last_external_username', od.external_identity);
@@ -1521,6 +1525,9 @@ define('xdialog', function (require, exports, module) {
           var that = this;
           var isUserToken = this._tokenType === 'user';
 
+          var forward = this._forward;
+          var page = this._page;
+
           var api_url = isUserToken ? 'resetPassword' : 'setupUserByInvitationToken';
           var reqData = {};
 
@@ -1545,13 +1552,29 @@ define('xdialog', function (require, exports, module) {
               data: reqData
             },
             function (data) {
-              that.hide();
 
-              var authorization = data.authorization
-              Bus.emit('app:user:signin:after', function () {
-                window.location.href = '/';
-              });
-              Bus.emit('app:user:signin', authorization.token, authorization.user_id);
+              if (page === 'resolve') {
+                var authorization = Store.get('authorization');
+                if (!authorization) {
+                  Store.set('authorization', data.authorization);
+                  Store.set('user', that._browsing_user);
+                  window.location.href = '/';
+                } else {
+                  $('#app-user-menu').find('.set-up').remove();
+                  var $bi = $('#app-browsing-identity');
+                  var settings = $bi.data('settings');
+                  settings.setup = false;
+                  $bi.data('settings', settings).trigger('click.data-api');
+                }
+              }
+              else {
+                var authorization = data.authorization
+                Bus.emit('app:user:signin:after', function () {
+                  window.location.href = '/';
+                });
+                Bus.emit('app:user:signin', authorization.token, authorization.user_id);
+              }
+              that.hide();
             }
           );
 
@@ -1609,9 +1632,14 @@ define('xdialog', function (require, exports, module) {
       onShowBefore: function (e) {
         var data = $(e.currentTarget).data('source');
         if (!data) return;
+        console.dir(data);
         var identity = data.identity;
+        this._browsing_user = data.browsing_user;
         this._tokenType = data.tokenType;
         this._originToken = data.originToken;
+        this._forward = data.forward || '/';
+        this._page = data.page;
+        this.$('#name').val(data.user_name || '');
         this.$('.identity').text(Util.printExtUserName(identity));
         this.$('.avatar')
           .attr('src', identity.avatar_filename)
