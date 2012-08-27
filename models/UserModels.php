@@ -97,9 +97,9 @@ class UserModels extends DataModel {
 
     public function getUserPasswdByUserId($user_id) {
         return $user_id ? $this->getRow(
-            "SELECT `cookie_logintoken`, `cookie_loginsequ`, `auth_token`,
-             `encrypted_password`, `password_salt`, `current_sign_in_ip`
-             FROM   `users` WHERE `id` = {$user_id}"
+            "SELECT `name`, `cookie_logintoken`, `cookie_loginsequ`,
+             `auth_token`, `encrypted_password`, `password_salt`,
+             `current_sign_in_ip` FROM `users` WHERE `id` = {$user_id}"
         ) : null;
     }
 
@@ -447,6 +447,7 @@ class UserModels extends DataModel {
                             }
                             return [
                                 'user_id'     => $siResult['user_id'],
+                                'user_name'   => $siResult['name'],
                                 'token'       => $siResult['token'],
                                 'identity_id' => $curToken['identity_id'],
                                 'action'      => $curToken['action'],
@@ -460,6 +461,7 @@ class UserModels extends DataModel {
                     if ($siResult) {
                         return [
                             'user_id'     => $siResult['user_id'],
+                            'user_name'   => $siResult['name'],
                             'token'       => $siResult['token'],
                             'identity_id' => $curToken['identity_id'],
                             'action'      => 'INPUT_NEW_PASSWORD',
