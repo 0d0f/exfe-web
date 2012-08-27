@@ -504,7 +504,7 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doRegdevicetoken() {
+    public function doRegdevice() {
         // check if this token allow
         $params    = $this->params;
         $hlpCheck  = $this->getHelperByName('check');
@@ -518,7 +518,7 @@ class UsersActions extends ActionController {
         $pushToken = $_POST['push_token'];
         $provider  = $_POST['provider'];
         $devicename  = $_POST['devicename'];
-        $identity_id = $modUser->regDeviceToken($devicetoken, $devicename, $provider, $user_id);
+        $identity_id = $modUser->regDevice($devicetoken, $devicename, $provider, $user_id);
         $identity_id = intval($identity_id);
         if ($identity_id) {
             apiResponse(array('device_token' => $devicetoken, 'identity_id' => $identity_id));
