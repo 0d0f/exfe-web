@@ -113,33 +113,22 @@ class ExfeeModels extends DataModel {
 
 
     public function getIdentityIdsByExfeeId($exfee_id) {
-        $identity_ids = array();
-        $sql = "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
+        $identity_ids = [];
+        $sql          = "SELECT `identity_id` FROM `invitations`
+                         WHERE  `cross_id` = {$exfee_id} AND `state` <> 4";
         $rawExfee     = $this->getAll($sql);
-        if ($rawExfee) {
-            foreach ($rawExfee as $ei => $eItem) {
-                if ($eItem['identity_id'] && $eItem['state'] !== 4) {
-                    $identity_ids[] = $eItem['identity_id'];
-                }
-            }
+        foreach ($rawExfee ?: [] as $eItem) {
+            $identity_ids[] = $eItem['identity_id'];
         }
         return $identity_ids;
     }
 
 
     public function getUserIdsByExfeeId($exfee_id, $notConnected = false) {
-        $hlpUser      = $this->getHelperByName('User');
-        $identity_ids = array();
-        $sql = "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}";
-        $rawExfee     = $this->getAll($sql);
-        if ($rawExfee) {
-            foreach ($rawExfee as $ei => $eItem) {
-                if ($eItem['identity_id'] && $eItem['state'] !== 4) {
-                    $identity_ids[] = $eItem['identity_id'];
-                }
-            }
-        }
-        return $hlpUser->getUserIdsByIdentityIds($identity_ids, $notConnected);
+        $hlpUser = $this->getHelperByName('User');
+        return $hlpUser->getUserIdsByIdentityIds(
+            $this->getIdentityIdsByExfeeId($exfee_id), $notConnected
+        );
     }
 
 
