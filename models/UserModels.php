@@ -79,7 +79,8 @@ class UserModels extends DataModel {
         $sql_token       = $new_token ? ", `token` = '{$new_token}'" : '';
         return $id ? $this->query(
             "UPDATE `tokens` SET
-             `expiration_date` = FROM_UNIXTIME({$expiration_date}) {$sql_token}
+             `expiration_date` = FROM_UNIXTIME({$expiration_date}) {$sql_token},
+             `used_at`         = 0
              WHERE  `id`       = {$id}"
         ) : false;
     }
