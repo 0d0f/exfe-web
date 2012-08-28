@@ -299,7 +299,7 @@ class UsersActions extends ActionController {
                             ];
                             $hlpGobus->send('user', 'Verify', $msgs);
                             if (DEBUG) {
-                                error_log($msgs);
+                                error_log(json_encode($msgs));
                             }
                             // }
                         }
