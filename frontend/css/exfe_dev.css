@@ -4675,6 +4675,19 @@ input[type="submit"].btn.btn-mini {
   cursor: pointer;
 }
 
+.xbtn-cancel,
+.xbtn-discard {
+  font-size: 12px;
+  color: #7f7f7f;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.xbtn-cancel:hover,
+.xbtn-discard:hover {
+  color: #7f7f7f;
+}
+
 .xbtn-white {
   background-color: #f2f2f2;
   background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
@@ -5705,7 +5718,7 @@ body {
   width: 235px;
   margin-top: 15px;
   margin-bottom: 12px;
-  margin-left: 10px;
+  margin-left: 34px;
 }
 
 .modal-fp .dropdown-menu {
@@ -5878,7 +5891,7 @@ body {
 }
 
 .modal-bi .xbtn-go {
-  margin-top: -13px;
+  margin-left: 18px;
 }
 
 .modal-bi .browsing-tips {
@@ -5929,18 +5942,8 @@ body {
   margin: 10px 0 0;
 }
 
-.modal-su input[type="text"]:-moz-placeholder,
-.modal-su input[type="password"]:-moz-placeholder {
-  text-align: center;
-}
-
-.modal-su input[type="text"]:-ms-input-placeholder,
-.modal-su input[type="password"]:-ms-input-placeholder {
-  text-align: center;
-}
-
-.modal-su input[type="text"]::-webkit-input-placeholder,
-.modal-su input[type="password"]::-webkit-input-placeholder {
+.modal-su input[type="text"],
+.modal-su input[type="password"] {
   text-align: center;
 }
 
