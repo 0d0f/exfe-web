@@ -325,7 +325,7 @@ ExfeeWidget = {
 
     showOne : function(invitation, fadeUnconfirmed) {
         var icons = {ACCEPTED   : 'icon14-rsvp-accepted-blue',
-                     DECLINED   : 'icon14-rsvp-declined-red',
+                     DECLINED   : 'icon14-rsvp-declined',
                      INTERESTED : 'icon14-rsvp-interested',
                      NORESPONSE : 'icon14-rsvp-noresponse'};
         $('#' + this.dom_id + ' .thumbnails').append(
