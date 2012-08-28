@@ -347,12 +347,13 @@ define('routes', function (require, exports, module) {
             });
           } else if (tab === 2) {
             $('#app-browsing-identity').trigger('click.data-api');
+            $('.modal-bi').css('top', 200);
           } else if (tab === 3) {
             $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
-            $('.modal-su').css('top', 230);
+            $('.modal-su').css('top', 200);
           } else {
             $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
-            $('.modal-su').css('top', 230);
+            $('.modal-su').css('top', 200);
           }
         });
         break;
@@ -727,11 +728,25 @@ define('routes', function (require, exports, module) {
 
   // invalid
   routes.invalid = function (req, res, next) {
+    var session = req.session
+      , authorization = session.authorization
+      , user = session.user;
+
     document.title = 'Invalid Link'
 
     Bus.emit('app:page:home', false);
 
-    Bus.emit('app:page:usermenu', false);
+    if (authorization) {
+      Bus.emit('app:page:usermenu', true);
+      Bus.emit('app:usermenu:updatenormal', user);
+      Bus.emit('app:usermenu:crosslist'
+        , authorization.token
+        , authorization.user_id
+      );
+    }
+    else {
+      Bus.emit('app:page:usermenu', false);
+    }
 
     res.render('invalid.html', function (tpl) {
       $('#app-main').append(tpl);
