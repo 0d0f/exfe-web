@@ -74,8 +74,8 @@ class UserModels extends DataModel {
     }
 
 
-    protected function extendTokenExpirationDate($id, $expiration_date = 60, $new_token = '') { // exp in minutes
-        $expiration_date = Time() + ($expiration_date * 60);                                    // for an hour by default
+    protected function extendTokenExpirationDate($id, $expiration_date = 3, $new_token = '') { // exp in minutes
+        $expiration_date = Time() + ($expiration_date * 60);                                   // for 3 minutes by default
         $sql_token       = $new_token ? ", `token` = '{$new_token}'" : '';
         return $id ? $this->query(
             "UPDATE `tokens` SET
