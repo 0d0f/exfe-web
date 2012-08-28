@@ -70,18 +70,18 @@ class DeviceModels extends DataModel {
 
 
     public function getDevicesByUserid($user_id, $mainIdentity = null) {
-        $rawResult = $user_id ? $this->query(
+        $rawResult = $user_id ? $this->getAll(
             "SELECT * FROM `devices`
              WHERE  `user_id` = {$user_id}
-             AND    `status` = 1"
+             AND    `status`  = 1"
         ) : [];
         if ($mainIdentity) {
             foreach ($rawResult as $rI => $rItem) {
                 $rawResult[$rI] = new Identity(
                     -$rItem['id'],
-                    $mainIdentity['name'],
+                    $mainIdentity->name,
                     $rItem['name'],
-                    $mainIdentity['bio'],
+                    $mainIdentity->bio,
                     $rItem['os_name'],
                     $rItem['user_id'],
                     $rItem['push_token'],
