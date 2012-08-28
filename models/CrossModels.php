@@ -33,7 +33,7 @@ class CrossModels extends DataModel {
 
 
     public function addCross($cross, $place_id = 0, $exfee_id = 0, $by_identity_id = 0, $old_cross = null) {
-        $cross_time = $cross->time;
+        $cross_time = $cross->time ?: new CrossTime('', '', '', '', '', '', '');
         $widgets    = $cross->widget;
         $background = '';
         if ($widgets) {
