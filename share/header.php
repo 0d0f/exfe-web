@@ -10,7 +10,7 @@
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
-  <meta name="description" content="EXFE, an utility for hanging out with friends." />
+  <meta name="description" content="EXFE, a utility for hanging out with friends." />
   <meta name="copyright" content="Copyright 2012 EXFE Inc" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <?php if (($twitterSignin = $this->getVar('twitter_signin'))) { ?>
