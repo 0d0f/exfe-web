@@ -521,19 +521,21 @@ class UserModels extends DataModel {
                 WHERE  `identities`.`provider`          = '{$provider}'
                 AND    `identities`.`external_username` = '{$external_username}'
                 AND    `identities`.`id` = `user_identity`.`identityid`";
-        $rawUser = $this->getRow($sql);
-        if ($rawUser && ($user_id = intval($rawUser['userid']))) {
-            $status      = intval($rawUser['status']);
-            $passwdInDb  = $this->getUserPasswdByUserId($user_id);
-            $password    = $this->encryptPassword($password, $passwdInDb['password_salt']);
-            $id_quantity = count($this->getAll(
-                "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
-            ));
-            if ((($status === 2 && $id_quantity === 1) || $status === 3)
-             && $password === $passwdInDb['encrypted_password']) {
-                $rsResult = $this->rawSignin($user_id, $passwdInDb);
-                if ($rsResult) {
-                    return $rsResult + ['identity_id' => $rawUser['identityid']];
+        $rawUser = $this->getAll($sql) ?: [];
+        foreach ($rawUser as $user) {
+            if ($user_id = (int) $user['userid']) {
+                $status  = (int) $user['status'];
+                $passwdInDb  = $this->getUserPasswdByUserId($user_id);
+                $password    = $this->encryptPassword($password, $passwdInDb['password_salt']);
+                $id_quantity = count($this->getAll(
+                    "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
+                ));
+                if ((($status === 2 && $id_quantity === 1) || $status === 3)
+                 && $password === $passwdInDb['encrypted_password']) {
+                    $rsResult = $this->rawSignin($user_id, $passwdInDb);
+                    if ($rsResult) {
+                        return $rsResult + ['identity_id' => $user['identityid']];
+                    }
                 }
             }
         }
