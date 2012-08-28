@@ -526,12 +526,12 @@ class UserModels extends DataModel {
             if ($user_id = (int) $user['userid']) {
                 $status  = (int) $user['status'];
                 $passwdInDb  = $this->getUserPasswdByUserId($user_id);
-                $password    = $this->encryptPassword($password, $passwdInDb['password_salt']);
+                $ecPasswd    = $this->encryptPassword($password, $passwdInDb['password_salt']);
                 $id_quantity = count($this->getAll(
                     "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$user_id}"
                 ));
                 if ((($status === 2 && $id_quantity === 1) || $status === 3)
-                 && $password === $passwdInDb['encrypted_password']) {
+                 && $ecPasswd === $passwdInDb['encrypted_password']) {
                     $rsResult = $this->rawSignin($user_id, $passwdInDb);
                     if ($rsResult) {
                         return $rsResult + ['identity_id' => $user['identityid']];
