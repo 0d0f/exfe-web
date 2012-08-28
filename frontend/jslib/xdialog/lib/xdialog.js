@@ -625,7 +625,7 @@ define('xdialog', function (require, exports, module) {
       this.$('.tab').addClass('hide');
       if (provider === 'email') {
         this.$('.tab1').removeClass('hide');
-        this.$('.xbtn-done').data('identity', identity);
+        this.$('.xbtn-send').data('identity', identity);
       }
       else {
         this.$('.tab2').removeClass('hide');
@@ -689,7 +689,7 @@ define('xdialog', function (require, exports, module) {
           }
         },
 
-        'click .xbtn-done': function (e) {
+        'click .xbtn-send': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('disabled')) {
@@ -713,8 +713,8 @@ define('xdialog', function (require, exports, module) {
                   external_username: i.external_username
                 },
                 beforeSend: function (xhr) {
-                  that.$('.done-before').removeClass('hide');
-                  that.$('.done-after').addClass('hide');
+                  that.$('.send-before').removeClass('hide');
+                  that.$('.send-after').addClass('hide');
                   $e.addClass('disabled');
                 },
                 complete: function (xhr) {
@@ -726,8 +726,8 @@ define('xdialog', function (require, exports, module) {
                 if (data.action === 'VERIFYING') {
                   that.$('.identity').next().removeClass('hide');
                   $e.text('Done').addClass('success');
-                  that.$('.done-before').addClass('hide');
-                  that.$('.done-after').removeClass('hide');
+                  that.$('.send-before').addClass('hide');
+                  that.$('.send-after').removeClass('hide');
                 }
               }
               //, function (data) {}
@@ -788,8 +788,8 @@ define('xdialog', function (require, exports, module) {
             + '<ul class="dropdown-menu"></ul>'
             + '<div class="pull-left caret-outer hide"><b class="caret"></b></div>'
           + '</div>'
-          + '<div class="done-before tab tab1 hide">Confirm sending reset token to your mailbox?</div>'
-          + '<div class="done-after tab hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
+          + '<div class="send-before tab tab1 hide">Confirm sending reset token to your mailbox?</div>'
+          + '<div class="send-after tab hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
           + '<div class="xalert-error tab hide">'
             + '<p>Requested too much, hold on awhile.</p>'
             + '<p>Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</p>'
@@ -798,7 +798,7 @@ define('xdialog', function (require, exports, module) {
           + '<div class="authenticate-before tab tab2 hide">You will be directed to Twitter website to authenticate identity above, you can reset password then.</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-white xbtn-done tab tab1 hide">Done</button>'
+          + '<button class="pull-right xbtn-white xbtn-send tab tab1 hide">Send</button>'
           + '<button class="pull-right xbtn-blue authenticate tab tab2 hide">Authenticate</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
@@ -1596,7 +1596,7 @@ define('xdialog', function (require, exports, module) {
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
           + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend>You’re browsing as identity underneath, please set up your account for easier further use. Got existing account already? <span class="underline">Sign in</span> directly to add this identity.</legend>'
+              + '<legend>For easier further use, please set up account of your identity underneath.<span class="hide"> Otherwise, <span class="underline">sign in</span> your existing account to merge with this identity.</span></legend>'
 
                 + '<div class="clearfix control-group">'
                   + '<div class="pull-right user-identity">'
@@ -1625,7 +1625,7 @@ define('xdialog', function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button class="xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Add…</button>'
+          + '<button class="xbtn-white xbtn-siea hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In to Merge…</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
       },
@@ -1633,7 +1633,6 @@ define('xdialog', function (require, exports, module) {
       onShowBefore: function (e) {
         var data = $(e.currentTarget).data('source');
         if (!data) return;
-        console.dir(data);
         var identity = data.identity;
         this._browsing_user = data.browsing_user;
         this._tokenType = data.tokenType;
@@ -1779,15 +1778,18 @@ define('xdialog', function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Browsing Identity</div>'
           + '<div class="user hide">'
-            + '<div>You will be redirected to the link as your currently signed in account underneath:</div>'
+            + '<div>You’re currently signed in account underneath, you can continue with this account.</div>'
             + '<div class="identity">'
               + '<img class="avatar" src="" width="40" height="40" />'
               + '<span></span>'
             + '</div>'
-            + '<div class="clearfix"><button class="pull-right xbtn-white xbtn-go">Go</button></div>'
+            + '<div class="clearfix">'
+              + '<button class="pull-right xbtn-white xbtn-go">Go</button>'
+              + '<a class="pull-right xbtn-cancel" data-dismiss="dialog">Cancel</a>'
+            + '</div>'
             + '<div class="spliterline"></div>'
           + '</div>'
-          + '<div class="browsing-tips">You’re currently browsing this page as identity underneath, please choose an option to continue.</div>'
+          + '<div class="browsing-tips"><span class="hide">Otherwise, you’re</span><span class="hide">You’re currently</span> browsing this page as identity underneath, please choose an option to continue.</div>'
           + '<div class="pull-right user-identity browsing-identity">'
             + '<img class="avatar" src="" alt="" width="40" height="40">'
             + '<i class="provider"></i>'
@@ -1825,7 +1827,10 @@ define('xdialog', function (require, exports, module) {
             .find('img')
             .attr('src', user.avatar_filename)
             .next().text(user.name || user.nickname);
+
         }
+
+        this.$('browsing-tips').find('span').eq(this._user ? 0 : 1).removeClass('hide')
 
         var beun = Util.printExtUserName(browsing_user.default_identity);
 
