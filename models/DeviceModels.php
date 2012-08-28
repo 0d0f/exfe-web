@@ -69,28 +69,30 @@ class DeviceModels extends DataModel {
     }
 
 
-    public function getDevicesByUserid($user_id, $asIdentity = false) {
+    public function getDevicesByUserid($user_id, $mainIdentity = null) {
         $rawResult = $user_id ? $this->query(
             "SELECT * FROM `devices`
              WHERE  `user_id` = {$user_id}
              AND    `status` = 1"
         ) : [];
-        if ($asIdentity) {
+        if ($mainIdentity) {
             foreach ($rawResult as $rI => $rItem) {
                 $rawResult[$rI] = new Identity(
                     -$rItem['id'],
+                    $mainIdentity['name'],
                     $rItem['name'],
-                    $rItem['model'],,
-                    $rItem['description'],
+                    $mainIdentity['bio'],
                     $rItem['os_name'],
                     $rItem['user_id'],
                     $rItem['push_token'],
                     $rItem['udid'],
-                                $avatar_filename   = '',
-                                $created_at        = '',
-                                $updated_at        = '');
+                    '',
+                    $rItem['first_connected_at'],
+                    $rItem['last_connected_at']
+                );
             }
         }
+        return $rawResult;
     }
 
 }

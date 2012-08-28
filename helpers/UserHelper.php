@@ -15,11 +15,6 @@ class UserHelper extends ActionController {
     }
 
 
-    public function getMobileIdentitiesByUserId($user_id) {
-        return $this->modUser->getMobileIdentitiesByUserId($user_id);
-    }
-
-
     public function getUserIdentityStatus($status_index) {
         return $this->modUser->arrUserIdentityStatus[$status_index];
     }

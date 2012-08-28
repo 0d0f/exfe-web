@@ -215,9 +215,9 @@ class CrossesActions extends ActionController {
             $crossHelper=$this->getHelperByName('cross');
             $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus {
-            $hlpGobus = $this->getHelperByName('gobus');
-            $modUser  = $this->getModelByName('user');
-            $chkMobUs = array();
+            $hlpGobus  = $this->getHelperByName('gobus');
+            $modDevice = $this->getModelByName('device');
+            $chkMobUs  = array();
             foreach ($cross->exfee->invitations as $invitation) {
                 if ($invitation->identity->id === $by_identity_id) {
                     $msgArg['by_identity'] = $invitation->identity;
@@ -226,8 +226,9 @@ class CrossesActions extends ActionController {
                 // get mobile identities
                 if ($invitation->identity->connected_user_id > 0
                 && !$chkMobUs[$invitation->identity->connected_user_id]) {
-                    $mobIdentities = $modUser->getMobileIdentitiesByUserId(
-                        $invitation->identity->connected_user_id
+                    $mobIdentities = $modDevice->getDevicesByUserid(
+                        $invitation->identity->connected_user_id,
+                        $invitation->identity
                     );
                     foreach ($mobIdentities as $mI => $mItem) {
                         $msgArg['to_identities'][] = $mItem;
