@@ -212,7 +212,9 @@ class UsersActions extends ActionController {
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'VERIFY', $user_id
+                        $identity,
+                        $raw_flag['reason'] === 'NO_PASSWORD' ? 'SET_PASSWORD' : 'VERIFY',
+                        $user_id
                     );
                     if ($viResult) {
                         $hlpGobus = $this->getHelperByName('gobus');
