@@ -289,14 +289,18 @@ class UsersActions extends ActionController {
                         } else {
                             $rtResult['action'] = 'VERIFYING';
                             // call Gobus {
-                            $user = $modUser->getUserById($raw_flag['user_id']);
+                            $user     = $modUser->getUserById($raw_flag['user_id']);
                             $hlpGobus = $this->getHelperByName('gobus');
-                            $hlpGobus->send('user', 'Verify', [
+                            $msgs     = [
                                 'to_identity' => $identity,
                                 'user_name'   => $user->name ?: '',
                                 'action'      => 'SET_PASSWORD',
                                 'token'       => $viResult['token'],
-                            ]);
+                            ];
+                            $hlpGobus->send('user', 'Verify', $msgs);
+                            if (DEBUG) {
+                                error_log($msgs);
+                            }
                             // }
                         }
                         apiResponse($rtResult);
