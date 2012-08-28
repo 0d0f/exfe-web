@@ -458,17 +458,22 @@ class UserModels extends DataModel {
                     }
                     break;
                 case 'SET_PASSWORD':
-                    $this->extendTokenExpirationDate($curToken['id']);
-                    $siResult = $this->rawSignin($curToken['user_id']);
-                    if ($siResult) {
-                        return [
-                            'user_id'     => $siResult['user_id'],
-                            'user_name'   => $siResult['name'],
-                            'identity_id' => $curToken['identity_id'],
-                            'token'       => $siResult['token'],
-                            'token_type'  => $curToken['action'],
-                            'action'      => 'INPUT_NEW_PASSWORD',
-                        ];
+                    $stResult = $this->setUserIdentityStatus(
+                        $curToken['user_id'], $curToken['identity_id'], 3
+                    );
+                    if ($stResult) {
+                        $this->extendTokenExpirationDate($curToken['id']);
+                        $siResult = $this->rawSignin($curToken['user_id']);
+                        if ($siResult) {
+                            return [
+                                'user_id'     => $siResult['user_id'],
+                                'user_name'   => $siResult['name'],
+                                'identity_id' => $curToken['identity_id'],
+                                'token'       => $siResult['token'],
+                                'token_type'  => $curToken['action'],
+                                'action'      => 'INPUT_NEW_PASSWORD',
+                            ];
+                        }
                     }
             }
         }
