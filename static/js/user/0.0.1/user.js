@@ -350,8 +350,6 @@ define('user', function (require, exports, module) {
       , browsing_user = data.browsing
       , tplFun;
 
-    console.dir(data);
-
     data.browsing.isBrowsing = true;
 
     $('#app-browsing-identity').remove();
@@ -383,9 +381,13 @@ define('user', function (require, exports, module) {
     $('#app-user-menu')
       .find('.set-up')
       .data('source', {
+        browsing_user: browsing_user,
         identity: browsing_user.default_identity,
         originToken: data.originToken,
-        tokenType: data.tokenType
+        tokenType: data.tokenType,
+        user_name: data.user_name,
+        forward: data.forward,
+        page: data.page
       }
     );
   }
