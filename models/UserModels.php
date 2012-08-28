@@ -402,11 +402,11 @@ class UserModels extends DataModel {
                 // update database
                 if ($curToken) {
                     if (strtotime($curToken['expiration_date']) > Time()
-                     && strtotime($curToken['used_at']) <= 0) { // extension
+                     && strtotime($curToken['used_at']) <= 0) {        // extension
                         $result['token'] = $curToken['token'];
                     }
                     $actResult = $this->extendTokenExpirationDate(
-                        $curToken['id'], 60 * 24 * 3, $result['token'] // 3 days
+                        $curToken['id'], 60 * 24 * 2, $result['token'] // 2 days
                     );
                 } else {
                     $actResult = $this->insertNewToken(
