@@ -208,44 +208,35 @@ class UsersActions extends ActionController {
         $raw_flag = $modUser->getRegistrationFlag($identity);
         // return
         if ($raw_flag) {
+            $user_id = isset($raw_flag['user_id']) ? $raw_flag['user_id'] : 0;
             switch ($raw_flag['flag']) {
                 case 'VERIFY':
-                case 'AUTHENTICATE':
-                    $user_id  = isset($raw_flag['user_id'])
-                              ? $raw_flag['user_id'] : 0;
                     $viResult = $modUser->verifyIdentity(
-                        $identity,
-                        $raw_flag['reason'] === 'NO_PASSWORD'
-                      ? 'SET_PASSWORD' : 'VERIFY',
-                        $user_id
+                        $identity, 'VERIFY', $user_id
                     );
                     if ($viResult) {
-                        $gobusFlag = '';
-                        switch ($raw_flag['flag']) {
-                            case 'VERIFY':
-                                $gobusFlag = $raw_flag['reason'] === 'NO_PASSWORD'
-                                           ? 'SET_PASSWORD' : 'CONFIRM_IDENTITY';
-                                $rtResult['action'] = 'VERIFYING';
-                                break;
-                            case 'AUTHENTICATE':
-                                $rtResult['url']    = $viResult['url'];
-                                $rtResult['action'] = 'REDIRECT';
-                        }
-                        // call Gobus {
-                        if ($gobusFlag) {
-                            $user = $modUser->getUserById($raw_flag['user_id']);
-                            $hlpGobus = $this->getHelperByName('gobus');
-                            $hlpGobus->send('user', 'Verify', [
-                                'to_identity' => $identity,
-                                'user_name'   => $user->name ?: '',
-                                'action'      => $gobusFlag,
-                                'token'       => $viResult['token'],
-                            ]);
-                        }
-                        // }
+                        $hlpGobus = $this->getHelperByName('gobus');
+                        $user     = $modUser->getUserById($user_id);
+                        $hlpGobus->send('user', 'Verify', [
+                            'to_identity' => $identity,
+                            'user_name'   => $user->name ?: '',
+                            'action'      => 'CONFIRM_IDENTITY',
+                            'token'       => $viResult['token'],
+                        ]);
+                        $rtResult['action'] = 'VERIFYING';
                         apiResponse($rtResult);
                     }
-                    apiError(500, 'failed', '');
+                    break;
+                case 'AUTHENTICATE':
+                    $viResult = $modUser->verifyIdentity(
+                        $identity, 'VERIFY', $user_id
+                    );
+                    if ($viResult) {
+                        $rtResult['url']    = $viResult['url'];
+                        $rtResult['action'] = 'REDIRECT';
+                        apiResponse($rtResult);
+                    }
+                    break;
                 case 'SIGN_IN':
                     apiError(400, 'no_need_to_verify', 'This identity is not need to verify.');
                 case 'SIGN_UP':
