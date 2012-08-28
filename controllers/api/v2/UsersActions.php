@@ -538,6 +538,8 @@ class UsersActions extends ActionController {
                 'udid'       => $udid,
                 'push_token' => $push_token,
                 'user_id'    => $user_id,
+                'os_name'    => $os_name,
+                'os_version' => $os_version,
             ]);
         } else {
             apiError(500, 'reg device error');
