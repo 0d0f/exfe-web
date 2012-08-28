@@ -57,7 +57,7 @@ root:table {
 
 
     Welcome {
-        An_utility_for_hanging_out_with_friends {"An utility for hanging out with friends."}
+        A_utility_for_hanging_out_with_friends {"A utility for hanging out with friends."}
         x_description {"X (cross), gathering of friends for anything you want to do with bunch of people. We saves you from calling up every one just to confirm attendance, or losing in emails of endless discussion off the point."}
         Go_meet_friends {"Go meet friends, offline."}
     }
@@ -180,7 +180,7 @@ root:table {
         I_See {"I See"}
         Hi {"Hi."}
         Thanks_for_using_EXFE {"Thanks for using EXFE"}
-        An_utility_for_hanging_out_with_friends {"An utility for hanging out with friends."}
+        A_utility_for_hanging_out_with_friends {"A utility for hanging out with friends."}
         Please_check_your_mailbox {"Please check your mailbox for verification."}
         X_is_a_gathering_of_people {"X (cross) is a gathering of people, for anything to do with them. We save you from calling up every one RSVP, losing in endless emails messages off the point."}
         EXFE_your_friends {"EXFE your friends, gather a X"}
