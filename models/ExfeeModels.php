@@ -244,19 +244,19 @@ class ExfeeModels extends DataModel {
 
     public function sendToGobus($exfee_id, $by_identity_id, $to_identities = null, $old_cross = null) {
         // get helpers
-        $hlpCross = $this->getHelperByName('cross');
-        $hlpUser  = $this->getHelperByName('user');
-        $hlpGobus = $this->getHelperByName('gobus');
+        $hlpCross  = $this->getHelperByName('cross');
+        $hlpGobus  = $this->getHelperByName('gobus');
+        $hlpDevice = $this->getHelperByName('device');
         // get cross
-        $cross_id = $this->getCrossIdByExfeeId($exfee_id);
-        $cross    = $hlpCross->getCross($cross_id, true, true);
-        $msgArg   = array('cross' => $cross, 'to_identities' => array());
+        $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
+        $cross     = $hlpCross->getCross($cross_id, true, true);
+        $msgArg    = array('cross' => $cross, 'to_identities' => array());
         // get old cross
         if ($old_cross) {
             $msgArg['old_cross'] = $old_cross;
         }
         // raw action
-        $chkMobUs = array();
+        $chkMobUs  = array();
         foreach ($cross->exfee->invitations as $i => $invitation) {
             if ($invitation->identity->id === $by_identity_id) {
                 $msgArg['by_identity'] = $invitation->identity;
@@ -268,8 +268,9 @@ class ExfeeModels extends DataModel {
                 // get mobile identities
                 if ($invitation->identity->connected_user_id > 0
                 && !$chkMobUs[$invitation->identity->connected_user_id]) {
-                    $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
-                        $invitation->identity->connected_user_id
+                    $mobIdentities = $hlpDevice->getDevicesByUserid(
+                        $invitation->identity->connected_user_id,
+                        $invitation->identity
                     );
                     foreach ($mobIdentities as $mI => $mItem) {
                         $msgArg['to_identities'][] = $mItem;
@@ -284,8 +285,8 @@ class ExfeeModels extends DataModel {
                 // get mobile identities
                 if ($identity->connected_user_id
                 && !$chkMobUs[$identity->connected_user_id]) {
-                    $mobIdentities = $hlpUser->getMobileIdentitiesByUserId(
-                        $identity->connected_user_id
+                    $mobIdentities = $hlpDevice->getDevicesByUserid(
+                        $identity->connected_user_id, $identity
                     );
                     foreach ($mobIdentities as $mI => $mItem) {
                         $msgArg['to_identities'][] = $mItem;

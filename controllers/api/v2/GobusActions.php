@@ -40,6 +40,7 @@ class GobusActions extends ActionController {
     public function doPostConversation() {
         // get model
         $modUser         = $this->getModelByName('User');
+        $modDevice       = $this->getModelByName('Device');
         $modIdentity     = $this->getModelByName('Identity');
         $modCnvrstn      = $this->getModelByName('Conversation');
         $hlpCross        = $this->getHelperByName('Cross');
@@ -145,8 +146,9 @@ class GobusActions extends ActionController {
             if ($invitation->identity->connected_user_id > 0
              && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
-                $mobIdentities = $modUser->getMobileIdentitiesByUserId(
-                    $invitation->identity->connected_user_id
+                $mobIdentities = $modDevice->getDevicesByUserid(
+                    $invitation->identity->connected_user_id,
+                    $invitation->identity
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
                     $msgArg['to_identities'][] = $mItem;
