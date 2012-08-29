@@ -14,8 +14,8 @@
   <style type="text/css">
     body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,img { margin: 0; padding:0; border: 0; }
     html, body { height: 100%; overflow: hidden; }
-    body { font: 20px "Times New Roman"; line-height: 1.2; background: #3A6EA5; }
-    .containter { position: relative; width: 520px; height: 420px; background: #ffffff; margin: 100px auto 0; padding: 50px; }
+    body { font: 20px "Times New Roman"; line-height: 1.2; background: #3A6EA5; text-align: center; }
+    .containter { text-align: left; position: relative; width: 520px; height: 420px; background: #ffffff; margin: 100px auto 0; padding: 50px; }
     .pixel-corner { position: absolute; width: 10px; height: 10px; background: #3A6EA5; z-index: 1; font-size: 0; }
     .left { float: left; }
     .right { float: right; }
