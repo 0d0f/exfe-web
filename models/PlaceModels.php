@@ -15,7 +15,7 @@ class PlaceModels extends DataModel {
         $created_at=$result["created_at"];
         $updated_at=$result["updated_at"];
 
-        $place=new Place(intval($place_id), $title ?: '', $description ?: '', $lng ?: 0, $lat ?: 0, $provider ?: '', $external_id ?: 0);
+        $place=new Place(intval($place_id), $title ?: '', $description ?: '', $lng ?: '', $lat ?: '', $provider ?: '', $external_id ?: 0);
         $place->created_at=$created_at;
         $place->updated_at=$updated_at;
 
