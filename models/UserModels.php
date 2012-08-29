@@ -820,10 +820,10 @@ class UserModels extends DataModel {
         do {
             $posArr  = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 3, 50, $fColor, $ftFile, $name);
             $fWidth  = $posArr[2] - $posArr[0];
-            $fHeight = $posArr[1] - $posArr[7];
+            $fHeight = $posArr[7] - $posArr[1];
             $ftSize--;
         } while ($fWidth > $specification['font-width']);
-        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, 50, $fColor, $ftFile, $name);
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, ($specification['height'] - $fHeight) / 2, $fColor, $ftFile, $name);
         // return
         if ($asimage) {
             return $image;
