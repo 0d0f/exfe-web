@@ -7208,8 +7208,21 @@ body {
 .cross-description {
   position: relative;
   max-height: 180px;
+  min-height: 80px;
   overflow: hidden;
   word-wrap: break-word;
+}
+
+.cross-description .gsd {
+  width: 470px;
+  max-height: 170px;
+  min-height: 70px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px dashed #d5d5d5;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
 }
 
 .cross-description p {
@@ -7222,7 +7235,8 @@ body {
 
 .cross-description textarea {
   width: 470px;
-  height: 170px;
+  max-height: 170px;
+  min-height: 70px;
   margin-bottom: 0;
   resize: none;
 }
@@ -7255,7 +7269,7 @@ body {
 }
 
 .cross-time {
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .cross-date h2 {
@@ -7273,7 +7287,6 @@ body {
 
 .cross-place h2 {
   max-height: 80px;
-  padding-top: 20px;
   overflow: hidden;
   word-wrap: break-word;
 }
