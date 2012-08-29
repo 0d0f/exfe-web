@@ -250,7 +250,7 @@ define(function (require) {
                 // class
                 cls: 'modal-id home-dialog'
               }
-            },
+            }
           };
           $('.sign-in').data('dialog-settings', settings);
           $('.sign-in').trigger('click.dialog.data-api');

@@ -6503,25 +6503,20 @@ body {
 
 .x-home .page-main .exfe-toy-shadow {
   position: absolute;
-  opacity: 0.66;
-  filter: alpha(opacity=66);
+  opacity: 0;
+  filter: alpha(opacity=0);
   /*.opacity(66);*/
 
 }
 
 .x-home .page-main .exfe-scaleOut {
-  opacity: 0;
-  filter: alpha(opacity=0);
-  -webkit-transform: scale(1.15);
-     -moz-transform: scale(1.15);
-      -ms-transform: scale(1.15);
-       -o-transform: scale(1.15);
-          transform: scale(1.15);
-  -webkit-transition: -webkit-transform 377ms ease-in, opacity 377ms ease-in;
-     -moz-transition: -moz-transform 377ms ease-in, opacity 377ms ease-in;
-      -ms-transition: -ms-transform 377ms ease-in, opacity 377ms ease-in;
-       -o-transition: -o-transform 377ms ease-in, opacity 377ms ease-in;
-          transition: transform 377ms ease-in, opacity 377ms ease-in;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  -webkit-transition: opacity 144ms ease-in;
+     -moz-transition: opacity 144ms ease-in;
+      -ms-transition: opacity 144ms ease-in;
+       -o-transition: opacity 144ms ease-in;
+          transition: opacity 144ms ease-in;
   -webkit-animation-fill-mode: forwards;
 }
 
@@ -7183,6 +7178,7 @@ body {
 }
 
 .cross-title {
+  position: relative;
   margin: 0 40px 20px;
   /*padding: 80px 0 20px;*/
 
@@ -7199,8 +7195,9 @@ body {
 }
 
 .cross-title textarea {
-  width: 788px;
-  height: 90px;
+  position: relative;
+  top: -5px;
+  left: -6px;
   margin: 0;
   font-size: 42px;
   font-weight: 300;
@@ -7394,17 +7391,29 @@ body {
   margin-bottom: 30px;
 }
 
-.single-line {
+.single-line h1 {
   width: 714px;
   max-height: 50px;
   overflow: hidden;
   text-overflow: clip;
 }
 
-.double-line {
+.single-line textarea {
+  width: 719px;
+  height: 50px;
+  margin-bottom: -10px;
+}
+
+.double-line h1 {
   width: 630px;
-  max-height: 100px;
+  height: 100px;
   overflow: hidden;
+}
+
+.double-line textarea {
+  width: 635px;
+  height: 100px;
+  margin-bottom: -10px;
 }
 
 .cross-container .cross-title .editing,
