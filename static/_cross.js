@@ -1280,7 +1280,9 @@ define(function (require, exports, module) {
                 },
                 function(data) {
                     $('.cross-opts .saving').hide();
-                    bus.emit('app:cross:edited', {error : 'no_permission'});
+                    var errorType = data.meta && (data.meta.code === 401 || data.meta.code === 403)
+                                  ? 'no_permission' : '';
+                    bus.emit('app:cross:edited', {error : errorType});
                 }
             );
         }
@@ -1330,7 +1332,9 @@ define(function (require, exports, module) {
                 },
                 function(data) {
                     $('.cross-opts .saving').hide();
-                    bus.emit('app:cross:edited', {error : 'no_permission'});
+                    var errorType = data.meta && (data.meta.code === 401 || data.meta.code === 403)
+                                  ? 'no_permission' : '';
+                    bus.emit('app:cross:edited', {error : errorType});
                 }
             );
         }
@@ -2107,7 +2111,9 @@ define(function (require, exports, module) {
             },
             function(data) {
                 $('.cross-opts .saving').hide();
-                bus.emit('app:cross:edited', {error : 'no_permission'});
+                var errorType = data.meta && (data.meta.code === 401 || data.meta.code === 403)
+                              ? 'no_permission' : '';
+                bus.emit('app:cross:edited', {error : errorType});
             }
         );
     };
