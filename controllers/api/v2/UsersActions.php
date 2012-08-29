@@ -492,6 +492,7 @@ class UsersActions extends ActionController {
         // collecting post data
         $params    = $this->params;
         $user_id   = intval($params['id']);
+        $os_name   = $_POST['os_name'];
         $udid      = $_POST['udid'];
         $check     = $hlpCheck->isAPIAllow(
             'user_signout', $params['token'], ['user_id' => $user_id]
@@ -501,7 +502,7 @@ class UsersActions extends ActionController {
         }
         // disconnect
         $rtResult  = ['user_id' => $user_id];
-        $rtResult += $udid && $modDevice->disconnectDeviceUseridAndUdid($user_id, $udid)
+        $rtResult += $udid && $os_name && $modDevice->disconnectDeviceUseridAndUdid($user_id, $udid, $os_name)
                    ? ['udid'    => $udid] : [];
         // return
         apiResponse($rtResult);
@@ -536,7 +537,7 @@ class UsersActions extends ActionController {
         }
         // connect
         $rdResult = $modDevice->regDeviceByUseridAndUdid(
-            $user_id, $udid, $push_token, $name, $brand, $model, $os_name, $os_version
+            $user_id, $udid, $push_token, $os_name, $name, $brand, $model, $os_version
         );
         // return
         if ($rdResult) {
