@@ -1765,12 +1765,17 @@ define(function (require, exports, module) {
 
 
     var ShowDescription = function() {
-        var expended = $('.cross-description .xbtn-more').hasClass('xbtn-less');
+        var expended = $('.cross-description .xbtn-more').hasClass('xbtn-less'),
+            domDesc  = '';
         $('.cross-description').toggleClass('more', true);
         $('.cross-description .xbtn-more').toggleClass('xbtn-less', false);
-        var domDesc = Cross.description
-                    ? ExfeUtilities.escape(Cross.description).replace(/\r\n|\r|\n/g, '<br>') // ? Marked.parse(Cross.description)
-                    : 'Click here to describe something about this X.';
+        if (Cross.description) {
+            domDesc  = ExfeUtilities.escape(Cross.description).replace(/\r\n|\r|\n/g, '<br>'); // ? Marked.parse(Cross.description)
+            $('.cross-description .show').toggleClass('gray', false);
+        } else {
+            domDesc  = 'Click here to describe something about this X.';
+            $('.cross-description .show').toggleClass('gray', true);
+        }
         if ($('.cross-description .show').html() !== domDesc) {
             $('.cross-description .show').html(domDesc);
         }
@@ -1815,11 +1820,13 @@ define(function (require, exports, module) {
             timeOffset  = getTimezoneOffset(ExfeUtilities.getTimezone()),
             timevalid   = crossOffset === timeOffset && require('config').timevalid,
             strAbsTime  = '', strRelTime = '', format = 'YYYY-MM-DD',
-            placeholder = Cross.id ? '&nbsp;' : 'Click here to set time.';
+            placeholder = Cross.id ? '&nbsp;' : 'Click here to set time.',
+            showGray    = false;
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
                 strAbsTime = placeholder;
                 strRelTime = ExfeUtilities.escape(Cross.time.origin);
+                showGray   = true;
             } else if (Cross.time.begin_at.time) {
                 var objMon = moment((moment.utc(
                     Cross.time.begin_at.date + ' '
@@ -1840,9 +1847,10 @@ define(function (require, exports, module) {
         } else {
             strAbsTime = placeholder;
             strRelTime = 'Sometime';
+            showGray   = true;
         }
         $('.cross-date h2').html(strRelTime);
-        $('.cross-time').html(strAbsTime);
+        $('.cross-time').html(strAbsTime).toggleClass('gray', showGray);
     };
 
 
@@ -1854,11 +1862,15 @@ define(function (require, exports, module) {
         );
         $('.cross-dp.cross-place > address').toggleClass('more', true)
         $('.cross-dp.cross-place .xbtn-more').toggleClass('xbtn-less', false);
-        $('.cross-dp.cross-place > address').html(
-            Cross.place.description
-          ? ExfeUtilities.escape(Cross.place.description).replace(/\r\n|\r|\n/g, '<br>')
-          : (Cross.id ? '&nbsp;' : 'Click here to set place.')
-        );
+        if (Cross.place.description) {
+            $('.cross-dp.cross-place > address').html(
+                ExfeUtilities.escape(Cross.place.description).replace(/\r\n|\r|\n/g, '<br>')
+            ).toggleClass('gray', false);
+        } else {
+            $('.cross-dp.cross-place > address').html(
+                Cross.id ? '&nbsp;' : 'Click here to set place.'
+            ).toggleClass('gray', true);
+        }
         if ($('.cross-dp.cross-place > address').height() > 80) {
             $('.cross-dp.cross-place > address').toggleClass('more', false);
             $('.cross-dp.cross-place .xbtn-more').show();
