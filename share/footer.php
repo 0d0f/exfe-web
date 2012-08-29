@@ -53,7 +53,7 @@ addScript([
     ['placepanel',    '0.0.1'],
     ['user',          '0.0.1'],
 ]);
-//echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
+echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
 // lightsaber
 addScript([
