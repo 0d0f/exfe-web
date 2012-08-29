@@ -775,18 +775,26 @@ class UserModels extends DataModel {
 
     public function makeDefaultAvatar($name, $asimage = false) {
         // image config
-        $specification = array(
-            'width'       => 80,
-            'height'      => 80,
-            'bg_quantity' => 3,
-        );
-        $colors = array(
-            array(138,  59, 197),
-            array(189,  53,  55),
-            array(219,  98,  11),
-            array( 66, 163,  36),
-            array( 41,  95, 204),
-        );
+        $specification = [
+            'width'  => 80,
+            'height' => 80,
+        ];
+        $backgrounds = [
+            'blue',
+            'green',
+            'khaki',
+            'magenta',
+            'purple',
+            'yellow',
+        ];
+        $colors = [
+            [138,  59, 197],
+            [189,  53,  55],
+            [219,  98,  11],
+            [ 66, 163,  36],
+            [ 41,  95, 204],
+            [ 41,  95, 204],
+        ];
         $ftSize = 36;
         $strHsh = md5($name);
         $intHsh = 0;
@@ -796,14 +804,13 @@ class UserModels extends DataModel {
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../default_avatar_portrait/";
-        $fLatin = "{$resDir}OpenSans-Regular.ttf";
+        $fLatin = "{$resDir}Museo500-Regular.otf";
         $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
-        $bgIdx  = fmod($intHsh, $specification['bg_quantity']);
-        $image  = ImageCreateFromPNG("{$resDir}bg_{$bgIdx}.png");
+        $bgIdx  = fmod($intHsh, count($backgrounds));
+        $image  = ImageCreateFromPNG("{$resDir}portrait_default_{$backgrounds[$bgIdx]}.png");
         // get color
-        $clIdx  = fmod($intHsh, count($colors));
-        $fColor = imagecolorallocate($image, $colors[$clIdx][0], $colors[$clIdx][1], $colors[$clIdx][2]);
+        $fColor = imagecolorallocate($image, $colors[$bgIdx][0], $colors[$bgIdx][1], $colors[$bgIdx][2]);
         // get name & check CJK
         $ftFile = checkCjk($name = mb_substr($name, 0, 3, 'UTF-8'))
                && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8')) ? $fCjk : $fLatin;
