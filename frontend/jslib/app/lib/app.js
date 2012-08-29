@@ -10,7 +10,6 @@ define(function (require, exports, module) {
 
   var lightsaber = require('lightsaber');
 
-
   // Create App   ***********************************
   var app = lightsaber();
 
@@ -23,7 +22,6 @@ define(function (require, exports, module) {
   app.set('view cache', true);
   app.set('view engine', Handlebars);
   app.set('views', '/static/views');
-
 
   // Routes       ***********************************
 
