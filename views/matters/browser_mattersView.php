@@ -12,23 +12,13 @@
   <link rel="shortcut icon" href="/static/img/favicon.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon.png" />
   <style type="text/css">
-    body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,img {
-      margin: 0;
-      padding:0;
-      border: 0;
-    }
-
+    body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,img { margin: 0; padding:0; border: 0; }
     html, body { height: 100%; overflow: hidden; }
-
     body { font: 20px "Times New Roman"; line-height: 1.2; background: #3A6EA5; }
-
     .containter { position: relative; width: 520px; height: 420px; background: #ffffff; margin: 100px auto 0; padding: 50px; }
-
     .pixel-corner { position: absolute; width: 10px; height: 10px; background: #3A6EA5; z-index: 1; font-size: 0; }
-
     .left { float: left; }
     .right { float: right; }
-
     .tl-0 { top: 0px; left: 0px; }
     .tl-1 { top: 0px; left: 10px; }
     .tl-2 { top: 10px; left: 0px; }
@@ -41,37 +31,22 @@
     .br-0 { bottom: 0px; right: 0px; }
     .br-1 { bottom: 0px; right: 10px; }
     .br-2 { bottom: 10px; right: 0px; }
-
     .hide { display: none; }
-
     .hd { zoom: 1; clear: both; margin-bottom: 34px; }
-
     .sad {margin: 0 34px 0 10px;}
-
     .x { font-family: Arial; color: #3A6EA5; text-decoration: none;}
-
     h1 { font-size: 36px; font-weight: normal; line-height: 1.1; }
-
     h2 { font-size: 20px; font-weight: normal; line-height: 1; }
-
     .pf { padding-bottom: 28px; }
-
     .ft { margin-top: 41px; text-align: center; border: 1px solid #000000; width: 518px; height: 158px; padding: 10px 0 8px; }
-
     ol { margin-top: 20px; clear: both; list-style: none; margin-left: 40px; zoom: 1; }
-
     ol li {margin-right: 96px;}
     .last {margin-right: 0;}
-
     .ie {vertical-align: middle;}
-
-
     ol li a { font-size: 13px; color: #7f7f7f; line-height: 1; text-decoration: none; display: inline-block; }
     ol li a span { padding-top: 10px; display: block; }
-
     .apt {padding-top: 10px;}
     ol li a:hover { zoom: 1; }
-
     ol li a:hover img.pixel { display: none; }
     ol li a:hover img.hide { display: block; }
   </style>
