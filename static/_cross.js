@@ -1394,8 +1394,8 @@ define(function (require, exports, module) {
                 function() {
                     $('.cross-title').removeAttr('editable');
                     $('.cross-title .show').show();
-                    $('.cross-title .edit').hide();
                     ChangeTitle($('.cross-title .edit').val(), 'cross');
+                    $('.cross-title .edit').hide();
                     AutoSaveCross();
                 },
                 function() {
@@ -1729,12 +1729,21 @@ define(function (require, exports, module) {
 
     var ShowTitle = function(from) {
         var title = Cross.title.length ? ExfeUtilities.escape(Cross.title) : 'Enter intent';
+        /*
         $('.cross-title .show').html(title);
         $('.cross-title .show').removeClass('single-line').removeClass('double-line');
         if ($('.cross-title .show').height() > 50) {
             $('.cross-title .show').addClass('double-line').removeClass('single-line');
         } else {
             $('.cross-title .show').addClass('single-line').removeClass('double-line');
+        }
+        */
+        $('.cross-title .show').html(title);
+        $('.cross-title').removeClass('single-line').removeClass('double-line');
+        if ($('.cross-title h1').height() > 50) {
+            $('.cross-title').addClass('double-line').removeClass('single-line');
+        } else {
+            $('.cross-title').addClass('single-line').removeClass('double-line');
         }
         document.title = 'EXFE - ' + Cross.title;
         switch (from) {

@@ -24,7 +24,7 @@ addScript([
     ['marked',        '0.2.5'],
     ['handlebars',    '1.0.0'],
     ['handlebarsext', '0.0.1'],
-    ['jqfocusend',    '0.0.1'],
+    ['jqfocusend',    '0.0.2'],
     ['jqoffset',      '0.0.1'],
 ]);
 
@@ -53,7 +53,7 @@ addScript([
     ['placepanel',    '0.0.1'],
     ['user',          '0.0.1'],
 ]);
-echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
+//echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
 // lightsaber
 addScript([
@@ -64,5 +64,5 @@ addScript([
 ]);
 
 if (SITE_URL !== 'https://exfe.com') {
-  echo "<script>document.querySelector('body').style.borderTop = '6px solid #D32232';</script>";
+  echo "<script>document.getElementsByTagName('body')[0].style.borderTop = '6px solid #D32232';</script>";
 }

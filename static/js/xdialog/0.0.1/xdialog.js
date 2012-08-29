@@ -689,18 +689,15 @@ define('xdialog', function (require, exports, module) {
           }
         },
 
+        'click .xbtn-done': function (e) {
+          this.hide(e);
+          return;
+        },
+
         'click .xbtn-send': function (e) {
           var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('disabled')) {
-            return;
-          }
-          if ($e.hasClass('success')) {
-            this.hide(e);
-            var $t = this.element;
-            //this.offSrcNode();
-            //this.destory();
-            //$t.remove();
             return;
           }
           var i = $e.data('identity');
@@ -725,7 +722,8 @@ define('xdialog', function (require, exports, module) {
                 // 后台暂时没有 limit 限制
                 if (data.action === 'VERIFYING') {
                   that.$('.identity').next().removeClass('hide');
-                  $e.text('Done').addClass('success');
+                  $e.addClass('hide');
+                  that.$('.xbtn-done').removeClass('hide');
                   that.$('.send-before').addClass('hide');
                   that.$('.send-after').removeClass('hide');
                 }
@@ -798,7 +796,8 @@ define('xdialog', function (require, exports, module) {
           + '<div class="authenticate-before tab tab2 hide">You will be directed to Twitter website to authenticate identity above, you can reset password then.</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-white xbtn-send tab tab1 hide">Send</button>'
+          + '<button class="pull-right xbtn-white xbtn-done hide">Done</button>'
+          + '<button class="pull-right xbtn-blue xbtn-send tab tab1 hide">Send</button>'
           + '<button class="pull-right xbtn-blue authenticate tab tab2 hide">Authenticate</button>'
           + '<a class="pull-right xbtn-cancel">Cancel</a>'
 
