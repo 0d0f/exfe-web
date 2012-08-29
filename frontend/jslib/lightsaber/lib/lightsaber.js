@@ -75,6 +75,7 @@ define('lightsaber', function (require, exports, module) {
     // implict middleware
     this.use(lightsaberInit(this));
 
+
     // router
     this._usedRouter = false;
     this._router = new Router(this);
@@ -148,9 +149,8 @@ define('lightsaber', function (require, exports, module) {
 
     fn = args.pop();
 
-    if (args.length) envs = args;
-
-    if ('all' === envs || ~envs.indexOf(this.settings.env)) fn.call(this);
+    //if ('all' === envs || ~envs.indexOf(this.settings.env)) fn.call(this);
+    if ('all' === envs || ~indexOf(envs, this.settings.env)) fn.call(this);
 
     return this;
   };
@@ -626,7 +626,6 @@ define('lightsaber', function (require, exports, module) {
       , route;
 
     i = i || 0
-
     // matching routes
     for (; i < len; ++i) {
       route = routes[i];
@@ -743,6 +742,19 @@ define('lightsaber', function (require, exports, module) {
   }
   uuid.id = 0;
 
+  // [].indexOf
+  function indexOf(a, el, i) {
+    var l = a.length;
+    if (!l) return -1;
+    i || (i = 0);
+    if (i > l) return -1;
+    (i < 0) && (i = Math.max(0, l + i));
+    for (; i < l; ++i) {
+      if (i in a && a[i] === el) return i;
+    }
+    return -1;
+  }
+
   // ajax get template
   function read(engine, path, options, fn, ext) {
     return $.get(path, function (tpl) {
@@ -794,7 +806,7 @@ define('lightsaber', function (require, exports, module) {
   // pathToRegexp
   function pathToRegexp(path, keys, sensitive, strict) {
     if (path instanceof RegExp) return path;
-    if (Array.isArray(path)) path = '(' + path.join('|') + ')';
+    if (isArray(path)) path = '(' + path.join('|') + ')';
     path = path
       .concat(strict ? '' : '/?')
       .replace(/\/\(/g, '(?:/')
