@@ -142,8 +142,20 @@
     .cross-description {
       position: relative;
       max-height: 180px;
+      min-height: 80px;
       overflow: hidden;
       word-wrap: break-word;
+
+      // gather show description
+      .gsd {
+        min-height: 70px;
+        max-height: 170px;
+        width: 470px;
+        padding: 4px;
+        border: 1px dashed #d5d5d5;
+        background: rgba(255, 255, 255, .25);
+        .border-radius(3px);
+      }
 
       p {
         margin-bottom: 20px;
@@ -155,7 +167,8 @@
 
       textarea {
         width: 470px;
-        height: 170px;
+        min-height: 70px;
+        max-height: 170px;
         resize: none;
         margin-bottom: 0;
       }
@@ -196,7 +209,7 @@
     }
 
     .cross-time {
-      margin-bottom: 20px;
+      margin-bottom: 40px;
     }
 
     .cross-date {
@@ -217,7 +230,6 @@
       h2 {
         max-height: 80px;
         overflow: hidden;
-        padding-top: 20px;
         word-wrap: break-word;
       }
 
