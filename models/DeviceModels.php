@@ -69,15 +69,17 @@ class DeviceModels extends DataModel {
     }
 
 
-    public function disconnectDeviceUseridAndUdid($user_id, $udid) {
+    public function disconnectDeviceUseridAndUdid($user_id, $udid, $os_name) {
         $user_id    = (int) $user_id;
         $udid       = mysql_real_escape_string($udid);
+        $os_name    = mysql_real_escape_string($os_name);
         return $user_id && $udid ? $this->query(
             "UPDATE `devices`
              SET    `status`             =  0,
                     `disconnected_at`    =  NOW()
              WHERE  `user_id`            =  {$user_id}
-             AND    `udid`               = '{$udid}'"
+             AND    `udid`               = '{$udid}'
+             AND    `os_name`            = '{$os_name}'"
         ) : false;
     }
 
