@@ -1774,7 +1774,7 @@ define(function (require, exports, module) {
             $('.cross-description .show').toggleClass('gray', false);
         } else {
             domDesc  = 'Click here to describe something about this X.';
-            $('.cross-description .show').toggleClass('gray', true);
+            $('.cross-description .show').toggleClass('gray', true).toggleClass('gsd', !Cross.id);
         }
         if ($('.cross-description .show').html() !== domDesc) {
             $('.cross-description .show').html(domDesc);
