@@ -708,7 +708,7 @@ class UserModels extends DataModel {
                  AND    `user_identity`.`status`     = 3"
             );
             if ($rawUser && $rawUser['avatar_file_name']) {
-                return ['url' => $rawUser['avatar_file_name'], 'type' => 'url'];
+                return ['url' => getAvatarUrl('', '', $rawUser['avatar_file_name']), 'type' => 'url'];
             }
             $name = $rawIdentity['name'];
         }
