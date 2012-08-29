@@ -44,6 +44,11 @@ class IdentityHelper extends ActionController {
     }
 
 
+    public function parseEmail($email) {
+        return $this->modIdentity->parseEmail($email);
+    }
+
+
     public function cleanIdentityBadgeNumber($device_identity_id, $user_id) {
         //device token
         $identityData = $this->getModelByName('identity');
