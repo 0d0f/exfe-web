@@ -1805,10 +1805,11 @@ define(function (require, exports, module) {
         var crossOffset = getTimezoneOffset(Cross.time.begin_at.timezone),
             timeOffset  = getTimezoneOffset(ExfeUtilities.getTimezone()),
             timevalid   = crossOffset === timeOffset && require('config').timevalid,
-            strAbsTime  = '', strRelTime = '', format = 'YYYY-MM-DD';
+            strAbsTime  = '', strRelTime = '', format = 'YYYY-MM-DD',
+            placeholder = Cross.id ? '&nbsp;' : 'No specified time, yet.';
         if (Cross.time.origin) {
             if (Cross.time.outputformat) {
-                strAbsTime = 'No specified time, yet.';
+                strAbsTime = placeholder;
                 strRelTime = ExfeUtilities.escape(Cross.time.origin);
             } else if (Cross.time.begin_at.time) {
                 var objMon = moment((moment.utc(
@@ -1828,7 +1829,7 @@ define(function (require, exports, module) {
                            ? 'Today' : (objRel ? objRel.fromNow() : '');
             }
         } else {
-            strAbsTime = 'No specified time, yet.';
+            strAbsTime = placeholder;
             strRelTime = 'Sometime';
         }
         $('.cross-date h2').html(strRelTime);
@@ -1847,7 +1848,7 @@ define(function (require, exports, module) {
         $('.cross-dp.cross-place > address').html(
             Cross.place.description
           ? ExfeUtilities.escape(Cross.place.description).replace(/\r\n|\r|\n/g, '<br>')
-          : 'Add some place details.'
+          : (Cross.id ? '&nbsp;' : 'Add some place details.')
         );
         if ($('.cross-dp.cross-place > address').height() > 80) {
             $('.cross-dp.cross-place > address').toggleClass('more', false);
