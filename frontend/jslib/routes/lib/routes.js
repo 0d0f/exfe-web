@@ -370,7 +370,7 @@ define('routes', function (require, exports, module) {
       default:
         break;
     }
-  }
+  };
 
 
   // cross
@@ -424,7 +424,7 @@ define('routes', function (require, exports, module) {
 
             viewData: {
               // class
-              cls: 'mblack modal-id',
+              cls: 'mblack modal-id'
             }
           }
         };
@@ -498,7 +498,9 @@ define('routes', function (require, exports, module) {
 
           var clicked = false;
           $('.xbtn-authenticate').on('click', function (e) {
-            if (clicked) return;
+            if (clicked) {
+              return;
+            }
             $.ajax({
               url: '/OAuth/twitterAuthenticate',
               dataType: 'JSON',
@@ -614,8 +616,6 @@ define('routes', function (require, exports, module) {
         window.location.href = '/404';
       }
     );
-
-
   };
 
 
@@ -759,7 +759,6 @@ define('routes', function (require, exports, module) {
     Store.remove('authorization');
     window.location.href = '/';
   };
-
 
 
   // Get User Data
