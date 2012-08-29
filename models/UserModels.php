@@ -619,6 +619,18 @@ class UserModels extends DataModel {
         if (!$user_id || !$identity_id || !$status) {
             return null;
         }
+        if ($status === 3) {
+            $this->query(
+                "UPDATE `user_identity`
+                 SET    `status`     = 1,
+                        `updated_at` = NOW()
+                 WHERE  `userid`    <> {$user_id}
+                 AND    `identityid` = {$identity_id}
+                 AND  ( `status`     = 2
+                 OR     `status`     = 3
+                 OR     `status`     = 4 )"
+            );
+        }
         $rawStatus = $this->getRow(
             "SELECT * FROM `user_identity`
              WHERE  `userid`     = {$user_id}
