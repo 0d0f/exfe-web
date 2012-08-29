@@ -3,6 +3,15 @@
 class HomeActions extends ActionController {
 
     public function doIndex() {
+        if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')
+        && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.5')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0'))) {
+            $this->displayViewByNameAction('matters', 'browser_matters');
+            return;
+        }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
         $modBackground = $this->getModelByName('background');
