@@ -776,24 +776,25 @@ class UserModels extends DataModel {
     public function makeDefaultAvatar($name, $asimage = false) {
         // image config
         $specification = [
-            'width'  => 80,
-            'height' => 80,
+            'width'      => 80,
+            'height'     => 80,
+            'font-width' => 64,
         ];
         $backgrounds = [
             'blue',
             'green',
-            'khaki',
             'magenta',
-            'purple',
             'yellow',
+            'khaki',
+            'purple',
         ];
         $colors = [
-            [138,  59, 197],
-            [189,  53,  55],
-            [219,  98,  11],
-            [ 66, 163,  36],
-            [ 41,  95, 204],
-            [ 41,  95, 204],
+            [135, 174, 198],
+            [156, 189, 129],
+            [178, 148, 173],
+            [175, 161, 120],
+            [189, 150, 128],
+            [156, 155, 183],
         ];
         $ftSize = 36;
         $strHsh = md5($name);
@@ -820,7 +821,7 @@ class UserModels extends DataModel {
             $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 3, 65, $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
-        } while ($fWidth > (80 - 2));
+        } while ($fWidth > $specification['font-width']);
         imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, 65, $fColor, $ftFile, $name);
         // return
         if ($asimage) {

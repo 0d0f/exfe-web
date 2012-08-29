@@ -24,18 +24,25 @@ class DeviceModels extends DataModel {
         $brand      = mysql_real_escape_string($brand);
         $model      = mysql_real_escape_string($model);
         $os_version = mysql_real_escape_string($os_version);
+        // $this->query(
+        //     "UPDATE `devices`
+        //      SET    `status`             =  0,
+        //             `disconnected_at`    =  NOW()
+        //      WHERE  `user_id`            =  {$user_id}
+        //      AND    `udid`               = '{$udid}'"
+        // );
         return $user_id && $udid && $push_token && $os_name ? $this->query(
             "UPDATE `devices`
              SET    `push_token`         = '{$push_token}',
                     `name`               = '{$name}',
                     `brand`              = '{$brand}',
                     `model`              = '{$model}',
-                    `os_name`            = '{$os_name}',
                     `os_version`         = '{$os_version}',
                     `status`             =  1,
                     `last_connected_at`  =  NOW()
              WHERE  `user_id`            =  {$user_id}
-             AND    `udid`               = '{$udid}'"
+             AND    `udid`               = '{$udid}'
+             AND    `os_name`            = '{$os_name}'"
         ) : false;
     }
 
