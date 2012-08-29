@@ -58,7 +58,7 @@
 
     .ft { margin-top: 41px; text-align: center; border: 1px solid #000000; width: 518px; height: 158px; padding: 10px 0 8px; }
 
-    ol { margin-top: 16px; clear: both; list-style: none; margin-left: 40px; }
+    ol { margin-top: 20px; clear: both; list-style: none; margin-left: 40px; zoom: 1; }
 
     ol li {margin-right: 96px;}
     .last {margin-right: 0;}
