@@ -2,13 +2,15 @@
 
 class DeviceModels extends DataModel {
 
-    public function getDeviceByUseridAndUdid($user_id, $udid) {
+    public function getDeviceByUseridAndUdid($user_id, $udid, $os_name) {
         $user_id    = (int) $user_id;
         $udid       = mysql_real_escape_string($udid);
+        $os_name    = mysql_real_escape_string($os_name);
         return $user_id && $udid ? $this->getRow(
             "SELECT * FROM `devices`
              WHERE `user_id` =  {$user_id}
-             AND   `udid`    = '{$udid}'"
+             AND   `udid`    = '{$udid}'
+             AND   `os_name` = '{$os_name }'"
         ) : null;
     }
 
@@ -82,7 +84,7 @@ class DeviceModels extends DataModel {
 
     public function regDeviceByUseridAndUdid($user_id, $udid, $push_token, $os_name, $name = '', $brand = '', $model = '', $os_version = '') {
         return $user_id && $udid && $push_token && $os_name ? (
-            $this->getDeviceByUseridAndUdid($user_id, $udid)
+            $this->getDeviceByUseridAndUdid($user_id, $udid, $os_name)
           ? $this->updateDeviceByUseridAndUdid($user_id, $udid, $push_token, $os_name, $name, $brand, $model, $os_version)
           : $this->connectDeviceByUseridAndUdid($user_id, $udid, $push_token, $os_name, $name, $brand, $model, $os_version)
         ) : false;
