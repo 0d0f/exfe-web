@@ -17,20 +17,6 @@ if(array_key_exists("locale", $_COOKIE)){
 }
 $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 
-/*
- * 判断并获取GET数据
- * @param $name:field name;
- * @return 如果存在，则返回GET的数据，否则返回空!
-*/
-function exGet($name)
-{
-    if (array_key_exists($name,$_GET))
-	{
-		return $_GET[$name];
-	}else{
-		return ("");
-	}
-}
 
 /**
  * 判断并获取POST数据
@@ -44,21 +30,6 @@ function exPost($name)
     } else {
         return ('');
     }
-}
-
-/**
- * 判断并获取REQUEST数据
- * @param $name:field name;
- * @return 如果存在，则返回REQUEST的数据，否则返回空!
-*/
-function exRequest($name)
-{
-	if (array_key_exists($name, $_REQUEST))
-	{
-		return $_REQUEST[$name];
-	}else{
-		return "";
-	}
 }
 
 
@@ -128,22 +99,6 @@ function getRealIpAddr()
     return $ip;
 }
 
-/**
- * 依据指定长度截取字符串
- * 传入值：$sourceStr　－　源字符串，即需要截取的字符串。
-           $outStrLen　－　输出字符串的长度！
- * 返回值：经过处理后的字符串！
-**/
-function mbString($sourceStr,$outStrLen)
-{
-    $curStrLen = mb_strlen($sourceStr,"UTF-8");
-    if($curStrLen > $outStrLen){
-        $echoStr = mb_substr($sourceStr, 0, $outStrLen, "UTF-8")."...";
-    }else{
-        $echoStr = $sourceStr;
-    }
-    return $echoStr;
-}
 
 /**
  * 随机产生字符串。
@@ -242,200 +197,6 @@ function getAvatarUrl($provider = '', $external_username = '', $raw_avatar = '',
     }
     return $raw_avatar;
 }
-
-
-/**
- * 简单的打包Array数组
- * @param $inArray
- * @return 打包后的字符串
-**/
-function simplePackArray($inArray)
-{
-    return preg_replace('/(.)/es',"str_pad(dechex(ord('\\1')),2,'0',STR_PAD_LEFT)",substr(base64_encode(rand().time()),0,9).base64_encode(serialize($inArray)));
-}
-
-/**
- * 简单的解包Array数组
- * @param $inString
- * @return 解包出来的Array数组
-**/
-function simpleUnpackArray($inString)
-{
-    return unserialize(base64_decode(substr(preg_replace('/(\w{2})/e',"chr(hexdec('\\1'))",$str),9)));
-}
-
-/**
- * 打包Array数组
- * @param $inArray
- * @return 打包后的字符串
-**/
-function packArray($inArray)
-{
-    return packString(serialize($inArray));
-}
-
-/**
- * 解包Array数组
- * @param $inString
- * @return 解包出来的Array数组
-**/
-function unpackArray($inString)
-{
-    return unserialize(unpackString($inString));
-}
-
-/**
- * 打包一个字符串。并且进行urlencode编码。
- * @param $string
- * @return 打包后的字符串
-**/
-function packString($str)
-{
-    $encode_str = exEncrypt($str,EXFE_PUB_KEY);
-    return preg_replace('/(.)/es',"str_pad(dechex(ord('\\1')),2,'0',STR_PAD_LEFT)",substr(base64_encode(rand().time()),0,9).base64_encode($encode_str));
-}
-
-/**
- * 解包一个字符串。并且进行urldecode解码。
- * @param $string
- * @return 解包后的字符串
-**/
-function unpackString($str)
-{
-    return exDecrypt(base64_decode(substr(preg_replace('/(\w{2})/e',"chr(hexdec('\\1'))",$str),9)),EXFE_PUB_KEY);
-}
-
-/**
- * 将UTF-8编码的字符串转成十六进制用于Ajax传输
- * @param $string
- * @return 编码后的字符串
-**/
-function _BIN2HEX($str)
-{
-    $arr = @unpack("H*", $str);
-    return $arr[1];
-}
-
-/**
- * 在服务器端将传入的十六进制Ajax内容解码！
- * @param $string
- * @return 解码后的字符串
-**/
-function _HEX2BIN($str)
-{
-    return @pack("H*", $str);
-}
-
-/**
- * ******************************************************
- * 通用加密解密方法
- * 开始
-**/
-function long2str($v, $w) {
-    $len = count($v);
-    $n = ($len - 1) << 2;
-    if ($w) {
-        $m = $v[$len - 1];
-        if (($m < $n - 3) || ($m > $n)) return false;
-        $n = $m;
-    }
-    $s = array();
-    for ($i = 0; $i < $len; $i++) {
-        $s[$i] = pack("V", $v[$i]);
-    }
-    if ($w) {
-        return substr(join('', $s), 0, $n);
-    }
-    else {
-        return join('', $s);
-    }
-}
-
-function str2long($s, $w) {
-    $v = unpack("V*", $s. str_repeat("\0", (4 - strlen($s) % 4) & 3));
-    $v = array_values($v);
-    if ($w) {
-        $v[count($v)] = strlen($s);
-    }
-    return $v;
-}
-
-function int32($n) {
-    while ($n >= 2147483648) $n -= 4294967296;
-    while ($n <= -2147483649) $n += 4294967296;
-    return (int)$n;
-}
-
-function exEncrypt($str, $key) {
-    if ($str == "") {
-        return "";
-    }
-    $v = str2long($str, true);
-    $k = str2long($key, false);
-    if (count($k) < 4) {
-        for ($i = count($k); $i < 4; $i++) {
-            $k[$i] = 0;
-        }
-    }
-    $n = count($v) - 1;
-
-    $z = $v[$n];
-    $y = $v[0];
-    $delta = 0x9E3779B9;
-    $q = floor(6 + 52 / ($n + 1));
-    $sum = 0;
-    while (0 < $q--) {
-        $sum = int32($sum + $delta);
-        $e = $sum >> 2 & 3;
-        for ($p = 0; $p < $n; $p++) {
-            $y = $v[$p + 1];
-            $mx = int32((($z >> 5 & 0x07ffffff) ^ $y << 2) + (($y >> 3 & 0x1fffffff) ^ $z << 4)) ^ int32(($sum ^ $y) + ($k[$p & 3 ^ $e] ^ $z));
-            $z = $v[$p] = int32($v[$p] + $mx);
-        }
-        $y = $v[0];
-        $mx = int32((($z >> 5 & 0x07ffffff) ^ $y << 2) + (($y >> 3 & 0x1fffffff) ^ $z << 4)) ^ int32(($sum ^ $y) + ($k[$p & 3 ^ $e] ^ $z));
-        $z = $v[$n] = int32($v[$n] + $mx);
-    }
-    return long2str($v, false);
-}
-
-function exDecrypt($str, $key) {
-    if ($str == "") {
-        return "";
-    }
-    $v = str2long($str, false);
-    $k = str2long($key, false);
-    if (count($k) < 4) {
-        for ($i = count($k); $i < 4; $i++) {
-            $k[$i] = 0;
-        }
-    }
-    $n = count($v) - 1;
-
-    $z = $v[$n];
-    $y = $v[0];
-    $delta = 0x9E3779B9;
-    $q = floor(6 + 52 / ($n + 1));
-    $sum = int32($q * $delta);
-    while ($sum != 0) {
-        $e = $sum >> 2 & 3;
-        for ($p = $n; $p > 0; $p--) {
-            $z = $v[$p - 1];
-            $mx = int32((($z >> 5 & 0x07ffffff) ^ $y << 2) + (($y >> 3 & 0x1fffffff) ^ $z << 4)) ^ int32(($sum ^ $y) + ($k[$p & 3 ^ $e] ^ $z));
-            $y = $v[$p] = int32($v[$p] - $mx);
-        }
-        $z = $v[$n];
-        $mx = int32((($z >> 5 & 0x07ffffff) ^ $y << 2) + (($y >> 3 & 0x1fffffff) ^ $z << 4)) ^ int32(($sum ^ $y) + ($k[$p & 3 ^ $e] ^ $z));
-        $y = $v[0] = int32($v[0] - $mx);
-        $sum = int32($sum - $delta);
-    }
-    return long2str($v, true);
-}
-/**
- * 通用加密解密方法
- * 结束
- * ******************************************************
-**/
 
 
 /**
