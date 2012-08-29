@@ -112,6 +112,7 @@
     }
 
     .cross-title {
+      position: relative;
       margin: 0 40px 20px;
       /*padding: 80px 0 20px;*/
       /*padding: 0 0 20px;*/
@@ -125,9 +126,12 @@
       }
 
       textarea {
+        position: relative;
+        top: -5px;
+        left: -6px;
         margin: 0;
-        width: 788px;
-        height: 90px;
+        /*width: 788px;*/
+        /*height: 90px;*/
         resize: none;
         font-size: 42px;
         font-weight: 300;
@@ -327,18 +331,34 @@
 
 // title 单行
 .single-line {
-  width: 714px;
-  max-height: 50px;
-  text-overflow: clip;
-  /*word-wrap: break-word;*/
-  overflow: hidden;
+  h1 {
+    width: 714px;
+    max-height: 50px;
+    text-overflow: clip;
+    /*word-wrap: break-word;*/
+    overflow: hidden;
+  }
+
+  textarea {
+    width: 719px;
+    height: 50px;
+    margin-bottom: -10px;
+  }
 }
 
 // title 双行
 .double-line {
-  width: 630px;
-  max-height: 100px;
-  overflow: hidden;
+  h1 {
+    width: 630px;
+    height: 100px;
+    overflow: hidden;
+  }
+
+  textarea {
+    height: 100px;
+    width: 635px;
+    margin-bottom: -10px;
+  }
 }
 
 .cross-container .cross-title .editing,
