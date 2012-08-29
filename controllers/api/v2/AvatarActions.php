@@ -14,6 +14,8 @@ class AvatarActions extends ActionController {
         $params  = $this->params;
         $modUser = $this->getModelByName('user');
         if ($params['provider'] && $params['external_username']) {
+            $params['provider']          = mysql_real_escape_string($params['provider']);
+            $params['external_username'] = mysql_real_escape_string($params['external_username']);
             $img_result = $modUser->getUserAvatarByProviderAndExternalUsername($params['provider'], $params['external_username']);
             if ($img_result) {
                 switch ($img_result['type']) {

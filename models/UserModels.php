@@ -681,11 +681,13 @@ class UserModels extends DataModel {
 
 
     public function getUserAvatarByProviderAndExternalUsername($provider, $external_username) {
+        $hlpIdentity = $this->getHelperByName('identity');
         $rawIdentity = $this->getRow(
             "SELECT `id`, `name` FROM `identities`
              WHERE  `provider`          = '{$provider}'
              AND    `external_username` = '{$external_username}'"
         );
+        $name = '';
         if ($rawIdentity && $rawIdentity['id']) {
             $rawUser = $this->getRow(
                 "SELECT `users`.`avatar_file_name` FROM `users`, `user_identity`
@@ -696,9 +698,18 @@ class UserModels extends DataModel {
             if ($rawUser && $rawUser['avatar_file_name']) {
                 return ['url' => $rawUser['avatar_file_name'], 'type' => 'url'];
             }
-            return ['name' => $rawIdentity['name'], 'type' => 'name'];
+            $name = $rawIdentity['name'];
         }
-        return false;
+        if (!$name) {
+            switch ($provider) {
+                case 'email':
+                    $objEmail = $hlpIdentity->parseEmail($external_username);
+                    if ($objEmail) {
+                        $name = $objEmail['name'];
+                    }
+            }
+        }
+        return ['name' => $name ?: $external_username, 'type' => 'name'];
     }
 
 
