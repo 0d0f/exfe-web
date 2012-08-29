@@ -543,7 +543,7 @@ ExfeeWidget = {
 
     parseAttendeeInfo : function(string) {
         function getAvatarUrl(provider, external_username) {
-            var avatar = ExfeeWidget.api_url + '/avatar/get?provider=' + provider + '&external_username=' + external_username;
+            var avatar = ExfeeWidget.api_url + '/avatar/get?provider=' + provider + '&external_username=' + encodeURIComponent(external_username);
             if (provider === 'email') {
                 avatar = 'http://www.gravatar.com/avatar/' + MD5(external_username) + '?d=' + encodeURIComponent(avatar);
             }

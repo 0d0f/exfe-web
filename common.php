@@ -190,7 +190,7 @@ function getAvatarUrl($provider = '', $external_username = '', $raw_avatar = '',
       . '/' . substr($raw_avatar, 1, 2)
       . '/' . "{$size}_{$raw_avatar}");
     } else {
-        $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_username={$external_username}");
+        $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_username=" . urlencode($external_username));
         if ($provider === 'email') {
             $raw_avatar = 'http://www.gravatar.com/avatar/' . md5($external_username) . '.jpg?d=' . urlencode($raw_avatar);
         }
