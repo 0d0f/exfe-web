@@ -823,7 +823,7 @@ class UserModels extends DataModel {
             $fHeight = $posArr[1] - $posArr[7];
             $ftSize--;
         } while ($fWidth > $specification['font-width']);
-        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, ($specification['height'] + $fHeight) / 2, $fColor, $ftFile, $name);
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, ($specification['height'] + $fHeight) / 2 - ($fHeight / 6), $fColor, $ftFile, $name);
         if ($asimage) {
             return $image;
         }
