@@ -144,7 +144,7 @@ define(function (require, exports, module) {
       }
       return s;
     } else {
-      if (b.time !== '00:00:00') {
+      if (b.time !== '') {
         f += 'hA ';
       }
       if (b.date) {
