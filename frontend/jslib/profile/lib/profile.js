@@ -62,9 +62,26 @@ define(function (require, exports, module) {
     // Cross 时区
     var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
     // 创建一个 moment date-object
-    var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
+    var s = '', sf = '';
+    if (b.date) {
+      s += b.date;
+      sf += 'YYYY-MM-DD';
+    }
 
-    var s = '', f;
+    if (b.time) {
+      s += ' ' + b.time;
+      sf += ' HH:mm:ss';
+    }
+
+    if ((b.date || b.time) && tz) {
+      s += ' ' + tz;
+      sf += ' ZZ'
+    }
+
+    var d = Moment(s, sf);
+    //var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
+
+    var s = '', f, tt;
 
     // 比对时区
     var czEtz = cz === tz;
@@ -82,7 +99,9 @@ define(function (require, exports, module) {
         s += b.time_word + ' (at) ';
       }
 
-      s += b.time;
+      if (b.time) {
+        s += b.time;
+      }
 
       if (!czEtz) {
         s += ' (' + tz + ') ';
@@ -92,14 +111,17 @@ define(function (require, exports, module) {
         s += b.date_word + ' (on) ';
       }
 
-      s += ' ' + b.date;
+      if (b.date) {
+        s += ' ' + b.date;
+      }
 
-      if (d.year() !== c.year()) {
+      if (d && d.year() !== 1900 && d.year() !== c.year()) {
         s += ' ' + d.year();
       }
     }
 
-    return d.calendar();
+    return s || (sf ? d.format(sf) : 'Sometime');
+    //return d.calendar();
     //return s;
   });
 
@@ -124,11 +146,7 @@ define(function (require, exports, module) {
     var cz = c.format('Z');
     var b = time.begin_at;
 
-    // Cross 时区
     var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
-    // 创建一个 moment date-object
-    var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
-
     var s = '', f = '';
 
     // 比对时区
@@ -141,14 +159,34 @@ define(function (require, exports, module) {
       }
       return s;
     } else {
-      if (b.time !== '') {
+      // Cross 时区
+      // 创建一个 moment date-object
+      var s = '', sf = '';
+      if (b.date) {
+        s += b.date;
+        sf += 'YYYY-MM-DD';
+      }
+
+      if (b.time) {
+        s += ' ' + b.time;
+        sf += ' HH:mm:ss';
+      }
+
+      if (tz) {
+        s += ' ' + tz;
+        sf += ' ZZ'
+      }
+
+      var d = Moment(s, sf);
+
+      if (b.time) {
         f += 'hA ';
       }
       if (b.date) {
         f += 'ddd MMM D';
       }
 
-      return d.format(f);
+      return f ? d.format(f) : 'Sometime';
     }
   });
 
@@ -165,8 +203,24 @@ define(function (require, exports, module) {
     // Cross 时区
     var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
     // 创建一个 moment date-object
-    var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
-    return d.fromNow();
+    var s = '', sf = '';
+    if (b.date) {
+      s += b.date;
+      sf += 'YYYY-MM-DD';
+    }
+
+    if (b.time) {
+      s += ' ' + b.time;
+      sf += ' HH:mm:ss';
+    }
+
+    if (tz) {
+      s += ' ' + tz;
+      sf += ' ZZ'
+    }
+
+    var d = Moment(s, sf);
+    return sf ? d.fromNow() : 'Sometime';
   });
 
   Handlebars.registerHelper('rsvpAction', function (identities, identity_id) {
