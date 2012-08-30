@@ -25,7 +25,7 @@ addScript([
     ['handlebars',    '1.0.0'],
     ['handlebarsext', '0.0.1'],
     ['jqfocusend',    '0.0.2'],
-    ['jqoffset',      '0.0.1'],
+    ['jqoffset',      '0.0.2'],
 ]);
 
 echo "  <script>\n";
