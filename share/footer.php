@@ -38,7 +38,7 @@ addScript([
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.1'],
-    ['global',        '0.0.1'],
+    ['global',        '0.0.2'],
 ]);
 
 // profile
