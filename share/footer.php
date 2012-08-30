@@ -1,9 +1,9 @@
 <?php
 
 function addScript($scripts) {
-    $mini = DEBUG ? '' : '.min';
+    $min = DEBUG ? '' : '.min';
     foreach ($scripts as $item) {
-        echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$mini}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
+        echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$min}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
     }
 }
 
