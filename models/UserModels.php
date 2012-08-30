@@ -708,7 +708,7 @@ class UserModels extends DataModel {
                  AND    `user_identity`.`status`     = 3"
             );
             if ($rawUser && $rawUser['avatar_file_name']) {
-                return ['url' => $rawUser['avatar_file_name'], 'type' => 'url'];
+                return ['url' => getAvatarUrl('', '', $rawUser['avatar_file_name']), 'type' => 'url'];
             }
             $name = $rawIdentity['name'];
         }
@@ -792,7 +792,7 @@ class UserModels extends DataModel {
             [135, 174, 198],
             [156, 189, 129],
             [178, 148, 173],
-            [175, 161, 120],
+            [184, 129,  96],
             [189, 150, 128],
             [156, 155, 183],
         ];
@@ -820,10 +820,10 @@ class UserModels extends DataModel {
         do {
             $posArr  = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 3, 50, $fColor, $ftFile, $name);
             $fWidth  = $posArr[2] - $posArr[0];
-            $fHeight = $posArr[1] - $posArr[7];
+            $fHeight = $posArr[7] - $posArr[1];
             $ftSize--;
         } while ($fWidth > $specification['font-width']);
-        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, 50, $fColor, $ftFile, $name);
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, ($specification['height'] - $fHeight) / 2, $fColor, $ftFile, $name);
         // return
         if ($asimage) {
             return $image;
