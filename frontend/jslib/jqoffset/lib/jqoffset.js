@@ -1,11 +1,10 @@
 define(function (require) {
 
-  var jQuery = require('jquery');
+  var $ = require('jquery');
 
-  !function ( $ ) {
-    // Firefox does not implement offsetX, OffsetY
+  // Firefox does not implement offsetX, OffsetY
 
-    if (! $.browser.mozilla) return false;
+  if ($.browser.mozilla) {
 
     var originalFilter = $.event.mouseHooks.filter;
 
@@ -21,5 +20,6 @@ define(function (require) {
       return event;
     };
 
-  }( jQuery );
+  }
+
 });
