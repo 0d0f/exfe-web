@@ -154,7 +154,7 @@ class libImage {
             curl_setopt($objCurl, CURLOPT_HEADER, false);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 1);
             $rawData = curl_exec($objCurl);
-            $image   = $rawData ? imagecreatefromstring($rawData) : null;
+            $image   = $rawData ? @imagecreatefromstring($rawData) : null;
             curl_close($objCurl);
         } else {
             $image   = null;
