@@ -38,13 +38,13 @@
     h1 { font-size: 36px; font-weight: normal; line-height: 1.1; }
     h2 { font-size: 20px; font-weight: normal; line-height: 1; }
     .pf { padding-bottom: 28px; }
-    .ft { margin-top: 41px; text-align: center; border: 1px solid #000000; width: 518px; height: 158px; padding: 10px 0 8px; }
+    .ft { margin-top: 41px; text-align: center; border: 1px solid #000000; width: 518px; height: 156px; padding: 10px 0 8px; }
     ol { margin-top: 20px; clear: both; list-style: none; margin-left: 40px; zoom: 1; }
     ol li {margin-right: 96px;}
     .last {margin-right: 0;}
     .ie {vertical-align: middle;}
-    ol li a { font-size: 13px; color: #7f7f7f; line-height: 1; text-decoration: none; display: inline-block; }
-    ol li a span { padding-top: 10px; display: block; }
+    ol li a { font-size: 13px; color: #7f7f7f; line-height: 1; text-decoration: none; display: inline-block; border: none; }
+    ol li a span { padding-top: 10px; display: block; padding-bottom: 2px; }
     .apt {padding-top: 10px;}
     ol li a:hover { zoom: 1; }
     ol li a:hover img.pixel { display: none; }
@@ -52,7 +52,6 @@
   </style>
 </head>
 <body>
-
   <div class="containter">
     <div class="pixel-corner tl-0"></div>
     <div class="pixel-corner tl-1"></div>
@@ -74,10 +73,12 @@
         <p>It's all about style and attitude.</p>
       </div>
     </div>
+
     <div class="bd">
       <p class="pf">Much to our regret, your browser (the blue <img class="ie" src="/static/img/ie.gif" alt="Internet Explorer" width="16" height="16" /> on your desktop) is too old-school to be supported.</p>
       <p><a href="https://exfe.com/" title="EXFE.com" class="x">EXFE</a> always be proud of looking forward.</p>
     </div>
+
     <div class="ft">
       <h2>Modern Browser Recommendations</h2>
       <ol>
@@ -99,5 +100,4 @@
       </ol>
     </div>
   </div>
-
 </body>
