@@ -126,3 +126,8 @@
 .oblique {
   font-style: oblique;
 }
+
+// Firefox image broken placeholder
+// http://adriansandu.com/how-to-handle-broken-images-in-firefox/
+// Github.com image broken image { float: left; }
+img:-moz-broken { -moz-force-broken-image-icon:1; }
