@@ -281,6 +281,7 @@ class ExfeeModels extends DataModel {
                 }
             }
         }
+        $cross->exfee->invitations = array_merge($cross->exfee->invitations);
         if ($to_identities) {
             foreach ($to_identities as $identity) {
                 $msgArg['to_identities'][] = $identity;
