@@ -1,9 +1,9 @@
 <?php
 
 function addScript($scripts) {
-    $mini = DEBUG ? '' : '.min';
+    $min = DEBUG ? '' : '.min';
     foreach ($scripts as $item) {
-        echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$mini}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
+        echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$min}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
     }
 }
 
@@ -38,7 +38,7 @@ addScript([
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.1'],
-    ['global',        '0.0.1'],
+    ['global',        '0.0.2'],
 ]);
 
 // profile
