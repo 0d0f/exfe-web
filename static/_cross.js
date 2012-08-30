@@ -966,7 +966,7 @@ define('exfeepanel', [], function (require, exports, module) {
                          +     '<div class="clearfix rsvp-actions">'
                          +      '<div class="pull-right invited">'
                          +        '<div class="mates-num hide"></div>'
-                         +        '<div class="pull-left together-with hide">Together with&nbsp;</div>'
+                         +        '<div class="pull-left together-with hide">Mates&nbsp;</div>'
                          +        '<div class="pull-right mates-info">'
                          +          '<i class="mates-add icon-plus-blue"></i>'
                          +        '</div>'
