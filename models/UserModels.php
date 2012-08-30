@@ -818,17 +818,12 @@ class UserModels extends DataModel {
         $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
         do {
-            $posArr  = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 3, 50, $fColor, $ftFile, $name);
+            $posArr  = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, $name);
             $fWidth  = $posArr[2] - $posArr[0];
-            $fHeight = $posArr[7] - $posArr[1];
+            $fHeight = $posArr[1] - $posArr[7];
             $ftSize--;
-        // print_r($posArr);
-
         } while ($fWidth > $specification['font-width']);
-        // print_r(($specification['height'] - $fHeight) / 2);
-        // exit();
-        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, ($specification['height'] - $fHeight) / 2, $fColor, $ftFile, $name);
-        // return
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2, ($specification['height'] + $fHeight) / 2 - ($fHeight / 6), $fColor, $ftFile, $name);
         if ($asimage) {
             return $image;
         }
