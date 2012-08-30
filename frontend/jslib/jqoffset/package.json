@@ -1,6 +1,6 @@
 {
   "name": "jqoffset",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "jQuery Plugins Support offsetX/offsetY in Firefox",
   "homepage": "https://exfe.com/",
   "author": "cfd",
