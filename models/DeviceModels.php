@@ -6,11 +6,11 @@ class DeviceModels extends DataModel {
         $user_id    = (int) $user_id;
         $udid       = mysql_real_escape_string($udid);
         $os_name    = mysql_real_escape_string($os_name);
-        return $user_id && $udid ? $this->getRow(
+        return $user_id && $udid && $os_name ? $this->getRow(
             "SELECT * FROM `devices`
              WHERE `user_id` =  {$user_id}
              AND   `udid`    = '{$udid}'
-             AND   `os_name` = '{$os_name }'"
+             AND   `os_name` = '{$os_name}'"
         ) : null;
     }
 
@@ -24,13 +24,7 @@ class DeviceModels extends DataModel {
         $brand      = mysql_real_escape_string($brand);
         $model      = mysql_real_escape_string($model);
         $os_version = mysql_real_escape_string($os_version);
-        // $this->query(
-        //     "UPDATE `devices`
-        //      SET    `status`             =  0,
-        //             `disconnected_at`    =  NOW()
-        //      WHERE  `user_id`            =  {$user_id}
-        //      AND    `udid`               = '{$udid}'"
-        // );
+        $this->disconnectDeviceByUdidExceptUserid($udid, $os_name, $user_id);
         return $user_id && $udid && $push_token && $os_name ? $this->query(
             "UPDATE `devices`
              SET    `push_token`         = '{$push_token}',
@@ -56,6 +50,7 @@ class DeviceModels extends DataModel {
         $brand      = mysql_real_escape_string($brand);
         $model      = mysql_real_escape_string($model);
         $os_version = mysql_real_escape_string($os_version);
+        $this->disconnectDeviceByUdidExceptUserid($udid, $os_name, $user_id);
         return $user_id && $udid && $push_token && $os_name ? $this->query(
             "INSERT INTO `devices`
              SET    `user_id`            =  {$user_id},
@@ -76,7 +71,23 @@ class DeviceModels extends DataModel {
     }
 
 
-    public function disconnectDeviceUseridAndUdid($user_id, $udid, $os_name) {
+    public function disconnectDeviceByUdidExceptUserid($udid, $os_name, $user_id) {
+        $udid       = mysql_real_escape_string($udid);
+        $os_name    = mysql_real_escape_string($os_name);
+        $user_id    = (int) $user_id;
+        return $udid && $os_name && $user_id ? $this->query(
+            "UPDATE `devices`
+             SET    `status`             =  0,
+                    `disconnected_at`    =  NOW()
+             WHERE  `status`             =  1
+             AND    `udid`               = '{$udid}'
+             AND    `os_name`            = '{$os_name}'
+             AND    `user_id`           <>  {$user_id}"
+        ) : false;
+    }
+
+
+    public function disconnectDeviceByUseridAndUdid($user_id, $udid, $os_name) {
         $user_id    = (int) $user_id;
         $udid       = mysql_real_escape_string($udid);
         $os_name    = mysql_real_escape_string($os_name);
