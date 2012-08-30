@@ -1,5 +1,5 @@
 // Front-End Configs
-  define('config', [], function (require, exports, module) {
+  define('config', function (require, exports, module) {
     var config = {
       APP_ENV: '<?php echo DEBUG ? 'development' : 'production'; ?>',
       api_url: '<?php echo API_URL; ?>/v2',
