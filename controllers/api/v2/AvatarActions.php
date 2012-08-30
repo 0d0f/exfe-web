@@ -209,7 +209,15 @@ class AvatarActions extends ActionController {
         }
         // get fall back image
         if (!$image) {
-            $image  = ImageCreateFromPNG("{$resDir}bg_" . fmod(0, 3) . '.png');
+            $backgrounds = [
+                'blue',
+                'green',
+                'magenta',
+                'yellow',
+                'khaki',
+                'purple',
+            ];
+            $image  = ImageCreateFromPNG("{$resDir}portrait_default_" . $backgrounds[rand(0, count($backgrounds) - 1)] . '.png');
         }
         // resize source image
         $rqs_width  = (int) $params['width'];
