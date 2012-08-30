@@ -1,0 +1,59 @@
+.spin-sprite {
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  .ie7-restore-right-whitespace();
+  background-image: ~'url("@{imgPath}/spin_sprite.png")';
+  background-repeat: no-repeat;
+  @spin: spin 500ms step-start infinite;
+  -webkit-animation: @spin;
+  -moz-animation: @spin;
+  -ms-animation: @spin;
+  -o-animation: @spin;
+  animation: @spin;
+
+  .keyframes {
+    0%    { background-position: 0 0; }
+    5%    { background-position: -32px 0; }
+    10%   { background-position: -64px 0; }
+    15%   { background-position: -96px 0; }
+    20%   { background-position: -128px 0; }
+    25%   { background-position: -160px 0; }
+    30%   { background-position: -192px 0; }
+    35%   { background-position: -224px 0; }
+    40%   { background-position: -256px 0; }
+    45%   { background-position: -288px 0; }
+    50%   { background-position: -320px 0; }
+    55%   { background-position: -352px 0; }
+    60%   { background-position: -384px 0; }
+    65%   { background-position: -416px 0; }
+    70%   { background-position: -448px 0; }
+    75%   { background-position: -480px 0; }
+    80%   { background-position: -512px 0; }
+    85%   { background-position: -544px 0; }
+    90%   { background-position: -576px 0; }
+    95%   { background-position: -608px 0; }
+    100%  { background-position: 0 0; }
+  }
+
+  @-webkit-keyframes spin {
+    .keyframes();
+  }
+
+  @-moz-keyframes spin {
+    .keyframes();
+  }
+
+  @-ms-keyframes spin {
+    .keyframes();
+  }
+
+  @-o-keyframes spin {
+    .keyframes();
+  }
+
+  @keyframes spin {
+    .keyframes();
+  }
+}

@@ -1,7 +1,4 @@
 define(function (require, exports, module) {
-  // TODO: 临时解决 Router 问题
-  //if (! /^\/profile(_iframe)?\..*/.test(window.location.pathname)) return;
-
   var $ = require('jquery');
   var Store = require('store');
   var Config = require('config');
@@ -63,7 +60,7 @@ define(function (require, exports, module) {
     var b = time.begin_at;
 
     // Cross 时区
-    var tz = /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1];
+    var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
     // 创建一个 moment date-object
     var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
 
@@ -128,7 +125,7 @@ define(function (require, exports, module) {
     var b = time.begin_at;
 
     // Cross 时区
-    var tz = /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1];
+    var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
     // 创建一个 moment date-object
     var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
 
@@ -166,7 +163,7 @@ define(function (require, exports, module) {
     }
 
     // Cross 时区
-    var tz = /(^[\+\-][\d]{2}:[\d]{2})/.exec(b.timezone)[1];
+    var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
     // 创建一个 moment date-object
     var d = Moment.utc(b.date + ' ' + b.time + ' ' + tz, 'YYYY-MM-DD HH:mm:ss Z');
     return d.fromNow();
