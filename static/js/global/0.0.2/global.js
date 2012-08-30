@@ -205,7 +205,9 @@ define(function (require, exports, module) {
         if (action === 'setup') {
           $('[data-user-action="' + action + '"]').trigger('click');
         }
-      } else {
+      // read-only
+      // data = {error : 'no_permission'}
+      } else if (data && data.error === 'no_permission') {
           if (!$readOnly.size()) {
             $('#app-main').append(
               $readOnly = $('<div id="app-read-only" data-widget="dialog" data-dialog-type="read_only"></div>')
