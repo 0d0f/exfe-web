@@ -503,7 +503,7 @@ class UsersActions extends ActionController {
         // disconnect
         $rtResult  = ['user_id' => $user_id];
         $rtResult += $udid && $os_name && $modDevice->disconnectDeviceByUseridAndUdid($user_id, $udid, $os_name)
-                   ? ['udid'    => $udid] : [];
+                   ? ['udid'    => $udid, 'os_name' => $os_name] : [];
         // return
         apiResponse($rtResult);
     }
