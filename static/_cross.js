@@ -335,7 +335,7 @@ ExfeeWidget = {
           +     '" external_username="' + invitation.identity.external_username.toLowerCase() + '">'
           +     '<span class="pointer avatar'
           +         (fadeUnconfirmed && invitation.rsvp_status !== 'ACCEPTED' ? ' unconfirmed' : '') + '">'
-          +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
+          +         '<img src="' + invitation.identity.avatar_filename + '" alt="' + invitation.identity.external_id + '" width="50" height="50" />'
           +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
           +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
           +        (this.dom_id === 'cross-exfee'

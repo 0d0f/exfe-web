@@ -42,7 +42,7 @@
     ol { margin-top: 20px; clear: both; list-style: none; margin-left: 40px; zoom: 1; }
     ol li {margin-right: 96px;}
     .last {margin-right: 0;}
-    .ie {vertical-align: middle;}
+    .ie {vertical-align: middle; margin-top: -2px;}
     ol li a { font-size: 13px; color: #7f7f7f; line-height: 1; text-decoration: none; display: inline-block; border: none; }
     ol li a span { padding-top: 10px; display: block; padding-bottom: 2px; }
     .apt {padding-top: 10px;}
