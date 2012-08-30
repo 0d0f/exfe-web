@@ -272,10 +272,11 @@ class ExfeeModels extends DataModel {
                         $invitation->identity->connected_user_id,
                         $invitation->identity
                     );
-                    if($mobIdentities)
+                    if ($mobIdentities) {
                         foreach ($mobIdentities as $mI => $mItem) {
                             $msgArg['to_identities'][] = $mItem;
                         }
+                    }
                     $chkMobUs[$invitation->identity->connected_user_id] = true;
                 }
             }
