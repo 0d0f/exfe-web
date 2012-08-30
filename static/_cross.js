@@ -338,9 +338,10 @@ ExfeeWidget = {
           +         '<img src="' + invitation.identity.avatar_filename + '" alt="" width="50" height="50" />'
           +         '<i class="rt' + (invitation.host ? ' icon10-host-h' : '') + '"></i>'
           +         '<i class="icon10-plus-' + invitation.mates + ' lt"></i>'
-          +         '<span class="rb rb-bg' + (ExfeeWidget.focus[this.dom_id + '-input'] ? '' : ' hide') + '">'
+          +        (this.dom_id === 'cross-exfee'
+          ?        ('<span class="rb rb-bg' + (ExfeeWidget.focus[this.dom_id + '-input'] ? '' : ' hide') + '">'
           +             '<i class="' + icons[invitation.rsvp_status] + '"></i>'
-          +         '</span>'
+          +         '</span>') : '')
           +     '</span>'
           +     '<div class="identity-name">' + invitation.identity.name + '</div>'
           + '</li>'
