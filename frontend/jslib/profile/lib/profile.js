@@ -466,7 +466,7 @@ define(function (require, exports, module) {
                 t = +new Date(dv.updated_at.replace(/\-/g, '/'));
                 if (t > mt) {
                   if (k === 'exfee') {
-                    if (dv.identity_id === v.by_identity.id) {
+                    if (dv.identity_id === v.by_identity.id || checkUserIdByIdentityId(dv.identity_id, user_id, v.exfee.invitations)) {
                       b |= false;
                     }
                     else {
@@ -502,6 +502,18 @@ define(function (require, exports, module) {
         }
     );
   };
+
+  function checkUserIdByIdentityId(identity_id, user_id, invitations) {
+    var rs = R.filter(invitations, function (v) {
+      if (v.identity.id === identity_id) {
+        return true;
+      }
+    })[0];
+    if (rs && rs.identity.connected_user_id === user_id) {
+      return true;
+    }
+    return false;
+  }
 
   // 加载新手引导
   var newbieGuide = function (data) {
