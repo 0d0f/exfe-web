@@ -108,6 +108,7 @@ class DeviceModels extends DataModel {
              AND    `status`  = 1"
         ) : [];
         if ($mainIdentity) {
+            if($rawResult)
             foreach ($rawResult as $rI => $rItem) {
                 $rawResult[$rI] = new Identity(
                     -$rItem['id'],
