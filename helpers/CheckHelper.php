@@ -8,6 +8,8 @@ class CheckHelper extends ActionController {
         $exfeeData    = $this->getModelByName('exfee');
         $crossData    = $this->getModelByName('cross');
 
+        if(!$token)
+            $token=$_SERVER["HTTP_TOKEN"];
         $uid = intval($userData->getUserIdByToken($token));
 
         if (!$uid) {
