@@ -12,7 +12,6 @@ class IdentityModels extends DataModel {
             $status            = null;
             $connected_user_id = - (int) $rawIdentity['id'];
             $revoked_user_id   = 0;
-            $rawIdentity['avatar_file_name'] = getAvatarUrl($rawIdentity['avatar_file_name']);
             if ($user_id) {
                 $chkUserIdentity = $this->getRow(
                     "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = $user_id"
@@ -61,7 +60,7 @@ class IdentityModels extends DataModel {
                 $connected_user_id,
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
-                $rawIdentity['avatar_file_name'] ?: getDefaultAvatarUrl($rawIdentity['name']),
+                getAvatarUrl($rawIdentity['avatar_file_name']) ?: getDefaultAvatarUrl($rawIdentity['name']),
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at']
             );
