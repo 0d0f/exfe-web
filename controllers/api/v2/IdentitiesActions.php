@@ -23,9 +23,9 @@ class IdentitiesActions extends ActionController {
         $modUser       = $this->getModelByName('user');
         $modIdentity   = $this->getModelByName('identity');
         // get inputs
-        $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : array();
+        $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : [];
         // ready
-        $objIdentities = array();
+        $objIdentities = [];
         // get
         if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
@@ -50,8 +50,9 @@ class IdentitiesActions extends ActionController {
                 } else {
                     switch ($identityItem->provider) {
                         case 'email':
-                            $objEmail = $modIdentity->parseEmail($id_str);
+                            $objEmail = Identity::parseEmail($id_str);
                             if ($objEmail) {
+                                ;
                                 $objIdentities[] = new Identity(
                                     0,
                                     $identityItem->name ?: $objEmail['name'],
@@ -61,13 +62,8 @@ class IdentitiesActions extends ActionController {
                                     0,
                                     $objEmail['email'],
                                     $objEmail['email'],
-                                    getAvatarUrl(
-                                        'email',
-                                        $objEmail['email'],
-                                        '',
-                                        '80_80',
-                                        API_URL . "/v2/avatar/default?name={$objEmail['email']}"
-                                    )
+                                    $modIdentity->getGravatarByExternalUsername($objEmail['email'])
+                                 ?: getDefaultAvatarUrl($objEmail['name'])
                                 );
                             }
                             break;
@@ -83,7 +79,7 @@ class IdentitiesActions extends ActionController {
                                     array('screen_name' => $identityItem->external_username)
                                 );
                                 if ($responseCode === 200) {
-                                    $twitterUser = (array)json_decode($twitterConn->response['response'], true);
+                                    $twitterUser = (array) json_decode($twitterConn->response['response'], true);
                                     $objIdentities[] = new Identity(
                                         0,
                                         $twitterUser['name'],
@@ -102,7 +98,7 @@ class IdentitiesActions extends ActionController {
                     }
                 }
             }
-            apiResponse(array('identities' => $objIdentities));
+            apiResponse(['identities' => $objIdentities]);
         } else {
             apiError(400, 'no_identities', 'identities must be provided');
         }

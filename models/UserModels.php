@@ -113,7 +113,7 @@ class UserModels extends DataModel {
                 $rawUser['name'],
                 $rawUser['bio'],
                 null, // default_identity
-                $rawUser['avatar_file_name'] ? getAvatarUrl('', '', $rawUser['avatar_file_name']) : '',
+                getAvatarUrl($rawUser['avatar_file_name']),
                 $rawUser['timezone']
             );
             if ($withCrossQuantity) {
@@ -135,11 +135,6 @@ class UserModels extends DataModel {
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
-                        $item['avatar_file_name'] = getAvatarUrl(
-                            $item['provider'],
-                            $item['external_username'],
-                            $item['avatar_file_name']
-                        );
                         $identity = new Identity(
                             $item['id'],
                             $item['name'],
@@ -153,6 +148,9 @@ class UserModels extends DataModel {
                             $item['created_at'],
                             $item['updated_at']
                         );
+                        $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
+                                                  ?: ($user->avatar_filename
+                                                  ?: getDefaultAvatarUrl($identity->name));
                         $identity->status = $identity_status[$identity->id];
                         $intLength = array_push($user->identities, $identity);
                         // catch default identity
@@ -692,39 +690,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserAvatarByProviderAndExternalUsername($provider, $external_username) {
-        $hlpIdentity = $this->getHelperByName('identity');
-        $rawIdentity = $this->getRow(
-            "SELECT `id`, `name` FROM `identities`
-             WHERE  `provider`          = '{$provider}'
-             AND    `external_username` = '{$external_username}'"
-        );
-        $name = '';
-        if ($rawIdentity && $rawIdentity['id']) {
-            $rawUser = $this->getRow(
-                "SELECT `users`.`avatar_file_name` FROM `users`, `user_identity`
-                 WHERE  `user_identity`.`userid`     = `users`.`id`
-                 AND    `user_identity`.`identityid` = {$rawIdentity['id']}
-                 AND    `user_identity`.`status`     = 3"
-            );
-            if ($rawUser && $rawUser['avatar_file_name']) {
-                return ['url' => getAvatarUrl('', '', $rawUser['avatar_file_name']), 'type' => 'url'];
-            }
-            $name = $rawIdentity['name'];
-        }
-        if (!$name) {
-            switch ($provider) {
-                case 'email':
-                    $objEmail = $hlpIdentity->parseEmail($external_username);
-                    if ($objEmail) {
-                        $name = $objEmail['name'];
-                    }
-            }
-        }
-        return ['name' => $name ?: $external_username, 'type' => 'name'];
-    }
-
-
     public function buildIdentitiesIndexes($user_id) {
         mb_internal_encoding('UTF-8');
         if (!$user_id) {
@@ -778,7 +743,7 @@ class UserModels extends DataModel {
         $specification = [
             'width'      => 80,
             'height'     => 80,
-            'font-width' => 64,
+            'font-width' => 62,
         ];
         $backgrounds = [
             'blue',
@@ -813,17 +778,23 @@ class UserModels extends DataModel {
         // get color
         $fColor = imagecolorallocate($image, $colors[$bgIdx][0], $colors[$bgIdx][1], $colors[$bgIdx][2]);
         // get name & check CJK
-        $ftFile = checkCjk($name = mb_substr($name, 0, 3, 'UTF-8'))
-               && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8')) ? $fCjk : $fLatin;
+        if (checkCjk($name = mb_substr($name, 0, 3, 'UTF-8'))
+         && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8'))) {
+            $ftFile = $fCjk;
+            $leftPd = 0;
+        } else {
+            $ftFile = $fLatin;
+            $leftPd = 1;
+        }
         $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
         do {
-            $posArr  = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, $name);
-            $fWidth  = $posArr[2] - $posArr[0];
-            $fHeight = $posArr[1] - $posArr[7];
+            $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, $name);
+            $fWidth = $posArr[2] - $posArr[0];
             $ftSize--;
         } while ($fWidth > $specification['font-width']);
-        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2 + ($fWidth / 40), ($specification['height'] + $fHeight) / 2 - ($fHeight / 6), $fColor, $ftFile, $name);
+        $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, 'x');
+        imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2 + $leftPd, ($specification['height'] + $posArr[1] - $posArr[7]) / 2, $fColor, $ftFile, $name);
         if ($asimage) {
             return $image;
         }
