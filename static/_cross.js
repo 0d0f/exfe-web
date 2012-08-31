@@ -543,13 +543,6 @@ ExfeeWidget = {
 
 
     parseAttendeeInfo : function(string) {
-        function getAvatarUrl(provider, external_username) {
-            var avatar = ExfeeWidget.api_url + '/avatar/get?provider=' + provider + '&external_username=' + encodeURIComponent(external_username);
-            if (provider === 'email') {
-                avatar = 'http://www.gravatar.com/avatar/' + MD5(external_username) + '?d=' + encodeURIComponent(avatar);
-            }
-            return avatar;
-        }
         string = ExfeUtilities.trim(string);
         var objIdentity = {
             id                : 0,
@@ -566,28 +559,32 @@ ExfeeWidget = {
             objIdentity.external_username = objIdentity.external_id;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(ExfeUtilities.trim(string.substring(0, iLt)).replace(/^"|^'|"$|'$/g, '')));
             objIdentity.provider          = 'email';
-            objIdentity.avatar_filename   = getAvatarUrl('email', objIdentity.external_username);
         } else if (/^[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(string)) {
             objIdentity.external_id       = string;
             objIdentity.external_username = string;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
             objIdentity.provider          = 'email';
-            objIdentity.avatar_filename   = getAvatarUrl('email', string);
+
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'twitter';
-            objIdentity.avatar_filename   = getAvatarUrl('twitter', objIdentity.external_username);
         } else if (/^[a-z0-9\.]{5,}@facebook$/i.test(string)) {
         // https://www.facebook.com/help/?faq=105399436216001#What-are-the-guidelines-around-creating-a-custom-username?
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/@facebook$/ig, '');
             objIdentity.name              = objIdentity.external_username;
             objIdentity.provider          = 'facebook';
-            objIdentity.avatar_filename   = getAvatarUrl('facebook', objIdentity.external_username);
         } else {
-            objIdentity = null;
+            return null;
+        }
+        objIdentity.avatar_filename = ExfeeWidget.api_url + '/avatar/get?default=' + objIdentity.name;
+        if (objIdentity.provider === 'email') {
+            objIdentity.avatar_filename = 'http://www.gravatar.com/avatar/'
+                                        + MD5(objIdentity.external_username)
+                                        + '?d='
+                                        + encodeURIComponent(objIdentity.avatar_filename);
         }
         return objIdentity;
     },
