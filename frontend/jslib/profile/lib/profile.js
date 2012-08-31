@@ -693,19 +693,29 @@ define(function (require, exports, module) {
             }
             , function (data) {
               Store.set('user', data.user);
-              Bus.emit('app:changename', value);
+              Bus.emit('app:page:changeusername', value);
             }
           );
 
         }
     });
 
-    $BODY.on('dblclick.profile', '.identity-list li.editable .identity > span.identityname em', function (e) {
-      var value = $.trim($(this).html());
-      var $input = $('<input type="text" value="' + value + '" class="username-input" />');
-      $input.data('oldValue', value);
-      $(this).after($input).hide();
-      $input.focusend();
+    $BODY.on('dblclick.profile', '.identity-list li .identity > span.identityname em', function (e) {
+      var that = $(this)
+        , $li = that.parents('li')
+        , provider = $li.data('provider')
+        , status = $li.data('status')
+        , editable = $li.data('editable');
+
+      if ('twitter facebook google'.indexOf(provider) !== -1) {
+        $li.find('.isOAuth').removeClass('hide');
+      } else if (editable) {
+        var value = $.trim(that.text());
+        var $input = $('<input type="text" value="' + value + '" class="username-input" />');
+        $input.data('oldValue', value);
+        that.after($input).hide();
+        $input.focusend();
+      }
     });
 
     $BODY.on('focusout.profile keydown.profile', '.identity-list .username-input', function (e) {
@@ -714,7 +724,7 @@ define(function (require, exports, module) {
           var value = $.trim($(this).val());
           var oldValue = $(this).data('oldValue');
           var identity_id = $(this).parents('li').data('identity-id');
-          $(this).hide().prev().html(value).show();
+          $(this).hide().prev().text(value).show();
           $(this).remove();
 
 
