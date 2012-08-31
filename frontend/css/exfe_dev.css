@@ -7446,6 +7446,14 @@ body {
           box-shadow: 0 12px 20px rgba(0, 0, 0, 0.09), 0 -10px 20px rgba(255, 255, 255, 0.35), 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 0 rgba(0, -1, 0, 0.1);
 }
 
+.x-home .gather-wrapper:hover .xbtn-gatherax {
+  background-color: #ffffff;
+}
+
+.x-home .gather-wrapper:active .xbtn-gatherax {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
 .cross-alert {
   height: 40px;
   padding: 0 40px;
