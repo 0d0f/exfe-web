@@ -12,6 +12,7 @@ class IdentityModels extends DataModel {
             $status            = null;
             $connected_user_id = - (int) $rawIdentity['id'];
             $revoked_user_id   = 0;
+            $rawIdentity['avatar_file_name'] = getAvatarUrl($rawIdentity['avatar_file_name']);
             if ($user_id) {
                 $chkUserIdentity = $this->getRow(
                     "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = $user_id"
@@ -29,27 +30,21 @@ class IdentityModels extends DataModel {
                     "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
                 );
                 if ($rawUser) {
-                    $rawIdentity['bio']
-                  = $rawIdentity['bio'] === ''
-                  ? $rawUser['bio'] : $rawIdentity['bio'];
+                    $rawIdentity['bio']              = $rawIdentity['bio']              ?: $rawUser['bio'];
+                    $rawIdentity['avatar_file_name'] = $rawIdentity['avatar_file_name'] ?: $rawUser['avatar_file_name'];
                 }
                 $connected_user_id = $rawUserIdentity['userid'];
-            } elseif ($withRevoke) {
+            } else if ($withRevoke) {
                 $rawUserIdentity = $this->getRow(
                     "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 4"
                 );
                 $revoked_user_id = $rawUserIdentity && $rawUserIdentity['userid']
                                  ? $rawUserIdentity['userid'] : 0;
             }
-            $rawIdentity['avatar_file_name'] = getAvatarUrl(
-                $rawIdentity['provider'],
-                $rawIdentity['external_username'],
-                $rawIdentity['avatar_file_name']
-            );
             if (!$rawIdentity['name']) {
                 switch ($rawIdentity['provider']) {
                     case 'email':
-                        $objParsed = $this->parseEmail($rawIdentity['external_username']);
+                        $objParsed = Identity::parseEmail($rawIdentity['external_username']);
                         $rawIdentity['name'] = $objParsed['name'];
                         break;
                     case 'twitter':
@@ -66,7 +61,7 @@ class IdentityModels extends DataModel {
                 $connected_user_id,
                 $rawIdentity['external_identity'],
                 $rawIdentity['external_username'],
-                $rawIdentity['avatar_file_name'],
+                $rawIdentity['avatar_file_name'] ?: getDefaultAvatarUrl($rawIdentity['name']),
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at']
             );
@@ -196,6 +191,35 @@ class IdentityModels extends DataModel {
     }
 
 
+    public function getGravatarUrlByExternalUsername($external_username, $format = '', $fallback = '') {
+        return $external_username
+             ? ('http://www.gravatar.com/avatar/' . md5($external_username)
+              . ($format   ? ".{$format}"    : '')
+              . ($fallback ? "?d={$fallback}" : ''))
+             : '';
+    }
+
+
+    public function getGravatarByExternalUsername($external_username) {
+        $url = $this->getGravatarUrlByExternalUsername($external_username, '', '404');
+        if ($url) {
+            $objCurl  = curl_init();
+            curl_setopt($objCurl, CURLOPT_URL, $url);
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($objCurl, CURLOPT_HEADER, true);
+            curl_setopt($objCurl, CURLOPT_NOBODY, true);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+            $httpHead = curl_exec($objCurl);
+            $httpCode = curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
+            curl_close($objCurl);
+            if ($httpCode === 200) {
+                return $this->getGravatarUrlByExternalUsername($external_username);
+            }
+        }
+        return '';
+    }
+
+
     /**
      * add a new identity into database
      * all parameters allow in $identityDetail:
@@ -237,7 +261,8 @@ class IdentityModels extends DataModel {
         // fixed args
         switch ($provider) {
             case 'email':
-                $external_id = $external_username;
+                $external_id     = $external_username;
+                $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
                 break;
             case 'twitter':
             case 'facebook':
@@ -363,20 +388,6 @@ class IdentityModels extends DataModel {
             }
         }
         return false;
-    }
-
-
-    public function parseEmail($email) {
-        $email = trim($email);
-        if (preg_match('/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/', $email)) {
-            $name  = preg_replace('/^[\s\"\']*|[\s\"\']*$/', '', preg_replace('/^([^<]*).*$/', '$1', $email));
-            $email = trim(preg_replace('/^.*<([^<^>]*).*>$/', '$1', $email));
-        } else if (preg_match('/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/', $email)) {
-            $name  = trim(preg_replace('/^([^@]*).*$/', '$1', $email));
-        } else {
-            return null;
-        }
-        return array('name' => $name, 'email' => $email);
     }
 
 

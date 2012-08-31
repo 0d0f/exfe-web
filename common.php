@@ -180,22 +180,20 @@ function getHashedFilePath($filename = '') {
 }
 
 
-function getAvatarUrl($provider = '', $external_username = '', $raw_avatar = '', $size = '80_80', $spec_fallback = '') {
-    if ($raw_avatar) {
-        $raw_avatar
-      = preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
-      ? $raw_avatar
-      : (IMG_URL
-      . '/' . substr($raw_avatar, 0, 1)
-      . '/' . substr($raw_avatar, 1, 2)
-      . '/' . "{$size}_{$raw_avatar}");
-    } else {
-        $raw_avatar = $spec_fallback ?: (API_URL . "/v2/avatar/get?provider={$provider}&external_username=" . urlencode($external_username));
-        if ($provider === 'email') {
-            $raw_avatar = 'http://www.gravatar.com/avatar/' . md5($external_username) . '.jpg?d=' . urlencode($raw_avatar);
-        }
-    }
-    return $raw_avatar;
+function getAvatarUrl($raw_avatar, $size = '80_80') {
+    return $raw_avatar
+         ? (preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
+          ? $raw_avatar
+          : (IMG_URL
+           . '/' . substr($raw_avatar, 0, 1)
+           . '/' . substr($raw_avatar, 1, 2)
+           . '/' . "{$size}_{$raw_avatar}"))
+         : '';
+}
+
+
+function getDefaultAvatarUrl($name) {
+    return $name ? (API_URL . "/v2/avatar/default?name={$name}") : '';
 }
 
 

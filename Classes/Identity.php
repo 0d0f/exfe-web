@@ -22,6 +22,21 @@ class Identity extends EFObject {
 
     public $updated_at        = null;
 
+
+    static function parseEmail($email) {
+        $email = trim($email);
+        if (preg_match('/^[^@]*<[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?>$/', $email)) {
+            $name  = preg_replace('/^[\s\"\']*|[\s\"\']*$/', '', preg_replace('/^([^<]*).*$/', '$1', $email));
+            $email = trim(preg_replace('/^.*<([^<^>]*).*>$/', '$1', $email));
+        } else if (preg_match('/^[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&\'*+\\/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/', $email)) {
+            $name  = trim(preg_replace('/^([^@]*).*$/', '$1', $email));
+        } else {
+            return null;
+        }
+        return array('name' => $name, 'email' => $email);
+    }
+
+
     public function __construct($id                = 0,
                                 $name              = '',
                                 $nickname          = '',
@@ -45,6 +60,19 @@ class Identity extends EFObject {
         $this->avatar_filename   = $avatar_filename;
         $this->created_at        = $created_at;
         $this->updated_at        = $updated_at ?: $created_at;
+
+        if (!$this->name) {
+            switch ($this->provider) {
+                case 'email':
+                    $objParsed  = $this->parseEmail($this->external_username);
+                    $this->name = $objParsed['name'];
+                    break;
+                case 'twitter':
+                case 'facebook':
+                default:
+                    $this->name = $this->external_username;
+            }
+        }
     }
 
 }
