@@ -45,13 +45,13 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.1'],
-    ['profile',       '0.0.2'],
+    ['profile',       '0.0.3'],
 ]);
 
 // cross
 addScript([
     ['placepanel',    '0.0.1'],
-    ['user',          '0.0.1'],
+    ['user',          '0.0.2'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 

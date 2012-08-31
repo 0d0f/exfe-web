@@ -416,6 +416,10 @@ define('user', function (require, exports, module) {
     $appSignin.toggleClass('hide', signed);
   }
 
+  // update `usermenu` user-anme
+  Bus.on('app:page:changeusername', function (value) {
+    $('#app-user-name').find('span').text(value);
+  });
 
   function refreshIdentities(identities) {
     var _identities = Store.get('identities') || []

@@ -56,6 +56,10 @@ define(function (require) {
 
   var $BODY = $(document.body);
 
+  if ($('script#js-newbieguide').attr('data-exists') === 'event-binded') {
+    return;
+  }
+
   $BODY.on('hover.newbie', '.newbie', function (e) {
     var t = e.type, z = $(this).data('ozIndex');
     if (t === 'mouseenter') {
@@ -106,5 +110,7 @@ define(function (require) {
         $(this).removeClass('bouncey');
       });
   });
+
+  $('script#js-newbieguide').attr('data-exists', 'event-binded');
 
 });
