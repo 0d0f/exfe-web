@@ -583,9 +583,13 @@ define(function (require, exports, module) {
 
     if (!newbie_status && cross_nums <= 3 && !$('#app-browsing-identity').size()) {
       var s = document.createElement('script');
+      var $ss = $('script#js-newbieguide');
+      s.id = 'js-newbieguide';
       s.type = 'text/javascript';
       s.async = true;
-      s.src = '/static/js/newbieguide/0.0.1/newbieguide.min.js?t=' + Config.timestamp;
+      s.src = '/static/js/newbieguide/0.0.2/newbieguide.min.js?t=' + Config.timestamp;
+      $(s).attr('data-exists', $ss.attr('data-exists'));
+      $ss.remove();
       var body = document.body;
       body.appendChild(s);
     }
@@ -689,19 +693,29 @@ define(function (require, exports, module) {
             }
             , function (data) {
               Store.set('user', data.user);
-              Bus.emit('app:changename', value);
+              Bus.emit('app:page:changeusername', value);
             }
           );
 
         }
     });
 
-    $BODY.on('dblclick.profile', '.identity-list li.editable .identity > span.identityname em', function (e) {
-      var value = $.trim($(this).html());
-      var $input = $('<input type="text" value="' + value + '" class="username-input" />');
-      $input.data('oldValue', value);
-      $(this).after($input).hide();
-      $input.focusend();
+    $BODY.on('dblclick.profile', '.identity-list li .identity > span.identityname em', function (e) {
+      var that = $(this)
+        , $li = that.parents('li')
+        , provider = $li.data('provider')
+        , status = $li.data('status')
+        , editable = $li.data('editable');
+
+      if ('twitter facebook google'.indexOf(provider) !== -1) {
+        $li.find('.isOAuth').removeClass('hide');
+      } else if (editable) {
+        var value = $.trim(that.text());
+        var $input = $('<input type="text" value="' + value + '" class="username-input" />');
+        $input.data('oldValue', value);
+        that.after($input).hide();
+        $input.focusend();
+      }
     });
 
     $BODY.on('focusout.profile keydown.profile', '.identity-list .username-input', function (e) {
@@ -709,8 +723,8 @@ define(function (require, exports, module) {
         if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
           var value = $.trim($(this).val());
           var oldValue = $(this).data('oldValue');
-          var identity_id = $(this).parent().parent().data('identity-id');
-          $(this).hide().prev().html(value).show();
+          var identity_id = $(this).parents('li').data('identity-id');
+          $(this).hide().prev().text(value).show();
           $(this).remove();
 
 

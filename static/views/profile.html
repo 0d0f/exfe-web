@@ -73,11 +73,14 @@
         -->
         <script id="jst-identity-list" type="text/x-handlebars-template">
         {{#each identities}}
-        <li data-identity-id="{{id}}" {{#editable provider status}}class="editable"{{/editable}} draggable="true">
+        <li data-identity-id="{{id}}" data-provider="{{provider}}" data-status="{{status}}" {{#editable provider status}}data-editable="true"{{/editable}} draggable="true">
           <i class="icon-move"></i>
           <span class="avatar alt40" data-link="nota"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
           </span><span class="identity"><span class="identityname"><em>{{printName name external_username}}</em></span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
           {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link="nota">Make default</a>{{/makeDefault}}
+          {{#isOAuthIdentity provider}}
+          <span class="xlabel isOAuth hide">Wanna change this name? Please do it in {{capitalize provider}}.</span>
+          {{/isOAuthIdentity}}
           {{#ifOauthVerifying provider status}}
           <span class="xlabel">
             <i class="icon16-warning"></i>
