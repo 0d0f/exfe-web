@@ -7372,11 +7372,9 @@ body {
 }
 
 .x-home .page-main .c-rsvp {
-  font-size: 22px;
-  /*height: 22px;*/
+  /*font-size: 22px;*/
 
-  /*height: 28px;*/
-
+  font-size: 18px;
   line-height: 28px;
 }
 
