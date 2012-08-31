@@ -1,5 +1,4 @@
 /**
- *
  * A collection of helpers for Handlebars.js
  */
 define(function (require) {
@@ -11,7 +10,7 @@ define(function (require) {
 
   // Return a copy of the string with its first character capitalized and the rest lowercased.
   Handlebars.registerHelper('capitalize', function (str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    return capitalize(str);
   });
 
 
@@ -29,6 +28,12 @@ define(function (require) {
   });
 
 
+  // Check identity's provider is an OAuth identity.
+  Handlebars.registerHelper('isOAuthIdentity', function (provider, options) {
+    var context = -1 !== 'twitter facebook google'.indexOf(provider);
+    return Handlebars.helpers['if'].call(this, context, options);
+  });
+
   // helpers
   // -----------------------------
 
@@ -39,5 +44,9 @@ define(function (require) {
         return true;
       }
     });
+  }
+
+  function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 });
