@@ -583,9 +583,13 @@ define(function (require, exports, module) {
 
     if (!newbie_status && cross_nums <= 3 && !$('#app-browsing-identity').size()) {
       var s = document.createElement('script');
+      var $ss = $('script#js-newbieguide');
+      s.id = 'js-newbieguide';
       s.type = 'text/javascript';
       s.async = true;
-      s.src = '/static/js/newbieguide/0.0.1/newbieguide.min.js?t=' + Config.timestamp;
+      s.src = '/static/js/newbieguide/0.0.2/newbieguide.min.js?t=' + Config.timestamp;
+      $(s).attr('data-exists', $ss.attr('data-exists'));
+      $ss.remove();
       var body = document.body;
       body.appendChild(s);
     }
