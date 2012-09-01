@@ -28,7 +28,7 @@ class PlaceModels extends DataModel {
             $sql = "INSERT INTO `places` (`place_line1`, `place_line2`, `provider`,
                     `external_id`, `lng`, `lat`, `created_at`, `updated_at`)
                     values ('{$place->title}', '{$place->description}', '{$place->provider}',
-                    '{$place->external_id}',{$place->lng},{$place->lat}, now(), now());";
+                    '{$place->external_id}','{$place->lng}','{$place->lat}', now(), now());";
             $result = $this->query($sql);
             return intval($result["insert_id"]) > 0
                  ? intval($result["insert_id"]) : false;
@@ -38,8 +38,8 @@ class PlaceModels extends DataModel {
                     `place_line2` = '{$place->description}',
                     `provider`    = '{$place->provider}',
                     `external_id` = '{$place->external_id}',
-                    `lng`={$place->lng},
-                    `lat`={$place->lat},
+                    `lng`='{$place->lng}',
+                    `lat`='{$place->lat}',
                     `updated_at`  = now()
                     WHERE `id`    = {$place->id};";
             $result=$this->query($sql);
