@@ -24,20 +24,24 @@ class PlaceModels extends DataModel {
     }
 
     public function addPlace($place) {
+        $title=mysql_real_escape_string($place->title);
+        $description=mysql_real_escape_string($place->description);
+        $external_id=mysql_real_escape_string($place->external_id);
+        $provider=mysql_real_escape_string($place->provider);
         if (intval($place->id)==0) {
             $sql = "INSERT INTO `places` (`place_line1`, `place_line2`, `provider`,
                     `external_id`, `lng`, `lat`, `created_at`, `updated_at`)
-                    values ('{$place->title}', '{$place->description}', '{$place->provider}',
-                    '{$place->external_id}','{$place->lng}','{$place->lat}', now(), now());";
+                    values ('{$title}', '{$description}', '{$provider}',
+                    '{$external_id}','{$place->lng}','{$place->lat}', now(), now());";
             $result = $this->query($sql);
             return intval($result["insert_id"]) > 0
                  ? intval($result["insert_id"]) : false;
         } else {
             $sql = "UPDATE `places` SET
-                    `place_line1` = '{$place->title}',
-                    `place_line2` = '{$place->description}',
-                    `provider`    = '{$place->provider}',
-                    `external_id` = '{$place->external_id}',
+                    `place_line1` = '{$title}',
+                    `place_line2` = '{$description}',
+                    `provider`    = '{$provider}',
+                    `external_id` = '{$external_id}',
                     `lng`='{$place->lng}',
                     `lat`='{$place->lat}',
                     `updated_at`  = now()
