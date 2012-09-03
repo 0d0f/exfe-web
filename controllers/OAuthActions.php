@@ -9,10 +9,17 @@ class OAuthActions extends ActionController {
         $webResponse = false;
         if ($_GET['device'] && $_GET['device_callback']) {
             $workflow    = ['callback' => [
-                'oauth_device'          => strtolower($_GET['device']),
-                'oauth_device_callback' => $_GET['device_callback'],
+                'oauth_device'          => strtolower(trim($_GET['device'])),
+                'oauth_device_callback' => trim($_GET['device_callback']),
             ]];
             $webResponse = true;
+        } else {
+            if ($_POST['callback']) {
+                $workflow['callback']['url']  = trim($_POST['callback']);
+            }
+            if ($_POST['args']) {
+                $workflow['callback']['args'] = trim($_POST['args']);
+            }
         }
         $modOauth = $this->getModelByName('OAuth');
         $urlOauth = $modOauth->getTwitterRequestToken($workflow);
@@ -42,14 +49,17 @@ class OAuthActions extends ActionController {
         $isMobile = $workflow ? ($workflow['callback']
                  && $workflow['callback']['oauth_device']
                  && $workflow['callback']['oauth_device_callback']) : false;
+        $cbckUrl  = isset($workflow['callback']['url'])
+                 && $workflow['callback']['url']
+                  ? $workflow['callback']['url'] : '/';
         if (!$oauthIfo || (isset($oauthIfo['oauth_token'])
          && $oauthIfo['oauth_token'] !== $_REQUEST['oauth_token'])) {
             if ($isMobile) {
                 $modOauth->resetSession();
                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
             } else {
-                $modOauth->addtoSession(['twitter_signin' => false]);
-                header('location: /');
+                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                header("location: {$cbckUrl}");
             }
             return;
         }
@@ -83,8 +93,8 @@ class OAuthActions extends ActionController {
                                 $modOauth->resetSession();
                                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                             } else {
-                                $modOauth->addtoSession(['twitter_signin' => false]);
-                                header('location: /');
+                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                                header("location: {$cbckUrl}");
                             }
                             return;
                         }
@@ -102,8 +112,8 @@ class OAuthActions extends ActionController {
                                 $modOauth->resetSession();
                                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                             } else {
-                                $modOauth->addtoSession(['twitter_signin' => false]);
-                                header('location: /');
+                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                                header("location: {$cbckUrl}");
                             }
                             return;
                         }
@@ -114,8 +124,8 @@ class OAuthActions extends ActionController {
                             $modOauth->resetSession();
                             header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                         } else {
-                            $modOauth->addtoSession(['twitter_signin' => false]);
-                            header('location: /');
+                            $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                            header("location: {$cbckUrl}");
                         }
                         return;
                     }
@@ -139,8 +149,8 @@ class OAuthActions extends ActionController {
                                 $modOauth->resetSession();
                                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                             } else {
-                                $modOauth->addtoSession(['twitter_signin' => false]);
-                                header('location: /');
+                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                                header("location: {$cbckUrl}");
                             }
                             return;
                         }
@@ -153,8 +163,8 @@ class OAuthActions extends ActionController {
                                 $modOauth->resetSession();
                                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                             } else {
-                                $modOauth->addtoSession(['twitter_signin' => false]);
-                                header('location: /');
+                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                                header("location: {$cbckUrl}");
                             }
                             return;
                         }
@@ -204,12 +214,13 @@ class OAuthActions extends ActionController {
                          'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                     );
                     $modOauth->addtoSession([
-                        'twitter_signin'          => $rstSignin,
-                        'twitter_identity_id'     => $objIdentity->id,
-                        'twitter_identity_status' => $identity_status,
-                        'twitter_following'       => $twitterConn->response['response'] === 'true'
+                        'oauth_signin'      => $rstSignin,
+                        'provider'          => 'twitter',
+                        'identity_id'       => $objIdentity->id,
+                        'identity_status'   => $identity_status,
+                        'twitter_following' => $twitterConn->response['response'] === 'true'
                     ]);
-                    header('location: /');
+                    header("location: {$cbckUrl}");
                     return;
                 }
             }
@@ -218,7 +229,7 @@ class OAuthActions extends ActionController {
         header('location: ' . (
             $isMobile
           ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
-          : '/'
+          : $cbckUrl
         ));
     }
 

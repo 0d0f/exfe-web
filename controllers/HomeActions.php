@@ -17,22 +17,33 @@ class HomeActions extends ActionController {
         $modBackground = $this->getModelByName('background');
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
-        $twitterSignin = null;
-        if ($oauthIfo) {
-            $twitterSignin
-          = $oauthIfo['twitter_signin']
-          ? ['authorization'   => $oauthIfo['twitter_signin'],
-             'identity_id'     => $oauthIfo['twitter_identity_id'],
-             'following'       => $oauthIfo['twitter_following'],
-             'identity_status' => $oauthIfo['twitter_identity_status'],
-             'type'            => 'twitter']
-          : ['authorization'   => null,
-             'type'            => 'twitter'];
+        $oauthRst      = null;
+        if ($oauthIfo && isset($oauthIfo['provider']) && $oauthIfo['provider']) {
+            $oauthRst  = [
+                'authorization' => null,
+                'provider'      => $oauthIfo['provider'],
+            ];
+            if ($oauthIfo['oauth_signin']) {
+                $oauthRst = [
+                    'authorization'   => $oauthIfo['oauth_signin'],
+                    'identity_id'     => $oauthIfo['identity_id'],
+                    'identity_status' => $oauthIfo['identity_status'],
+                ];
+                if ($oauthIfo['provider'] === 'twitter') {
+                    $oauthRst['twitter_following'] = $oauthIfo['twitter_following'];
+                }
+                if (isset($oauthIfo['callback']['url'])) {
+                    $oauthRst['callback']          = $oauthIfo['callback']['url'];
+                }
+                if (isset($oauthIfo['callback']['args'])) {
+                    $oauthRst['args']              = $oauthIfo['callback']['args'];
+                }
+            }
         }
         $modOauth->resetSession();
         // show page
-        $this->setVar('backgrounds',    $modBackground->getAllBackground());
-        $this->setVar('twitter_signin', $twitterSignin);
+        $this->setVar('backgrounds', $modBackground->getAllBackground());
+        $this->setVar('oauth',       $oauthRst);
         $this->displayView();
     }
 
