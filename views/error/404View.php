@@ -66,7 +66,7 @@
 
   <script>
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-    window.requestAnimFrame = (function() {
+    window.requestAnimFrame = function() {
       return window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame ||
@@ -75,7 +75,7 @@
       function(callback, element) {
         window.setTimeout(callback, 1000 / 60);
       };
-    })();
+    }();
 
     var c = document.getElementById('circle')
       , ctx = c.getContext('2d')
@@ -91,72 +91,46 @@
     img.src = '/static/img/exfe.png';
 
     img.onload = function () {
-      function animate () {
-        draw(angle);
-        angle += 3;
-        window.requestAnimFrame(animate, 0);
-      }
       animate();
-
-      /*
-      setInterval(function () {
-        draw(angle);
-        angle += 3;
-      }, 20);
-       */
     };
+
+alert(window.Worker);
+
+    function animate () {
+      draw(angle);
+      angle += 3;
+      window.requestAnimFrame(animate, 0);
+    }
 
     function rads(x) {
       return Math.PI * x / 180;
     }
 
     function draw(angle) {
-      /*
-      mctx.width = mctx.height = w;
       mctx.clearRect(0, 0, w, w);
-      mctx.save();
-      mctx.beginPath();
-      mctx.moveTo(centre, centre);
-      mctx.arc(centre, centre, centre, rads(-120 + angle), angle, false);
-      //mctx.closePath();
-      mctx.clip();
-       */
-
       mctx.translate(centre, centre);
       mctx.rotate(angle * degress);
       mctx.drawImage(maskImg, -maskImg.width / 2, -maskImg.width / 2);
       mctx.rotate(-angle * degress);
       mctx.translate(-centre, -centre);
-      mctx.restore();
-
-      /*
-      ctx.clearRect(0, 0, w, w);
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(centre, centre);
-      ctx.arc(centre, centre, centre, rads(-120 + angle), angle, false);
-      //ctx.closePath();
-      ctx.clip();
-       */
 
       // draw IMG
+      ctx.clearRect(0, 0, w, w);
       ctx.translate(centre, centre);
       ctx.drawImage(img, -img.width / 2, -img.width / 2);
       ctx.translate(-centre, -centre);
-      /*ctx.restore();
 
       var p0 = ctx.getImageData(0, 0, w, w)
         , d0 = p0.data
         , p1 = mctx.getImageData(0, 0, w, w)
         , d1 = p1.data
-        , width = p1.width
-        , height = p1.height;
+        , l = d1.length / 4;
 
-      for (var i = 0, l = d1.length; i < l; i += 4) {
-        d0[i + 3] *= d1[i] / 255;
+      for (var i = 0; i < l; ++i) {
+        //d0[i + 3] *= d1[i] / 255;
+        d0[i * 4 + 3] *= d1[i * 4] / 255;
       }
       ctx.putImageData(p0, 0, 0);
-       */
     }
 
   </script>
