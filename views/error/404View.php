@@ -75,8 +75,8 @@
     img.onload = function () {
       setInterval(function () {
         draw(angle);
-        angle += 2;
-      }, 10);
+        angle += 4;
+      }, 20);
     };
 
     function rads(x) {
