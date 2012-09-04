@@ -13,7 +13,12 @@
     body {
       background-attachment: fixed;
       background-color: #84A4BF;
+      background-image: -moz-linear-gradient(top, #5A7A95, #C3E3FD);
+      background-image: -ms-linear-gradient(top, #5A7A95, #C3E3FD);
       background-image: -moz-linear-gradient(center top , #5A7A95, #C3E3FD);
+      background-image: -webkit-linear-gradient(top, rgb(90, 122, 149), rgb(195, 227, 253));
+      background-image: -o-linear-gradient(top, #5A7A95, #C3E3FD);
+      background-image: linear-gradient(top, #5A7A95, #C3E3FD);
       background-repeat: repeat-x;
     }
 
