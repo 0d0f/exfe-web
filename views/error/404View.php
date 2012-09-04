@@ -16,7 +16,7 @@
       background-image: -moz-linear-gradient(top, #5A7A95, #C3E3FD);
       background-image: -ms-linear-gradient(top, #5A7A95, #C3E3FD);
       background-image: -moz-linear-gradient(center top , #5A7A95, #C3E3FD);
-      background-image: -webkit-linear-gradient(top, rgb(90, 122, 149), rgb(195, 227, 253));
+      background-image: -webkit-linear-gradient(top, #5A7A95, #C3E3FD);
       background-image: -o-linear-gradient(top, #5A7A95, #C3E3FD);
       background-image: linear-gradient(top, #5A7A95, #C3E3FD);
       background-repeat: repeat-x;
@@ -79,7 +79,8 @@
 
     var c = document.getElementById('circle')
       , ctx = c.getContext('2d')
-      , centre = c.width / 2
+      , w = 480
+      , centre = w / 2
       , img = document.createElement('img')
       , mask = document.getElementById('mask')
       , maskImg = document.getElementById('404mask')
@@ -90,11 +91,12 @@
     img.src = '/static/img/exfe.png';
 
     img.onload = function () {
-      (function animate () {
+      function animate () {
         draw(angle);
         angle += 3;
         window.requestAnimFrame(animate, 0);
-      })();
+      }
+      animate();
 
       /*
       setInterval(function () {
@@ -109,11 +111,12 @@
     }
 
     function draw(angle) {
-      mctx.clearRect(0, 0, 480, 480);
+      mctx.width = mctx.height = w;
+      mctx.clearRect(0, 0, w, w);
       mctx.save();
       mctx.beginPath();
-      mctx.moveTo(240, 240);
-      mctx.arc(240, 240, 240, rads(-120 + angle), angle, false);
+      mctx.moveTo(centre, centre);
+      mctx.arc(centre, centre, centre, rads(-120 + angle), angle, false);
       mctx.closePath();
       mctx.clip();
       mctx.restore();
@@ -125,7 +128,7 @@
       mctx.translate(-centre, -centre);
       mctx.restore();
 
-      ctx.clearRect(0, 0, 480, 480);
+      ctx.clearRect(0, 0, w, w);
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(centre, centre);
@@ -140,9 +143,9 @@
       ctx.translate(-centre, -centre);
       ctx.restore();
 
-      var p0 = ctx.getImageData(0, 0, 480, 480)
+      var p0 = ctx.getImageData(0, 0, w, w)
         , d0 = p0.data
-        , p1 = mctx.getImageData(0, 0, 480, 480)
+        , p1 = mctx.getImageData(0, 0, w, w)
         , d1 = p1.data
         , width = p1.width
         , height = p1.height;
