@@ -59,7 +59,7 @@
   <div class="container">
     <div class="outer">
       <canvas id="circle" width="480" height="480"></canvas>
-      <canvas id="mask" width="480" height="480" style="display: none;"></canvas>
+      <canvas id="mask" width="480" height="480"></canvas>
       <img id="404mask" src="/static/img/radar_mask.jpg" style="display: none;" />
     </div>
   </div>
@@ -117,9 +117,8 @@
       mctx.beginPath();
       mctx.moveTo(centre, centre);
       mctx.arc(centre, centre, centre, rads(-120 + angle), angle, false);
-      mctx.closePath();
+      //mctx.closePath();
       mctx.clip();
-      mctx.restore();
 
       mctx.translate(centre, centre);
       mctx.rotate(angle * degress);
@@ -128,20 +127,21 @@
       mctx.translate(-centre, -centre);
       mctx.restore();
 
+      /*
       ctx.clearRect(0, 0, w, w);
       ctx.save();
       ctx.beginPath();
       ctx.moveTo(centre, centre);
       ctx.arc(centre, centre, centre, rads(-120 + angle), angle, false);
-      ctx.closePath();
+      //ctx.closePath();
       ctx.clip();
-      ctx.restore();
+       */
 
       // draw IMG
       ctx.translate(centre, centre);
       ctx.drawImage(img, -img.width / 2, -img.width / 2);
       ctx.translate(-centre, -centre);
-      ctx.restore();
+      /*ctx.restore();
 
       var p0 = ctx.getImageData(0, 0, w, w)
         , d0 = p0.data
@@ -154,6 +154,7 @@
         d0[i + 3] *= d1[i] / 255;
       }
       ctx.putImageData(p0, 0, 0);
+       */
     }
 
   </script>
