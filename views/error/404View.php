@@ -55,7 +55,7 @@
     <div class="outer">
       <canvas id="circle" width="480" height="480"></canvas>
       <canvas id="mask" width="480" height="480" style="display: none;"></canvas>
-      <img id="404mask" src="radar_mask.jpg" style="display: none;" />
+      <img id="404mask" src="/static/img/radar_mask.jpg" style="display: none;" />
     </div>
   </div>
 
@@ -70,7 +70,7 @@
       , degress = Math.PI / 180
       , angle = 0;
 
-    img.src = 'exfe.png';
+    img.src = '/static/img/exfe.png';
 
     img.onload = function () {
       setInterval(function () {
