@@ -75,7 +75,7 @@
     img.onload = function () {
       setInterval(function () {
         draw(angle);
-        angle += 4;
+        angle += 3;
       }, 20);
     };
 
