@@ -59,7 +59,7 @@
   <div class="container">
     <div class="outer">
       <canvas id="circle" width="480" height="480"></canvas>
-      <canvas id="mask" width="480" height="480"></canvas>
+      <canvas id="mask" width="480" height="480" style="display: none;"></canvas>
       <img id="404mask" src="/static/img/radar_mask.jpg" style="display: none;" />
     </div>
   </div>
@@ -94,18 +94,14 @@
       animate();
     };
 
-alert(window.Worker);
-
     function animate () {
       draw(angle);
       angle += 3;
       window.requestAnimFrame(animate, 0);
     }
 
-    function rads(x) {
-      return Math.PI * x / 180;
-    }
-
+    mctx.width = mctx.height = w;
+    ctx.width = ctx.height = w;
     function draw(angle) {
       mctx.clearRect(0, 0, w, w);
       mctx.translate(centre, centre);
@@ -124,13 +120,16 @@ alert(window.Worker);
         , d0 = p0.data
         , p1 = mctx.getImageData(0, 0, w, w)
         , d1 = p1.data
-        , l = d1.length / 4;
+        , l = d1.length / 4
+        , j;
 
       for (var i = 0; i < l; ++i) {
-        //d0[i + 3] *= d1[i] / 255;
-        d0[i * 4 + 3] *= d1[i * 4] / 255;
+        j = i * 4;
+        d0[j + 3] *= d1[j] / 255;
       }
       ctx.putImageData(p0, 0, 0);
+      d1.length = d0.length = l = j = 0;
+      p1 = p0 = null;
     }
 
   </script>
