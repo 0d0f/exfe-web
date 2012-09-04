@@ -111,6 +111,7 @@
     }
 
     function draw(angle) {
+      /*
       mctx.width = mctx.height = w;
       mctx.clearRect(0, 0, w, w);
       mctx.save();
@@ -119,6 +120,7 @@
       mctx.arc(centre, centre, centre, rads(-120 + angle), angle, false);
       //mctx.closePath();
       mctx.clip();
+       */
 
       mctx.translate(centre, centre);
       mctx.rotate(angle * degress);
