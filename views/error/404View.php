@@ -105,10 +105,10 @@
       window.requestAnimFrame(animate, 0);
     }
 
-    mctx.width = mctx.height = w;
-    ctx.width = ctx.height = w;
     function draw(angle) {
-      mctx.clearRect(0, 0, w, w);
+      mctx.width = mctx.height = w;
+      ctx.width = ctx.height = w;
+      //mctx.clearRect(0, 0, w, w);
       mctx.translate(centre, centre);
       mctx.rotate(angle * degress);
       mctx.drawImage(maskImg, -maskImg.width / 2, -maskImg.width / 2);
@@ -116,7 +116,7 @@
       mctx.translate(-centre, -centre);
 
       // draw IMG
-      ctx.clearRect(0, 0, w, w);
+      //ctx.clearRect(0, 0, w, w);
       ctx.translate(centre, centre);
       ctx.drawImage(exfe, -ew / 2, -ew / 2);
       ctx.translate(-centre, -centre);
