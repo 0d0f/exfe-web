@@ -60,6 +60,18 @@
   </div>
 
   <script>
+    // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+    window.requestAnimFrame = (function() {
+      return window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.oRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function(callback, element) {
+        window.setTimeout(callback, 1000 / 60);
+      };
+    })();
+
     var c = document.getElementById('circle')
       , ctx = c.getContext('2d')
       , centre = c.width / 2
@@ -73,10 +85,18 @@
     img.src = '/static/img/exfe.png';
 
     img.onload = function () {
+      (function animate () {
+        draw(angle);
+        angle += 3;
+        window.requestAnimFrame(animate, 0);
+      })();
+
+      /*
       setInterval(function () {
         draw(angle);
         angle += 3;
       }, 20);
+       */
     };
 
     function rads(x) {
