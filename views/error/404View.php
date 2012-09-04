@@ -60,6 +60,7 @@
     <div class="outer">
       <canvas id="circle" width="480" height="480"></canvas>
       <canvas id="mask" width="480" height="480" style="display: none;"></canvas>
+      <img id="exfelogo" src="/static/img/exfe.png" style="display: none;" />
       <img id="404mask" src="/static/img/radar_mask.jpg" style="display: none;" />
     </div>
   </div>
@@ -81,18 +82,22 @@
       , ctx = c.getContext('2d')
       , w = 480
       , centre = w / 2
-      , img = document.createElement('img')
+      , exfe = document.getElementById('exfelogo')
+      , ew = 340
       , mask = document.getElementById('mask')
       , maskImg = document.getElementById('404mask')
       , mctx = mask.getContext('2d')
       , degress = Math.PI / 180
-      , angle = 0;
+      , angle = 0
+      , p0
+      , d0
+      , p1
+      , d1
+      , l
+      , j
+      , i = 0;
 
-    img.src = '/static/img/exfe.png';
-
-    img.onload = function () {
-      animate();
-    };
+    animate();
 
     function animate () {
       draw(angle);
@@ -113,22 +118,22 @@
       // draw IMG
       ctx.clearRect(0, 0, w, w);
       ctx.translate(centre, centre);
-      ctx.drawImage(img, -img.width / 2, -img.width / 2);
+      ctx.drawImage(exfe, -ew / 2, -ew / 2);
       ctx.translate(-centre, -centre);
 
-      var p0 = ctx.getImageData(0, 0, w, w)
-        , d0 = p0.data
-        , p1 = mctx.getImageData(0, 0, w, w)
-        , d1 = p1.data
-        , l = d1.length / 4
-        , j;
+      p0 = ctx.getImageData(0, 0, w, w);
+      d0 = p0.data;
 
-      for (var i = 0; i < l; ++i) {
+      p1 = mctx.getImageData(0, 0, w, w);
+      d1 = p1.data;
+      l = d1.length / 4;
+
+      for (; i < l; ++i) {
         j = i * 4;
         d0[j + 3] *= d1[j] / 255;
       }
       ctx.putImageData(p0, 0, 0);
-      d1.length = d0.length = l = j = 0;
+      d1.length = d0.length = l = i = j = 0;
       p1 = p0 = null;
     }
 
