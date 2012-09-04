@@ -193,7 +193,7 @@ function getAvatarUrl($raw_avatar, $size = '80_80') {
 
 
 function getDefaultAvatarUrl($name) {
-    return $name ? (API_URL . "/v2/avatar/default?name={$name}") : '';
+    return $name ? (API_URL . '/v2/avatar/default?name=' . urlencode($name)) : '';
 }
 
 
