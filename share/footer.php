@@ -1,7 +1,7 @@
 <?php
 
 function addScript($scripts) {
-    $min = DEBUG ? '' : '.min';
+    $min = JS_DEBUG ? '' : '.min';
     foreach ($scripts as $item) {
         echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$min}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
     }
