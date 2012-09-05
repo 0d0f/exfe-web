@@ -80,7 +80,10 @@
       , d0
       , p1
       , d1
-      , l
+      , l0
+      , l1
+      , l2
+      , l3
       , j
       , i = 0;
 
@@ -93,8 +96,6 @@
     }
 
     function draw(angle) {
-      mctx.width = mctx.height = w;
-      ctx.width = ctx.height = w;
       mctx.clearRect(0, 0, w, w);
       mctx.translate(centre, centre);
       mctx.rotate(angle * degress);
@@ -113,14 +114,33 @@
 
       p1 = mctx.getImageData(0, 0, w, w);
       d1 = p1.data;
-      l = d1.length / 4;
+      l0 = d1.length >> 5;
+      l1 = d1.length >> 4;
+      l2 = d1.length >> 3;
+      l3 = d1.length >> 2;
 
-      for (; i < l; ++i) {
+      for (; i < l0; ++i) {
         j = i * 4;
         d0[j + 3] *= d1[j] / 255;
       }
+
+      for (; i < l1; ++i) {
+        j = i * 4;
+        d0[j + 3] *= d1[j] / 255;
+      }
+
+      for (; i < l2; ++i) {
+        j = i * 4;
+        d0[j + 3] *= d1[j] / 255;
+      }
+
+      for (; i < l3; ++i) {
+        j = i * 4;
+        d0[j + 3] *= d1[j] / 255;
+      }
+
       ctx.putImageData(p0, 0, 0);
-      d1.length = d0.length = l = i = j = 0;
+      d1.length = d0.length = l0 = l1 = l2 = l3 = i = j = 0;
       p1 = p0 = null;
     }
   </script>
