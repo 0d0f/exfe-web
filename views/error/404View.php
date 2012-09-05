@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" dir="ltr"> <!--<![endif]-->
 <head>
-  <meta charset="UTF-8" />
-  <title>404</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+  <title>EXFE.COM</title>
+  <meta name="author" content="EXFE Inc." />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
+  <meta name="description" content="EXFE, a utility for hanging out with friends." />
+  <meta name="copyright" content="Copyright 2012 EXFE Inc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <link rel="shortcut icon" href="/static/img/favicon.png" />
+  <link rel="apple-touch-icon" href="/static/img/favicon.png" />
   <style>
     body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,img { margin: 0; padding:0; border: 0; }
-
-    html, body {
-      height: 100%;
-    }
-
+    html, body { height: 100%; }
     body {
       background-attachment: fixed;
       background-color: #84A4BF;
@@ -21,37 +29,16 @@
       background-image: linear-gradient(top, #5A7A95, #C3E3FD);
       background-repeat: repeat-x;
     }
-
     .container {
       display: table;
       margin: 0 auto;
       width: 340px;
       height: 100%;
     }
-
     .outer {
       display: table-cell;
       vertical-align: middle;
       position: relative;
-    }
-
-    h1 {
-      position: absolute;
-      left: 30px;
-      top: 250px;
-    }
-
-    /*
-    #mask, #circle {
-      position: absolute;
-      margin-top: -170px;
-    }
-    */
-
-    #mask {
-    }
-
-    #circle {
     }
   </style>
 </head>
@@ -65,9 +52,9 @@
     </div>
   </div>
 
-  <script>
+  <script type="text/javascript">
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-    window.requestAnimFrame = function() {
+    var requestAnimFrame = function() {
       return window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame ||
@@ -102,7 +89,7 @@
     function animate () {
       draw(angle);
       angle += 3;
-      window.requestAnimFrame(animate, 0);
+      requestAnimFrame(animate, 0);
     }
 
     function draw(angle) {
@@ -136,7 +123,18 @@
       d1.length = d0.length = l = i = j = 0;
       p1 = p0 = null;
     }
-
   </script>
+<?php if (SITE_URL === 'https://exfe.com'): ?>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-31794223-2']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+<?php endif; ?>
 </body>
 </html>
