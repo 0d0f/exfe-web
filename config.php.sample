@@ -30,6 +30,8 @@ define("RESQUE_SERVER", "127.0.0.1:6379");
 define("REDIS_SERVER_ADDRESS", "127.0.0.1");
 define("REDIS_SERVER_PORT", "6379");
 
+define("EXFE_AUTH_SERVER", "http://127.0.0.1:23333");
+
 define('COOKIES_DOMAIN', '.exfe.com');
 define('INTL_RESOURCES', '/Users/huoju/www/exfe/intl');
 

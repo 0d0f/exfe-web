@@ -81,6 +81,7 @@ class GobusActions extends ActionController {
             curl_setopt($objCurl, CURLOPT_URL, IOM_URL . "/iom/{$raw_by_identity->connected_user_id}/{$iom}");
             curl_setopt($objCurl, CURLOPT_HEADER, 0);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
             $curlResult = curl_exec($objCurl);
             curl_close($objCurl);
             $cross_id = (int) $curlResult;
