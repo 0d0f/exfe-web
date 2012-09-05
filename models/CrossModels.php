@@ -14,7 +14,7 @@ class CrossModels extends DataModel {
                 $filter = "AND c.`date` =  '' ORDER BY c.`created_at` DESC";
                 break;
             default:
-                $filter = '';
+                $filter = ' ORDER BY c.`begin_at` DESC';
         }
         $exfee_ids = implode($exfee_id_list,",");
 
