@@ -453,9 +453,6 @@ class UsersActions extends ActionController {
 
 
     public function doSignin() {
-        $modExfeAuth   = $this->getModelByName('ExfeAuth');
-        $modExfeAuth->generateToken();
-
         // get models
         $modUser       = $this->getModelByName('user');
         $modIdentity   = $this->getModelByName('identity');

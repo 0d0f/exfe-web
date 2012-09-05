@@ -98,7 +98,7 @@ class UserModels extends DataModel {
 
     public function getUserPasswdByUserId($user_id) {
         return $user_id ? $this->getRow(
-            "SELECT `name`, `auth_token`, `encrypted_password`, `password_salt`,
+            "SELECT `name`, `encrypted_password`, `password_salt`,
              `current_sign_in_ip` FROM `users` WHERE `id` = {$user_id}"
         ) : null;
     }
@@ -544,20 +544,19 @@ class UserModels extends DataModel {
         if ($user_id) {
             $passwdInDb = $passwdInDb ?: $this->getUserPasswdByUserId($user_id);
             if ($passwdInDb) {
-                $siResult = true;
-                if (!$passwdInDb['auth_token']) {
-                    $passwdInDb['auth_token'] = md5($time.uniqid());
-                    $siResult = $this->query(
-                        "UPDATE `users`
-                         SET    `auth_token` = '{$passwdInDb['auth_token']}'
-                         WHERE  `id`         =  {$user_id}"
-                    );
-                }
-                if ($siResult) {
+                $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+                $token = $hlpExfeAuth->generateToken(
+                    ['token_type'        => 'user_token',
+                     'user_id'           => $user_id],
+                    ['signin_time'       => time(),
+                     'last_authenticate' => time()],
+                    31536000 // 1 year
+                );
+                if ($token) {
                     return [
                         'user_id'  => $user_id,
                         'name'     => $passwdInDb['name'],
-                        'token'    => $passwdInDb['auth_token'],
+                        'token'    => $token,
                         'password' => !!$passwdInDb['encrypted_password']
                     ];
                 }
@@ -568,11 +567,14 @@ class UserModels extends DataModel {
 
 
     public function getUserIdByToken($token) {
-        if(trim($token)==='')
-            return 0;
-        $sql="select id from users where auth_token='$token';";
-        $row=$this->getRow($sql);
-        return intval($row["id"]);
+        if ($token) {
+            $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+            $result = $hlpExfeAuth->getToken($token);
+            if (isset($result['resource']['user_id'])) {
+                return (int) $result['resource']['user_id'];
+            }
+        }
+        return 0;
     }
 
 
