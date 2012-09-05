@@ -60,7 +60,7 @@ addScript([
     ['lightsaber',    '0.0.1'],
     ['middleware',    '0.0.1'],
     ['routes',        '0.0.1'],
-    ['app',           '0.0.1'],
+    ['app',           '0.0.2'],
 ]);
 
 // Google Analytics
