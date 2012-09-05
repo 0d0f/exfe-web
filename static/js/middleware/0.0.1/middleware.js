@@ -73,7 +73,7 @@ define('middleware', function (require, exports, module) {
 
   // errorHandler
   middleware.errorHandler = function (req, res, next) {
-    res.redirect('/404');
+    res.redirect('/error/404');
   };
 
   // Helers:
