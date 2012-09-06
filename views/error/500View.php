@@ -109,7 +109,7 @@
       centerY = offset.top + centre;
     });
 
-    $(document).on('mousemove touchstarttouchstart touchmove', function (e) {
+    $(document).on('mousemove touchstart touchmove', function (e) {
       e.preventDefault(); // iPAD, 防止上下滑动
       if (e.type === 'touchmove' || e.type === 'touchstart') {
         var touch = e.originalEvent.touches[0];
