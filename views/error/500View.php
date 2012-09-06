@@ -104,12 +104,10 @@
     });
 
     $(document).on('mousemove touchmove', function (e) {
-      document.title = e.type + ', ' + e.touches[0].pageX + ', ' + e.touches[0].pageY;
       if (e.type === 'touchmove') {
-        var touch = e.touches[0];
+        var touch = e.originalEvent.touches[0];
         pageX = touch.pageX;
         pageY = touch.pageY;
-        alert(pageX);
         document.title = pageX + ', ' + pageY;
       }
       else {
