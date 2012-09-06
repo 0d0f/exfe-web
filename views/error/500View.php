@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
-  <title>404 · EXFE.COM</title>
+  <title>Server Error · EXFE.COM</title>
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
@@ -40,109 +40,98 @@
       vertical-align: middle;
       position: relative;
     }
+    .inner {
+      -webkit-perspective: 600px;
+      -moz-perspective: 600px;
+      -ms-perspective: 600px;
+      -o-perspective: 600px;
+      perspective: 600px;
+      position: relative;
+      width: 340px;
+      height: 340px;
+    }
+
+    #exfe {
+      /*
+      -moz-transition: -moz-transform 144ms ease 0s;
+      -webkit-transition: -webkit-transform 144ms ease 0s;
+      */
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    #bubble {
+      position: absolute;
+      top: -70px;
+      left: -70px;
+    }
   </style>
+  <script type="text/javascript" src="/static/js/jquery/1.8.0/jquery.min.js"></script>
+  <script type="text/javascript" src="/static/js/modernizr/2.5.3/modernizr.min.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="outer">
-      <canvas id="circle" width="480" height="480"></canvas>
-      <canvas id="mask" width="480" height="480" style="display: none;"></canvas>
-      <img id="exfelogo" src="/static/img/exfe.png" style="display: none;" />
-      <img id="404mask" src="/static/img/radar_mask.jpg" style="display: none;" />
+      <div class="inner">
+        <img id="exfe" src="/static/img/exfe.png" width="340" height="340" alt="" />
+        <img id="bubble" src="/static/img/500_bubble.png" width="480" height="480" alt="" />
+      </div>
     </div>
   </div>
 
   <script type="text/javascript">
-    // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-    var requestAnimFrame = function() {
-      return window.requestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-      window.oRequestAnimationFrame ||
-      window.msRequestAnimationFrame ||
-      function(callback, element) {
-        window.setTimeout(callback, 1000 / 60);
-      };
-    }();
+    var centerX, centerY, pageX, pageY
+      , $exfe = $('#exfe')
+      , $bubble = $('#bubble')
+      , w = 340 , centre = w / 2
+      , offset = $exfe.offset()
+      , dx , dy , tx = 0 , ty = 0
+      , rx = 0 , ry = 0 , st , sr , ss;
 
-    var c = document.getElementById('circle')
-      , ctx = c.getContext('2d')
-      , w = 480
-      , centre = w / 2
-      , exfe = document.getElementById('exfelogo')
-      , ew = 340
-      , mask = document.getElementById('mask')
-      , maskImg = document.getElementById('404mask')
-      , mctx = mask.getContext('2d')
-      , degress = Math.PI / 180
-      , angle = 0
-      , p0
-      , d0
-      , p1
-      , d1
-      , l0
-      , l1
-      , l2
-      , l3
-      , j
-      , i = 0;
+    centerX = offset.left + centre;
+    centerY = offset.top + centre;
 
-    animate();
+    $(window).resize(function () {
+      offset = $exfe.offset();
+      centerX = offset.left + centre;
+      centerY = offset.top + centre;
+    });
 
-    function animate () {
-      draw(angle);
-      angle += 3;
-      requestAnimFrame(animate, 0);
-    }
+    $(document).on('mousemove', function (e) {
+      pageX = e.pageX;
+      pageY = e.pageY;
 
-    function draw(angle) {
-      mctx.clearRect(0, 0, w, w);
-      mctx.translate(centre, centre);
-      mctx.rotate(angle * degress);
-      mctx.drawImage(maskImg, -maskImg.width / 2, -maskImg.width / 2);
-      mctx.rotate(-angle * degress);
-      mctx.translate(-centre, -centre);
+      dx = pageX - centerX;
+      dy = pageY - centerY;
 
-      // draw IMG
-      ctx.clearRect(0, 0, w, w);
-      ctx.translate(centre, centre);
-      ctx.drawImage(exfe, -ew / 2, -ew / 2);
-      ctx.translate(-centre, -centre);
+      tx = -1 * dx / centerX * 5;
+      ty = -1 * dy / centerY * 5;
 
-      p0 = ctx.getImageData(0, 0, w, w);
-      d0 = p0.data;
+      rx = dx / centerX * 12;
+      ry = -1 * dy / centerY * 12;
 
-      p1 = mctx.getImageData(0, 0, w, w);
-      d1 = p1.data;
-      l0 = d1.length >> 5;
-      l1 = d1.length >> 4;
-      l2 = d1.length >> 3;
-      l3 = d1.length >> 2;
+      sr = 'rotateY(' + rx + 'deg) rotateX(' + ry + 'deg)';
+      st = 'translate(' + tx + 'px, ' + ty + 'px)';
+      ss = sr + ' ' + st;
 
-      for (; i < l0; ++i) {
-        j = i * 4;
-        d0[j + 3] *= d1[j] / 255;
-      }
+      $bubble.css({
+        '-webkit-transform': ss,
+        '-moz-transform': ss,
+        '-ms-transform': ss,
+        // wtf? Opera css3D
+        '-o-transform': st,
+        'transform': ss
+      });
 
-      for (; i < l1; ++i) {
-        j = i * 4;
-        d0[j + 3] *= d1[j] / 255;
-      }
-
-      for (; i < l2; ++i) {
-        j = i * 4;
-        d0[j + 3] *= d1[j] / 255;
-      }
-
-      for (; i < l3; ++i) {
-        j = i * 4;
-        d0[j + 3] *= d1[j] / 255;
-      }
-
-      ctx.putImageData(p0, 0, 0);
-      d1.length = d0.length = l0 = l1 = l2 = l3 = i = j = 0;
-      p1 = p0 = null;
-    }
+      $exfe.css({
+        '-webkit-transform': sr,
+        '-moz-transform': sr,
+        '-ms-transform': sr,
+        '-o-transform': sr,
+        'transform': sr
+      });
+    });
   </script>
 <?php if (SITE_URL === 'https://exfe.com'): ?>
   <script type="text/javascript">
