@@ -22,6 +22,11 @@ class ExfeAuthHelper extends ActionController {
     }
 
 
+    public function findToken($resource) {
+        return $this->modExfeAuth->findToken($resource);
+    }
+
+
     public function verifyToken($token, $resource) {
         return $this->modExfeAuth->verifyToken($token, $resource);
     }
@@ -45,6 +50,5 @@ class ExfeAuthHelper extends ActionController {
     public function expireToken($token) {
         return $this->modExfeAuth->expireToken($token);
     }
-
 
 }

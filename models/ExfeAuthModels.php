@@ -53,6 +53,11 @@ class ExfeAuthModels extends DataModel {
     }
 
 
+    public function findToken($resource) {
+        return $this->useTokenApi('Find', $resource);
+    }
+
+
     public function verifyToken($token, $resource) {
         return $this->useTokenApi('Verify', [
             'Token'    => $token,
