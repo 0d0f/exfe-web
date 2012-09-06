@@ -104,6 +104,7 @@
     });
 
     $(document).on('mousemove touchmove', function (e) {
+      document.title = e.type;
       if (e.type === 'touchmove') {
         var touch = e.touches[0];
         pageX = touch.pageX;
