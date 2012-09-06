@@ -294,10 +294,10 @@ class UserModels extends DataModel {
         switch ($identity->provider) {
             case 'email':
                 // get current token
-                $resource  = ['token_type'   => 'verification_token',
-                              'action'       => $action,
-                              'user_id'      => (int) $user_id,
-                              'identity_id'  => (int) $identity->id];
+                $resource  = ['token_type'  => 'verification_token',
+                              'action'      => $action,
+                              'user_id'     => (int) $user_id,
+                              'identity_id' => (int) $identity->id];
                 $expireSec = 60 * 24 * 2; // 2 days
                 $curTokens = $hlpExfeAuth->findToken($resource);
                 if ($curTokens && is_array($curTokens)) {
