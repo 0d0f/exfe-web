@@ -110,7 +110,7 @@
     });
 
     $(document).on('mousemove touchstarttouchstart touchmove', function (e) {
-      //e.preventDefault();
+      e.preventDefault();
       if (e.type === 'touchmove' || e.type === 'touchstart') {
         var touch = e.originalEvent.touches[0];
         pageX = touch.pageX;
