@@ -41,6 +41,9 @@
     }
   }
 
+  // AMD
+  define.amd = { jQuery: true };
+
   /**
    * 不对外提供此接口
    * Accepts a module identifier.
