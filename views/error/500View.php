@@ -103,10 +103,16 @@
       centerY = offset.top + centre;
     });
 
-    $(document).on('mousemove touchstart', function (e) {
-      alert(e.type)
-      pageX = e.pageX;
-      pageY = e.pageY;
+    $(document).on('mousemove touchmove', function (e) {
+      if (e.type === 'touchmove') {
+        var touch = e.touches[0];
+        pageX = touch.pageX;
+        pageY = touch.pageY;
+      }
+      else {
+        pageX = e.pageX;
+        pageY = e.pageY;
+      }
 
       dx = pageX - centerX;
       dy = pageY - centerY;
