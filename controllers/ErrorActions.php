@@ -6,4 +6,9 @@ class ErrorActions extends ActionController {
         $this->displayView();
     }
 
+
+    public function do500() {
+        $this->displayView();
+    }
+
 }
