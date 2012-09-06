@@ -398,7 +398,7 @@ class UserModels extends DataModel {
         }
         // change password
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['token_type'] === 'verification_token') {
+          && $curToken['Resource']['token_type'] === 'verification_token') {
             $cpResult  = $this->setUserPassword(
                 $curToken['Resource']['user_id'], $password, $name
             );
