@@ -87,7 +87,7 @@
       , w = 340 , centre = w / 2
       , offset = $exfe.offset()
       , dx , dy , tx = 0 , ty = 0
-      , rx = 0 , ry = 0 , st , sr , ss;
+      , rx = 0 , ry = 0 , st, sr, sr2, ss;
 
     centerX = offset.left + centre;
     centerY = offset.top + centre;
@@ -108,12 +108,13 @@
       tx = -1 * dx / centerX * 5;
       ty = -1 * dy / centerY * 5;
 
-      rx = dx / centerX * 12;
-      ry = -1 * dy / centerY * 12;
+      rx = dx / centerX * 8;
+      ry = -1 * dy / centerY * 8;
 
       sr = 'rotateY(' + rx + 'deg) rotateX(' + ry + 'deg)';
+      sr2 = 'rotateY(' + -rx + 'deg) rotateX(' + -ry + 'deg)';
       st = 'translate(' + tx + 'px, ' + ty + 'px)';
-      ss = sr + ' ' + st;
+      ss = sr2 + ' ' + st;
 
       $bubble.css({
         '-webkit-transform': ss,
