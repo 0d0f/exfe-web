@@ -294,10 +294,10 @@ class UserModels extends DataModel {
         switch ($identity->provider) {
             case 'email':
                 // get current token
-                $resource  = ['token_type'   => 'verification_token',
-                              'action'       => $action,
-                              'user_id'      => (int) $user_id,
-                              'identity_id'  => (int) $identity->id];
+                $resource  = ['token_type'  => 'verification_token',
+                              'action'      => $action,
+                              'user_id'     => (int) $user_id,
+                              'identity_id' => (int) $identity->id];
                 $expireSec = 60 * 24 * 2; // 2 days
                 $curTokens = $hlpExfeAuth->findToken($resource);
                 if ($curTokens && is_array($curTokens)) {
@@ -309,11 +309,13 @@ class UserModels extends DataModel {
                     }
                 }
                 // update database
-                $actResult = $token
-              ? $hlpExfeAuth->refreshToken($token, $expireSec)        // extension
-              : $hlpExfeAuth->generateToken(
-                    $resource, ['created_time' => time()], $expireSec // make new token
-                );
+                if ($token) {
+                    $actResult = $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                } else {
+                    $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
+                        $resource, ['created_time' => time()], $expireSec
+                    );
+                }
                 // return
                 if ($actResult) {
                     return $result;
@@ -330,17 +332,17 @@ class UserModels extends DataModel {
     public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['token_type'] === 'verification_token') {
-            switch ($curToken['Resource']['action']) {
+          && $curToken['resource']['token_type'] === 'verification_token') {
+            switch ($curToken['resource']['action']) {
                 case 'VERIFY':
                     // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
                     $stResult = $this->setUserIdentityStatus(
-                        $curToken['Resource']['user_id'],
-                        $curToken['Resource']['identity_id'], 3
+                        $curToken['resource']['user_id'],
+                        $curToken['resource']['identity_id'], 3
                     );
                     if ($stResult) {
                         $siResult = $this->rawSignin(
-                            $curToken['Resource']['user_id']
+                            $curToken['resource']['user_id']
                         );
                         if ($siResult) {
                             if ($siResult['password']) {
@@ -353,9 +355,9 @@ class UserModels extends DataModel {
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'identity_id' => $curToken['Resource']['identity_id'],
+                                'identity_id' => $curToken['resource']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['Resource']['action'],
+                                'token_type'  => $curToken['resource']['action'],
                                 'action'      => $nextAction,
                             ];
                         }
@@ -363,21 +365,21 @@ class UserModels extends DataModel {
                     break;
                 case 'SET_PASSWORD':
                     $stResult = $this->setUserIdentityStatus(
-                        $curToken['Resource']['user_id'],
-                        $curToken['Resource']['identity_id'], 3
+                        $curToken['resource']['user_id'],
+                        $curToken['resource']['identity_id'], 3
                     );
                     if ($stResult) {
                         $hlpExfeAuth->refreshToken($token, 233);
                         $siResult = $this->rawSignin(
-                            $curToken['Resource']['user_id']
+                            $curToken['resource']['user_id']
                         );
                         if ($siResult) {
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'identity_id' => $curToken['Resource']['identity_id'],
+                                'identity_id' => $curToken['resource']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['Resource']['action'],
+                                'token_type'  => $curToken['resource']['action'],
                                 'action'      => 'INPUT_NEW_PASSWORD',
                             ];
                         }
@@ -396,18 +398,18 @@ class UserModels extends DataModel {
         }
         // change password
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['token_type'] === 'verification_token') {
+          && $curToken['resource']['token_type'] === 'verification_token') {
             $cpResult  = $this->setUserPassword(
-                $curToken['Resource']['user_id'], $password, $name
+                $curToken['resource']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $siResult = $this->rawSignin($curToken['Resource']['user_id']);
+                $siResult = $this->rawSignin($curToken['resource']['user_id']);
                 $hlpExfeAuth->expireToken($token);
                 return array(
                     'user_id'     => $siResult['user_id'],
                     'token'       => $siResult['token'],
-                    'identity_id' => $curToken['Resource']['identity_id'],
-                    'action'      => $curToken['Resource']['action'],
+                    'identity_id' => $curToken['resource']['identity_id'],
+                    'action'      => $curToken['resource']['action'],
                 );
             }
         }
