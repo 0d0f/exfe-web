@@ -309,11 +309,13 @@ class UserModels extends DataModel {
                     }
                 }
                 // update database
-                $actResult = $token
-              ? $hlpExfeAuth->refreshToken($token, $expireSec)        // extension
-              : $hlpExfeAuth->generateToken(
-                    $resource, ['created_time' => time()], $expireSec // make new token
-                );
+                if ($token) {
+                    $actResult = $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                } else {
+                    $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
+                        $resource, ['created_time' => time()], $expireSec
+                    );
+                }
                 // return
                 if ($actResult) {
                     return $result;
