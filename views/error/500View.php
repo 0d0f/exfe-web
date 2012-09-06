@@ -28,6 +28,12 @@
       background-image: -o-linear-gradient(top, #5A7A95, #C3E3FD);
       background-image: linear-gradient(top, #5A7A95, #C3E3FD);
       background-repeat: repeat-x;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
     }
     .container {
       display: table;
@@ -104,7 +110,7 @@
     });
 
     $(document).on('mousemove touchstarttouchstart touchmove', function (e) {
-      e.preventDefault();
+      //e.preventDefault();
       if (e.type === 'touchmove' || e.type === 'touchstart') {
         var touch = e.originalEvent.touches[0];
         pageX = touch.pageX;
