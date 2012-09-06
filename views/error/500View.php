@@ -109,6 +109,7 @@
         var touch = e.touches[0];
         pageX = touch.pageX;
         pageY = touch.pageY;
+        alert(pageX);
         document.title = pageX + ', ' + pageY;
       }
       else {
