@@ -109,7 +109,6 @@
         var touch = e.originalEvent.touches[0];
         pageX = touch.pageX;
         pageY = touch.pageY;
-        document.title = e.type + ', ' + pageX + ', ' + pageY;
       }
       else {
         pageX = e.pageX;
