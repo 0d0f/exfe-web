@@ -104,7 +104,7 @@
     });
 
     $(document).on('mousemove touchmove', function (e) {
-      document.title = e.type;
+      document.title = e.type + ', ' + e.touches[0].pageX + ', ' + e.touches[0].pageY;
       if (e.type === 'touchmove') {
         var touch = e.touches[0];
         pageX = touch.pageX;
