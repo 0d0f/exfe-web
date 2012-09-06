@@ -2,7 +2,7 @@
 define("STATIC_CODE_TIMESTAMP", 1334903539); // date +%s
 
 define("DEBUG", false);
-define("JS_DEBUG", false);
+define('JS_DEBUG', false);
 
 $dbhost="127.0.0.1";
 $dbuser="root";
