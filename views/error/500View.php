@@ -110,11 +110,11 @@
       dx = pageX - centerX;
       dy = pageY - centerY;
 
-      tx = -1 * dx / centerX * 5;
-      ty = -1 * dy / centerY * 5;
+      tx = -dx / centerX * 5;
+      ty = -dy / centerY * 5;
 
       rx = dx / centerX * 8;
-      ry = -1 * dy / centerY * 8;
+      ry = -dy / centerY * 8;
 
       sr = 'rotateY(' + rx + 'deg) rotateX(' + ry + 'deg)';
       sr2 = 'rotateY(' + -rx + 'deg) rotateX(' + -ry + 'deg)';
@@ -127,7 +127,7 @@
         '-ms-transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss,
         // wtf? Opera css3D
         '-o-transform': st,
-        'transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss,
+        'transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss
       });
 
       $exfe.css({
