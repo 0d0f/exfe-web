@@ -12,7 +12,7 @@
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
   <meta name="description" content="EXFE, a utility for hanging out with friends." />
   <meta name="copyright" content="Copyright 2012 EXFE Inc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1" />
   <link rel="shortcut icon" href="/static/img/favicon.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon.png" />
   <style>
