@@ -10,9 +10,5 @@
     "url": "http://code.jquery.com/jquery-1.8.0.js",
     "minurl": "http://code.jquery.com/jquery-1.8.0.min.js"
   },
-  "hint": false,
-  "module": {
-    "header": "define('jquery', function (require, exports, module) {\n\n\n",
-    "footer": "\n\n\n  return jQuery;\n});"
-  }
+  "hint": false
 }

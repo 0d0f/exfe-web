@@ -10,7 +10,7 @@ function addScript($scripts) {
 
 echo "\n";
 addScript([
-    ['common',        '0.0.1'],
+    ['common',        '0.0.2'],
     ['class',         '0.0.1'],
     ['emitter',       '0.0.1'],
     ['base',          '0.0.1'],
