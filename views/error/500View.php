@@ -103,8 +103,9 @@
       centerY = offset.top + centre;
     });
 
-    $(document).on('mousemove touchmove', function (e) {
-      if (e.type === 'touchmove') {
+    $(document).on('mousemove touchstart touchmove', function (e) {
+      e.preventDefault();
+      if (e.type === 'touchmove' || e.type === 'touchstart') {
         var touch = e.originalEvent.touches[0];
         pageX = touch.pageX;
         pageY = touch.pageY;
