@@ -32,7 +32,7 @@ define('lightsaber', function (require, exports, module) {
   var _firstLoad = false;
   $(win).on('load', function (e) {
     _firstLoad = true;
-    setTimeout(function () { _firstLoad = false; }, 0);
+    requestAnimFrame(function () { _firstLoad = false; }, 0);
   });
 
   // export module
@@ -458,6 +458,18 @@ define('lightsaber', function (require, exports, module) {
   // Response.prototype
   proto = Response.prototype;
 
+  var _redirect = $.browser.opera ?  function (url) {
+      requestAnimFrame(function () {
+        setTimeout(function () {
+          location.href = url;
+        }, 1000 / 60);
+      }, 0);
+    } : function (url) {
+      requestAnimFrame(function () {
+        location.href = url;
+      }, 0);
+    };
+
   // redirect('back')
   // redirect('/user', 'User Page', {id: 'user'});
   proto.redirect = function (url) {
@@ -472,9 +484,7 @@ define('lightsaber', function (require, exports, module) {
         history[url]();
       } else {
         // 进入线程, 防止失败
-        requestAnimFrame(function () {
-          location.href = url;
-        });
+        _redirect(url);
       }
       return;
     }
