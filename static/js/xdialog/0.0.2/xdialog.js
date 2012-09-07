@@ -565,12 +565,14 @@ define('xdialog', function (require, exports, module) {
         this._provider = identity.provider;
         this._identity_id = identity.id;
         this._token = data.token;
+        this._following = data.following;
 
         if (identity.provider === 'email') {
           this.$('.provider-email').removeClass('hide');
           title.text('Hi, ' + identity.name + '.');
         } else {
           this.$('.provider-other').removeClass('hide');
+          this.$('#follow').prop('checked', this._following);
           title.text('Hi, ' + Util.printExtUserName(identity) + '.');
         }
       },

@@ -675,10 +675,11 @@ define('routes', function (require, exports, module) {
               }
             })[0];
 
-            $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-oauth-type="' + oauth.type + '"></div>')
+            $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-oauth-provider="' + oauth.provider + '"></div>')
             .appendTo(document.body)
               .trigger({
                 type: 'click',
+                following: oauth.following,
                 identity: identity,
                 token: authorization.token
               })
