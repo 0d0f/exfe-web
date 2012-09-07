@@ -193,9 +193,12 @@ class OAuthActions extends ActionController {
                     if ($isMobile) {
                         header(
                             "location: {$workflow['callback']['oauth_device_callback']}"
-                          . "?token={$rstSignin['token']}&name={$objTwitterIdentity->name}"
-                          . "&userid={$rstSignin['user_id']}&external_id="
-                          . "{$objTwitterIdentity->external_id}&provider=twitter"
+                          . "?token={$rstSignin['token']}"
+                          . "&name={$objTwitterIdentity->name}"
+                          . "&userid={$rstSignin['user_id']}"
+                          . "&external_id={$objTwitterIdentity->external_id}"
+                          . '&provider=twitter'
+                          . "&identity_status={$identity_status}"
                         );
                         return;
                     }
