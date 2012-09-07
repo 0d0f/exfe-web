@@ -10,7 +10,7 @@ function addScript($scripts) {
 
 echo "\n";
 addScript([
-    ['common',        '0.0.2'],
+    ['common',        '0.0.3'],
     ['class',         '0.0.1'],
     ['emitter',       '0.0.1'],
     ['base',          '0.0.1'],
@@ -20,7 +20,7 @@ addScript([
     ['widget',        '0.0.1'],
     ['jquery',        '1.8.0'],
     ['moment',        '1.6.2'],
-    ['store',         '1.3.3'],
+    ['store',         '1.3.4'],
     ['marked',        '0.2.5'],
     ['handlebars',    '1.0.0'],
     ['handlebarsext', '0.0.1'],
@@ -37,7 +37,7 @@ addScript([
     ['dialog',        '0.0.1'],
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.1'],
+    ['xdialog',       '0.0.2'],
     ['global',        '0.0.2'],
 ]);
 
@@ -58,7 +58,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.2'],
-    ['middleware',    '0.0.1'],
+    ['middleware',    '0.0.2'],
     ['routes',        '0.0.1'],
     ['app',           '0.0.2'],
 ]);
