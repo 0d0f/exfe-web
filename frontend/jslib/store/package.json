@@ -10,6 +10,7 @@
     "url": "https://github.com/marcuswestin/store.js/raw/master/store.js",
     "minurl": "https://raw.github.com/marcuswestin/store.js/master/store.min.js"
   },
+  "date": "16:18:48 09/07/2012",
   "hint": false,
   "module": {
     "header": "define('store', function (require, exports, module) {\n\n\n",
