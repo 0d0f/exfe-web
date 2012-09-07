@@ -20,7 +20,7 @@ addScript([
     ['widget',        '0.0.1'],
     ['jquery',        '1.8.0'],
     ['moment',        '1.6.2'],
-    ['store',         '1.3.3'],
+    ['store',         '1.3.4'],
     ['marked',        '0.2.5'],
     ['handlebars',    '1.0.0'],
     ['handlebarsext', '0.0.1'],
