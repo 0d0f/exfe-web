@@ -1,4 +1,4 @@
-define('class', [], function () {
+define('class', function () {
 /*
  * Class
  * @author cfddream@gmail.com

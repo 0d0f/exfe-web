@@ -37,7 +37,7 @@ addScript([
     ['dialog',        '0.0.1'],
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.1'],
+    ['xdialog',       '0.0.2'],
     ['global',        '0.0.2'],
 ]);
 
@@ -58,7 +58,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.2'],
-    ['middleware',    '0.0.1'],
+    ['middleware',    '0.0.2'],
     ['routes',        '0.0.1'],
     ['app',           '0.0.2'],
 ]);
