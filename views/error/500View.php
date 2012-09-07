@@ -79,7 +79,7 @@
     }
   </style>
   <script type="text/javascript" src="/static/js/jquery/1.8.0/jquery.min.js"></script>
-  <script type="text/javascript" src="/static/js/modernizr/2.5.3/modernizr.min.js"></script>
+  <!--script type="text/javascript" src="/static/js/modernizr/2.5.3/modernizr.min.js"></script-->
 </head>
 <body>
   <div class="container">
