@@ -13,8 +13,8 @@
   <meta name="description" content="EXFE, a utility for hanging out with friends." />
   <meta name="copyright" content="Copyright 2012 EXFE Inc" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<?php if (($twitterSignin = $this->getVar('twitter_signin'))) { ?>
-  <meta name="authorization" content="<?php echo htmlentities(json_encode($twitterSignin)); ?>" />
+<?php if (($oauth = $this->getVar('oauth'))) { ?>
+  <meta name="authorization" content="<?php echo htmlentities(json_encode($oauth)); ?>" />
 <?php } ?>
   <link rel="shortcut icon" href="/static/img/favicon.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon.png" />

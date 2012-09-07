@@ -11,18 +11,9 @@ define('middleware', function (require, exports, module) {
    *      2. 检查 header.meta.name = 'authorization'
    *
    *  本地缓存已经有 `authorization`，则其他 `token` 身份进来的都为 `browsing identity`
-   *
    */
   middleware.basicAuth = function (req, res, next) {
     var session = req.session;
-
-    // 清掉上次 `browsing` 数据
-    //if (session.browsing_authorization) {
-      //delete session.browsing_authorization;
-    //}
-    //if (session.browsing_user) {
-      //delete session.browsing_user;
-    //}
 
     // Step 1
     var authorization = Store.get('authorization')
@@ -37,15 +28,18 @@ define('middleware', function (require, exports, module) {
     }
 
     else if (!authorization && authMeta) {
-      Store.set('authorization', session.authorization = authMeta.authorization);
-      Store.set('user', session.user = null);
       Store.set('oauth', session.oauth = {
         type: authMeta.type,
-        following: authMeta.following,
+        provider: authMeta.provider,
+        following: authMeta.provider === 'twitter' ? authMeta.twitter_following : false,
         identity_id: authMeta.identity_id,
         // status: connected, new, revoked
         identity_status: authMeta.identity_status
       });
+
+      delete session.user;
+      Store.remove('user');
+      Store.set('authorization', session.authorization = authMeta.authorization);
     }
 
     else if (authorization && authMeta) {
@@ -53,18 +47,18 @@ define('middleware', function (require, exports, module) {
           && authorization.user_id !== authMeta.authorization.user_id) {
         Store.set('oauth', session.oauth = {
           type: authMeta.type,
-          following: authMeta.following,
+          provider: authMeta.provider,
+          following: authMeta.provider === 'twitter' ? authMeta.twitter_following : false,
           identity_id: authMeta.identity_id,
           // status: connected, new, revoked
           identity_status: authMeta.identity_status
         });
-        Store.set('user', session.user = null);
+
+        delete session.user;
+        Store.remove('user');
         Store.set('authorization', session.authorization = authMeta.authorization);
       }
     }
-
-    //else if (!authorization && !authMeta) {
-    //}
 
     next();
   };
