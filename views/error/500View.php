@@ -68,11 +68,11 @@
     }
 
     #bubble {
-      -webkit-transform: translateZ(50px) scale(0.89583333, 0.89583333);
-      -moz-transform: translateZ(50px) scale(0.89583333, 0.89583333);
-      -os-transform: translateZ(50px) scale(0.89583333, 0.89583333);
-      -o-transform: translateZ(50px) scale(0.89583333, 0.89583333);
-      transform: translateZ(50px) scale(0.89583333, 0.89583333);
+      -webkit-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+      -moz-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+      -os-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+      -o-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+      transform: translateZ(70px) scale(0.854166666, 0.854166666);
       position: absolute;
       top: -70px;
       left: -70px;
@@ -136,12 +136,12 @@
       ss = sr2 + ' ' + st;
 
       $bubble.css({
-        '-webkit-transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss,
-        '-moz-transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss,
-        '-ms-transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss,
+        '-webkit-transform': 'translateZ(70px) scale(0.854166666, 0.854166666) ' + ss,
+        '-moz-transform': 'translateZ(70px) scale(0.854166666, 0.854166666) ' + ss,
+        '-ms-transform': 'translateZ(70px) scale(0.854166666, 0.854166666) ' + ss,
         // wtf? Opera css3D
         '-o-transform': st,
-        'transform': 'translateZ(50px) scale(0.89583333, 0.89583333) ' + ss
+        'transform': 'translateZ(70px) scale(0.854166666, 0.854166666) ' + ss
       });
 
       $exfe.css({
