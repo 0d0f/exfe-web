@@ -198,7 +198,7 @@
                 {{/if}}
 
                 {{#if updated.conversation}}
-                <div><span class="blue">{{by_identity.name}}</span>:
+                <div><span class="blue">{{printIdentityNameFromInvitations updated.conversation.identity_id exfee.invitations}}</span>:
                 {{updated.conversation.content}}</div>
                 {{/if}}
                 {{#if conversation_count}}
