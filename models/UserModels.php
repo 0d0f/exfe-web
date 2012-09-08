@@ -271,6 +271,8 @@ class UserModels extends DataModel {
         if (!$identity || !$action) {
             return null;
         }
+        $identity->id = (int) $identity->id;
+        $user_id      = (int) $user_id;
         // check action
         switch ($action) {
             case 'VERIFY':
@@ -294,26 +296,36 @@ class UserModels extends DataModel {
         switch ($identity->provider) {
             case 'email':
                 // get current token
-                $resource  = ['token_type'  => 'verification_token',
-                              'action'      => $action,
-                              'user_id'     => (int) $user_id,
-                              'identity_id' => (int) $identity->id];
+                $resource  = ['token_type'   => 'verification_token',
+                              'action'       => $action,
+                              'identity_id'  => $identity->id];
+                $data      = ['token_type'   => 'verification_token',
+                              'action'       => $action,
+                              'user_id'      => $user_id,
+                              'identity_id'  => $identity->id,
+                              'created_time' => time(),
+                              'updated_time' => time()];
                 $expireSec = 60 * 24 * 2; // 2 days
                 $curTokens = $hlpExfeAuth->findToken($resource);
                 if ($curTokens && is_array($curTokens)) {
                     foreach ($curTokens as $cI => $cItem) {
-                        if (!$cItem['is_expired']) {
-                            $result['token'] = $cItem['Token'];
+                        if ($cItem['data']['token_type'] === 'verification_token'
+                         && $cItem['data']['user_id']    === $user_id
+                         && !$cItem['is_expire']) {
+                            $result['token'] = $cItem['token'];
+                            $data            = $cItem['data'];
                             break;
                         }
                     }
                 }
                 // update database
-                if ($token) {
+                if ($result['token']) {
+                    $data['updated_time'] = time();
+                    $hlpExfeAuth->updateToken($token, $data);                    // update
                     $actResult = $hlpExfeAuth->refreshToken($token, $expireSec); // extension
                 } else {
                     $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
-                        $resource, ['created_time' => time()], $expireSec
+                        $resource, $data, $expireSec
                     );
                 }
                 // return
@@ -332,17 +344,17 @@ class UserModels extends DataModel {
     public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['resource']['token_type'] === 'verification_token') {
-            switch ($curToken['resource']['action']) {
+          && $curToken['data']['token_type'] === 'verification_token') {
+            switch ($curToken['data']['action']) {
                 case 'VERIFY':
                     // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
                     $stResult = $this->setUserIdentityStatus(
-                        $curToken['resource']['user_id'],
-                        $curToken['resource']['identity_id'], 3
+                        $curToken['data']['user_id'],
+                        $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
                         $siResult = $this->rawSignin(
-                            $curToken['resource']['user_id']
+                            $curToken['data']['user_id']
                         );
                         if ($siResult) {
                             if ($siResult['password']) {
@@ -355,9 +367,9 @@ class UserModels extends DataModel {
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'identity_id' => $curToken['resource']['identity_id'],
+                                'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['resource']['action'],
+                                'token_type'  => $curToken['data']['action'],
                                 'action'      => $nextAction,
                             ];
                         }
@@ -365,21 +377,21 @@ class UserModels extends DataModel {
                     break;
                 case 'SET_PASSWORD':
                     $stResult = $this->setUserIdentityStatus(
-                        $curToken['resource']['user_id'],
-                        $curToken['resource']['identity_id'], 3
+                        $curToken['data']['user_id'],
+                        $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
                         $hlpExfeAuth->refreshToken($token, 233);
                         $siResult = $this->rawSignin(
-                            $curToken['resource']['user_id']
+                            $curToken['data']['user_id']
                         );
                         if ($siResult) {
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'identity_id' => $curToken['resource']['identity_id'],
+                                'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['resource']['action'],
+                                'token_type'  => $curToken['data']['action'],
                                 'action'      => 'INPUT_NEW_PASSWORD',
                             ];
                         }
@@ -398,18 +410,18 @@ class UserModels extends DataModel {
         }
         // change password
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['resource']['token_type'] === 'verification_token') {
+          && $curToken['data']['token_type'] === 'verification_token') {
             $cpResult  = $this->setUserPassword(
-                $curToken['resource']['user_id'], $password, $name
+                $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $siResult = $this->rawSignin($curToken['resource']['user_id']);
+                $siResult = $this->rawSignin($curToken['data']['user_id']);
                 $hlpExfeAuth->expireToken($token);
                 return array(
                     'user_id'     => $siResult['user_id'],
                     'token'       => $siResult['token'],
-                    'identity_id' => $curToken['resource']['identity_id'],
-                    'action'      => $curToken['resource']['action'],
+                    'identity_id' => $curToken['data']['identity_id'],
+                    'action'      => $curToken['data']['action'],
                 );
             }
         }
@@ -461,12 +473,12 @@ class UserModels extends DataModel {
             $passwdInDb = $passwdInDb ?: $this->getUserPasswdByUserId($user_id);
             if ($passwdInDb) {
                 $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+                $resource = ['token_type' => 'user_token',
+                             'user_id'    => $user_id];
                 $token = $hlpExfeAuth->generateToken(
-                    ['token_type'        => 'user_token',
-                     'user_id'           => $user_id],
-                    ['signin_time'       => time(),
-                     'last_authenticate' => time()],
-                    31536000 // 1 year
+                    $resource, $resource
+                  + ['signin_time'        => time(),
+                     'last_authenticate'  => time()], 31536000 // 1 year
                 );
                 if ($token) {
                     return [
@@ -486,8 +498,8 @@ class UserModels extends DataModel {
         if ($token) {
             $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
             $result = $hlpExfeAuth->getToken($token);
-            if (isset($result['resource']['user_id'])) {
-                return (int) $result['resource']['user_id'];
+            if (isset($result['data']['user_id'])) {
+                return (int) $result['data']['user_id'];
             }
         }
         return 0;
