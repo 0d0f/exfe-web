@@ -247,4 +247,9 @@ class CrossesActions extends ActionController {
             apiError(500,"server_error","Can't Edit this Cross.");
     }
 
+
+    public function doGetBackgrounds() {
+
+    }
+
 }
