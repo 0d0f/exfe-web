@@ -123,7 +123,7 @@ class CrossModels extends DataModel {
 
             $updatesql=implode($updatefields, ',');
             if ($updatesql) {
-                $sql    = "UPDATED `crosses` SET updated_at=now(), {$updatesql} WHERE `id` = {$cross->id}";
+                $sql    = "UPDATE `crosses` SET updated_at=now(), {$updatesql} WHERE `id` = {$cross->id}";
                 $result = $this->query($sql);
                 if ($result <= 0) {
                     return 0;
