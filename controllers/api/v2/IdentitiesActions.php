@@ -178,7 +178,7 @@ class IdentitiesActions extends ActionController {
                         );
                         break;
                     case 'rid':
-                        $objIdentity = $modIdentity->getIdentityByIdFromCache(
+                        $objIdentity = $modIdentity->getIdentityById(
                             $identity_id
                         );
                         break;
