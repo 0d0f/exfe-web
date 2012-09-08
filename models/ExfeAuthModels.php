@@ -58,18 +58,18 @@ class ExfeAuthModels extends DataModel {
     }
 
 
-    public function verifyToken($token, $resource) {
-        return $this->useTokenApi('Verify', [
-            'Token'    => $token,
-            'Resource' => $resource,
-        ]);
-    }
-
-
     public function updateToken($token, $data) {
         return $this->useTokenApi('Update', [
             'Token'    => $token,
             'Data'     => $data,
+        ]);
+    }
+
+
+    public function verifyToken($token, $resource) {
+        return $this->useTokenApi('Verify', [
+            'Token'    => $token,
+            'Resource' => $resource,
         ]);
     }
 
