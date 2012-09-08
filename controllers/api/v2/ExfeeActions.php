@@ -55,7 +55,7 @@ class ExfeeActions extends ActionController {
         $exfee = json_decode($_POST['exfee']);
         if ($exfee && isset($exfee->invitations) && is_array($exfee->invitations)
         && ($udResult = $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id, $result['uid']))) {
-            if ($cross_id) {
+            if ($cross_id && $udResult['changed']) {
                 saveUpdate(
                     $cross_id,
                     array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))

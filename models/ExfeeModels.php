@@ -352,6 +352,7 @@ class ExfeeModels extends DataModel {
         $old_cross  = $hlpCross->getCross($cross_id, true, true);
         $items      = $old_cross->exfee->items;
         $over_quota = false;
+        $changed    = false;
         // raw actions
         $chkInvit = array();
         $delExfee = array();
@@ -400,6 +401,7 @@ class ExfeeModels extends DataModel {
                          || $fmItem->host        !== $toItem->host
                          || $fmItem->mates       !== $toItem->mates) {
                             $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                            $changed = true;
                         }
                         $chkInvit[$fmI] = true;
                     }
@@ -415,13 +417,14 @@ class ExfeeModels extends DataModel {
                     }
                 }
                 $this->addInvitationIntoExfee($toItem, $exfee_id, $by_identity_id, $user_id);
+                $changed = true;
             }
         }
         $this->updateExfeeTime($exfee_id);
         // call Gobus
         $this->sendToGobus($exfee_id, $by_identity_id, $delExfee, $old_cross);
         // return
-        return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
+        return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota, 'changed' => $changed];
     }
 
 
