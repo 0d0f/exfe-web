@@ -321,8 +321,9 @@ class UserModels extends DataModel {
                 // update database
                 if ($result['token']) {
                     $data['updated_time'] = time();
-                    $hlpExfeAuth->updateToken($token, $data);                    // update
-                    $actResult = $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                    $hlpExfeAuth->updateToken($token, $data);       // update
+                    $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                    $actResult = true;
                 } else {
                     $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
                         $resource, $data, $expireSec

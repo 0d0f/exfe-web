@@ -41,9 +41,9 @@ class ExfeAuthModels extends DataModel {
 
     public function generateToken($resource, $data, $expireAfterSeconds) {
         return $this->useTokenApi('Generate', [
-            'Resource'           => $resource,
-            'Data'               => $data,
-            'ExpireAfterSeconds' => $expireAfterSeconds,
+            'resource'             => $resource,
+            'data'                 => $data,
+            'expire_after_seconds' => $expireAfterSeconds,
         ]);
     }
 
@@ -68,8 +68,8 @@ class ExfeAuthModels extends DataModel {
 
     public function verifyToken($token, $resource) {
         return $this->useTokenApi('Verify', [
-            'Token'    => $token,
-            'Resource' => $resource,
+            'token'    => $token,
+            'resource' => $resource,
         ]);
     }
 
@@ -81,8 +81,8 @@ class ExfeAuthModels extends DataModel {
 
     public function refreshToken($token, $expireAfterSeconds) {
         return $this->useTokenApi('Refresh', [
-            'Token'              => $token,
-            'ExpireAfterSeconds' => $expireAfterSeconds,
+            'token'                => $token,
+            'expire_after_seconds' => $expireAfterSeconds,
         ]);
     }
 
