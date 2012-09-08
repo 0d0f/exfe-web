@@ -12,6 +12,17 @@ define('lightsaber', function (require, exports, module) {
   var Emitter = require('emitter');
   var $ = require('jquery');
 
+  var requestAnimFrame = function() {
+    return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback, element) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+  }();
+
   var win = window
     , location = win.location
     , history = win.history
@@ -21,18 +32,16 @@ define('lightsaber', function (require, exports, module) {
   var _firstLoad = false;
   $(win).on('load', function (e) {
     _firstLoad = true;
-    setTimeout(function () { _firstLoad = false; }, 0);
+    requestAnimFrame(function () { _firstLoad = false; }, 0);
   });
 
   // export module
   exports = module.exports = createApplication;
 
-  exports.createApplication = createApplication;
-
   var proto;
 
   // lightsaber version
-  exports.version = '0.0.1';
+  exports.version = '0.0.2';
 
   // Create Application
   function createApplication() {
@@ -53,21 +62,23 @@ define('lightsaber', function (require, exports, module) {
   proto.historySupport = (history !== null ? history.pushState : void 0) !== null;
 
   // wtf? window.onpopstate v12?
-  $.browser.opera && (proto.historySupport = false);
+  if ($.browser.opera) {
+    proto.historySupport = false;
+  }
 
   proto.init = function () {
     this.route = ROOT;
     this.stack = [];
     this.cache = {};
     this.settings = {};
+    this.engines = {};
     this.viewCallbacks = [];
     this.defaultConfiguration();
   };
 
   proto.defaultConfiguration = function () {
     // default settings
-    this.set('env', 'development');
-    //this.set('env', 'production');
+    this.set('env', 'production');
 
     // perform initial dispatch
     this.enable('dispatch');
@@ -75,10 +86,10 @@ define('lightsaber', function (require, exports, module) {
     // implict middleware
     this.use(lightsaberInit(this));
 
-
     // router
     this._usedRouter = false;
     this._router = new Router(this);
+    this.routes = this._router.map;
     this._router.caseSensitive = this.enabled('case sensitive routing');
     this._router.strict = this.enabled('strict routing');
 
@@ -89,7 +100,7 @@ define('lightsaber', function (require, exports, module) {
     this.locals.settings = this.settings;
 
     this.configure('development', function () {
-      this.set('env', 'development odof.com');
+      this.set('env', 'development');
     });
 
     this.configure('production', function () {
@@ -98,8 +109,6 @@ define('lightsaber', function (require, exports, module) {
   };
 
   proto.use = function (route, fn) {
-    var app, home, handle;
-
     // default route to '/'
     if ('string' !== typeof route) {
       fn = route;
@@ -113,6 +122,16 @@ define('lightsaber', function (require, exports, module) {
 
     this.stack.push({ route: route, handle: fn });
 
+    return this;
+  };
+
+  /**
+   * Register the given template engine callback `fn`
+   */
+  proto.engine = function (ext, fn) {
+    if ('function' !== typeof fn) throw new Error('callback function required');
+    if ('.' !== ext[0]) ext = '.' + ext;
+    this.engines[ext] = fn;
     return this;
   };
 
@@ -148,6 +167,8 @@ define('lightsaber', function (require, exports, module) {
       , args = [].slice.call(arguments);
 
     fn = args.pop();
+
+    if (args.length) envs = args;
 
     //if ('all' === envs || ~envs.indexOf(this.settings.env)) fn.call(this);
     if ('all' === envs || ~indexOf(envs, this.settings.env)) fn.call(this);
@@ -252,14 +273,28 @@ define('lightsaber', function (require, exports, module) {
     return this._router.route.apply(this._router, args);
   };
 
-  proto.handle = function (req, res) {
+  /*
+   * Handle request
+   *
+   * @api private
+   */
+  proto.handle = function (req, res, out) {
     var stack = this.stack
+      , removed = ''
+      , slashAdded = false
       , index = 0;
 
     function next(err) {
       // next callback
       var layer = stack[index++]
         , path;
+
+      if (slashAdded) {
+        req.url = req.url.substr(1);
+        slashAdded = false;
+      }
+
+      req.url = removed + req.url;
 
       // all done
       if (!layer) {
@@ -277,6 +312,14 @@ define('lightsaber', function (require, exports, module) {
 
         // debug
         //console.log(index, 'path', path, arity, layer.handle.toString());
+
+        removed = layer.route;
+        req.url = req.url.substr(removed.length);
+
+        if ('/' !== req.url[0]) {
+          req.url = '/' + req.url;
+          slashAdded = true;
+        }
 
         if (err) {
           if (4 === arity) {
@@ -415,6 +458,18 @@ define('lightsaber', function (require, exports, module) {
   // Response.prototype
   proto = Response.prototype;
 
+  var _redirect = $.browser.opera ?  function (url) {
+      requestAnimFrame(function () {
+        setTimeout(function () {
+          location.href = url;
+        }, 1000 / 60);
+      }, 0);
+    } : function (url) {
+      requestAnimFrame(function () {
+        location.href = url;
+      }, 0);
+    };
+
   // redirect('back')
   // redirect('/user', 'User Page', {id: 'user'});
   proto.redirect = function (url) {
@@ -429,9 +484,7 @@ define('lightsaber', function (require, exports, module) {
         history[url]();
       } else {
         // 进入线程, 防止失败
-        setTimeout(function () {
-          location.href = url;
-        }, 13);
+        _redirect(url);
       }
       return;
     }
@@ -730,6 +783,8 @@ define('lightsaber', function (require, exports, module) {
 
       req.next = next;
 
+      res.locals = res.locals || locals(res);
+
       next();
     };
   }
@@ -825,5 +880,4 @@ define('lightsaber', function (require, exports, module) {
     .replace(/\*/g, '(.*)');
     return new RegExp('^' + path + '$', sensitive ? '' : 'i');
   }
-
 });

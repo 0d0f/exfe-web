@@ -1,6 +1,3 @@
-define('jquery', function (require, exports, module) {
-
-
 /*!
  * jQuery JavaScript Library v1.8.0
  * http://jquery.com/
@@ -9228,8 +9225,3 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 }
 
 })( window );
-
-
-
-  return jQuery;
-});

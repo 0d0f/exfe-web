@@ -1,7 +1,7 @@
 <?php
 
 function addScript($scripts) {
-    $min = DEBUG ? '' : '.min';
+    $min = JS_DEBUG ? '' : '.min';
     foreach ($scripts as $item) {
         echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$min}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
     }
@@ -10,7 +10,7 @@ function addScript($scripts) {
 
 echo "\n";
 addScript([
-    ['common',        '0.0.1'],
+    ['common',        '0.0.3'],
     ['class',         '0.0.1'],
     ['emitter',       '0.0.1'],
     ['base',          '0.0.1'],
@@ -20,7 +20,7 @@ addScript([
     ['widget',        '0.0.1'],
     ['jquery',        '1.8.0'],
     ['moment',        '1.6.2'],
-    ['store',         '1.3.3'],
+    ['store',         '1.3.4'],
     ['marked',        '0.2.5'],
     ['handlebars',    '1.0.0'],
     ['handlebarsext', '0.0.1'],
@@ -37,7 +37,7 @@ addScript([
     ['dialog',        '0.0.1'],
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.1'],
+    ['xdialog',       '0.0.2'],
     ['global',        '0.0.2'],
 ]);
 
@@ -57,11 +57,27 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 
 // lightsaber
 addScript([
-    ['lightsaber',    '0.0.1'],
-    ['middleware',    '0.0.1'],
+    ['lightsaber',    '0.0.2'],
+    ['middleware',    '0.0.2'],
     ['routes',        '0.0.1'],
-    ['app',           '0.0.1'],
+    ['app',           '0.0.2'],
 ]);
+
+// Google Analytics
+if (SITE_URL === 'https://exfe.com') {
+echo <<<EOT
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-31794223-2']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+EOT;
+}
 
 if (SITE_URL !== 'https://exfe.com') {
   echo "<script>document.getElementsByTagName('body')[0].style.borderTop = '6px solid #D32232';</script>";
