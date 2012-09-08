@@ -458,15 +458,15 @@ define('lightsaber', function (require, exports, module) {
   // Response.prototype
   proto = Response.prototype;
 
-  var _redirect = $.browser.opera ?  function (url) {
+  var _redirect = $.browser.mozilla ?  function (url) {
       requestAnimFrame(function () {
-        setTimeout(function () {
-          location.href = url;
-        }, 1000 / 60);
+        location.href = url;
       }, 0);
     } : function (url) {
       requestAnimFrame(function () {
-        location.href = url;
+        setTimeout(function () {
+          location.href = url;
+        }, 1000 / 60 * 2);
       }, 0);
     };
 
