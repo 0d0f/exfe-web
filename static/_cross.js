@@ -446,10 +446,11 @@ ExfeeWidget = {
                     host        : !!host,
                     mates       : 0
                 });
-            } else {
+                this.callback();
+            } else if (Exfee.invitations[idx].rsvp_status === 'REMOVED') {
                 Exfee.invitations[idx].rsvp_status = 'NORESPONSE';
+                this.callback();
             }
-            this.callback();
             return true;
         }
         return false;
