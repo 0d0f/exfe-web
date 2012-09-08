@@ -390,27 +390,27 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityByIdFromCache($identity_id) {
-        if ($identity_id) {
-            $redis = new Redis();
-            $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-            $identity = $redis->HGET('identities', "id:{$identity_id}");
-            if ($identity) {
-                $identity = json_decode($identity);
-            } else {
-                $identity = $this->getIdentityById($identity_id);
-                if ($identity) {
-                    $redis->HSET(
-                        'identities', "id:{$identity_id}",
-                        json_encode($identity) // @was: json_encode_nounicode
-                    );
-                }
-            }
-            if ($identity) {
-                return $identity;
-            }
-        }
-        return null;
-    }
+    // public function getIdentityByIdFromCache($identity_id) {
+    //     if ($identity_id) {
+    //         $redis = new Redis();
+    //         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+    //         $identity = $redis->HGET('identities', "id:{$identity_id}");
+    //         if ($identity) {
+    //             $identity = json_decode($identity);
+    //         } else {
+    //             $identity = $this->getIdentityById($identity_id);
+    //             if ($identity) {
+    //                 $redis->HSET(
+    //                     'identities', "id:{$identity_id}",
+    //                     json_encode($identity) // @was: json_encode_nounicode
+    //                 );
+    //             }
+    //         }
+    //         if ($identity) {
+    //             return $identity;
+    //         }
+    //     }
+    //     return null;
+    // }
 
 }
