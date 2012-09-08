@@ -41,6 +41,9 @@
     }
   }
 
+  // AMD
+  define.amd = { jQuery: true };
+
   /**
    * 不对外提供此接口
    * Accepts a module identifier.
@@ -77,7 +80,8 @@
 
     this.uri = undefined;
     // dependencies
-    this.deps = deps || [];
+    //this.deps = deps || [];
+    this.deps = deps;
 
     // lazy eval
     // http://calendar.perfplanet.com/2011/lazy-evaluation-of-commonjs-modules/
