@@ -613,7 +613,7 @@ define('routes', function (require, exports, module) {
         render();
       }
       , function (data) {
-        window.location.href = '/404';
+        window.location.href = '/error/404';
       }
     );
   };
@@ -675,10 +675,11 @@ define('routes', function (require, exports, module) {
               }
             })[0];
 
-            $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-oauth-type="' + oauth.type + '"></div>')
+            $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-oauth-provider="' + oauth.provider + '"></div>')
             .appendTo(document.body)
               .trigger({
                 type: 'click',
+                following: oauth.following,
                 identity: identity,
                 token: authorization.token
               })

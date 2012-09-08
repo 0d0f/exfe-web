@@ -1,4 +1,4 @@
-define('store', [], function (require, exports, module) {
+define('store', function (require, exports, module) {
 
 
 /* Copyright (c) 2010-2012 Marcus Westin
@@ -144,10 +144,11 @@ define('store', [], function (require, exports, module) {
 				return result
 			}
 		}
+		
+		// In IE7, keys may not contain special chars. See all of https://github.com/marcuswestin/store.js/issues/40
+		var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g")
 		function ieKeyFix(key) {
-			// In IE7, keys may not begin with numbers.
-			// See https://github.com/marcuswestin/store.js/issues/40#issuecomment-4617842
-			return '_'+key
+			return key.replace(forbiddenCharsRegex, '___')
 		}
 		store.set = withIEStorage(function(storage, key, val) {
 			key = ieKeyFix(key)
@@ -190,11 +191,12 @@ define('store', [], function (require, exports, module) {
 	} catch(e) {
 		store.disabled = true
 	}
+	store.enabled = !store.disabled
 	
 	if (typeof module != 'undefined' && typeof module != 'function') { module.exports = store }
 	else if (typeof define === 'function' && define.amd) { define(store) }
 	else { this.store = store }
-})()
+})();
 
 
 
