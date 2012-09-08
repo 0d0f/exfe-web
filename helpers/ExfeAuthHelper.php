@@ -27,13 +27,13 @@ class ExfeAuthHelper extends ActionController {
     }
 
 
-    public function verifyToken($token, $resource) {
-        return $this->modExfeAuth->verifyToken($token, $resource);
+    public function updateToken($token, $data) {
+        return $this->modExfeAuth->updateToken($token, $data);
     }
 
 
-    public function updateToken($token, $data) {
-        return $this->modExfeAuth->updateToken($token, $data);
+    public function verifyToken($token, $resource) {
+        return $this->modExfeAuth->verifyToken($token, $resource);
     }
 
 
