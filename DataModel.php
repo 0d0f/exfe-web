@@ -1,9 +1,11 @@
 <?php
+
 require_once dirname(__FILE__)."/config.php";
 
 function stripslashes_deep($value) {
     return is_array($value) ? array_map('reverse_escape', $value) : reverse_escape($value);
 }
+
 
 abstract class DataModel {
 
@@ -17,7 +19,7 @@ abstract class DataModel {
         include_once $helperfile;
         return new $class;
     }
-    
+
     public function getHelperByName($name,$version="")
     {
         if($version=="")
@@ -28,7 +30,7 @@ abstract class DataModel {
         include_once $helperfile;
         return new $class;
     }
-    
+
     private function endswith($str, $test) {
         return substr($str, -strlen($test)) == $test;
     }
@@ -79,13 +81,14 @@ abstract class DataModel {
     //check insert or delete is Error
     public function query($sql) {
         mysql_query($sql);
-        if(!mysql_error()) {
+        if (($error = mysql_error())) {
+            error_log("sql error: {$error}\nsql: {$sql}");
+            return false;
+        } else {
             $insert_id=mysql_insert_id();
             if($insert_id>0)
                 return array("insert_id" => strval($insert_id));
             return mysql_affected_rows();
-        }else{
-            return false;
         }
     }
 

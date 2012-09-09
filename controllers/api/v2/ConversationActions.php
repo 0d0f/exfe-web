@@ -92,10 +92,12 @@ class ConversationActions extends ActionController {
                     $msgArg['to_identities'][] = $mItem;
                 }
                 // set conversation counter
-                $modConv->addConversationCounter(
-                    $cross->exfee->id,
-                    $invitation->identity->connected_user_id
-                );
+                if ($invitation->identity->connected_user_id !== $result['uid']) {
+                    $modConv->addConversationCounter(
+                        $cross->exfee->id,
+                        $invitation->identity->connected_user_id
+                    );
+                }
                 // depended
                 if ($invitation->identity->connected_user_id
                 === $identity->connected_user_id) {
