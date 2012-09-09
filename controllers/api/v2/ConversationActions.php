@@ -12,7 +12,9 @@ class ConversationActions extends ActionController {
             $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
 
         $checkHelper=$this->getHelperByName('check');
-        $result=$checkHelper->isAPIAllow("conversation",$params["token"],array("user_id"=>$uid,"exfee_id"=>$exfee_id));
+        $result = $checkHelper->isAPIAllow(
+            'conversation', $params['token'], ['exfee_id' => $exfee_id]
+        );
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
@@ -46,8 +48,8 @@ class ConversationActions extends ActionController {
         $post->postable_id   = $exfee_id;
         // check auth
         $result   = $hlpCheck->isAPIAllow(
-            'conversation_add', $params['token'], ['user_id' => $uid,
-            'exfee_id' => $exfee_id, 'identity_id' => $post->by_identity_id]
+            'conversation_add', $params['token'],
+            ['exfee_id' => $exfee_id, 'identity_id' => $post->by_identity_id]
         );
         if (!$result['check']) {
             if ($result['uid']) {
