@@ -33,13 +33,17 @@ class Invitation extends EFObject {
                                 $mates            = 0) {
         parent::__construct($id, 'invitation');
 
+        $updated_at             = $updated_at
+                               && $updated_at !== '0000-00-00 00:00:00'
+                                ? $updated_at : $created_at;
+
         $this->identity         = $identity;
         $this->by_identity      = $by_identity;
         $this->rsvp_status      = $rsvp_status;
         $this->via              = $via;
         $this->token            = $token;
-        $this->created_at       = $created_at;
-        $this->updated_at       = $updated_at;
+        $this->created_at       = $created_at . ' +0000';
+        $this->updated_at       = $updated_at . ' +0000';
         $this->host             = !!intval($host);
         $this->mates            = (int) $mates;
     }

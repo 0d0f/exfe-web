@@ -17,7 +17,7 @@ class Post extends Metainfo{
         $this->postable_id   = intval($postable_id);
         $this->postable_type = $postable_type;
         $this->via           = $via;
-        $this->created_at    = $created_at;
+        $this->created_at    = $created_at . ' +0000';
     }
 
 }
