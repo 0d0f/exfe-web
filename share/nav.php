@@ -11,12 +11,12 @@
 
         <!--  EXFE LOGO -->
         <a href="/" class="brand" data-link><img src="/static/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
-        <a href="#" class="version" data-widget="dialog" data-dialog-type="sandbox">SANDBOX</a>
+        <a href="/" class="version" data-widget="dialog" data-dialog-type="sandbox">SANDBOX</a>
 
         <div class="nav-collapse" role="navigation">
           <ul class="nav pull-right">
             <li class="hide" id="app-signin">
-              <a class="sign-in" href="#" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In</a>
+              <a class="sign-in" href="/" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In</a>
             </li>
             <li class="dropdown hide" id="app-user-menu">
               <div class="pull-left fill-left hide"></div>
