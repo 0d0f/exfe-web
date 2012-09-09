@@ -22,7 +22,10 @@ class CrossHelper extends ActionController {
         if($crosses)
             foreach($crosses as $cross)
             {
-                $place=new Place($cross["place_id"],$cross["place_line1"],$cross["place_line2"],$cross["lng"],$cross["lat"],$cross["provider"],$cross["external_id"]);
+                $place=new Place(
+                    $cross["place_id"], $cross["place_line1"], $cross["place_line2"], $cross["lng"], $cross["lat"],
+                    $cross["provider"],$cross["external_id"], $cross['place_created_at'], $cross['place_updated_at']
+                );
                 $background=new Background($cross["background"]);
 
                 $begin_at=new CrossTime($cross['date_word'], $cross['date'], $cross['time_word'], $cross['time'], $cross["timezone"], $cross['origin_begin_at'], intval($cross['outputformat']));

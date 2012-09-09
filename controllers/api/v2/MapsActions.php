@@ -33,6 +33,7 @@ class MapsActions extends ActionController {
             foreach($venues as $venue)
             {
                 $place=new Place(0,$venue["name"],$venue["location"]["address"],$venue["location"]["lng"],$venue["location"]["lat"],"4sq",$venue["id"]);
+                // @todo !!! 4sq!!! by @leaskh
                 array_push($result_response["places"],$place);
             }
         }

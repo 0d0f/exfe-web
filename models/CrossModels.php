@@ -18,7 +18,7 @@ class CrossModels extends DataModel {
         }
         $exfee_ids = implode($exfee_id_list,",");
 
-        $sql = "select c.*,p.place_line1,p.place_line2,p.provider,p.external_id,p.lng,p.lat from crosses c left join places p on p.id=c.place_id where c.exfee_id in ({$exfee_ids}) {$filter}";
+        $sql = "select c.*,p.place_line1,p.place_line2,p.provider,p.external_id,p.lng,p.lat,p.created_at as place_created_at,p.updated_at as place_updated_at from crosses c left join places p on p.id=c.place_id where c.exfee_id in ({$exfee_ids}) {$filter}";
         $result = $this->getAll($sql);
         return $result;
     }
