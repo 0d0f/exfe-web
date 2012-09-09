@@ -1,4 +1,4 @@
-'<?php
+<?php
 
 class GobusActions extends ActionController {
 
@@ -155,10 +155,13 @@ class GobusActions extends ActionController {
                     $msgArg['to_identities'][] = $mItem;
                 }
                 // set conversation counter
-                $modConv->addConversationCounter(
-                    $cross->exfee->id,
-                    $invitation->identity->connected_user_id
-                );
+                if ($invitation->identity->connected_user_id
+                !== $raw_by_identity->connected_user_id) {
+                    $modConv->addConversationCounter(
+                        $cross->exfee->id,
+                        $invitation->identity->connected_user_id
+                    );
+                }
                 // depended
                 if ($invitation->identity->connected_user_id
                 === $by_identity->connected_user_id) {
