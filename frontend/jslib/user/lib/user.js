@@ -393,13 +393,16 @@ define('user', function (require, exports, module) {
   }
 
   Bus.on('app:page:home', switchPage);
-  function switchPage(isHome) {
+  function switchPage(isHome, nocleanup) {
     isHome = !!isHome;
     var $BODY = $(document.body)
       , $appMenubar = $('#app-menubar')
       , $appMain = $('#app-main');
 
-    $appMain.empty();
+    // nocleanup === false, no clean up
+    if (!nocleanup) {
+      $appMain.empty();
+    }
 
     $BODY.toggleClass('hbg', isHome);
     $appMenubar.toggleClass('hide', isHome);
