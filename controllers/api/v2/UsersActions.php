@@ -411,8 +411,9 @@ class UsersActions extends ActionController {
 
     public function doSetupUserByInvitationToken() {
         // get models
-        $modUser  = $this->getModelByName('user');
-        $modExfee = $this->getModelByName('exfee');
+        $modUser     = $this->getModelByName('user');
+        $modExfee    = $this->getModelByName('exfee');
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
         // get name
         if (!($name = trim($_POST['name']))) {
             apiError(400, 'no_user_name', 'No user name');
@@ -432,6 +433,14 @@ class UsersActions extends ActionController {
             );
             // try connected user
             if (!isset($user_infos['CONNECTED'])) {
+                // clear verify token
+                if (isset($user_infos['VERIFYING'])) {
+                    $modExfeAuth->expireAllTokens([
+                        'token_type'   => 'verification_token',
+                        'action'       => 'VERIFY',
+                        'identity_id'  => $invitation['identity_id'],
+                    ]);
+                }
                 // add new user
                 $user_id = $modUser->addUser($passwd, $name);
                 // connect identity to new user
