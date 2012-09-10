@@ -580,7 +580,7 @@ ExfeeWidget = {
         } else {
             return null;
         }
-        objIdentity.avatar_filename = ExfeeWidget.api_url + '/avatar/get?default=' + objIdentity.name;
+        objIdentity.avatar_filename = ExfeeWidget.api_url + '/avatar/default?name=' + objIdentity.name;
         if (objIdentity.provider === 'email') {
             objIdentity.avatar_filename = 'http://www.gravatar.com/avatar/'
                                         + MD5(objIdentity.external_username)
