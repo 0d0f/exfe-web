@@ -613,7 +613,7 @@ define('routes', function (require, exports, module) {
         render();
       }
       , function (data) {
-        window.location.href = '/error/404';
+        window.location.href = '/404';
       }
     );
   };
