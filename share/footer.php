@@ -57,7 +57,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 
 // lightsaber
 addScript([
-    ['lightsaber',    '0.0.2'],
+    ['lightsaber',    '0.0.3'],
     ['middleware',    '0.0.2'],
     ['routes',        '0.0.2'],
     ['app',           '0.0.2'],
