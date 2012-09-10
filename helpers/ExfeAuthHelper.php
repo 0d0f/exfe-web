@@ -51,4 +51,10 @@ class ExfeAuthHelper extends ActionController {
         return $this->modExfeAuth->expireToken($token);
     }
 
+
+    public function expireAllTokens($resource) {
+        return $this->modExfeAuth->expireAllTokens($resource);
+    }
+
+
 }
