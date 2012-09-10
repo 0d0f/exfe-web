@@ -346,6 +346,9 @@ class UserModels extends DataModel {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
         if (($curToken = $hlpExfeAuth->getToken($token))
           && $curToken['data']['token_type'] === 'verification_token') {
+            $resource  = ['token_type'   => $curToken['data']['token_type'],
+                          'action'       => $curToken['data']['action'],
+                          'identity_id'  => $curToken['data']['identity_id']];
             switch ($curToken['data']['action']) {
                 case 'VERIFY':
                     // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
@@ -359,7 +362,7 @@ class UserModels extends DataModel {
                         );
                         if ($siResult) {
                             if ($siResult['password']) {
-                                $hlpExfeAuth->expireToken($token);
+                                $hlpExfeAuth->expireAllTokens($resource);
                                 $nextAction = 'VERIFIED';
                             } else {
                                 $hlpExfeAuth->refreshToken($token, 233);
@@ -412,12 +415,15 @@ class UserModels extends DataModel {
         // change password
         if (($curToken = $hlpExfeAuth->getToken($token))
           && $curToken['data']['token_type'] === 'verification_token') {
+            $resource  = ['token_type'   => $curToken['data']['token_type'],
+                          'action'       => $curToken['data']['action'],
+                          'identity_id'  => $curToken['data']['identity_id']];
             $cpResult  = $this->setUserPassword(
                 $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
                 $siResult = $this->rawSignin($curToken['data']['user_id']);
-                $hlpExfeAuth->expireToken($token);
+                $hlpExfeAuth->expireAllTokens($resource);
                 return array(
                     'user_id'     => $siResult['user_id'],
                     'token'       => $siResult['token'],

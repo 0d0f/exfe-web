@@ -91,4 +91,10 @@ class ExfeAuthModels extends DataModel {
         return $this->useTokenApi('Expire', $token);
     }
 
+
+    public function expireAllTokens($resource) {
+        return $this->useTokenApi('ExpireAll', $resource);
+    }
+
+
 }
