@@ -1,1 +1,1 @@
-DELETE FROM `identities` WHERE `provider` = 'iOS' OR `provider` = 'Android';
+DELETE FROM `identities` WHERE `provider` = 'iOSAPN' OR `provider` = 'Android';
