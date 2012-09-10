@@ -60,7 +60,7 @@ define(function (require, exports, module) {
 
 
   // invalid link
-  app.get(/^\/#invalid\/token=([a-zA-Z0-9]{64})$/, routes.invalid);
+  app.get(/^\/#invalid\/token=([a-zA-Z0-9]{32)$/, routes.invalid);
 
 
   // signout
