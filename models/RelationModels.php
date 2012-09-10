@@ -89,9 +89,9 @@ class RelationModels extends DataModel {
                     if ($rawRelation['provider'] === 'email') {
                         $rawRelation['avatar_filename']
                       = 'http://www.gravatar.com/avatar/'
-                      + md5($rawRelation['external_identity'])
-                      + '?d='
-                      + urlencode($rawRelation['avatar_filename']);
+                      . md5($rawRelation['external_identity'])
+                      . '?d='
+                      . urlencode($rawRelation['avatar_filename']);
                     }
                 }
                 return new Identity(
