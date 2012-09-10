@@ -16,7 +16,7 @@
     text-align: center;
   }
   .header {
-    margin-top: 24px;
+    padding-top: 16px;
     color: #ffffff;
   }
   .header h1 {
@@ -28,11 +28,14 @@
   .header p {
     font-size: 21px;
     line-height: 27px;
-    padding-bottom: 20px;
+    /*padding-bottom: 20px;*/
     margin: 0;
   }
   .x {
     color: #DBEAF9 !important;
+  }
+  .wrapper {
+    margin-top: -13px;
   }
 </style>
 </head>
