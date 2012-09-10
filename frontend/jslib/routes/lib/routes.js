@@ -644,7 +644,7 @@ define('routes', function (require, exports, module) {
 
     if (authorization || browsing_authorization) {
 
-      document.title = 'Profile';
+      document.title = 'EXFE - Profile';
 
       Bus.emit('app:page:usermenu', true);
 
@@ -733,7 +733,7 @@ define('routes', function (require, exports, module) {
       , authorization = session.authorization
       , user = session.user;
 
-    document.title = 'Invalid Link'
+    document.title = 'EXFE - Invalid Link'
 
     Bus.emit('app:page:home', false);
 
