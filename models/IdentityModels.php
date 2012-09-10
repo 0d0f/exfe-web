@@ -142,7 +142,6 @@ class IdentityModels extends DataModel {
         return $update_sql
              ? $this->query("UPDATE `identities` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$identity_id}")
              : true;
-
     }
 
 
