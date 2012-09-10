@@ -171,6 +171,9 @@ class GobusActions extends ActionController {
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
         }
+        if (DEBUG) {
+            error_log(json_encode($msgArg));
+        }
         $hlpGobus->send('cross', 'Update', $msgArg);
         $modExfee->updateExfeeTime($cross->exfee->id);
         // }

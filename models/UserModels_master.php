@@ -15,90 +15,9 @@ class UserModels extends DataModel {
     }
 
 
-    protected function getTokenInfo($token) {
-        $time = Time();
-        return $token ? $this->getRow(
-            "SELECT * FROM `tokens`
-             WHERE `token`           = '{$token}'
-             AND   `expiration_date` >  FROM_UNIXTIME({$time})
-             AND   `used_at`         =  0"
-        ) : null;
-    }
-
-
-    protected function getSimilarTokenInfo($identity_id, $user_id, $action) {
-        return $identity_id && $user_id && $action ? $this->getRow(
-            "SELECT * FROM `tokens`
-             WHERE `identity_id` =  {$identity_id}
-             AND   `user_id`     =  {$user_id}
-             AND   `action`      = '{$action}'"
-        ) : null;
-    }
-
-
-    protected function usedToken($token) {
-        $usResult = $token
-                 && $token['id']
-                 && $token['identity_id']
-                 && $token['action']
-                 && $this->query(
-            "UPDATE `tokens`
-             SET    `expiration_date` = NOW(),
-                    `used_at`         = NOW()
-             WHERE  `id`              = {$token['id']}"
-        );
-        if ($usResult) {
-            return $this->destroySimilarTokens(
-                $token['identity_id'], $token['action']
-            );
-        }
-        return false;
-    }
-
-
-    protected function insertNewToken($token, $action, $identity_id, $user_id, $expiration_date = 2880) { // exp in minutes: 60 * 24 * 2 = 2 days
-        if ($token && $action && $identity_id && $user_id && $expiration_date) {
-            $expiration_date += Time();
-            return $this->query(
-                "INSERT INTO `tokens` SET
-                 `token`           = '{$token}',
-                 `action`          = '{$action}',
-                 `identity_id`     =  {$identity_id},
-                 `user_id`         =  {$user_id},
-                 `created_at`      =  NOW(),
-                 `expiration_date` =  FROM_UNIXTIME({$expiration_date}),
-                 `used_at`         =  0"
-            );
-        }
-        return false;
-    }
-
-
-    protected function extendTokenExpirationDate($id, $expiration_date = 3, $new_token = '') { // exp in minutes
-        $expiration_date = Time() + ($expiration_date * 60);                                   // for 3 minutes by default
-        $sql_token       = $new_token ? ", `token` = '{$new_token}'" : '';
-        return $id ? $this->query(
-            "UPDATE `tokens` SET
-             `expiration_date` = FROM_UNIXTIME({$expiration_date}) {$sql_token},
-             `used_at`         = 0
-             WHERE  `id`       = {$id}"
-        ) : false;
-    }
-
-
-    public function destroySimilarTokens($identity_id, $action) {
-        return $identity_id && $action ? $this->query(
-            "UPDATE `tokens`
-             SET    `expiration_date` =  NOW()
-             WHERE  `identity_id`     =  {$identity_id}
-             AND    `action`          = '{$action}'"
-        ) : false;
-    }
-
-
     public function getUserPasswdByUserId($user_id) {
         return $user_id ? $this->getRow(
-            "SELECT `name`, `auth_token`, `encrypted_password`, `password_salt`,
+            "SELECT `name`, `encrypted_password`, `password_salt`,
              `current_sign_in_ip` FROM `users` WHERE `id` = {$user_id}"
         ) : null;
     }
@@ -200,7 +119,8 @@ class UserModels extends DataModel {
             $nameSql      = "`name` = '{$name}',";
         }
         $dbResult = $this->query(
-            "INSERT INTO `users` SET {$passwordSql} {$nameSql} `created_at` = NOW()"
+            "INSERT INTO `users` SET {$passwordSql} {$nameSql}
+             `created_at` = NOW(), `updated_at` = NOW()"
         );
         return intval($dbResult['insert_id']);
     }
@@ -351,64 +271,62 @@ class UserModels extends DataModel {
         if (!$identity || !$action) {
             return null;
         }
+        $identity->id = (int) $identity->id;
+        $user_id      = (int) $user_id;
         // check action
         switch ($action) {
             case 'VERIFY':
-                if ($user_id) {
-                    $setResult = $this->setUserIdentityStatus(
-                        $user_id, $identity->id, 2
-                    );
-                    if (!$setResult) {
-                        return null;
-                    }
-                } else {
-                    // 创建新用户并设为验证状态
-                    $user_id = $this->addVerifyingEmptyUserByIdentityId(
-                        $identity->id
-                    );
-                    if (!$user_id) {
-                        return null;
-                    }
+                $user_id = $user_id ?: $this->addUser();
+                if ($this->setUserIdentityStatus($user_id, $identity->id, 2)) {
+                    return null;
                 }
                 break;
             case 'SET_PASSWORD':
-                if (!$user_id) {
-                    return null;
-                }
                 break;
             default:
                 return null;
         }
+        if (!$user_id) {
+            return null;
+        }
         // get ready
-        $result = array('user_id' => $user_id);
+        $result      = ['user_id' => $user_id, 'token' => ''];
+        $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         // case provider
         switch ($identity->provider) {
             case 'email':
                 // get current token
-                $curToken = $this->getSimilarTokenInfo(
-                    $identity->id, $user_id, $action
-                );
-                // make new token
-                $result['token'] = md5(json_encode(array(
-                    'action'      => $action,
-                    'identity_id' => $identity->id,
-                    'user_id'     => $user_id,
-                    'microtime'   => Microtime(),
-                    'random'      => Rand(0, Time()),
-                    'unique_id'   => Uniqid(),
-                )));
-                // update database
-                if ($curToken) {
-                    if (strtotime($curToken['expiration_date']) > Time()
-                     && strtotime($curToken['used_at']) <= 0) {        // extension
-                        $result['token'] = $curToken['token'];
+                $resource  = ['token_type'   => 'verification_token',
+                              'action'       => $action,
+                              'identity_id'  => $identity->id];
+                $data      = ['token_type'   => 'verification_token',
+                              'action'       => $action,
+                              'user_id'      => $user_id,
+                              'identity_id'  => $identity->id,
+                              'created_time' => time(),
+                              'updated_time' => time()];
+                $expireSec = 60 * 24 * 2; // 2 days
+                $curTokens = $hlpExfeAuth->findToken($resource);
+                if ($curTokens && is_array($curTokens)) {
+                    foreach ($curTokens as $cI => $cItem) {
+                        if ($cItem['data']['token_type'] === 'verification_token'
+                         && $cItem['data']['user_id']    === $user_id
+                         && !$cItem['is_expire']) {
+                            $result['token'] = $cItem['token'];
+                            $data            = $cItem['data'];
+                            break;
+                        }
                     }
-                    $actResult = $this->extendTokenExpirationDate(
-                        $curToken['id'], 60 * 24 * 2, $result['token'] // 2 days
-                    );
+                }
+                // update database
+                if ($result['token']) {
+                    $data['updated_time'] = time();
+                    $hlpExfeAuth->updateToken($token, $data);       // update
+                    $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                    $actResult = true;
                 } else {
-                    $actResult = $this->insertNewToken(
-                        $result['token'], $action, $identity->id, $user_id
+                    $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
+                        $resource, $data, $expireSec
                     );
                 }
                 // return
@@ -425,30 +343,37 @@ class UserModels extends DataModel {
 
 
     public function resolveToken($token) {
-        if (($curToken = $this->getTokenInfo($token))) {
-            $curToken['user_id']     = (int) $curToken['user_id'];
-            $curToken['identity_id'] = (int) $curToken['identity_id'];
-            switch ($curToken['action']) {
+        $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
+        if (($curToken = $hlpExfeAuth->getToken($token))
+          && $curToken['data']['token_type'] === 'verification_token') {
+            $resource  = ['token_type'   => $curToken['data']['token_type'],
+                          'action'       => $curToken['data']['action'],
+                          'identity_id'  => $curToken['data']['identity_id']];
+            switch ($curToken['data']['action']) {
                 case 'VERIFY':
+                    // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
                     $stResult = $this->setUserIdentityStatus(
-                        $curToken['user_id'], $curToken['identity_id'], 3
+                        $curToken['data']['user_id'],
+                        $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
-                        $siResult = $this->rawSignin($curToken['user_id']);
+                        $siResult = $this->rawSignin(
+                            $curToken['data']['user_id']
+                        );
                         if ($siResult) {
                             if ($siResult['password']) {
-                                $this->usedToken($curToken);
+                                $hlpExfeAuth->expireAllTokens($resource);
                                 $nextAction = 'VERIFIED';
                             } else {
-                                $this->extendTokenExpirationDate($curToken['id']);
+                                $hlpExfeAuth->refreshToken($token, 233);
                                 $nextAction = 'INPUT_NEW_PASSWORD';
                             }
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'identity_id' => $curToken['identity_id'],
+                                'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['action'],
+                                'token_type'  => $curToken['data']['action'],
                                 'action'      => $nextAction,
                             ];
                         }
@@ -456,18 +381,21 @@ class UserModels extends DataModel {
                     break;
                 case 'SET_PASSWORD':
                     $stResult = $this->setUserIdentityStatus(
-                        $curToken['user_id'], $curToken['identity_id'], 3
+                        $curToken['data']['user_id'],
+                        $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
-                        $this->extendTokenExpirationDate($curToken['id']);
-                        $siResult = $this->rawSignin($curToken['user_id']);
+                        $hlpExfeAuth->refreshToken($token, 233);
+                        $siResult = $this->rawSignin(
+                            $curToken['data']['user_id']
+                        );
                         if ($siResult) {
                             return [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
-                                'identity_id' => $curToken['identity_id'],
+                                'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['action'],
+                                'token_type'  => $curToken['data']['action'],
                                 'action'      => 'INPUT_NEW_PASSWORD',
                             ];
                         }
@@ -479,21 +407,28 @@ class UserModels extends DataModel {
 
 
     public function resetPasswordByToken($token, $password, $name = '') {
+        $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
         // basic check
         if (!$token || !$password) {
             return null;
         }
         // change password
-        if (($curToken = $this->getTokenInfo($token))) {
-            $cpResult  = $this->setUserPassword($curToken['user_id'], $password, $name);
+        if (($curToken = $hlpExfeAuth->getToken($token))
+          && $curToken['data']['token_type'] === 'verification_token') {
+            $resource  = ['token_type'   => $curToken['data']['token_type'],
+                          'action'       => $curToken['data']['action'],
+                          'identity_id'  => $curToken['data']['identity_id']];
+            $cpResult  = $this->setUserPassword(
+                $curToken['data']['user_id'], $password, $name
+            );
             if ($cpResult) {
-                $siResult = $this->rawSignin($curToken['user_id']);
-                $this->usedToken($curToken);
+                $siResult = $this->rawSignin($curToken['data']['user_id']);
+                $hlpExfeAuth->expireAllTokens($resource);
                 return array(
                     'user_id'     => $siResult['user_id'],
                     'token'       => $siResult['token'],
-                    'identity_id' => $curToken['identity_id'],
-                    'action'      => $curToken['action'],
+                    'identity_id' => $curToken['data']['identity_id'],
+                    'action'      => $curToken['data']['action'],
                 );
             }
         }
@@ -544,20 +479,19 @@ class UserModels extends DataModel {
         if ($user_id) {
             $passwdInDb = $passwdInDb ?: $this->getUserPasswdByUserId($user_id);
             if ($passwdInDb) {
-                $siResult = true;
-                if (!$passwdInDb['auth_token']) {
-                    $passwdInDb['auth_token'] = md5($time.uniqid());
-                    $siResult = $this->query(
-                        "UPDATE `users`
-                         SET    `auth_token` = '{$passwdInDb['auth_token']}'
-                         WHERE  `id`         =  {$user_id}"
-                    );
-                }
-                if ($siResult) {
+                $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+                $resource = ['token_type' => 'user_token',
+                             'user_id'    => $user_id];
+                $token = $hlpExfeAuth->generateToken(
+                    $resource, $resource
+                  + ['signin_time'        => time(),
+                     'last_authenticate'  => time()], 31536000 // 1 year
+                );
+                if ($token) {
                     return [
                         'user_id'  => $user_id,
                         'name'     => $passwdInDb['name'],
-                        'token'    => $passwdInDb['auth_token'],
+                        'token'    => $token,
                         'password' => !!$passwdInDb['encrypted_password']
                     ];
                 }
@@ -568,11 +502,14 @@ class UserModels extends DataModel {
 
 
     public function getUserIdByToken($token) {
-        if(trim($token)==='')
-            return 0;
-        $sql="select id from users where auth_token='$token';";
-        $row=$this->getRow($sql);
-        return intval($row["id"]);
+        if ($token) {
+            $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+            $result = $hlpExfeAuth->getToken($token);
+            if (isset($result['data']['user_id'])) {
+                return (int) $result['data']['user_id'];
+            }
+        }
+        return 0;
     }
 
 
@@ -584,32 +521,6 @@ class UserModels extends DataModel {
         $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
         return $password === $passwdInDb['encrypted_password']
             || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
-    }
-
-
-    public function addVerifyingEmptyUserByIdentityId($identity_id) {
-        // basic check
-        if (!$identity_id) {
-            return null;
-        }
-        // add new user
-        $isuResult = $this->query(
-            "INSERT INTO `users` SET `created_at` = NOW()"
-        );
-        // add verifying relation
-        if ($isuResult && isset($isuResult['insert_id'])) {
-            $user_id   = (int) $isuResult['insert_id'];
-            $isrResult = $this->query(
-                "INSERT INTO `user_identity` SET
-                 `identityid` = {$identity_id},
-                 `userid`     = {$user_id},
-                 `status`     = 2,
-                 `created_at` = NOW(),
-                 `updated_at` = NOW()"
-            );
-            return intval($isrResult) ? $user_id : null;
-        }
-        return null;
     }
 
 
