@@ -434,24 +434,13 @@ class UsersActions extends ActionController {
             // try connected user
             if (!isset($user_infos['CONNECTED'])) {
                 // clear verify token
-                // if (isset($user_infos['VERIFYING'])) {
-                //     $modExfeAuth->expireAllTokens([
-                //         'token_type'   => 'verification_token',
-                //         'action'       => 'VERIFY',
-                //         'identity_id'  => $invitation['identity_id'],
-                //     ]);
-                // }
-
-                ////////////////////////////////////////////////////////////////
-                // @todo upgraded by @leaskh
-                // clear verify token
                 if (isset($user_infos['VERIFYING'])) {
-                    $modUser->destroySimilarTokens(
-                        $invitation['identity_id'], 'VERIFY'
-                    );
+                    $modExfeAuth->expireAllTokens([
+                        'token_type'   => 'verification_token',
+                        'action'       => 'VERIFY',
+                        'identity_id'  => $invitation['identity_id'],
+                    ]);
                 }
-                ////////////////////////////////////////////////////////////////
-
                 // add new user
                 $user_id = $modUser->addUser($passwd, $name);
                 // connect identity to new user
