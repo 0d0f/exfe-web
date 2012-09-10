@@ -581,7 +581,6 @@ ExfeeWidget = {
             return null;
         }
         objIdentity.avatar_filename = ExfeeWidget.api_url + '/avatar/default?name=' + objIdentity.name;
-        console.log(objIdentity.avatar_filename);
         if (objIdentity.provider === 'email') {
             objIdentity.avatar_filename = 'http://www.gravatar.com/avatar/'
                                         + MD5(objIdentity.external_username)
