@@ -31,7 +31,7 @@
     margin: 0;
   }
   .x {
-    color: #DBEAF9;
+    color: #DBEAF9 !important;
   }
 </style>
 </head>
