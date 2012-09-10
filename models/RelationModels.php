@@ -83,6 +83,17 @@ class RelationModels extends DataModel {
                 "SELECT * FROM `user_relations` WHERE `id` = {$id}"
             );
             if ($rawRelation) {
+                $rawRelation['external_username'] = $rawRelation['external_username'] ?: $rawRelation['external_identity'];
+                if (!$rawRelation['avatar_filename']) {
+                    $rawRelation['avatar_filename'] = getDefaultAvatarUrl($rawRelation['name']);
+                    if ($rawRelation['provider'] === 'email') {
+                        $rawRelation['avatar_filename']
+                      = 'http://www.gravatar.com/avatar/'
+                      + md5($rawRelation['external_identity'])
+                      + '?d='
+                      + urlencode($rawRelation['avatar_filename']);
+                    }
+                }
                 return new Identity(
                     0,
                     $rawRelation['name'],
