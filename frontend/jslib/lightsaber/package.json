@@ -4,6 +4,6 @@
   "description": "Lightsaber is a lightweight web framework.",
   "wiki": "http://en.wikipedia.org/wiki/Lightsaber",
   "author": "cfd",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "hint": true
 }
