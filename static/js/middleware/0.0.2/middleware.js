@@ -67,6 +67,21 @@ define('middleware', function (require, exports, module) {
 
   // errorHandler
   middleware.errorHandler = function (req, res, next) {
+    var url = /^\/error\/404/;
+    if (url.exec(window.location.pathname)) {
+      Bus.emit('app:page:home', false, true);
+      var authorization = Store.get('authorization');
+      Bus.emit('app:page:usermenu', !!authorization);
+      if (authorization) {
+        var user = Store.get('user');
+        Bus.emit('app:usermenu:updatenormal', user);
+        Bus.emit('app:usermenu:crosslist'
+          , authorization.token
+          , authorization.user_id
+        );
+      }
+      return;
+    }
     res.redirect('/error/404');
   };
 

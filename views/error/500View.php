@@ -1,97 +1,103 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" dir="ltr"> <!--<![endif]-->
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
-  <title>Server Error · EXFE.COM</title>
-  <meta name="author" content="EXFE Inc." />
-  <meta name="robots" content="index, follow" />
-  <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
-  <meta name="description" content="EXFE, a utility for hanging out with friends." />
-  <meta name="copyright" content="Copyright 2012 EXFE Inc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="shortcut icon" href="/static/img/favicon.png" />
-  <link rel="apple-touch-icon" href="/static/img/favicon.png" />
-  <style>
-    body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,img { margin: 0; padding:0; border: 0; }
-    html, body { height: 100%; }
-    body {
-      background-attachment: fixed;
-      background-color: #84A4BF;
-      background-image: -moz-linear-gradient(top, #5A7A95, #C3E3FD);
-      background-image: -ms-linear-gradient(top, #5A7A95, #C3E3FD);
-      background-image: -moz-linear-gradient(center top , #5A7A95, #C3E3FD);
-      background-image: -webkit-linear-gradient(top, #5A7A95, #C3E3FD);
-      background-image: -o-linear-gradient(top, #5A7A95, #C3E3FD);
-      background-image: linear-gradient(top, #5A7A95, #C3E3FD);
-      background-repeat: repeat-x;
-      -khtml-user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -o-user-select: none;
-      user-select: none;
-    }
-    .container {
-      display: table;
-      margin: 0 auto;
+<?php include "share/header.php" ?>
+<style>
+  body {
+    background-attachment: fixed;
+    background-color: #84A4BF;
+    background-image: -moz-linear-gradient(top, #5A7A95, #C3E3FD);
+    background-image: -ms-linear-gradient(top, #5A7A95, #C3E3FD);
+    background-image: -moz-linear-gradient(center top , #5A7A95, #C3E3FD);
+    background-image: -webkit-linear-gradient(top, #5A7A95, #C3E3FD);
+    background-image: -o-linear-gradient(top, #5A7A95, #C3E3FD);
+    background-image: linear-gradient(top, #5A7A95, #C3E3FD);
+    background-repeat: repeat-x;
+  }
+  #app-main {
+    text-align: center;
+  }
+  .header {
+    margin-top: 24px;
+    color: #ffffff;
+  }
+  .header h1 {
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 40px;
+    padding-bottom: 20px;
+  }
+  .header p {
+    font-size: 21px;
+    line-height: 27px;
+    padding-bottom: 20px;
+    margin: 0;
+  }
+  .wrapper {
+      margin: 72px auto 0;
       width: 340px;
       height: 100%;
     }
-    .outer {
-      display: table-cell;
-      vertical-align: middle;
-      position: relative;
-    }
-    .inner {
-      -webkit-perspective: 600px;
-      -moz-perspective: 600px;
-      -ms-perspective: 600px;
-      -o-perspective: 600px;
-      perspective: 600px;
-      position: relative;
-      width: 340px;
-      height: 340px;
-    }
+  .inner {
+    -webkit-perspective: 600px;
+    -moz-perspective: 600px;
+    -ms-perspective: 600px;
+    -o-perspective: 600px;
+    perspective: 600px;
+    position: relative;
+    width: 340px;
+    height: 340px;
+  }
+  #exfe {
+    /*
+    -moz-transition: -moz-transform 144ms ease 0s;
+    -webkit-transition: -webkit-transform 144ms ease 0s;
+    */
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+  img {max-width: none;}
 
-    #exfe {
-      /*
-      -moz-transition: -moz-transform 144ms ease 0s;
-      -webkit-transition: -webkit-transform 144ms ease 0s;
-      */
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    #bubble {
-      -webkit-transform: translateZ(70px) scale(0.854166666, 0.854166666);
-      -moz-transform: translateZ(70px) scale(0.854166666, 0.854166666);
-      -os-transform: translateZ(70px) scale(0.854166666, 0.854166666);
-      -o-transform: translateZ(70px) scale(0.854166666, 0.854166666);
-      transform: translateZ(70px) scale(0.854166666, 0.854166666);
-      position: absolute;
-      top: -70px;
-      left: -70px;
-    }
-  </style>
-  <script type="text/javascript" src="/static/js/jquery/1.8.0/jquery.min.js"></script>
-  <!--script type="text/javascript" src="/static/js/modernizr/2.5.3/modernizr.min.js"></script-->
+  #bubble {
+    -webkit-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+    -moz-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+    -os-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+    -o-transform: translateZ(70px) scale(0.854166666, 0.854166666);
+    transform: translateZ(70px) scale(0.854166666, 0.854166666);
+    position: absolute;
+    top: -70px;
+    left: -70px;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="outer">
-      <div class="inner">
-        <img id="exfe" src="/static/img/exfe.png" width="340" height="340" alt="" />
-        <img id="bubble" src="/static/img/500_bubble.png" width="480" height="480" alt="" />
-      </div>
+  <?php include "share/nav.php" ?>
+
+  <!-- Container {{{-->
+  <div class="container" id="app-container">
+    <div role="main" id="app-main">
+      <section id="error404" class="x-error404">
+        <div class="header">
+          <h1>Lost in the Crowd</h1>
+          <p>Sorry, something is technically wrong, we’re fixing it up.</p>
+        </div>
+        <div class="wrapper">
+          <div class="inner">
+            <img id="exfe" src="/static/img/exfe.png" width="340" height="340" alt="" />
+            <img id="bubble" src="/static/img/500_bubble.png" width="480" height="480" alt="" />
+          </div>
+        </div>
+      </section>
     </div>
   </div>
+  <!--/Container }}}-->
 
+  <noscript>EXFE.com can't load if JavaScript is disabled</noscript>
+  <script type="text/javascript" src="/static/js/jquery/1.8.0/jquery.min.js"></script>
   <script type="text/javascript">
+    document.title = 'EXFE - Server Error';
+    $('#app-menubar, #app-signin').removeClass('hide');
+
     var centerX, centerY, pageX, pageY
       , $exfe = $('#exfe')
       , $bubble = $('#bubble')
@@ -153,17 +159,30 @@
       });
     });
   </script>
-<?php if (SITE_URL === 'https://exfe.com'): ?>
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-31794223-2']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-<?php endif; ?>
+
+<?php
+// Google Analytics
+if (SITE_URL === 'https://exfe.com') {
+echo <<<EOT
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-31794223-2']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+EOT;
+}
+
+if (SITE_URL !== 'https://exfe.com') {
+  echo "<script>document.getElementsByTagName('body')[0].style.borderTop = '6px solid #D32232';</script>";
+}
+
+?>
+
 </body>
 </html>
+
