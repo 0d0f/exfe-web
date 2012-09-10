@@ -521,7 +521,7 @@ define('xdialog', function (require, exports, module) {
 
         body: ''
           + '<div class="shadow title">“Rome wasn\'t built in a day.”</div>'
-          + '<p><span class="x-sign">EXFE</span> [ˈɛksfi] is still in <span class="pilot">pilot</span> stage (with <span class="sandbox">SANDBOX</span> tag). We’re building up blocks, consequently some bugs or unfinished pages may happen. Our apologies for any trouble you may encounter. Any feedback, please email <span class="feedback">feedback@exfe.com</span>. Much appreciated.</p>'
+          + '<p><span class="x-sign">EXFE</span> [’ɛksfi] is still in <span class="pilot">pilot</span> stage (with <span class="sandbox">SANDBOX</span> tag). We’re building up blocks, consequently some bugs or unfinished pages may happen. Our apologies for any trouble you may encounter. Any feedback, please email <span class="feedback">feedback@exfe.com</span>. Much appreciated.</p>'
       }
     }
   };
