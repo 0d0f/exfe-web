@@ -67,7 +67,7 @@ define('middleware', function (require, exports, module) {
 
   // errorHandler
   middleware.errorHandler = function (req, res, next) {
-    var url = /^\/error\/404/;
+    var url = /^\/404/;
     if (url.exec(window.location.pathname)) {
       Bus.emit('app:page:home', false, true);
       var authorization = Store.get('authorization');
@@ -82,7 +82,7 @@ define('middleware', function (require, exports, module) {
       }
       return;
     }
-    res.redirect('/error/404');
+    res.redirect('/404');
   };
 
   // Helers:
