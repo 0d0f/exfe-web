@@ -173,12 +173,12 @@ class IdentitiesActions extends ActionController {
             if (($identity_id = (int) $arrArI[1])) {
                 switch ($arrArI[0]) {
                     case 'id':
-                        $objIdentity = $modIdentity->getIdentityById(
+                        $objIdentity = $modRelation->getRelationIdentityById(
                             $identity_id
                         );
                         break;
                     case 'rid':
-                        $objIdentity = $modRelation->getRelationIdentityById(
+                        $objIdentity = $modIdentity->getIdentityById(
                             $identity_id
                         );
                         break;
