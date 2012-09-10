@@ -90,8 +90,8 @@
           {{/ifOauthVerifying}}
           {{#ifVerifying provider status}}
           <span class="xlabel">
-            <i class="icon16-warning"></i>
-            <span>Pending verification, 5 days left.</span>
+            <i class="icon16-warning" style="display: none;"></i>
+            <span class="hide">Pending verification, 5 days left.</span>
             <button class="xbtn xbtn-reverify" data-identity-id="{{id}}" data-widget="dialog" data-dialog-type="verification_email" data-link="nota">Re-Verify...</button>
           </span>
           {{/ifVerifying}}

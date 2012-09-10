@@ -10,6 +10,7 @@
     background-image: -o-linear-gradient(top, #5A7A95, #C3E3FD);
     background-image: linear-gradient(top, #5A7A95, #C3E3FD);
     background-repeat: repeat-x;
+    overflow: hidden;
   }
   #app-main {
     text-align: center;
@@ -61,6 +62,7 @@
 
   <?php include 'share/footer.php'; ?>
   <script type="text/javascript">
+    document.title = 'EXFE - 404';
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
     var requestAnimFrame = function() {
       return window.requestAnimationFrame ||

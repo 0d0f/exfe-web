@@ -13,14 +13,16 @@ define('lightsaber', function (require, exports, module) {
   var $ = require('jquery');
 
   var requestAnimFrame = function() {
-    return window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function(callback, element) {
-      window.setTimeout(callback, 1000 / 60);
-    };
+    return (
+      window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      window.oRequestAnimationFrame ||
+      window.msRequestAnimationFrame ||
+      function(callback, element) {
+        window.setTimeout(callback, 1000 / 60);
+      }
+    );
   }();
 
   var win = window
@@ -458,17 +460,13 @@ define('lightsaber', function (require, exports, module) {
   // Response.prototype
   proto = Response.prototype;
 
-  var _redirect = $.browser.mozilla ?  function (url) {
-      requestAnimFrame(function () {
+  var _redirect = function (url) {
+    requestAnimFrame(function () {
+      setTimeout(function () {
         location.href = url;
-      }, 0);
-    } : function (url) {
-      requestAnimFrame(function () {
-        setTimeout(function () {
-          location.href = url;
-        }, 1000 / 60 * 2);
-      }, 0);
-    };
+      }, 1000 / 60 * 2);
+    }, 0);
+  };
 
   // redirect('back')
   // redirect('/user', 'User Page', {id: 'user'});
