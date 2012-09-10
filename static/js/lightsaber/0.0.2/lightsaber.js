@@ -34,7 +34,7 @@ define('lightsaber', function (require, exports, module) {
   var _firstLoad = false;
   $(win).on('load', function (e) {
     _firstLoad = true;
-    requestAnimFrame(function () { _firstLoad = false; }, 0);
+    setTimeout(function () { _firstLoad = false; }, 0);
   });
 
   // export module
@@ -476,14 +476,14 @@ define('lightsaber', function (require, exports, module) {
       , state;
 
     // `back` `forward`
-    if (1 === argsLen) {
+    //if (1 === argsLen) {
       url = arguments[0];
       if (url === 'back' || url === 'forward') {
         history[url]();
-      } else {
-        // 进入线程, 防止失败
-        _redirect(url);
-      }
+      //} else {
+      //  // 进入线程, 防止失败
+      //  _redirect(url);
+      //}
       return;
     }
 
