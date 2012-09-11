@@ -28,6 +28,7 @@ define('lightsaber', function (require, exports, module) {
   var win = window
     , location = win.location
     , history = win.history
+    , historySupport
     , ROOT = '/';
 
   // http://cacheandquery.com/blog/category/technology/
@@ -61,11 +62,11 @@ define('lightsaber', function (require, exports, module) {
   proto = Application.prototype;
 
   // html5 history support
-  proto.historySupport = (history !== null ? history.pushState : void 0) !== null;
+  proto.historySupport = historySupport = (history !== null ? history.pushState : void 0) !== null;
 
   // wtf? window.onpopstate v12?
   if ($.browser.opera) {
-    proto.historySupport = false;
+    proto.historySupport = historySupport = false;
   }
 
   proto.init = function () {
@@ -487,6 +488,12 @@ define('lightsaber', function (require, exports, module) {
       return;
     }
 
+    if (!historySupport) {
+      //location.hash = this.path.substr(2);
+      _redirect(url);
+      return;
+    }
+
     title = arguments[1];
     state = arguments[2] || {};
 
@@ -496,10 +503,6 @@ define('lightsaber', function (require, exports, module) {
     this.state = state;
     this.state.id = uuid();
     this.pushState();
-
-    if (!this.historySupport) {
-      location.hash = this.path.substr(2);
-    }
 
     $(win).triggerHandler('popstate');
   };
