@@ -112,12 +112,6 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getCrossAccessToken($cross_id, $identity_id) {
-        $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
-        $hlpExfeAuth->generateToken($resource, $data, 60 * 60 * 24 * 7); // for 1 week
-    }
-
-
     public function getIdentityIdsByExfeeId($exfee_id) {
         $identity_ids = [];
         $sql          = "SELECT `identity_id` FROM `invitations`
