@@ -74,6 +74,32 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function getRawInvitationByCrossIdAndIdentityId($cross_id, $identity_id) {
+        $exfee_id = $this->getExfeeIdByCrossId($cross_id);
+        if ($exfee_id && $identity_id) {
+            $rawInvitation = $this->getRow(
+                "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}
+                 AND `identity_id` = {$identity_id} AND `state` <> 4"
+            );
+            if ($rawInvitation) {
+                $rawInvitation['id']             = (int) $rawInvitation['id'];
+                $rawInvitation['identity_id']    = (int) $rawInvitation['identity_id'];
+                $rawInvitation['state']          = (int) $rawInvitation['state'];
+                $rawInvitation['by_identity_id'] = (int) $rawInvitation['by_identity_id'];
+                $rawInvitation['host']           = (int) $rawInvitation['host'];
+                $rawInvitation['mates']          = (int) $rawInvitation['mates'];
+                $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
+                $rawInvitation['cross_id']       = (int) $cross_id;
+                $rawInvitation['valid']          = $rawInvitation['state'] !== 4
+                                                && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
+                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30)); // 23 min 30 secs
+                return $rawInvitation;
+            }
+        }
+        return null;
+    }
+
+
     public function getInvitationByExfeeIdAndToken($exfee_id, $token) {
         if ($exfee_id && $token) {
             $rawInvitation = $this->getRow(

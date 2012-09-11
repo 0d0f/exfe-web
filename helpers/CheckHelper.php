@@ -13,23 +13,43 @@ class CheckHelper extends ActionController {
         $uid = intval($userData->getUserIdByToken($token));
 
         if (!$uid) {
-            $invitation = $exfeeData->getRawInvitationByToken($token);
-            if ($invitation && $invitation['valid']) {
-                switch ($api) {
-                    case 'cross_edit':
-                        if ((int) $args['cross_id'] === $invitation['cross_id']) {
-                            return ['check' => true, 'uid' => 0, 'exfee_id' => $invitation['exfee_id'], 'by_identity_id' => $invitation['identity_id']];
-                        }
-                        break;
-                    case 'conversation':
-                        if ((int) $args['exfee_id'] === $invitation['exfee_id']) {
-                            return ['check' => true, 'uid' => 0];
-                        }
-                        break;
-                    case 'conversation_add':
-                        if ((int) $args['exfee_id'] === $invitation['exfee_id']) {
-                            return ['check' => true, 'uid' => 0, 'by_identity_id' => $invitation['identity_id']];
-                        }
+            $invToken = $crossData->getCrossAccessToken($token);
+            if ($invToken
+             && $invToken['data']
+             && $invToken['data']['token_type'] === 'cross_access_token'
+             && !$invToken['is_expire']) {
+                $invitation = $exfeeData->getRawInvitationByCrossIdAndIdentityId(
+                    $invToken['data']['cross_id'], $invToken['data']['identity_id']
+                );
+                if ($invitation) {
+                    switch ($api) {
+                        case 'cross_edit':
+                            if ((int) $args['cross_id'] === $invitation['cross_id']) {
+                                return [
+                                    'check'          => true,
+                                    'uid'            => 0,
+                                    'exfee_id'       => $invitation['exfee_id'],
+                                    'by_identity_id' => $invitation['identity_id'],
+                                ];
+                            }
+                            break;
+                        case 'conversation':
+                            if ((int) $args['exfee_id'] === $invitation['exfee_id']) {
+                                return [
+                                    'check'          => true,
+                                    'uid'            => 0,
+                                ];
+                            }
+                            break;
+                        case 'conversation_add':
+                            if ((int) $args['exfee_id'] === $invitation['exfee_id']) {
+                                return [
+                                    'check'          => true,
+                                    'uid'            => 0,
+                                    'by_identity_id' => $invitation['identity_id'],
+                                ];
+                            }
+                    }
                 }
             }
             return array('check' => false, 'uid' => 0);
