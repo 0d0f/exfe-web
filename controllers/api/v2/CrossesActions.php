@@ -47,7 +47,7 @@ class CrossesActions extends ActionController {
             // used token
             if ($invitation['valid']) {
                 $modExfee->usedToken($invToken);
-                $crossAccessToken = $modCross->getCrossAccessToken(
+                $crossAccessToken = $modCross->generateCrossAccessToken(
                     $invitation['cross_id'], $invitation['identity_id']
                 );
                 if ($crossAccessToken) {

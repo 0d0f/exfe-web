@@ -147,7 +147,7 @@ class CrossModels extends DataModel {
     }
 
 
-    public function getCrossAccessToken($cross_id, $identity_id) {
+    public function generateCrossAccessToken($cross_id, $identity_id) {
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         $resource    = ['token_type'   => 'cross_access_token',
                         'cross_id'     => (int) $cross_id,
@@ -158,6 +158,12 @@ class CrossModels extends DataModel {
         return $cross_id && $identity_id
              ? $hlpExfeAuth->generateToken($resource, $data, 60 * 60 * 24 * 7) // for 1 week
              : null;
+    }
+
+
+    public function getCrossAccessToken($token) {
+        $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+        return $hlpExfeAuth->getToken($token);
     }
 
 
