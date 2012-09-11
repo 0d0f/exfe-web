@@ -1255,8 +1255,8 @@ define(function (require, exports, module) {
                 origin : '', outputformat : 1, id : 0, type : 'CrossTime'
             },
             place : {
-                title    : '', description : '', lng : 0, lat  : 0,
-                provider : '', external_id : 0,  id  : 0, type : 'Place'
+                title    : '', description : '', lng : '', lat  : '',
+                provider : '', external_id : '',  id : 0,  type : 'Place'
             },
             attribute : {state : 'published'},
             exfee_id  : 0,

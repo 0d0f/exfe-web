@@ -344,11 +344,12 @@ class UserModels extends DataModel {
 
     public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
+        print_r($curToken);
         if (($curToken = $hlpExfeAuth->getToken($token))
           && $curToken['data']['token_type'] === 'verification_token') {
-            $resource  = ['token_type'   => $curToken['data']['token_type'],
-                          'action'       => $curToken['data']['action'],
-                          'identity_id'  => $curToken['data']['identity_id']];
+            $resource  = ['token_type'  => $curToken['data']['token_type'],
+                          'action'      => $curToken['data']['action'],
+                          'identity_id' => $curToken['data']['identity_id']];
             switch ($curToken['data']['action']) {
                 case 'VERIFY':
                     // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
