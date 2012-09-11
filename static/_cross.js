@@ -1241,10 +1241,10 @@ define('exfeepanel', [], function (require, exports, module) {
 
 define(function (require, exports, module) {
 
-    var $        = require('jquery'),
+    var $          = require('jquery'),
         PlacePanel = require('placepanel'),
-        Timeline = [],
-        rawCross = {
+        Timeline   = [],
+        rawCross   = {
             title : '', description : '', by_identity : {id : 0},
             time  : {
                 begin_at : {
@@ -1263,7 +1263,7 @@ define(function (require, exports, module) {
             widget : [{image : '', widget_id : 0, id : 0, type : 'Background'}],
             relative : {id : 0, relation : ''}, type : 'Cross'
         },
-        rawExfee = {id : 0, type : 'Exfee', invitations : []};
+        rawExfee   = {id : 0, type : 'Exfee', invitations : []};
 
 
     var SaveExfee = function(refresh) {
