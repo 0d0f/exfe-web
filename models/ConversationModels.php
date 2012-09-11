@@ -15,6 +15,7 @@ class ConversationModels extends DataModel {
     public function addPost($post, $timestamp = 0) {
         $post->by_identity_id = (int) $post->by_identity_id;
         $post->postable_id    = (int) $post->postable_id;
+        $post->content        = mb_substr($post->content, 0, 233, 'utf-8');
         $sql                  = "select id from crosses where exfee_id = {$post->postable_id};";
         $cross                = $this->getRow($sql);
         $cross_id             = $cross["id"];
