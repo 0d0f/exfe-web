@@ -50,6 +50,7 @@ class Identity extends EFObject {
                                 $updated_at        = '') {
         parent::__construct($id, 'identity');
 
+        $created_at              = $created_at ?:  '0000-00-00 00:00:00';
         $updated_at              = $updated_at
                                 && $updated_at !== '0000-00-00 00:00:00'
                                  ? $updated_at : $created_at;
