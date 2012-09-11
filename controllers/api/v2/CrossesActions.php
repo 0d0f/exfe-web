@@ -26,6 +26,7 @@ class CrossesActions extends ActionController {
         // load models
         $hlpCheck    = $this->getHelperByName('check');
         $hlpCross    = $this->getHelperByName('cross');
+        $modCross    = $this->getModelByName('cross');
         $modExfee    = $this->getModelByName('exfee');
         $modUser     = $this->getModelByName('user');
         $modIdentity = $this->getModelByName('identity');
@@ -38,19 +39,25 @@ class CrossesActions extends ActionController {
         $invitation  = $modExfee->getRawInvitationByToken($invToken);
         // 受邀 token 存在
         if ($invitation && $invitation['state'] !== 4) {
-            // used token
-            if ($invitation['valid']) {
-                $modExfee->usedToken($invToken);
-            }
-            // get user info by invitation token
-            $user_infos = $modUser->getUserIdentityInfoByIdentityId(
-                $invitation['identity_id']
-            );
             // get cross by token
             $result = [
                 'cross'     => $hlpCross->getCross($invitation['cross_id']),
                 'read_only' => true,
             ];
+            // used token
+            if ($invitation['valid']) {
+                $modExfee->usedToken($invToken);
+                $crossAccessToken = $modCross->getCrossAccessToken(
+                    $invitation['cross_id'], $invitation['identity_id']
+                );
+                if ($crossAccessToken) {
+                    $result['cross_access_token'] = $crossAccessToken;
+                }
+            }
+            // get user info by invitation token
+            $user_infos = $modUser->getUserIdentityInfoByIdentityId(
+                $invitation['identity_id']
+            );
             // 已登录  初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
             // TRUE (any)   CONNECTED / REVOKED （同用户）   正常登录    M50D3
             if ($user_id
