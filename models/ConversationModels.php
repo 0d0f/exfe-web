@@ -13,21 +13,27 @@ class ConversationModels extends DataModel {
 
 
     public function addPost($post, $timestamp = 0) {
-        $sql      = "select id from crosses where exfee_id={$post->postable_id};";
-        $cross    = $this->getRow($sql);
-        $cross_id = $cross["id"];
-
-        $updated  = array(
+        $post->by_identity_id = (int) $post->by_identity_id;
+        $post->postable_id    = (int) $post->postable_id;
+        $post->content        = mb_substr($post->content, 0, 233, 'utf-8');
+        $sql                  = "select id from crosses where exfee_id = {$post->postable_id};";
+        $cross                = $this->getRow($sql);
+        $cross_id             = $cross["id"];
+        $updated              = array(
             'updated_at'  => date('Y-m-d H:i:s', time()),
             'identity_id' => $post->by_identity_id,
             'content'     => $post->content,
         );
-        $cross_updated["conversation"]=$updated;
-        saveUpdate($cross_id,$cross_updated);
-        $time     = $timestamp ? "FROM_UNIXTIME({$timestamp})" : 'NOW()';
-        $sql      = "insert into posts (identity_id,content,postable_id,postable_type,created_at,updated_at) values ({$post->by_identity_id},'{$post->content}',{$post->postable_id},'{$post->postable_type}',{$time},NOW());";
-        $result   = $this->query($sql);
-        $post_id  = intval($result['insert_id']);
+        $post->content        = mysql_real_escape_string($post->content);
+        $post->postable_type  = mysql_real_escape_string($post->postable_type);
+        $time                 = $timestamp ? "FROM_UNIXTIME({$timestamp})" : 'NOW()';
+        $sql                  = "insert into posts (identity_id,content,postable_id,postable_type,created_at,updated_at)
+                                 values ({$post->by_identity_id}, '{$post->content}', {$post->postable_id}, '{$post->postable_type}', {$time}, NOW());";
+        $result               = $this->query($sql);
+        $post_id              = intval($result['insert_id']);
+        if ($post_id) {
+            saveUpdate($cross_id, ['conversation' => $updated]);
+        }
         return $post_id;
     }
 
