@@ -197,10 +197,6 @@ function getDefaultAvatarUrl($name) {
 }
 
 
-/**
- * @todo: removing!!!!!!!
- * @by: @leaskh
- */
 function createToken(){
     $randString = randStr(16);
     $hashString = md5(base64_encode(pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
@@ -208,6 +204,10 @@ function createToken(){
 }
 
 
+/**
+ * @todo: removing!!!!!!!
+ * @by: @leaskh
+ */
 function json_encode_nounicode($code)
 {
     $code = json_encode(urlencodeAry($code));
