@@ -90,9 +90,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['mates']          = (int) $rawInvitation['mates'];
                 $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
                 $rawInvitation['cross_id']       = (int) $cross_id;
-                $rawInvitation['valid']          = $rawInvitation['state'] !== 4
-                                                && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
-                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30)); // 23 min 30 secs
+                $rawInvitation['valid']          = true;
                 return $rawInvitation;
             }
         }
@@ -130,7 +128,7 @@ class ExfeeModels extends DataModel {
 
 
     public function usedToken($token) {
-        return $this->query(
+        return $token && $this->query(
             "UPDATE `invitations`
              SET    `token_used_at` = NOW()
              WHERE  `token` = '{$token}'"
