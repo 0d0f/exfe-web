@@ -27,6 +27,7 @@ class CrossesActions extends ActionController {
         $hlpCheck    = $this->getHelperByName('check');
         $hlpCross    = $this->getHelperByName('cross');
         $modCross    = $this->getModelByName('cross');
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
         $modExfee    = $this->getModelByName('exfee');
         $modUser     = $this->getModelByName('user');
         $modIdentity = $this->getModelByName('identity');
@@ -35,8 +36,24 @@ class CrossesActions extends ActionController {
         $signinStat  = $hlpCheck->isAPIAllow('user_edit', trim($params['token']));
         $user_id     = $signinStat['check'] ? (int) $signinStat['uid'] : 0;
         // get invitation data
+        $acsToken    = trim($_POST['cross_access_token']);
         $invToken    = trim($_POST['invitation_token']);
-        $invitation  = $modExfee->getRawInvitationByToken($invToken);
+        $invitation  = null;
+        if ($acsToken) {
+            $crossToken = $modCross->getCrossAccessToken($acsToken);
+            if ($crossToken
+             && $crossToken['data']
+             && $crossToken['data']['token_type'] === 'cross_access_token'
+             && !$crossToken['is_expire']) {
+                $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
+                    $crossToken['data']['cross_id'], $crossToken['data']['identity_id']
+                );
+                $modExfeAuth->refreshToken($acsToken, 60 * 60 * 24 * 7); // for 1 week
+            }
+        }
+        if (!$invitation && $invToken) {
+            $invitation = $modExfee->getRawInvitationByToken($invToken);
+        }
         // 受邀 token 存在
         if ($invitation && $invitation['state'] !== 4) {
             // get cross by token
@@ -47,11 +64,13 @@ class CrossesActions extends ActionController {
             // used token
             if ($invitation['valid']) {
                 $modExfee->usedToken($invToken);
-                $crossAccessToken = $modCross->generateCrossAccessToken(
-                    $invitation['cross_id'], $invitation['identity_id']
-                );
-                if ($crossAccessToken) {
-                    $result['cross_access_token'] = $crossAccessToken;
+                if (!$acsToken) {
+                    $crossAccessToken = $modCross->generateCrossAccessToken(
+                        $invitation['cross_id'], $invitation['identity_id']
+                    );
+                    if ($crossAccessToken) {
+                        $result['cross_access_token'] = $crossAccessToken;
+                    }
                 }
             }
             // get user info by invitation token
