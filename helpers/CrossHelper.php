@@ -132,22 +132,22 @@ class CrossHelper extends ActionController {
 
         $exfee_id  = intval($cross->exfee_id);
         // check exfee and update exfee
-        $placeData = $this->getModelByName("place");
-        $crossData = $this->getModelByName("cross");
-        $place = $cross->place;
+        $placeData = $this->getModelByName('place');
+        $crossData = $this->getModelByName('cross');
+        $place     = $cross->place;
+
         if ($place
          && ($place->title    !== '' || $place->description !== ''
-          || $place->lng      !== 0  || $place->lat         !== 0
-          || $place->provider !== '' || $place->external_id !== 0
-          || $place->id       !== 0)) {
-            $place_id=$placeData->addPlace($place);
+          || $place->lng      !== '' || $place->lat         !== ''
+          || $place->provider !== '' || $place->external_id !== ''
+          || $place->id       !=  0)) {
+            $place_id = $placeData->addPlace($place);
         }
 
-        $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id,$old_cross);
-        $exfeeData=$this->getModelByName("exfee");
+        $cross_id  = $crossData->addCross($cross, $place_id, $exfee_id, $by_identity_id, $old_cross);
+        $exfeeData = $this->getModelByName('exfee');
         $exfeeData->updateExfeeTime($exfee_id);
         return $cross_id;
-
     }
 
 }
