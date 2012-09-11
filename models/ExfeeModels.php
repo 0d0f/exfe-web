@@ -66,7 +66,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
                 $rawInvitation['valid']          = $rawInvitation['state'] !== 4
                                                 && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
-                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30));
+                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30)); // 23 min 30 secs
                 return $rawInvitation;
             }
         }
@@ -109,6 +109,12 @@ class ExfeeModels extends DataModel {
              SET    `token_used_at` = NOW()
              WHERE  `token` = '{$token}'"
         );
+    }
+
+
+    public function getCrossAccessToken($cross_id, $identity_id) {
+        $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+        $hlpExfeAuth->generateToken($resource, $data, 60 * 60 * 24 * 7); // for 1 week
     }
 
 
