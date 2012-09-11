@@ -130,11 +130,17 @@ ExfeeCache = {
 
 
     init : function() {
-        var cached_user_id = Store.get('exfee_cache_user_id');
-        this.identities    = Store.get('exfee_cache_identities');
+        var cached_user_id = Store.get('exfee_cache_user_id'),
+            identities     = Store.get('exfee_cache_identities');
         if (!User || !User.id || !cached_user_id
-         || User.id !== cached_user_id || !this.identities) {
-            ExfeeCache.identities = [];
+         || User.id !== cached_user_id || !identities) {
+            identities  = [];
+        }
+        this.identities = [];
+        for (var i = 0; i < identities.length; i++) {
+            if (identities[i].external_username) {
+                this.identities.push(identities[i]);
+            }
         }
     },
 
