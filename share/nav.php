@@ -1,15 +1,8 @@
 <!-- NavBar {{{-->
   <div class="navbar hide" id="app-menubar" role="banner">
-
-    <!-- navbar-bg -->
     <div class="navbar-bg"></div>
-    <!-- /navbar-bg -->
-
-    <!-- navbar-inner -->
     <div class="navbar-inner">
       <div class="container" id="app-menus">
-
-        <!--  EXFE LOGO -->
         <a href="/" class="brand" data-link><img src="/static/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
         <a href="/" class="version" data-widget="dialog" data-dialog-type="sandbox">SANDBOX</a>
 
@@ -26,10 +19,7 @@
             </li>
           </ul>
         </div>
-
       </div>
     </div>
-    <!-- /navbar-inner -->
-
   </div>
   <!-- /NavBar }}}-->

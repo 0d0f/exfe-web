@@ -10,7 +10,6 @@
   <!--/Container }}}-->
 
   <noscript>EXFE.com can't load if JavaScript is disabled</noscript>
-
   <?php include 'share/footer.php'; ?>
 </body>
 </html>
