@@ -9716,6 +9716,10 @@ body {
   padding-top: 0;
 }
 
+.x-forbidden p {
+  margin: 0;
+}
+
 .x-forbidden .title {
   padding: 40px 0 20px;
   font-size: 34px;
@@ -9723,7 +9727,9 @@ body {
   line-height: 40px;
 }
 
-.x-forbidden .please-signin {
+.x-forbidden .please-signin,
+.x-forbidden .please-access {
+  padding-bottom: 20px;
   font-size: 21px;
   line-height: 27px;
   color: #333;
@@ -9738,13 +9744,37 @@ body {
   filter: alpha(opacity=13);
 }
 
+.x-forbidden .details {
+  margin-top: 40px;
+  margin-left: 140px;
+  text-align: left;
+}
+
+.x-forbidden .details .info {
+  width: 360px;
+  margin-right: 30px;
+}
+
+.x-forbidden .details .identity {
+  padding-top: 20px;
+}
+
+.x-forbidden .details .identity-name {
+  margin-left: 25px;
+  font-size: 18px;
+  line-height: 24px;
+  color: #4c4c4c;
+  vertical-align: text-top;
+}
+
 .x-invite .title,
 .x-invite .please-signin {
   color: #424242;
 }
 
 .x-invite .form-horizontal {
-  margin-top: 50px;
+  width: 440px;
+  margin-top: 40px;
   color: #191919;
   text-align: left;
 }
@@ -9770,8 +9800,39 @@ body {
   color: #191919;
 }
 
+.x-invite .fh-left {
+  float: left;
+}
+
+.x-invite .fh-left .control-label {
+  margin-left: 100px;
+}
+
+.x-invite .fh-left .controls {
+  padding-left: 176px;
+}
+
+.x-invite .fh-left .form-actions {
+  padding-left: 190px;
+}
+
 .x-invite label[for="follow"] {
   margin-top: 3px;
+  color: #424242;
+}
+
+.x-invite .details {
+  width: 340px;
+  margin-right: 60px;
+  margin-left: 0;
+}
+
+.x-invite .details .identity {
+  padding: 0;
+  margin: 8px 0 12px 40px;
+}
+
+.x-invite label[for="merge"] {
   color: #424242;
 }
 
