@@ -1,4 +1,4 @@
-<!-- NavBar {{{-->
+<!-- Navbar {{{-->
   <div class="navbar hide" id="app-menubar" role="banner">
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
@@ -22,4 +22,4 @@
       </div>
     </div>
   </div>
-  <!-- /NavBar }}}-->
+  <!-- /Navbar }}}-->
