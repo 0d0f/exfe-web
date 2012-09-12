@@ -30,11 +30,13 @@ class HomeActions extends ActionController {
                 if ($oauthIfo['provider'] === 'twitter') {
                     $oauthRst['twitter_following'] = $oauthIfo['twitter_following'];
                 }
-                if (isset($oauthIfo['callback']['url'])) {
-                    $oauthRst['callback']          = $oauthIfo['callback']['url'];
-                }
-                if (isset($oauthIfo['callback']['args'])) {
-                    $oauthRst['args']              = $oauthIfo['callback']['args'];
+                if (isset($oauthIfo['workflow'])) {
+                    if (isset($oauthIfo['workflow']['callback']['url'])) {
+                        $oauthRst['callback']          = $oauthIfo['workflow']['callback']['url'];
+                    }
+                    if (isset($oauthIfo['workflow']['callback']['args'])) {
+                        $oauthRst['args']              = $oauthIfo['workflow']['callback']['args'];
+                    }
                 }
             }
         }
