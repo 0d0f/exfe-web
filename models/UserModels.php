@@ -278,7 +278,7 @@ class UserModels extends DataModel {
         switch ($action) {
             case 'VERIFY':
                 $user_id = $user_id ?: $this->addUser();
-                if ($this->setUserIdentityStatus($user_id, $identity->id, 2)) {
+                if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
                     return null;
                 }
                 break;
