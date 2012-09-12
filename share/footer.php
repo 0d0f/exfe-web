@@ -51,14 +51,14 @@ addScript([
 // cross
 addScript([
     ['placepanel',    '0.0.1'],
-    ['user',          '0.0.2'],
+    ['user',          '0.0.3'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
 // lightsaber
 addScript([
-    ['lightsaber',    '0.0.3'],
-    ['middleware',    '0.0.2'],
+    ['lightsaber',    '0.0.4'],
+    ['middleware',    '0.0.3'],
     ['routes',        '0.0.3'],
     ['app',           '0.0.2'],
 ]);
