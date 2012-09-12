@@ -10,16 +10,34 @@
         <!-- Cross-Container -->
         <div class="cross-container">
           <h1 class="title">You are opening a private invitation.</h1>
-          <p class="please-signin">Please authenticate as attendee first.</p>
+          <p class="please-signin hide">Please authenticate as attendee first.</p>
+          <p class="please-access hide">The identity you just authenticated has no access.</p>
+
+          <div class="details pull-right hide">
+            <div class="info">
+              <p>You’re currently signed in as account underneath,<br /> which has no identity valid to access this <span class="x">·X·</span>.</p>
+            </div>
+            <div class="identity">
+              <span class="avatar">
+                <img src="" alt="" width="40" height="40" />
+              </span>
+              <span class="identity-name"></span>
+            </div>
+            <p>To access this private <span class="x">·X·</span>, please authenticate with authorized identity on the left. Your current account will be signed out automatically.</p>
+            <label for="merge" class="hide">
+              <input type="checkbox" name="merge" id="merge" checked /> Merge identities with current account.
+            </label>
+          </div>
         </div>
 
         <form class="form-horizontal">
           <fieldset>
-
             <div class="control-group">
               <div class="control-label">To:</div>
               <div class="controls invite-to">
-                <img width="20" height="20" alt="" src="" />
+                <span class="avatar alt40">
+                  <img width="20" height="20" alt="" src="" />
+                </span>
                 <strong></strong>
               </div>
             </div>
@@ -27,7 +45,9 @@
             <div class="control-group">
               <div class="control-label">From:</div>
               <div class="controls invite-from">
-                <img width="20" height="20" alt="" src="" />
+                <span class="avatar alt40">
+                  <img width="20" height="20" alt="" src="" />
+                </span>
                 <strong></strong>
               </div>
             </div>
@@ -40,7 +60,7 @@
             </div>
 
           <div class="form-actions">
-            <button class="xbtn xbtn-authenticate" type="submit">
+            <button class="xbtn xbtn-authenticate">
              <img class="pull-right" src="/static/img/twitter_40.png" alt="" width="40" height="40" />
             Authenticate
             </button>
@@ -51,7 +71,6 @@
               And add into my <span class="x-sign">EXFE</span> account as new identity.
             </label>
           </div>
-
           </fieldset>
         </form>
 

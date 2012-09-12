@@ -11,6 +11,21 @@
         <div class="cross-container">
           <h1 class="title">You are opening a private <span class="x">·X·</span>.</h1>
           <p class="please-signin hide">Please authenticate as attendee first.</p>
-        </div>
+          <p class="please-access hide">The identity you just authenticated has no access.</p>
 
+          <div class="details hide">
+            <div class="pull-left info">
+              <p>You’re currently signed in as account on the right, which has no identity valid to access this private <span class="x">·X·</span>. Please authenticate with authorized identity to access details.</p>
+              <label for="merge" class="hide">
+                <input type="checkbox" name="merge" id="merge" checked /> Merge identities with current account.
+              </label>
+            </div>
+            <div class="identity">
+              <span class="avatar">
+                <img src="" alt="" width="40" height="40" />
+              </span>
+              <span class="identity-name"></span>
+            </div>
+          </div>
+        </div>
       </section>
