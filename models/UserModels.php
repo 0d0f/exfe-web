@@ -54,13 +54,14 @@ class UserModels extends DataModel {
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
+                        $item['id'] = (int) $item['id'];
                         $identity = new Identity(
                             $item['id'],
                             $item['name'],
                             '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
-                            $rawUser['id'],
+                            $identity_status[$item['id']] === 3 ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
