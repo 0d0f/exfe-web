@@ -355,21 +355,9 @@ class UserModels extends DataModel {
         // check action
         switch ($action) {
             case 'VERIFY':
-                if ($user_id) {
-                    $setResult = $this->setUserIdentityStatus(
-                        $user_id, $identity->id, 2
-                    );
-                    if (!$setResult) {
-                        return null;
-                    }
-                } else {
-                    // 创建新用户并设为验证状态
-                    $user_id = $this->addVerifyingEmptyUserByIdentityId(
-                        $identity->id
-                    );
-                    if (!$user_id) {
-                        return null;
-                    }
+                $user_id = $user_id ?: $this->addUser();
+                if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
+                    return null;
                 }
                 break;
             case 'SET_PASSWORD':
