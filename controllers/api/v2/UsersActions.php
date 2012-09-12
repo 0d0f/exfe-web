@@ -364,6 +364,7 @@ class UsersActions extends ActionController {
                     }
                     apiResponse($rtResult);
                 }
+                apiError(500, 'server_error', 'Please try again later.');
         }
         apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
     }
