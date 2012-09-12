@@ -43,6 +43,12 @@ define('user', function (require, exports, module) {
           // 刷新登录列表
           refreshIdentities(user.identities);
 
+          var $fobidden = $('#forbidden')
+            , $invite = $('#invite');
+          if ($fobidden.size() || $invite.size()) {
+            window.location.reload();
+          }
+
           // cleanup `browsing identity` DOM
           var $browsing = $('#app-browsing-identity');
           if ($browsing.size() && $browsing.attr('data-page') === 'profile') {
