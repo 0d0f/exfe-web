@@ -142,7 +142,7 @@ class UserModels extends DataModel {
                             '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
-                            $identity_status[$item['id']] === 3 ? $rawUser['id'] : - $item['id'],
+                            $identity_status[$item['id']] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
