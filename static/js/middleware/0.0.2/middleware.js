@@ -29,7 +29,6 @@ define('middleware', function (require, exports, module) {
 
     else if (!authorization && authMeta) {
       Store.set('oauth', session.oauth = {
-        type: authMeta.type,
         provider: authMeta.provider,
         following: authMeta.provider === 'twitter' ? authMeta.twitter_following : false,
         identity_id: authMeta.identity_id,
@@ -46,7 +45,6 @@ define('middleware', function (require, exports, module) {
       if (authorization.token !== authMeta.authorization.token
           && authorization.user_id !== authMeta.authorization.user_id) {
         Store.set('oauth', session.oauth = {
-          type: authMeta.type,
           provider: authMeta.provider,
           following: authMeta.provider === 'twitter' ? authMeta.twitter_following : false,
           identity_id: authMeta.identity_id,
@@ -57,6 +55,12 @@ define('middleware', function (require, exports, module) {
         delete session.user;
         Store.remove('user');
         Store.set('authorization', session.authorization = authMeta.authorization);
+      }
+    }
+
+    if (authMeta) {
+      if (authMeta.callback !== window.location.protocol + '//' + window.location.hostname) {
+        window.location.href = authMeta.callback;
       }
     }
 
@@ -82,7 +86,7 @@ define('middleware', function (require, exports, module) {
       }
       return;
     }
-    res.redirect('/404');
+    res.location('/404');
   };
 
   // Helers:
