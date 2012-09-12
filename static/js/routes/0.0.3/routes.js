@@ -75,126 +75,7 @@ define('routes', function (require, exports, module) {
     });
   };
 
-
   // resolve token
-  /*
-  routes.resolveToken = function (req, res, next) {
-    req.origin = 'resolveToken';
-    var originToken = req.params[0];
-
-    if (originToken) {
-      var session = req.session
-        , authorization = session.authorization
-        , user = session.user
-        , browsing_authorization
-        , action;
-
-      Bus.emit('app:page:home', false);
-
-      Bus.emit('app:page:usermenu', true);
-
-      Api.request('resolveToken',
-        {
-          type: 'POST',
-          data: { token: originToken }
-        }
-        // data:
-        //    user_id
-        //    user_name
-        //    token
-        //    action
-        //    identity_id
-        , function (data) {
-          action = session.action = data.action;
-          delete data.action;
-
-          // 如果 browsing 与 之前登录过的身份相等，则清除 browsing
-          if (authorization
-              && data
-              && authorization.token === data.token
-              && authorization.user_id === data.user_id) {
-
-            res.redirect('/#' + Util.printExtUserName(user.default_identity));
-            return;
-          }
-
-          // authorization || action === 'INPUT_NEW_PASSWORD'
-          session.browsing_authorization = browsing_authorization = data;
-          session.originToken = originToken;
-
-          // 正常的验证身份（有密码)
-          if (action === 'VERIFIED') {
-            Bus.emit('app:api:getuser'
-              , data.token
-              , data.user_id
-              , function done(data) {
-                  var user = data.user
-                  , eun = Util.printExtUserName(user.default_identity);
-
-                  if (authorization) {
-                    session.browsing_user = user;
-                    res.redirect('/#' + eun + '/token=' + originToken);
-                  }
-                  else {
-                    Store.set('authorization', session.browsing_authorization);
-                    Store.set('user', user);
-                    delete session.browsing_authorization;
-                    delete session.originToken;
-                    res.redirect('/#' + eun);
-                  }
-                }
-            )
-            return;
-          }
-
-          Bus.emit('app:api:getuser'
-            , data.token
-            , data.user_id
-            , function done(data2) {
-              var eun = Util.printExtUserName(data2.user.default_identity);
-              var forwardUrl = '';
-              if (authorization) {
-                forwardUrl = '/#' + eun + '/token=' + originToken;
-              }
-              else {
-                forwardUrl = '/#' + eun;
-              }
-
-              Bus.emit('app:usermenu:updatebrowsing',
-                {   normal: user
-                  , browsing: data2.user
-                  , action: action
-                  , setup: action === 'INPUT_NEW_PASSWORD'
-                  , originToken: originToken
-                  , tokenType: 'user'
-                  , page: 'resolve'
-                  , readOnly: true
-                  , user_name: data.user_name
-                  , forward: forwardUrl
-                }
-                , 'browsing_identity');
-
-                res.render('resolve.html', function (tpl) {
-                  $('#app-user-menu').find('.set-up').trigger('click.dialog.data-api');
-                  $('.modal-su').css('top', 260);
-                  $('#app-main').append(tpl);
-                });
-              }
-            //, function fail(err) {}
-          );
-        }
-        , function (data) {
-          res.redirect('/#invalid/token=' + originToken);
-        }
-      );
-
-    }
-    else {
-      res.redirect('/#invalid');
-    }
-  };
-  */
-
   routes.resolveToken = function (req, res, next) {
     req.origin = 'resolveToken';
     var originToken = req.params[0];
@@ -383,7 +264,7 @@ define('routes', function (require, exports, module) {
       //res.redirect('/');
       Bus.emit('app:page:home', false);
       Bus.emit('app:page:usermenu', false);
-      Bus.emit('app:cross:forbidden', req.params[0]);
+      Bus.emit('app:cross:forbidden', req.params[0], null);
       return;
     }
 
@@ -411,28 +292,40 @@ define('routes', function (require, exports, module) {
 
   // cross forbidden
   // TODO: 整合 cross 逻辑
-  Bus.on('app:cross:forbidden', function (cross_id) {
+  Bus.on('app:cross:forbidden', function (cross_id, data) {
     $('#app-main').load('/static/views/forbidden.html', function () {
       var authorization = Store.get('authorization');
+      var settings = {
+        options: {
+          keyboard: false,
+          backdrop: false,
+
+          viewData: {
+            // class
+            cls: 'modal-id'
+          }
+        }
+      };
+      if (data) {
+        $('.sign-in').data('source', data.external_username);
+      }
+      $('.sign-in').data('dialog-settings', settings);
+      $('.sign-in').trigger('click.dialog.data-api');
+      $('.sign-in').data('dialog-settings', null);
+      $('.popmenu').addClass('hide');
       if (!authorization) {
         $('.please-signin').removeClass('hide');
-        var start = $('#app-signin a').clone().addClass('hide');
-        var settings = {
-          options: {
-            keyboard: false,
-            backdrop: false,
-
-            viewData: {
-              // class
-              cls: 'mblack modal-id'
-            }
-          }
-        };
-        $('.sign-in').data('dialog-settings', settings);
-        $('.sign-in').trigger('click.dialog.data-api');
-        $('.sign-in').data('dialog-settings', null);
-        $('.popmenu').addClass('hide');
         $('.modal-id').css('top', 260);
+      }
+      else {
+        var user = Store.get('user');
+        $('.details').removeClass('hide');
+        $('.details .avatar img').attr('src', user.avatar_filename);
+        $('.details .identity-name').text(user.name);
+        $('.please-access').removeClass('hide');
+        $('.modal-id').css({
+          top: 380
+        });
       }
     });
   });
@@ -450,7 +343,7 @@ define('routes', function (require, exports, module) {
 
     Bus.emit('app:page:home', false);
 
-    Bus.emit('app:page:usermenu', true);
+    Bus.emit('app:page:usermenu', !!authorization);
 
     if (authorization) {
       //session.initMenuBar = true;
@@ -471,25 +364,53 @@ define('routes', function (require, exports, module) {
       , function (data) {
         var invitation = data.invitation
           , identity = invitation.identity
-          , by_identity = invitation.by_identity;
+          , by_identity = invitation.by_identity
+          , _identity;
 
-        if (user_id === identity.connected_user_id) {
-          res.redirect('/#!' + cross_id);
+        if (user_id) {
+          _identity = R.filter(user.identities, function (v) {
+            if (v.connected_user_id === identity.connected_user_id
+                && v.id === identity.id) {
+              return true;
+            }
+          });
+
+          if (_identity.length) {
+            res.redirect('/#!' + cross_id);
+            return;
+          }
+        }
+
+        if (identity.provider === 'email') {
+          Bus.emit('app:cross:forbidden', cross_id, identity);
           return;
         }
 
         res.render('invite.html', function (tpl) {
           $('#app-main').append(tpl);
 
+          if (authorization) {
+            $('.please-access').removeClass('hide');
+            $('.form-horizontal').addClass('fh-left');
+            $('.details').removeClass('hide');
+            $('.details .avatar img').attr('src', user.avatar_filename);
+            $('.details .identity-name').text(user.name);
+          }
+          else {
+            $('.please-signin').removeClass('hide');
+          }
+
           $('.invite-to')
             .find('img')
             .attr('src', identity.avatar_filename)
+            .parent()
             .next()
             .text(Util.printExtUserName(identity));
 
           $('.invite-from')
             .find('img')
             .attr('src', by_identity.avatar_filename)
+              .parent()
             .next()
             .text(Util.printExtUserName(by_identity));
 
@@ -498,12 +419,18 @@ define('routes', function (require, exports, module) {
 
           var clicked = false;
           $('.xbtn-authenticate').on('click', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
             if (clicked) {
               return;
             }
             $.ajax({
               url: '/OAuth/twitterAuthenticate',
+              type: 'POST',
               dataType: 'JSON',
+              data: {
+                callback: window.location.href
+              },
               beforeSend: function (xhr) {
                 clicked = true;
                 $fail.addClass('hide');
@@ -531,6 +458,12 @@ define('routes', function (require, exports, module) {
           */
         });
 
+      },
+
+      function (data) {
+        if (data.meta.code === 404) {
+          res.location('/404');
+        }
       }
     );
   };
@@ -544,31 +477,48 @@ define('routes', function (require, exports, module) {
       , authToken = authorization && authorization.token
       , ctoken = req.params[0]
       , accept = req.params[1]
-      , params = {};
+      // cat = cross_access_token
+      , cat
+      , params = {}
+      , data;
 
     if (authToken) {
       params.token = authToken;
+    }
+
+    cat = Store.get('cat:' + ctoken);
+
+    if (cat) {
+      data = { cross_access_token: cat };
+    }
+    else {
+      data = { invitation_token: ctoken };
     }
 
     Api.request('getCrossByInvitationToken',
       {
         type: 'POST',
         params: params,
-        data: { invitation_token: ctoken }
+        data: data
       }
       , function (data) {
         var auth = data.authorization
           , browsing_identity = data.browsing_identity
           , action = data.action
           , cross = data.cross
+          , cross_access_token = data.cross_access_token
           , read_only = data.read_only;
+
+        if (false === read_only && cross_access_token) {
+          Store.set('cat:' + ctoken, cat = cross_access_token);
+        }
 
         //
         function render() {
           res.render('x.html', function (tpl) {
             $('#app-main').append(tpl);
             Bus.emit('xapp:cross:main');
-            Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, ctoken, !!accept);
+            Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, cat, !!accept);
           });
         }
 
@@ -613,7 +563,9 @@ define('routes', function (require, exports, module) {
         render();
       }
       , function (data) {
-        window.location.href = '/404';
+        if (data.meta.code === 404) {
+          res.location('/404');
+        }
       }
     );
   };
@@ -684,6 +636,7 @@ define('routes', function (require, exports, module) {
                 token: authorization.token
               })
               .remove();
+            delete session.oauth;
           }
         });
       }
@@ -758,7 +711,6 @@ define('routes', function (require, exports, module) {
   // signout
   routes.signout = function (req, res, next) {
     Store.remove('user');
-    alert(Store.get('user'));
     Store.remove('authorization');
     window.location.href = '/';
   };
