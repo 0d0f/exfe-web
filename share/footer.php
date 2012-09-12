@@ -38,7 +38,7 @@ addScript([
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.2'],
-    ['global',        '0.0.2'],
+    ['global',        '0.0.3'],
 ]);
 
 // profile
@@ -59,7 +59,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 addScript([
     ['lightsaber',    '0.0.3'],
     ['middleware',    '0.0.2'],
-    ['routes',        '0.0.2'],
+    ['routes',        '0.0.3'],
     ['app',           '0.0.2'],
 ]);
 
