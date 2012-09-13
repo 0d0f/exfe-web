@@ -345,7 +345,6 @@ class UserModels extends DataModel {
 
     public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
-        print_r($curToken);
         if (($curToken = $hlpExfeAuth->getToken($token))
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
@@ -354,11 +353,27 @@ class UserModels extends DataModel {
                           'identity_id' => $curToken['data']['identity_id']];
             switch ($curToken['data']['action']) {
                 case 'VERIFY':
-                    // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
+                    // get current connecting user id
+                    $current_user_id = $this->getUserIdByIdentityId(
+                        $curToken['data']['identity_id']
+                    );
+                    // connect identity id to new user id
                     $stResult = $this->setUserIdentityStatus(
                         $curToken['data']['user_id'],
                         $curToken['data']['identity_id'], 3
                     );
+                    //
+                    if ($current_user_id
+                     && $current_user_id !== $curToken['data']['user_id']) {
+                        $current_user = $this->getUserById($current_user_id);
+                        $current_user_identities
+                      = $current_user ? $current_user->identities : [];
+                    }
+
+
+
+
+
                     if ($stResult) {
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
