@@ -362,19 +362,29 @@ class UserModels extends DataModel {
                         $curToken['data']['user_id'],
                         $curToken['data']['identity_id'], 3
                     );
-                    //
-                    if ($current_user_id
-                     && $current_user_id !== $curToken['data']['user_id']) {
-                        $current_user = $this->getUserById($current_user_id);
-                        $current_user_identities
-                      = $current_user ? $current_user->identities : [];
-                    }
-
-
-
-
-
+                    // success
                     if ($stResult) {
+                        // get other identities of current connecting user
+                        $current_user_identities = [];
+                        if ($current_user_id
+                         && $current_user_id !== $curToken['data']['user_id']) {
+                            $current_user = $this->getUserById($current_user_id);
+                            if ($current_user) {
+
+                            }
+                            $current_user_identities
+                          =  ? $current_user->identities : [];
+
+
+                        }
+
+
+
+
+
+
+
+
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );
