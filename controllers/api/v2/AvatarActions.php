@@ -82,7 +82,7 @@ class AvatarActions extends ActionController {
                            ? move_uploaded_file($_FILES[$i]['tmp_name'], $full_path)
                            : false;
                 if ($movResult) {
-                    $apiResult['avatars'][$i] = getAvatarUrl('', '', $filename, $i);
+                    $apiResult['avatars'][$i] = getAvatarUrl($filename, $i);
                     continue;
                 }
                 apiError(500, 'error_saving_image', 'Error while saving image.');
