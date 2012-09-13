@@ -347,7 +347,8 @@ class UserModels extends DataModel {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
         print_r($curToken);
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['data']['token_type'] === 'verification_token') {
+          && $curToken['data']['token_type'] === 'verification_token'
+          && !$curToken['is_expire']) {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
                           'action'      => $curToken['data']['action'],
                           'identity_id' => $curToken['data']['identity_id']];
@@ -416,10 +417,11 @@ class UserModels extends DataModel {
         }
         // change password
         if (($curToken = $hlpExfeAuth->getToken($token))
-          && $curToken['data']['token_type'] === 'verification_token') {
-            $resource  = ['token_type'   => $curToken['data']['token_type'],
-                          'action'       => $curToken['data']['action'],
-                          'identity_id'  => $curToken['data']['identity_id']];
+          && $curToken['data']['token_type'] === 'verification_token'
+          && !$curToken['is_expire']) {
+            $resource  = ['token_type'  => $curToken['data']['token_type'],
+                          'action'      => $curToken['data']['action'],
+                          'identity_id' => $curToken['data']['identity_id']];
             $cpResult  = $this->setUserPassword(
                 $curToken['data']['user_id'], $password, $name
             );
