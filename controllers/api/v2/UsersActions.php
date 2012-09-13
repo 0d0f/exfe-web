@@ -61,6 +61,11 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doMergeIdentities() {
+
+    }
+
+
     public function doDeleteIdentity() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
