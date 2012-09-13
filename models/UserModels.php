@@ -524,7 +524,9 @@ class UserModels extends DataModel {
         if ($token) {
             $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
             $result = $hlpExfeAuth->getToken($token);
-            if (isset($result['data']['user_id'])) {
+            if ($result
+             && $result['data']['token_type'] === 'user_token'
+             && !$result['is_expire']) {
                 return (int) $result['data']['user_id'];
             }
         }
