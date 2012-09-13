@@ -52,8 +52,14 @@ class CrossHelper extends ActionController {
                 if($with_updated==true)
                 {
                     $updated=json_decode($updated_crosses[$cross->id],true);
-                    if($updated)
-                        $cross->updated=$updated;
+                    if ($updated) {
+                        foreach ($updated as $uI => $uItem) {
+                            $updated[$uI]['updated_at'] = "{$uItem['updated_at']} +0000";
+                        }
+                        $cross->updated = $updated;
+                    } else {
+                        $cross->updated = [];
+                    }
                 }
                 array_push($cross_list,$cross);
             }
