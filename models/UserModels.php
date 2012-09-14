@@ -364,46 +364,42 @@ class UserModels extends DataModel {
                     );
                     // success
                     if ($stResult) {
-                        // get other identities of current connecting user
-                        $current_user_identities = [];
-                        if ($current_user_id
-                         && $current_user_id !== $curToken['data']['user_id']) {
-                            $current_user = $this->getUserById($current_user_id);
-                            if ($current_user) {
-
-                            }
-                            $current_user_identities
-                          =  ? $current_user->identities : [];
-
-
-                        }
-
-
-
-
-
-
-
-
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );
                         if ($siResult) {
-                            if ($siResult['password']) {
-                                $hlpExfeAuth->expireAllTokens($resource);
-                                $nextAction = 'VERIFIED';
-                            } else {
-                                $hlpExfeAuth->refreshToken($token, 233);
-                                $nextAction = 'INPUT_NEW_PASSWORD';
-                            }
-                            return [
+                            $rtResult = [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
                                 'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
                                 'token_type'  => $curToken['data']['action'],
-                                'action'      => $nextAction,
                             ];
+                            // get other identities of current connecting user {
+                            if ($current_user_id
+                             && $current_user_id !== $curToken['data']['user_id']) {
+                                $current_user = $this->getUserById($current_user_id);
+                                if ($current_user && $current_user->identities) {
+                                    $rtResult['mergeable_user'] = $current_user;
+                                    // updated token {
+                                    $curToken['data']['merger_info'] = [
+                                        'mergeable_user' => $current_user,
+                                        'created_time'   => time(),
+                                        'updated_time'   => time(),
+                                    ];
+                                    $hlpExfeAuth->updateToken($token, $curToken['data']);
+                                    // }
+                                }
+                            }
+                            // }
+                            if ($siResult['password']) {
+                                $hlpExfeAuth->expireAllTokens($resource);
+                                $rtResult['action'] = 'VERIFIED';
+                            } else {
+                                $hlpExfeAuth->refreshToken($token, 233);
+                                $rtResult['action'] = 'INPUT_NEW_PASSWORD';
+                            }
+                            return $rtResult;
                         }
                     }
                     break;
@@ -451,14 +447,16 @@ class UserModels extends DataModel {
                 $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $siResult = $this->rawSignin($curToken['data']['user_id']);
                 $hlpExfeAuth->expireAllTokens($resource);
-                return array(
-                    'user_id'     => $siResult['user_id'],
-                    'token'       => $siResult['token'],
-                    'identity_id' => $curToken['data']['identity_id'],
-                    'action'      => $curToken['data']['action'],
-                );
+                $siResult = $this->rawSignin($curToken['data']['user_id']);
+                if ($siResult) {
+                    return [
+                        'user_id'     => $siResult['user_id'],
+                        'token'       => $siResult['token'],
+                        'identity_id' => $curToken['data']['identity_id'],
+                        'action'      => $curToken['data']['action'],
+                    ];
+                }
             }
         }
         return null;
