@@ -291,11 +291,12 @@ class UserModels extends DataModel {
             return null;
         }
         // get ready
-        $result      = ['user_id' => $user_id, 'token' => ''];
+        $result      = ['user_id' => $user_id];
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         // case provider
         switch ($identity->provider) {
             case 'email':
+                $result['token'] = '';
                 // get current token
                 $resource  = ['token_type'   => 'verification_token',
                               'action'       => $action,
@@ -336,7 +337,13 @@ class UserModels extends DataModel {
                 }
                 break;
             case 'twitter':
-                // @todo by @leaskh
+                $hlpOAuth = $this->getHelperByName('OAuth');
+                $urlOauth = $hlpOAuth->getTwitterRequestToken();
+                if ($urlOauth) {
+                    $result['url'] = $urlOauth;
+                    return $result;
+                }
+                $hlpOAuth->resetSession();
         }
         // return
         return null;
