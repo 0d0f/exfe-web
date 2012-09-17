@@ -58,7 +58,7 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doMergeBrowsingIdentities() {
+    public function doMergeIdentities() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -80,78 +80,49 @@ class UsersActions extends ActionController {
         }
         // get browsing token
         if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
+         || ($objBsToken['data']['token_type'] !== 'user_token'
+          && $objBsToken['data']['token_type'] !== 'cross_access_token')
          || $objBsToken['is_expire']) {
             apiError(400, 'error_browsing_identity_token', '');
         }
-        // check token
-        switch ($objBsToken['data']['token_type']) {
-            case 'user_token':
-                // get browsing identity id
-                if (!($bsIdentityId = (int) $_POST['identity_id'])) {
-                    apiError(400, 'no_identity_id', '');
+        // check fresh
+        if (time() - $objBsToken['data']['last_authenticate'] > 60 * 15) { // in 15 mins
+            apiError(401, 'authenticate_timeout', 're authenticate is needed');
+        }
+        // get browsing identity ids
+        $bsIdentityIds = @json_decode($_POST['identity_ids']);
+        if (!$bsIdentityIds || !is_array($bsIdentityIds)) {
+            apiError(400, 'no_identity_ids', '');
+        }
+        // merge
+        $mgResult = [];
+        $mgStatus = false;
+        foreach ($bsIdentityIds as $bsIdentityId) {
+            if (!($bsIdentityId = (int) $bsIdentityId)) {
+                continue;
+            }
+            // get broswing identity user
+            $fromUserId = $modUser->getUserIdByIdentityId($bsIdentityId);
+            // check user identity status
+            if ($objBsToken['data']['user_id'] === $fromUserId
+             && $objBsToken['data']['user_id'] !== $user_id) {
+                // merge directly
+                if ($modUser->setUserIdentityStatus($user_id, $bsIdentityId, 3)) {
+                    // get other mergeable user identity
+                    ///////////////////////////
+
+                    $mgStatus = $mgResult[$bsIdentityId] = true;
+                    continue;
                 }
-                break;
-            case 'cross_access_token':
-                // get browsing identity id
-                $bsIdentityIds = $objBsToken['data']['identity_id'];
-                break;
-            default:
-                apiError(400, 'error_browsing_identity_token', '');
-        }
-        // get broswing identity user
-        $fromUserId = $modUser->getUserIdByIdentityId($bsIdentityId);
-        // check user identity status
-        if ($objBsToken['data']['token_type'] === 'user_token'
-         && $objBsToken['data']['user_id']    !== $fromUserId) {
-            apiError(400, 'error_identity_status', 'identity status have been changed');
-        }
-        if ($fromUserId === $user_id) {
-            apiError(400, 'no_need_to_merger', 'from_user_id is the same as to_user_id');
-        }
-        // merge directly
-        if (time() - $objBsToken['data']['last_authenticate'] <= 60 * 15) { // in 15 mins
-            if ($modUser->setUserIdentityStatus($user_id, $bsIdentityId, 3)) {
-                // get other mergeable user identity
-                ///////////////////////////
-                apiResponse([
-                    'status' => 'succeed',
-                ]);
             }
-            apiError(500, 'merge_error');
+            $mgResult[$bsIdentityId] = false;
         }
-        // merge by verify
-        if (($objVerify = $modUser->verifyIdentity($bsIdentityId, 'VERIFY', $user_id))) {
-            if (isset($objVerify['url'])) {
-                ///////////////////////////
-                apiResponse([
-                    'status' => 'verifying',
-                    'url'    => $objVerify['url'],
-                ]);
-            }
-            ///////////////////////////
+        if ($mgStatus) {
             apiResponse([
-                'status' => 'verifying',
+                'status' => $mgResult,
             ]);
         }
         apiError(500, 'server_error');
-    }
-
-
-    public function doMergeIdentities() {
-
-        // api: 2
-        //     verify_token(merge_able)
-        //     identity_ids
-
-
-        $modExfeAuth = $this->getModelByName('ExfeAuth');
-        $token = $modExfeAuth->getToken($_POST['token']);
-
-
-
-        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
-        if ($result['check']) {
-        }
     }
 
 
