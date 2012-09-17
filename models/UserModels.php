@@ -535,28 +535,17 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserIdByToken($token) {
+    public function getUserToken($token) {
         if ($token) {
             $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
             $result = $hlpExfeAuth->getToken($token);
             if ($result
              && $result['data']['token_type'] === 'user_token'
              && !$result['is_expire']) {
-                return (int) $result['data']['user_id'];
+                return $result;
             }
         }
-        return 0;
-    }
-
-
-    public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
-        if (!$user_id) {
-            return false;
-        }
-        $passwdInDb = $this->getUserPasswdByUserId($user_id);
-        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-        return $password === $passwdInDb['encrypted_password']
-            || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
+        return null;
     }
 
 
@@ -757,3 +746,15 @@ class UserModels extends DataModel {
     }
 
 }
+
+
+
+// public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
+//     if (!$user_id) {
+//         return false;
+//     }
+//     $passwdInDb = $this->getUserPasswdByUserId($user_id);
+//     $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
+//     return $password === $passwdInDb['encrypted_password']
+//         || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
+// }
