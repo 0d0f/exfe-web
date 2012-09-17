@@ -52,7 +52,7 @@ addScript([
 // cross
 addScript([
     ['placepanel',    '0.0.1'],
-    ['user',          '0.0.3'],
+    ['user',          '0.0.4'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
