@@ -227,7 +227,7 @@ define('eftime', function (require, exports, module) {
         output.token = 10;
       }
 
-      // 750m <= x <= 1439
+      // 750m <= x <= 1439m
       else if (750 <= minutes) {
         data.days = 0;
         output.token = 11;
@@ -250,12 +250,10 @@ define('eftime', function (require, exports, module) {
     // 3 days <= x <= 30 days
     else if (3 <= days && days <= 30) {
       day = sdate.getDay();
-      var thisDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate());
-      thisDay.setDate(thisDay.getDate() + days + 1);
-      var weekFirstDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate());
-      var nextWeekFirstDay;
-      var nextWeekLastDay;
-      weekFirstDay.setDate(weekFirstDay.getDate() + (settings.weekStartAt - day));
+      var thisDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate() + days + 1)
+        , weekFirstDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate() + (settings.weekStartAt - day))
+        , nextWeekFirstDay
+        , nextWeekLastDay;
       // current week
       if (+weekFirstDay <= +sdate) {
         nextWeekFirstDay = new Date(+weekFirstDay);
