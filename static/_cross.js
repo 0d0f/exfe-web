@@ -1371,7 +1371,7 @@ define(function (require, exports, module) {
                     var objInput = $(this);
                     if (!event.shiftKey) {
                         event.preventDefault();
-                        postConversation(objInput.val());
+                        postConversation(ExfeUtilities.escape(objInput.val()));
                         objInput.val('');
                     }
                     break;
@@ -1936,7 +1936,7 @@ define(function (require, exports, module) {
                        +   '<div class="comment">'
                        +     '<p>'
                        +       '<span class="author"><strong>' + message.by_identity.name + '</strong>:&nbsp;</span>'
-                       +          strContent
+                       +          ExfeUtilities.escape(strContent)
                        +       '<span class="pull-right date">'
                        +         '<time data-origin-time="' + message.created_at + '">' + moment(message.created_at, 'YYYY-MM-DD HH:mm:ss Z').fromNow() + '</time>'
                        +       '</span>'
