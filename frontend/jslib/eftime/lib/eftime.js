@@ -44,9 +44,15 @@ define('eftime', function (require, exports, module) {
     , '3'   : 'Yesterday'
     , '4'   : '{{hours}} hours ago'
     , '5'   : '{{hours}} hours ago'
-    , '6'   : '{{minutes}} minutes ago'
-    , '7'   : '{{minutes}} minutes ago'
-    , '8'   : 'Seconds ago'
+    , '6'   : function (data, type) {
+                return type === 'X' ? 'Just Now' : '{{minutes}} minutes ago'
+              }
+    , '7'   : function (data, type) {
+                return type === 'X' ? 'Now' : '{{minutes}} minutes ago'
+              }
+    , '8'   : function (data, type) {
+                return type === 'X' ? 'Now' : 'Seconds ago';
+              }
     , '9'   : 'In {{minutes}} minutes'
     , '10'  : 'In {{hours}} hours'
     , '11'  : 'Today'
@@ -77,11 +83,12 @@ define('eftime', function (require, exports, module) {
     en: EN
   };
 
-  efTime.timeAgo = function (t, s, c) {
+  efTime.timeAgo = function (t, s, type, c) {
     var lang = efTime.locales[efTime.locale]
       , distanceTime = efTime.distanceOfTime(t, s)
-      , input = efTime.diff(distanceTime)
-      , output = efTime.inWords(input, lang);
+      , input = efTime.diff(distanceTime);
+    input.type = type;
+    var output = efTime.inWords(input, lang);
 
     if ('function' === typeof c) {
       output = c(output.data);
@@ -92,6 +99,7 @@ define('eftime', function (require, exports, module) {
 
   efTime.inWords = function (input, lang) {
     var token = lang[input.token]
+      , type = input.type
       , data = input.data
       , matches
       , placeholder
@@ -102,7 +110,7 @@ define('eftime', function (require, exports, module) {
       , message;
 
     if ('function' === typeof token) {
-      message = token(data);
+      message = token(data, type);
     }
     else {
       message = token;
@@ -242,9 +250,9 @@ define('eftime', function (require, exports, module) {
     // 3 days <= x <= 30 days
     else if (3 <= days && days <= 30) {
       day = sdate.getDay();
-      var thisDay = new Date(+sdate);
-      thisDay.setDate(thisDay.getDate() + days);
-      var weekFirstDay = new Date(+sdate);
+      var thisDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate());
+      thisDay.setDate(thisDay.getDate() + days + 1);
+      var weekFirstDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate());
       var nextWeekFirstDay;
       var nextWeekLastDay;
       weekFirstDay.setDate(weekFirstDay.getDate() + (settings.weekStartAt - day));
@@ -304,6 +312,9 @@ define('eftime', function (require, exports, module) {
     if (undefined === s) {
       s = new Date();
     }
+    else if ('number' === typeof s) {
+      s = new Date(s);
+    }
     else if ('string' === typeof s) {
       s = parseISO8601(s);
     }
@@ -325,13 +336,22 @@ define('eftime', function (require, exports, module) {
   // Helpers:
   // --------------------------------
   function parseISO8601(datestring) {
-    datestring = datestring.replace(/\.\d{1,3}/, ''); // 0 ~ 999 ms
-    datestring = datestring.replace(/-/, '/');
-    datestring = datestring.replace(/T/, ' UTC');
-    datestring = datestring.replace(/([\+\-]\d\d):?(\d\d)/, '$1$2');
-    datestring = datestring.replace(/Z/, '+0000'); // at UTC
-    return new Date(datestring);
+    datestring = datestring.replace(/-/, '/').replace(/-/, '/');
+    // datestring = '2012-06-09'
+    if (datestring.length > 10) {
+      datestring = datestring.replace(/\.\d\d\d/, ''); // 0 ~ 999 ms
+      datestring = datestring.replace(/T/, ' ');
+      datestring = datestring.replace(/([\+\-]\d\d):?(\d\d)/, ' UTC$1$2');
+      datestring = datestring.replace(/Z/, ' UTC+0000'); // at UTC
+    }
+    datestring = new Date(datestring);
+    return datestring;
   }
+
+  // "2012-09-12 09:51:04 +0000" => "2012-09-12T09:51:04+0000"
+  efTime.printISO8601 = function (datestring) {
+    return datestring.replace(/\s/, 'T').replace(/\s/, '');
+  };
 
   // 取整
   function floor(n) {
