@@ -8,9 +8,9 @@ class CheckHelper extends ActionController {
         $exfeeData    = $this->getModelByName('exfee');
         $crossData    = $this->getModelByName('cross');
 
-        if(!$token)
-            $token=$_SERVER["HTTP_TOKEN"];
-        $uid = intval($userData->getUserIdByToken($token));
+        $token        = $token ?: $_SERVER['HTTP_TOKEN'];
+        $objToken     = $userData->getUserToken($token);
+        $uid          = $objToken['data']['user_id'];
 
         if (!$uid) {
             $invToken = $crossData->getCrossAccessToken($token);
@@ -116,12 +116,14 @@ class CheckHelper extends ActionController {
             case 'user_signin':
             case 'user_signup':
                 return array("check"=>true);
-                break;
             case 'user_signout':
             case 'user_edit':
             case 'user_regdevice':
-                return array('check' => true, 'uid' => $uid);
-                break;
+                return [
+                    'check' => true,
+                    'uid'   => $uid,
+                    'fresh' => time() - $objToken['data']['last_authenticate'] <= 60 * 15 // in 15 mins
+                ];
         }
         return array("check"=>false);
     }
