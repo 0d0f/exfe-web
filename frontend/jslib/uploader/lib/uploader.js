@@ -1,4 +1,9 @@
-define('uploader', [], function (require, exports, module) {
+define('uploader', function (require, exports, module) {
+  // https://github.com/blueimp
+  // https://github.com/blueimp/jQuery-File-Upload
+  // https://github.com/gildas-lormeau/zip.js
+  // https://gist.github.com/2793006
+  // http://www.w3.org/TR/html5/the-canvas-element.html#dom-canvas-toblob
 
   // Uploader Avatar Image
   // ---------------------
@@ -216,6 +221,7 @@ define('uploader', [], function (require, exports, module) {
       this.filehtml5.on('uploadcomplete', function (e) {
         var b = true;
         that.$('.loading').addClass('hide');
+        that.$('.zoom').show();
         data = JSON.parse(e.data);
         if (data) {
           if (data.meta.code === 200) {
@@ -370,6 +376,7 @@ define('uploader', [], function (require, exports, module) {
           this.$('.resizeable').removeClass('hide');
           this.$('.upload-done').show();
           this.$('.upload-clear').hide();
+          this.$('.zoom').hide();
 
           var self = this;
           self.ri = 0;
@@ -383,7 +390,7 @@ define('uploader', [], function (require, exports, module) {
             , bitmap80
             , originalImage = document.createElement('img');
 
-          originalImage.onload = function () {
+          originalImage.onerror = originalImage.onload = function () {
             var image = originalImage;
             var min = Math.min(originalImage.width, originalImage.height);
             self.sss = 1;
@@ -731,20 +738,19 @@ define('uploader', [], function (require, exports, module) {
 
   function readFileToImage(image, file) {
     // 读取图像
-    if (window.URL && window.URL.createObjectURL) {
+    if (window.URL && window.URL.revokeObjectURL) {
       image.src = window.URL.createObjectURL(file);
     }
-    else if (window.webkitURL.createObjectURL) {
+    else if (window.webkitURL && window.webkitURL.createObjectURL) {
       image.src = window.webkitURL.createObjectURL(file);
     }
     else {
       var reader = new FileReader();
-      reader.onload = function () {
-        image.src = this.result;
+      reader.onload = function (e) {
+        image.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
-    return image;
   }
 
   /**
@@ -758,7 +764,7 @@ define('uploader', [], function (require, exports, module) {
     if (dataURI.split(',')[0].indexOf('base64') >= 0) {
         byteString = atob(dataURI.split(',')[1]);
     } else {
-        byteString = unescape(dataURI.split(',')[1]);
+        byteString = decodeURIComponent(dataURI.split(',')[1]);
     }
 
     // separate out the mime component
@@ -767,12 +773,13 @@ define('uploader', [], function (require, exports, module) {
     // write the bytes of the string to an ArrayBuffer
     var ab = new ArrayBuffer(byteString.length);
     var ia = new Uint8Array(ab);
-    for (var i = 0; i < byteString.length; i++) {
+    for (var i = 0, l = byteString.length; i < l; ++i) {
       ia[i] = byteString.charCodeAt(i);
     }
 
     // write the ArrayBuffer to a blob, and you're done
-    var BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.BlobBuilder;
+    // https://github.com/blueimp/JavaScript-Canvas-to-Blob/blob/master/canvas-to-blob.js
+    var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
     var res;
     if (BlobBuilder) {
       var bb = new BlobBuilder();
@@ -781,6 +788,7 @@ define('uploader', [], function (require, exports, module) {
     } else {
       // for safari Blob  算法不一样，导致 bytelength 也不一样
       // wtf? // 对于大文件不稳定哦
+      // opera 12 暂不支持
       res = new Blob([ab], {"type": mimeString});
     }
     return res;

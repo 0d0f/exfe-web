@@ -461,7 +461,7 @@ define('lightsaber', function (require, exports, module) {
   // Response.prototype
   proto = Response.prototype;
 
-  var _redirect = function (url) {
+  proto.location = function (url) {
     requestAnimFrame(function () {
       setTimeout(function () {
         location.href = url;
@@ -490,7 +490,7 @@ define('lightsaber', function (require, exports, module) {
 
     if (!historySupport) {
       //location.hash = this.path.substr(2);
-      _redirect(url);
+      this.location(url);
       return;
     }
 
@@ -498,7 +498,7 @@ define('lightsaber', function (require, exports, module) {
     state = arguments[2] || {};
 
     this.path = url;
-    this.title = title;
+    this.title = title || 'EXFE.COM';
     document.title = this.title;
     this.state = state;
     this.state.id = uuid();
