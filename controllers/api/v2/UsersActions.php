@@ -58,7 +58,7 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doMergeBrowsingIdentity() {
+    public function doMergeBrowsingIdentities() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -86,35 +86,54 @@ class UsersActions extends ActionController {
         // check token
         switch ($objBsToken['data']['token_type']) {
             case 'user_token':
+                // get browsing identity id
                 if (!($bsIdentityId = (int) $_POST['identity_id'])) {
                     apiError(400, 'no_identity_id', '');
                 }
-                if (!($fromUserId = $modUser->getUserIdByIdentityId($bsIdentityId))) {
-                    apiError(400, 'error_identity_status', 'identity is not connected');
-                }
-                if ($objBsToken['data']['user_id'] !== $fromUserId) {
-                    apiError(400, 'error_identity_status', 'identity status have been changed');
-                }
-                if ($objBsToken['data']['user_id'] === $user_id) {
-                    apiError(400, 'no_need_to_merger', 'from_user_id is the same as to_user_id');
-                }
-                if (time() - $objBsToken['data']['last_authenticate'] <= 60 * 15) { // in 15 mins
-                    if ($modUser->setUserIdentityStatus($user_id, $bsIdentityId, 3)) {
-                        apiResponse([]);
-                    } else {
-
-                    }
-                } else {
-
-                }
                 break;
             case 'cross_access_token':
+                // get browsing identity id
+                $bsIdentityIds = $objBsToken['data']['identity_id'];
                 break;
             default:
                 apiError(400, 'error_browsing_identity_token', '');
         }
-
-
+        // get broswing identity user
+        $fromUserId = $modUser->getUserIdByIdentityId($bsIdentityId);
+        // check user identity status
+        if ($objBsToken['data']['token_type'] === 'user_token'
+         && $objBsToken['data']['user_id']    !== $fromUserId) {
+            apiError(400, 'error_identity_status', 'identity status have been changed');
+        }
+        if ($fromUserId === $user_id) {
+            apiError(400, 'no_need_to_merger', 'from_user_id is the same as to_user_id');
+        }
+        // merge directly
+        if (time() - $objBsToken['data']['last_authenticate'] <= 60 * 15) { // in 15 mins
+            if ($modUser->setUserIdentityStatus($user_id, $bsIdentityId, 3)) {
+                // get other mergeable user identity
+                ///////////////////////////
+                apiResponse([
+                    'status' => 'succeed',
+                ]);
+            }
+            apiError(500, 'merge_error');
+        }
+        // merge by verify
+        if (($objVerify = $modUser->verifyIdentity($bsIdentityId, 'VERIFY', $user_id))) {
+            if (isset($objVerify['url'])) {
+                ///////////////////////////
+                apiResponse([
+                    'status' => 'verifying',
+                    'url'    => $objVerify['url'],
+                ]);
+            }
+            ///////////////////////////
+            apiResponse([
+                'status' => 'verifying',
+            ]);
+        }
+        apiError(500, 'server_error');
     }
 
 
