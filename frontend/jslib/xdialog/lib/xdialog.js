@@ -103,7 +103,11 @@ define('xdialog', function (require, exports, module) {
           if (oauthType === 'twitter') {
             that._oauth_ = $.ajax({
               url: '/OAuth/twitterAuthenticate',
+              type: 'POST',
               dataType: 'JSON',
+              data: {
+                callback: window.location.href
+              },
               beforeSend: function (xhr) {
                 that.$('.modal-body').eq(0).css('opacity', 0);
                 that.switchTab('d05');
@@ -546,6 +550,9 @@ define('xdialog', function (require, exports, module) {
               data: {
                 //token: this._token,
                 identity_id: this._identity_id
+              },
+              success: function () {
+                Store.remove('oauth');
               }
             });
           }
@@ -1673,6 +1680,7 @@ define('xdialog', function (require, exports, module) {
         'click .authorize': function (e) {
             this._oauth_ = $.ajax({
               url: '/OAuth/twitterAuthenticate',
+              type: 'POST',
               dataType: 'JSON',
               beforeSend: function (xhr) {
               },
