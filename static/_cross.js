@@ -50,7 +50,7 @@ ExfeUtilities = {
     parseTimestring : function(strTime) {
         var sptTime = strTime ? strTime.split(/[^0-9a-zA-Z]+/) : [],
             arrTime = [],
-            fmtFrom = 'YYYY MM DD hh mm ss a',
+            fmtFrom = 'YYYY MM DD hh mm ss a ZZ',
             rawTime = null,
             efeTime = {
                 begin_at : {
@@ -84,7 +84,7 @@ ExfeUtilities = {
             case 5:
                 arrTime.push(parseInt(arrTime[3], 10) === 12 ? 'pm' : 'am');
             default:
-                if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
+                if (rawTime = moment(arrTime.join(' ') + ' 00 ' + efeTime.begin_at.timezone, fmtFrom)) {
                     var objTime = rawTime.toDate();
                     efeTime.begin_at.date =    objTime.getUTCFullYear()   + '-'
                                           + db(objTime.getUTCMonth() + 1) + '-'
