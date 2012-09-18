@@ -123,7 +123,7 @@ class CheckHelper extends ActionController {
                     'check' => true,
                     'uid'   => $uid,
                     'fresh' => time() - $objToken['data']['last_authenticate'] <= 60 * 15 // in 15 mins
-                ]
+                ];
                 if ($withTokenInfo) {
                     $rtResult['token_info'] = $objToken;
                 }
