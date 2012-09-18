@@ -1371,7 +1371,7 @@ define(function (require, exports, module) {
                     var objInput = $(this);
                     if (!event.shiftKey) {
                         event.preventDefault();
-                        postConversation(ExfeUtilities.escape(objInput.val()));
+                        postConversation(objInput.val());
                         objInput.val('');
                     }
                     break;
