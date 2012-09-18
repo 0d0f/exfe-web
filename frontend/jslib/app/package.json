@@ -1,7 +1,7 @@
 {
   "name": "app",
   "description": "X webapp bootstrap!",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "cfd",
   "hint": true
 }
