@@ -32,6 +32,9 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            }
             $user_id = $result['uid'];
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
@@ -46,12 +49,6 @@ class UsersActions extends ActionController {
         if (!($provider = trim($_POST['provider']))) {
             apiError(400, 'no_provider', '');
         }
-        if (!($password = $_POST['password'])) {
-            apiError(401, 'no_password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
-        }
         if (($identity_id = $modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username], $user_id))
          && ($objIdentity = $modIdentity->getIdentityById($identity_id, $user_id))) {
             apiResponse(['identity' => $objIdentity]);
@@ -62,7 +59,70 @@ class UsersActions extends ActionController {
 
 
     public function doMergeIdentities() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            }
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
+        $modUser     = $this->getModelByName('User');
+        // collecting post data
+        if (!($strBsToken = trim($_POST['browsing_identity_token']))) {
+            apiError(400, 'no_browsing_identity_token', '');
+        }
+        // get browsing token
+        if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
+         || ($objBsToken['data']['token_type'] !== 'user_token'
+          && $objBsToken['data']['token_type'] !== 'cross_access_token')
+         || $objBsToken['is_expire']) {
+            apiError(400, 'error_browsing_identity_token', '');
+        }
+        // check fresh
+        if (time() - $objBsToken['data']['last_authenticate'] > 60 * 15) { // in 15 mins
+            apiError(401, 'authenticate_timeout', 're authenticate is needed');
+        }
+        // get browsing identity ids
+        $bsIdentityIds = @json_decode($_POST['identity_ids']);
+        if (!$bsIdentityIds || !is_array($bsIdentityIds)) {
+            apiError(400, 'no_identity_ids', '');
+        }
+        // merge
+        $mgResult = [];
+        $mgStatus = false;
+        foreach ($bsIdentityIds as $bsIdentityId) {
+            if (!($bsIdentityId = (int) $bsIdentityId)) {
+                continue;
+            }
+            // get broswing identity user
+            $fromUserId = $modUser->getUserIdByIdentityId($bsIdentityId);
+            // check user identity status
+            if ($objBsToken['data']['user_id'] === $fromUserId
+             && $objBsToken['data']['user_id'] !== $user_id) {
+                // merge directly
+                if ($modUser->setUserIdentityStatus($user_id, $bsIdentityId, 3)) {
+                    // get other mergeable user identity
+                    ///////////////////////////
 
+                    $mgStatus = $mgResult[$bsIdentityId] = true;
+                    continue;
+                }
+            }
+            $mgResult[$bsIdentityId] = false;
+        }
+        if ($mgStatus) {
+            apiResponse([
+                'status' => $mgResult,
+            ]);
+        }
+        apiError(500, 'server_error');
     }
 
 
@@ -72,6 +132,9 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            }
             $user_id = $result['uid'];
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
@@ -82,12 +145,6 @@ class UsersActions extends ActionController {
         // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        if (!($password = $_POST['password'])) {
-            apiError(403, 'password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
         }
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
             case 'CONNECTED':
@@ -109,6 +166,9 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            }
             $user_id = $result['uid'];
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
@@ -119,12 +179,6 @@ class UsersActions extends ActionController {
         // collecting post data
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        if (!($password = $_POST['password'])) {
-            apiError(403, 'no_current_password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
         }
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
             case 'CONNECTED':
@@ -813,6 +867,9 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            }
             $user_id = $result['uid'];
         } else if (intval($_SESSION['userid'])) { // @todo removing $_SESSION['userid']
             $user_id = intval($_SESSION['userid']);
@@ -822,9 +879,6 @@ class UsersActions extends ActionController {
         // get models
         $modUser = $this->getModelByName('user');
         // collecting post data
-        if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
-            apiError(403, 'invalid_current_password', ''); // 密码错误
-        }
         if (!($newPassword = $_POST['new_password'])) {
             apiError(400, 'no_new_password', ''); // 请输入当新密码
         }
