@@ -87,12 +87,24 @@ class UsersActions extends ActionController {
         }
         // check fresh
         if (time() - $objBsToken['data']['last_authenticate'] > 60 * 15) { // in 15 mins
-            apiError(401, 'authenticate_timeout', 're authenticate is needed');
+            apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
         }
         // get browsing identity ids
         $bsIdentityIds = @json_decode($_POST['identity_ids']);
         if (!$bsIdentityIds || !is_array($bsIdentityIds)) {
             apiError(400, 'no_identity_ids', '');
+        }
+        // get from user
+        $fromUser = $modUser->getUserById($objBsToken['data']['user_id'], false, 0);
+        if (!$fromUser) {
+            apiError(400, 'error_user_status', '');
+        }
+        // check user identity status
+        foreach ($fromUser->identities as $iI => $iItem) {
+            if ($iItem->status !== 'CONNECTED'
+             && $iItem->status !== 'REVOKED') {
+                unset($fromUser->identities[$iI]);
+            }
         }
         // merge
         $mgResult = [];
@@ -101,26 +113,37 @@ class UsersActions extends ActionController {
             if (!($bsIdentityId = (int) $bsIdentityId)) {
                 continue;
             }
-            // get broswing identity user
-            $fromUserId = $modUser->getUserIdByIdentityId($bsIdentityId);
-            // check user identity status
-            if ($objBsToken['data']['user_id'] === $fromUserId
-             && $objBsToken['data']['user_id'] !== $user_id) {
-                // merge directly
-                if ($modUser->setUserIdentityStatus($user_id, $bsIdentityId, 3)) {
-                    // get other mergeable user identity
-                    ///////////////////////////
-
-                    $mgStatus = $mgResult[$bsIdentityId] = true;
-                    continue;
+            // merge directly
+            foreach ($fromUser->identities as $iI => $iItem) {
+                if ($iItem->id === $bsIdentityId) {
+                    $tarStatus = 0;
+                    switch ($iItem->status) {
+                        case 'CONNECTED':
+                            $tarStatus = 3;
+                            break;
+                        case 'REVOKED':
+                            $tarStatus = 4;
+                    }
+                    if ($modUser->setUserIdentityStatus(
+                        $user_id, $bsIdentityId, $tarStatus
+                    )) {
+                        $mgResult[$bsIdentityId] = $mgStatus = true;
+                    } else {
+                        $mgResult[$bsIdentityId] = false;
+                    }
+                    unset($fromUser->identities[$iI]);
                 }
             }
-            $mgResult[$bsIdentityId] = false;
         }
+        // get other mergeable user identity
+        $fromUser->identities = array_merge($fromUser->identities);
+        // return
         if ($mgStatus) {
-            apiResponse([
-                'status' => $mgResult,
-            ]);
+            $rtResult = ['status' => $mgResult];
+            if ($fromUser->identities) {
+                $rtResult['mergeable_user'] = $fromUser;
+            }
+            apiResponse($rtResult);
         }
         apiError(500, 'server_error');
     }
@@ -871,8 +894,6 @@ class UsersActions extends ActionController {
                 apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
             }
             $user_id = $result['uid'];
-        } else if (intval($_SESSION['userid'])) { // @todo removing $_SESSION['userid']
-            $user_id = intval($_SESSION['userid']);
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
