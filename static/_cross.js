@@ -1855,18 +1855,21 @@ define(function (require, exports, module) {
             }
             */
           } else if (bdate && btime) {
+            var now = new Date()
+              , matches = bdate.match(/^\d\d\d\d/m);
             var objMon = moment((moment.utc(
                 Cross.time.begin_at.date + ' '
               + Cross.time.begin_at.time, format + ' HH:mm:ss'
             ).unix()   + (timevalid ? 0 : (crossOffset - timeOffset))) * 1000);
-            strAbsTime = objMon.format('h:mmA on ddd, MMM D')
+            strAbsTime = objMon.format('h:mmA on ddd, MMM D' + (matches && matches[0] == now.getFullYear() ? '' : ' YYYY'))
                         + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
             //strRelTime = efTime.timeAgo(bdate + ' ' + btime +  ' ' + bzone[0] + bzone[1] + bzone[2]  + bzone[4] + bzone[5]);
             strRelTime = efTime.timeAgo(bdate + ' ' + btime +  ' Z', undefined, 'X');
           } else if (bdate && !btime) {
-            strAbsTime = moment(bdate).format('On ddd, MMM D')
+            var now = new Date()
+              , matches = bdate.match(/^\d\d\d\d/m);
+            strAbsTime = moment(bdate).format('On ddd, MMM D' + (matches && matches[0] == now.getFullYear() ? '' : ' YYYY'))
                         + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
-            var now = new Date();
             now = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             strRelTime = efTime.timeAgo(bdate + ' ' + bzone[0] + bzone[1] + bzone[2]  + bzone[4] + bzone[5], +now);
             if (strRelTime === 'Seconds ago') {
