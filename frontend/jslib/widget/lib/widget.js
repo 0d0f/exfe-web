@@ -52,6 +52,8 @@ define('widget', [], function (require, exports, module) {
       if (!this.element) {
         throw 'element is invalid';
       }
+
+      this.element.attr('data-widget-id', this.cid);
     },
 
     // 外部接口，方便子类初始化
@@ -65,14 +67,14 @@ define('widget', [], function (require, exports, module) {
 
     delegateEvents: function (events) {
       events || (events = getValue(this.options, 'events'));
-      if (!events) return;
+      if (!events) { return; }
       this.undelegateEvents();
 
       var key, method, match, eventName, selector;
       for (key in events) {
         method = events[key] || this[key];
 
-        if (!method) throw 'Method "' + events[key] + '" does not exist';
+        if (!method) { throw 'Method "' + events[key] + '" does not exist'; }
 
         match = key.match(delegateEventSplitter);
         eventName = match[1];
@@ -92,10 +94,8 @@ define('widget', [], function (require, exports, module) {
       return this.element.find(selector);
     },
 
-    destory: function () {
+    _destory: function () {
       this.undelegateEvents();
-      // remove `element`
-      //this.element.remove();
       Widget.superclass.destory.call(this);
     }
   });
@@ -107,7 +107,7 @@ define('widget', [], function (require, exports, module) {
   // 事件代理参数中，'event selector' 的分隔符
   var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
-  var uuid = 1;
+  var uuid = 0;
 
   function guid() {
     return 'widget-' + uuid++;
@@ -127,14 +127,13 @@ define('widget', [], function (require, exports, module) {
   function setAttrOptions(r, s) {
     var k;
     for (k in s) {
-      if (k !== 'options') r[k] = s[k];
+      if (k !== 'options') { r[k] = s[k]; }
     }
   }
 
   function proxy(f, c) {
-    if (!f) return undefined;
-    return cb;
-    function cb(e) {
+    if (!f) { return; }
+    return function cb(e) {
       return f.call(c, e);
     };
   }
