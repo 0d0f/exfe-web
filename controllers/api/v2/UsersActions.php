@@ -292,6 +292,8 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
             $provider, $external_username
         );
+        // collecting post data
+        $args = trim(@$_POST['args']) ?: null;
         // init return value
         $rtResult = ['identity' => $identity];
         // 身份不存在，提示注册
@@ -308,7 +310,7 @@ class UsersActions extends ActionController {
                     $viResult = $modUser->verifyIdentity(
                         $identity,
                         $raw_flag['reason'] === 'NO_PASSWORD' ? 'SET_PASSWORD' : 'VERIFY',
-                        $user_id
+                        $user_id, $args
                     );
                     if ($viResult) {
                         $hlpGobus = $this->getHelperByName('gobus');
@@ -325,7 +327,7 @@ class UsersActions extends ActionController {
                     break;
                 case 'AUTHENTICATE':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'VERIFY', $user_id
+                        $identity, 'VERIFY', $user_id, $args
                     );
                     if ($viResult) {
                         $rtResult['url']    = $viResult['url'];
