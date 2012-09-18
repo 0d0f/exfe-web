@@ -516,7 +516,9 @@ define('routes', function (require, exports, module) {
         //
         function render() {
           res.render('x.html', function (tpl) {
-            $('#app-main').append(tpl);
+            $('#app-main')
+              .empty()
+              .append(tpl);
             Bus.emit('xapp:cross:main');
             Bus.emit('xapp:cross', null, browsing_identity, cross, read_only, cat, !!accept);
           });
