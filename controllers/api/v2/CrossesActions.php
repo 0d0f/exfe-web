@@ -22,7 +22,6 @@ class CrossesActions extends ActionController {
 
 
     public function doGetCrossByInvitationToken() {
-        // @todo: REVOKED身份合并后状态不变
         // load models
         $hlpCheck    = $this->getHelperByName('check');
         $hlpCross    = $this->getHelperByName('cross');
@@ -39,6 +38,7 @@ class CrossesActions extends ActionController {
         $acsToken    = trim($_POST['cross_access_token']);
         $invToken    = trim($_POST['invitation_token']);
         $invitation  = null;
+        $usInvToken  = false;
         if ($acsToken) {
             $crossToken = $modCross->getCrossAccessToken($acsToken);
             if ($crossToken
@@ -53,6 +53,7 @@ class CrossesActions extends ActionController {
         }
         if (!$invitation && $invToken) {
             $invitation = $modExfee->getRawInvitationByToken($invToken);
+            $usInvToken = !!$invitation;
         }
         // 受邀 token 存在
         if ($invitation && $invitation['state'] !== 4) {
@@ -112,9 +113,15 @@ class CrossesActions extends ActionController {
             if (!$user_id
              && $invitation['valid']
              && isset($user_infos['CONNECTED'])) {
-                $result['authorization'] = $modUser->rawSignin(
-                    $user_infos['CONNECTED'][0]['user_id']
-                );
+                if ($usInvToken) {
+                    $result['authorization'] = $modUser->rawSignin(
+                        $user_infos['CONNECTED'][0]['user_id']
+                    );
+                } else {
+                    $result['browsing_identity'] = $modIdentity->getIdentityById(
+                        $invitation['identity_id']
+                    );
+                }
                 $result['read_only'] = false;
                 apiResponse($result);
             }
