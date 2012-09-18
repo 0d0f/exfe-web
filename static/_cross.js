@@ -1945,7 +1945,7 @@ define(function (require, exports, module) {
             );
             $('#conversation-form').show();
         }
-        $('.conversation-timeline').html();
+        $('.conversation-timeline').html('');
         $('.cross-conversation').slideDown(233);
         Timeline = timeline;
         for (var i = Timeline.length - 1; i >= 0; i--) {
