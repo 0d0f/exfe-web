@@ -68,7 +68,7 @@ class CrossesActions extends ActionController {
                 if (!$acsToken) {
                     $crossAccessToken = $modCross->generateCrossAccessToken(
                         $invitation['cross_id'], $invitation['identity_id'],
-                        $modUser->getUserIdByIdentityId($invitation['identity_id']);
+                        $modUser->getUserIdByIdentityId($invitation['identity_id'])
                     );
                     if ($crossAccessToken) {
                         $result['cross_access_token'] = $crossAccessToken;
