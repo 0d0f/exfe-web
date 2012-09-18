@@ -384,17 +384,30 @@ class UserModels extends DataModel {
                             // get other identities of current connecting user {
                             if ($current_user_id
                              && $current_user_id !== $curToken['data']['user_id']) {
-                                $current_user = $this->getUserById($current_user_id);
+                                $current_user = $this->getUserById(
+                                    $current_user_id, false, 0
+                                );
                                 if ($current_user && $current_user->identities) {
-                                    $rtResult['mergeable_user'] = $current_user;
-                                    // updated token {
-                                    $curToken['data']['merger_info'] = [
-                                        'mergeable_user' => $current_user,
-                                        'created_time'   => time(),
-                                        'updated_time'   => time(),
-                                    ];
-                                    $hlpExfeAuth->updateToken($token, $curToken['data']);
-                                    // }
+                                    foreach ($current_user->identities as $iI => $iItem) {
+                                        if ($iItem->status !== 'CONNECTED'
+                                         && $iItem->status !== 'REVOKED') {
+                                            unset($current_user->identities[$iI]);
+                                        }
+                                    }
+                                    $current_user->identities = array_merge(
+                                        $current_user->identities
+                                    );
+                                    if ($current_user->identities) {
+                                        $rtResult['mergeable_user'] = $current_user;
+                                        // updated token {
+                                        $curToken['data']['merger_info'] = [
+                                            'mergeable_user' => $current_user,
+                                            'created_time'   => time(),
+                                            'updated_time'   => time(),
+                                        ];
+                                        $hlpExfeAuth->updateToken($token, $curToken['data']);
+                                        // }
+                                    }
                                 }
                             }
                             // }
