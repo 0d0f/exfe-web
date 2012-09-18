@@ -565,7 +565,7 @@ class UserModels extends DataModel {
         if (!$user_id || !$identity_id || !$status) {
             return null;
         }
-        if ($status === 3) {
+        if ($status === 3 || $status === 4) {
             $this->query(
                 "UPDATE `user_identity`
                  SET    `status`     = 1,
