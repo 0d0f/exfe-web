@@ -102,8 +102,7 @@ class UserModels extends DataModel {
         $dbResult = $this->getRow(
             "SELECT `userid` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `status` = 3"
         );
-        $user_id = intval($dbResult["userid"]);
-        return $user_id ?: null;
+        return $dbResult && ($user_id = (int) $dbResult['userid']) ? $user_id : null;
     }
 
 
@@ -291,11 +290,12 @@ class UserModels extends DataModel {
             return null;
         }
         // get ready
-        $result      = ['user_id' => $user_id, 'token' => ''];
+        $result      = ['user_id' => $user_id];
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         // case provider
         switch ($identity->provider) {
             case 'email':
+                $result['token'] = '';
                 // get current token
                 $resource  = ['token_type'   => 'verification_token',
                               'action'       => $action,
@@ -336,7 +336,13 @@ class UserModels extends DataModel {
                 }
                 break;
             case 'twitter':
-                // @todo by @leaskh
+                $hlpOAuth = $this->getHelperByName('OAuth');
+                $urlOauth = $hlpOAuth->getTwitterRequestToken();
+                if ($urlOauth) {
+                    $result['url'] = $urlOauth;
+                    return $result;
+                }
+                $hlpOAuth->resetSession();
         }
         // return
         return null;
@@ -345,7 +351,6 @@ class UserModels extends DataModel {
 
     public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
-        print_r($curToken);
         if (($curToken = $hlpExfeAuth->getToken($token))
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
@@ -354,31 +359,53 @@ class UserModels extends DataModel {
                           'identity_id' => $curToken['data']['identity_id']];
             switch ($curToken['data']['action']) {
                 case 'VERIFY':
-                    // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
+                    // get current connecting user id
+                    $current_user_id = $this->getUserIdByIdentityId(
+                        $curToken['data']['identity_id']
+                    );
+                    // connect identity id to new user id
                     $stResult = $this->setUserIdentityStatus(
                         $curToken['data']['user_id'],
                         $curToken['data']['identity_id'], 3
                     );
+                    // success
                     if ($stResult) {
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );
                         if ($siResult) {
-                            if ($siResult['password']) {
-                                $hlpExfeAuth->expireAllTokens($resource);
-                                $nextAction = 'VERIFIED';
-                            } else {
-                                $hlpExfeAuth->refreshToken($token, 233);
-                                $nextAction = 'INPUT_NEW_PASSWORD';
-                            }
-                            return [
+                            $rtResult = [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
                                 'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
                                 'token_type'  => $curToken['data']['action'],
-                                'action'      => $nextAction,
                             ];
+                            // get other identities of current connecting user {
+                            if ($current_user_id
+                             && $current_user_id !== $curToken['data']['user_id']) {
+                                $current_user = $this->getUserById($current_user_id);
+                                if ($current_user && $current_user->identities) {
+                                    $rtResult['mergeable_user'] = $current_user;
+                                    // updated token {
+                                    $curToken['data']['merger_info'] = [
+                                        'mergeable_user' => $current_user,
+                                        'created_time'   => time(),
+                                        'updated_time'   => time(),
+                                    ];
+                                    $hlpExfeAuth->updateToken($token, $curToken['data']);
+                                    // }
+                                }
+                            }
+                            // }
+                            if ($siResult['password']) {
+                                $hlpExfeAuth->expireAllTokens($resource);
+                                $rtResult['action'] = 'VERIFIED';
+                            } else {
+                                $hlpExfeAuth->refreshToken($token, 233);
+                                $rtResult['action'] = 'INPUT_NEW_PASSWORD';
+                            }
+                            return $rtResult;
                         }
                     }
                     break;
@@ -426,14 +453,16 @@ class UserModels extends DataModel {
                 $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $siResult = $this->rawSignin($curToken['data']['user_id']);
                 $hlpExfeAuth->expireAllTokens($resource);
-                return array(
-                    'user_id'     => $siResult['user_id'],
-                    'token'       => $siResult['token'],
-                    'identity_id' => $curToken['data']['identity_id'],
-                    'action'      => $curToken['data']['action'],
-                );
+                $siResult = $this->rawSignin($curToken['data']['user_id']);
+                if ($siResult) {
+                    return [
+                        'user_id'     => $siResult['user_id'],
+                        'token'       => $siResult['token'],
+                        'identity_id' => $curToken['data']['identity_id'],
+                        'action'      => $curToken['data']['action'],
+                    ];
+                }
             }
         }
         return null;
@@ -505,28 +534,17 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserIdByToken($token) {
+    public function getUserToken($token) {
         if ($token) {
             $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
             $result = $hlpExfeAuth->getToken($token);
             if ($result
              && $result['data']['token_type'] === 'user_token'
              && !$result['is_expire']) {
-                return (int) $result['data']['user_id'];
+                return $result;
             }
         }
-        return 0;
-    }
-
-
-    public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
-        if (!$user_id) {
-            return false;
-        }
-        $passwdInDb = $this->getUserPasswdByUserId($user_id);
-        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-        return $password === $passwdInDb['encrypted_password']
-            || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
+        return null;
     }
 
 
@@ -727,3 +745,15 @@ class UserModels extends DataModel {
     }
 
 }
+
+
+
+// public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
+//     if (!$user_id) {
+//         return false;
+//     }
+//     $passwdInDb = $this->getUserPasswdByUserId($user_id);
+//     $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
+//     return $password === $passwdInDb['encrypted_password']
+//         || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
+// }
