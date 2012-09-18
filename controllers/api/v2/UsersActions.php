@@ -62,7 +62,7 @@ class UsersActions extends ActionController {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
-        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token'], [], true);
         if ($result['check']) {
             if (!$result['fresh']) {
                 apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
@@ -75,19 +75,31 @@ class UsersActions extends ActionController {
         $modExfeAuth = $this->getModelByName('ExfeAuth');
         $modUser     = $this->getModelByName('User');
         // collecting post data
-        if (!($strBsToken = trim($_POST['browsing_identity_token']))) {
+        if (($strBsToken = trim($_POST['browsing_identity_token']))) {
+            // get browsing token
+            if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
+             || $objBsToken['is_expire']) {
+                apiError(400, 'error_browsing_identity_token', '');
+            }
+            // check fresh
+            switch ($objBsToken['data']['token_type']) {
+                case 'user_token':
+                    $last_authenticate = $objBsToken['data']['last_authenticate'];
+                    break;
+                case 'cross_access_token':
+                    $last_authenticate = $objBsToken['data']['updated_time'];
+                    break;
+                default:
+                    apiError(400, 'error_browsing_identity_token', '');
+            }
+            if (time() - $last_authenticate > 60 * 15) { // in 15 mins
+                apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
+            }
+            $fromUserId = $objBsToken['data']['user_id'];
+        } else if ($result['token_info']['data']['merger_info']) {
+            $fromUserId = $result['token_info']['data']['merger_info']['mergeable_user']->id;
+        } else {
             apiError(400, 'no_browsing_identity_token', '');
-        }
-        // get browsing token
-        if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
-         || ($objBsToken['data']['token_type'] !== 'user_token'
-          && $objBsToken['data']['token_type'] !== 'cross_access_token')
-         || $objBsToken['is_expire']) {
-            apiError(400, 'error_browsing_identity_token', '');
-        }
-        // check fresh
-        if (time() - $objBsToken['data']['last_authenticate'] > 60 * 15) { // in 15 mins
-            apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
         }
         // get browsing identity ids
         $bsIdentityIds = @json_decode($_POST['identity_ids']);
@@ -95,7 +107,7 @@ class UsersActions extends ActionController {
             apiError(400, 'no_identity_ids', '');
         }
         // get from user
-        $fromUser = $modUser->getUserById($objBsToken['data']['user_id'], false, 0);
+        $fromUser = $modUser->getUserById($fromUserId, false, 0);
         if (!$fromUser) {
             apiError(400, 'error_user_status', '');
         }

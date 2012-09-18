@@ -2,7 +2,7 @@
 
 class CheckHelper extends ActionController {
 
-    function isAPIAllow($api, $token, $args = array()) {
+    function isAPIAllow($api, $token, $args = array(), $withTokenInfo = false) {
         $userData     = $this->getModelByName('user');
         $identityData = $this->getModelByName('identity');
         $exfeeData    = $this->getModelByName('exfee');
@@ -119,13 +119,17 @@ class CheckHelper extends ActionController {
             case 'user_signout':
             case 'user_edit':
             case 'user_regdevice':
-                return [
+                $rtResult = [
                     'check' => true,
                     'uid'   => $uid,
                     'fresh' => time() - $objToken['data']['last_authenticate'] <= 60 * 15 // in 15 mins
-                ];
+                ]
+                if ($withTokenInfo) {
+                    $rtResult['token_info'] = $objToken;
+                }
+                return $rtResult;
         }
-        return array("check"=>false);
+        return ['check' => false];
     }
 
 }
