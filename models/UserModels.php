@@ -266,7 +266,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0) {
+    public function verifyIdentity($identity, $action, $user_id = 0, $args = null) {
         // basic check
         if (!$identity || !$action) {
             return null;
@@ -300,12 +300,13 @@ class UserModels extends DataModel {
                 $resource  = ['token_type'   => 'verification_token',
                               'action'       => $action,
                               'identity_id'  => $identity->id];
-                $data      = ['token_type'   => 'verification_token',
-                              'action'       => $action,
-                              'user_id'      => $user_id,
-                              'identity_id'  => $identity->id,
+                $data      = $resource
+                           + ['user_id'      => $user_id,
                               'created_time' => time(),
                               'updated_time' => time()];
+                if ($args) {
+                    $data['args'] = $args;
+                }
                 $expireSec = 60 * 24 * 2; // 2 days
                 $curTokens = $hlpExfeAuth->findToken($resource);
                 if ($curTokens && is_array($curTokens)) {
@@ -337,7 +338,8 @@ class UserModels extends DataModel {
                 break;
             case 'twitter':
                 $hlpOAuth = $this->getHelperByName('OAuth');
-                $urlOauth = $hlpOAuth->getTwitterRequestToken();
+                $workflow = $args ? ['callback' => ['args' => $args]] : [];
+                $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
                 if ($urlOauth) {
                     $result['url'] = $urlOauth;
                     return $result;
@@ -381,6 +383,9 @@ class UserModels extends DataModel {
                                 'token'       => $siResult['token'],
                                 'token_type'  => $curToken['data']['action'],
                             ];
+                            if (@$curToken['data']['args']) {
+                                $rtResult['args'] = $curToken['data']['args'];
+                            }
                             // get other identities of current connecting user {
                             if ($current_user_id
                              && $current_user_id !== $curToken['data']['user_id']) {
