@@ -113,7 +113,11 @@ class CrossModels extends DataModel {
                 $cross_updated['description'] = $updated;
             }
 
-            if ($cross_time && $old_cross && $old_cross->time->origin !== $cross->time->origin) {
+            if ($cross_time
+             && $old_cross
+             && ($old_cross->time->origin         !== $cross->time->origin
+              || $old_cross->time->begin_at->date !== $cross->time->begin_at->date
+              || $old_cross->time->begin_at->time !== $cross->time->begin_at->time)) {
                 array_push($updatefields, "`begin_at`        = '{$begin_at_time_in_old_format}'");
                 array_push($updatefields, "`date_word`       = '{$cross_time->begin_at->date_word}'");
                 array_push($updatefields, "`time_word`       = '{$cross_time->begin_at->time_word}'");
