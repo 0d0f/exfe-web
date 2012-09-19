@@ -365,13 +365,8 @@ class IdentityModels extends DataModel {
                  WHERE  `identityid` = {$identity_id}
                  AND    `userid`     = {$user_id}"
             );
-            if (!$upResult) {
-                return false;
-            }
-            foreach ($identities as $item) {
-                if ($item['identityid'] !== $identity_id) {
-                    return $this->setIdentityAsDefaultIdentityOfUser($item['identityid'], $user_id);
-                }
+            if ($upResult) {
+                return true;
             }
         }
         return false;
