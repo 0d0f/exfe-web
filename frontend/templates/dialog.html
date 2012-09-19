@@ -311,9 +311,11 @@
           <fieldset>
             <legend>Please enter current password and set new one.</legend>
 
-            <div class="identity">
-              <img class="avatar" src="/img/users/u1x40.png" width="40" height="40" />
-              <span>Steve Exfee</span>
+            <div class="clearfix context-user">
+              <div class="pull-left avatar">
+                <img src="/img/users/u1x40.png" width="40" height="40" />
+              </div>
+              <div class="pull-left username">Steve Exfer</div>
             </div>
 
             <div class="control-group">
@@ -569,10 +571,71 @@
         <button class="pull-right xbtn xbtn-yellow">Yes</button>
         <button class="pull-right xbtn xbtn-white">No</button>
       </div>
-      </div>
     </div>
+  </div>
+  <!--2}}}-->
 
+  <!-- Authorization {{{2-->
+  <div class="modal modal-au" style="position: relative; top: 4650px">
+    <div class="modal-header">
+      <button class="close" data-dismiss="modal">×</button>
+      <h3>Authorization</h3>
+    </div>
+    <div class="modal-main">
+      <div class="modal-body">
+        <div class="shadow title">Authorization</div>
+        <div class="detials">
+          You’re about to change your account details. For security concern, please re-authenticate your identity and set your <span class="x-sign">EXFE</span> password first.
+        </div>
 
+        <div class="clearfix context-user">
+          <div class="pull-left avatar">
+            <img src="/img/users/u1x40.png" alt="" width="40" height="40" />
+          </div>
+          <div class="pull-left username">Steve Exfer</div>
+        </div>
+        <div class="modal-form">
+          <div class="control-group">
+            <label class="control-label" for="password">Password: <span></span></label>
+            <div class="controls">
+              <input type="password" class="input-large" id="password" autocomplete="off" />
+              <i class="help-inline icon16-pass-hide pointer" id="password-eye"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="context-identity">
+          <div class="pull-right avatar">
+            <img src="" alt="" width="40" height="40" />
+            <i class="provider icon16-identity-email"></i>
+          </div>
+          <div class="clearfix dropdown-toggle" data-toggle="dropdown">
+            <div class="pull-left box identity">cfd@exfe.com</div>
+            <ul class="dropdown-menu hide"></ul>
+            <div class="pull-left caret-outer hide"><b class="caret"></b></div>
+          </div>
+        </div>
+        <div class="context-identity switcher">
+          <div class="pull-right avatar">
+            <img src="" alt="" width="40" height="40" />
+            <i class="provider icon16-identity-email"></i>
+          </div>
+          <div class="clearfix dropdown-toggle" data-toggle="dropdown">
+            <div class="pull-left box identity">cfd@exfe.com</div>
+            <ul class="dropdown-menu">
+              <li>
+                <i class="pull-right icon16-identity-email"></i>
+                <span>@cfddream</span>
+              </li>
+            </ul>
+            <div class="pull-left caret-outer hide"><b class="caret"></b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="pull-right xbtn xbtn-blue">Authenticate</button>
+      </div>
     </div>
   </div>
   <!--2}}}-->
