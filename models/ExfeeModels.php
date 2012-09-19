@@ -43,7 +43,7 @@ class ExfeeModels extends DataModel {
                 $eItem['mates']
             );
         }
-        $objExfee->updated_at = $exfee_updated_at;
+        $objExfee->updated_at = $exfee_updated_at . ' +0000';
         $objExfee->summary();
         // return
         return $objExfee;
