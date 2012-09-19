@@ -103,42 +103,6 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doSetDefaultIdentity() {
-        // check signin
-        $checkHelper = $this->getHelperByName('check');
-        $params = $this->params;
-        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
-        if ($result['check']) {
-            $user_id = $result['uid'];
-        } else {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
-        // get models
-        $modUser     = $this->getModelByName('user');
-        $modIdentity = $this->getModelByName('identity');
-        // collecting post data
-        if (!($identity_id = intval($_POST['identity_id']))) {
-            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        if (!($password = $_POST['password'])) {
-            apiError(403, 'no_current_password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
-        }
-        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
-            case 'CONNECTED':
-                if ($modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id)) {
-                    apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
-                }
-                break;
-            default:
-                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
-        }
-        apiError(500, 'failed', '');
-    }
-
-
     public function doGetRegistrationFlag() {
         // get models
         $modUser     = $this->getModelByName('user');
