@@ -254,32 +254,33 @@ class IdentityModels extends DataModel {
             ) . ' LIMIT 1'
         );
         if (intval($curIdentity['id']) > 0) {
-            return intval($curIdentity['id']);
+            $id = intval($curIdentity['id']);
+        } else {
+            // fixed args
+            switch ($provider) {
+                case 'email':
+                    $external_id     = $external_username;
+                    $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
+                    break;
+                case 'twitter':
+                case 'facebook':
+                    break;
+                default:
+                    return null;
+            }
+            // insert new identity into database
+            $dbResult = $this->query(
+                "INSERT INTO `identities` SET
+                 `provider`          = '{$provider}',
+                 `external_identity` = '{$external_id}',
+                 `created_at`        = NOW(),
+                 `name`              = '{$name}',
+                 `bio`               = '{$bio}',
+                 `avatar_file_name`  = '{$avatar_filename}',
+                 `external_username` = '{$external_username}'"
+            );
+            $id = intval($dbResult['insert_id']);
         }
-        // fixed args
-        switch ($provider) {
-            case 'email':
-                $external_id     = $external_username;
-                $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
-                break;
-            case 'twitter':
-            case 'facebook':
-                break;
-            default:
-                return null;
-        }
-        // insert new identity into database
-        $dbResult = $this->query(
-            "INSERT INTO `identities` SET
-             `provider`          = '{$provider}',
-             `external_identity` = '{$external_id}',
-             `created_at`        = NOW(),
-             `name`              = '{$name}',
-             `bio`               = '{$bio}',
-             `avatar_file_name`  = '{$avatar_filename}',
-             `external_username` = '{$external_username}'"
-        );
-        $id = intval($dbResult['insert_id']);
         // update user information
         if ($id) {
             if ($user_id) {
