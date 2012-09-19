@@ -75,7 +75,7 @@ class UserModels extends DataModel {
                         $intLength = array_push($user->identities, $identity);
                         // catch default identity
                         if ($identity->id === intval($rawUser['default_identity'])) {
-                            $user->default_identity = $user->identities[$intLength];
+                            $user->default_identity = $user->identities[$intLength - 1];
                         }
                     }
                     $user->default_identity = $user->default_identity ?: $user->identities[0];
