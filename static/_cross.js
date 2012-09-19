@@ -2235,7 +2235,7 @@ define(function (require, exports, module) {
         window.User = Signin ? Store.get('user') : null;
         if (User) {
             Api.setToken(Signin.token);
-            curIdentity = ExfeUtilities.clone(User.default_identity);
+            curIdentity = ExfeUtilities.clone(User.identities[0]);
         }
 
         // init moment
@@ -2285,7 +2285,7 @@ define(function (require, exports, module) {
             window.User = Signin ? Store.get('user') : null;
             if (User) {
                 Api.setToken(Signin.token);
-                curIdentity = ExfeUtilities.clone(User.default_identity);
+                curIdentity = ExfeUtilities.clone(User.identities[0]);
                 ShowHost();
                 fixExfee();
             }
