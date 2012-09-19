@@ -1,3 +1,6 @@
+* v0.0.5 23:23:30 09/19/2012
+  - `user.default_identity`
+
 * v0.0.4 00:16:54 09/14/2012
   + user-token 过期时
     清除 session.authorization 和 session.user
