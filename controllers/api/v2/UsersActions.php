@@ -182,6 +182,7 @@ class UsersActions extends ActionController {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
+            case 'VERIFYING':
             case 'CONNECTED':
             case 'REVOKED':
                 if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) {
