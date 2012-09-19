@@ -480,8 +480,8 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getExfeeIdByUserid($userid,$updated_at="") {
-        $sql="select identityid from user_identity where userid=$userid;";
+    public function getExfeeIdByUserid($userid,$updated_at='') {
+        $sql="SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid} AND ( `status` = 3 OR `status` = 4 );";
         $identities=$this->getColumn($sql);
         if($updated_at!="")
             $updated_sql="and exfee_updated_at>'$updated_at'";
