@@ -3652,12 +3652,12 @@ input[type="submit"].btn.btn-mini {
 }
 
 .break-all {
+  -webkit-hyphens: auto;
+     -moz-hyphens: auto;
+          hyphens: auto;
   -ms-word-break: break-all;
       word-break: break-all;
   word-break: break-word;
-  -moz-hyphens: auto;
-       hyphens: auto;
-  -webkit-hyphens: auto;
 }
 
 .text-overflow-clip {
@@ -3874,8 +3874,7 @@ img:-moz-broken {
   padding-right: 28px;
 }
 
-.modal-body .disabled {
-  color: #7f7f7f;
+.modal-body .box {
   text-align: center;
   border: 1px solid #d5d5d5;
 }
@@ -3899,6 +3898,97 @@ img:-moz-broken {
 .modal-body p {
   padding-bottom: 10px;
   line-height: 20px;
+}
+
+.modal-body .context-user {
+  margin: 24px 0 16px 50px;
+}
+
+.modal-body .context-user .username {
+  margin: 16px 0 0 15px;
+  font-size: 18px;
+  line-height: 24px;
+  color: #7f7f7f;
+}
+
+.modal-body .context-identity {
+  margin: 10px 0 0 10px;
+}
+
+.modal-body .context-identity .identity {
+  width: 277px;
+  height: 28px;
+  margin-top: 10px;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.modal-body .switcher .identity {
+  width: 258px;
+}
+
+.modal-body .switcher .caret-outer {
+  display: block;
+  height: 15px;
+  padding: 12px 4px 0;
+  margin: 10px 0 0 1px;
+  overflow: hidden;
+  text-align: center;
+  cursor: pointer;
+  background-color: #e6e6e6;
+  background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -o-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.modal-body .switcher .dropdown-toggle {
+  position: relative;
+  width: 279px;
+}
+
+.modal-body .switcher .dropdown-menu {
+  width: 100%;
+  color: #4c4c4c;
+  background-color: #f2f2f2;
+  background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -o-linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: linear-gradient(top, #fafafa, #e6e6e6);
+  background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #fff;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#e6e6e6', GradientType=0);
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.modal-body .switcher .dropdown-menu ul {
+  margin: 0;
+  list-style: none;
+}
+
+.modal-body .switcher .dropdown-menu li {
+  height: 24px;
+  padding: 0 3px;
+  font-style: oblique;
+  cursor: pointer;
+}
+
+.modal-body .switcher .dropdown-menu .active {
+  color: #191919;
+  background-color: rgba(127, 127, 127, 0.08);
 }
 
 .modal-content {
@@ -4038,6 +4128,7 @@ img:-moz-broken {
 }
 
 .modal-form .control-label {
+  padding-left: 6px;
   margin-bottom: 0;
   color: #797979;
 }
@@ -6025,6 +6116,10 @@ body {
   color: #1175a5;
 }
 
+#app-tmp > div {
+  outline: none;
+}
+
 .modal-id .modal-main {
   min-height: 271px;
 }
@@ -6150,85 +6245,6 @@ body {
   font-style: normal;
 }
 
-.modal-fp .dropdown-toggle {
-  position: relative;
-  width: 235px;
-  margin-top: 15px;
-  margin-bottom: 12px;
-  margin-left: 34px;
-}
-
-.modal-fp .dropdown-menu {
-  width: 100%;
-  color: #4c4c4c;
-  background-color: #f2f2f2;
-  background-image: -moz-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -o-linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: linear-gradient(top, #fafafa, #e6e6e6);
-  background-image: -ms-linear-gradient(top, #fafafa, #e6e6e6);
-  background-repeat: repeat-x;
-  border: 1px solid #fff;
-  -webkit-border-radius: 0;
-     -moz-border-radius: 0;
-          border-radius: 0;
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fafafa', endColorstr='#e6e6e6', GradientType=0);
-  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.modal-fp .dropdown-menu ul {
-  margin: 0;
-  list-style: none;
-}
-
-.modal-fp .dropdown-menu li {
-  height: 24px;
-  padding: 0 3px;
-  font-style: oblique;
-  cursor: pointer;
-}
-
-.modal-fp .dropdown-menu .active {
-  color: #191919;
-  background-color: rgba(127, 127, 127, 0.08);
-}
-
-.modal-fp .caret-outer {
-  height: 15px;
-  padding: 11px 4px 0;
-  margin-top: -1px;
-  margin-left: 2px;
-  overflow: hidden;
-  text-align: center;
-  cursor: pointer;
-  background-color: #e6e6e6;
-  background-image: -moz-linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: -ms-linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: -o-linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-image: -webkit-linear-gradient(255deg, #fafafa, #e6e6e6);
-  background-repeat: repeat-x;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-}
-
-.modal-fp .identity {
-  width: 213px;
-  height: 26px;
-  font-size: 18px;
-  line-height: 26px;
-}
-
-.modal-fp .user-identity {
-  margin-top: 3px;
-  margin-right: 25px;
-}
-
 .modal-ve .identity {
   width: 271px;
   height: 26px;
@@ -6280,52 +6296,48 @@ body {
   line-height: 26px;
 }
 
-.modal-sp .identity,
-.modal-cp .identity,
-.modal-bi .identity,
-.modal-ro .identity {
-  position: relative;
-  display: table;
-  padding-top: 10px;
-  margin-bottom: 16px;
-  margin-left: 50px;
-  font-size: 18px;
-  font-style: normal;
-  line-height: 24px;
-  color: #797979;
-}
+/*
+// set password
+.modal-sp,
+// change password
+.modal-cp,
+// browsing identity
+.modal-bi,
+.modal-ro {
+  .identity {
+    display: table;
+    position: relative;
+    //margin-left: 60px;
+    margin-left: 50px;
+    margin-bottom: 16px;
+    padding-top: 10px;
+    font-size: 18px;
+    line-height: 24px;
+    font-style: normal;
+    color: #797979;
 
-.modal-sp .identity .avatar,
-.modal-cp .identity .avatar,
-.modal-bi .identity .avatar,
-.modal-ro .identity .avatar {
-  position: relative;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  margin-right: 15px;
-}
+    .avatar {
+      position: relative;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      margin-right: 15px;
+    }
 
-.modal-sp .identity > span,
-.modal-cp .identity > span,
-.modal-bi .identity > span,
-.modal-ro .identity > span {
-  vertical-align: bottom;
-}
+    > span {
+      vertical-align: bottom;
+    }
+  }
 
-.modal-sp .control-group,
-.modal-cp .control-group,
-.modal-bi .control-group,
-.modal-ro .control-group {
-  padding-left: 10px;
-}
+  .control-group {
+    padding-left: 10px;
+  }
 
-.modal-sp .control-label,
-.modal-cp .control-label,
-.modal-bi .control-label,
-.modal-ro .control-label {
-  padding-left: 6px;
+  .control-label {
+    padding-left: 6px;
+  }
 }
+*/
 
 .modal-bi .xbtn-go {
   margin-left: 18px;
@@ -6397,37 +6409,6 @@ body {
   color: #7f7f7f;
   cursor: pointer;
 }
-
-/*
-.modal-rsp {
-  .identity-name {
-    display: inline-block;
-    width: 273px;
-    height: 26px;
-    margin-left: 10px;
-    margin-top: 12px;
-    line-height: 26px;
-    font-size: 18px;
-    font-style: oblique;
-    text-align: center;
-    text-decoration: none;
-    color: #4c4c4c;
-    border: 1px solid rgba(127, 127, 127, .15);
-    #gradient > .directional(#fafafa, #e6e6e6, 270deg);
-    .box-shadow(0 1px 1px rgba(255, 255, 255, 1));
-
-    &:hover,
-    &:active {
-      color: #191919;
-      #gradient > .directional(#fafafa, #d5e8f2, 270deg);
-    }
-  }
-
-  .user-identity {
-    margin-right: 5px;
-  }
-}
-*/
 
 .modal-uploader {
   -webkit-user-select: none;
@@ -6696,6 +6677,19 @@ body {
   margin: 0 0 15px 5px;
 }
 
+.modal-au .why {
+  margin-top: 15px;
+  font-size: 11px;
+  line-height: 14px;
+  color: #333333;
+}
+
+.modal-au .answer {
+  font-size: 11px;
+  line-height: 14px;
+  color: #7f7f7f;
+}
+
 html,
 body {
   height: 100%;
@@ -6912,12 +6906,12 @@ body {
   position: relative;
   opacity: 0;
   filter: alpha(opacity=0);
+  -webkit-animation-fill-mode: forwards;
   -webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
      -moz-transition: -moz-transform 0.5s ease, opacity 0.5s ease;
       -ms-transition: -ms-transform 0.5s ease, opacity 0.5s ease;
        -o-transition: -o-transform 0.5s ease, opacity 0.5s ease;
           transition: transform 0.5s ease, opacity 0.5s ease;
-  -webkit-animation-fill-mode: forwards;
 }
 
 .x-home .page-main .exfe-init {
@@ -6949,12 +6943,12 @@ body {
 .x-home .page-main .exfe-scaleOut {
   opacity: 1;
   filter: alpha(opacity=100);
+  -webkit-animation-fill-mode: forwards;
   -webkit-transition: opacity 144ms ease-in;
      -moz-transition: opacity 144ms ease-in;
       -ms-transition: opacity 144ms ease-in;
        -o-transition: opacity 144ms ease-in;
           transition: opacity 144ms ease-in;
-  -webkit-animation-fill-mode: forwards;
 }
 
 .x-home .page-main .circle {
@@ -7246,10 +7240,10 @@ body {
      -moz-animation-name: bounceOut;
        -o-animation-name: bounceOut;
           animation-name: bounceOut;
-  -moz-animation-fill-mode: both;
-    -o-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .fadeIn .c-ctx > span {
@@ -7261,10 +7255,10 @@ body {
      -moz-animation-name: fadeIn;
        -o-animation-name: fadeIn;
           animation-name: fadeIn;
-  -moz-animation-fill-mode: both;
-    -o-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .fadeOut .c-ctx > span {
@@ -7276,10 +7270,10 @@ body {
      -moz-animation-name: fadeOut;
        -o-animation-name: fadeOut;
           animation-name: fadeOut;
-  -moz-animation-fill-mode: both;
-    -o-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .animated {
@@ -7287,10 +7281,10 @@ body {
      -moz-animation-duration: 610ms;
        -o-animation-duration: 610ms;
           animation-duration: 610ms;
-  -moz-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
        -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .bounceIn {
@@ -7302,10 +7296,10 @@ body {
      -moz-animation-name: bounceIn;
        -o-animation-name: bounceIn;
           animation-name: bounceIn;
-  -moz-animation-fill-mode: both;
-    -o-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .circle.fadeIn .c-inner {
@@ -7317,10 +7311,10 @@ body {
      -moz-animation-name: bounceIn;
        -o-animation-name: bounceIn;
           animation-name: bounceIn;
-  -moz-animation-fill-mode: both;
-    -o-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .circle.fadeOut .c-inner {
@@ -7332,10 +7326,10 @@ body {
      -moz-animation-name: bounceOut;
        -o-animation-name: bounceOut;
           animation-name: bounceOut;
-  -moz-animation-fill-mode: both;
-    -o-animation-fill-mode: both;
-       animation-fill-mode: both;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
+          animation-fill-mode: both;
 }
 
 .x-home .page-main .c-ctx {
@@ -9114,7 +9108,14 @@ body {
 }
 
 .settings-panel .identities-trash .trash-message {
+  display: table;
   width: 95px;
+  height: 28px;
+}
+
+.settings-panel .identities-trash .trash-message .draged,
+.settings-panel .identities-trash .trash-message .removed {
+  vertical-align: middle;
 }
 
 .settings-panel .identities-trash.over {
@@ -9128,7 +9129,7 @@ body {
 }
 
 .settings-panel .identities-trash.over .removed {
-  display: inline;
+  display: table-cell;
 }
 
 .crosses {
@@ -9545,16 +9546,16 @@ body {
       -ms-animation-timing-function: ease;
        -o-animation-timing-function: ease;
           animation-timing-function: ease;
-  -ms-animation-fill-mode: both;
-  backface-visibility: hidden;
   -webkit-animation-fill-mode: both;
+     -moz-animation-fill-mode: both;
+      -ms-animation-fill-mode: both;
+       -o-animation-fill-mode: both;
           animation-fill-mode: both;
   -webkit-backface-visibility: hidden;
-  -moz-animation-fill-mode: both;
-  -moz-backface-visibility: hidden;
-    -o-backface-visibility: hidden;
-   -ms-backface-visibility: hidden;
-  -o-animation-fill-mode: both;
+     -moz-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+       -o-backface-visibility: hidden;
+          backface-visibility: hidden;
 }
 
 .newbie.nbg-0:before {
