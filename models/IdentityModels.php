@@ -367,7 +367,7 @@ class IdentityModels extends DataModel {
         if (!$identity_id || !$user_id) {
             return false;
         }
-        $identities = $this->getRow(
+        $identities = $this->getAll(
             "SELECT * FROM `user_identity` WHERE `userid` = {$user_id}"
         );
         if (count($identities) > 1) {
@@ -379,7 +379,7 @@ class IdentityModels extends DataModel {
             if (!$upResult) {
                 return false;
             }
-            foreach ($identities as $item){
+            foreach ($identities as $item) {
                 if ($item['identityid'] !== $identity_id) {
                     return $this->setIdentityAsDefaultIdentityOfUser($item['identityid'], $user_id);
                 }
