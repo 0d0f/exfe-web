@@ -290,7 +290,14 @@
       }
 
       .trash-message {
+        display: table;
         width: 95px;
+        height: 28px;
+
+        .draged,
+        .removed {
+          vertical-align: middle;
+        }
       }
 
       &.over {
@@ -303,7 +310,7 @@
         }
 
         .removed {
-          .show-inline;
+          display: table-cell;
         }
       }
     }
