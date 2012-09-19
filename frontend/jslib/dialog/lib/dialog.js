@@ -1,4 +1,4 @@
-define('dialog', [], function (require, exports, module) {
+define('dialog', function (require, exports, module) {
   /**
    *
    * Dependence:

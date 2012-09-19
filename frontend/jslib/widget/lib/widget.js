@@ -1,4 +1,4 @@
-define('widget', [], function (require, exports, module) {
+define('widget', function (require, exports, module) {
 
   // Widget
   // ------
