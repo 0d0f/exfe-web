@@ -26,6 +26,7 @@ addScript([
     ['handlebarsext', '0.0.1'],
     ['jqfocusend',    '0.0.2'],
     ['jqoffset',      '0.0.2'],
+    ['jqdndsortable', '0.0.1'],
 ]);
 
 echo "  <script>\n";
@@ -34,7 +35,7 @@ echo "  </script>\n";
 
 addScript([
     ['eftime',        '0.0.1'],
-    ['api',           '0.0.1'],
+    ['api',           '0.0.2'],
     ['dialog',        '0.0.2'],
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
@@ -46,13 +47,13 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.2'],
-    ['profile',       '0.0.3'],
+    ['profile',       '0.0.4'],
 ]);
 
 // cross
 addScript([
     ['placepanel',    '0.0.1'],
-    ['user',          '0.0.4'],
+    ['user',          '0.0.5'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
@@ -60,7 +61,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 addScript([
     ['lightsaber',    '0.0.4'],
     ['middleware',    '0.0.4'],
-    ['routes',        '0.0.4'],
+    ['routes',        '0.0.5'],
     ['app',           '0.0.3'],
 ]);
 
