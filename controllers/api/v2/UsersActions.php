@@ -196,39 +196,6 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doSetDefaultIdentity() {
-        // check signin
-        $checkHelper = $this->getHelperByName('check');
-        $params = $this->params;
-        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
-        if ($result['check']) {
-            if (!$result['fresh']) {
-                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
-            }
-            $user_id = $result['uid'];
-        } else {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
-        // get models
-        $modUser     = $this->getModelByName('user');
-        $modIdentity = $this->getModelByName('identity');
-        // collecting post data
-        if (!($identity_id = intval($_POST['identity_id']))) {
-            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
-            case 'CONNECTED':
-                if ($modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id)) {
-                    apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
-                }
-                break;
-            default:
-                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
-        }
-        apiError(500, 'failed', '');
-    }
-
-
     public function doGetRegistrationFlag() {
         // get models
         $modUser     = $this->getModelByName('user');

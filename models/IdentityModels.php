@@ -287,16 +287,14 @@ class IdentityModels extends DataModel {
                 // load models
                 $hlpUder  = $this->getHelperByName('user');
                 // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name']             = $userInfo['name']             == '' ? $name : $userInfo['name'];
-                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio  : $userInfo['bio'];
-                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id   : $userInfo['default_identity'];
+                $userInfo = $this->getRow("SELECT `name`, `bio` FROM `users` WHERE `id` = {$user_id}");
+                $userInfo['name'] = $userInfo['name'] == '' ? $name : $userInfo['name'];
+                $userInfo['bio']  = $userInfo['bio']  == '' ? $bio  : $userInfo['bio'];
                 $this->query(
                     "UPDATE `users` SET
-                     `name`             = '{$userInfo['name']}',
-                     `bio`              = '{$userInfo['bio']}',
-                     `default_identity` =  {$userInfo['default_identity']}
-                     WHERE `id`         =  {$user_id}"
+                     `name`       = '{$userInfo['name']}',
+                     `bio`        = '{$userInfo['bio']}'
+                     WHERE  `id`  =  {$user_id}"
                 );
                 if ($status === 2) {
                     // welcome and verify user via Gobus {
@@ -354,16 +352,6 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function setIdentityAsDefaultIdentityOfUser($identity_id, $user_id) {
-        if (!$identity_id || !$user_id) {
-            return false;
-        }
-        return $this->query(
-            "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
-        );
-    }
-
-
     public function deleteIdentityFromUser($identity_id, $user_id) {
         if (!$identity_id || !$user_id) {
             return false;
@@ -389,28 +377,29 @@ class IdentityModels extends DataModel {
         return false;
     }
 
-
-    // public function getIdentityByIdFromCache($identity_id) {
-    //     if ($identity_id) {
-    //         $redis = new Redis();
-    //         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-    //         $identity = $redis->HGET('identities', "id:{$identity_id}");
-    //         if ($identity) {
-    //             $identity = json_decode($identity);
-    //         } else {
-    //             $identity = $this->getIdentityById($identity_id);
-    //             if ($identity) {
-    //                 $redis->HSET(
-    //                     'identities', "id:{$identity_id}",
-    //                     json_encode($identity) // @was: json_encode_nounicode
-    //                 );
-    //             }
-    //         }
-    //         if ($identity) {
-    //             return $identity;
-    //         }
-    //     }
-    //     return null;
-    // }
-
 }
+
+
+
+// public function getIdentityByIdFromCache($identity_id) {
+//     if ($identity_id) {
+//         $redis = new Redis();
+//         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+//         $identity = $redis->HGET('identities', "id:{$identity_id}");
+//         if ($identity) {
+//             $identity = json_decode($identity);
+//         } else {
+//             $identity = $this->getIdentityById($identity_id);
+//             if ($identity) {
+//                 $redis->HSET(
+//                     'identities', "id:{$identity_id}",
+//                     json_encode($identity) // @was: json_encode_nounicode
+//                 );
+//             }
+//         }
+//         if ($identity) {
+//             return $identity;
+//         }
+//     }
+//     return null;
+// }
