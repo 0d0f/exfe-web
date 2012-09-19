@@ -1433,8 +1433,10 @@ define(function (require, exports, module) {
                     $('.cross-date').removeAttr('editable');
                     $('.cross-date .show').show();
                     $('.cross-date .edit').hide();
-                    ChangeTime($('.cross-date .edit').val());
-                    AutoSaveCross();
+                    if (oldEditing === 'time') {
+                        ChangeTime($('.cross-date .edit').val());
+                        AutoSaveCross();
+                    }
                 },
                 function() {
                     $('.cross-date').attr('editable', true);
@@ -2181,7 +2183,9 @@ define(function (require, exports, module) {
             id          : Cross.id,
             title       : Cross.title,
             description : Cross.description,
-            time        : Cross.time.origin,
+            time        : Cross.time.origin        + ', '
+                        + Cross.time.begin_at.date + ', '
+                        + Cross.time.begin_at.time,
             place       : {title       : Cross.place.title,
                            description : Cross.place.description},
             background  : Cross.widget[0].image
