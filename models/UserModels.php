@@ -41,17 +41,21 @@ class UserModels extends DataModel {
             $identityStatus = ($identityStatus = intval($identityStatus))
                             ? "`status` = {$identityStatus}" : '(`status` > 1 AND `status` < 5)';
             $rawIdentityIds = $this->getAll(
-                "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
+                "SELECT `identityid`, `status`, `order` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
             );
             // insert identities into user
             if ($rawIdentityIds) {
-                $identity_status = array();
+                $identity_infos = [];
                 foreach ($rawIdentityIds as $i => $item) {
-                    $identity_status[intval($item['identityid'])] = $this->arrUserIdentityStatus[intval($item['status'])];
+                    $identity_infos[(int) $item['identityid']] = [
+                        'status' => $this->arrUserIdentityStatus[(int) $item['status']],
+                        'order'  => (int) $item['status'],
+                    ];
                 }
-                $identityIds = implode(array_keys($identity_status), ', ');
+                $identityIds = implode(array_keys($identity_infos), ', ');
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds}) ORDER BY `id`");
                 if ($identities) {
+                    $sorting_identities = [];
                     foreach ($identities as $i => $item) {
                         $item['id'] = (int) $item['id'];
                         $identity = new Identity(
@@ -60,7 +64,7 @@ class UserModels extends DataModel {
                             '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
-                            $identity_status[$item['id']] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
+                            $identity_infos[$item['id']]['status'] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
@@ -70,9 +74,20 @@ class UserModels extends DataModel {
                         $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
                                                   ?: ($user->avatar_filename
                                                   ?: getDefaultAvatarUrl($identity->name));
-                        $identity->status = $identity_status[$identity->id];
-                        $intLength = array_push($user->identities, $identity);
+                        $identity->status  = $identity_infos[$identity->id]['status'];
+                        if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
+                            $sorting_identities[$identity_infos[$identity->id]['order']] = [];
+                        }
+                        $sorting_identities[$identity_infos[$identity->id]['order']][$identity->id] = $identity;
+
                     }
+                    foreach ($sorting_identities as $siItem) {
+                        foreach ($siItem as $identity) {
+                            $identity->order    = count($user->identities);
+                            $user->identities[] = $identity;
+                        }
+                    }
+                    $user->identities      = array_merge($user->identities);
                     $user->name            = $user->name            ?: $user->identities[0]->name;
                     $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
