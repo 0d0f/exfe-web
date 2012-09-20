@@ -32,9 +32,6 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
-            if (!$result['fresh']) {
-                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
-            }
             $user_id = $result['uid'];
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
