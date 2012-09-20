@@ -196,6 +196,13 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doSortIdentities() {
+        // get models
+
+
+    }
+
+
     public function doGetRegistrationFlag() {
         // get models
         $modUser     = $this->getModelByName('user');
