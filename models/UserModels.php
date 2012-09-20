@@ -50,7 +50,7 @@ class UserModels extends DataModel {
                     $identity_status[intval($item['identityid'])] = $this->arrUserIdentityStatus[intval($item['status'])];
                 }
                 $identityIds = implode(array_keys($identity_status), ', ');
-                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
+                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds}) ORDER BY `id`");
                 if ($identities) {
                     foreach ($identities as $i => $item) {
                         $item['id'] = (int) $item['id'];
