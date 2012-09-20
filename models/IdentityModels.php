@@ -232,8 +232,9 @@ class IdentityModels extends DataModel {
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2) {
+    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false) {
         // collecting new identity informations
+        $user_id           = (int) $user_id;
         $provider          = mysql_real_escape_string(trim($identityDetail['provider']));
         $external_id       = mysql_real_escape_string(trim($identityDetail['external_id']));
         $external_username = mysql_real_escape_string(trim($identityDetail['external_username']));
@@ -297,20 +298,35 @@ class IdentityModels extends DataModel {
                      WHERE  `id`  =  {$user_id}"
                 );
                 if ($status === 2) {
-                    // welcome and verify user via Gobus {
-                    if ($provider === 'email') {
-                        $hlpGobus = $this->getHelperByName('gobus');
-                        $objIdentity = $this->getIdentityById($id);
-                        $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
-                        if ($vfyResult) {
+                    if ($user_id === $hlpUder->getUserIdByIdentityId($id) {
+                        return null;
+                    }
+                    // verify identity
+                    $objIdentity = $this->getIdentityById($id);
+                    $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
+                    if ($vfyResult) {
+                        if (isset($vfyResult['url']) && $withVerifyInfo) {
+                            return [
+                                'identity_id'  => $id,
+                                'verification' => ['url' => $vfyResult['url']],
+                            ];
+                        } else if (isset($vfyResult['token'])) {
+                            // welcome and verify user via Gobus {
+                            $hlpGobus = $this->getHelperByName('gobus');
                             $hlpGobus->send('user', 'Welcome', [
                                 'To_identity' => $objIdentity,
                                 'User_name'   => $userInfo['name'],
                                 'Token'       => $vfyResult['token'],
                             ]);
+                            // }
+                            if ($withVerifyInfo) {
+                                return [
+                                    'identity_id'  => $id,
+                                    'verification' => ['token' => $vfyResult['token']],
+                                ];
+                            }
                         }
                     }
-                    // }
                 } else {
                     $hlpUder->setUserIdentityStatus($user_id, $id, $status);
                 }
