@@ -250,7 +250,7 @@ define('eftime', function (require, exports, module) {
     // 3 days <= x <= 30 days
     else if (3 <= days && days <= 30) {
       day = sdate.getDay();
-      var thisDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate() + days + 1)
+      var thisDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate() + days)
         , weekFirstDay = new Date(sdate.getFullYear(), sdate.getMonth(), sdate.getDate() + (settings.weekStartAt - day))
         , nextWeekFirstDay
         , nextWeekLastDay;
