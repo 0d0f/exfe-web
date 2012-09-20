@@ -49,9 +49,15 @@ class UsersActions extends ActionController {
         if (!($provider = trim($_POST['provider']))) {
             apiError(400, 'no_provider', '');
         }
+        // adding
         if (($identity_id = $modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username], $user_id))
-         && ($objIdentity = $modIdentity->getIdentityById($identity_id, $user_id))) {
-            apiResponse(['identity' => $objIdentity]);
+         && ($adResult    = $modIdentity->getIdentityById($identity_id, $user_id, 2, true))) {
+            $rtResult     = ['identity' => $adResult['identity_id'],
+                             'action'   => 'VERIFYING'];
+            if (isset($adResult['verification']['url'])) {
+                $rtResult['url'] = $adResult['verification']['url'];
+            }
+            apiResponse($rtResult);
         } else {
             apiError(400, 'failed', '');
         }
