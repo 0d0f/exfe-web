@@ -298,7 +298,7 @@ class IdentityModels extends DataModel {
                      WHERE  `id`  =  {$user_id}"
                 );
                 if ($status === 2) {
-                    if ($user_id === $hlpUder->getUserIdByIdentityId($id) {
+                    if ($user_id === $hlpUder->getUserIdByIdentityId($id)) {
                         return null;
                     }
                     // verify identity
