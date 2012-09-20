@@ -49,7 +49,7 @@ class UserModels extends DataModel {
                 foreach ($rawIdentityIds as $i => $item) {
                     $identity_infos[(int) $item['identityid']] = [
                         'status' => $this->arrUserIdentityStatus[(int) $item['status']],
-                        'order'  => (int) $item['status'],
+                        'order'  => (int) $item['order'],
                     ];
                 }
                 $identityIds = implode(array_keys($identity_infos), ', ');
@@ -81,13 +81,13 @@ class UserModels extends DataModel {
                         $sorting_identities[$identity_infos[$identity->id]['order']][$identity->id] = $identity;
 
                     }
+                    ksort($sorting_identities);
                     foreach ($sorting_identities as $siItem) {
                         foreach ($siItem as $identity) {
                             $identity->order    = count($user->identities);
                             $user->identities[] = $identity;
                         }
                     }
-                    $user->identities      = array_merge($user->identities);
                     $user->name            = $user->name            ?: $user->identities[0]->name;
                     $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
@@ -183,6 +183,43 @@ class UserModels extends DataModel {
             }
         }
         return $arrStatus;
+    }
+
+
+    public function sortIdentities($user_id, $identity_order) {
+        if (!$user_id || !$identity_order) {
+            return false;
+        }
+        $rawStatus = $this->getAll(
+            "SELECT   `identityid`
+             FROM     `user_identity`
+             WHERE    `userid` = {$user_id}
+             ORDER BY `order`"
+        );
+        $order      = 0;
+        $orderd_ids = [];
+        foreach ($identity_order as $identity_id) {
+            @$this->query(
+                "UPDATE `user_identity`
+                 SET    `order`      = {$order}
+                 WHERE  `userid`     = {$user_id}
+                 AND    `identityid` = {$identity_id}"
+            );
+            $orderd_ids[$identity_id] = true;
+            $order++;
+        }
+        foreach ($rawStatus as $identity) {
+            if (!isset($orderd_ids[$identity_id])) {
+                @$this->query(
+                    "UPDATE `user_identity`
+                     SET    `order`      = {$order}
+                     WHERE  `userid`     = {$user_id}
+                     AND    `identityid` = {$identity['identityid']}"
+                );
+                $order++;
+            }
+        }
+        return true;
     }
 
 
