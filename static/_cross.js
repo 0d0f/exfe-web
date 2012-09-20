@@ -75,10 +75,8 @@ ExfeUtilities = {
             case 2:
                 break;
             case 3:
-                if (rawTime = moment(arrTime.join(' '), fmtFrom)) {
-                    efeTime.begin_at.date = rawTime.format('YYYY-MM-DD');
-                    efeTime.outputformat  = 0;
-                }
+                efeTime.begin_at.date = arrTime[0] + '-' + arrTime[1] + '-' + arrTime[2];
+                efeTime.outputformat  = 0;
                 break;
             case 4:
             case 5:
