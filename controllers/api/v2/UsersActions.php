@@ -203,8 +203,26 @@ class UsersActions extends ActionController {
 
     public function doSortIdentities() {
         // get models
-
-
+        $checkHelper = $this->getHelperByName('check');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get models
+        $modUser     = $this->getModelByName('user');
+        // collecting post data
+        if (!($identity_order = @json_decode($_POST['identity_order']))
+         || !is_array($identity_order)) {
+            apiError(400, 'no_identity_order', '');
+        }
+        // sort
+        if ($modUser->sortIdentities($user_id, $identity_order)) {
+            apiResponse(['identity_order' => $identity_order]);
+        }
+        apiError(500, 'failed', '');
     }
 
 
