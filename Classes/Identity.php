@@ -22,6 +22,8 @@ class Identity extends EFObject {
 
     public $updated_at        = null;
 
+    public $order             = null;
+
 
     static function parseEmail($email) {
         $email = trim($email);
@@ -47,7 +49,8 @@ class Identity extends EFObject {
                                 $external_username = '',
                                 $avatar_filename   = '',
                                 $created_at        = '',
-                                $updated_at        = '') {
+                                $updated_at        = '',
+                                $order             = 0) {
         parent::__construct($id, 'identity');
 
         $created_at              = $created_at ?:  '0000-00-00 00:00:00';
@@ -65,6 +68,7 @@ class Identity extends EFObject {
         $this->avatar_filename   = $avatar_filename;
         $this->created_at        = $created_at . ' +0000';
         $this->updated_at        = $updated_at . ' +0000';
+        $this->order             = (int)    $order;
 
         if (!$this->name) {
             switch ($this->provider) {
