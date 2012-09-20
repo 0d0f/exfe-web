@@ -67,10 +67,13 @@ class UsersActions extends ActionController {
     public function doMergeIdentities() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
-        $params = $this->params;
-        $result = $checkHelper->isAPIAllow('user_edit', $params['token'], [], true);
+        $params      = $this->params;
+        $result      = $checkHelper->isAPIAllow('user_edit', $params['token'], [], true);
+        $strBsToken  = trim(@$_POST['browsing_identity_token']);
         if ($result['check']) {
-            if (!$result['fresh']) {
+            // 提交一个 Token 的时候，需要该 Token 是新鲜的
+            // 提交两个 Token 的时候，只需要保证第二个 Token 是新鲜的
+            if (!$strBsToken && !$result['fresh']) {
                 apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
             }
             $user_id = $result['uid'];
@@ -81,7 +84,7 @@ class UsersActions extends ActionController {
         $modExfeAuth = $this->getModelByName('ExfeAuth');
         $modUser     = $this->getModelByName('User');
         // collecting post data
-        if (($strBsToken = trim($_POST['browsing_identity_token']))) {
+        if ($strBsToken) {
             // get browsing token
             if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
              || $objBsToken['is_expire']) {
