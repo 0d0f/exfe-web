@@ -3991,6 +3991,10 @@ img:-moz-broken {
   background-color: rgba(127, 127, 127, 0.08);
 }
 
+.modal-body .alert-label {
+  margin-top: 12px;
+}
+
 .modal-content {
   color: #333333;
 }
@@ -8956,7 +8960,7 @@ body {
   display: inline;
 }
 
-.settings-panel .user-infos .editable .avatar {
+.settings-panel .user-infos [data-editable="true"] .avatar {
   cursor: pointer;
 }
 
