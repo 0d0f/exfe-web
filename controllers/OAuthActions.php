@@ -131,11 +131,18 @@ class OAuthActions extends ActionController {
                     }
                     // 身份未连接
                     if ($objIdentity->connected_user_id <= 0) {
+                        $user_id     = 0;
+                        // verify
+                        if (@$oauthIfo['workflow']['user_id']) {
+                            $user_id = $oauthIfo['workflow']['user_id'];
+                        }
                         // 身份被 revoked，重新连接用户
                         if ($objIdentity->revoked_user_id) {
                             $identity_status = 'revoked';
-                            $user_id = $objIdentity->revoked_user_id;
+                            $user_id = $user_id ?: $objIdentity->revoked_user_id;
                         // 孤立身份，创建新用户并连接到该身份
+                        } else if ($user_id) {
+                            $identity_status = 'verifying';
                         } else {
                             $identity_status = 'new';
                             $user_id = $modUser->addUser(
