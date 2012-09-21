@@ -31,7 +31,7 @@ define(function (require) {
 
       items
         .addClass(options.childClass)
-        .attr('draggable', 'true');
+        .prop('draggable', true);
 
       $this
         // dragstart
