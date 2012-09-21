@@ -34,9 +34,9 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['eftime',        '0.0.1'],
+    ['eftime',        '0.0.2'],
     ['api',           '0.0.2'],
-    ['dialog',        '0.0.2'],
+    ['dialog',        '0.0.3'],
     ['typeahead',     '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.2'],
@@ -60,7 +60,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.4'],
-    ['middleware',    '0.0.4'],
+    ['middleware',    '0.0.5'],
     ['routes',        '0.0.5'],
     ['app',           '0.0.3'],
 ]);
