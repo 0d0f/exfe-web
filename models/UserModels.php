@@ -382,7 +382,10 @@ class UserModels extends DataModel {
                 break;
             case 'twitter':
                 $hlpOAuth = $this->getHelperByName('OAuth');
-                $workflow = $args ? ['callback' => ['args' => $args]] : [];
+                $workflow = ['user_id' => $user_id];
+                if ($args) {
+                    $workflow['callback'] = ['args' => $args];
+                }
                 $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
                 if ($urlOauth) {
                     $result['url'] = $urlOauth;
