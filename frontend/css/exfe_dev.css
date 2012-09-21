@@ -6540,12 +6540,12 @@ body {
   height: 10px;
   background: transparent;
   -webkit-user-select: none;
-   -khtml-user-select: none;
+   -khtml-user-select: element;
      -moz-user-select: none;
       -ms-user-select: none;
        -o-user-select: none;
-          user-select: none;
-  -webkit-user-drag: none;
+          user-select: element;
+  -webkit-user-drag: element;
   tap-highlight-color: rgba(0, 0, 0, 0);
   user-drag: none;
   -khtml-user-drag: none;
@@ -9678,18 +9678,19 @@ body {
  */
 
 [draggable="true"] {
+  cursor: move;
   -webkit-user-select: none;
-   -khtml-user-select: none;
+   -khtml-user-select: element;
      -moz-user-select: none;
       -ms-user-select: none;
        -o-user-select: none;
-          user-select: none;
-  tap-highlight-color: rgba(0, 0, 0, 0);
+          user-select: element;
   -khtml-user-drag: none;
-         user-drag: none;
+  tap-highlight-color: rgba(0, 0, 0, 0);
+  user-drag: none;
+  touch-callout: none;
   -webkit-touch-callout: none;
-          touch-callout: none;
-  -webkit-user-drag: none;
+  -webkit-user-drag: element;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
