@@ -861,7 +861,7 @@ define(function (require, exports, module) {
     var $e = $(this),
         $img = $e.find('img');
 
-    if (!$e.parent().hasClass('editable')) { return false; }
+    if (!$e.parent().data('editable')) { return false; }
 
     var identity_id = $e.parent().data('identity-id');
 
@@ -998,9 +998,9 @@ define(function (require, exports, module) {
             && meta.code === 401
             && meta.errorType === 'authenticate_timeout') {
 
-          var d = new Dialog(Dialogs.authentication);
-          d.render();
-          d.show();
+          var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+          $('#app-tmp').append($d);
+          $d.trigger('click.dialog.data-api');
         }
       }
     );
