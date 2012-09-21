@@ -33,7 +33,6 @@ define(function (require) {
         .addClass(options.childClass)
         .attr('draggable', 'true');
 
-      console.log($this, selector);
       $this
         // dragstart
         .on('dragstart.ui', selector, function (e) {
