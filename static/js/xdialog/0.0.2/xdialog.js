@@ -635,7 +635,7 @@ define('xdialog', function (require, exports, module) {
         this.$('.authenticate').data('identity', identity);
       }
       $identity.find('.avatar img').attr('src', identity.avatar_filename);
-      $identity.find('.provider').addClass('icon16-identity-' + identity.provider);
+      $identity.find('.provider').attr('class', 'provider icon16-identity-' + identity.provider);
       $identity.find('.identity').text(identity.eun);
     },
 
@@ -655,6 +655,23 @@ define('xdialog', function (require, exports, module) {
 
       events: {
         'click .authenticate': function (e) {
+          var that = this;
+          that._oauth_ = $.ajax({
+            url: '/OAuth/twitterAuthenticate',
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+              callback: window.location.href
+            }
+          })
+            .done(function (data) {
+              console.dir(data);
+              var code = data.meta.code;
+              if (code === 200) {
+                window.location.href = data.response.redirect;
+              }
+            }
+          );
         },
 
         'click .caret-outer': function (e) {
@@ -788,14 +805,16 @@ define('xdialog', function (require, exports, module) {
               + '<div class="pull-left caret-outer hide"><b class="caret"></b></div>'
             + '</div>'
           + '</div>'
-          + '<div class="send-before tab tab1 hide">Confirm sending reset token to your mailbox?</div>'
-          + '<div class="send-after tab hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
-          + '<div class="xalert-error tab hide">'
-            + '<p>Requested too much, hold on awhile.</p>'
-            + '<p>Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</p>'
-          + '</div>'
+          + '<div class="alert-label">'
+            + '<div class="send-before tab tab1 hide">Confirm sending reset token to your mailbox?</div>'
+            + '<div class="send-after tab hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</div>'
+            + '<div class="xalert-error tab hide">'
+              + '<p>Requested too much, hold on awhile.</p>'
+              + '<p>Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</p>'
+            + '</div>'
 
-          + '<div class="authenticate-before tab tab2 hide">You will be directed to Twitter website to authenticate identity above, you can reset password then.</div>',
+            + '<div class="authenticate-before tab tab2 hide">You will be directed to Twitter website to authenticate identity above, you can reset password then.</div>'
+          + '</div>',
 
         footer: ''
           + '<button class="pull-right xbtn-white xbtn-done hide">Done</button>'
@@ -912,9 +931,10 @@ define('xdialog', function (require, exports, module) {
                     && meta.errorType === 'authenticate_timeout') {
 
                   that.destory();
-                  var d = new Dialog(dialogs.authentication);
-                  d.render();
-                  d.show();
+
+                  var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                  $('#app-tmp').append($d);
+                  $d.trigger('click.dialog.data-api');
                 }
               }
             }
@@ -926,7 +946,7 @@ define('xdialog', function (require, exports, module) {
       onShowBefore: function () {
         var user = Store.get('user');
         this.$('.avatar > img').attr('src', user.avatar_filename);
-        this.$('.username > span').text(user.name);
+        this.$('.username').text(user.name);
       },
 
       backdrop: false,
@@ -996,26 +1016,30 @@ define('xdialog', function (require, exports, module) {
         },
         'click .xbtn-forgotpwd': function (e) {
           var $btn = $(e.currentTarget)
-            , enable = !$btn.hasClass('disabled');
+            , disabled = $btn.hasClass('disabled');
 
-          if (!enable) {
-            return;
+          if (disabled) {
+            e.stopPropagation();
+            return false;
           }
-
-          this.$('.d0').addClass('hide');
-          this.$('.d1').removeClass('hide');
         },
         'click .xbtn-startover': function (e) {
-          this.$('.d1').addClass('hide');
+          this.$('.d1, d2').addClass('hide');
           this.$('.d0').removeClass('hide');
+          this.$('#identity').val('').focus();
         },
         'click .xbtn-add': function (e) {
           var that = this
             , authorization = Store.get('authorization')
             , token = authorization.token
             , od = that._identity
-            , provider = od.provider
-            , external_username = od.external_identity || od.external_username || '';
+
+          if (!od) {
+            return false;
+          }
+
+          var provider = od.provider
+            , external_username = od.external_username || od.external_identity || '';
           var defe = Api.request('addIdentity',
             {
               type: 'POST',
@@ -1043,9 +1067,9 @@ define('xdialog', function (require, exports, module) {
                   && meta.errorType === 'authenticate_timeout') {
 
                 that.destory();
-                var d = new Dialog(dialogs.authentication);
-                d.render();
-                d.show();
+                var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                $('#app-tmp').append($d);
+                $d.trigger('click.dialog.data-api');
               }
             }
           );
@@ -1134,9 +1158,9 @@ define('xdialog', function (require, exports, module) {
                   && meta.errorType === 'authenticate_timeout') {
 
                 that.destory();
-                var d = new Dialog(dialogs.authentication);
-                d.render();
-                d.show();
+                var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                $('#app-tmp').append($d);
+                $d.trigger('click.dialog.data-api');
               }
             }
           );
@@ -1214,7 +1238,7 @@ define('xdialog', function (require, exports, module) {
 
         footer: ''
           + '<button class="xbtn-white xbtn-startover d d1 hide">Start Over</button>'
-          + '<button class="xbtn-white xbtn-forgotpwd d d0 disabled">Forgot Password...</button>'
+          + '<button class="xbtn-white xbtn-forgotpwd d d0 disabled" data-dialog-from="addidentity" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button class="pull-right xbtn-blue xbtn-add d d0">Add</button>'
           + '<button class="pull-right xbtn-blue xbtn-verify d d1 hide">Verify</button>'
           + '<button class="pull-right xbtn-white xbtn-done d d2 hide">Done</button>'
@@ -1239,24 +1263,29 @@ define('xdialog', function (require, exports, module) {
             that._identity = null;
           }
 
+          var registration_flag = data.registration_flag;
           // SIGN_IN
-          if (data.registration_flag === 'SIGN_IN') {
+          if (registration_flag === 'SIGN_IN') {
+            that.$('.d1, .d2').addClass('hide');
             that.$('.d0').removeClass('hide');
-            that.$('.d1').addClass('hide');
-            that.$('.xbtn-forgotpwd').removeClass('disabled').data('source', that._identity);
+            that.$('.xbtn-forgotpwd').removeClass('disabled').data('source', [that._identity]);
           }
           // SIGN_UP 新身份
-          else if (data.registration_flag === 'SIGN_UP') {
+          else if (registration_flag === 'SIGN_UP') {
             that._identity = Util.parseId(that.$('#identity').val());
             that.$('.d0, .d1').addClass('hide');
             that.$('.d2').removeClass('hide');
           }
           // AUTHENTICATE
-          else if (data.registration_flag === 'AUTHENTICATE') {
+          else if (registration_flag === 'AUTHENTICATE') {
+            that._identity = Util.parseId(that.$('#identity').val());
+            that.$('.d1, .d2').addClass('hide');
+            that.$('.d0').removeClass('hide');
+            that.$('label[for="password"]').parent().addClass('hide');
           }
           // VERIFY
-          else if (data.registration_flag === 'VERIFY') {
-            that.$('.d0').addClass('hide');
+          else if (registration_flag === 'VERIFY') {
+            that.$('.d0, .d2').addClass('hide');
             that.$('.d1').removeClass('hide');
           }
 
@@ -1400,7 +1429,7 @@ define('xdialog', function (require, exports, module) {
             + '<img class="avatar" src="" alt="" width="40" height="40">'
             + '<i class="provider icon16-identity-email"></i>'
           + '</div>'
-          + '<div class="identity box"></div>'
+          + '<div class="box identity"></div>'
           + '<p class="verify-before">Confirm sending verification to your mailbox?</p>'
           + '<p class="verify-after hide">Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.</p>'
           + '<div class="xalert-error hide"><span class="xalert-fail">Requested too much, hold on awhile.</span><br />Receive no verification email? It might be mistakenly filtered as spam, please check and un-spam. Alternatively, use ‘Manual Verification’.</div>',
@@ -1463,9 +1492,7 @@ define('xdialog', function (require, exports, module) {
               }
             }
             , function (data) {
-              if (data.action === 'VERIFYING') {
-                $e.text('Done').addClass('success');
-              }
+              window.location.href = data.url;
             }
             , function (data) {
             }
@@ -1473,10 +1500,7 @@ define('xdialog', function (require, exports, module) {
         },
 
         'click .xbtn-cancel': function (e) {
-          var $e = this.element;
-          this.offSrcNode();
-          this.destory();
-          $e.remove();
+          this.hide();
         }
 
       },
@@ -1497,8 +1521,8 @@ define('xdialog', function (require, exports, module) {
             + '<img class="avatar" src="" alt="" width="40" height="40">'
             + '<i class="provider icon16-identity-twitter"></i>'
           + '</div>'
-          + '<div class="identity box"></div>'
-          + '<p>You will be directed to Twitter website to authorize <span class="x-sign">EXFE</span>. Don’t forget to follow @<span class="">EXFE</span>, it’s necessary for smooth service integration.</p>'
+          + '<div class="box identity"></div>'
+          + '<p>You will be directed to Twitter website to authenticate. Don’t forget to follow @<span class="x-sign">EXFE</span> so we could send you invitation PRIVATELY through Direct Message.</p>'
           + '<p>We hate spam, will NEVER disappoint your trust.</p>',
 
         footer: ''
@@ -1507,17 +1531,21 @@ define('xdialog', function (require, exports, module) {
 
       },
 
+      onHideAfter: function (e) {
+        this.destory();
+      },
+
       onShowBefore: function (e) {
         var $e = $(e.currentTarget);
         var identity_id = $e.parents('li').data('identity-id');
         var user = Store.get('user');
-        var identity = R.filter(user.identities, function (v, i) {
+        var identity = R.find(user.identities, function (v) {
           if (v.id === identity_id) {
             return true;
           }
-        })[0];
+        });
         this.$('.xbtn-verify').data('identity_id', identity.id);
-        this.$('.identity').text(identity.external_id);
+        this.$('.identity').text(Util.printExtUserName(identity));
         this.$('.avatar').attr('src', identity.avatar_filename);
       }
 
@@ -1643,9 +1671,11 @@ define('xdialog', function (require, exports, module) {
             + '<fieldset>'
               + '<legend>Please set <span class="x-sign">EXFE</span> password of your account.<br />All your identities share the same password for sign-in and account management.</legend>'
 
-              + '<div class="identity">'
-                + '<img class="avatar" src="" width="40" height="40" />'
-                + '<span></span>'
+              + '<div class="clearfix context-user">'
+                + '<div class="pull-left avatar">'
+                  + '<img width="40" height="40" alt="" src="" />'
+                + '</div>'
+                + '<div class="pull-left username"></div>'
               + '</div>'
 
               + '<div class="control-group">'
@@ -1666,8 +1696,8 @@ define('xdialog', function (require, exports, module) {
 
       onShowBefore: function () {
         var user = Store.get('user');
-        this.$('.identity > img').attr('src', user.avatar_filename);
-        this.$('.identity > span').text(user.name);
+        this.$('.avatar img').attr('src', user.avatar_filename);
+        this.$('.username').text(user.name);
       }
 
     }
@@ -1802,7 +1832,7 @@ define('xdialog', function (require, exports, module) {
           + '<div class="shadow title">Welcome to <span class="x-sign">EXFE</span></div>'
           + '<form class="modal-form">'
             + '<fieldset>'
-              + '<legend>For easier further use, please set up account of your identity underneath.<span class="hide"> Otherwise, <span class="underline">sign in</span> your existing account to merge with this identity.</span></legend>'
+              + '<legend>For easier further use, please set up account of your identity underneath. Otherwise, <span class="underline">sign in</span> your existing account to merge with this identity.</legend>'
 
                 + '<div class="clearfix control-group">'
                   + '<div class="pull-right user-identity">'
@@ -1815,7 +1845,7 @@ define('xdialog', function (require, exports, module) {
                 + '<div class="control-group">'
                   + '<label class="control-label" for="name">Display name: <span></span></label>'
                   + '<div class="controls">'
-                    + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Desired recognizable name" />'
+                    + '<input type="text" class="input-large" id="name" autocomplete="off" placeholder="Your recognizable name" />'
                   + '</div>'
                 + '</div>'
 
@@ -1833,7 +1863,7 @@ define('xdialog', function (require, exports, module) {
         footer: ''
           + '<button class="xbtn-white xbtn-siea hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In to Merge…</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
-          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Discard</a>'
+          + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Cancel</a>'
       },
 
       onShowBefore: function (e) {
@@ -1910,7 +1940,7 @@ define('xdialog', function (require, exports, module) {
                     + '<img class="avatar" src="" alt="" width="40" height="40" />'
                     + '<i class="provider"></i>'
                   + '</div>'
-                  + '<div class="identity disabled"></div>'
+                  + '<div class="box identity"></div>'
                 + '</div>'
 
                 + '<div class="clearfix">'
@@ -1920,9 +1950,7 @@ define('xdialog', function (require, exports, module) {
 
                 + '<div class="spliterline"></div>'
 
-                + '<div>'
-                  + 'Got existing <span class="x-sign">EXFE</span> account already?<br /> Just <span class="underline">sign in to add</span> this identity into your account.'
-                + '</div>'
+                + '<div>Otherwise, sign in your existing <span class="x-sign">EXFE</span> account to merge with this identity.</div>'
 
             + '</fieldset>'
           + '</form>',
@@ -2004,12 +2032,9 @@ define('xdialog', function (require, exports, module) {
           + '</div>',
 
         footer: ''
-          //+ '<button class="pull-right xbtn-blue xbtn-merge hide">Merge with account above</button>'
-          //+ '<button class="xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
-          //+ '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup">Set up identity</button>'
-          // note: 暂时没有`merge` 功能，按钮放右边
-          + '<button class="pull-right xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign in and switch</button>'
-          + '<button class="pull-right xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup_email">Set up identity</button>'
+          + '<button class="pull-right xbtn-blue xbtn-merge hide">Merge into account above</button>'
+          + '<button class="xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Switch</button>'
+          + '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup_email">Set Up Identity</button>'
 
       },
 
@@ -2028,14 +2053,16 @@ define('xdialog', function (require, exports, module) {
         this._tokenType = settings.tokenType;
 
         if (this._user) {
-
           this.$('.user')
             .removeClass('hide')
             .find('img')
             .attr('src', user.avatar_filename)
             .parent()
             .next().text(user.name || user.nickname);
-
+          this.$('.xbtn-merge').removeClass('hide');
+        }
+        else {
+          this.$('.xbtn-sias, .xbtn-sui').addClass('pull-right');
         }
 
         this.$('browsing-tips').find('span').eq(this._user ? 0 : 1).removeClass('hide')
@@ -2232,7 +2259,7 @@ define('xdialog', function (require, exports, module) {
           + '</div>',
 
         footer: ''
-          + '<button class="pull-left xbtn xbtn-white d0 hide">Forgot Password...</button>'
+          + '<button class="pull-left xbtn xbtn-white xbtn-forgotpwd d0 hide" data-dialog-from="authentication" data-widget="dialog" data-dialog-type="forgotpassword">Forgot Password...</button>'
           + '<button class="pull-right xbtn xbtn-blue xbtn-auth d1 hide">Authenticate</button>'
           + '<button class="pull-right xbtn xbtn-blue xbtn-done d0 hide">Done</button>'
           + '<a class="pull-right xbtn-discard d0 hide" data-dismiss="dialog">Cancel</a>'
@@ -2313,6 +2340,10 @@ define('xdialog', function (require, exports, module) {
         }
       },
 
+      onHideAfter: function () {
+        this.destory();
+      },
+
       onShowBefore: function (e) {
         var that = this
           , user = Store.get('user')
@@ -2323,6 +2354,7 @@ define('xdialog', function (require, exports, module) {
             .find('.avatar img').attr('src', user.avatar_filename)
             .parent()
             .next().text(user.name);
+          that.$('.xbtn-forgotpwd').data('source', user.identities);
         }
         else {
           var ids = user.identities
