@@ -1,5 +1,7 @@
-* v0.0.5 23:23:30 09/19/2012
+* v0.0.5 14:27:15 09/20/2012
   - `user.default_identity`
+  ✔ fixed `verification_token` 时，同一 user，token 不一样的 bug
+  ✔ Refactor `routes.resolveShow` and `routes.resolveRequest`
 
 * v0.0.4 00:16:54 09/14/2012
   + user-token 过期时
