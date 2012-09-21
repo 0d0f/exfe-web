@@ -127,7 +127,6 @@ class AvatarActions extends ActionController {
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../../default_avatar_portrait/";
-        $icoFile   = "{$curDir}/../../../static/img/icons.png";
         require_once "{$curDir}/../../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
@@ -170,9 +169,27 @@ class AvatarActions extends ActionController {
             header('HTTP/1.1 404 Not Found');
             return;
         }
+        // get resolution
+        switch (($resolution = (float) @$params['resolution'])) {
+            case 1:
+            case 2:
+                break;
+            default:
+                $resolution = 1;
+        }
+        if ($resolution > 1) {
+            $icoFile = "{$curDir}/../../../static/img/icons@{$resolution}x.png";
+        } else {
+            $icoFile = "{$curDir}/../../../static/img/icons.png";
+        }
+        foreach ($config as $cI => $cItem) {
+            if ($cI !== 'mates-max') {
+                $config[$cI] *= $resolution;
+            }
+        }
         // resize source image
-        $rqs_width  = (int) $params['width'];
-        $rqs_height = (int) $params['height'];
+        $rqs_width  = (int) $params['width']  * $resolution;
+        $rqs_height = (int) $params['height'] * $resolution;
         $config['width']  = $rqs_width  > 0 ? $rqs_width  : $config['width'];
         $config['height'] = $rqs_height > 0 ? $rqs_height : $config['height'];
         $image = $objLibImage->rawResizeImage($image, $config['width'], $config['height']);
