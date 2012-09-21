@@ -73,7 +73,9 @@ class OAuthActions extends ActionController {
                 $oauthIfo['oauth_token_secret']
             );
             if ($objTwitterIdentity) {
-                if (!$oauthIfo['workflow'] || $oauthIfo['workflow']['callback']) {
+                if (@!$oauthIfo['workflow']
+                 || @$oauthIfo['workflow']['callback']
+                 || @$oauthIfo['workflow']['user_id']) {
                     $modUser     = $this->getModelByName('User');
                     $modIdentity = $this->getModelByName('Identity');
                     $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
