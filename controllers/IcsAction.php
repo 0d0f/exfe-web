@@ -7,49 +7,28 @@ class IcsActions extends ActionController {
         $checkHelper = $this->getHelperByName('check');
         $params      = $this->params;
         if (!$params['id']) {
-            apiError(400, 'no_user_id', 'user_id must be provided');
+           // apiError(400, 'no_user_id', 'user_id must be provided');
             header("HTTP/1.0 404 Not Found");
         }
-        $result = $checkHelper->isAPIAllow('user_self', $params['token'], array('user_id' => $params['id']));
+        $result = $checkHelper->isAPIAllow('user_crosses', $params['token'], ['user_id' => $uid]);
         if (!$result['check']) {
             if ($result['uid']) {
-                apiError(403, 'not_authorized', 'You can not access the informations of this user.');
+             //   apiError(403, 'not_authorized', 'You can not access the informations of this user.');
             } else {
-                apiError(401, 'invalid_auth', '');
+               // apiError(401, 'invalid_auth', '');
             }
         }
 
-        if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
-            $passwd  = $modUser->getUserPasswdByUserId($params['id']);
-            $objUser->password = !!$passwd['encrypted_password'];
-            apiResponse(['user' => $objUser]);
-        }
-        apiError(404, 'user_not_found', 'user not found');
+
+
+        $exfeeHelper   = $this->getHelperByName('exfee');
+        $exfee_id_list = $exfeeHelper->getExfeeIdByUserid(intval($uid));
+        $crossHelper   = $this->getHelperByName('cross');
+        $cross_list    = $crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,false,$uid);
+        print_r(array("crosses"=>$cross_list));
 
 
 
-        $params = $this->params;
-        $uid=$params["id"];
-        $updated_at=$params["updated_at"];
-        if($updated_at!='')
-            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
-
-        $checkHelper=$this->getHelperByName('check');
-        $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
-        if($result["check"]!==true)
-        {
-            if($result["uid"]===0)
-                apiError(401,"invalid_auth","");
-        }
-
-        $exfeeHelper= $this->getHelperByName('exfee');
-        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
-        $crossHelper= $this->getHelperByName('cross');
-        if($updated_at!='')
-            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,true,$uid);
-        else
-            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,false,$uid);
-        apiResponse(array("crosses"=>$cross_list));
 
 
 
