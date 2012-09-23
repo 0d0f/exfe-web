@@ -29,14 +29,19 @@ class IcsActions extends ActionController {
         header('Content-Description: File Transfer');
         header('Content-type: application/octet-stream');
         header('Content-Disposition: attachment; filename="crosses.ics"');
+        echo "BEGIN:VCALENDAR\n"
+           . "VERSION:2.0\n"
+           . "CALSCALE:GREGORIAN\n"
+           . "METHOD:REQUEST\n\n";
         // output content
         if ($cross_list && is_array($cross_list)) {
             foreach ($cross_list as $crossItem) {
                 if (($icsItem = $modIcs->makeIcs($crossItem))) {
-                    echo "{$icsItem}\n\n";
+                    echo "{$icsItem}\n";
                 }
             }
         }
+        echo 'END:VCALENDAR';
     }
 
 }
