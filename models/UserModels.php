@@ -41,15 +41,16 @@ class UserModels extends DataModel {
             $identityStatus = ($identityStatus = intval($identityStatus))
                             ? "`status` = {$identityStatus}" : '(`status` > 1 AND `status` < 5)';
             $rawIdentityIds = $this->getAll(
-                "SELECT `identityid`, `status`, `order` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
+                "SELECT `identityid`, `status`, `order`, `created_at` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
             );
             // insert identities into user
             if ($rawIdentityIds) {
                 $identity_infos = [];
                 foreach ($rawIdentityIds as $i => $item) {
                     $identity_infos[(int) $item['identityid']] = [
-                        'status' => $this->arrUserIdentityStatus[(int) $item['status']],
-                        'order'  => (int) $item['order'],
+                        'status'     => $this->arrUserIdentityStatus[(int) $item['status']],
+                        'order'      => (int) $item['order'],
+                        'created_at' => strtotime($item['created_at']),
                     ];
                 }
                 $identityIds = implode(array_keys($identity_infos), ', ');
@@ -78,14 +79,20 @@ class UserModels extends DataModel {
                         if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
                             $sorting_identities[$identity_infos[$identity->id]['order']] = [];
                         }
-                        $sorting_identities[$identity_infos[$identity->id]['order']][$identity->id] = $identity;
+                        if (!isset($sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['created_at']])) {
+                            $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['created_at']] = [];
+                        }
+                        $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['created_at']][$identity->id] = $identity;
 
                     }
                     ksort($sorting_identities);
-                    foreach ($sorting_identities as $siItem) {
-                        foreach ($siItem as $identity) {
-                            $identity->order    = count($user->identities);
-                            $user->identities[] = $identity;
+                    foreach ($sorting_identities as $soryByCreated) {
+                        ksort($soryByCreated);
+                        foreach ($soryByCreated as $sortById) {
+                            foreach ($sortById as $identity) {
+                                $identity->order    = count($user->identities);
+                                $user->identities[] = $identity;
+                            }
                         }
                     }
                     $user->name            = $user->name            ?: $user->identities[0]->name;
