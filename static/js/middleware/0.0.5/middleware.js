@@ -68,7 +68,7 @@ define('middleware', function (require, exports, module) {
 
     if (authMeta) {
       if (authMeta.callback !== window.location.protocol + '//' + window.location.hostname) {
-        window.location.href = authMeta.callback;
+        window.location.href = authMeta.callback || '/';
       }
     }
 
