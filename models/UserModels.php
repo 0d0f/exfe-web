@@ -41,7 +41,7 @@ class UserModels extends DataModel {
             $identityStatus = ($identityStatus = intval($identityStatus))
                             ? "`status` = {$identityStatus}" : '(`status` > 1 AND `status` < 5)';
             $rawIdentityIds = $this->getAll(
-                "SELECT `identityid`, `status`, `order`, `created_at` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
+                "SELECT `identityid`, `status`, `order`, `updated_at` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
             );
             // insert identities into user
             if ($rawIdentityIds) {
@@ -50,7 +50,7 @@ class UserModels extends DataModel {
                     $identity_infos[(int) $item['identityid']] = [
                         'status'     => $this->arrUserIdentityStatus[(int) $item['status']],
                         'order'      => (int) $item['order'],
-                        'created_at' => strtotime($item['created_at']),
+                        'updated_at' => strtotime($item['updated_at']),
                     ];
                 }
                 $identityIds = implode(array_keys($identity_infos), ', ');
@@ -69,7 +69,7 @@ class UserModels extends DataModel {
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
-                            $item['created_at'],
+                            $item['updated_at'],
                             $item['updated_at']
                         );
                         $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
@@ -79,10 +79,10 @@ class UserModels extends DataModel {
                         if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
                             $sorting_identities[$identity_infos[$identity->id]['order']] = [];
                         }
-                        if (!isset($sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['created_at']])) {
-                            $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['created_at']] = [];
+                        if (!isset($sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']])) {
+                            $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']] = [];
                         }
-                        $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['created_at']][$identity->id] = $identity;
+                        $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']][$identity->id] = $identity;
 
                     }
                     ksort($sorting_identities);
