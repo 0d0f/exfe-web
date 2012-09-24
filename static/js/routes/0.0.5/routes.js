@@ -166,6 +166,7 @@ define('routes', function (require, exports, module) {
                     , page: 'resolve'
                     , readOnly: true
                     , user_name: target_user_name || new_user.name
+                    , mergeable_user: mergeable_user
                     , forward: forwardUrl
                   }
                   , 'browsing_identity');
