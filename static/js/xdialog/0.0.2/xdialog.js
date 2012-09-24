@@ -1684,6 +1684,8 @@ define('xdialog', function (require, exports, module) {
                 window.location.href = data.url;
               }
           );
+          e.preventDefault();
+          return false;
         },
 
         'click .xbtn-cancel': function (e) {
