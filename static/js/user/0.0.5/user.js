@@ -342,7 +342,7 @@ define('user', function (require, exports, module) {
     user.profileLink = profileLink;
 
     // 新身份未验证时，显示提示信息
-    user.verifying = 'VERIFYING' === user.identities[0].status;
+    user.verifying = 1 === user.identities.length && 'VERIFYING' === user.identities[0].status;
 
     $dropdownWrapper.append(tplFun(user));
 
