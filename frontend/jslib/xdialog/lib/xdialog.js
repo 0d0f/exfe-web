@@ -1172,7 +1172,7 @@ define('xdialog', function (require, exports, module) {
         },
         'click .oauth > a': function (e) {
           e.preventDefault();
-          $.ajax({
+          this.befer = $.ajax({
             url: '/OAuth/twitterAuthenticate',
             type: 'POST',
             dataType: 'JSON',
@@ -1196,6 +1196,7 @@ define('xdialog', function (require, exports, module) {
       },
 
       onHideAfter: function () {
+        this.befer.abort();
         this.destory();
       },
 
