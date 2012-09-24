@@ -1553,6 +1553,9 @@ define('xdialog', function (require, exports, module) {
     options: {
 
       onHideAfter: function () {
+        if (this.befer) {
+          this.befer.abort();
+        }
         this.destory();
       },
 
@@ -1569,7 +1572,7 @@ define('xdialog', function (require, exports, module) {
           var identity_id = $e.data('identity_id');
           var authorization = Store.get('authorization');
           var token = authorization.token;
-          Api.request('verifyUserIdentity'
+          this.befer = Api.request('verifyUserIdentity'
             , {
               type: 'POST',
               params: { token: token },
@@ -1671,7 +1674,7 @@ define('xdialog', function (require, exports, module) {
           var authorization = Store.get('authorization');
           var token = authorization.token;
 
-          Api.request('verifyUserIdentity'
+          this.befer = Api.request('verifyUserIdentity'
             , {
               type: 'POST',
               params: { token: token },
@@ -1724,6 +1727,9 @@ define('xdialog', function (require, exports, module) {
       },
 
       onHideAfter: function (e) {
+        if (this.befer) {
+          this.befer.abort();
+        }
         this.destory();
       },
 
