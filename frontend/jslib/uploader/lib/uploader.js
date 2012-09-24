@@ -537,7 +537,7 @@ define('uploader', function (require, exports, module) {
           return false;
         },
 
-        'click /*#avatar240,*/.smallphoto': function (e) {
+        'click .smallphoto': function (e) {
           e.preventDefault();
           var src = '';
           if (!this.bitmap) { return false; }
