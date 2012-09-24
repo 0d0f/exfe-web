@@ -1169,6 +1169,24 @@ define('xdialog', function (require, exports, module) {
               }
             }
           );
+        },
+        'click .oauth > a': function (e) {
+          e.preventDefault();
+          $.ajax({
+            url: '/OAuth/twitterAuthenticate',
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+              callback: window.location.href
+            },
+            success: function (data) {
+              var code = data.meta.code;
+              if (code === 200) {
+                window.location.href = data.response.redirect;
+              }
+            }
+          });
+          return false;
         }
       },
 
@@ -1991,6 +2009,7 @@ define('xdialog', function (require, exports, module) {
                   var $bi = $('#app-browsing-identity');
                   var settings = $bi.data('settings');
                   settings.setup = false;
+                  settings.originToken = data.authorization.token;
                   $bi.data('settings', settings).trigger('click.data-api');
                 }
               }
@@ -2185,17 +2204,19 @@ define('xdialog', function (require, exports, module) {
 
         'click .xbtn-merge': function (e) {
           var that = this
-            , token = this._token
-            , identity = this._identity;
+            , authorization = Store.get('authorization')
+            , token = authorization.token
+            , browsing_token = this._token
+            , identity = this._identity
+            , postData = {
+                browsing_identity_token: browsing_token,
+                identity_ids: '[' + identity.id + ']'
+              };
           Api.request('mergeIdentities'
             , {
               type: 'POST',
-              //params: { token: token },
               params: { token: token },
-              data: {
-                //browsing_identity_token: this.browsing_token,
-                identity_ids: '[' + identity.id + ']'
-              }
+              data: postData
             }
             , function (data) {
                 that.hide();
@@ -2207,7 +2228,7 @@ define('xdialog', function (require, exports, module) {
                     merged_identity: R.find(user.identities, function (v) {
                       if (v.id === identity.id) { return true; }
                     }),
-                    browsing_token: token,
+                    browsing_token: browsing_token,
                     mergeable_user: data.mergeable_user
                   });
                   d.appendTo($('#app-tmp'));
