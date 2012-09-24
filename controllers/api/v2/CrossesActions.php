@@ -212,6 +212,10 @@ class CrossesActions extends ActionController {
         $crossHelper=$this->getHelperByName('cross');
         $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
 
+        if (DEBUG) {
+            error_log($cross_str);
+        }
+
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName('cross');
@@ -244,6 +248,11 @@ class CrossesActions extends ActionController {
         $crossHelper=$this->getHelperByName('cross');
         $msgArg = array('old_cross' => $crossHelper->getCross(intval($params["id"])), 'to_identities' => array());
         $cross_id=$crossHelper->editCross($cross,$by_identity_id);
+
+        if (DEBUG) {
+            error_log($cross_str);
+        }
+
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName('cross');
