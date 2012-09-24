@@ -348,9 +348,7 @@ define('xdialog', function (require, exports, module) {
 
                 that.hide();
                 if (t === 'd01' || t === 'd02') {
-                  //Bus.emit('xapp:usertoken', data.token, data.user_id, 2);
-                  Bus.emit('app:user:signin', data.token, data.user_id);
-                  Bus.emit('xapp:usersignin');
+                  Bus.emit('app:user:signin', data.token, data.user_id, false, true);
                 } else {
                   var d = new Dialog(dialogs.welcome);
                   d.render();
@@ -665,7 +663,6 @@ define('xdialog', function (require, exports, module) {
             }
           })
             .done(function (data) {
-              console.dir(data);
               var code = data.meta.code;
               if (code === 200) {
                 window.location.href = data.response.redirect;
@@ -1149,7 +1146,15 @@ define('xdialog', function (require, exports, module) {
               }
             },
             function (data) {
-              console.log(data);
+              var identity = data.identity
+                , user = Store.get('user')
+                , identities = user.identities;
+              identities.push(identity);
+              Store.set('user', user);
+              var s = Handlebars.compile($('#jst-identity-item').html());
+              var h = s(data.identity);
+              $('.identity-list').append(h);
+              that.destory();
             },
             function (data) {
               var meta = data && data.meta;
@@ -1304,11 +1309,147 @@ define('xdialog', function (require, exports, module) {
 
   };
 
+  dialogs.addIdentityAfterSignIn = {
+
+    options: {
+
+      events: {
+        'click .xbtn-cancel': function () {
+          this.destory();
+        },
+        'click .xbtn-add': function () {
+          var that = this
+            , authorization = Store.get('authorization')
+            , token = authorization.token
+            , external_username = this._identity.external_username
+            , provider = this._identity.provider;
+          var defe = Api.request('addIdentity',
+            {
+              type: 'POST',
+              params: { token: token },
+              data: {
+                external_username: external_username,
+                provider: provider
+              }
+            },
+            function (data) {
+              var identity = data.identity
+                , user = Store.get('user')
+                , identities = user.identities;
+              identities.push(identity);
+              Store.set('user', user);
+              that.destory();
+              window.location.href = '/';
+            },
+            function (data) {
+              var meta = data && data.meta;
+              if (meta
+                  && meta.code === 401
+                  && meta.errorType === 'authenticate_timeout') {
+
+                that.destory();
+                var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                $('#app-tmp').append($d);
+                $d.trigger('click.dialog.data-api');
+              }
+            }
+          );
+        }
+      },
+
+      backdrop: false,
+      viewData: {
+        cls: 'mblack modal-aifsi',
+        title: 'Set Up Account',
+        body: ''
+            + '<div class="shadow title">Add Identity</div>'
+            + '<div class="clearfix context-user">'
+              + '<div class="pull-left avatar">'
+                + '<img width="40" height="40" alt="" src="" />'
+              + '</div>'
+              + '<div class="pull-left username"></div>'
+            + '</div>'
+            + '<div>Please authorize identity underneath through Twitter to add into your account above.</div>'
+            + '<div class="context-identity">'
+              + '<div class="pull-right avatar">'
+                + '<img width="40" height="40" alt="" src="" />'
+                + '<i class="provider"></i>'
+              + '</div>'
+              + '<div class="clearfix">'
+                + '<div class="pull-left box identity"></div>'
+              + '</div>'
+            + '</div>',
+
+        footer: ''
+          + '<button class="pull-right xbtn-blue xbtn-add">Add</button>'
+          + '<a class="pull-right xbtn-cancel">Cancel</a>'
+      },
+
+      onShowBefore: function (e) {
+        var data = $(e.currentTarget).data('source')
+          , identity = data.identity
+          , user = Store.get('user');
+        this._identity = identity;
+        this.$('.context-user')
+          .find('img').attr('src', user.avatar_filename)
+          .parent()
+          .next().text(user.name);
+        this.$('.context-identity')
+          .find('img').attr('src', identity.avatar_filename)
+          .next().addClass('icon16-identity-' + identity.provider);
+        this.$('.identity').text(Util.printExtUserName(identity));
+        if (identity.provider !== 'email') {
+          this.$('.xbtn-done').text('Authorize');
+        }
+      }
+
+    }
+
+  };
+
 
   // merge identity
   dialogs.mergeidentity = {
 
     options: {
+      onHideAfter: function () {
+        this.destory();
+      },
+
+      events: {
+        'click .xbtn-donot': function (e) {
+          this.hide();
+        },
+        'click .xbtn-merge': function (e) {
+          var that = this
+            , $ids = this.$('.merge-list').find('input:checked')
+            , ids = []
+            , authorization = Store.get('authorization')
+            , token = authorization.token;
+          if ($ids.length) {
+            for (var i = 0, l = $ids.length; i < l; ++i) {
+              ids.push($ids.eq(i).parents('li').data('identity-id'));
+            }
+            Api.request('mergeIdentities'
+              , {
+                type: 'POST',
+                //params: { token: token },
+                params: { token: this.browsing_token },
+                data: {
+                  //browsing_identity_token: this.browsing_token,
+                  identity_ids: '[' + ids.toString() + ']'
+                }
+              }
+              , function (data) {
+                  that.hide();
+                  window.location.href = '/';
+                }
+            );
+            return;
+          }
+          this.hide();
+        }
+      },
 
       backdrop: false,
 
@@ -1322,32 +1463,62 @@ define('xdialog', function (require, exports, module) {
         body: ''
           + '<div class="shadow title">Merge Identity</div>'
           + '<div>You just successfully merged identity underneath:</div>'
-          + '<div class="merge-identity">'
-            + '<div class="pull-right user-identity">'
-              + '<img class="avatar" src="" alt="" width="40" height="40" />'
+          + '<div class="context-identity">'
+            + '<div class="pull-right avatar">'
+              + '<img width="40" height="40" alt="" src="" />'
               + '<i class="provider"></i>'
             + '</div>'
-            + '<div class="identity disabled">cfd@demox.io</div>'
+            + '<div class="clearfix">'
+              + '<div class="pull-left box identity"></div>'
+            + '</div>'
           + '</div>'
-          + '<div class="merge-container">'
-            + '<p>Following identities might also belong to you. Merge them into your current account to avoid switching identities back and forth.</p>'
+          + '<div class="clearfix merge-container">'
+            + '<div class="alert-label">Following identities might also belong to you. Merge them into your current account to avoid switching identities back and forth.</div>'
             + '<div class="merge-list">'
               + '<ul class="unstyled">'
-                + '<li>'
-                  + '<label for="identity-0">'
-                    + '<input name="identity-0" type="checkbox" />'
-                    + '<div class="">'
-                    + '</div>'
-                  + '</label>'
-                + '</li>'
               + '</ul>'
             + '</div>'
           + '</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue xbtn-merge">Merge</button>'
+          + '<button class="pull-right xbtn-blue xbtn-merge" style="margin-left: 10px;">Merge</button>'
           + '<button class="pull-right xbtn-white xbtn-donot">Do NOT</button>'
 
+      },
+
+      onShowBefore: function (e) {
+        var data = $(e.currentTarget).data('source')
+          , merged_identity = data.merged_identity
+          , browsing_token = data.browsing_token
+          , mergeable_user = data.mergeable_user
+          , identities = mergeable_user.identities
+          , li = '<li class="clearfix" data-identity-id="{{id}}">'
+                + '<label for="identity-{{i}}">'
+                  + '<input class="pull-left" id="identity-{{i}}" name="identity-{{i}}" type="checkbox" />'
+                  + '<div class="pull-left box identity">{{external_username}}</div>'
+                  + '<div class="pull-right avatar">'
+                    + '<img width="40" height="40" alt="" src="{{avatar_filename}}" />'
+                    + '<i class="provider icon16-identity-{{provider}}"></i>'
+                  + '</div>'
+                + '</label>'
+              + '</li>'
+          , $ul = this.$('.merge-list ul');
+        this.$('.context-identity')
+          .find('img').attr('src', merged_identity.avatar_filename);
+        this.$('.context-identity')
+          .find('.identity').text(Util.printExtUserName(merged_identity));
+        this.browsing_token = browsing_token;
+        for (var i = 0, l = identities.length; i < l; ++i) {
+          var ll = li;
+          $ul.append(
+            $(li
+              .replace('{{id}}', identities[i].id)
+              .replace(/\{\{i\}\}/g, i)
+              .replace('{{external_username}}', Util.printExtUserName(identities[i]))
+              .replace('{{avatar_filename}}', identities[i].avatar_filename)
+              .replace('{{provider}}', identities[i].provider)
+             ));
+        }
       }
 
     }
@@ -1610,47 +1781,58 @@ define('xdialog', function (require, exports, module) {
           e.preventDefault();
 
           var $e = $(e.currentTarget)
-            , authorization = Store.get('authorization')
-            , user_id = authorization.user_id
-            , token = authorization.token;
-
-          Api.request('setPassword'
-            , {
-              type: 'POST',
-              params: { token: token },
-              resources: { user_id: user_id },
-              data: { new_password: stpwd },
-              beforeSend: function (xhr) {
-                $e.addClass('disabled loading');
-              },
-              complete: function (xhr) {
-                $e.removeClass('disabled loading');
-              }
-            }
-            , function (data) {
-
-              // 设置密码, 刷新本地缓存，及 `user-menu`
-              // TODO: 先简单处理，后面再细想
-              var user = Store.get('user');
-              user.password = true;
-              Store.set('user', user);
-              xbtn
-                .data('dialog', null)
-                .data('dialog-type', 'changepassword')
-                .find('span').text('Change Password...');
-              $('.set-up').remove();
-              that.hide();
-            }
-            , function (data) {
-              if (data.meta.code === 403) {
-                var errorType = data.meta.errorType;
-                if (errorType === 'invalid_current_password') {
-                  alert('Invalid current password.');
+            , user = this._user
+            , token = this._token;
+          if (this._setup) {
+            Api.request('setPassword'
+              , {
+                type: 'POST',
+                params: { token: token },
+                resources: { user_id: user.id },
+                data: { new_password: stpwd },
+                beforeSend: function (xhr) {
+                  $e.addClass('disabled loading');
+                },
+                complete: function (xhr) {
+                  $e.removeClass('disabled loading');
                 }
               }
-            }
-          );
-
+              , function (data) {
+                Bus.on('app:user:signin', data.token, data.user_id, true);
+                xbtn
+                  .data('dialog', null)
+                  .data('dialog-type', 'changepassword')
+                  .find('span').text('Change Password...');
+                $('.set-up').remove();
+                that.hide();
+              }
+              , function (data) {
+                if (data.meta.code === 403) {
+                  var errorType = data.meta.errorType;
+                  if (errorType === 'invalid_current_password') {
+                    alert('Invalid current password.');
+                  }
+                }
+              }
+            );
+          }
+          else {
+            Api.request('resetPassword',
+              {
+                type: 'POST',
+                data: {
+                  token: token,
+                  name: user.name,
+                  password: stpwd
+                }
+              },
+              function (data) {
+                Store.set('authorization', data.authorization);
+                window.location.href = '/';
+                that.hide();
+              }
+            );
+          }
         }
       },
 
@@ -1692,10 +1874,20 @@ define('xdialog', function (require, exports, module) {
 
       },
 
-      onShowBefore: function () {
-        var user = Store.get('user');
-        this.$('.avatar img').attr('src', user.avatar_filename);
-        this.$('.username').text(user.name);
+      onShowBefore: function (e) {
+        var data = $(e.currentTarget).data('source');
+        this._setup = false;
+        if (data) {
+          this._user = data.user;
+          this._token = data.token;
+          this._setup = data.setup;
+        }
+        else {
+          this._user = Store.get('user');
+          this._token = Store.get('authorization').token;
+        }
+        this.$('.avatar img').attr('src', this._user.avatar_filename);
+        this.$('.username').text(this._user.name);
       }
 
     }
@@ -1859,7 +2051,7 @@ define('xdialog', function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button class="xbtn-white xbtn-siea hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In to Merge…</button>'
+          + '<button class="xbtn-white xbtn-sitm" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In to Merge…</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Cancel</a>'
       },
@@ -1989,6 +2181,44 @@ define('xdialog', function (require, exports, module) {
 
         'click .xbtn-go': function (e) {
           window.location.href = '/';
+        },
+
+        'click .xbtn-merge': function (e) {
+          var that = this
+            , token = this._token
+            , identity = this._identity;
+          Api.request('mergeIdentities'
+            , {
+              type: 'POST',
+              //params: { token: token },
+              params: { token: token },
+              data: {
+                //browsing_identity_token: this.browsing_token,
+                identity_ids: '[' + identity.id + ']'
+              }
+            }
+            , function (data) {
+                that.hide();
+                if (data.mergeable_user) {
+                  var mergeable_user = data.mergeable_user;
+                  var d = $('<div id="js-dialog-merge" data-destory="true" data-widget="dialog" data-dialog-type="mergeidentity">');
+                  var user = Store.get('user');
+                  d.data('source', {
+                    merged_identity: R.find(user.identities, function (v) {
+                      if (v.id === identity.id) { return true; }
+                    }),
+                    browsing_token: token,
+                    mergeable_user: data.mergeable_user
+                  });
+                  d.appendTo($('#app-tmp'));
+                  d.trigger('click.dialog.data-api');
+                  $('.modal-mi').css('top', 230);
+                }
+                else {
+                  window.location.href = '/';
+                }
+              }
+          );
         }
 
       },
@@ -2018,7 +2248,7 @@ define('xdialog', function (require, exports, module) {
             + '</div>'
             + '<div class="spliterline"></div>'
           + '</div>'
-          + '<div class="browsing-tips"><span class="hide">Otherwise, you’re</span><span class="hide">You’re currently</span> browsing this page as identity underneath, please choose an option to continue.</div>'
+          + '<div class="browsing-tips"><span class="tip-0 hide">Otherwise, you’re</span><span class="tip-1 hide">You’re</span> currently browsing this page as identity underneath, please choose an option to continue.</div>'
           + '<div class="context-identity">'
             + '<div class="pull-right avatar">'
               + '<img width="40" height="40" alt="" src="" />'
@@ -2044,6 +2274,7 @@ define('xdialog', function (require, exports, module) {
           , setup = settings.setup
           , action = settings.action;
 
+        this._token = settings.originToken;
         this._user = user;
         this._browsing_user = browsing_user;
         this._setup = setup;
@@ -2058,15 +2289,18 @@ define('xdialog', function (require, exports, module) {
             .parent()
             .next().text(user.name || user.nickname);
           this.$('.xbtn-merge').removeClass('hide');
+          this.$('.browsing-tips').find('.tip-0').removeClass('hide');
         }
         else {
           this.$('.xbtn-sias, .xbtn-sui').addClass('pull-right');
+          this.$('.browsing-tips').find('.tip-1').removeClass('hide');
         }
 
         this.$('browsing-tips').find('span').eq(this._user ? 0 : 1).removeClass('hide')
 
         // browsing default identity
         var bdidentity = browsing_user.identities[0];
+        this._identity = bdidentity;
         var beun = Util.printExtUserName(bdidentity);
 
         this.$('.context-identity')
@@ -2136,7 +2370,7 @@ define('xdialog', function (require, exports, module) {
                     + '<img class="avatar" src="" alt="" width="40" height="40" />'
                     + '<i class="provider"></i>'
                   + '</div>'
-                  + '<div class="identity disabled"></div>'
+                  + '<div class="box identity"></div>'
                 + '</div>'
 
             + '</fieldset>'

@@ -14,7 +14,7 @@ define('user', function (require, exports, module) {
 
 
   // `status` 可以跳转到 profile
-  function signIn(token, user_id, redirect) {
+  function signIn(token, user_id, redirect, block_redirect) {
     getUser(token, user_id
       , function (data) {
           var last_external_username = Store.get('last_external_username')
@@ -22,13 +22,13 @@ define('user', function (require, exports, module) {
             , user = data.user;
 
           if (last_external_username) {
-            identity = R.filter(user.identities, function (v) {
+            identity = R.find(user.identities, function (v) {
               var external_username = Util.printExtUserName(v);
 
               if (last_external_username === external_username) {
                 return true;
               }
-            })[0];
+            });
           }
 
           if (!identity) {
@@ -43,6 +43,8 @@ define('user', function (require, exports, module) {
           // 刷新登录列表
           refreshIdentities(user.identities);
 
+          block_redirect = !$('.modal-su').size();
+          if (block_redirect) {
           // fobidden or invite 页面，登录后刷新
           var $fobidden = $('#forbidden')
             , $invite = $('#invite');
@@ -60,7 +62,7 @@ define('user', function (require, exports, module) {
 
           var hash = decodeURIComponent(window.location.hash);
           if (redirect || (('' === hash
-                           || /^#?(invalid)?/.test(hash))
+                          || /^#?(invalid)?/.test(hash))
                         && !/^#gather/.test(hash)
                         && !/^#!/.test(hash)
                           )
@@ -69,6 +71,7 @@ define('user', function (require, exports, module) {
               window.location.href = '/#' + Util.printExtUserName(user.identities[0]);
             }, 13);
             return;
+          }
           }
 
           Bus.emit('app:page:usermenu', true);
@@ -360,7 +363,7 @@ define('user', function (require, exports, module) {
     data.browsing.isBrowsing = true;
 
     $('#app-browsing-identity').remove();
-    $(document.body).append(
+    $('#app-tmp').append(
       $('<div id="app-browsing-identity">')
         .data('settings', data)
         .attr('data-widget', 'dialog')
