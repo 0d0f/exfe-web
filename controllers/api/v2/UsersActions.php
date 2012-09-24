@@ -61,26 +61,20 @@ class UsersActions extends ActionController {
 
 
     public function doMergeIdentities() {
-        // check signin
-        $checkHelper = $this->getHelperByName('check');
-        $params      = $this->params;
-        $result      = $checkHelper->isAPIAllow('user_edit', $params['token'], [], true);
-        $strBsToken  = trim(@$_POST['browsing_identity_token']);
-        if ($result['check']) {
-            // 提交一个 Token 的时候，需要该 Token 是新鲜的
-            // 提交两个 Token 的时候，只需要保证第二个 Token 是新鲜的
-            if (!$strBsToken && !$result['fresh']) {
-                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
-            }
-            $user_id = $result['uid'];
-        } else {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
         // get models
         $modExfeAuth = $this->getModelByName('ExfeAuth');
         $modUser     = $this->getModelByName('User');
+        $checkHelper = $this->getHelperByName('check');
         // collecting post data
-        if ($strBsToken) {
+        $params      = $this->params;
+        // 提交两个 Token 的时候，只需要保证第二个 Token 是新鲜的
+        if (($strBsToken = trim(@$_POST['browsing_identity_token']))) {
+            // check signin
+            $result  = $checkHelper->isAPIAllow('user_edit', @$params['token'], [], true);
+            if (!$result['check']) {
+                apiError(401, 'no_signin', ''); // 需要登录
+            }
+            $user_id = $result['uid'];
             // get browsing token
             if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
              || $objBsToken['is_expire']) {
@@ -101,10 +95,15 @@ class UsersActions extends ActionController {
                 apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
             }
             $fromUserId = $objBsToken['data']['user_id'];
-        } else if ($result['token_info']['data']['merger_info']) {
-            $fromUserId = $result['token_info']['data']['merger_info']['mergeable_user']->id;
+        // 提交一个 Token 的时候，需要保证该 Token 是新鲜的
+        // get verify token
+        } else if (($verifyToken = $modExfeAuth->getToken(@$params['token']))
+                && isset($verifyToken['data']['merger_info'])
+                && time() - $verifyToken['data']['merger_info']['updated_time'] < 60 * 15) { // in 15 mins
+            $user_id    = $verifyToken['data']['user_id'];
+            $fromUserId = $verifyToken['data']['merger_info']['mergeable_user']->id;
         } else {
-            apiError(400, 'no_browsing_identity_token', '');
+            apiError(401, 'authenticate_failed', ''); // 需要重新鉴权
         }
         // get browsing identity ids
         $bsIdentityIds = @json_decode($_POST['identity_ids']);
