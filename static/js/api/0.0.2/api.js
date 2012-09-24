@@ -36,6 +36,7 @@ define('api', function (require, exports, module) {
 
     setDefaultIdentity: '/Users/setDefaultIdentity',
 
+    mergeIdentities: '/Users/mergeIdentities',
 
     // Identity
     getIdentityById: '/Identities/:identity_id',
