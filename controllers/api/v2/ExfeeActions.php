@@ -53,6 +53,9 @@ class ExfeeActions extends ActionController {
         $by_identity_id = (int) $result['by_identity_id'];
         // do it
         $exfee = json_decode($_POST['exfee']);
+        if (DEBUG) {
+            error_log($_POST['exfee']);
+        }
         if ($exfee && isset($exfee->invitations) && is_array($exfee->invitations)
         && ($udResult = $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id, $result['uid']))) {
             if ($cross_id && $udResult['changed']) {
