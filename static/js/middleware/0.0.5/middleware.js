@@ -28,7 +28,7 @@ define('middleware', function (require, exports, module) {
       session.user = user;
     }
 
-    else if (!authorization && authMeta) {
+    else if (!authorization && authMeta && authMeta.authorization) {
       Store.set('oauth', session.oauth = {
         provider: authMeta.provider,
         following: authMeta.provider === 'twitter' ? authMeta.twitter_following : false,
@@ -42,7 +42,7 @@ define('middleware', function (require, exports, module) {
       Store.set('authorization', session.authorization = authMeta.authorization);
     }
 
-    else if (authorization && authMeta) {
+    else if (authorization && authMeta && authMeta.authorization) {
       if (authorization.user_id === authMeta.authorization.user_id
          && authorization.token !== authMeta.authorization.token
          ) {
