@@ -260,7 +260,13 @@ class IdentityModels extends DataModel {
             // fixed args
             switch ($provider) {
                 case 'email':
-                    $external_id     = $external_username;
+                    if ($external_id) {
+                        $external_username = $external_id;
+                    } else if ($external_username) {
+                        $external_id = $external_username;
+                    } else {
+                        return null;
+                    }
                     $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
                     break;
                 case 'twitter':
