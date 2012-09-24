@@ -1196,7 +1196,9 @@ define('xdialog', function (require, exports, module) {
       },
 
       onHideAfter: function () {
-        this.befer.abort();
+        if (this.befer) {
+          this.befer.abort();
+        }
         this.destory();
       },
 
