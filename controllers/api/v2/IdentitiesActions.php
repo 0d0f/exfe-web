@@ -98,6 +98,9 @@ class IdentitiesActions extends ActionController {
                     }
                 }
             }
+            if (DEBUG) {
+                error_log(json_encode($objIdentities));
+            }
             apiResponse(['identities' => $objIdentities]);
         } else {
             apiError(400, 'no_identities', 'identities must be provided');
