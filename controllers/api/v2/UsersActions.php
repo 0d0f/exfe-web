@@ -101,7 +101,7 @@ class UsersActions extends ActionController {
                 && isset($verifyToken['data']['merger_info'])
                 && time() - $verifyToken['data']['merger_info']['updated_time'] < 60 * 15) { // in 15 mins
             $user_id    = $verifyToken['data']['user_id'];
-            $fromUserId = $verifyToken['data']['merger_info']['mergeable_user']->id;
+            $fromUserId = $verifyToken['data']['merger_info']['mergeable_user']['id'];
         } else {
             apiError(401, 'authenticate_failed', ''); // 需要重新鉴权
         }
