@@ -159,7 +159,7 @@ function getMainDB() {
     if(!$maindb) {
         $maindb = mysql_connect($dbhost, $dbuser, $dbpasswd);
         mysql_select_db($dbname, $maindb);
-        mysql_query("SET NAMES 'UTF8'");
+        mysql_query("SET NAMES 'utf8mb4'");
     }
     return $maindb;
 }
