@@ -345,3 +345,17 @@ function get_CJK_unicode_ranges() {
 function checkCjk($string) {
     return preg_match('/' . implode('|', get_CJK_unicode_ranges()) . '/u', $string);
 }
+
+
+function formatTitle($string) {
+    $string = trim($string);
+    $string = preg_replace('/\r\n|\n\r|\r/', '\n', $string, 1);
+    $string = preg_replace('/\r\n|\n\r|\r/', ' ',  $string);
+    return $string;
+}
+
+function formatDescription($string) {
+    $string = trim($string);
+    $string = preg_replace('/\r\n|\n\r|\r/', '\n', $string);
+    return $string;
+}
