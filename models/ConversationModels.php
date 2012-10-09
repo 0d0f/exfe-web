@@ -108,4 +108,24 @@ class ConversationModels extends DataModel {
         $conversation_count = $redis->HGET("conversation:count",$key);
         return $conversation_count;
     }
+
+
+    public function validatePost($post) {
+        // init
+        $result = ['post' => $post, 'error' => []];
+        // check structure
+        if (!$post || !is_object($post)) {
+            $result['error'][] = 'invalid_post_structure';
+        }
+        // check content
+        if (isset($result['post']->content)) {
+            $result['post']->content = formatDescription(
+                mb_substr($result['post']->content, 0, 233, 'utf8')
+            );
+        } else {
+            $result['error'][] = 'no_post_content';
+        }
+        return $result;
+    }
+
 }

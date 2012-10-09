@@ -177,4 +177,43 @@ class CrossModels extends DataModel {
         return $result["exfee_id"];
     }
 
+
+    public function validateCross($cross) {
+        // init
+        $result = ['cross' => $cross, 'error' => []];
+        // check structure
+        if (!$cross || !is_object($cross)) {
+            $result['error'][] = 'invalid_cross_structure';
+        }
+        // check title
+        if (isset($result['cross']->title)) {
+            $result['cross']->title = formatTitle(
+                mb_substr($result['cross']->title, 0, 233, 'utf8')
+            );
+            if (!$result['cross']->title) {
+                $result['error'][] = 'empty_cross_title';
+            }
+        } else {
+            $result['error'][] = 'no_cross_title';
+        }
+        // check description
+        if (isset($result['cross']->description)) {
+            $result['cross']->description = formatDescription($result['cross']->description);
+        } else {
+            $result['error'][] = 'no_cross_description';
+        }
+        // check time
+        // @todo by @leask ///////
+        // check place
+        if (isset($result['cross']->place)) {
+            $hlpPlace = $this->getHelperByName('Place');
+            $chkPlace = $hlpPlace->validatePlace($result['cross']->place);
+            $result['cross']->place = $chkPlace['place'];
+            $result['error'] = array_merge($result['error'], $chkPlace['error']);
+        }
+        // check invitations
+        // @todo by @leask ///////
+        return $result;
+    }
+
  }

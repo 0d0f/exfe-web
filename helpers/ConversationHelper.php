@@ -1,12 +1,18 @@
 <?php
 
 class ConversationHelper extends ActionController {
+
+    protected $modConversaction = null;
+
+
+    public function __construct() {
+        $this->modConversation = $this->getModelByName('Conversation');
+    }
+
+
     public function getConversationByExfeeId($exfee_id,$updated_at='') {
-
-
         $identityHelper=$this->getHelperByName('identity');
-        $conversationData=$this->getModelByName('conversation');
-        $posts=$conversationData->getConversationByExfeeId($exfee_id,$updated_at) ;
+        $posts=$this->modConversation->getConversationByExfeeId($exfee_id,$updated_at) ;
         $identities=array();
         $conversation=array();
         foreach($posts as $post)
@@ -25,5 +31,11 @@ class ConversationHelper extends ActionController {
         }
         return $conversation;
     }
+
+
+    public function validatePost($post) {
+        return $this->modConversation->validatePost($post);
+    }
+
 }
 
