@@ -18,6 +18,7 @@ class PlaceModels extends DataModel {
         );
     }
 
+
     public function addPlace($place) {
         $place->id   = (int) $place->id;
         $title       = mysql_real_escape_string($place->title);
@@ -49,6 +50,33 @@ class PlaceModels extends DataModel {
             }
         }
         return false;
+    }
+
+
+    public function validatePlace($place) {
+        // init
+        $result = ['place' => $place, 'error' => []];
+        // check structure
+        if (!$place || !is_object($place)) {
+            $result['error'][] = 'invalid_place_structure';
+        }
+        // check title
+        if (isset($result['place']->title)) {
+            $result['place']->title = formatTitle(
+                mb_substr($result['place']->title, 0, 144, 'utf8')
+            );
+        } else {
+            $result['error'][] = 'no_place_title';
+        }
+        // check description
+        if (isset($result['place']->description)) {
+            $result['place']->description = formatDescription(
+                mb_substr($result['place']->description, 0, 233, 'utf8')
+            );
+        } else {
+            $result['error'][] = 'no_place_description';
+        }
+        return $result;
     }
 
 }
