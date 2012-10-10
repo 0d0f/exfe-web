@@ -402,7 +402,10 @@ class UsersActions extends ActionController {
         if (!$password = $_POST['password']) {
             apiError(400, 'no_password', 'password must be provided');
         }
-        $name = mysql_real_escape_string(trim($_POST['name']));
+        if (!validatePassword($password)) {
+            apiError(400, 'weak_password', 'password must be longer than four');
+        }
+        $name = mysql_real_escape_string(formatName($_POST['name']));
         // set password
         $stResult = $modUser->resetPasswordByToken($token, $password, $name);
         if ($stResult) {
@@ -421,12 +424,15 @@ class UsersActions extends ActionController {
         $modExfee    = $this->getModelByName('exfee');
         $modExfeAuth = $this->getModelByName('ExfeAuth');
         // get name
-        if (!($name = trim($_POST['name']))) {
+        if (!($name = formatName($_POST['name']))) {
             apiError(400, 'no_user_name', 'No user name');
         }
         // get password
         if (!($passwd = $_POST['password'])) {
             apiError(400, 'no_password', 'No password');
+        }
+        if (!validatePassword($passwd)) {
+            apiError(400, 'weak_password', 'password must be longer than four');
         }
         // get invitation data
         $invToken   = trim($_POST['invitation_token']);
@@ -466,19 +472,22 @@ class UsersActions extends ActionController {
         $modUser       = $this->getModelByName('user');
         $modIdentity   = $this->getModelByName('identity');
         // collecting post data
-        if (!$external_username = $_POST['external_username']) {
+        if (!($external_username = $_POST['external_username'])) {
             apiError(403, 'no_external_username', 'external_username must be provided');
         }
-        if (!$provider = $_POST['provider']) {
+        if (!($provider = $_POST['provider'])) {
             apiError(403, 'no_provider', 'provider must be provided');
         }
         // @todo: 需要根据 $provider 检查 $external_username 有效性
-        if (!$password = $_POST['password']) {
+        if (!($password = $_POST['password'])) {
             apiError(403, 'no_password', 'password must be provided');
+        }
+        if (!validatePassword($password)) {
+            apiError(400, 'weak_password', 'password must be longer than four');
         }
         // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
-        if (($name = trim($_POST['name'])) !== ''
+        if (($name = formatName($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, false, true)) {
             if (!($user_id = $modUser->addUser($password, $name))
              || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
@@ -795,7 +804,7 @@ class UsersActions extends ActionController {
         // collecting post data
         $user = array();
         if (isset($_POST['name'])) {
-            $user['name'] = trim($_POST['name']);
+            $user['name'] = formatName($_POST['name']);
         }
         if ($user && !$modUser->updateUserById($user_id, $user)) {
             apiError(500, 'update_failed');
@@ -826,7 +835,10 @@ class UsersActions extends ActionController {
             apiError(403, 'invalid_current_password', ''); // 密码错误
         }
         if (!($newPassword = $_POST['new_password'])) {
-            apiError(400, 'no_new_password', ''); // 请输入当新密码
+            apiError(400, 'no_new_password', ''); // 请输入新密码
+        }
+        if (!validatePassword($newPassword)) {
+            apiError(400, 'weak_password', 'password must be longer than four');
         }
         if ($modUser->setUserPassword($user_id, $newPassword)) {
             apiResponse(array('user_id' => $user_id)); // 成功

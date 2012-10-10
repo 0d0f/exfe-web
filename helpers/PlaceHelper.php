@@ -11,7 +11,7 @@ class PlaceHelper extends ActionController {
 
 
     public function validatePlace($place) {
-        $this->modPlace->validatePlace($place);
+        return $this->modPlace->validatePlace($place);
     }
 
 }

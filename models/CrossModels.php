@@ -187,9 +187,7 @@ class CrossModels extends DataModel {
         }
         // check title
         if (isset($result['cross']->title)) {
-            $result['cross']->title = formatTitle(
-                mb_substr($result['cross']->title, 0, 233, 'utf8')
-            );
+            $result['cross']->title = formatTitle($result['cross']->title, 233);
             if (!$result['cross']->title) {
                 $result['error'][] = 'empty_cross_title';
             }
@@ -198,12 +196,15 @@ class CrossModels extends DataModel {
         }
         // check description
         if (isset($result['cross']->description)) {
-            $result['cross']->description = formatDescription($result['cross']->description);
+            $result['cross']->description = formatDescription($result['cross']->description, 0);
         } else {
             $result['error'][] = 'no_cross_description';
         }
         // check time
+        if (isset($result['cross']->time)) {
+            $result['cross']->origin = formatTitle($result['cross']->origin);
         // @todo by @leask ///////
+        }
         // check place
         if (isset($result['cross']->place)) {
             $hlpPlace = $this->getHelperByName('Place');
@@ -211,8 +212,10 @@ class CrossModels extends DataModel {
             $result['cross']->place = $chkPlace['place'];
             $result['error'] = array_merge($result['error'], $chkPlace['error']);
         }
-        // check invitations
+        // check exfee
+        if (isset($result['cross']->exfee)) {
         // @todo by @leask ///////
+        }
         return $result;
     }
 

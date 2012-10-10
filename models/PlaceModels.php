@@ -62,16 +62,14 @@ class PlaceModels extends DataModel {
         }
         // check title
         if (isset($result['place']->title)) {
-            $result['place']->title = formatTitle(
-                mb_substr($result['place']->title, 0, 144, 'utf8')
-            );
+            $result['place']->title = formatTitle($result['place']->title);
         } else {
             $result['error'][] = 'no_place_title';
         }
         // check description
         if (isset($result['place']->description)) {
             $result['place']->description = formatDescription(
-                mb_substr($result['place']->description, 0, 233, 'utf8')
+                $result['place']->description
             );
         } else {
             $result['error'][] = 'no_place_description';
