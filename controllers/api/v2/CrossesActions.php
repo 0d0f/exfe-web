@@ -208,12 +208,18 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
-        $crossHelper=$this->getHelperByName('cross');
-        $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
 
         if (DEBUG) {
             error_log($cross_str);
         }
+
+        $crossHelper=$this->getHelperByName('cross');
+        $chkCross = $crossHelper->validateCross($cross);
+        if ($chkCross['error']) {
+            apiError(400, 'cross_error', $chkCross['error'][0]);
+        }
+        $cross = $chkCross['cross'];
+        $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
 
         if(intval($cross_id)>0)
         {
@@ -241,16 +247,21 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
+
+        if (DEBUG) {
+            error_log($cross_str);
+        }
+
         $by_identity_id = (int) $result['by_identity_id'];
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
         $crossHelper=$this->getHelperByName('cross');
         $msgArg = array('old_cross' => $crossHelper->getCross(intval($params["id"])), 'to_identities' => array());
-        $cross_id=$crossHelper->editCross($cross,$by_identity_id);
-
-        if (DEBUG) {
-            error_log($cross_str);
+        $chkCross = $crossHelper->validateCross($cross);
+        if ($chkCross['error']) {
+            apiError(400, 'cross_error', $chkCross['error'][0]);
         }
+        $cross_id=$crossHelper->editCross($cross,$by_identity_id);
 
         if(intval($cross_id)>0)
         {
