@@ -2,6 +2,19 @@
 
 class CrossHelper extends ActionController {
 
+    protected $modCross = null;
+
+
+    public function __construct() {
+        $this->modCross = $this->getModelByName('Cross');
+    }
+
+
+    public function validateCross($cross) {
+        return $this->modCross->validateCross($cross);
+    }
+
+
     public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false,$uid = 0)
     {
         $crossData=$this->getModelByName("cross");
