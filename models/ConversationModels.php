@@ -13,9 +13,13 @@ class ConversationModels extends DataModel {
 
 
     public function addPost($post, $timestamp = 0) {
+        $chkPost = $this->validatePost($post);
+        if ($chkPost['error']) {
+            return ['post_id' => 0, 'post' => $post, 'error' => $chkPost['error']];
+        }
+        $post = $chkPost['post'];
         $post->by_identity_id = (int) $post->by_identity_id;
         $post->postable_id    = (int) $post->postable_id;
-        $post->content        = mb_substr($post->content, 0, 233, 'utf-8');
         $sql                  = "select id from crosses where exfee_id = {$post->postable_id};";
         $cross                = $this->getRow($sql);
         $cross_id             = $cross["id"];
@@ -34,7 +38,7 @@ class ConversationModels extends DataModel {
         if ($post_id) {
             saveUpdate($cross_id, ['conversation' => $updated]);
         }
-        return $post_id;
+        return ['post_id' => $post_id, 'post' => $post, 'error' => []];
     }
 
 
@@ -119,9 +123,7 @@ class ConversationModels extends DataModel {
         }
         // check content
         if (isset($result['post']->content)) {
-            $result['post']->content = formatDescription(
-                mb_substr($result['post']->content, 0, 233, 'utf8')
-            );
+            $result['post']->content = formatDescription($result['post']->content);
         } else {
             $result['error'][] = 'no_post_content';
         }
