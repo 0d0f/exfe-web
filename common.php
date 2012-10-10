@@ -345,3 +345,30 @@ function get_CJK_unicode_ranges() {
 function checkCjk($string) {
     return preg_match('/' . implode('|', get_CJK_unicode_ranges()) . '/u', $string);
 }
+
+
+function formatName($string, $length = 30) {
+    $string = mb_substr($string, 0, $length, 'utf8');
+    $string = preg_replace('/\r\n|\n\r|\r|\n/', ' ',  $string);
+    return $string;
+}
+
+
+function formatTitle($string, $length = 144) {
+    $string = trim(mb_substr($string, 0, $length, 'utf8'));
+    $string = preg_replace('/\r\n|\n\r|\r/',    '\n', $string, 1);
+    $string = preg_replace('/\r\n|\n\r|\r|\n/', ' ',  $string);
+    return $string;
+}
+
+
+function formatDescription($string, $length = 233) {
+    $string = trim($length ? mb_substr($string, 0, $length, 'utf8') : $string);
+    $string = preg_replace('/\r\n|\n\r|\r|\n/', '\n', $string);
+    return $string;
+}
+
+
+function validatePassword($string) {
+    return mb_strlen($string, 'utf8') >= 4;
+}

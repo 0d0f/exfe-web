@@ -43,9 +43,6 @@ class ConversationActions extends ActionController {
         $exfee_id = $params['id'];
         // get raw post
         $post_str = @file_get_contents('php://input');
-        if (DEBUG) {
-            error_log($post_str);
-        }
         $post     = json_decode($post_str);
         $post->postable_type = 'exfee';
         $post->postable_id   = $exfee_id;
@@ -61,10 +58,16 @@ class ConversationActions extends ActionController {
                 apiError(401,"invalid_auth","");
             }
         }
+        if (DEBUG) {
+            error_log($post_str);
+        }
         $post->by_identity_id = $result['by_identity_id'];
         // do post
-        $post_id = $modConv->addPost($post);
-        if (!$post_id) {
+        $rstPost = $modConv->addPost($post);
+        if (!($post_id = $rstPost['post_id'])) {
+            if ($rstPost['error']) {
+                apiError(400, 'error_post', $rstPost['error'][0]);
+            }
             apiError(400, 'failed', '');
         }
         // get post
