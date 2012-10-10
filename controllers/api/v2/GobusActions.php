@@ -121,8 +121,8 @@ class GobusActions extends ActionController {
         // add post to conversation
         $post     = new Post(0, null, $content, $cross->exfee->id, 'exfee');
         $post->by_identity_id = $by_identity->id;
-        $post_id  = $modCnvrstn->addPost($post, $time);
-        if (!$post_id) {
+        $rstPost  = $modCnvrstn->addPost($post, $time);
+        if (!($post_id = $rstPost['post_id'])) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
