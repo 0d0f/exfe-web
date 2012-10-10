@@ -214,7 +214,13 @@ class CrossModels extends DataModel {
         }
         // check exfee
         if (isset($result['cross']->exfee)) {
-        // @todo by @leask ///////
+            if (isset(  $result['cross']->exfee->invitations)
+            && is_array($result['cross']->exfee->invitations)
+            &&          $result['cross']->exfee->invitations) {
+                // @todo by @leask ///////
+            } else {
+                $result['error'][] = 'no_exfee_invitations';
+            }
         }
         return $result;
     }
