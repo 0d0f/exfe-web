@@ -1276,7 +1276,7 @@ define(function (require, exports, module) {
                 function(data) {
                     $('.cross-opts .saving').hide();
                     if (refresh) {
-                        window.location.reload();
+                        window.location.href = '/';
                     } else {
                         bus.emit('app:cross:edited');
                     }
@@ -1864,7 +1864,7 @@ define(function (require, exports, module) {
             strAbsTime = objMon.format('h:mmA on ddd, MMM D' + (matches && matches[0] == now.getFullYear() ? '' : ' YYYY'))
                         + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
             //strRelTime = efTime.timeAgo(bdate + ' ' + btime +  ' ' + bzone[0] + bzone[1] + bzone[2]  + bzone[4] + bzone[5]);
-            strRelTime = efTime.timeAgo(bdate + ' ' + btime +  ' Z', undefined, 'X');
+            strRelTime = efTime.timeAgo(bdate + ' ' + btime + ' Z', undefined, 'X');
           } else if (bdate && !btime) {
             var now = new Date()
               , matches = bdate.match(/^\d\d\d\d/m);
