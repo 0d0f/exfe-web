@@ -39,7 +39,7 @@ addScript([
     ['dialog',        '0.0.3'],
     ['typeahead',     '0.0.2'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.3'],
+    ['xdialog',       '0.0.4'],
     ['global',        '0.0.5'],
 ]);
 
