@@ -1116,11 +1116,6 @@ define('uploader', function (require, exports, module) {
           _u_.stage.update();
           _u_.bitmap80.updateImage(_u_.stage.canvas);
           _u_.stage80.update();
-          //var img = document.createElement('img');
-          //img.onload = function () {
-          //  new Thumbnailer(document.getElementById('real-avatar80'), this, _u_.stage80.canvas, 80, 3);
-          //}
-          //img.src = _u_.stage.canvas.toDataURL('image/png');
           return false;
         }
         if (_u_ && _u_.resizing) {
@@ -1294,12 +1289,6 @@ define('uploader', function (require, exports, module) {
             _u_.stage.update();
             _u_.bitmap80.updateImage(_u_.stage.canvas);
             _u_.stage80.update();
-
-            //var img = document.createElement('img');
-            //img.onload = function () {
-            //  new Thumbnailer(document.getElementById('real-avatar80'), this, _u_.stage80.canvas, 80, 3);
-            //}
-            //img.src = _u_.stage.canvas.toDataURL('image/png');
           }
 
           return false;
