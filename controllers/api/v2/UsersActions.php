@@ -570,13 +570,13 @@ class UsersActions extends ActionController {
         if (!($password = $_POST['password'])) {
             apiError(403, 'no_password', 'password must be provided');
         }
-        if (!validatePassword($password)) {
-            apiError(400, 'weak_password', 'password must be longer than four');
-        }
         // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
         if (($name = formatName($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, false, true)) {
+            if (!validatePassword($password)) {
+                apiError(400, 'weak_password', 'password must be longer than four');
+            }
             if (!($user_id = $modUser->addUser($password, $name))
              || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
                 apiError(403, 'failed', 'failed while signing up new user');
