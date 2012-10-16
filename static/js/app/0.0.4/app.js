@@ -14,6 +14,7 @@ define(function (require, exports, module) {
   var app = lightsaber();
 
   app.use(middleware.basicAuth);
+  app.use(middleware.cleanupAppTmp);
   app.initRouter();
   // *注: 要使 `errorHandler` 生效，`app.initRouter` 必须先初始化。
   app.use(middleware.errorHandler);
