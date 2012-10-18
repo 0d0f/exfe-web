@@ -24,7 +24,7 @@ class User extends EFObject {
         parent::__construct($id, 'user');
 
         $this->name              = $name;
-        $this->bio               = $bio;
+        $this->bio               = $bio ?: '';
         $this->default_identity  = $default_identity;
         $this->avatar_filename   = $avatar_filename;
         $this->timezone          = $timezone;
