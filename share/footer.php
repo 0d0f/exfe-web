@@ -39,7 +39,7 @@ addScript([
     ['dialog',        '0.0.3'],
     ['typeahead',     '0.0.2'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.2'],
+    ['xdialog',       '0.0.3'],
     ['global',        '0.0.3'],
 ]);
 
@@ -61,8 +61,8 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 addScript([
     ['lightsaber',    '0.0.4'],
     ['middleware',    '0.0.5'],
-    ['routes',        '0.0.5'],
-    ['app',           '0.0.3'],
+    ['routes',        '0.0.6'],
+    ['app',           '0.0.4'],
 ]);
 
 // Google Analytics
