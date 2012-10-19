@@ -27,7 +27,7 @@ class User extends EFObject {
         $this->bio               = $bio ?: '';
         $this->default_identity  = $default_identity;
         $this->avatar_filename   = $avatar_filename;
-        $this->timezone          = $timezone;
+        $this->timezone          = $timezone ?: '';
         $this->identities        = $identities;
     }
 
