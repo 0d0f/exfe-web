@@ -17,13 +17,13 @@ class User extends EFObject {
                                 $bio               = '',
                                 $avatar_filename   = '',
                                 $timezone          = '',
-                                $identities        = array()) {
+                                $identities        = []) {
         parent::__construct($id, 'user');
 
         $this->name              = $name;
-        $this->bio               = $bio;
+        $this->bio               = $bio ?: '';
         $this->avatar_filename   = $avatar_filename;
-        $this->timezone          = $timezone;
+        $this->timezone          = $timezone ?: '';
         $this->identities        = $identities;
     }
 

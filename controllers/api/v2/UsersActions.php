@@ -567,7 +567,7 @@ class UsersActions extends ActionController {
             apiError(403, 'no_provider', 'provider must be provided');
         }
         // @todo: 需要根据 $provider 检查 $external_username 有效性
-        if (!($password = $_POST['password'])) {
+        if (strlen($password = $_POST['password']) === 0) {
             apiError(403, 'no_password', 'password must be provided');
         }
         // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
