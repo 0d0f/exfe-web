@@ -593,21 +593,25 @@ class UsersActions extends ActionController {
 
     public function doSignout() {
         // get models
-        $hlpCheck  = $this->getHelperByName('check');
-        $modDevice = $this->getModelByName('device');
+        $hlpCheck    = $this->getHelperByName('check');
+        $modDevice   = $this->getModelByName('device');
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
         // collecting post data
-        $params    = $this->params;
-        $user_id   = intval($params['id']);
-        $os_name   = $_POST['os_name'];
-        $udid      = $_POST['udid'];
-        $check     = $hlpCheck->isAPIAllow(
+        $params  = $this->params;
+        $user_id = intval($params['id']);
+        $os_name = $_POST['os_name'];
+        $udid    = $_POST['udid'];
+        $check   = $hlpCheck->isAPIAllow(
             'user_signout', $params['token'], ['user_id' => $user_id]
         );
         if (!$check['check']) {
             apiError(403, 'forbidden');
         }
-        // disconnect
+        // ready
         $rtResult  = ['user_id' => $user_id];
+        // expireToken
+        $modExfeAuth->expireToken($params['token']);
+        // disconnect
         $rtResult += $udid && $os_name && $modDevice->disconnectDeviceByUseridAndUdid($user_id, $udid, $os_name)
                    ? ['udid'    => $udid, 'os_name' => $os_name] : [];
         // return
@@ -905,29 +909,38 @@ class UsersActions extends ActionController {
 
 
     public function doSetPassword() {
-        // check signin
+        // get models
+        $modUser     = $this->getModelByName('user');
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
         $checkHelper = $this->getHelperByName('check');
+        // check signin
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
-            if (!$result['fresh']) {
-                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
-            }
             $user_id = $result['uid'];
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
-        // get models
-        $modUser = $this->getModelByName('user');
         // collecting post data
-        if (!($newPassword = $_POST['new_password'])) {
+        if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
+            apiError(403, 'invalid_current_password', ''); // 密码错误
+        }
+        if (strlen($newPassword = $_POST['new_password']) === 0) {
             apiError(400, 'no_new_password', ''); // 请输入新密码
         }
         if (!validatePassword($newPassword)) {
             apiError(400, 'weak_password', 'password must be longer than four');
         }
+        // set password
         if ($modUser->setUserPassword($user_id, $newPassword)) {
-            apiResponse(array('user_id' => $user_id)); // 成功
+            // expire token
+            $modExfeAuth->expireToken($params['token']);
+            // get new token
+            $siResult = $modUser->rawSignin($user_id);
+            // return
+            if ($siResult) { // 成功
+                apiResponse(['user_id' => $user_id, 'token' => $siResult['token']]);
+            }
         }
         apiError(500, 'failed', ''); // 操作失败
     }

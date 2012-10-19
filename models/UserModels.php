@@ -816,16 +816,15 @@ class UserModels extends DataModel {
         return $actResult;
     }
 
+
+    public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
+        if (!$user_id) {
+            return false;
+        }
+        $passwdInDb = $this->getUserPasswdByUserId($user_id);
+        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
+        return $password === $passwdInDb['encrypted_password']
+            || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
+    }
+
 }
-
-
-
-// public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
-//     if (!$user_id) {
-//         return false;
-//     }
-//     $passwdInDb = $this->getUserPasswdByUserId($user_id);
-//     $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-//     return $password === $passwdInDb['encrypted_password']
-//         || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
-// }
