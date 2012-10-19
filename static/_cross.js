@@ -109,8 +109,8 @@ ExfeUtilities = {
         var title = arrPlace.shift();
         title = title ? title : '';
         return {
-            title : title, description : arrPlace.join('\r'), lng : 0, lat : 0,
-            provider : '', external_id : 0, id : Cross.place.id, type : 'Place'
+            title : title, description : arrPlace.join('\r'), lng : '', lat : '',
+            provider : '', external_id : '', id : Cross.place.id, type : 'Place'
         };
     }
 
