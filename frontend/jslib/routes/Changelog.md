@@ -1,3 +1,6 @@
+* v0.0.6 2012-10-11T16:49:32 UTC+0800
+  ✔ fixed `user.identities.length === 0` 时，登出
+
 * v0.0.5 14:27:15 09/20/2012
   - `user.default_identity`
   ✔ fixed `verification_token` 时，同一 user，token 不一样的 bug
