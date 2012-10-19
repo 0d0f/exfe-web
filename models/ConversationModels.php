@@ -124,6 +124,9 @@ class ConversationModels extends DataModel {
         // check content
         if (isset($result['post']->content)) {
             $result['post']->content = formatDescription($result['post']->content);
+            if (strlen($result['post']->content) === 0) {
+                $result['error'][] = 'post';
+            }
         } else {
             $result['error'][] = 'no_post_content';
         }
