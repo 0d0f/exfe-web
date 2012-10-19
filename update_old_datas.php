@@ -28,23 +28,22 @@ class UpgradeOldDatas extends DataModel {
                                `origin_begin_at` = '{$origin_begin_at}'
                         WHERE  `id`              =  {$item['id']}";
                 echo '[UPDATED]';
-                // $this->query(
-                // );
+                $this->query($sql);
             } else {
                 echo '[OK]';
             }
             echo "\r\n";
         }
+        echo "\r\n";
 
         // parse all places
         echo "Start checking place datas:\r\n";
         $places = $this->getAll("SELECT * FROM `places`");
         // loop
-        print_r($places);
         foreach ($places as $item) {
             echo "Checking place: {$item['id']}...";
-            $place_line1 = formatTitle($place_line1);
-            $place_line2 = formatDescription($place_line2);
+            $place_line1 = formatTitle($item['place_line1']);
+            $place_line2 = formatDescription($item['place_line2']);
             if ($place_line1 !== $item['place_line1']
              || $place_line2 !== $item['place_line2']) {
                 $place_line1 = mysql_real_escape_string($place_line1);
@@ -54,19 +53,37 @@ class UpgradeOldDatas extends DataModel {
                                `place_line2`     = '{$place_line2}'
                         WHERE  `id`              =  {$item['id']}";
                 echo '[UPDATED]';
-                // $this->query(
-                // );
+                $this->query($sql);
             } else {
                 echo '[OK]';
             }
             echo "\r\n";
         }
+        echo "\r\n";
 
-        // parse all times
-        echo "Start checking place datas:\r\n";
+        // parse all conversations
+        echo "Start checking conversation datas:\r\n";
+        $posts = $this->getAll("SELECT * FROM `posts`");
+        // loop
+        foreach ($posts as $item) {
+            echo "Checking post: {$item['id']}...";
+            $post = formatDescription($item['content']);
+            if ($post !== $item['content']) {
+                $post = mysql_real_escape_string($post);
+                $sql = "UPDATE `posts`
+                        SET    `content`         = '{$post}'
+                        WHERE  `id`              =  {$item['id']}";
+                echo '[UPDATED]';
+                $this->query($sql);
+            } else {
+                echo '[OK]';
+            }
+            echo "\r\n";
+        }
+        echo "\r\n";
 
         // done
-        echo "\r\nAll Done. 😃\r\n";
+        echo "All Done. 😃\r\n";
     }
 
 }

@@ -90,12 +90,11 @@ class CrossModels extends DataModel {
             $cross_updated = [];
             $updated       = ['updated_at'  => date('Y-m-d H:i:s', time()),
                               'identity_id' => $by_identity_id];
-
             if ($place_id > 0 && $old_cross
-             && ($old_cross->place->title       !== $cross->place->title
-              || $old_cross->place->description !== $cross->place->description
-              || $old_cross->place->lng         !== $cross->place->lng
-              || $old_cross->place->lat         !== $cross->place->lat
+             && (mysql_real_escape_string($old_cross->place->title)       !== $cross->place->title
+              || mysql_real_escape_string($old_cross->place->description) !== $cross->place->description
+              || (float) $old_cross->place->lng !== (float) $cross->place->lng
+              || (float) $old_cross->place->lat !== (float) $cross->place->lat
               || $old_cross->place->provider    !== $cross->place->provider
               || $old_cross->place->external_id !== $cross->place->external_id
               || $old_cross->place->id          !=  $place_id)) {
@@ -103,19 +102,19 @@ class CrossModels extends DataModel {
                 $cross_updated['place']       = $updated;
             }
 
-            if ($cross->title && $old_cross && $old_cross->title !== $cross->title) {
+            if ($cross->title && $old_cross && mysql_real_escape_string($old_cross->title) !== $cross->title) {
                 array_push($updatefields, "`title`           = '{$cross->title}'");
                 $cross_updated['title']       = $updated;
             }
 
-            if ($cross->description && $old_cross && $old_cross->description !== $cross->description) {
+            if ($cross->description && $old_cross && mysql_real_escape_string($old_cross->description) !== $cross->description) {
                 array_push($updatefields, "`description`     = '{$cross->description}'");
                 $cross_updated['description'] = $updated;
             }
 
             if ($cross_time
              && $old_cross
-             && ($old_cross->time->origin         !== $cross->time->origin
+             && (mysql_real_escape_string($old_cross->time->origin) !== $cross->time->origin
               || $old_cross->time->begin_at->date !== $cross->time->begin_at->date
               || $old_cross->time->begin_at->time !== $cross->time->begin_at->time)) {
                 array_push($updatefields, "`begin_at`        = '{$begin_at_time_in_old_format}'");
@@ -189,7 +188,7 @@ class CrossModels extends DataModel {
         // check title
         if (isset($result['cross']->title)) {
             $result['cross']->title = formatTitle($result['cross']->title, 233);
-            if (!$result['cross']->title) {
+            if (strlen($result['cross']->title) === 0) {
                 $result['error'][] = 'empty_cross_title';
             }
         } else {
@@ -204,7 +203,7 @@ class CrossModels extends DataModel {
         // check time
         if (isset($result['cross']->time)) {
             $result['cross']->origin = formatTitle($result['cross']->origin);
-        // @todo by @leask ///////
+            // @todo by @leask ///////
         }
         // check place
         if (isset($result['cross']->place)) {
