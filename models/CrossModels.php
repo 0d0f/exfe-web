@@ -188,7 +188,7 @@ class CrossModels extends DataModel {
         // check title
         if (isset($result['cross']->title)) {
             $result['cross']->title = formatTitle($result['cross']->title, 233);
-            if (!$result['cross']->title) {
+            if (strlen($result['cross']->title) === 0) {
                 $result['error'][] = 'empty_cross_title';
             }
         } else {
@@ -203,7 +203,7 @@ class CrossModels extends DataModel {
         // check time
         if (isset($result['cross']->time)) {
             $result['cross']->origin = formatTitle($result['cross']->origin);
-        // @todo by @leask ///////
+            // @todo by @leask ///////
         }
         // check place
         if (isset($result['cross']->place)) {
