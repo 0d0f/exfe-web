@@ -15,10 +15,10 @@ class OAuthActions extends ActionController {
             $webResponse = true;
         } else {
             if ($_POST['callback']) {
-                $workflow['callback']['url']  = trim($_POST['callback']);
+                $workflow['callback']['url']  = trim($_POST['refere']);
             }
             if ($_POST['args']) {
-                $workflow['callback']['args'] = trim($_POST['args']);
+                $workflow['callback']['args'] = trim($_POST['event']);
             }
         }
         $modOauth = $this->getModelByName('OAuth');
