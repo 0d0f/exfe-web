@@ -104,7 +104,7 @@ class OAuthActions extends ActionController {
                             ['provider'          => 'twitter',
                              'external_id'       => $objTwitterIdentity->external_id,
                              'name'              => $objTwitterIdentity->name,
-                             'bio'               => $objTwitterIdentity->bio,
+                             'bio'               => $objTwitterIdentity->description,
                              'external_username' => $objTwitterIdentity->external_username,
                              'avatar_filename'   => $objTwitterIdentity->avatar_filename],
                             $user_id, 3
