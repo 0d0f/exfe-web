@@ -37,26 +37,19 @@ class UpgradeGravatars extends DataModel {
 
     public function run() {
         $identities = $this->getAll(
-            "SELECT * FROM `identities`
-             WHERE  `provider`          = 'email'
-             AND  ( `avatar_file_name`  = ''
-             OR     `avatar_file_name` is  NULL )
-             ORDER BY `id`"
+            "SELECT * FROM `identities` WHERE `provider` = 'email' ORDER BY `id`"
         );
         // loop
         foreach ($identities as $item) {
             echo "Fetch Gravatar for {$item['id']} / {$item['external_username']}: ";
-            if (($avatar_filename = $this->getGravatarByExternalUsername($item['external_username']))) {
-                $this->query(
-                    "UPDATE `identities`
-                     SET    `avatar_file_name` = '{$avatar_filename}',
-                            `updated_at`       =  NOW()
-                     WHERE  `id`               =  {$item['id']}"
-                );
-                echo "[Succeed] [URL:{$avatar_filename}]\r\n";
-            } else {
-                echo "[Failed]\r\n";
-            }
+            $avatar_filename = $this->getGravatarByExternalUsername($item['external_username']);
+            $this->query(
+                "UPDATE `identities`
+                 SET    `avatar_file_name` = '{$avatar_filename}',
+                        `updated_at`       =  NOW()
+                 WHERE  `id`               =  {$item['id']}"
+            );
+            echo $avatar_filename ? "[Succeed] [URL:{$avatar_filename}]\r\n" : "[Failed]\r\n";
         }
         //
         echo "\r\nDone. 😃\r\n";
