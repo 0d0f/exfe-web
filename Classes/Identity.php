@@ -60,7 +60,7 @@ class Identity extends EFObject {
 
         $this->name              = $name;
         $this->nickname          = $nickname;
-        $this->bio               = $bio;
+        $this->bio               = $bio ?: '';
         $this->provider          = $provider;
         $this->connected_user_id = (int)    $connected_user_id;
         $this->external_id       = (string) $external_id;
