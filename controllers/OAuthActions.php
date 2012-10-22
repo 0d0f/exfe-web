@@ -7,17 +7,17 @@ class OAuthActions extends ActionController {
     public function doTwitterAuthenticate() {
         $workflow    = [];
         $webResponse = false;
-        if ($_GET['device'] && $_GET['device_callback']) {
+        if (@$_GET['device'] && @$_GET['device_callback']) {
             $workflow    = ['callback' => [
                 'oauth_device'          => strtolower(trim($_GET['device'])),
                 'oauth_device_callback' => trim($_GET['device_callback']),
             ]];
             $webResponse = true;
         } else {
-            if ($_POST['callback']) {
+            if (isset($_POST['callback'])) {
                 $workflow['callback']['url']  = trim($_POST['refere']);
             }
-            if ($_POST['args']) {
+            if (isset($_POST['args'])) {
                 $workflow['callback']['args'] = trim($_POST['event']);
             }
         }
