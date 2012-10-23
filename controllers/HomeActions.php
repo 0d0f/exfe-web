@@ -22,17 +22,19 @@ class HomeActions extends ActionController {
             $oauthRst  = ['authorization' => null];
             if ($oauthIfo['oauth_signin']) {
                 $oauthRst['authorization']   = $oauthIfo['oauth_signin'];
-                $oauthRst['identity']        = $oauthIfo['identity'];
-                $oauthRst['identity_status'] = $oauthIfo['identity_status'];
+                $oauthRst['data']            = [
+                    'identity'        => $oauthIfo['identity'],
+                    'identity_status' => $oauthIfo['identity_status'],
+                ];
                 if ($oauthIfo['identity']->provider === 'twitter') {
-                    $oauthRst['twitter_following'] = $oauthIfo['twitter_following'];
+                    $oauthRst['data']['twitter_following'] = $oauthIfo['twitter_following'];
                 }
                 if (isset($oauthIfo['workflow'])) {
                     if (isset($oauthIfo['workflow']['callback']['url'])) {
-                        $oauthRst['refere']        = $oauthIfo['workflow']['callback']['url'];
+                        $oauthRst['refere'] = $oauthIfo['workflow']['callback']['url'];
                     }
                     if (isset($oauthIfo['workflow']['callback']['args'])) {
-                        $oauthRst['event']         = $oauthIfo['workflow']['callback']['args'];
+                        $oauthRst['event']  = $oauthIfo['workflow']['callback']['args'];
                     }
                 }
             }
