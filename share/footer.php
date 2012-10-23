@@ -46,7 +46,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.3'],
+    ['profile',       '0.0.4'],
 ]);
 
 // cross
