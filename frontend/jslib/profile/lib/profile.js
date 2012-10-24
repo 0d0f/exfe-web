@@ -94,7 +94,7 @@ define(function (require, exports, module) {
       if (!czEtz) {
         s += ' ' + tz;
       }
-      return s;
+      return s || 'Sometime';
     } else {
 
       if (b.time_word) {
