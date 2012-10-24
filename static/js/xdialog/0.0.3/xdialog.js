@@ -104,7 +104,7 @@ define('xdialog', function (require, exports, module) {
               type: 'POST',
               dataType: 'JSON',
               data: {
-                callback: window.location.href
+                refere: window.location.href
               },
               beforeSend: function (xhr) {
                 that.$('.modal-body').eq(0).css('opacity', 0);
@@ -659,7 +659,7 @@ define('xdialog', function (require, exports, module) {
             type: 'POST',
             dataType: 'JSON',
             data: {
-              callback: window.location.href
+              refere: window.location.href
             }
           })
             .done(function (data) {
@@ -893,50 +893,51 @@ define('xdialog', function (require, exports, module) {
             , user_id = authorization.user_id
             , token = authorization.token;
 
-          Api.request('setPassword'
-            , {
-              type: 'POST',
-              params: { token: token },
-              resources: { user_id: user_id },
-              data: {
-                current_password: cppwd,
-                new_password: cpnpwd
-              },
-              beforeSend: function (xhr) {
-                $e.addClass('disabled loading');
-              },
-              complete: function (xhr) {
-                $e.removeClass('disabled loading');
+          //function _setPassword(token, user_id, cppwd, cpnpwd, that, $e) {
+            Api.request('setPassword'
+              , {
+                type: 'POST',
+                params: { token: token },
+                resources: { user_id: user_id },
+                data: {
+                  current_password: cppwd,
+                  new_password: cpnpwd
+                },
+                beforeSend: function (xhr) {
+                  $e && $e.addClass('disabled loading');
+                },
+                complete: function (xhr) {
+                  $e && $e.removeClass('disabled loading');
+                }
               }
-            }
-            , function (data) {
-              $e = that.element;
-              that.offSrcNode();
-              that.destory();
-              $e.remove();
-            }
-            , function (data) {
-              var meta = data && data.meta;
-              if (meta) {
-                if (meta.code === 403) {
-                  var errorType = data.meta.errorType;
-                  if (errorType === 'invalid_current_password') {
-                    alert('Invalid current password.');
+              , function (data) {
+                Store.set('authorization', data);
+                that && that.destory();
+              }
+              , function (data) {
+                var meta = data && data.meta;
+                if (meta) {
+                  if (meta.code === 403) {
+                    var errorType = data.meta.errorType;
+                    if (errorType === 'invalid_current_password') {
+                      alert('Invalid current password.');
+                    }
+                  }
+                  else if (meta.code === 401
+                      && meta.errorType === 'authenticate_timeout') {
+
+                    that && that.destory();
+
+                    //var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                    //$('#app-tmp').append($d);
+                    //$d.trigger('click.dialog.data-api', {callback: function () { setPassword(token, user_id, cppwd, cpnpwd); }});
                   }
                 }
-                else if (meta.code === 401
-                    && meta.errorType === 'authenticate_timeout') {
-
-                  that.destory();
-
-                  var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
-                  $('#app-tmp').append($d);
-                  $d.trigger('click.dialog.data-api');
-                }
               }
-            }
-          );
+            );
+          //}
 
+          //_setPassword(token, user_id, cpnpwd, that, $e);
         }
       },
 
@@ -1027,8 +1028,6 @@ define('xdialog', function (require, exports, module) {
         },
         'click .xbtn-add': function (e) {
           var that = this
-            , authorization = Store.get('authorization')
-            , token = authorization.token
             , od = that._identity
 
           if (!od) {
@@ -1036,67 +1035,57 @@ define('xdialog', function (require, exports, module) {
           }
 
           var provider = od.provider
-            , external_username = od.external_username || od.external_identity || '';
-          var defe = Api.request('addIdentity',
-            {
-              type: 'POST',
-              params: { token: token },
-              data: {
-                external_username: external_username,
-                provider: provider
-              }
-            },
-            function (data) {
-              var identity = data.identity
-                , user = Store.get('user')
-                , identities = user.identities;
-              identities.push(identity);
-              Store.set('user', user);
-              var s = Handlebars.compile($('#jst-identity-item').html());
-              var h = s(data.identity);
-              $('.identity-list').append(h);
-              that.destory();
-            },
-            function (data) {
-              var meta = data && data.meta;
-              if (meta
-                  && meta.code === 401
-                  && meta.errorType === 'authenticate_timeout') {
+            , external_username = od.external_username || od.external_identity || ''
+            , user = Store.get('user');
 
-                that.destory();
-                var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
-                $('#app-tmp').append($d);
-                $d.trigger('click.dialog.data-api');
-              }
-            }
-          );
-          /*
-          if (od) {
-            od.password = this.$('#password').val();
-            if (!od.password) {
-              return;
-            }
-            Api.request('signin'
-              , {
+          // 如果该身份已经添加过，则不再重复添加
+          if (R.find(user.identities, function (v, i) {
+                if (v.provider === provider && v.external_username === external_username) { return true; }
+              })) {
+            that.destory();
+            return;
+          }
+
+          function addIdentity(external_username, provider, that) {
+            var authorization = Store.get('authorization')
+              , token = authorization.token;
+            var defe = Api.request('addIdentity',
+              {
                 type: 'POST',
+                params: { token: token },
                 data: {
-                  external_username: od.external_username,
-                  provider: od.provider,
-                  password: od.password,
-                  name: '',
-                  auto_signin: !od.auto_signin
-                },
-                beforeSend: function (xhr) {
-                },
-                complete: function (xhr) {
+                  external_username: external_username,
+                  provider: provider
+                }
+              },
+              function (data) {
+                var identity = data.identity
+                  , user = Store.get('user')
+                  , identities = user.identities;
+                identities.push(identity);
+                Store.set('user', user);
+                var s = Handlebars.compile($('#jst-identity-item').html());
+                var h = s(data.identity);
+                $('.identity-list').append(h);
+                that && that.destory();
+              },
+              function (data) {
+                var meta = data && data.meta;
+                if (meta
+                    && meta.code === 401
+                    && meta.errorType === 'authenticate_timeout') {
+
+                  that && that.destory();
+                  var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                  $('#app-tmp').append($d);
+                  var e = $.Event('click.dialog.data-api');
+                  e._data = {callback: function () { addIdentity(external_username, provider)}};
+                  $d.trigger(e);
                 }
               }
-              , function (data) {
-                  console.log(data);
-                }
             );
           }
-          */
+          addIdentity(external_username, provider, that);
         },
         'click .xbtn-verify': function (e) {
           var that = this;
@@ -1131,44 +1120,7 @@ define('xdialog', function (require, exports, module) {
           );
         },
         'click .xbtn-done': function (e) {
-          var that = this
-            , provider = that._identity.provider
-            , external_username = that._identity.external_identity || that._identity.external_username
-            , authorization = Store.get('authorization')
-            , token = authorization.token;
-          Api.request('addIdentity',
-            {
-              type: 'POST',
-              params: { token: token },
-              data: {
-                external_username: external_username,
-                provider: provider
-              }
-            },
-            function (data) {
-              var identity = data.identity
-                , user = Store.get('user')
-                , identities = user.identities;
-              identities.push(identity);
-              Store.set('user', user);
-              var s = Handlebars.compile($('#jst-identity-item').html());
-              var h = s(data.identity);
-              $('.identity-list').append(h);
-              that.destory();
-            },
-            function (data) {
-              var meta = data && data.meta;
-              if (meta
-                  && meta.code === 401
-                  && meta.errorType === 'authenticate_timeout') {
-
-                that.destory();
-                var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
-                $('#app-tmp').append($d);
-                $d.trigger('click.dialog.data-api');
-              }
-            }
-          );
+          this.$('.xbtn-add').trigger('click');
         },
         'click .oauth > a': function (e) {
           e.preventDefault();
@@ -1177,7 +1129,8 @@ define('xdialog', function (require, exports, module) {
             type: 'POST',
             dataType: 'JSON',
             data: {
-              callback: window.location.href
+              refere: window.location.href,
+              event: '{"action": "add_identity"}'
             },
             success: function (data) {
               var code = data.meta.code;
@@ -2547,7 +2500,9 @@ define('xdialog', function (require, exports, module) {
             },
             function (data) {
               Store.set('authorization', data);
+              var cb = that.callback;
               that.destory();
+              cb();
             }
           );
         },
@@ -2607,6 +2562,13 @@ define('xdialog', function (require, exports, module) {
           , user = Store.get('user')
           , hasPassword = user.password;
         that.$('.d' + (hasPassword ? 0 : 1)).removeClass('hide');
+
+        if (e && e._data) {
+          that.callback = e._data.callback;
+        }
+
+        that.callback || (that.callback = function () {});
+
         if (hasPassword) {
           that.$('.modal-body .d0')
             .find('.avatar img').attr('src', user.avatar_filename)
