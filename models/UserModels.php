@@ -590,6 +590,9 @@ class UserModels extends DataModel {
                     `created_at` = NOW(),
                     `updated_at` = NOW()"
         );
+        $this->query(
+            "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
+        );
         return intval($actResult);
     }
 
@@ -612,7 +615,8 @@ class UserModels extends DataModel {
         return $this->query(
             "UPDATE `users`
              SET    `encrypted_password` = '{$password}',
-                    `password_salt`      = '{$passwordSalt}'{$sqlName}
+                    `password_salt`      = '{$passwordSalt}'{$sqlName},
+                    `updated_at`         =  NOW()
              WHERE  `id`                 =  {$user_id}"
         );
     }
