@@ -1,3 +1,7 @@
+* v0.0.4 2012-10-23T22:36:59 UTC+0800
+  * 如果 cross.time.outputformat == 0 且 time.begin_at 都位空时,输出 `Sometime`
+  * add Twitter OAuth identity
+
 * v0.0.3 12:31:54 08/31/2012   
   \+ 如果是 OAuth identity, 双击修改 identity name 时，提示红色文字   
   \* 修复 newbieguide.js 重复加载问题, newbieguide 升级到 v0.0.2   
