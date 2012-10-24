@@ -105,7 +105,7 @@ define(function (require, exports, module) {
         s += b.time;
       }
 
-      if (!czEtz) {
+      if (!czEtz && tz) {
         s += ' (' + tz + ') ';
       }
 
@@ -320,6 +320,53 @@ define(function (require, exports, module) {
 
     var h = s({identities: identities});
     $('.identity-list').append(h);
+    if (event = $('#app-main').data('event')) {
+      var action = event.action;
+      if (action === 'add_identity') {
+        var data = event.data;
+        function addIdentity(external_username, provider, that) {
+          var authorization = Store.get('authorization')
+            , token = authorization.token;
+          var defe = Api.request('addIdentity',
+            {
+              type: 'POST',
+              params: { token: token },
+              data: {
+                external_username: external_username,
+                provider: provider
+              }
+            },
+            function (data) {
+              var identity = data.identity
+                , user = Store.get('user')
+                , identities = user.identities;
+              identities.push(identity);
+              Store.set('user', user);
+              var s = Handlebars.compile($('#jst-identity-item').html());
+              var h = s(data.identity);
+              $('.identity-list').append(h);
+              that && that.destory();
+            },
+            function (data) {
+              var meta = data && data.meta;
+              if (meta
+                  && meta.code === 401
+                  && meta.errorType === 'authenticate_timeout') {
+
+                that && that.destory();
+                var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                $('#app-tmp').append($d);
+                var e = $.Event('click.dialog.data-api');
+                e._data = {callback: function () { addIdentity(external_username, provider)}};
+                $d.trigger(e);
+              }
+            }
+          );
+        }
+        addIdentity(data.identity.external_username, data.identity.provider);
+        $('#app-main').removeData('event');
+      }
+    }
   };
 
   // crossList 信息
@@ -968,42 +1015,48 @@ define(function (require, exports, module) {
     var identity_id = +dt.getData('text/plain');
     $(this).parent().removeClass('over');
     $('.icon24-trash').removeClass('icon24-trash-red');
-    var authorization = Store.get('authorization')
-      , token = authorization.token;
 
     // delete identity
-    Api.request('deleteIdentity'
-      , {
-        type: 'POST',
-        params: { token: token },
-        data: {
-          identity_id: identity_id
-        }
-      },
-      function (data) {
-        var user = Store.get('user')
-          , identities = user.identities;
-        R.some(identities, function (v, i) {
-          if (v.id === identity_id) {
-            identities.splice(i, 1);
-            return true;
+    function _deleteIdentity(identity_id) {
+      var authorization = Store.get('authorization')
+        , token = authorization.token;
+      Api.request('deleteIdentity'
+        , {
+          type: 'POST',
+          params: { token: token },
+          data: {
+            identity_id: identity_id
           }
-        });
-        Store.set('user', user);
-        $('.identity-list > li[data-identity-id="' + identity_id + '"]').remove();
-      },
-      function (data) {
-        var meta = data && data.meta;
-        if (meta
-            && meta.code === 401
-            && meta.errorType === 'authenticate_timeout') {
+        },
+        function (data) {
+          var user = Store.get('user')
+            , identities = user.identities;
+          R.some(identities, function (v, i) {
+            if (v.id === identity_id) {
+              identities.splice(i, 1);
+              return true;
+            }
+          });
+          Store.set('user', user);
+          $('.identity-list > li[data-identity-id="' + identity_id + '"]').remove();
+        },
+        function (data) {
+          var meta = data && data.meta;
+          if (meta
+              && meta.code === 401
+              && meta.errorType === 'authenticate_timeout') {
 
-          var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
-          $('#app-tmp').append($d);
-          $d.trigger('click.dialog.data-api');
+            var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+            $('#app-tmp').append($d);
+            var e = $.Event('click.dialog.data-api');
+            e._data = {callback: function () { _deleteIdentity(identity_id); }};
+            $d.trigger(e);
+          }
         }
-      }
-    );
+      );
+    }
+
+    _deleteIdentity(identity_id);
 
     return false;
   });
