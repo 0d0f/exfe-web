@@ -1764,56 +1764,87 @@ define('xdialog', function (require, exports, module) {
 
           var $e = $(e.currentTarget)
             , user = this._user
-            , token = this._token;
+            , token = this._token
+            , signed = this.signed;
           if (this._setup) {
-            Api.request('setPassword'
-              , {
-                type: 'POST',
-                params: { token: token },
-                resources: { user_id: user.id },
-                data: { new_password: stpwd },
-                beforeSend: function (xhr) {
-                  $e.addClass('disabled loading');
-                },
-                complete: function (xhr) {
-                  $e.removeClass('disabled loading');
-                }
-              }
-              , function (data) {
-                Bus.on('app:user:signin', data.token, data.user_id, true);
-                xbtn
-                  .data('dialog', null)
-                  .data('dialog-type', 'changepassword')
-                  .find('span').text('Change Password...');
-                $('.set-up').remove();
-                that.hide();
-              }
-              , function (data) {
-                if (data.meta.code === 403) {
-                  var errorType = data.meta.errorType;
-                  if (errorType === 'invalid_current_password') {
-                    alert('Invalid current password.');
+            function _setPassword(signed, token, user, stpwd, xbtn, that) {
+              Api.request('setPassword'
+                , {
+                  type: 'POST',
+                  params: { token: token },
+                  resources: { user_id: user.id },
+                  data: { new_password: stpwd },
+                  beforeSend: function (xhr) {
+                    $e.addClass('disabled loading');
+                  },
+                  complete: function (xhr) {
+                    $e.removeClass('disabled loading');
                   }
                 }
-              }
-            );
+                , function (data) {
+                  Bus.on('app:user:signin', data.token, data.user_id, true);
+                  xbtn && xbtn
+                    .data('dialog', null)
+                    .data('dialog-type', 'changepassword')
+                    .find('span').text('Change Password...');
+                  $('.set-up').remove();
+                  that && that.hide();
+                }
+                , function (data) {
+                  that && that.hide();
+                  if (data.meta.code === 403) {
+                    var errorType = data.meta.errorType;
+                    if (errorType === 'invalid_current_password') {
+                      alert('Invalid current password.');
+                    }
+                  }
+                  else if (meta.code === 401
+                      && meta.errorType === 'authenticate_timeout') {
+
+                      if (signed) {
+                        var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                        $('#app-tmp').append($d);
+                        var authorization = Store.get('authorization');
+                        token = authorization.token;
+                        $d.trigger('click.dialog.data-api', {callback: function () { _setPassword(signed, token, user, stpwd); }});
+                      }
+                  }
+                }
+              );
+            }
+            _setPassword(signed, token, user, stpwd, xbtn, that);
           }
           else {
-            Api.request('resetPassword',
-              {
-                type: 'POST',
-                data: {
-                  token: token,
-                  name: user.name,
-                  password: stpwd
+            function _resetPassword(signed, token, user, stpwd, that) {
+              Api.request('resetPassword',
+                {
+                  type: 'POST',
+                  data: {
+                    token: token,
+                    name: user.name,
+                    password: stpwd
+                  }
+                },
+                function (data) {
+                  Store.set('authorization', data.authorization);
+                  that && that.hide();
+                  window.location.href = '/';
                 }
-              },
-              function (data) {
-                Store.set('authorization', data.authorization);
-                window.location.href = '/';
-                that.hide();
-              }
-            );
+                , function (data) {
+                    that && that.hide();
+                    if (meta.code === 401
+                        && meta.errorType === 'authenticate_timeout') {
+
+                        var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                        $('#app-tmp').append($d);
+                        var authorization = Store.get('authorization');
+                        token = authorization.token;
+                        $d.trigger('click.dialog.data-api', {callback: function () { _resetPassword(signed, token, user, stpwd); }});
+                    }
+                  }
+              );
+            }
+            _resetPassword(signed, token, user, stpwd, that);
           }
         }
       },
@@ -1858,6 +1889,7 @@ define('xdialog', function (require, exports, module) {
 
       onShowBefore: function (e) {
         var data = $(e.currentTarget).data('source');
+        this.signed = false;
         this._setup = false;
         if (data) {
           this._user = data.user;
@@ -1865,8 +1897,10 @@ define('xdialog', function (require, exports, module) {
           this._setup = data.setup;
         }
         else {
+          this.signed = true;
           this._user = Store.get('user');
           this._token = Store.get('authorization').token;
+          this._setup = !this._user.password;
         }
         this.$('.avatar img').attr('src', this._user.avatar_filename);
         this.$('.username').text(this._user.name);
