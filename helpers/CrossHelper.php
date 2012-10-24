@@ -109,9 +109,9 @@ class CrossHelper extends ActionController {
         $created_at=$cross["created_at"];
 
         $cross=new Cross($cross["id"],$cross["title"], $cross["description"],$attribute,$exfee, array($background),$begin_at, $place);
-        $cross->by_identity=$by_identity;
-        $cross->created_at=$created_at;
-        $cross->updated_at = $exfee->updated_at;
+        $cross->by_identity = $by_identity;
+        $cross->created_at  = $created_at . ' +0000';
+        $cross->updated_at  = $exfee->updated_at;
         $relative_id=0;
         $relation="";
 
