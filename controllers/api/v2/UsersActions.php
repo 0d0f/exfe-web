@@ -414,7 +414,7 @@ class UsersActions extends ActionController {
                 'token'   => $stResult['token'],
             ]]);
         }
-        apiError(400, 'invalid_token', 'Invalid Token');
+        apiError(401, 'invalid_token', 'Invalid Token');
     }
 
 
