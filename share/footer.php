@@ -81,5 +81,5 @@ EOT;
 }
 
 if (SITE_URL !== 'https://exfe.com') {
-  echo "<script>document.getElementsByTagName('body')[0].style.borderTop = '6px solid #D32232';</script>";
+    require 'jsdev.php';
 }
