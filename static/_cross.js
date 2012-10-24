@@ -2046,6 +2046,30 @@ define(function (require, exports, module) {
         $('.cross-rsvp .edit').hide();
     };
 
+    var ShowGoogleMap = function () {
+        var hasLL = Cross.place.lat.length && Cross.place.lng.length;
+        function getMap(position) {
+          var coords = position.coords;
+          map_dom = map_dom.replace(/\{\{lat\}\}/ig, coords.latitude)
+            .replace(/\{\{lng\}\}/ig, coords.longitude);
+          $('.cross-map').append(map_dom);
+        }
+
+        function getPositionError(msg) {
+        }
+        var map_dom = '<a target="_blank" href="https://maps.google.com/maps?hl=en&ie=UTF8&ll={{lat}},{{lng}}&t=m&z=16"><img style="border-radius: 3px; box-shadow: 2px 2px 4px rgba(0, 0, 0, .25);" src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&markers=size:mid%7Ccolor:blue%7C{{lat}},{{lng}}&zoom=13&size=280x140&maptype=road&sensor=false" alt="" width="280" height="140" /></a>'
+
+        if (hasLL) {
+          getMap({
+            coords: {
+              latitude: Cross.place.lat,
+              longitude: Cross.place.lng
+            }
+          });
+        //} else if (navigator.geolocation) {
+        //  navigator.geolocation.getCurrentPosition(getMap, getPositionError);
+        }
+    };
 
     var ShowCross = function() {
         ShowTitle();
@@ -2054,6 +2078,7 @@ define(function (require, exports, module) {
         ShowExfee();
         ShowBackground();
         ShowRsvp();
+        ShowGoogleMap();
     };
 
 
