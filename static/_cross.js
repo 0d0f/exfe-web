@@ -2072,8 +2072,8 @@ define(function (require, exports, module) {
               longitude: Cross.place.lng
             }
           });
-        } else if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(getMap, getPositionError);
+        //} else if (navigator.geolocation) {
+        //  navigator.geolocation.getCurrentPosition(getMap, getPositionError);
         }
     };
 
