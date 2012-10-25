@@ -1,5 +1,5 @@
-* v0.0.7 2012-10-22T18:25:32 UTC+0800
-  
+* v0.0.7 2012-10-25T15:58:46 UTC+0800
+  * fixed `Welcome` 欢迎窗口弹出 bug
 
 * v0.0.6 2012-10-11T16:49:32 UTC+0800
   ✔ fixed `user.identities.length === 0` 时，登出
