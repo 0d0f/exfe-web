@@ -53,7 +53,7 @@ addScript([
 // cross
 addScript([
     ['placepanel',    '0.0.1'],
-    ['user',          '0.0.5'],
+    ['user',          '0.0.6'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
@@ -82,5 +82,5 @@ EOT;
 }
 
 if (SITE_URL !== 'https://exfe.com') {
-  echo "<script>document.getElementsByTagName('body')[0].style.borderTop = '6px solid #D32232';</script>";
+  require 'jsdev.php';
 }
