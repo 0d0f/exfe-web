@@ -30,9 +30,8 @@ define('middleware', function (require, exports, module) {
 
     else if (!authorization && authMeta && authMeta.authorization && authMeta.data && !authMeta.event) {
       Store.set('oauth', session.oauth = {
-        provider: authMeta.data.identity.provider,
-        following: authMeta.data.identity.provider === 'twitter' ? authMeta.data.twitter_following : false,
-        identity_id: authMeta.data.identity.identity_id,
+        identity: authMeta.data.identity,
+        following: authMeta.data.identity.provider === 'twitter' ? !!authMeta.data.twitter_following : false,
         // status: connected, new, revoked
         identity_status: authMeta.data.identity_status
       });
@@ -54,9 +53,8 @@ define('middleware', function (require, exports, module) {
           && authMeta.identity
           ) {
         Store.set('oauth', session.oauth = {
-          provider: authMeta.data.identity.provider,
-          following: authMeta.data.identity.provider === 'twitter' ? authMeta.data.twitter_following : false,
-          identity_id: authMeta.data.identity.identity_id,
+          identity: authMeta.data.identity,
+          following: authMeta.data.identity.provider === 'twitter' ? !!authMeta.data.twitter_following : false,
           // status: connected, new, revoked
           identity_status: authMeta.data.identity_status
         });
