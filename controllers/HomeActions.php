@@ -26,7 +26,7 @@ class HomeActions extends ActionController {
                     'identity'        => $oauthIfo['identity'],
                     'identity_status' => $oauthIfo['identity_status'],
                 ];
-                if ($oauthIfo['identity']['provider'] === 'twitter') {
+                if ($oauthIfo['identity']->provider === 'twitter') {
                     $oauthRst['data']['twitter_following'] = $oauthIfo['twitter_following'];
                 }
                 if (isset($oauthIfo['workflow'])) {

@@ -227,7 +227,7 @@ class OAuthActions extends ActionController {
                     );
                     $modOauth->addtoSession([
                         'oauth_signin'      => $rstSignin,
-                        'identity'          => $objIdentity,
+                        'identity'          => (array) $objIdentity,
                         'identity_status'   => $identity_status,
                         'twitter_following' => $twitterConn->response['response'] === 'true'
                     ]);
