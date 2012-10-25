@@ -1792,9 +1792,8 @@ define('xdialog', function (require, exports, module) {
                 }
                 , function (data) {
                   that && that.hide();
-                  var meta = data && data.meta;
-                  if (meta.code === 403) {
-                    var errorType = meta.errorType;
+                  if (data.meta.code === 403) {
+                    var errorType = data.meta.errorType;
                     if (errorType === 'invalid_current_password') {
                       alert('Invalid current password.');
                     }
@@ -1833,7 +1832,6 @@ define('xdialog', function (require, exports, module) {
                 }
                 , function (data) {
                     that && that.hide();
-                    var meta = data && data.meta;
                     if (meta.code === 401
                         && meta.errorType === 'authenticate_timeout') {
 
@@ -1997,14 +1995,13 @@ define('xdialog', function (require, exports, module) {
               data: reqData
             },
             function (data) {
-              var authorization = Store.get('authorization');
 
               if (page === 'resolve') {
+                var authorization = Store.get('authorization');
                 if (!authorization) {
-                  authorization = data.authorization
+                  Store.set('authorization', data.authorization);
                   Store.set('user', that._browsing_user);
-                  Bus.once('app:user:signin:after', function () { window.location.href = '/'; });
-                  Bus.emit('app:user:signin', authorization.token, authorization.user_id);
+                  window.location.href = '/';
                 } else {
                   $('#app-user-menu').find('.set-up').remove();
                   var $bi = $('#app-browsing-identity');
@@ -2016,7 +2013,9 @@ define('xdialog', function (require, exports, module) {
               }
               else {
                 var authorization = data.authorization
-                Bus.once('app:user:signin:after', function () { window.location.href = '/'; });
+                Bus.emit('app:user:signin:after', function () {
+                  window.location.href = '/';
+                });
                 Bus.emit('app:user:signin', authorization.token, authorization.user_id);
               }
               that.hide();
