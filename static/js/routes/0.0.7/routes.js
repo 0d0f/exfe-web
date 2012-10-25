@@ -683,24 +683,20 @@ define('routes', function (require, exports, module) {
           Bus.emit('app:profile:show', dfd);
 
           // 弹出 OAuth Welcome
-          // revoked, new 暂时都弹 welcome 窗口
-          if (oauth && oauth.identity_status !== 'connected') {
-            var identities = user.identities;
-            var identity = R.filter(identities, function (v) {
-              if (v.id === oauth.identity_id) {
-                return true;
-              }
-            })[0];
+          // `identity_status`: connected | new | revoked
+          if (oauth) {
+            if (oauth.identity_status !== 'connected') {
+              var e = $.Event('click.dialog.data-api');
+              e.following = oauth.following;
+              e.identity = oauth.identity;
+              e.token = authorization.token;
+              $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome"></div>')
+              .appendTo($('#app-tmp'))
+                .trigger(e);
+            }
+            //else if (oauth.identity_status === 'revoked') {}
 
-            $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-oauth-provider="' + oauth.provider + '"></div>')
-            .appendTo(document.body)
-              .trigger({
-                type: 'click',
-                following: oauth.following,
-                identity: identity,
-                token: authorization.token
-              })
-              .remove();
+            Store.remove('oauth');
             delete session.oauth;
           }
         });
@@ -809,7 +805,9 @@ define('routes', function (require, exports, module) {
         }
         // 继续使用本地缓存
       , function (data) {
-          if (data && data.meta.code === 401) {
+          if (data
+              && data.meta
+              && data.meta.code === 401) {
             Store.remove('user');
             Store.remove('authorization');
             delete session.user;
