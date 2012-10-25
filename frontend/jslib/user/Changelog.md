@@ -1,3 +1,6 @@
+* V0.0.6 2012-10-24T17:54:20 UTC+0800
+  * fixed OAuth 用户设置密码时，弹出框 bug
+
 * v0.0.5 2012-09-25T01:50:45
   - `user.default_identity`
   * fixed bug: 判断新身份时
