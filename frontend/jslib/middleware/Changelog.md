@@ -1,3 +1,6 @@
+* v0.0.6 2012-10-25T16:02:01 UTC+0800
+  * 调整 OAuth 返回参数
+
 * v0.0.5 03:06:53 09/25/2012
   * fixed: 刷新 `Authenticate` 回来的本地 token
   * fixed: authMeta.callback 为 undefined 时，默认调到 '/'
