@@ -166,6 +166,8 @@ class OAuthActions extends ActionController {
                     'access_secret' => $oauthIfo['oauth_token_secret'],
                 ]);
                 // }
+                $verification_token = isset($workflow['verification_token'])
+                                    ? $workflow['verification_token'] : '';
                 if ($isMobile) {
                     header(
                         "location: {$workflow['callback']['oauth_device_callback']}"
@@ -175,6 +177,7 @@ class OAuthActions extends ActionController {
                       . "&external_id={$objTwitterIdentity->external_id}"
                       . '&provider=twitter'
                       . "&identity_status={$identity_status}"
+                      . ($verification_token ? "&verification_token={$verification_token}" : '')
                     );
                     return;
                 }
@@ -193,11 +196,12 @@ class OAuthActions extends ActionController {
                      'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                 );
                 $modOauth->addtoSession([
-                    'oauth_signin'      => $rstSignin,
-                    'identity'          => (array) $objIdentity,
-                    'provider'          => $objIdentity->provider,
-                    'identity_status'   => $identity_status,
-                    'twitter_following' => $twitterConn->response['response'] === 'true'
+                    'oauth_signin'       => $rstSignin,
+                    'identity'           => (array) $objIdentity,
+                    'provider'           => $objIdentity->provider,
+                    'identity_status'    => $identity_status,
+                    'twitter_following'  => $twitterConn->response['response'] === 'true',
+                    'verification_token' => $verification_token,
                 ]);
                 header("location: {$cbckUrl}");
                 return;

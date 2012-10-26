@@ -31,10 +31,13 @@ class HomeActions extends ActionController {
                 }
                 if (isset($oauthIfo['workflow'])) {
                     if (isset($oauthIfo['workflow']['callback']['url'])) {
-                        $oauthRst['refere'] = $oauthIfo['workflow']['callback']['url'];
+                        $oauthRst['refere']             = $oauthIfo['workflow']['callback']['url'];
                     }
                     if (isset($oauthIfo['workflow']['callback']['args'])) {
-                        $oauthRst['event']  = $oauthIfo['workflow']['callback']['args'];
+                        $oauthRst['event']              = $oauthIfo['workflow']['callback']['args'];
+                    }
+                    if (isset($oauthIfo['workflow']['verification_token'])) {
+                        $oauthRst['verification_token'] = $oauthIfo['workflow']['verification_token'];
                     }
                 }
             }

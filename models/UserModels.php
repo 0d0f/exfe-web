@@ -347,39 +347,40 @@ class UserModels extends DataModel {
         // get ready
         $result      = ['user_id' => $user_id];
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+        // make token seed
+        $resource  = ['token_type'   => 'verification_token',
+                      'action'       => $action,
+                      'identity_id'  => @$identity->id];
+        $data      = $resource
+                   + ['user_id'      => $user_id,
+                      'created_time' => time(),
+                      'updated_time' => time()];
+        if ($args) {
+            $data['args'] = $args;
+        }
+        // get current token
+        $expireSec = 60 * 24 * 2; // 2 days
+        $result['token'] = '';
+        $curTokens = $hlpExfeAuth->findToken($resource);
+        if ($curTokens && is_array($curTokens)) {
+            foreach ($curTokens as $cI => $cItem) {
+                if ($cItem['data']['token_type'] === 'verification_token'
+                 && $cItem['data']['user_id']    === $user_id
+                 && !$cItem['is_expire']) {
+                    $result['token'] = $cItem['token'];
+                    $data            = $cItem['data'];
+                    break;
+                }
+            }
+        }
+        $data['updated_time'] = time();
         // case provider
         switch ($identity->provider) {
             case 'email':
-                $result['token'] = '';
-                // get current token
-                $resource  = ['token_type'   => 'verification_token',
-                              'action'       => $action,
-                              'identity_id'  => $identity->id];
-                $data      = $resource
-                           + ['user_id'      => $user_id,
-                              'created_time' => time(),
-                              'updated_time' => time()];
-                if ($args) {
-                    $data['args'] = $args;
-                }
-                $expireSec = 60 * 24 * 2; // 2 days
-                $curTokens = $hlpExfeAuth->findToken($resource);
-                if ($curTokens && is_array($curTokens)) {
-                    foreach ($curTokens as $cI => $cItem) {
-                        if ($cItem['data']['token_type'] === 'verification_token'
-                         && $cItem['data']['user_id']    === $user_id
-                         && !$cItem['is_expire']) {
-                            $result['token'] = $cItem['token'];
-                            $data            = $cItem['data'];
-                            break;
-                        }
-                    }
-                }
                 // update database
                 if ($result['token']) {
-                    $data['updated_time'] = time();
-                    $hlpExfeAuth->updateToken($token, $data);       // update
-                    $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                    $hlpExfeAuth->updateToken($result['token'], $data);       // update
+                    $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
                     $actResult = true;
                 } else {
                     $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
@@ -394,6 +395,22 @@ class UserModels extends DataModel {
             case 'twitter':
                 $hlpOAuth = $this->getHelperByName('OAuth');
                 $workflow = ['user_id' => $user_id];
+                switch ($action) {
+                    case 'SET_PASSWORD':
+                        // update database
+                        if ($result['token']) {
+                            $hlpExfeAuth->updateToken($result['token'], $data);       // update
+                            $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
+                            $actResult = true;
+                        } else {
+                            $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
+                                $resource, $data, $expireSec
+                            );
+                        }
+                        if ($actResult) {
+                            $workflow['verification_token'] = $result['token'];
+                        }
+                }
                 if ($args) {
                     $workflow['callback'] = ['args' => $args];
                 }
