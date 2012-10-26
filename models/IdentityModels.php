@@ -233,18 +233,43 @@ class IdentityModels extends DataModel {
      * if ($user_id === 0) without adding it to a user
      */
     public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false) {
+        // load models
+        $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
         $user_id           = (int) $user_id;
-        $provider          = mysql_real_escape_string(trim($identityDetail['provider']));
-        $external_id       = mysql_real_escape_string(trim($identityDetail['external_id']));
-        $external_username = mysql_real_escape_string(trim($identityDetail['external_username']));
-        $name              = mysql_real_escape_string(trim($identityDetail['name']));
-        $nickname          = mysql_real_escape_string(trim($identityDetail['nickname']));
-        $bio               = mysql_real_escape_string(trim($identityDetail['bio']));
-        $avatar_filename   = mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        $provider          = @mysql_real_escape_string(trim($identityDetail['provider']));
+        $external_id       = @mysql_real_escape_string(trim($identityDetail['external_id']));
+        $external_username = @mysql_real_escape_string(trim($identityDetail['external_username']));
+        $name              = @mysql_real_escape_string(trim($identityDetail['name']));
+        $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
+        $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
+        $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
         // basic check
-        if (!$provider || (!$external_id && !$external_username)) {
-            return null;
+        switch ($provider) {
+            case 'email':
+                if (!$external_id && !$external_username) {
+                    return null;
+                }
+                break;
+            case 'twitter':
+            case 'facebook':
+                if (!$external_id && !$external_username) {
+                    if ($user_id && $status = 2 && $withVerifyInfo) {
+                        $identity = new stdClass;
+                        $identity->provider = $provider;
+                        $vfyResult = $hlpUder->verifyIdentity($identity, 'VERIFY', $user_id);
+                        if ($vfyResult && isset($vfyResult['url'])) {
+                            return [
+                                'identity_id'  => -1,
+                                'verification' => ['url' => $vfyResult['url']],
+                            ];
+                        }
+                    }
+                    return null;
+                }
+                break;
+            default:
+                return null;
         }
         // check current identity
         $curIdentity = $this->getRow(
@@ -254,19 +279,12 @@ class IdentityModels extends DataModel {
               : "`external_username` = '{$external_username}'"
             ) . ' LIMIT 1'
         );
-        if (intval($curIdentity['id']) > 0) {
-            $id = intval($curIdentity['id']);
-        } else {
+        // add identity
+        if (($id = intval($curIdentity['id'])) <= 0) {
             // fixed args
             switch ($provider) {
                 case 'email':
-                    if ($external_id) {
-                        $external_username = $external_id;
-                    } else if ($external_username) {
-                        $external_id = $external_username;
-                    } else {
-                        return null;
-                    }
+                    $external_id = $external_username = $external_id ?: $external_username;
                     $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
                     break;
                 case 'twitter':
@@ -291,8 +309,6 @@ class IdentityModels extends DataModel {
         // update user information
         if ($id) {
             if ($user_id) {
-                // load models
-                $hlpUder  = $this->getHelperByName('user');
                 // verify
                 if ($status === 2) {
                     if ($user_id === $hlpUder->getUserIdByIdentityId($id)) {
