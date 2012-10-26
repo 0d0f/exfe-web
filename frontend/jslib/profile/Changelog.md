@@ -1,3 +1,6 @@
+* v0.0.5 2012-10-26T12:52:39 UTC+0800
+  * fixed: Accepted 计算： 不管 accepted 和 总人数，都要加上 已经 accepted 的 mates
+
 * v0.0.4 2012-10-23T22:36:59 UTC+0800
   * 如果 cross.time.outputformat == 0 且 time.begin_at 都位空时,输出 `Sometime`
   * add Twitter OAuth identity
