@@ -40,23 +40,35 @@ class UsersActions extends ActionController {
         $modUser     = $this->getModelByName('User');
         $modIdentity = $this->getModelByName('identity');
         // collecting post data
-        if (!($external_username = trim($_POST['external_username']))) {
-            apiError(400, 'no_external_username', '');
-        }
-        if (!($provider = trim($_POST['provider']))) {
-            apiError(400, 'no_provider', '');
+        switch ($provider = @trim($_POST['provider'])) {
+            case 'email':
+                if (!($external_username = trim($_POST['external_username']))) {
+                    apiError(400, 'no_external_username', '');
+                }
+                break;
+            case 'twitter':
+            case 'facebook':
+                $external_username = '';
+                break;
+            default:
+                apiError(400, 'unknow_provider', '');
         }
         // adding
-        if (($adResult    = $modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username], $user_id, 2, true))
-         && ($objIdentity = $modIdentity->getIdentityById(@$adResult['identity_id'], $user_id))) {
-            $rtResult     = ['identity' => $objIdentity, 'action' => 'VERIFYING'];
-            if (isset($adResult['verification']['url'])) {
+        if (($adResult = $modIdentity->addIdentity(
+            ['provider' => $provider, 'external_username' => $external_username], $user_id, 2, true
+        ))) {
+            $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
+            if ($adResult['identity_id'] > 0) {
+                $objIdentity = $modIdentity->getIdentityById($adResult['identity_id'], $user_id);
+                $rtResult['identity'] = $objIdentity;
+                apiResponse($rtResult);
+            } else if ($adResult['identity_id'] === -1) {
                 $rtResult['url'] = $adResult['verification']['url'];
+                apiResponse($rtResult);
             }
-            apiResponse($rtResult);
-        } else {
-            apiError(400, 'failed', '');
+
         }
+        apiError(400, 'failed', '');
     }
 
 
