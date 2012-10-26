@@ -293,16 +293,7 @@ class IdentityModels extends DataModel {
             if ($user_id) {
                 // load models
                 $hlpUder  = $this->getHelperByName('user');
-                // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name'] = $userInfo['name'] == '' ? $name : $userInfo['name'];
-                $userInfo['bio']  = $userInfo['bio']  == '' ? $bio  : $userInfo['bio'];
-                $this->query(
-                    "UPDATE `users` SET
-                     `name`       = '{$userInfo['name']}',
-                     `bio`        = '{$userInfo['bio']}'
-                     WHERE  `id`  =  {$user_id}"
-                );
+                // verify
                 if ($status === 2) {
                     if ($user_id === $hlpUder->getUserIdByIdentityId($id)) {
                         return null;

@@ -96,6 +96,7 @@ class UserModels extends DataModel {
                         }
                     }
                     $user->name            = $user->name            ?: $user->identities[0]->name;
+                    $user->bio             = $user->bio             ?: $user->identities[0]->bio;
                     $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
@@ -328,8 +329,11 @@ class UserModels extends DataModel {
         switch ($action) {
             case 'VERIFY':
                 $user_id = $user_id ?: $this->addUser();
-                if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
-                    return null;
+                switch ($identity->provider) {
+                    case 'email':
+                        if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
+                            return null;
+                        }
                 }
                 break;
             case 'SET_PASSWORD':

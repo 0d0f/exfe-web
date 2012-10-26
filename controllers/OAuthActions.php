@@ -49,9 +49,7 @@ class OAuthActions extends ActionController {
         $isMobile = $workflow ? ($workflow['callback']
                  && $workflow['callback']['oauth_device']
                  && $workflow['callback']['oauth_device_callback']) : false;
-        $cbckUrl  = isset($workflow['callback']['url'])
-                 && $workflow['callback']['url']
-                  ? $workflow['callback']['url'] : '/';
+        $cbckUrl  = '/';
         if (!$oauthIfo || (isset($oauthIfo['oauth_token'])
          && $oauthIfo['oauth_token'] !== $_REQUEST['oauth_token'])) {
             if ($isMobile) {
@@ -73,55 +71,69 @@ class OAuthActions extends ActionController {
                 $oauthIfo['oauth_token_secret']
             );
             if ($objTwitterIdentity) {
-                if (@!$oauthIfo['workflow']
-                 || @$oauthIfo['workflow']['callback']
-                 || @$oauthIfo['workflow']['user_id']) {
-                    $modUser     = $this->getModelByName('User');
-                    $modIdentity = $this->getModelByName('Identity');
-                    $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
-                        'twitter', $objTwitterIdentity->external_username, true
+                $modUser     = $this->getModelByName('User');
+                $modIdentity = $this->getModelByName('Identity');
+                $objIdentity = $modIdentity->getIdentityByProviderAndExternalUsername(
+                    'twitter', $objTwitterIdentity->external_username, true
+                );
+                // 身份不存在，创建新身份
+                if (!$objIdentity) {
+                    $identity_id = $modIdentity->addIdentity(
+                        ['provider'          => 'twitter',
+                         'external_id'       => $objTwitterIdentity->external_id,
+                         'name'              => $objTwitterIdentity->name,
+                         'bio'               => $objTwitterIdentity->bio,
+                         'external_username' => $objTwitterIdentity->external_username,
+                         'avatar_filename'   => $objTwitterIdentity->avatar_filename]
                     );
-                    $identity_status = 'connected';
-                    // 身份不存在，创建新身份并连接新用户
-                    if (!$objIdentity) {
-                        $identity_status = 'new';
-                        $user_id = $modUser->addUser(
-                            '',
-                            $objTwitterIdentity->name
-                         ?: $objTwitterIdentity->external_username
-                        );
-                        if (!$user_id) {
-                            if ($isMobile) {
-                                $modOauth->resetSession();
-                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
-                            } else {
-                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
-                                header("location: {$cbckUrl}");
-                            }
-                            return;
-                        }
-                        $identity_id = $modIdentity->addIdentity(
-                            ['provider'          => 'twitter',
-                             'external_id'       => $objTwitterIdentity->external_id,
-                             'name'              => $objTwitterIdentity->name,
-                             'bio'               => $objTwitterIdentity->description,
-                             'external_username' => $objTwitterIdentity->external_username,
-                             'avatar_filename'   => $objTwitterIdentity->avatar_filename],
-                            $user_id, 3
-                        );
-                        if (!$identity_id) {
-                            if ($isMobile) {
-                                $modOauth->resetSession();
-                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
-                            } else {
-                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
-                                header("location: {$cbckUrl}");
-                            }
-                            return;
-                        }
-                        $objIdentity = $modIdentity->getIdentityById($identity_id, null, true);
+                    $objIdentity = $modIdentity->getIdentityById($identity_id, null, true);
+                }
+                if (!$objIdentity) {
+                    if ($isMobile) {
+                        $modOauth->resetSession();
+                        header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                    } else {
+                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                        header("location: {$cbckUrl}");
                     }
-                    if (!$objIdentity) {
+                    return;
+                }
+                // init check
+                $user_id         = 0;
+                $identity_status = '';
+                // verifying
+                if (($user_id = @ (int) $oauthIfo['workflow']['user_id'])) {
+                    $identity_status = 'verifying';
+                // 身份被 revoked，重新连接用户
+                } else if (($user_id = $objIdentity->revoked_user_id)) {
+                    $identity_status = 'revoked';
+                } else if (($user_id = $objIdentity->connected_user_id)) {
+                    $identity_status = 'connected';
+                // 孤立身份，创建新用户并连接到该身份
+                } else if (($user_id = $modUser->addUser(
+                    '',
+                    $objTwitterIdentity->name
+                 ?: $objTwitterIdentity->external_username
+                ))) {
+                    $identity_status = 'new';
+                // no user_id
+                } else {
+                    if ($isMobile) {
+                        $modOauth->resetSession();
+                        header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                    } else {
+                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
+                        header("location: {$cbckUrl}");
+                    }
+                    return;
+                }
+                // connect user
+                if ($user_id === $objIdentity->connected_user_id) {
+                    $identity_status = 'connected';
+                } else {
+                    if (!$modUser->setUserIdentityStatus(
+                        $user_id, $objIdentity->id, 3
+                    )) {
                         if ($isMobile) {
                             $modOauth->resetSession();
                             header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
@@ -131,109 +143,64 @@ class OAuthActions extends ActionController {
                         }
                         return;
                     }
-                    // 身份未连接
-                    if ($objIdentity->connected_user_id <= 0) {
-                        $user_id     = 0;
-                        // verify
-                        if (@$oauthIfo['workflow']['user_id']) {
-                            $user_id = $oauthIfo['workflow']['user_id'];
-                        }
-                        // 身份被 revoked，重新连接用户
-                        if ($objIdentity->revoked_user_id) {
-                            $identity_status = 'revoked';
-                            $user_id = $user_id ?: $objIdentity->revoked_user_id;
-                        // 孤立身份，创建新用户并连接到该身份
-                        } else if ($user_id) {
-                            $identity_status = 'verifying';
-                        } else {
-                            $identity_status = 'new';
-                            $user_id = $modUser->addUser(
-                                '',
-                                $objTwitterIdentity->name
-                             ?: $objTwitterIdentity->external_username
-                            );
-                        }
-                        if (!$user_id) {
-                            if ($isMobile) {
-                                $modOauth->resetSession();
-                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
-                            } else {
-                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
-                                header("location: {$cbckUrl}");
-                            }
-                            return;
-                        }
-                        $rstChangeStatus = $modUser->setUserIdentityStatus(
-                            $user_id, $objIdentity->id, 3
-                        );
-                        $objIdentity->connected_user_id = $user_id;
-                        if (!$rstChangeStatus) {
-                            if ($isMobile) {
-                                $modOauth->resetSession();
-                                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
-                            } else {
-                                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
-                                header("location: {$cbckUrl}");
-                            }
-                            return;
-                        }
-                    }
-                    // 更新 OAuth Token
-                    $modIdentity->updateOAuthTokenById($objIdentity->id, [
-                        'oauth_token'        => $oauthIfo['oauth_token'],
-                        'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
-                    ]);
-                    // 使用该身份登录
-                    $rstSignin = $modUser->rawSignin(
-                        $objIdentity->connected_user_id
+                    $objIdentity->connected_user_id = $user_id;
+                }
+                // 更新 OAuth Token
+                $modIdentity->updateOAuthTokenById($objIdentity->id, [
+                    'oauth_token'        => $oauthIfo['oauth_token'],
+                    'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
+                ]);
+                // 使用该身份登录
+                $rstSignin = $modUser->rawSignin(
+                    $objIdentity->connected_user_id
+                );
+                // call Gobus {
+                $hlpGobus = $this->getHelperByName('gobus');
+                $hlpGobus->send('user', 'GetFriends', [
+                    'user_id'       => $objIdentity->connected_user_id,
+                    'provider'      => 'twitter',
+                    'external_id'   => $objIdentity->external_id,
+                    'client_token'  => TWITTER_CONSUMER_KEY,
+                    'client_secret' => TWITTER_CONSUMER_SECRET,
+                    'access_token'  => $oauthIfo['oauth_token'],
+                    'access_secret' => $oauthIfo['oauth_token_secret'],
+                ]);
+                // }
+                if ($isMobile) {
+                    header(
+                        "location: {$workflow['callback']['oauth_device_callback']}"
+                      . "?token={$rstSignin['token']}"
+                      . "&name={$objTwitterIdentity->name}"
+                      . "&userid={$rstSignin['user_id']}"
+                      . "&external_id={$objTwitterIdentity->external_id}"
+                      . '&provider=twitter'
+                      . "&identity_status={$identity_status}"
                     );
-                    // call Gobus {
-                    $hlpGobus = $this->getHelperByName('gobus');
-                    $hlpGobus->send('user', 'GetFriends', [
-                        'user_id'       => $objIdentity->connected_user_id,
-                        'provider'      => 'twitter',
-                        'external_id'   => $objIdentity->external_id,
-                        'client_token'  => TWITTER_CONSUMER_KEY,
-                        'client_secret' => TWITTER_CONSUMER_SECRET,
-                        'access_token'  => $oauthIfo['oauth_token'],
-                        'access_secret' => $oauthIfo['oauth_token_secret'],
-                    ]);
-                    // }
-                    if ($isMobile) {
-                        header(
-                            "location: {$workflow['callback']['oauth_device_callback']}"
-                          . "?token={$rstSignin['token']}"
-                          . "&name={$objTwitterIdentity->name}"
-                          . "&userid={$rstSignin['user_id']}"
-                          . "&external_id={$objTwitterIdentity->external_id}"
-                          . '&provider=twitter'
-                          . "&identity_status={$identity_status}"
-                        );
-                        return;
-                    }
-                    // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
-                    // true / false [String]
-                    $twitterConn = new tmhOAuth([
-                        'consumer_key'    => TWITTER_CONSUMER_KEY,
-                        'consumer_secret' => TWITTER_CONSUMER_SECRET,
-                        'user_token'      => $oauthIfo['oauth_token'],
-                        'user_secret'     => $oauthIfo['oauth_token_secret'],
-                    ]);
-                    $twitterConn->request(
-                        'GET',
-                        $twitterConn->url('1/friendships/exists'),
-                        ['screen_name_a' => $objIdentity->external_username,
-                         'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
-                    );
-                    $modOauth->addtoSession([
-                        'oauth_signin'      => $rstSignin,
-                        'identity'          => (array) $objIdentity,
-                        'identity_status'   => $identity_status,
-                        'twitter_following' => $twitterConn->response['response'] === 'true'
-                    ]);
-                    header("location: {$cbckUrl}");
                     return;
                 }
+                // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
+                // true / false [String]
+                $twitterConn = new tmhOAuth([
+                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                    'user_token'      => $oauthIfo['oauth_token'],
+                    'user_secret'     => $oauthIfo['oauth_token_secret'],
+                ]);
+                $twitterConn->request(
+                    'GET',
+                    $twitterConn->url('1/friendships/exists'),
+                    ['screen_name_a' => $objIdentity->external_username,
+                     'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
+                );
+                $modOauth->addtoSession([
+                    'oauth_signin'      => $rstSignin,
+                    'identity'          => (array) $objIdentity,
+                    'provider'          => $objIdentity->provider,
+                    'identity_status'   => $identity_status,
+                    'twitter_following' => $twitterConn->response['response'] === 'true'
+                ]);
+                header("location: {$cbckUrl}");
+                return;
             }
         }
         $modOauth->resetSession();
