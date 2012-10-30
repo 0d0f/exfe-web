@@ -195,14 +195,17 @@ class OAuthActions extends ActionController {
                     ['screen_name_a' => $objIdentity->external_username,
                      'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                 );
-                $modOauth->addtoSession([
+                $session = [
                     'oauth_signin'       => $rstSignin,
                     'identity'           => (array) $objIdentity,
                     'provider'           => $objIdentity->provider,
                     'identity_status'    => $identity_status,
                     'twitter_following'  => $twitterConn->response['response'] === 'true',
-                    'verification_token' => $verification_token,
-                ]);
+                ];
+                if ($verification_token) {
+                    $session['verification_token'] = $verification_token;
+                }
+                $modOauth->addtoSession($session);
                 header("location: {$cbckUrl}");
                 return;
             }
