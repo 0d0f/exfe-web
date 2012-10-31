@@ -153,7 +153,12 @@ define('dialog', function (require, exports, module) {
 
     destory: function () {
       var $e = this.element;
+      var dataType = this.options.srcNode.data('dialog-type');
       this.offSrcNode();
+      $BODY
+        .find('[data-dialog-type="' + dataType + '"]')
+        .not($e)
+        .removeData('dialog');
       this._destory();
       $e.remove();
     }
