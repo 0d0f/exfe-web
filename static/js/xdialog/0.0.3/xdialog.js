@@ -639,6 +639,9 @@ define('xdialog', function (require, exports, module) {
 
     options: {
       onHideAfter: function (e) {
+        if (this.befer) {
+          this.befer.abort();
+        }
         // jquery.Event
         // TODO: 临时处理 , 首页 登录窗口
         if (e) {
@@ -654,21 +657,46 @@ define('xdialog', function (require, exports, module) {
       events: {
         'click .authenticate': function (e) {
           var that = this;
-          that._oauth_ = $.ajax({
-            url: '/OAuth/twitterAuthenticate',
-            type: 'POST',
-            dataType: 'JSON',
-            data: {
-              refere: window.location.href
-            }
-          })
-            .done(function (data) {
-              var code = data.meta.code;
-              if (code === 200) {
-                window.location.href = data.response.redirect;
+          var $e = $(e.currentTarget);
+          var i = $e.data('identity');
+          if (i) {
+            that.befer = Api.request('forgotPassword'
+              , {
+                type: 'POST',
+                data: {
+                  provider: i.provider,
+                  external_username: i.external_username
+                },
+                beforeSend: function (xhr) {
+                  that.$('.send-before').removeClass('hide');
+                  that.$('.send-after').addClass('hide');
+                  $e.addClass('disabled');
+                }
               }
-            }
-          );
+              , function (data) {
+                // 后台暂时没有 limit 限制
+                if (data.action === 'REDIRECT') {
+                  window.location.href = data.url;
+                }
+              }
+              //, function (data) {}
+            );
+          }
+          //that._oauth_ = $.ajax({
+          //  url: '/OAuth/twitterAuthenticate',
+          //  type: 'POST',
+          //  dataType: 'JSON',
+          //  data: {
+          //    refere: window.location.href
+          //  }
+          //})
+          //  .done(function (data) {
+          //    var code = data.meta.code;
+          //    if (code === 200) {
+          //      window.location.href = data.response.redirect;
+          //    }
+          //  }
+          //);
         },
 
         'click .caret-outer': function (e) {
@@ -716,7 +744,7 @@ define('xdialog', function (require, exports, module) {
           }
           var i = $e.data('identity');
           if (i) {
-            Api.request('forgotPassword'
+            that.befer = Api.request('forgotPassword'
               , {
                 type: 'POST',
                 data: {
@@ -1027,6 +1055,7 @@ define('xdialog', function (require, exports, module) {
           this.$('#identity').val('').focus();
         },
         'click .xbtn-add': function (e) {
+          e.preventDefault();
           var that = this
             , od = that._identity
 
@@ -1049,7 +1078,7 @@ define('xdialog', function (require, exports, module) {
           function addIdentity(external_username, provider, that) {
             var authorization = Store.get('authorization')
               , token = authorization.token;
-            var defe = Api.request('addIdentity',
+            var defer = Api.request('addIdentity',
               {
                 type: 'POST',
                 params: { token: token },
@@ -1084,6 +1113,7 @@ define('xdialog', function (require, exports, module) {
                 }
               }
             );
+            that && (that.defer = defer);
           }
           addIdentity(external_username, provider, that);
         },
@@ -1098,7 +1128,7 @@ define('xdialog', function (require, exports, module) {
           }
           var provider = that._identity.provider;
           var external_id = that._identity.external_id;
-          Api.request('verifyIdentity'
+          that.defer = Api.request('verifyIdentity'
             , {
               type: 'POST',
               data: {
@@ -1124,6 +1154,52 @@ define('xdialog', function (require, exports, module) {
         },
         'click .oauth > a': function (e) {
           e.preventDefault();
+          var external_username = ''
+            , provider = $(e.currentTarget).data('oauth')
+            , that = this;
+          function addIdentity(external_username, provider, that) {
+            var authorization = Store.get('authorization')
+              , token = authorization.token;
+            var defer = Api.request('addIdentity',
+              {
+                type: 'POST',
+                params: { token: token },
+                data: {
+                  external_username: external_username,
+                  provider: provider
+                }
+              },
+              function (data) {
+                window.location.href = data.url;
+                //var identity = data.identity
+                //  , user = Store.get('user')
+                //  , identities = user.identities;
+                //identities.push(identity);
+                //Store.set('user', user);
+                //var s = Handlebars.compile($('#jst-identity-item').html());
+                //var h = s(data.identity);
+                //$('.identity-list').append(h);
+                that && that.destory();
+              },
+              function (data) {
+                var meta = data && data.meta;
+                if (meta
+                    && meta.code === 401
+                    && meta.errorType === 'authenticate_timeout') {
+
+                  that && that.destory();
+                  var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                  $('#app-tmp').append($d);
+                  var e = $.Event('click.dialog.data-api');
+                  e._data = {callback: function () { addIdentity(external_username, provider)}};
+                  $d.trigger(e);
+                }
+              }
+            );
+            that && (that.defer = defer);
+          }
+          addIdentity(external_username, provider, that);
+          /*
           this.befer = $.ajax({
             url: '/OAuth/twitterAuthenticate',
             type: 'POST',
@@ -1139,6 +1215,7 @@ define('xdialog', function (require, exports, module) {
               }
             }
           });
+          */
           return false;
         }
       },
@@ -1792,8 +1869,9 @@ define('xdialog', function (require, exports, module) {
                 }
                 , function (data) {
                   that && that.hide();
-                  if (data.meta.code === 403) {
-                    var errorType = data.meta.errorType;
+                  var meta = data.meta;
+                  if (meta.code === 403) {
+                    var errorType = meta.errorType;
                     if (errorType === 'invalid_current_password') {
                       alert('Invalid current password.');
                     }
@@ -1832,7 +1910,9 @@ define('xdialog', function (require, exports, module) {
                 }
                 , function (data) {
                     that && that.hide();
-                    if (meta.code === 401
+                    var meta = data.meta;
+                    if (meta
+                        && meta.code === 401
                         && meta.errorType === 'authenticate_timeout') {
 
                         var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
@@ -1889,17 +1969,18 @@ define('xdialog', function (require, exports, module) {
 
       onShowBefore: function (e) {
         var data = $(e.currentTarget).data('source');
+        var token = $(e.currentTarget).data('token');
         this.signed = false;
         this._setup = false;
         if (data) {
           this._user = data.user;
-          this._token = data.token;
+          this._token = token || data.token;
           this._setup = data.setup;
         }
         else {
           this.signed = true;
           this._user = Store.get('user');
-          this._token = Store.get('authorization').token;
+          this._token = token || Store.get('authorization').token;
           this._setup = !this._user.password;
         }
         this.$('.avatar img').attr('src', this._user.avatar_filename);
