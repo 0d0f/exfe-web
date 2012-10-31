@@ -143,7 +143,6 @@ class GobusActions extends ActionController {
         $chkUser = array();
         foreach ($cross->exfee->invitations as $invitation) {
             $msgArg['to_identities'][] = $invitation->identity;
-            // @todo: $msgArg['depended'] = false;
             if ($invitation->identity->connected_user_id > 0
              && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -161,11 +160,6 @@ class GobusActions extends ActionController {
                         $cross->exfee->id,
                         $invitation->identity->connected_user_id
                     );
-                }
-                // depended
-                if ($invitation->identity->connected_user_id
-                === $by_identity->connected_user_id) {
-                    // @todo: $msgArg['depended'] = true;
                 }
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
