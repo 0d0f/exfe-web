@@ -857,6 +857,7 @@ define('xdialog', function (require, exports, module) {
     options: {
 
       onHideAfter: function () {
+        this.befer && this.befer.abort();
         this.destory();
       },
 
@@ -922,7 +923,7 @@ define('xdialog', function (require, exports, module) {
             , token = authorization.token;
 
           //function _setPassword(token, user_id, cppwd, cpnpwd, that, $e) {
-            Api.request('setPassword'
+            that.befer = Api.request('setPassword'
               , {
                 type: 'POST',
                 params: { token: token },
@@ -1812,6 +1813,7 @@ define('xdialog', function (require, exports, module) {
     options: {
 
       onHideAfter: function () {
+        this.befer && this.befer.abort();
         this.destory();
       },
 
@@ -1845,7 +1847,7 @@ define('xdialog', function (require, exports, module) {
             , signed = this.signed;
           if (this._setup) {
             function _setPassword(signed, token, user, stpwd, xbtn, that) {
-              Api.request('setPassword'
+              var befer = Api.request('setPassword'
                 , {
                   type: 'POST',
                   params: { token: token },
@@ -1859,6 +1861,7 @@ define('xdialog', function (require, exports, module) {
                   }
                 }
                 , function (data) {
+                  Store.set('authorization', data);
                   Bus.on('app:user:signin', data.token, data.user_id, true);
                   xbtn && xbtn
                     .data('dialog', null)
@@ -1889,12 +1892,13 @@ define('xdialog', function (require, exports, module) {
                   }
                 }
               );
+              that && (that.befer = befer);
             }
             _setPassword(signed, token, user, stpwd, xbtn, that);
           }
           else {
             function _resetPassword(signed, token, user, stpwd, that) {
-              Api.request('resetPassword',
+              var befer = Api.request('resetPassword',
                 {
                   type: 'POST',
                   data: {
@@ -1923,6 +1927,7 @@ define('xdialog', function (require, exports, module) {
                     }
                   }
               );
+              that && (that.befer = befer);
             }
             _resetPassword(signed, token, user, stpwd, that);
           }
@@ -2536,6 +2541,7 @@ define('xdialog', function (require, exports, module) {
       $identity.find('.avatar img').attr('src', identity.avatar_filename);
       $identity.find('.provider').attr('class', 'provider icon16-identity-' + identity.provider);
       $identity.find('.identity').text(identity.eun);
+      this._identity = identity;
     },
 
     options: {
@@ -2593,6 +2599,12 @@ define('xdialog', function (require, exports, module) {
       },
 
       events: {
+        /*
+        'click .why': function (e) {
+          var that = this;
+          that.$('.answer').removeClass('hide');
+        },
+        */
         'click .xbtn-done': function (e) {
           var that = this
             , user = Store.get('user')
@@ -2632,17 +2644,20 @@ define('xdialog', function (require, exports, module) {
             return false;
           }
           var provider = that._identity.provider;
-          var external_id = that._identity.external_id;
-          Api.request('verifyIdentity'
+          var external_username = that._identity.external_username;
+          that.befer = Api.request('verifyIdentity'
             , {
               type: 'POST',
               data: {
                 provider: provider,
-                external_username: external_id
+                external_username: external_username
               }
             }
             , function (data) {
+              if (data.action === 'REDIRECT') {
+                window.location.href = data.url;
               }
+            }
           );
         },
 
@@ -2669,6 +2684,7 @@ define('xdialog', function (require, exports, module) {
       },
 
       onHideAfter: function () {
+        this.befer && this.befer.abort();
         this.destory();
       },
 
@@ -2745,12 +2761,10 @@ define('xdialog', function (require, exports, module) {
           t = 'd01';
         }
 
+        that.$('.xalert-error').addClass('hide');
         that.$('.help-subject')
           .removeClass('icon14-question')
-          .addClass('icon14-clear')
-          .parent()
-          .find('.xalert-error')
-          .addClass('hide');
+          .addClass('icon14-clear');
 
         if (data) {
           // test
@@ -2864,9 +2878,6 @@ define('xdialog', function (require, exports, module) {
         .removeClass('hide');
 
       this.$('.x-signin')[(this.availability ? 'remove' : 'add') + 'Class']('disabled');
-      this.$('.xalert-error').addClass('hide');
-
-      //this.$('.xalert-info').addClass('hide');
 
       this.switchTabType = t;
 
