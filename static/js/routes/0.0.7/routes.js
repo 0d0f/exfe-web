@@ -15,7 +15,6 @@ define('routes', function (require, exports, module) {
 
   // index
   routes.index = function (req, res, next) {
-
     // redirect to `profile`
     if (req.session.authorization) {
       redirectToProfile(req, res);
@@ -38,7 +37,6 @@ define('routes', function (require, exports, module) {
           url: "/static/js/home/0.0.1/home.js?t=" + req.app.set('timestamp')
         });
       });
-
     });
   };
 
@@ -698,6 +696,13 @@ define('routes', function (require, exports, module) {
 
             Store.remove('oauth');
             delete session.oauth;
+          } else if (session.verification_token) {
+            var e = $.Event('click.dialog.data-api');
+            $('<div id="app-oauth-resetpassword" class="hide" data-widget="dialog" data-dialog-type="setpassword"></div>')
+            .data('token', session.verification_token)
+            .appendTo($('#app-tmp'))
+              .trigger(e);
+            delete session.verification_token;
           }
         });
       }
