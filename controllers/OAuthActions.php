@@ -107,7 +107,7 @@ class OAuthActions extends ActionController {
                 // 身份被 revoked，重新连接用户
                 } else if (($user_id = $objIdentity->revoked_user_id)) {
                     $identity_status = 'revoked';
-                } else if (($user_id = $objIdentity->connected_user_id)) {
+                } else if (($user_id = $objIdentity->connected_user_id) > 0) {
                     $identity_status = 'connected';
                 // 孤立身份，创建新用户并连接到该身份
                 } else if (($user_id = $modUser->addUser(
