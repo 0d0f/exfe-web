@@ -153,7 +153,15 @@ define('dialog', function (require, exports, module) {
 
     destory: function () {
       var $e = this.element;
+      var dataType = this.options.srcNode.data('dialog-type');
       this.offSrcNode();
+
+      // 删除所有 dialog 引用
+      $BODY
+        .find('[data-dialog-type="' + dataType + '"]')
+        .not($e)
+        .removeData('dialog');
+
       this._destory();
       $e.remove();
     }
