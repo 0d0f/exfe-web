@@ -688,7 +688,7 @@ define('routes', function (require, exports, module) {
               e.following = oauth.following;
               e.identity = oauth.identity;
               e.token = authorization.token;
-              $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome"></div>')
+              $('<div id="app-oauth-welcome" class="hide" data-widget="dialog" data-dialog-type="welcome" data-destory="true"></div>')
               .appendTo($('#app-tmp'))
                 .trigger(e);
             }
@@ -698,7 +698,7 @@ define('routes', function (require, exports, module) {
             delete session.oauth;
           } else if (session.verification_token) {
             var e = $.Event('click.dialog.data-api');
-            $('<div id="app-oauth-resetpassword" class="hide" data-widget="dialog" data-dialog-type="setpassword"></div>')
+            $('<div id="app-oauth-resetpassword" class="hide" data-widget="dialog" data-dialog-type="setpassword" data-destory="true"></div>')
             .data('token', session.verification_token)
             .appendTo($('#app-tmp'))
               .trigger(e);
