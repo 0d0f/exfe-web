@@ -46,7 +46,7 @@ define('middleware', function (require, exports, module) {
          && authorization.token !== authMeta.authorization.token
          ) {
         authorization.token = authMeta.authorization.token;
-        Store.set('authorization', authorization);
+        Store.set('authorization', session.authorization = authorization);
       }
       else if (authorization.user_id !== authMeta.authorization.user_id
           && authorization.token !== authMeta.authorization.token
@@ -73,7 +73,11 @@ define('middleware', function (require, exports, module) {
         session.event.data = authMeta.data
       }
 
-      if (authMeta.refere !== window.location.protocol + '//' + window.location.hostname) {
+      if (authMeta.verification_token) {
+        session.verification_token = authMeta.verification_token;
+      }
+
+      if (authMeta.refere && authMeta.refere !== window.location.protocol + '//' + window.location.hostname + '/') {
         window.location.href = authMeta.refere || '/';
       }
     }
