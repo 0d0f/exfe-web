@@ -936,7 +936,7 @@ class UsersActions extends ActionController {
         // collecting post data
         $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
         if ($rstVerify) {
-        } else ($rstVerify === null) {
+        } else if ($rstVerify === null) {
             if (!$result['fresh']) {
                 apiError(403, 'token_timeout', '');
             }
