@@ -938,7 +938,7 @@ class UsersActions extends ActionController {
         if ($rstVerify) {
         } else if ($rstVerify === null) {
             if (!$result['fresh']) {
-                apiError(403, 'token_timeout', '');
+                apiError(401, 'authenticate_timeout', '');
             }
         } else {
             apiError(403, 'invalid_current_password', ''); // 密码错误
