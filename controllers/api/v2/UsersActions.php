@@ -934,7 +934,13 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // collecting post data
-        if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
+        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
+        if ($rstVerify) {
+        } else ($rstVerify === null) {
+            if (!$result['fresh']) {
+                apiError(403, 'token_timeout', '');
+            }
+        } else {
             apiError(403, 'invalid_current_password', ''); // 密码错误
         }
         if (strlen($newPassword = $_POST['new_password']) === 0) {
