@@ -45,9 +45,4 @@ class GobusModels extends DataModel {
         return null;
     }
 
-
-    public function sadfsd() {
-
-    }
-
 }
