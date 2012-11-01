@@ -40,14 +40,14 @@ addScript([
     ['typeahead',     '0.0.2'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.3'],
-    ['global',        '0.0.4'],
+    ['global',        '0.0.5'],
 ]);
 
 // profile
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.5'],
+    ['profile',       '0.0.6'],
 ]);
 
 // cross
