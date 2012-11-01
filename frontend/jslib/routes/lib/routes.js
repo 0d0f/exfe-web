@@ -535,6 +535,7 @@ define('routes', function (require, exports, module) {
       , authToken = authorization && authorization.token
       , ctoken = req.params[0]
       , accept = req.params[1]
+      , cats = Store.get('cats')
       // cat = cross_access_token
       , cat
       , params = {}
@@ -544,7 +545,9 @@ define('routes', function (require, exports, module) {
       params.token = authToken;
     }
 
-    cat = Store.get('cat:' + ctoken);
+    if (cats) {
+      cat = cats[ctoken];
+    }
 
     if (cat) {
       data = { cross_access_token: cat };
@@ -568,7 +571,9 @@ define('routes', function (require, exports, module) {
           , read_only = data.read_only;
 
         if (false === read_only && cross_access_token) {
-          Store.set('cat:' + ctoken, cat = cross_access_token);
+          cats || (cats = {});
+          cats[ctoken] = cross_access_token;
+          Store.set('cats', cats);
         }
 
         //
@@ -776,6 +781,7 @@ define('routes', function (require, exports, module) {
 
   // signout
   routes.signout = function (req, res, next) {
+    Store.remove('cats');
     Store.remove('user');
     Store.remove('authorization');
     window.location.href = '/';
