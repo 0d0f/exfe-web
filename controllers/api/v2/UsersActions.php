@@ -53,6 +53,18 @@ class UsersActions extends ActionController {
             default:
                 apiError(400, 'unknow_provider', '');
         }
+        // check user
+        $user = $modUser->getUserById($user_id);
+        $past = false;
+        foreach ($user->identities as $identity) {
+            if ($identity->status === 'CONNECTED') {
+                $past = true;
+                break;
+            }
+        }
+        if (!$past) {
+            apiError(400, 'no_connected_identity', '');
+        }
         // adding
         if (($adResult = $modIdentity->addIdentity(
             ['provider' => $provider, 'external_username' => $external_username], $user_id, 2, true
