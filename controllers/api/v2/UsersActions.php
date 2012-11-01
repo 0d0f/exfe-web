@@ -532,8 +532,9 @@ class UsersActions extends ActionController {
 
     public function doSetupUserByInvitationToken() {
         // get models
-        $modUser     = $this->getModelByName('user');
-        $modExfee    = $this->getModelByName('exfee');
+        $modUser     = $this->getModelByName('User');
+        $modIdentity = $this->getModelByName('Identity');
+        $modExfee    = $this->getModelByName('Exfee');
         $modExfeAuth = $this->getModelByName('ExfeAuth');
         // get name
         if (!($name = formatName($_POST['name']))) {
@@ -567,6 +568,10 @@ class UsersActions extends ActionController {
                 }
                 // add new user
                 $user_id = $modUser->addUser($passwd, $name);
+                // update identity
+                $modIdentity->updateIdentityById(
+                    $invitation['identity_id'], ['name' => $name]
+                );
                 // connect identity to new user
                 $modUser->setUserIdentityStatus(
                     $user_id, $invitation['identity_id'], 3
