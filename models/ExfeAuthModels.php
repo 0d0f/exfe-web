@@ -12,7 +12,7 @@ class ExfeAuthModels extends DataModel {
 
     protected function useTokenApi($method, $args) {
         return $this->hlpGobus->useGobusApi(
-            EXFE_AUTH_SERVER, 'TokenManager', $method, $args
+            EXFE_AUTH_SERVER, 'TokenManager', $method, $args, true
         );
     }
 

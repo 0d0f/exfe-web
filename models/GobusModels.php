@@ -2,9 +2,9 @@
 
 class GobusModels extends DataModel {
 
-    public function useGobusApi($server, $api, $method, $args) {
+    public function useGobusApi($server, $api, $method, $args, $encode_fields = false) {
         if ($method && $args) {
-            if (is_array($args)) {
+            if ($encode_fields && is_array($args)) {
                 foreach ($args as $aI => $aItem) {
                     if (is_array($aItem)) {
                         $args[$aI] = json_encode($aItem);

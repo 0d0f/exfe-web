@@ -73,48 +73,14 @@ class ConversationActions extends ActionController {
         // get post
         $post = $modConv->getPostById($post_id);
         // call Gobus {
-        $hlpGobus  = $this->getHelperByName('gobus');
-        $hlpCross  = $this->getHelperByName('cross');
-        $modDevice = $this->getModelByName('device');
-        $modExfee  = $this->getModelByName('exfee');
-        $cross_id  = $modExfee->getCrossIdByExfeeId($post->postable_id);
-        $cross     = $hlpCross->getCross($cross_id, true);
-        $msgArg    = array(
-            'cross'         => $cross,
-            'post'          => $post,
-            'to_identities' => array(),
-            'by_identity'   => $post->by_identity,
-        );
-        $chkUser   = array();
-        foreach ($cross->exfee->invitations as $invitation) {
-            $msgArg['to_identities'][] = $invitation->identity;
-            if ($invitation->identity->connected_user_id > 0
-            && !$chkUser[$invitation->identity->connected_user_id]) {
-                // get mobile identities
-                $mobIdentities = $modDevice->getDevicesByUserid(
-                    $invitation->identity->connected_user_id,
-                    $invitation->identity
-                );
-                foreach ($mobIdentities as $mI => $mItem) {
-                    $msgArg['to_identities'][] = $mItem;
-                }
-                // set conversation counter
-                if ($invitation->identity->connected_user_id !== $result['uid']) {
-                    $modConv->addConversationCounter(
-                        $cross->exfee->id,
-                        $invitation->identity->connected_user_id
-                    );
-                }
-                // marked
-                $chkUser[$invitation->identity->connected_user_id] = true;
-            }
-        }
-        if (DEBUG) {
-            error_log(json_encode($msgArg));
-        }
-        $hlpGobus->send('cross', 'Update', $msgArg);
-        $modExfee->updateExfeeTime($cross->exfee->id);
+        $modQueue = $this->getModelByName('Queue');
+        $modExfee = $this->getModelByName('exfee');
+        $hlpCross = $this->getHelperByName('cross');
+        $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
+        $cross    = $hlpCross->getCross($cross_id, true);
+        $modQueue->despatchConversation($cross, $post, $result['uid']);
         // }
+        $modExfee->updateExfeeTime($cross->exfee->id);
         // return
         apiResponse(['post' => $post]);
     }
