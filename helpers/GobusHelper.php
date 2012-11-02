@@ -31,8 +31,10 @@ class GobusHelper extends ActionController {
     } // - }
 
 
-    public function useGobusApi($server, $api, $method, $args) {
-        return $this->modGobus->useGobusApi($server, $api, $method, $args);
+    public function useGobusApi($server, $api, $method, $args, $encode_fields = false) {
+        return $this->modGobus->useGobusApi(
+            $server, $api, $method, $args, $encode_fields
+        );
     }
 
 
