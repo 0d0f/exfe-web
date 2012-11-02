@@ -2,11 +2,15 @@
 
 class OAuthActions extends ActionController {
 
-    // twitter {
-
     public function doTwitterAuthenticate() {
+        $this->doAuthenticate('twitter');
+    }
+
+
+    public function doAuthenticate($provider = '') {
         $workflow    = [];
         $webResponse = false;
+        $provider = $provider ?: @$_GET['provider'];
         if (@$_GET['device'] && @$_GET['device_callback']) {
             $workflow    = ['callback' => [
                 'oauth_device'          => strtolower(trim($_GET['device'])),
@@ -22,7 +26,16 @@ class OAuthActions extends ActionController {
             }
         }
         $modOauth = $this->getModelByName('OAuth');
-        $urlOauth = $modOauth->getTwitterRequestToken($workflow);
+        switch ($provider) {
+            case 'twitter':
+                $urlOauth = $modOauth->getTwitterRequestToken($workflow);
+                break;
+            case 'facebook':
+                $urlOauth = $modOauth->facebookRedirect($workflow);
+                break;
+            default:
+                apiError(400, 'no_provider', '');
+        }
         if ($urlOauth) {
             if ($webResponse) {
                 header("Location: {$urlOauth}");
@@ -36,8 +49,8 @@ class OAuthActions extends ActionController {
             return;
         }
         apiError(
-            500, 'could_not_connect_to_twitter',
-            'Could not connect to Twitter. Refresh the page or try again later.'
+            500, "could_not_connect_to_{$provider}",
+            "Could not connect to {$provider}. Refresh the page or try again later."
         );
     }
 
@@ -257,41 +270,6 @@ class OAuthActions extends ActionController {
         apiError(500, 'failed', '');
     }
 
-    // }
-
-
-    // facebook {
-
-    public function doFacebookAuthenticate() {
-        $workflow    = [];
-        $webResponse = false;
-        if ($_GET['device'] && $_GET['device_callback']) {
-            $workflow    = ['callback' => [
-                'oauth_device'          => $_GET['device'],
-                'oauth_device_callback' => $_GET['device_callback'],
-            ]];
-            $webResponse = true;
-        }
-        $modOauth = $this->getModelByName('OAuth');
-        $urlOauth = $modOauth->facebookRedirect($workflow);
-        if ($urlOauth) {
-            if ($webResponse) {
-                header("Location: {$urlOauth}");
-                return;
-            }
-            apiResponse(array('redirect' => $urlOauth));
-        }
-        if ($webResponse) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo 'Could not connect to Facebook. Refresh the page or try again later.';
-            return;
-        }
-        apiError(
-            500, 'could_not_connect_to_facebook',
-            'Could not connect to Facebook. Refresh the page or try again later.'
-        );
-    }
-
 
     public function doFacebookCallBack() {
         $modOauth   = $this->getModelByName('OAuth');
@@ -398,7 +376,6 @@ class OAuthActions extends ActionController {
         apiError(400, 'invalid_callback', '');
     }
 
-    // }
 
 
 
