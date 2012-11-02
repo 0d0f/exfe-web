@@ -1355,7 +1355,15 @@ define(function (require, exports, module) {
                     Gather();
                 }
             } else {
+              var title = $.trim($('#gather-title').val());
+              if (0 === title.length) {
+                $('.choose-identity .placeholder').addClass('text-error');
+                $('.add-identity').addClass('hide');
+                $('.please-identity').removeClass('hide');
+              }
+              else {
                 $('.choose-identity .placeholder').trigger('click');
+              }
             }
         });
         $('.cross-conversation .comment-form .pointer').bind('click', function() {
@@ -1737,7 +1745,15 @@ define(function (require, exports, module) {
 
 
     var ShowTitle = function(from) {
-        var title = Cross.title.length ? ExfeUtilities.escape(Cross.title) : 'Enter intent';
+        if (Cross.title.length) {
+          if ($('.choose-identity .placeholder').hasClass('text-error')) {
+            $('.choose-identity .placeholder').removeClass('text-error')
+            $('.add-identity').removeClass('hide');
+            $('.please-identity').addClass('hide');
+          }
+        }
+
+        var title = Cross.title.length ? ExfeUtilities.escape(Cross.title) : 'Gathering for what?';
         /*
         $('.cross-title .show').html(title);
         $('.cross-title .show').removeClass('single-line').removeClass('double-line');
