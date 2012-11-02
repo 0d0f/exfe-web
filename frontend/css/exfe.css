@@ -9404,6 +9404,11 @@ body {
   color: #4c4c4c;
 }
 
+.x-gather .cross-form .text-error {
+  margin-right: 10px;
+  color: #e52e53;
+}
+
 .x-gather .choose-identity {
   position: absolute;
   left: 80px;
@@ -9414,7 +9419,8 @@ body {
 
 .x-gather .choose-identity .placeholder {
   display: table-cell;
-  height: 80px;
+  height: 60px;
+  padding: 10px;
   text-align: center;
   vertical-align: middle;
   background-color: #e6e6e6;
@@ -9488,6 +9494,10 @@ body {
   background: rgba(255, 255, 255, 0.66);
 }
 
+.text-error {
+  color: #e52e53;
+}
+
 #gather-title:-moz-placeholder,
 #gather-exfee-input:-moz-placeholder,
 #cross-exfee-input:-moz-placeholder {
@@ -9504,6 +9514,18 @@ body {
 #gather-exfee-input::-webkit-input-placeholder,
 #cross-exfee-input::-webkit-input-placeholder {
   color: #b2b2b2;
+}
+
+#gather-title:-moz-placeholder {
+  color: #e52e53;
+}
+
+#gather-title:-ms-input-placeholder {
+  color: #e52e53;
+}
+
+#gather-title::-webkit-input-placeholder {
+  color: #e52e53;
 }
 
 #gather-exfee {
