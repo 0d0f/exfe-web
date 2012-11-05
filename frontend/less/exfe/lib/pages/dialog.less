@@ -8,6 +8,10 @@
     padding-right: 0;
   }
 
+  .oauth-provider {
+    text-transform: capitalize;
+  }
+
   .authorize {
     /*display: table-cell;*/
     /*vertical-align: middle;*/
@@ -25,6 +29,7 @@
     margin-left: 26px;
 
     > a {
+      .pull-left();
       display: block;
       width: 40px;
       height: 40px;
@@ -39,6 +44,14 @@
 
     &:hover {
       background-image: ~'url("@{imgPath}/twitter_40.png")';
+    }
+  }
+
+  .oauth-facebook {
+    background-image: ~'url("@{imgPath}/facebook_40_gray.png")';
+
+    &:hover {
+      background-image: ~'url("@{imgPath}/fackbook_40.png")';
     }
   }
 
@@ -186,7 +199,7 @@
 }
 
 /*
-// set password
+ set password
 .modal-sp,
 // change password
 .modal-cp,
@@ -432,7 +445,7 @@
     //background: #ddd;
     //.opacity(50);
     .draggable();
-  }
+   }
 
   .anchor-nw {
     width: 10px;
