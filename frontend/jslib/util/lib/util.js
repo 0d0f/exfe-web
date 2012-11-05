@@ -112,6 +112,10 @@ define('util', function (require, exports, module) {
         username = '@' + username;
       }
 
+      if (provider === 'facebook') {
+        username = username + '@facebook';
+      }
+
       return username;
     }
 
