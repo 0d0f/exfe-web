@@ -483,7 +483,7 @@ define('routes', function (require, exports, module) {
               return;
             }
             $.ajax({
-              url: '/OAuth/twitterAuthenticate',
+              url: '/OAuth/Authenticate?provider=',
               type: 'POST',
               dataType: 'JSON',
               data: {
