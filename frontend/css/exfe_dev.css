@@ -6853,6 +6853,10 @@ body {
   padding-right: 0;
 }
 
+.modal-id .oauth-provider {
+  text-transform: capitalize;
+}
+
 .modal-id .authorize {
   /*display: table-cell;*/
 
@@ -6874,6 +6878,7 @@ body {
 
 .modal-id .oauth > a {
   display: block;
+  float: left;
   width: 40px;
   height: 40px;
   font: 0/0 a;
@@ -6891,6 +6896,14 @@ body {
 
 .modal-id .oauth-twitter:hover {
   background-image: url("/img/twitter_40.png");
+}
+
+.modal-id .oauth-facebook {
+  background-image: url("/img/facebook_40_gray.png");
+}
+
+.modal-id .oauth-facebook:hover {
+  background-image: url("/img/fackbook_40.png");
 }
 
 .modal-id .user-identity {
@@ -7022,7 +7035,7 @@ body {
 }
 
 /*
-// set password
+ set password
 .modal-sp,
 // change password
 .modal-cp,
