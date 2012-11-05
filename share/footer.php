@@ -16,7 +16,7 @@ addScript([
     ['base',          '0.0.2'],
     ['bus',           '0.0.2'],
     ['rex',           '0.0.2'],
-    ['util',          '0.0.2'],
+    ['util',          '0.0.3'],
     ['widget',        '0.0.2'],
     ['jquery',        '1.8.2'],
     ['moment',        '1.6.2'],
@@ -39,7 +39,7 @@ addScript([
     ['dialog',        '0.0.3'],
     ['typeahead',     '0.0.2'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.3'],
+    ['xdialog',       '0.0.4'],
     ['global',        '0.0.5'],
 ]);
 
