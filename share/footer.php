@@ -47,7 +47,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.6'],
+    ['profile',       '0.0.7'],
 ]);
 
 // cross
@@ -60,7 +60,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.4'],
-    ['middleware',    '0.0.6'],
+    ['middleware',    '0.0.7'],
     ['routes',        '0.0.7'],
     ['app',           '0.0.4'],
 ]);
