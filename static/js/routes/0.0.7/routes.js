@@ -482,8 +482,9 @@ define('routes', function (require, exports, module) {
             if (clicked) {
               return;
             }
+            var provider = $(this).data('oauth');
             $.ajax({
-              url: '/OAuth/twitterAuthenticate',
+              url: '/OAuth/Authenticate?provider=' + provider,
               type: 'POST',
               dataType: 'JSON',
               data: {
