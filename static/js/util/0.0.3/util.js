@@ -115,10 +115,6 @@ define('util', function (require, exports, module) {
         username += '@facebook';
       }
 
-      if (provider === 'facebook') {
-        username = username + '@facebook';
-      }
-
       return username;
     }
 
