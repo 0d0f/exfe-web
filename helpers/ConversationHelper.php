@@ -37,5 +37,12 @@ class ConversationHelper extends ActionController {
         return $this->modConversation->validatePost($post);
     }
 
+
+    public function addConversationCounter($exfee_id, $user_id, $count = 1) {
+        return $this->modConversation->addConversationCounter(
+            $exfee_id, $user_id, $count
+        );
+    }
+
 }
 

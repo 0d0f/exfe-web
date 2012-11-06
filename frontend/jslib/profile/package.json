@@ -1,9 +1,17 @@
 {
   "name": "profile",
+<<<<<<< HEAD
   "version": "0.0.5",
   "description": "profile page js",
   "homepage": "https://exfe.com/",
   "author": "cfd",
   "date": "2012-10-26T13:02:52 UTC+0800",
+=======
+  "version": "0.0.6",
+  "description": "profile page js",
+  "homepage": "https://exfe.com/",
+  "author": "cfd",
+  "date": "2012-11-01T14:39:48 UTC+0800",
+>>>>>>> master
   "hint": true
 }
