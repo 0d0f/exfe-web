@@ -1,0 +1,112 @@
+#date-panel {
+  min-width: 310px;
+  min-height: 210px;
+  width: 310px;
+  padding: 15px 15px 15px 15px;
+  #gradient > .vertical(#eee, #fcfcfc);
+
+  #date-string {
+    width: 300px;
+    .border-radius(0);
+    margin: 0 0 9px 0;
+    border: 1px dashed #80addf;
+    background: #fefefe;
+
+    &:focus {
+      background: #ffffff;
+      border: 1px solid rgba(90, 151, 214, .64);
+      .box-shadow(0 0 5px rgba(0, 133, 242, .35));
+    }
+  }
+
+  .date-container {
+    position: relative;
+    background: #fafafa;
+    max-height: 166px;
+    overflow: hidden;
+    .border-radius(3px);
+    .box-shadow(inset 0 0 4px rgba(0, 0, 0, .35));
+  }
+
+  #date-head {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    text-align: center;
+    color: #ECF0F4;
+    background: #65717E;
+    li {
+      line-height: 30px;
+      width: 44px;
+      .pull-left();
+    }
+  }
+
+  .full-month {
+    position: absolute;
+    bottom: 3px;
+    font-size: 55px;
+    line-height: 1;
+    color: rgba(127, 127, 127, .33);
+  }
+
+  #date-table {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    .border-top-left-radius(0);
+    .border-top-right-radius(0);
+
+    tbody td {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      text-align: center;
+      border: 1px solid rgba(204, 204, 204, 0.35);
+      background: transparent;
+
+      // day of month
+       .d {
+        display: block;
+        color: #565E65;
+        font-size: 16px;
+        font-weight: 300;
+        margin-top: 15px;
+      }
+
+      .m {
+        position: absolute;
+        display: block;
+        font-size: 12px;
+        color: #999999;
+      }
+
+      &.hover {
+        background: #eeeeee;
+      }
+
+      &.selected {
+        position: relative;
+        background: #D6E9F4;
+
+        .d {
+          color: #61686f;
+          font-weight: bold;
+        }
+
+        &:before {
+          position: absolute;
+          content: '';
+          border: 2px solid #386FA5;
+          top: -1px;
+          right: -1px;
+          bottom: -1px;
+          left: -1px;
+        }
+      }
+    }
+
+
+  }
+}

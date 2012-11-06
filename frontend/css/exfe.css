@@ -68,7 +68,6 @@ sub {
 
 img {
   width: auto\9;
-  height: auto;
   max-width: 100%;
   vertical-align: middle;
   border: 0;
@@ -6423,6 +6422,24 @@ img:-moz-broken {
   }
 }
 
+/* Panel */
+
+.panel {
+  position: absolute;
+  z-index: 1060;
+  border: 1px solid #ffffff;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 31, 64, 0.25);
+     -moz-box-shadow: 0 1px 4px rgba(0, 31, 64, 0.25);
+          box-shadow: 0 1px 4px rgba(0, 31, 64, 0.25);
+}
+
+.panel:focus {
+  outline: none;
+}
+
 html,
 body {
   height: 100%;
@@ -9418,6 +9435,11 @@ body {
   color: #4c4c4c;
 }
 
+.x-gather .cross-form .text-error {
+  margin-right: 10px;
+  color: #e52e53;
+}
+
 .x-gather .choose-identity {
   position: absolute;
   left: 80px;
@@ -9428,7 +9450,8 @@ body {
 
 .x-gather .choose-identity .placeholder {
   display: table-cell;
-  height: 80px;
+  height: 60px;
+  padding: 10px;
   text-align: center;
   vertical-align: middle;
   background-color: #e6e6e6;
@@ -9502,6 +9525,10 @@ body {
   background: rgba(255, 255, 255, 0.66);
 }
 
+.text-error {
+  color: #e52e53;
+}
+
 #gather-title:-moz-placeholder,
 #gather-exfee-input:-moz-placeholder,
 #cross-exfee-input:-moz-placeholder {
@@ -9518,6 +9545,18 @@ body {
 #gather-exfee-input::-webkit-input-placeholder,
 #cross-exfee-input::-webkit-input-placeholder {
   color: #b2b2b2;
+}
+
+#gather-title:-moz-placeholder {
+  color: #e52e53;
+}
+
+#gather-title:-ms-input-placeholder {
+  color: #e52e53;
+}
+
+#gather-title::-webkit-input-placeholder {
+  color: #e52e53;
 }
 
 #gather-exfee {
@@ -10645,4 +10684,134 @@ body {
   background: #fbfbfb;
   border: 1px solid #d5d5d5;
   resize: none;
+}
+
+#date-panel {
+  width: 310px;
+  min-width: 310px;
+  min-height: 210px;
+  padding: 15px 15px 15px 15px;
+  background-color: #f4f4f4;
+  background-image: -moz-linear-gradient(top, #eeeeee, #fcfcfc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#fcfcfc));
+  background-image: -webkit-linear-gradient(top, #eeeeee, #fcfcfc);
+  background-image: -o-linear-gradient(top, #eeeeee, #fcfcfc);
+  background-image: linear-gradient(to bottom, #eeeeee, #fcfcfc);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeeeee', endColorstr='#fffcfcfc', GradientType=0);
+}
+
+#date-panel #date-string {
+  width: 300px;
+  margin: 0 0 9px 0;
+  background: #fefefe;
+  border: 1px dashed #80addf;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+#date-panel #date-string:focus {
+  background: #ffffff;
+  border: 1px solid rgba(90, 151, 214, 0.64);
+  -webkit-box-shadow: 0 0 5px rgba(0, 133, 242, 0.35);
+     -moz-box-shadow: 0 0 5px rgba(0, 133, 242, 0.35);
+          box-shadow: 0 0 5px rgba(0, 133, 242, 0.35);
+}
+
+#date-panel .date-container {
+  position: relative;
+  max-height: 166px;
+  overflow: hidden;
+  background: #fafafa;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+     -moz-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+          box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+}
+
+#date-panel #date-head {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  color: #ECF0F4;
+  text-align: center;
+  background: #65717E;
+}
+
+#date-panel #date-head li {
+  float: left;
+  width: 44px;
+  line-height: 30px;
+}
+
+#date-panel .full-month {
+  position: absolute;
+  bottom: 3px;
+  font-size: 55px;
+  line-height: 1;
+  color: rgba(127, 127, 127, 0.33);
+}
+
+#date-panel #date-table {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  -webkit-border-top-right-radius: 0;
+          border-top-right-radius: 0;
+  -webkit-border-top-left-radius: 0;
+          border-top-left-radius: 0;
+  -moz-border-radius-topright: 0;
+  -moz-border-radius-topleft: 0;
+}
+
+#date-panel #date-table tbody td {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  text-align: center;
+  background: transparent;
+  border: 1px solid rgba(204, 204, 204, 0.35);
+}
+
+#date-panel #date-table tbody td .d {
+  display: block;
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 300;
+  color: #565E65;
+}
+
+#date-panel #date-table tbody td .m {
+  position: absolute;
+  display: block;
+  font-size: 12px;
+  color: #999999;
+}
+
+#date-panel #date-table tbody td.hover {
+  background: #eeeeee;
+}
+
+#date-panel #date-table tbody td.selected {
+  position: relative;
+  background: #D6E9F4;
+}
+
+#date-panel #date-table tbody td.selected .d {
+  font-weight: bold;
+  color: #61686f;
+}
+
+#date-panel #date-table tbody td.selected:before {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+  border: 2px solid #386FA5;
+  content: '';
 }
