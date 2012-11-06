@@ -111,6 +111,9 @@ define('util', function (require, exports, module) {
       if (provider === 'twitter') {
         username = '@' + username;
       }
+      else if (provider === 'facebook') {
+        username += '@facebook';
+      }
 
       return username;
     }
