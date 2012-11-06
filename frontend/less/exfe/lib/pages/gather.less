@@ -39,6 +39,11 @@
       margin: 0;
       color: #4c4c4c;
     }
+
+    .text-error {
+      margin-right: 10px;
+      color: #e52e53;
+    }
   }
 
   .choose-identity {
@@ -50,7 +55,8 @@
 
     .placeholder {
       display: table-cell;
-      height: 80px;
+      height: 60px;
+      padding: 10px;
       text-align: center;
       vertical-align: middle;
       #gradient > .directional(#fafafa, #e6e6e6, 270deg);
@@ -117,10 +123,18 @@
   background: rgba(255, 255, 255, .66);
 }
 
+.text-error {
+  color: #e52e53;
+}
+
 #gather-title,
 #gather-exfee-input,
 #cross-exfee-input {
   .placeholder(#b2b2b2);
+}
+
+#gather-title {
+  .placeholder(#e52e53);
 }
 
 #gather-exfee {
