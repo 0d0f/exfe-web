@@ -5,8 +5,14 @@ class OAuthActions extends ActionController {
     // twitter {
 
     public function doTwitterAuthenticate() {
+        $this->doAuthenticate('twitter');
+    }
+
+
+    public function doAuthenticate($provider = '') {
         $workflow    = [];
         $webResponse = false;
+        $provider = $provider ?: @$_GET['provider'];
         if (@$_GET['device'] && @$_GET['device_callback']) {
             $workflow    = ['callback' => [
                 'oauth_device'          => strtolower(trim($_GET['device'])),
@@ -22,7 +28,16 @@ class OAuthActions extends ActionController {
             }
         }
         $modOauth = $this->getModelByName('OAuth');
-        $urlOauth = $modOauth->getTwitterRequestToken($workflow);
+        switch ($provider) {
+            case 'twitter':
+                $urlOauth = $modOauth->getTwitterRequestToken($workflow);
+                break;
+            case 'facebook':
+                $urlOauth = $modOauth->facebookRedirect($workflow);
+                break;
+            default:
+                apiError(400, 'no_provider', '');
+        }
         if ($urlOauth) {
             if ($webResponse) {
                 header("Location: {$urlOauth}");
@@ -36,8 +51,8 @@ class OAuthActions extends ActionController {
             return;
         }
         apiError(
-            500, 'could_not_connect_to_twitter',
-            'Could not connect to Twitter. Refresh the page or try again later.'
+            500, "could_not_connect_to_{$provider}",
+            "Could not connect to {$provider}. Refresh the page or try again later."
         );
     }
 
