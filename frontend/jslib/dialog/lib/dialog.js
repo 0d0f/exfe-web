@@ -1,4 +1,4 @@
-define('dialog', [], function (require, exports, module) {
+define('dialog', function (require, exports, module) {
   /**
    *
    * Dependence:
@@ -15,6 +15,7 @@ define('dialog', [], function (require, exports, module) {
   var Widget = require('widget');
 
   var $BODY = $(document.body);
+  var $TMP = $('#app-tmp');
 
   /*
    * HTML
@@ -42,7 +43,7 @@ define('dialog', [], function (require, exports, module) {
     , template: '<div class="modal"><div class="modal-header"><button class="close" data-dismiss="dialog">×</button><h3></h3></div><div class="modal-main"><div class="modal-body"></div><div class="modal-footer"></div></div></div>'
 
       // 父节点，插入方式 appendTo
-    , parentNode: $BODY
+    , parentNode: $TMP
 
     // source target node
     , srcNode: ''
@@ -71,16 +72,18 @@ define('dialog', [], function (require, exports, module) {
           , others = data.others
           , cls = data.cls;
         this.element.attr('tabIndex', -1);
-        if (cls) this.element.addClass(cls);
-        if (title) this.element.find('h3').eq(0).html(title);
-        if (body) this.element.find('div.modal-body').html(body);
-        if (footer) this.element.find('div.modal-footer').html(footer);
-        if (others) this.element.find('div.modal-main').append(others);
+        if (cls) { this.element.addClass(cls); }
+        if (title) { this.element.find('h3').eq(0).html(title); }
+        if (body) { this.element.find('div.modal-body').html(body); }
+        if (footer) { this.element.find('div.modal-footer').html(footer); }
+        if (others) { this.element.find('div.modal-main').append(others); }
       }
 
       this.element.appendTo(this.parentNode);
 
       this.element.on('click.dismiss.dialog', '[data-dismiss="dialog"]', $.proxy(this.hide, this));
+
+      this.element.on('destory.widget', $.proxy(this.destory, this));
 
       this.sync();
 
@@ -96,7 +99,7 @@ define('dialog', [], function (require, exports, module) {
 
     show: function (data) {
       // 临时
-      $BODY.find('.modal').addClass('hide');
+      $TMP.find('.modal').addClass('hide');
 
       this.emit('showBefore', data);
 
@@ -138,9 +141,29 @@ define('dialog', [], function (require, exports, module) {
     },
 
     offSrcNode: function () {
-      if (this.options.srcNode) {
-        this.options.srcNode.data('dialog', null);
+      var srcNode = this.options.srcNode;
+      if (srcNode) {
+        srcNode.data('dialog', null);
+        // <div data-destory="true" />
+        if (srcNode.data('destory')) {
+          srcNode.remove();
+        }
       }
+    },
+
+    destory: function () {
+      var $e = this.element;
+      var dataType = this.options.srcNode.data('dialog-type');
+      this.offSrcNode();
+
+      // 删除所有 dialog 引用
+      $BODY
+        .find('[data-dialog-type="' + dataType + '"]')
+        .not($e)
+        .removeData('dialog');
+
+      this._destory();
+      $e.remove();
     }
 
   });
@@ -177,7 +200,7 @@ define('dialog', [], function (require, exports, module) {
         if (e.which === 27) {
           e.stopPropagation();
           e.preventDefault();
-          e.which === 27 && that.hide();
+          that.hide();
           return false;
         }
       });

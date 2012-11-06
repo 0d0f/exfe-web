@@ -1,14 +1,11 @@
       <section id="profile" class="x-profile">
 
         <div class="row settings-panel">
-          <div class="pull-left user-avatar editable">
-          </div>
+          <div class="pull-left user-avatar" data-editable="true"></div>
 
           <div class="pull-right user-xstats">
             <div class="attended"></div>
-            <div>
-              <span class="x">·X·</span> attended
-            </div>
+            <div><span class="x">·X·</span> attended</div>
           </div>
 
           <div class="user-infos">
@@ -16,20 +13,17 @@
               <h3 class="pull-left" data-link="nota"></h3>
               <div class="xbtn changepassword" data-link="nota" data-widget="dialog"><i class="icon14-lock"></i><span></span></div>
             </div>
-            <ul class="unstyled identity-list">
-            </ul>
+            <ul class="unstyled identity-list"></ul>
 
           </div>
-          <!--
-          <button class="pull-right xbtn xbtn-addidentity" data-widget="dialog" data-dialog-type="addidentity">Add Identity…</button>
-          -->
+          <button id="app-profile-addidentity" class="pull-right xbtn xbtn-addidentity hide" data-widget="dialog" data-dialog-type="addidentity">Add Identity…</button>
 
           <div class="pull-right identities-trash hide">
             <div class="pull-right trash-message">
               <span class="draged">Drop here to remove identity</span>
               <span class="removed">Remove Identity</span>
             </div>
-            <i class="icon-trash"></i>
+            <i class="icon24-trash"></i>
             <div class="trash-overlay"></div>
           </div>
 
@@ -37,9 +31,7 @@
 
         <div class="row">
           <div class="gr-a">
-            <div class="crosses">
-
-            </div>
+            <div class="crosses"></div>
 
           </div>
 
@@ -66,18 +58,16 @@
 
         </div>
 
-        <!-- TODO: 暂时先放这里-->
         <!-- JS Templates -->
         <!--
         {{#if __default__}}<span class="default">default</span>{{/if}}
         -->
-        <script id="jst-identity-list" type="text/x-handlebars-template">
-        {{#each identities}}
+        <script id="jst-identity-item" type="text/x-handlebars-template">
         <li data-identity-id="{{id}}" data-provider="{{provider}}" data-status="{{status}}" {{#editable provider status}}data-editable="true"{{/editable}} draggable="true">
           <i class="icon-move"></i>
           <span class="avatar alt40" data-link="nota"><img src="{{avatarFilename avatar_filename}}" alt="" width="20" height="20" />
           </span><span class="identity"><span class="identityname"><em>{{printName name external_username}}</em></span><span class="oblique external">{{atName provider external_username}}</span> <i class="icon16-identity-{{provider}}"></i></span>
-          {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link="nota">Make default</a>{{/makeDefault}}
+          <!-- {{#makeDefault __default__ status}}<a class="makedefault" href="#" data-link="nota">Make default</a>{{/makeDefault}} -->
           {{#isOAuthIdentity provider}}
           <span class="xlabel isOAuth hide">Wanna change this name? Please do it in {{capitalize provider}}.</span>
           {{/isOAuthIdentity}}
@@ -96,7 +86,11 @@
           </span>
           {{/ifVerifying}}
         </li>
-        {{/each}}
+        </script>
+        <script id="jst-identity-list" type="text/x-handlebars-template">
+        {{#identities}}
+        {{> jst-identity-item}}
+        {{/identities}}
         </script>
         <script id="jst-user-avatar" type="text/x-handlebars-template">
         {{#if avatar_filename}}

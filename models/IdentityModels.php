@@ -232,18 +232,44 @@ class IdentityModels extends DataModel {
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2) {
+    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false) {
+        // load models
+        $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
-        $provider          = mysql_real_escape_string(trim($identityDetail['provider']));
-        $external_id       = mysql_real_escape_string(trim($identityDetail['external_id']));
-        $external_username = mysql_real_escape_string(trim($identityDetail['external_username']));
-        $name              = mysql_real_escape_string(trim($identityDetail['name']));
-        $nickname          = mysql_real_escape_string(trim($identityDetail['nickname']));
-        $bio               = mysql_real_escape_string(trim($identityDetail['bio']));
-        $avatar_filename   = mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        $user_id           = (int) $user_id;
+        $provider          = @mysql_real_escape_string(trim($identityDetail['provider']));
+        $external_id       = @mysql_real_escape_string(trim($identityDetail['external_id']));
+        $external_username = @mysql_real_escape_string(trim($identityDetail['external_username']));
+        $name              = @mysql_real_escape_string(trim($identityDetail['name']));
+        $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
+        $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
+        $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
         // basic check
-        if (!$provider || (!$external_id && !$external_username)) {
-            return null;
+        switch ($provider) {
+            case 'email':
+                if (!$external_id && !$external_username) {
+                    return null;
+                }
+                break;
+            case 'twitter':
+            case 'facebook':
+                if (!$external_id && !$external_username) {
+                    if ($user_id && $status = 2 && $withVerifyInfo) {
+                        $identity = new stdClass;
+                        $identity->provider = $provider;
+                        $vfyResult = $hlpUder->verifyIdentity($identity, 'VERIFY', $user_id);
+                        if ($vfyResult && isset($vfyResult['url'])) {
+                            return [
+                                'identity_id'  => -1,
+                                'verification' => ['url' => $vfyResult['url']],
+                            ];
+                        }
+                    }
+                    return null;
+                }
+                break;
+            default:
+                return null;
         }
         // check current identity
         $curIdentity = $this->getRow(
@@ -253,71 +279,67 @@ class IdentityModels extends DataModel {
               : "`external_username` = '{$external_username}'"
             ) . ' LIMIT 1'
         );
-        if (intval($curIdentity['id']) > 0) {
-            return intval($curIdentity['id']);
-        }
-        // fixed args
-        switch ($provider) {
-            case 'email':
-                if ($external_id) {
-                    $external_username = $external_id;
-                } else if ($external_username) {
-                    $external_id = $external_username;
-                } else {
+        // add identity
+        if (($id = intval($curIdentity['id'])) <= 0) {
+            // fixed args
+            switch ($provider) {
+                case 'email':
+                    $external_id = $external_username = $external_id ?: $external_username;
+                    $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
+                    break;
+                case 'twitter':
+                case 'facebook':
+                    break;
+                default:
                     return null;
-                }
-                $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
-                break;
-            case 'twitter':
-            case 'facebook':
-                break;
-            default:
-                return null;
+            }
+            // insert new identity into database
+            $dbResult = $this->query(
+                "INSERT INTO `identities` SET
+                 `provider`          = '{$provider}',
+                 `external_identity` = '{$external_id}',
+                 `created_at`        = NOW(),
+                 `name`              = '{$name}',
+                 `bio`               = '{$bio}',
+                 `avatar_file_name`  = '{$avatar_filename}',
+                 `external_username` = '{$external_username}'"
+            );
+            $id = intval($dbResult['insert_id']);
         }
-        // insert new identity into database
-        $dbResult = $this->query(
-            "INSERT INTO `identities` SET
-             `provider`          = '{$provider}',
-             `external_identity` = '{$external_id}',
-             `created_at`        = NOW(),
-             `name`              = '{$name}',
-             `bio`               = '{$bio}',
-             `avatar_file_name`  = '{$avatar_filename}',
-             `external_username` = '{$external_username}'"
-        );
-        $id = intval($dbResult['insert_id']);
         // update user information
         if ($id) {
             if ($user_id) {
-                // load models
-                $hlpUder  = $this->getHelperByName('user');
-                // do update
-                $userInfo = $this->getRow("SELECT `name`, `bio`, `default_identity` FROM `users` WHERE `id` = {$user_id}");
-                $userInfo['name']             = $userInfo['name']             == '' ? $name : $userInfo['name'];
-                $userInfo['bio']              = $userInfo['bio']              == '' ? $bio  : $userInfo['bio'];
-                $userInfo['default_identity'] = $userInfo['default_identity'] == 0  ? $id   : $userInfo['default_identity'];
-                $this->query(
-                    "UPDATE `users` SET
-                     `name`             = '{$userInfo['name']}',
-                     `bio`              = '{$userInfo['bio']}',
-                     `default_identity` =  {$userInfo['default_identity']}
-                     WHERE `id`         =  {$user_id}"
-                );
+                // verify
                 if ($status === 2) {
-                    // welcome and verify user via Gobus {
-                    if ($provider === 'email') {
-                        $hlpGobus = $this->getHelperByName('gobus');
-                        $objIdentity = $this->getIdentityById($id);
-                        $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
-                        if ($vfyResult) {
+                    if ($user_id === $hlpUder->getUserIdByIdentityId($id)) {
+                        return null;
+                    }
+                    // verify identity
+                    $objIdentity = $this->getIdentityById($id);
+                    $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
+                    if ($vfyResult) {
+                        if (isset($vfyResult['url']) && $withVerifyInfo) {
+                            return [
+                                'identity_id'  => $id,
+                                'verification' => ['url' => $vfyResult['url']],
+                            ];
+                        } else if (isset($vfyResult['token'])) {
+                            // welcome and verify user via Gobus {
+                            $hlpGobus = $this->getHelperByName('gobus');
                             $hlpGobus->send('user', 'Welcome', [
                                 'To_identity' => $objIdentity,
                                 'User_name'   => $userInfo['name'],
                                 'Token'       => $vfyResult['token'],
                             ]);
+                            // }
+                            if ($withVerifyInfo) {
+                                return [
+                                    'identity_id'  => $id,
+                                    'verification' => ['token' => $vfyResult['token']],
+                                ];
+                            }
                         }
                     }
-                    // }
                 } else {
                     $hlpUder->setUserIdentityStatus($user_id, $id, $status);
                 }
@@ -359,21 +381,11 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function setIdentityAsDefaultIdentityOfUser($identity_id, $user_id) {
-        if (!$identity_id || !$user_id) {
-            return false;
-        }
-        return $this->query(
-            "UPDATE `users` SET `default_identity` = {$identity_id} WHERE `id` = {$user_id}"
-        );
-    }
-
-
     public function deleteIdentityFromUser($identity_id, $user_id) {
         if (!$identity_id || !$user_id) {
             return false;
         }
-        $identities = $this->getRow(
+        $identities = $this->getAll(
             "SELECT * FROM `user_identity` WHERE `userid` = {$user_id}"
         );
         if (count($identities) > 1) {
@@ -382,40 +394,36 @@ class IdentityModels extends DataModel {
                  WHERE  `identityid` = {$identity_id}
                  AND    `userid`     = {$user_id}"
             );
-            if (!$upResult) {
-                return false;
-            }
-            foreach ($identities as $item){
-                if ($item['identityid'] !== $identity_id) {
-                    return $this->setIdentityAsDefaultIdentityOfUser($item['identityid'], $user_id);
-                }
+            if ($upResult) {
+                return true;
             }
         }
         return false;
     }
 
-
-    // public function getIdentityByIdFromCache($identity_id) {
-    //     if ($identity_id) {
-    //         $redis = new Redis();
-    //         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-    //         $identity = $redis->HGET('identities', "id:{$identity_id}");
-    //         if ($identity) {
-    //             $identity = json_decode($identity);
-    //         } else {
-    //             $identity = $this->getIdentityById($identity_id);
-    //             if ($identity) {
-    //                 $redis->HSET(
-    //                     'identities', "id:{$identity_id}",
-    //                     json_encode($identity) // @was: json_encode_nounicode
-    //                 );
-    //             }
-    //         }
-    //         if ($identity) {
-    //             return $identity;
-    //         }
-    //     }
-    //     return null;
-    // }
-
 }
+
+
+
+// public function getIdentityByIdFromCache($identity_id) {
+//     if ($identity_id) {
+//         $redis = new Redis();
+//         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+//         $identity = $redis->HGET('identities', "id:{$identity_id}");
+//         if ($identity) {
+//             $identity = json_decode($identity);
+//         } else {
+//             $identity = $this->getIdentityById($identity_id);
+//             if ($identity) {
+//                 $redis->HSET(
+//                     'identities', "id:{$identity_id}",
+//                     json_encode($identity) // @was: json_encode_nounicode
+//                 );
+//             }
+//         }
+//         if ($identity) {
+//             return $identity;
+//         }
+//     }
+//     return null;
+// }

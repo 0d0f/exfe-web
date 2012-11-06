@@ -31,7 +31,6 @@ class UserModels extends DataModel {
                 $rawUser['id'],
                 $rawUser['name'],
                 $rawUser['bio'],
-                null, // default_identity
                 getAvatarUrl($rawUser['avatar_file_name']),
                 $rawUser['timezone'],
                 [],
@@ -46,17 +45,22 @@ class UserModels extends DataModel {
             $identityStatus = ($identityStatus = intval($identityStatus))
                             ? "`status` = {$identityStatus}" : '(`status` > 1 AND `status` < 5)';
             $rawIdentityIds = $this->getAll(
-                "SELECT `identityid`, `status` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
+                "SELECT `identityid`, `status`, `order`, `updated_at` FROM `user_identity` WHERE `userid` = {$rawUser['id']} AND {$identityStatus}"
             );
             // insert identities into user
             if ($rawIdentityIds) {
-                $identity_status = array();
+                $identity_infos = [];
                 foreach ($rawIdentityIds as $i => $item) {
-                    $identity_status[intval($item['identityid'])] = $this->arrUserIdentityStatus[intval($item['status'])];
+                    $identity_infos[(int) $item['identityid']] = [
+                        'status'     => $this->arrUserIdentityStatus[(int) $item['status']],
+                        'order'      => (int) $item['order'],
+                        'updated_at' => strtotime($item['updated_at']),
+                    ];
                 }
-                $identityIds = implode(array_keys($identity_status), ', ');
-                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds})");
+                $identityIds = implode(array_keys($identity_infos), ', ');
+                $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds}) ORDER BY `id`");
                 if ($identities) {
+                    $sorting_identities = [];
                     foreach ($identities as $i => $item) {
                         $item['id'] = (int) $item['id'];
                         $identity = new Identity(
@@ -65,33 +69,44 @@ class UserModels extends DataModel {
                             '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
-                            $identity_status[$item['id']] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
+                            $identity_infos[$item['id']]['status'] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
-                            $item['created_at'],
+                            $item['updated_at'],
                             $item['updated_at']
                         );
                         $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
                                                   ?: ($user->avatar_filename
                                                   ?: getDefaultAvatarUrl($identity->name));
-                        $identity->status = $identity_status[$identity->id];
-                        $intLength = array_push($user->identities, $identity);
-                        // catch default identity
-                        if ($identity->id === intval($rawUser['default_identity'])) {
-                            $user->default_identity = $user->identities[$intLength];
+                        $identity->status  = $identity_infos[$identity->id]['status'];
+                        if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
+                            $sorting_identities[$identity_infos[$identity->id]['order']] = [];
+                        }
+                        if (!isset($sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']])) {
+                            $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']] = [];
+                        }
+                        $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']][$identity->id] = $identity;
+
+                    }
+                    ksort($sorting_identities);
+                    foreach ($sorting_identities as $soryByCreated) {
+                        ksort($soryByCreated);
+                        foreach ($soryByCreated as $sortById) {
+                            foreach ($sortById as $identity) {
+                                $identity->order    = count($user->identities);
+                                $user->identities[] = $identity;
+                            }
                         }
                     }
-                    $user->default_identity = $user->default_identity ?: $user->identities[0];
-                    $user->name             = $user->name             ?: $user->default_identity->name;
+                    $user->name            = $user->name            ?: $user->identities[0]->name;
+                    $user->bio             = $user->bio             ?: $user->identities[0]->bio;
+                    $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
                             "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
                         );
-                        $user->cross_quantity  = (int) $cross_quantity['cross_quantity'];
-                    }
-                    if (!$user->avatar_filename) {
-                        $user->avatar_filename = $user->default_identity->avatar_filename;
+                        $user->cross_quantity = (int) $cross_quantity['cross_quantity'];
                     }
                 }
             }
@@ -127,8 +142,7 @@ class UserModels extends DataModel {
         $dbResult = $this->getRow(
             "SELECT `userid` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `status` = 3"
         );
-        $user_id = intval($dbResult["userid"]);
-        return $user_id ?: null;
+        return $dbResult && ($user_id = (int) $dbResult['userid']) ? $user_id : null;
     }
 
 
@@ -202,6 +216,43 @@ class UserModels extends DataModel {
             }
         }
         return $arrStatus;
+    }
+
+
+    public function sortIdentities($user_id, $identity_order) {
+        if (!$user_id || !$identity_order) {
+            return false;
+        }
+        $rawStatus = $this->getAll(
+            "SELECT   `identityid`
+             FROM     `user_identity`
+             WHERE    `userid` = {$user_id}
+             ORDER BY `order`"
+        );
+        $order      = 0;
+        $orderd_ids = [];
+        foreach ($identity_order as $identity_id) {
+            @$this->query(
+                "UPDATE `user_identity`
+                 SET    `order`      = {$order}
+                 WHERE  `userid`     = {$user_id}
+                 AND    `identityid` = {$identity_id}"
+            );
+            $orderd_ids[$identity_id] = true;
+            $order++;
+        }
+        foreach ($rawStatus as $identity) {
+            if (!isset($orderd_ids[$identity_id])) {
+                @$this->query(
+                    "UPDATE `user_identity`
+                     SET    `order`      = {$order}
+                     WHERE  `userid`     = {$user_id}
+                     AND    `identityid` = {$identity['identityid']}"
+                );
+                $order++;
+            }
+        }
+        return true;
     }
 
 
@@ -292,7 +343,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0) {
+    public function verifyIdentity($identity, $action, $user_id = 0, $args = null) {
         // basic check
         if (!$identity || !$action) {
             return null;
@@ -303,8 +354,11 @@ class UserModels extends DataModel {
         switch ($action) {
             case 'VERIFY':
                 $user_id = $user_id ?: $this->addUser();
-                if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
-                    return null;
+                switch ($identity->provider) {
+                    case 'email':
+                        if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
+                            return null;
+                        }
                 }
                 break;
             case 'SET_PASSWORD':
@@ -316,39 +370,42 @@ class UserModels extends DataModel {
             return null;
         }
         // get ready
-        $result      = ['user_id' => $user_id, 'token' => ''];
+        $result      = ['user_id' => $user_id];
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+        // make token seed
+        $resource  = ['token_type'   => 'verification_token',
+                      'action'       => $action,
+                      'identity_id'  => @$identity->id];
+        $data      = $resource
+                   + ['user_id'      => $user_id,
+                      'created_time' => time(),
+                      'updated_time' => time()];
+        if ($args) {
+            $data['args'] = $args;
+        }
+        // get current token
+        $expireSec = 60 * 24 * 2; // 2 days
+        $result['token'] = '';
+        $curTokens = $hlpExfeAuth->findToken($resource);
+        if ($curTokens && is_array($curTokens)) {
+            foreach ($curTokens as $cI => $cItem) {
+                if ($cItem['data']['token_type'] === 'verification_token'
+                 && $cItem['data']['user_id']    === $user_id
+                 && !$cItem['is_expire']) {
+                    $result['token'] = $cItem['token'];
+                    $data            = $cItem['data'];
+                    break;
+                }
+            }
+        }
+        $data['updated_time'] = time();
         // case provider
         switch ($identity->provider) {
             case 'email':
-                // get current token
-                $resource  = ['token_type'   => 'verification_token',
-                              'action'       => $action,
-                              'identity_id'  => $identity->id];
-                $data      = ['token_type'   => 'verification_token',
-                              'action'       => $action,
-                              'user_id'      => $user_id,
-                              'identity_id'  => $identity->id,
-                              'created_time' => time(),
-                              'updated_time' => time()];
-                $expireSec = 60 * 24 * 2; // 2 days
-                $curTokens = $hlpExfeAuth->findToken($resource);
-                if ($curTokens && is_array($curTokens)) {
-                    foreach ($curTokens as $cI => $cItem) {
-                        if ($cItem['data']['token_type'] === 'verification_token'
-                         && $cItem['data']['user_id']    === $user_id
-                         && !$cItem['is_expire']) {
-                            $result['token'] = $cItem['token'];
-                            $data            = $cItem['data'];
-                            break;
-                        }
-                    }
-                }
                 // update database
                 if ($result['token']) {
-                    $data['updated_time'] = time();
-                    $hlpExfeAuth->updateToken($token, $data);       // update
-                    $hlpExfeAuth->refreshToken($token, $expireSec); // extension
+                    $hlpExfeAuth->updateToken($result['token'], $data);       // update
+                    $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
                     $actResult = true;
                 } else {
                     $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
@@ -361,7 +418,33 @@ class UserModels extends DataModel {
                 }
                 break;
             case 'twitter':
-                // @todo by @leaskh
+                $hlpOAuth = $this->getHelperByName('OAuth');
+                $workflow = ['user_id' => $user_id];
+                switch ($action) {
+                    case 'SET_PASSWORD':
+                        // update database
+                        if ($result['token']) {
+                            $hlpExfeAuth->updateToken($result['token'], $data);       // update
+                            $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
+                            $actResult = true;
+                        } else {
+                            $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
+                                $resource, $data, $expireSec
+                            );
+                        }
+                        if ($actResult) {
+                            $workflow['verification_token'] = $result['token'];
+                        }
+                }
+                if ($args) {
+                    $workflow['callback'] = ['args' => $args];
+                }
+                $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
+                if ($urlOauth) {
+                    $result['url'] = $urlOauth;
+                    return $result;
+                }
+                $hlpOAuth->resetSession();
         }
         // return
         return null;
@@ -370,7 +453,6 @@ class UserModels extends DataModel {
 
     public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
-        print_r($curToken);
         if (($curToken = $hlpExfeAuth->getToken($token))
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
@@ -379,31 +461,69 @@ class UserModels extends DataModel {
                           'identity_id' => $curToken['data']['identity_id']];
             switch ($curToken['data']['action']) {
                 case 'VERIFY':
-                    // @todo 检查用户是否处于 verify 状态 // 安全问题 // 因为无法销毁相似token // by Leask
+                    // get current connecting user id
+                    $current_user_id = $this->getUserIdByIdentityId(
+                        $curToken['data']['identity_id']
+                    );
+                    // connect identity id to new user id
                     $stResult = $this->setUserIdentityStatus(
                         $curToken['data']['user_id'],
                         $curToken['data']['identity_id'], 3
                     );
+                    // success
                     if ($stResult) {
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );
                         if ($siResult) {
-                            if ($siResult['password']) {
-                                $hlpExfeAuth->expireAllTokens($resource);
-                                $nextAction = 'VERIFIED';
-                            } else {
-                                $hlpExfeAuth->refreshToken($token, 233);
-                                $nextAction = 'INPUT_NEW_PASSWORD';
-                            }
-                            return [
+                            $rtResult = [
                                 'user_id'     => $siResult['user_id'],
                                 'user_name'   => $siResult['name'],
                                 'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
                                 'token_type'  => $curToken['data']['action'],
-                                'action'      => $nextAction,
                             ];
+                            if (@$curToken['data']['args']) {
+                                $rtResult['args'] = $curToken['data']['args'];
+                            }
+                            // get other identities of current connecting user {
+                            if ($current_user_id
+                             && $current_user_id !== $curToken['data']['user_id']) {
+                                $current_user = $this->getUserById(
+                                    $current_user_id, false, 0
+                                );
+                                if ($current_user && $current_user->identities) {
+                                    foreach ($current_user->identities as $iI => $iItem) {
+                                        if ($iItem->status !== 'CONNECTED'
+                                         && $iItem->status !== 'REVOKED') {
+                                            unset($current_user->identities[$iI]);
+                                        }
+                                    }
+                                    $current_user->identities = array_merge(
+                                        $current_user->identities
+                                    );
+                                    if ($current_user->identities) {
+                                        $rtResult['mergeable_user'] = $current_user;
+                                        // updated token {
+                                        $curToken['data']['merger_info'] = [
+                                            'mergeable_user' => $current_user,
+                                            'created_time'   => time(),
+                                            'updated_time'   => time(),
+                                        ];
+                                        $hlpExfeAuth->updateToken($token, $curToken['data']);
+                                        // }
+                                    }
+                                }
+                            }
+                            // }
+                            if ($siResult['password']) {
+                                $hlpExfeAuth->expireAllTokens($resource);
+                                $rtResult['action'] = 'VERIFIED';
+                            } else {
+                                $hlpExfeAuth->refreshToken($token, 233);
+                                $rtResult['action'] = 'INPUT_NEW_PASSWORD';
+                            }
+                            return $rtResult;
                         }
                     }
                     break;
@@ -451,14 +571,16 @@ class UserModels extends DataModel {
                 $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $siResult = $this->rawSignin($curToken['data']['user_id']);
                 $hlpExfeAuth->expireAllTokens($resource);
-                return array(
-                    'user_id'     => $siResult['user_id'],
-                    'token'       => $siResult['token'],
-                    'identity_id' => $curToken['data']['identity_id'],
-                    'action'      => $curToken['data']['action'],
-                );
+                $siResult = $this->rawSignin($curToken['data']['user_id']);
+                if ($siResult) {
+                    return [
+                        'user_id'     => $siResult['user_id'],
+                        'token'       => $siResult['token'],
+                        'identity_id' => $curToken['data']['identity_id'],
+                        'action'      => $curToken['data']['action'],
+                    ];
+                }
             }
         }
         return null;
@@ -530,28 +652,17 @@ class UserModels extends DataModel {
     }
 
 
-    public function getUserIdByToken($token) {
+    public function getUserToken($token) {
         if ($token) {
             $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
             $result = $hlpExfeAuth->getToken($token);
             if ($result
              && $result['data']['token_type'] === 'user_token'
              && !$result['is_expire']) {
-                return (int) $result['data']['user_id'];
+                return $result;
             }
         }
-        return 0;
-    }
-
-
-    public function verifyUserPassword($user_id, $password, $ignore_empty_passwd = false) {
-        if (!$user_id) {
-            return false;
-        }
-        $passwdInDb = $this->getUserPasswdByUserId($user_id);
-        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
-        return $password === $passwdInDb['encrypted_password']
-            || ($ignore_empty_passwd && !$passwdInDb['encrypted_password']);
+        return null;
     }
 
 
@@ -559,7 +670,7 @@ class UserModels extends DataModel {
         if (!$user_id || !$identity_id || !$status) {
             return null;
         }
-        if ($status === 3) {
+        if ($status === 3 || $status === 4) {
             $this->query(
                 "UPDATE `user_identity`
                  SET    `status`     = 1,
@@ -753,6 +864,19 @@ class UserModels extends DataModel {
         imagedestroy($image);
         // return
         return $actResult;
+    }
+
+
+    public function verifyUserPassword($user_id, $password) {
+        if (!$user_id) {
+            return false;
+        }
+        $passwdInDb = $this->getUserPasswdByUserId($user_id);
+        if (!$passwdInDb['encrypted_password']) {
+            return null;
+        }
+        $password   = $this->encryptPassword($password, $passwdInDb['password_salt']);
+        return $password === $passwdInDb['encrypted_password'];
     }
 
 }

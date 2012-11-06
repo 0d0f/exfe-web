@@ -8,6 +8,7 @@ require_once 'Identity.php';
 require_once 'Exfee.php';
 require_once 'Invitation.php';
 require_once 'Device.php';
+require_once 'Recipient.php';
 
 abstract class EFobject{
 

@@ -14,7 +14,8 @@ define('dialog', [], function (require, exports, module) {
   var $ = require('jquery');
   var Widget = require('widget');
 
-  var $BODY = $(document.body);
+  var $BODY = $('#body');
+  var $TMP = $('#app-tmp');
 
   /*
    * HTML
@@ -42,7 +43,7 @@ define('dialog', [], function (require, exports, module) {
     , template: '<div class="modal"><div class="modal-header"><button class="close" data-dismiss="dialog">×</button><h3></h3></div><div class="modal-main"><div class="modal-body"></div><div class="modal-footer"></div></div></div>'
 
       // 父节点，插入方式 appendTo
-    , parentNode: $BODY
+    , parentNode: $TMP
 
     // source target node
     , srcNode: ''
@@ -70,6 +71,7 @@ define('dialog', [], function (require, exports, module) {
           , footer = data.footer
           , others = data.others
           , cls = data.cls;
+        this.element.attr('tabIndex', -1);
         if (cls) this.element.addClass(cls);
         if (title) this.element.find('h3').eq(0).html(title);
         if (body) this.element.find('div.modal-body').html(body);
@@ -95,7 +97,7 @@ define('dialog', [], function (require, exports, module) {
 
     show: function (data) {
       // 临时
-      $BODY.find('.modal').addClass('hide');
+      $TMP.find('.modal').addClass('hide');
 
       this.emit('showBefore', data);
 
