@@ -19,4 +19,18 @@ class OAuthHelper extends ActionController {
         return $this->modOAuth->resetSession();
     }
 
+
+    public function getFacebookProfileByExternalUsername($external_username) {
+        return $this->modOAuth->getFacebookProfileByExternalUsername(
+            $external_username
+        );
+    }
+
+
+    public function getTwitterProfileByExternalUsername($external_username) {
+        return $this->modOAuth->getTwitterProfileByExternalUsername(
+            $external_username
+        );
+    }
+
 }
