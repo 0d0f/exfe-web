@@ -20,8 +20,9 @@ class IdentitiesActions extends ActionController {
 
     public function doGet() {
         // get models
-        $modUser       = $this->getModelByName('user');
-        $modIdentity   = $this->getModelByName('identity');
+        $modUser       = $this->getModelByName('User');
+        $modIdentity   = $this->getModelByName('Identity');
+        $modOAuth      = $this->getModelByName('OAuth');
         // get inputs
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : [];
         // ready
@@ -93,6 +94,16 @@ class IdentitiesActions extends ActionController {
                                             $twitterUser['profile_image_url']
                                         )
                                     );
+                                }
+                            }
+                            break;
+                        case 'facebook':
+                            if ($identityItem->external_username) {
+                                $rawIdentity = $modOAuth->getFacebookProfileByExternalUsername(
+                                    $identityItem->external_username
+                                );
+                                if ($rawIdentity) {
+                                    $objIdentities[] = $rawIdentity;
                                 }
                             }
                     }

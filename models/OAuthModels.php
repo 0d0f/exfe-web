@@ -218,6 +218,32 @@ class OAuthModels extends DataModel {
         return null;
     }
 
+
+    public function getFacebookProfileByExternalUsername($external_username) {
+        if (!$external_username) {
+            return null;
+        }
+        $objCurl = curl_init("https://graph.facebook.com/{$external_username}");
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($rawIdentity = (array) json_decode($data))) {
+            return new Identity(
+                0,
+                $rawIdentity['name'],
+                '',
+                array_key_exists('bio', $rawIdentity) ? $rawIdentity['bio'] : '',
+                'facebook',
+                0,
+                $rawIdentity['id'],
+                $rawIdentity['username'],
+                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large"
+            );
+        }
+        return null;
+    }
+
     // }
 
 
