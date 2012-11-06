@@ -16,7 +16,7 @@ addScript([
     ['base',          '0.0.2'],
     ['bus',           '0.0.2'],
     ['rex',           '0.0.2'],
-    ['util',          '0.0.2'],
+    ['util',          '0.0.3'],
     ['widget',        '0.0.2'],
     ['jquery',        '1.8.2'],
     ['moment',        '1.6.2'],
@@ -47,11 +47,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-<<<<<<< HEAD
-    ['profile',       '0.0.5'],
-=======
     ['profile',       '0.0.6'],
->>>>>>> master
 ]);
 
 // cross
@@ -86,9 +82,5 @@ EOT;
 }
 
 if (SITE_URL !== 'https://exfe.com') {
-<<<<<<< HEAD
-    require 'jsdev.php';
-=======
   require 'jsdev.php';
->>>>>>> master
 }
