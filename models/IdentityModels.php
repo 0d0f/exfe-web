@@ -232,14 +232,14 @@ class IdentityModels extends DataModel {
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false) {
+    public function addIdentity($identityDetail = [], $user_id = 0, $status = 2, $withVerifyInfo = false) {
         // load models
         $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
         $user_id           = (int) $user_id;
         $provider          = @mysql_real_escape_string(trim($identityDetail['provider']));
-        $external_id       = @mysql_real_escape_string(trim($identityDetail['external_id']));
-        $external_username = @mysql_real_escape_string(trim($identityDetail['external_username']));
+        $external_id       = @mysql_real_escape_string(strtolower(trim($identityDetail['external_id'])));
+        $external_username = @mysql_real_escape_string(strtolower(trim($identityDetail['external_username'])));
         $name              = @mysql_real_escape_string(trim($identityDetail['name']));
         $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
         $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
@@ -282,13 +282,33 @@ class IdentityModels extends DataModel {
         // add identity
         if (($id = intval($curIdentity['id'])) <= 0) {
             // fixed args
+            $hlpOAuth = $this->getHelperByName('OAuth');
             switch ($provider) {
                 case 'email':
                     $external_id = $external_username = $external_id ?: $external_username;
-                    $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
+                    $avatar_filename = $this->getGravatarByExternalUsername($external_username);
                     break;
                 case 'twitter':
+                    $rawIdentity = $hlpOAuth->getTwitterProfileByExternalUsername(
+                        $external_username
+                    );
+                    if ($rawIdentity) {
+                        $external_id     = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
+                        $name            = mysql_real_escape_string(trim($rawIdentity->name));
+                        $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
+                        $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
+                    }
+                    break;
                 case 'facebook':
+                    $rawIdentity = $hlpOAuth->getFacebookProfileByExternalUsername(
+                        $external_username
+                    );
+                    if ($rawIdentity) {
+                        $external_id     = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
+                        $name            = mysql_real_escape_string(trim($rawIdentity->name));
+                        $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
+                        $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
+                    }
                     break;
                 default:
                     return null;

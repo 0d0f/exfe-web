@@ -3,7 +3,7 @@
 class OAuthActions extends ActionController {
 
     public function doTwitterAuthenticate() {
-        $this->doAuthenticate('facebook');
+        $this->doAuthenticate('twitter');
     }
 
 

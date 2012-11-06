@@ -136,6 +136,41 @@ class OAuthModels extends DataModel {
 		unset($_SESSION['oauth']);
 	}
 
+
+    public function getTwitterProfileByExternalUsername($external_username) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        if (!$external_username) {
+            return null;
+        }
+        $twitterConn = new tmhOAuth([
+            'consumer_key'    => TWITTER_CONSUMER_KEY,
+            'consumer_secret' => TWITTER_CONSUMER_SECRET,
+        ]);
+        $responseCode = $twitterConn->request(
+            'GET', $twitterConn->url('1/users/show'),
+            ['screen_name' => $external_username]
+        );
+        if ($responseCode === 200) {
+            $twitterUser = (array) json_decode(
+                $twitterConn->response['response'], true
+            );
+            return new Identity(
+                0,
+                $twitterUser['name'],
+                '',
+                $twitterUser['description'],
+                'twitter',
+                0,
+                $twitterUser['id'],
+                $twitterUser['screen_name'],
+                $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
+                    $twitterUser['profile_image_url']
+                )
+            );
+        }
+        return null;
+    }
+
     // }
 
 
