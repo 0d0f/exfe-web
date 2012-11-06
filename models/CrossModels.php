@@ -150,11 +150,12 @@ class CrossModels extends DataModel {
     }
 
 
-    public function generateCrossAccessToken($cross_id, $identity_id) {
+    public function generateCrossAccessToken($cross_id, $identity_id, $user_id = 0) {
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         $resource    = ['token_type'   => 'cross_access_token',
                         'cross_id'     => (int) $cross_id,
-                        'identity_id'  => (int) $identity_id];
+                        'identity_id'  => (int) $identity_id,
+                        'user_id'      => (int) $user_id];
         $data        = $resource
                      + ['created_time' => time(),
                         'updated_time' => time()];

@@ -2020,7 +2020,8 @@ define(function (require, exports, module) {
                 }
                 var objSummary = ExfeeWidget.summary(),
                     strSummary = '';
-                for (var i = 0; i < objSummary.accepted_invitations.length; i++) {
+                // 最多显示 5 条，最新的 accepted
+                for (var i = 0; i < Math.min(objSummary.accepted_invitations.length, 5); i++) {
                     strSummary += '<li><span class="avatar alt40">'
                                 +   '<img height="20" width="20" alt="" src="'
                                 +      objSummary.accepted_invitations[i].identity.avatar_filename
@@ -2257,7 +2258,7 @@ define(function (require, exports, module) {
         window.User = Signin ? Store.get('user') : null;
         if (User) {
             Api.setToken(Signin.token);
-            curIdentity = ExfeUtilities.clone(User.default_identity);
+            curIdentity = ExfeUtilities.clone(User.identities[0]);
         }
 
         // init moment
@@ -2307,7 +2308,7 @@ define(function (require, exports, module) {
             window.User = Signin ? Store.get('user') : null;
             if (User) {
                 Api.setToken(Signin.token);
-                curIdentity = ExfeUtilities.clone(User.default_identity);
+                curIdentity = ExfeUtilities.clone(User.identities[0]);
                 ShowHost();
                 fixExfee();
             }

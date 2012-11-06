@@ -238,11 +238,10 @@ define('typeahead', [], function (require, exports, module) {
 
   // simple proxy function, $.proxy
   function proxy(f, c) {
-    if (!f) return undefined;
-    return cb;
-    function cb(e) {
+    if (!f) { return; }
+    return function cb(e) {
       return f.call(c, e);
-    }
+    };
   }
 });
 

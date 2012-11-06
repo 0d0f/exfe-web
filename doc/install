@@ -76,6 +76,10 @@ config.php.sample
 mailclient/mailconf.php.sample
 
 
+php 配置文件
+session.cookie_domain = '.exfe.com'
+
+
 mysql 配置文件
 [mysqld]
 default-time-zone='+00:00'

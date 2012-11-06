@@ -129,68 +129,7 @@
 }
 
 // modal forgot password
-.modal-fp {
-  .dropdown-toggle {
-    position: relative;
-    margin-top: 15px;
-    margin-left: 34px;
-    margin-bottom: 12px;
-    width: 235px;
-  }
-
-  .dropdown-menu {
-    width: 100%;
-    #gradient > .vertical(#fafafa, #e6e6e6);
-    border: 1px solid #fff;
-    .border-radius(0);
-    .box-shadow(0 1px 4px rgba(0,0,0,.25));
-    color: #4c4c4c;
-
-    ul {
-      margin: 0;
-      list-style: none;
-    }
-
-    li {
-      cursor: pointer;
-      font-style: oblique;
-      padding: 0 3px;
-      height: 24px;
-    }
-
-    // li:hover,
-    .active {
-      color: #191919;
-      background-color: rgba(127,127,127,.08);
-    }
-  }
-
-  .caret-outer {
-    height: 15px;
-    /*width: 16px;*/
-    padding: 11px 4px 0;
-    margin-top: -1px;
-    margin-left: 2px;
-    border: 1px solid rgba(255, 255, 255, .5);
-    #gradient > .directional(#fafafa, #e6e6e6, 255deg);
-    text-align: center;
-    overflow: hidden;
-    .box-shadow(0 1px 2px rgba(0, 0, 0, .25));
-    cursor: pointer;
-  }
-
-  .identity {
-    width: 213px;
-    height: 26px;
-    font-size: 18px;
-    line-height: 26px;
-  }
-
-  .user-identity {
-    margin-top: 3px;
-    margin-right: 25px;
-  }
-}
+//.modal-fp {}
 
 // modal verification
 .modal-ve {
@@ -246,6 +185,7 @@
   }
 }
 
+/*
 // set password
 .modal-sp,
 // change password
@@ -286,6 +226,7 @@
     padding-left: 6px;
   }
 }
+*/
 
 // browsing-identity
 .modal-bi {
@@ -369,37 +310,6 @@
   }
 }
 
-// reset password
-/*
-.modal-rsp {
-  .identity-name {
-    display: inline-block;
-    width: 273px;
-    height: 26px;
-    margin-left: 10px;
-    margin-top: 12px;
-    line-height: 26px;
-    font-size: 18px;
-    font-style: oblique;
-    text-align: center;
-    text-decoration: none;
-    color: #4c4c4c;
-    border: 1px solid rgba(127, 127, 127, .15);
-    #gradient > .directional(#fafafa, #e6e6e6, 270deg);
-    .box-shadow(0 1px 1px rgba(255, 255, 255, 1));
-
-    &:hover,
-    &:active {
-      color: #191919;
-      #gradient > .directional(#fafafa, #d5e8f2, 270deg);
-    }
-  }
-
-  .user-identity {
-    margin-right: 5px;
-  }
-}
-*/
 
 // avatar uploader
 .modal-uploader {
@@ -643,4 +553,37 @@
     margin: 0 0 15px 5px;
   }
 
+}
+
+.modal-au {
+  .why {
+    margin-top: 15px;
+    color: #333333;
+    font-size: 11px;
+    line-height: 14px;
+  }
+  .answer {
+    color: #7f7f7f;
+    font-size: 11px;
+    line-height: 14px;
+  }
+}
+
+.modal-mi {
+  .merge-list {
+    li {
+      margin-top: 10px;
+    }
+    input {
+      margin-top: 15px;
+      margin-right: 15px;
+    }
+    .identity {
+      font-size: 18px;
+      height: 28px;
+      line-height: 28px;
+      margin-top: 10px;
+      width: 250px;
+    }
+  }
 }

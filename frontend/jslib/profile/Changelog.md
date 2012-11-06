@@ -3,6 +3,11 @@
 
 * v0.0.4 2012-10-23T22:36:59 UTC+0800
   * 如果 cross.time.outputformat == 0 且 time.begin_at 都位空时,输出 `Sometime`
+<<<<<<< HEAD
+=======
+  * add Twitter OAuth identity
+  * fixed: 如果 `time.outputformat` = 1 & `time.origin` = '' 时，应该显示 `Sometime`
+>>>>>>> master
 
 * v0.0.3 12:31:54 08/31/2012   
   \+ 如果是 OAuth identity, 双击修改 identity name 时，提示红色文字   

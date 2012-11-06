@@ -40,29 +40,152 @@ class UsersActions extends ActionController {
         $modUser     = $this->getModelByName('User');
         $modIdentity = $this->getModelByName('identity');
         // collecting post data
-        if (!($external_username = trim($_POST['external_username']))) {
-            apiError(400, 'no_external_username', '');
+        switch ($provider = @trim($_POST['provider'])) {
+            case 'email':
+                if (!($external_username = trim($_POST['external_username']))) {
+                    apiError(400, 'no_external_username', '');
+                }
+                break;
+            case 'twitter':
+            case 'facebook':
+                $external_username = '';
+                break;
+            default:
+                apiError(400, 'unknow_provider', '');
         }
-        if (!($provider = trim($_POST['provider']))) {
-            apiError(400, 'no_provider', '');
+        // check user
+        $user = $modUser->getUserById($user_id);
+        $past = false;
+        foreach ($user->identities as $identity) {
+            if ($identity->status === 'CONNECTED') {
+                $past = true;
+                break;
+            }
         }
-        if (!($password = $_POST['password'])) {
-            apiError(401, 'no_password', ''); // 请输入当前密码
+        if (!$past) {
+            apiError(400, 'no_connected_identity', '');
         }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
+        // adding
+        if (($adResult = $modIdentity->addIdentity(
+            ['provider' => $provider, 'external_username' => $external_username], $user_id, 2, true
+        ))) {
+            $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
+            if ($adResult['identity_id'] > 0) {
+                $objIdentity = $modIdentity->getIdentityById($adResult['identity_id'], $user_id);
+                $rtResult['identity'] = $objIdentity;
+                apiResponse($rtResult);
+            } else if ($adResult['identity_id'] === -1) {
+                $rtResult['url'] = $adResult['verification']['url'];
+                apiResponse($rtResult);
+            }
+
         }
-        if (($identity_id = $modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username], $user_id))
-         && ($objIdentity = $modIdentity->getIdentityById($identity_id, $user_id))) {
-            apiResponse(['identity' => $objIdentity]);
-        } else {
-            apiError(400, 'failed', '');
-        }
+        apiError(400, 'failed', '');
     }
 
 
     public function doMergeIdentities() {
-
+        // get models
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
+        $modUser     = $this->getModelByName('User');
+        $checkHelper = $this->getHelperByName('check');
+        // collecting post data
+        $params      = $this->params;
+        // 提交两个 Token 的时候，只需要保证第二个 Token 是新鲜的
+        if (($strBsToken = trim(@$_POST['browsing_identity_token']))) {
+            // check signin
+            $result  = $checkHelper->isAPIAllow('user_edit', @$params['token'], [], true);
+            if (!$result['check']) {
+                apiError(401, 'no_signin', ''); // 需要登录
+            }
+            $user_id = $result['uid'];
+            // get browsing token
+            if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
+             || $objBsToken['is_expire']) {
+                apiError(400, 'error_browsing_identity_token', '');
+            }
+            // check fresh
+            switch ($objBsToken['data']['token_type']) {
+                case 'user_token':
+                    $last_authenticate = $objBsToken['data']['last_authenticate'];
+                    break;
+                case 'cross_access_token':
+                    $last_authenticate = $objBsToken['data']['updated_time'];
+                    break;
+                default:
+                    apiError(400, 'error_browsing_identity_token', '');
+            }
+            if (time() - $last_authenticate > 60 * 15) { // in 15 mins
+                apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
+            }
+            $fromUserId = $objBsToken['data']['user_id'];
+        // 提交一个 Token 的时候，需要保证该 Token 是新鲜的
+        // get verify token
+        } else if (($verifyToken = $modExfeAuth->getToken(@$params['token']))
+                && isset($verifyToken['data']['merger_info'])
+                && time() - $verifyToken['data']['merger_info']['updated_time'] < 60 * 15) { // in 15 mins
+            $user_id    = $verifyToken['data']['user_id'];
+            $fromUserId = $verifyToken['data']['merger_info']['mergeable_user']['id'];
+        } else {
+            apiError(401, 'authenticate_failed', ''); // 需要重新鉴权
+        }
+        // get browsing identity ids
+        $bsIdentityIds = @json_decode($_POST['identity_ids']);
+        if (!$bsIdentityIds || !is_array($bsIdentityIds)) {
+            apiError(400, 'no_identity_ids', '');
+        }
+        // get from user
+        $fromUser = $modUser->getUserById($fromUserId, false, 0);
+        if (!$fromUser) {
+            apiError(400, 'error_user_status', '');
+        }
+        // check user identity status
+        foreach ($fromUser->identities as $iI => $iItem) {
+            if ($iItem->status !== 'CONNECTED'
+             && $iItem->status !== 'REVOKED') {
+                unset($fromUser->identities[$iI]);
+            }
+        }
+        // merge
+        $mgResult = [];
+        $mgStatus = false;
+        foreach ($bsIdentityIds as $bsIdentityId) {
+            if (!($bsIdentityId = (int) $bsIdentityId)) {
+                continue;
+            }
+            // merge directly
+            foreach ($fromUser->identities as $iI => $iItem) {
+                if ($iItem->id === $bsIdentityId) {
+                    $tarStatus = 0;
+                    switch ($iItem->status) {
+                        case 'CONNECTED':
+                            $tarStatus = 3;
+                            break;
+                        case 'REVOKED':
+                            $tarStatus = 4;
+                    }
+                    if ($modUser->setUserIdentityStatus(
+                        $user_id, $bsIdentityId, $tarStatus
+                    )) {
+                        $mgResult[$bsIdentityId] = $mgStatus = true;
+                    } else {
+                        $mgResult[$bsIdentityId] = false;
+                    }
+                    unset($fromUser->identities[$iI]);
+                }
+            }
+        }
+        // get other mergeable user identity
+        $fromUser->identities = array_merge($fromUser->identities);
+        // return
+        if ($mgStatus) {
+            $rtResult = ['status' => $mgResult];
+            if ($fromUser->identities) {
+                $rtResult['mergeable_user'] = $fromUser;
+            }
+            apiResponse($rtResult);
+        }
+        apiError(500, 'server_error');
     }
 
 
@@ -72,6 +195,9 @@ class UsersActions extends ActionController {
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            }
             $user_id = $result['uid'];
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
@@ -83,13 +209,8 @@ class UsersActions extends ActionController {
         if (!($identity_id = intval($_POST['identity_id']))) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
-        if (!($password = $_POST['password'])) {
-            apiError(403, 'password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
-        }
         switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
+            case 'VERIFYING':
             case 'CONNECTED':
             case 'REVOKED':
                 if ($modIdentity->deleteIdentityFromUser($identity_id, $user_id)) {
@@ -103,8 +224,8 @@ class UsersActions extends ActionController {
     }
 
 
-    public function doSetDefaultIdentity() {
-        // check signin
+    public function doSortIdentities() {
+        // get models
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
@@ -115,25 +236,14 @@ class UsersActions extends ActionController {
         }
         // get models
         $modUser     = $this->getModelByName('user');
-        $modIdentity = $this->getModelByName('identity');
         // collecting post data
-        if (!($identity_id = intval($_POST['identity_id']))) {
-            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
+        if (!($identity_order = @json_decode($_POST['identity_order']))
+         || !is_array($identity_order)) {
+            apiError(400, 'no_identity_order', '');
         }
-        if (!($password = $_POST['password'])) {
-            apiError(403, 'no_current_password', ''); // 请输入当前密码
-        }
-        if (!$modUser->verifyUserPassword($user_id, $password)) {
-            apiError(403, 'invalid_password', ''); // 密码错误
-        }
-        switch ($modUser->getUserIdentityStatusByUserIdAndIdentityId($user_id, $identity_id)) {
-            case 'CONNECTED':
-                if ($modIdentity->setIdentityAsDefaultIdentityOfUser($identity_id, $user_id)) {
-                    apiResponse(array('user_id' => $user_id, 'identity_id' => $identity_id));
-                }
-                break;
-            default:
-                apiError(400, 'invalid_relation', ''); // 用户和身份关系错误
+        // sort
+        if ($modUser->sortIdentities($user_id, $identity_order)) {
+            apiResponse(['identity_order' => $identity_order]);
         }
         apiError(500, 'failed', '');
     }
@@ -203,6 +313,8 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
             $provider, $external_username
         );
+        // collecting post data
+        $args = trim(@$_POST['args']) ?: null;
         // init return value
         $rtResult = ['identity' => $identity];
         // 身份不存在，提示注册
@@ -219,7 +331,7 @@ class UsersActions extends ActionController {
                     $viResult = $modUser->verifyIdentity(
                         $identity,
                         $raw_flag['reason'] === 'NO_PASSWORD' ? 'SET_PASSWORD' : 'VERIFY',
-                        $user_id
+                        $user_id, $args
                     );
                     if ($viResult) {
                         $hlpGobus = $this->getHelperByName('gobus');
@@ -236,7 +348,7 @@ class UsersActions extends ActionController {
                     break;
                 case 'AUTHENTICATE':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'VERIFY', $user_id
+                        $identity, 'VERIFY', $user_id, $args
                     );
                     if ($viResult) {
                         $rtResult['url']    = $viResult['url'];
@@ -420,8 +532,9 @@ class UsersActions extends ActionController {
 
     public function doSetupUserByInvitationToken() {
         // get models
-        $modUser     = $this->getModelByName('user');
-        $modExfee    = $this->getModelByName('exfee');
+        $modUser     = $this->getModelByName('User');
+        $modIdentity = $this->getModelByName('Identity');
+        $modExfee    = $this->getModelByName('Exfee');
         $modExfeAuth = $this->getModelByName('ExfeAuth');
         // get name
         if (!($name = formatName($_POST['name']))) {
@@ -455,6 +568,10 @@ class UsersActions extends ActionController {
                 }
                 // add new user
                 $user_id = $modUser->addUser($passwd, $name);
+                // update identity
+                $modIdentity->updateIdentityById(
+                    $invitation['identity_id'], ['name' => $name]
+                );
                 // connect identity to new user
                 $modUser->setUserIdentityStatus(
                     $user_id, $invitation['identity_id'], 3
@@ -505,21 +622,25 @@ class UsersActions extends ActionController {
 
     public function doSignout() {
         // get models
-        $hlpCheck  = $this->getHelperByName('check');
-        $modDevice = $this->getModelByName('device');
+        $hlpCheck    = $this->getHelperByName('check');
+        $modDevice   = $this->getModelByName('device');
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
         // collecting post data
-        $params    = $this->params;
-        $user_id   = intval($params['id']);
-        $os_name   = $_POST['os_name'];
-        $udid      = $_POST['udid'];
-        $check     = $hlpCheck->isAPIAllow(
+        $params  = $this->params;
+        $user_id = intval($params['id']);
+        $os_name = $_POST['os_name'];
+        $udid    = $_POST['udid'];
+        $check   = $hlpCheck->isAPIAllow(
             'user_signout', $params['token'], ['user_id' => $user_id]
         );
         if (!$check['check']) {
             apiError(403, 'forbidden');
         }
-        // disconnect
+        // ready
         $rtResult  = ['user_id' => $user_id];
+        // expireToken
+        $modExfeAuth->expireToken($params['token']);
+        // disconnect
         $rtResult += $udid && $os_name && $modDevice->disconnectDeviceByUseridAndUdid($user_id, $udid, $os_name)
                    ? ['udid'    => $udid, 'os_name' => $os_name] : [];
         // return
@@ -817,31 +938,44 @@ class UsersActions extends ActionController {
 
 
     public function doSetPassword() {
-        // check signin
+        // get models
+        $modUser     = $this->getModelByName('user');
+        $modExfeAuth = $this->getModelByName('ExfeAuth');
         $checkHelper = $this->getHelperByName('check');
+        // check signin
         $params = $this->params;
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
             $user_id = $result['uid'];
-        } else if (intval($_SESSION['userid'])) { // @todo removing $_SESSION['userid']
-            $user_id = intval($_SESSION['userid']);
         } else {
             apiError(401, 'no_signin', ''); // 需要登录
         }
-        // get models
-        $modUser = $this->getModelByName('user');
         // collecting post data
-        if (!$modUser->verifyUserPassword($user_id, $_POST['current_password'], true)) {
+        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
+        if ($rstVerify) {
+        } else if ($rstVerify === null) {
+            if (!$result['fresh']) {
+                apiError(401, 'authenticate_timeout', '');
+            }
+        } else {
             apiError(403, 'invalid_current_password', ''); // 密码错误
         }
-        if (!($newPassword = $_POST['new_password'])) {
+        if (strlen($newPassword = $_POST['new_password']) === 0) {
             apiError(400, 'no_new_password', ''); // 请输入新密码
         }
         if (!validatePassword($newPassword)) {
             apiError(400, 'weak_password', 'password must be longer than four');
         }
+        // set password
         if ($modUser->setUserPassword($user_id, $newPassword)) {
-            apiResponse(array('user_id' => $user_id)); // 成功
+            // expire token
+            $modExfeAuth->expireToken($params['token']);
+            // get new token
+            $siResult = $modUser->rawSignin($user_id);
+            // return
+            if ($siResult) { // 成功
+                apiResponse(['user_id' => $user_id, 'token' => $siResult['token']]);
+            }
         }
         apiError(500, 'failed', ''); // 操作失败
     }
