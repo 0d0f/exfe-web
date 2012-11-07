@@ -91,7 +91,7 @@ class OAuthModels extends DataModel {
 
 
 	public function setSession($service, $token, $token_secret, $workflow = []) {
-        if ($service && $token && $token_secret) {
+        if ($service) {
     		$_SESSION['oauth'] = [
             	'external_service'   => $service,
             	'oauth_token'        => $token,
@@ -219,6 +219,122 @@ class OAuthModels extends DataModel {
     }
 
     // }
+
+
+    public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
+        // get models
+        $hlpUser     = $this->getHelperByName('User');
+        $hlpIdentity = $this->getHelperByName('Identity');
+        // get identity object
+        $objIdentity = $hlpIdentity->getIdentityByProviderAndExternalUsername(
+            $rawIdentity->provider, $rawIdentity->external_username, true
+        );
+        // 身份不存在，创建新身份
+        if (!$objIdentity) {
+            $identity_id = $hlpIdentity->addIdentity(
+                ['provider'          => $rawIdentity->provider,
+                 'external_id'       => $rawIdentity->external_id,
+                 'name'              => $rawIdentity->name,
+                 'bio'               => $rawIdentity->bio,
+                 'external_username' => $rawIdentity->external_username,
+                 'avatar_filename'   => $rawIdentity->avatar_filename]
+            );
+            $objIdentity = $hlpIdentity->getIdentityById($identity_id, null, true);
+        }
+        if (!$objIdentity) {
+            return null;
+        }
+        // init check
+        $user_id         = 0;
+        $identity_status = '';
+        // verifying
+        if (($user_id = @ (int) $oauthIfo['workflow']['user_id'])) {
+            $identity_status = 'verifying';
+        // 身份被 revoked，重新连接用户
+        } else if (($user_id = $objIdentity->revoked_user_id)) {
+            $identity_status = 'revoked';
+        } else if (($user_id = $objIdentity->connected_user_id) > 0) {
+            $identity_status = 'connected';
+        // 孤立身份，创建新用户并连接到该身份
+        } else if (($user_id = $hlpUser->addUser(
+            '', $rawIdentity->name ?: $rawIdentity->external_username
+        ))) {
+            $identity_status = 'new';
+        // no user_id
+        } else {
+            return null;
+        }
+        // connect user
+        if ($user_id === $objIdentity->connected_user_id) {
+            $identity_status = 'connected';
+        } else {
+            if (!$hlpUser->setUserIdentityStatus(
+                $user_id, $objIdentity->id, 3
+            )) {
+                return null;
+            }
+            $objIdentity->connected_user_id = $user_id;
+        }
+        // 更新 OAuth Token
+        switch ($objIdentity->provider) {
+            case 'twitter':
+                $oAuthToken = [
+                    'oauth_token'        => $oauthIfo['oauth_token'],
+                    'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
+                ];
+                break;
+            case 'facebook':
+                $oAuthToken = [
+                    'oauth_token'        => $rawOAuthToken['oauth_token'],
+                    'oauth_expires'      => $rawOAuthToken['oauth_expires'],
+                ];
+        }
+        $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);
+        // 使用该身份登录
+        $rstSignin = $hlpUser->rawSignin($objIdentity->connected_user_id);
+        // call Gobus { @todo upgrading by @leaskh
+        if ($objIdentity->provider === 'twitter') {
+            $hlpGobus = $this->getHelperByName('gobus');
+            $hlpGobus->send('user', 'GetFriends', [
+                'user_id'       => $objIdentity->connected_user_id,
+                'provider'      => 'twitter',
+                'external_id'   => $objIdentity->external_id,
+                'client_token'  => TWITTER_CONSUMER_KEY,
+                'client_secret' => TWITTER_CONSUMER_SECRET,
+                'access_token'  => $oauthIfo['oauth_token'],
+                'access_secret' => $oauthIfo['oauth_token_secret'],
+            ]);
+        }
+        // }
+        // return
+        $result = [
+            'oauth_signin'    => $rstSignin,
+            'identity'        => $objIdentity,
+            'identity_status' => $identity_status,
+        ];
+        switch ($objIdentity->provider) {
+            case 'twitter':
+                // 通过 friendships/exists 去判断当前用户 screen_name_a 是否 Follow screen_name_b
+                // true / false [String]
+                $twitterConn = new tmhOAuth([
+                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                    'user_token'      => $oauthIfo['oauth_token'],
+                    'user_secret'     => $oauthIfo['oauth_token_secret'],
+                ]);
+                $twitterConn->request(
+                    'GET',
+                    $twitterConn->url('1/friendships/exists'),
+                    ['screen_name_a' => $objIdentity->external_username,
+                     'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
+                );
+                $result['twitter_following'] = $twitterConn->response['response'] === 'true';
+        }
+        return $result;
+    }
+
+
+
 
 
 

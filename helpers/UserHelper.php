@@ -34,4 +34,14 @@ class UserHelper extends ActionController {
         return $this->modUser->getUserIdByIdentityId($identity_id);
     }
 
+
+    public function rawSignin($user_id, $passwdInDb = null) {
+        return $this->modUser->rawSignin($user_id, $passwdInDb);
+    }
+
+
+    public function addUser($password = '', $name = '') {
+        return $this->modUser->addUser($password, $name);
+    }
+
 }
