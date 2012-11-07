@@ -232,7 +232,7 @@ class IdentityModels extends DataModel {
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false) {
+    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false, $mail = 'Welcome') {
         // load models
         $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
@@ -326,7 +326,7 @@ class IdentityModels extends DataModel {
                         } else if (isset($vfyResult['token'])) {
                             // welcome and verify user via Gobus {
                             $hlpGobus = $this->getHelperByName('gobus');
-                            $hlpGobus->send('user', 'Welcome', [
+                            $hlpGobus->send('user', $mail, [
                                 'To_identity' => $objIdentity,
                                 'User_name'   => $userInfo['name'] ?: $objIdentity->name,
                                 'Token'       => $vfyResult['token'],
