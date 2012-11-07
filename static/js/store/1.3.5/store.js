@@ -53,7 +53,8 @@ define('store', function (require, exports, module) {
 	}
 	store.deserialize = function(value) {
 		if (typeof value != 'string') { return undefined }
-		return JSON.parse(value)
+		try { return JSON.parse(value) }
+		catch(e) { return value || undefined }
 	}
 
 	// Functions to encapsulate questionable FireFox 3.6.13 behavior
@@ -74,6 +75,7 @@ define('store', function (require, exports, module) {
 		store.set = function(key, val) {
 			if (val === undefined) { return store.remove(key) }
 			storage.setItem(key, store.serialize(val))
+			return val
 		}
 		store.get = function(key) { return store.deserialize(storage.getItem(key)) }
 		store.remove = function(key) { storage.removeItem(key) }
@@ -91,6 +93,7 @@ define('store', function (require, exports, module) {
 		store.set = function(key, val) {
 			if (val === undefined) { return store.remove(key) }
 			storage[key] = store.serialize(val)
+			return val
 		}
 		store.get = function(key) { return store.deserialize(storage[key] && storage[key].value) }
 		store.remove = function(key) { delete storage[key] }
@@ -144,7 +147,7 @@ define('store', function (require, exports, module) {
 				return result
 			}
 		}
-		
+
 		// In IE7, keys may not contain special chars. See all of https://github.com/marcuswestin/store.js/issues/40
 		var forbiddenCharsRegex = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g")
 		function ieKeyFix(key) {
@@ -155,6 +158,7 @@ define('store', function (require, exports, module) {
 			if (val === undefined) { return store.remove(key) }
 			storage.setAttribute(key, store.serialize(val))
 			storage.save(localStorageName)
+			return val
 		})
 		store.get = withIEStorage(function(storage, key) {
 			key = ieKeyFix(key)
@@ -192,7 +196,7 @@ define('store', function (require, exports, module) {
 		store.disabled = true
 	}
 	store.enabled = !store.disabled
-	
+
 	if (typeof module != 'undefined' && typeof module != 'function') { module.exports = store }
 	else if (typeof define === 'function' && define.amd) { define(store) }
 	else { this.store = store }
