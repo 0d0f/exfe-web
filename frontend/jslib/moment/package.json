@@ -1,16 +1,17 @@
 {
   "name": "moment",
-  "version": "1.6.2",
+  "version": "1.7.2",
   "homepage": "https://github.com/timrwood/moment",
   "repository": {
     "type": "git",
     "url": "git://github.com/timrwood/moment.git"
   },
   "pull": {
-    "url": "https://raw.github.com/timrwood/moment/1.6.2/moment.js",
-    "minurl": "https://raw.github.com/timrwood/moment/1.6.2/min/moment.min.js"
+    "url": "https://raw.github.com/timrwood/moment/1.7.2/moment.js",
+    "minurl": "https://raw.github.com/timrwood/moment/1.7.2/min/moment.min.js"
   },
   "hint": false,
+  "date": "2012-11-07T11:20:28 UTC+0800",
   "module": {
     "header": "define('moment', [], function (require, exports, module) {\n\n\n",
     "footer": "\n\n\n});"
