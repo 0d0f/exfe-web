@@ -1,3 +1,6 @@
+* v0.0.8 2012-11-07T15:57:13 UTC+0800
+  * updated home.js-v0.0.2
+
 * v0.0.7 2012-11-01T13:30:58 UTC+0800
   * fixed `Welcome` 欢迎窗口弹出 bug
   * [*] OAuth 重新设置密码
