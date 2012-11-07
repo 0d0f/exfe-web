@@ -1122,6 +1122,83 @@ define('xdialog', function (require, exports, module) {
           addIdentity(external_username, provider, that);
         },
         'click .xbtn-verify': function (e) {
+          e.preventDefault();
+          var $e = $(e.currentTarget);
+          if ($e.hasClass('xbtn-success')) {
+            that.$('.verify-after').addClass('hide');
+            that.hide();
+            return false;
+          }
+          var that = this
+            , od = that._identity
+
+          if (!od) {
+            return false;
+          }
+
+          var provider = od.provider
+            , external_username = od.external_username || od.external_identity || ''
+            , user = Store.get('user');
+
+          // 如果该身份已经添加过，则不再重复添加
+          if (R.find(user.identities, function (v, i) {
+                if (v.provider === provider && v.external_username === external_username) { return true; }
+              })) {
+            that.destory();
+            return;
+          }
+
+          function addIdentity(external_username, provider, that) {
+            var authorization = Store.get('authorization')
+              , token = authorization.token;
+            var defer = Api.request('addIdentity',
+              {
+                type: 'POST',
+                params: { token: token },
+                data: {
+                  external_username: external_username,
+                  provider: provider
+                }
+              },
+              function (data) {
+                var identity = data.identity
+                  , user = Store.get('user')
+                  , identities = user.identities;
+                identities.push(identity);
+                Store.set('user', user);
+                var s = Handlebars.compile($('#jst-identity-item').html());
+                var h = s(data.identity);
+                $('.identity-list').append(h);
+                that && that.$('.verify-before').addClass('hide');
+                that && that.$('.verify-after').removeClass('hide');
+                that && that.$('.xbtn-verify').addClass('hide');
+                that && that.$('.xbtn-done').removeClass('hide');
+              },
+              function (data) {
+                if (that) {
+                  that.$('.verify-before').removeClass('hide');
+                  that.$('.verify-after').addClass('hide');
+                  that.$('.xbtn-verify').removeClass('hide');
+                  that.$('.xbtn-done').addClass('hide');
+                }
+                var meta = data && data.meta;
+                if (meta
+                    && meta.code === 401
+                    && meta.errorType === 'authenticate_timeout') {
+
+                  that && that.destory();
+                  var $d = $('<div data-widget="dialog" data-dialog-type="authentication" data-destory="true" class="hide"></div>');
+                  $('#app-tmp').append($d);
+                  var e = $.Event('click.dialog.data-api');
+                  e._data = {callback: function () { addIdentity(external_username, provider)}};
+                  $d.trigger(e);
+                }
+              }
+            );
+            that && (that.defer = defer);
+          }
+          addIdentity(external_username, provider, that);
+          /*
           var that = this;
           var $e = $(e.currentTarget);
           if ($e.hasClass('xbtn-success')) {
@@ -1152,6 +1229,7 @@ define('xdialog', function (require, exports, module) {
               }
             }
           );
+          */
         },
         'click .xbtn-done': function (e) {
           this.$('.xbtn-add').trigger('click');
