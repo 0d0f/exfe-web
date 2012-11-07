@@ -420,8 +420,8 @@ define(function (require) {
 
       if (n === 0) {
         TOY_SHADOW
-          .addClass('hide')
-          .removeClass('exfe-scaleOut');
+          .addClass('shadow-scaleOn')
+          .removeClass('shadow-scaleOut');
         return;
       }
 
@@ -440,9 +440,9 @@ define(function (require) {
       if (n === 0){
 
         TOY_SHADOW
-          .removeClass('hide');
+          .removeClass('hide shadow-scaleOn');
         setTimeout(function () {
-          TOY_SHADOW.addClass('exfe-scaleOut');
+          TOY_SHADOW.addClass('shadow-scaleOut');
         }, 0);
         return;
       }

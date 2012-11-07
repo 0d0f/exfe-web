@@ -420,8 +420,8 @@ define(function (require) {
 
       if (n === 0) {
         TOY_SHADOW
-          .addClass('shadow-scaleOn')
-          .removeClass('shadow-scaleOut');
+          .removeClass('shadow-scaleOut')
+          .addClass('shadow-scaleOn');
         return;
       }
 
