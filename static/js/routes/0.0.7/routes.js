@@ -118,7 +118,8 @@ define('routes', function (require, exports, module) {
             , target_user_name = data.user_name
             , target_identity_id = data.identity_id
             // 是否还有可以合并的 `identities`
-            , mergeable_user = data.mergeable_user
+            //, mergeable_user = data.mergeable_user
+            , mergeable_user = null
             , token_type = data.token_type
             , action = data.action
             , browsing_authorization;
@@ -201,7 +202,8 @@ define('routes', function (require, exports, module) {
       , target_user_id = resolveData.user_id
       , target_token = resolveData.token
       , token_type = resolveData.token_type
-      , mergeable_user = resolveData.mergeable_user
+      //, mergeable_user = resolveData.mergeable_user
+      , mergeable_user = null
       , action = resolveData.action
       , tplUrl = 'identity_verified.html';
 
