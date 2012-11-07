@@ -103,10 +103,10 @@ class QueueModels extends DataModel {
             }
         }
         $h10Result = $head10  ? $this->pushConversationToQueue(
-            'Head10',  $head10, $cross, $post
+            'Head10',  $head10,  $cross, $post
         ) : true;
         $insResult = $instant ? $this->pushConversationToQueue(
-            'Instant', $head10, $cross, $post
+            'Instant', $instant, $cross, $post
         ) : true;
         return $h10Result && $insResult;
     }
