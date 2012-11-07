@@ -2157,7 +2157,7 @@ define('xdialog', function (require, exports, module) {
           + '</form>',
 
         footer: ''
-          + '<button class="xbtn-white xbtn-sitm" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In to Merge…</button>'
+          ////+ '<button class="xbtn-white xbtn-sitm" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In to Merge…</button>'
           + '<button class="pull-right xbtn-blue xbtn-success">Done</button>'
           + '<a class="pull-right xbtn-discard" data-dismiss="dialog">Cancel</a>'
       },
@@ -2200,7 +2200,7 @@ define('xdialog', function (require, exports, module) {
       events: {
         'click .authorize': function (e) {
             this._oauth_ = $.ajax({
-              url: '/OAuth/Authenticate?provider=',
+              url: '/OAuth/Authenticate?provider=twitter',
               type: 'POST',
               dataType: 'JSON',
               beforeSend: function (xhr) {
@@ -2244,15 +2244,15 @@ define('xdialog', function (require, exports, module) {
                   + '<a class="pull-right underline pointer cancel" data-dismiss="dialog">Cancel</a>'
                 + '</div>'
 
-                + '<div class="spliterline"></div>'
+                ////+ '<div class="spliterline"></div>'
 
-                + '<div>Otherwise, sign in your existing <span class="x-sign">EXFE</span> account to merge with this identity.</div>'
+                ////+ '<div>Otherwise, sign in your existing <span class="x-sign">EXFE</span> account to merge with this identity.</div>'
 
             + '</fieldset>'
           + '</form>',
 
         footer: ''
-          + '<button class="pull-right xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Add…</button>'
+          ////+ '<button class="pull-right xbtn-white xbtn-siea" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Add…</button>'
       },
 
       onShowBefore: function (e) {
@@ -2368,7 +2368,7 @@ define('xdialog', function (require, exports, module) {
           + '</div>',
 
         footer: ''
-          + '<button class="pull-right xbtn-blue xbtn-merge hide">Merge into account above</button>'
+          ////+ '<button class="pull-right xbtn-blue xbtn-merge hide">Merge into account above</button>'
           + '<button class="xbtn-white xbtn-sias hide" data-widget="dialog" data-dialog-type="identification" data-dialog-tab="d00">Sign In and Switch</button>'
           + '<button class="xbtn-white xbtn-sui hide" data-widget="dialog" data-dialog-type="setup_email">Set Up Identity</button>'
 
