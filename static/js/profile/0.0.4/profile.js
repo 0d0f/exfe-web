@@ -2,8 +2,11 @@ define(function (require, exports, module) {
   var $ = require('jquery');
   var Store = require('store');
   var Config = require('config');
+<<<<<<< HEAD
+=======
   var Dialog = require('dialog');
   var Dialogs = require('xdialog').dialogs;
+>>>>>>> master
   var Handlebars = require('handlebars');
   var R = require('rex');
   var Util = require('util');
@@ -94,7 +97,11 @@ define(function (require, exports, module) {
       if (!czEtz) {
         s += ' ' + tz;
       }
+<<<<<<< HEAD
+      return s;
+=======
       return s || 'Sometime';
+>>>>>>> master
     } else {
 
       if (b.time_word) {
@@ -305,12 +312,24 @@ define(function (require, exports, module) {
       .find('span')
       .text( user.password ? 'Change Password...' : 'Set Password...');
 
+<<<<<<< HEAD
+
+    var jst_identity_list = $('#jst-identity-list');
+    var s = Handlebars.compile(jst_identity_list.html());
+    var default_identity = user.default_identity;
+    R.each(user.identities, function (e, i) {
+      if (e.id === default_identity.id) {
+        e.__default__ = true;
+      }
+    });
+=======
     Handlebars.registerPartial('jst-identity-item', $('#jst-identity-item').html())
 
     var jst_identity_list = $('#jst-identity-list');
     var s = Handlebars.compile(jst_identity_list.html());
     var default_identity = user.identities[0];
     default_identity.__default__ = true;
+>>>>>>> master
 
     var identities = R.filter(user.identities, function (v) {
       if (v.provider === 'email' || v.provider === 'twitter') {
@@ -320,6 +339,8 @@ define(function (require, exports, module) {
 
     var h = s({identities: identities});
     $('.identity-list').append(h);
+<<<<<<< HEAD
+=======
     if (event = $('#app-main').data('event')) {
       var action = event.action;
       if (action === 'add_identity') {
@@ -367,6 +388,7 @@ define(function (require, exports, module) {
         $('#app-main').removeData('event');
       }
     }
+>>>>>>> master
   };
 
   // crossList 信息
@@ -665,6 +687,28 @@ define(function (require, exports, module) {
   });
 
   var $BODY = $(document.body);
+<<<<<<< HEAD
+  $(function () {
+
+    $BODY.on('hover.profile', '.identity-list > li', function (e) {
+      //$(this).find('i.icon-minus-sign').toggleClass('hide');
+      //if (e.type === 'mouseenter') $(this).addClass('over');
+      //else $(this).removeClass('over');
+      ///$(this).find('.xbtn-reverify, .xbtn-reauthorize').toggleClass('hide');
+    });
+
+    // removed identity
+    $BODY.on('click.profile', 'i.icon-minus-sign', function (e) {
+      var identity_id = $(this).parent().data('identity-id');
+      var authorization = Store.get('authorization');
+      var token = authorization.token;
+
+      //
+      return;
+      if (password) {
+
+        Api.request('deleteIdentity'
+=======
 
   // 暂时使用jQuery 简单实现功能
   // 编辑 user/identity name etc.
@@ -691,20 +735,263 @@ define(function (require, exports, module) {
           , token = authorization.token;
 
         Api.request('updateUser'
+>>>>>>> master
           , {
             type: 'POST',
             params: { token: token },
             data: {
+<<<<<<< HEAD
+              identity_id: identity_id,
+              password: password
+            }
+          }
+          , function (data) {
+          }
+          , function (data) {
+            if (data.meta.code === 403) {
+              alert('Please input password.');
+            }
+=======
               name: value
             }
           }
           , function (data) {
             Store.set('user', data.user);
             Bus.emit('app:page:changeusername', value);
+>>>>>>> master
           }
         );
 
       }
+<<<<<<< HEAD
+    });
+
+    // 暂时使用jQuery 简单实现功能
+    // 编辑 user/identity name etc.
+    $BODY.on('dblclick.profile', '.user-name h3', function (e) {
+      var value = $.trim($(this).html());
+      var $input = $('<input type="text" value="' + value + '" class="pull-left" />');
+      $input.data('oldValue', value);
+      $(this).after($input).hide();
+      $input.focusend();
+      $('.xbtn-changepassword').addClass('hide');
+    });
+
+    $BODY.on('focusout.profile keydown.profile', '.user-name input', function (e) {
+        var t = e.type, kc = e.keyCode;
+        if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+          var value = $.trim($(this).val());
+          var oldValue = $(this).data('oldValue');
+          $(this).hide().prev().html(value).show();
+          $(this).remove();
+          !$('.settings-panel').data('hoverout') && $('.xbtn-changepassword').removeClass('hide');
+
+          if (!value || value === oldValue) return;
+          var authorization = Store.get('authorization')
+            , token = authorization.token;
+
+          Api.request('updateUser'
+            , {
+              type: 'POST',
+              params: { token: token },
+              data: {
+                name: value
+              }
+            }
+            , function (data) {
+              Store.set('user', data.user);
+              Bus.emit('app:page:changeusername', value);
+            }
+          );
+
+        }
+    });
+
+    $BODY.on('dblclick.profile', '.identity-list li .identity > span.identityname em', function (e) {
+      var that = $(this)
+        , $li = that.parents('li')
+        , provider = $li.data('provider')
+        , status = $li.data('status')
+        , editable = $li.data('editable');
+
+      if ('twitter facebook google'.indexOf(provider) !== -1) {
+        $li.find('.isOAuth').removeClass('hide');
+      } else if (editable) {
+        var value = $.trim(that.text());
+        var $input = $('<input type="text" value="' + value + '" class="username-input" />');
+        $input.data('oldValue', value);
+        that.after($input).hide();
+        $input.focusend();
+      }
+    });
+
+    $BODY.on('focusout.profile keydown.profile', '.identity-list .username-input', function (e) {
+        var t = e.type, kc = e.keyCode;
+        if (t === 'focusout' || (kc === 9 || (!e.shiftKey && kc === 13))) {
+          var value = $.trim($(this).val());
+          var oldValue = $(this).data('oldValue');
+          var identity_id = $(this).parents('li').data('identity-id');
+          $(this).hide().prev().text(value).show();
+          $(this).remove();
+
+
+          if (!value || value === oldValue) return;
+          var authorization = Store.get('authorization')
+            , token = authorization.token;
+
+          Api.request('updateIdentity'
+            , {
+              params: { token: token },
+              resources: {identity_id: identity_id},
+              type: 'POST',
+              data: {
+                name: value
+              }
+            }
+            , function (data) {
+              var user = Store.get('user');
+              for (var i = 0, l = user.identities.length; i < l; ++i) {
+                if (user.identities[i].id === data.identity_id) {
+                  user.identities[i] = identity;
+                  break;
+                }
+              }
+
+              Store.set('user', user);
+            }
+          );
+        }
+    });
+
+    // RSVP Accpet
+    $BODY.on('click.profile', '.xbtn-accept', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var identity = Store.get('lastIdentity');
+      var p = $(this).parent();
+      var crossid = p.data('id');
+      var invitationid = p.data('invitationid');
+      var cross_box = $('.gr-a [data-id="' + crossid + '"]');
+      var exfee_id = p.data('exfeeid');
+      var authorization = Store.get('authorization')
+        , token = authorization.token;
+
+
+      Api.request('rsvp'
+        , {
+          params: { token: token },
+          resources: {exfee_id: exfee_id},
+          type: 'POST',
+          data: {
+            rsvp: '[{"identity_id":' + identity.id + ', "rsvp_status": "ACCEPTED", "by_identity_id": ' + identity.id + '}]',
+            by_identity_id: identity.id
+          }
+        }
+        , function (data) {
+          var fs = cross_box.find('>div :first-child');
+          var i = +fs.text();
+          fs.text(i + 1);
+          var ls = cross_box.find('>div :last-child');
+          var s = ls.text();
+          var identity = Store.get('lastIdentity');
+          ls.text(s + (s ? ', ' : '') + identity.name);
+          var inv;
+          if (!p.parent().prev().length && !p.parent().next().length) {
+            inv = p.parents('.invitations');
+          }
+          p.parent().remove();
+          inv && inv.remove();
+        }
+      );
+
+    });
+
+    // 身份验证
+    /*
+    $BODY.on('click.profile.identity', '.xbtn-reverify', function (e) {
+      var identity_id = $(this).parents('li').data('identity-id');
+      var user = Store.get('user');
+      var identity = R.filter(user.identities, function (v, i) {
+        if (v.id === identity_id) return true;
+      })[0];
+      $(this).data('source', identity);
+    });
+    */
+
+    // 添加身份
+    $BODY.on('click.profile.identity', '.xbtn-addidentity', function (e) {
+    });
+
+    $BODY.on('click.profile', '#profile div.cross-type', function (e) {
+      e.preventDefault();
+      $(this).next().toggleClass('hide').next().toggleClass('hide');
+      $(this).find('span.arrow').toggleClass('lt rb');
+    });
+
+    $BODY.on('hover.profile', '.changepassword', function (e) {
+      var t = e.type;
+      $(this).data('hoverout', t === 'mouseleave');
+      if (t === 'mouseenter') {
+        $(this).addClass('xbtn-changepassword');
+      } else {
+        $(this).removeClass('xbtn-changepassword');
+      }
+    });
+
+    /*
+    $BODY.on('hover.profile', '.settings-panel', function (e) {
+      var t = e.type;
+      $(this).data('hoverout', t === 'mouseleave');
+      if (t === 'mouseenter') {
+        $(this).find('.xbtn-changepassword').removeClass('hide');
+        //$(this).find('.xlabel').removeClass('hide');
+      } else {
+        $(this).find('.xbtn-changepassword').addClass('hide');
+        //$(this).find('.xlabel').addClass('hide');
+      }
+    });
+    */
+
+    // more
+    $BODY.on('click.profile', '.more > a', function (e) {
+      e.preventDefault();
+      var $e = $(this);
+      var p = $e.parent();
+      var cate = p.data('cate');
+      var data = Store.get('authorization');
+      var token = data.token;
+      var user_id = data.user_id;
+      var more_position = p.prev().find(' .cross-box').length;
+      var more_category = cate;
+
+      Api.request('crosslist'
+        , {
+          params: { token: token },
+          resources: { user_id: user_id },
+          data: {
+            more_category: more_category,
+            more_position: more_position
+          }
+        }
+        , function (data) {
+          if (data.crosses.length) {
+            var h = '{{#crosses}}'
+                + '{{> jst-cross-box}}'
+              + '{{/crosses}}';
+            var s = Handlebars.compile(h);
+            p.prev().append(s(data))
+            var l = R.filter(data.more, function (v) {
+              if (v === cate) return true;
+            });
+            if (!l.length) {
+              $e.remove();
+            }
+          }
+        }
+      );
+
+    });
+=======
   });
 
   $BODY.on('dblclick.profile', '.identity-list li .identity > span.identityname em', function (e) {
@@ -888,6 +1175,7 @@ define(function (require, exports, module) {
         }
       }
     );
+>>>>>>> master
 
   });
 
@@ -908,7 +1196,11 @@ define(function (require, exports, module) {
     var $e = $(this),
         $img = $e.find('img');
 
+<<<<<<< HEAD
+    if (!$e.parent().hasClass('editable')) { return false; }
+=======
     if (!$e.parent().data('editable')) { return false; }
+>>>>>>> master
 
     var identity_id = $e.parent().data('identity-id');
 
@@ -949,6 +1241,13 @@ define(function (require, exports, module) {
     uploader.show(data);
   });
 
+<<<<<<< HEAD
+  /*
+  $('.identity-list').dndsortable({
+    delay: 300,
+    wrap: true,
+    sort: function (dragging, dropzone) {
+=======
   $BODY.dndsortable({
     delay: 300,
     wrap: true,
@@ -956,6 +1255,7 @@ define(function (require, exports, module) {
     items: ' > li',
     sort: function (dragging, dropzone) {
       /*
+>>>>>>> master
       var c = this.data('timer');
       if (c) {
         clearTimeout(c);
@@ -966,6 +1266,14 @@ define(function (require, exports, module) {
         console.log('dropzone', 1);
       }, 300);
       this.data('timer', c);
+<<<<<<< HEAD
+    },
+    items: 'li',
+    setData: function (e) {
+      return $(e).data('identity-id');
+    },
+    start: function () {
+=======
       */
     },
     setData: function (e) {
@@ -975,23 +1283,52 @@ define(function (require, exports, module) {
       if (1 === $('.settings-panel .identity-list > li').size()) {
         return false;
       }
+>>>>>>> master
       $(this).addClass('dragme');
       $('.xbtn-addidentity').addClass('hide');
       $('.identities-trash').removeClass('hide over');
     },
     end: function () {
       $(this).removeClass('dragme');
+<<<<<<< HEAD
+=======
       $('.xbtn-addidentity').removeClass('hide');
       $('.identities-trash').addClass('hide over');
+>>>>>>> master
     },
     change: function (data) {
       //console.log(data);
     }
   });
+<<<<<<< HEAD
+  */
+
+  /*
+  // identity remote
+  $BODY.on('dragstart.profile', '.identity-list > li', function (e) {
+    e.stopPropagation();
+    $(this).addClass('dragme');
+    $('.xbtn-addidentity').addClass('hide');
+    $('.identities-trash').removeClass('hide over');
+    e.originalEvent.dataTransfer.effectAllowed = 'move';
+    e.originalEvent.dataTransfer.setData("text/plain", $(this).data('identity-id'));
+    return true;
+  });
+
+  $BODY.on('dragend.profile', '.identity-list > li', function (e) {
+    $(this).removeClass('dragme');
+    e.stopPropagation();
+    return false;
+  });
+
+  $BODY.on('dragenter.profile', '.trash-overlay', function (e) {
+    $(this).parent().addClass('over');
+=======
 
   $BODY.on('dragenter.profile', '.trash-overlay', function (e) {
     $(this).parent().addClass('over');
     $('.icon24-trash').addClass('icon24-trash-red');
+>>>>>>> master
     return false;
   });
 
@@ -1004,7 +1341,10 @@ define(function (require, exports, module) {
 
   $BODY.on('dragleave.profile', '.trash-overlay', function (e) {
     $(this).parent().removeClass('over');
+<<<<<<< HEAD
+=======
     $('.icon24-trash').removeClass('icon24-trash-red');
+>>>>>>> master
     return false;
   });
 
@@ -1012,6 +1352,13 @@ define(function (require, exports, module) {
     e.stopPropagation();
     e.preventDefault();
     var dt = e.originalEvent.dataTransfer;
+<<<<<<< HEAD
+    var data = dt.getData('text/plain');
+
+    return false;
+  });
+  */
+=======
     var identity_id = +dt.getData('text/plain');
     $(this).parent().removeClass('over');
     $('.icon24-trash').removeClass('icon24-trash-red');
@@ -1060,5 +1407,6 @@ define(function (require, exports, module) {
 
     return false;
   });
+>>>>>>> master
 
 });
