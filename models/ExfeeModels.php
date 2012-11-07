@@ -161,11 +161,15 @@ class ExfeeModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('identity');
         // adding new identity
         if (!$hlpIdentity->checkIdentityById($invitation->identity->id)) {
-            $avatar_filename = $invitation->identity->avatar_filename;
             switch ($invitation->identity->provider) {
                 case 'twitter':
-                    $avatar_filename = preg_match('/\.twimg\.com\//', $avatar_filename)
-                                     ? $avatar_filename : '';
+                    $avatar_filename = preg_match(
+                        '/\.twimg\.com\//',
+                        $invitation->identity->avatar_filename
+                    ) ? $invitation->identity->avatar_filename : '';
+                    break;
+                default:
+                    $avatar_filename = '';
             }
             $invitation->identity->id = $hlpIdentity->addIdentity(
                 ['provider'          => $invitation->identity->provider,
@@ -383,11 +387,14 @@ class ExfeeModels extends DataModel {
         foreach ($invitations as $toI => $toItem) {
             // adding new identity
             if (!$hlpIdentity->checkIdentityById($toItem->identity->id)) {
-                $avatar_filename = $toItem->identity->avatar_filename;
                 switch ($toItem->identity->provider) {
                     case 'twitter':
-                        $avatar_filename = preg_match('/\.twimg\.com\//', $avatar_filename)
-                                         ? $avatar_filename : '';
+                        $avatar_filename = preg_match(
+                            '/\.twimg\.com\//',
+                            $toItem->identity->avatar_filename
+                        ) ? $toItem->identity->avatar_filename : '';
+                    default:
+                        $avatar_filename = '';
                 }
                 $toItem->identity->id = $hlpIdentity->addIdentity(
                     ['provider'          => $toItem->identity->provider,

@@ -44,13 +44,22 @@ class UpgradeOldDatas extends DataModel {
             echo "Checking place: {$item['id']}...";
             $place_line1 = formatTitle($item['place_line1']);
             $place_line2 = formatDescription($item['place_line2']);
+            $external_id = strlen($item['external_id']) > 3 ? $item['external_id'] : '';
+            $lng         = (float) $item['lng']             ? $item['lng']         : '';
+            $lat         = (float) $item['lat']             ? $item['lat']         : '';
             if ($place_line1 !== $item['place_line1']
-             || $place_line2 !== $item['place_line2']) {
+             || $place_line2 !== $item['place_line2']
+             || $external_id !== $item['external_id']
+             || $lng         !== $item['lng']
+             || $lat         !== $item['lat']) {
                 $place_line1 = mysql_real_escape_string($place_line1);
                 $place_line2 = mysql_real_escape_string($place_line2);
                 $sql = "UPDATE `places`
                         SET    `place_line1`     = '{$place_line1}',
-                               `place_line2`     = '{$place_line2}'
+                               `place_line2`     = '{$place_line2}',
+                               `external_id`     = '{$external_id}',
+                               `lng`             = '{$lng}',
+                               `lat`             = '{$lat}'
                         WHERE  `id`              =  {$item['id']}";
                 echo '[UPDATED]';
                 $this->query($sql);

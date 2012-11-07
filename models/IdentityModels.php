@@ -192,7 +192,7 @@ class IdentityModels extends DataModel {
     public function getGravatarUrlByExternalUsername($external_username, $format = '', $fallback = '') {
         return $external_username
              ? ('http://www.gravatar.com/avatar/' . md5(strtolower($external_username))
-              . ($format   ? ".{$format}"    : '')
+              . ($format   ? ".{$format}"     : '')
               . ($fallback ? "?d={$fallback}" : ''))
              : '';
     }

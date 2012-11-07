@@ -10752,7 +10752,7 @@ body {
 #date-panel #date-head li {
   float: left;
   width: 44px;
-  line-height: 30px;
+  background: #fafafa;
 }
 
 #date-panel .full-month {

@@ -10773,6 +10773,9 @@ body {
           border-top-left-radius: 0;
   -moz-border-radius-topright: 0;
   -moz-border-radius-topleft: 0;
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+     -moz-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+          box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
 #date-panel #date-table tbody td {
