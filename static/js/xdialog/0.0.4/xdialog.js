@@ -1338,7 +1338,7 @@ define('xdialog', function (require, exports, module) {
           else if (registration_flag === 'SIGN_UP') {
             that._identity = Util.parseId(that.$('#identity').val());
             that.$('.d0, .d1, .d3').addClass('hide');
-            that.$('.d2').removeClass('hide');
+            that.$('.xbtn-add').removeClass('hide');
           }
           // AUTHENTICATE
           else if (registration_flag === 'AUTHENTICATE') {
