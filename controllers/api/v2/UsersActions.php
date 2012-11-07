@@ -67,7 +67,8 @@ class UsersActions extends ActionController {
         }
         // adding
         if (($adResult = $modIdentity->addIdentity(
-            ['provider' => $provider, 'external_username' => $external_username], $user_id, 2, true
+            ['provider' => $provider, 'external_username' => $external_username],
+            $user_id, 2, true, 'Verify'
         ))) {
             $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
             if ($adResult['identity_id'] > 0) {
