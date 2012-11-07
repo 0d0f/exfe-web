@@ -44,6 +44,11 @@ class IdentityHelper extends ActionController {
     }
 
 
+    public function updateOAuthTokenById($identity_id, $tokens) {
+        return $this->modIdentity->updateOAuthTokenById($identity_id, $tokens);
+    }
+
+
     public function cleanIdentityBadgeNumber($device_identity_id, $user_id) {
         //device token
         $identityData = $this->getModelByName('identity');
