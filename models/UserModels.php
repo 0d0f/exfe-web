@@ -32,7 +32,11 @@ class UserModels extends DataModel {
                 $rawUser['name'],
                 $rawUser['bio'],
                 getAvatarUrl($rawUser['avatar_file_name']),
-                $rawUser['timezone']
+                $rawUser['timezone'],
+                [],
+                [],
+                $rawUser['created_at'],
+                $rawUser['updated_at']
             );
             if ($withCrossQuantity) {
                 $user->cross_quantity = 0;
@@ -106,6 +110,27 @@ class UserModels extends DataModel {
                     }
                 }
             }
+            // get all devices of user
+            $rawDevices = $this->getAll(
+                "SELECT * FROM `devices` WHERE `user_id` = {$rawUser['id']}"
+            );
+            // insert devices into user
+            foreach ($rawDevices ?: [] as $device) {
+                $user->devices[] = new Device(
+                    $device['id'],
+                    $device['name'],
+                    $device['brand'],
+                    $device['model'],
+                    $device['os_name'],
+                    $device['os_version'],
+                    $device['description'],
+                    $device['status'],
+                    $device['first_connected_at'],
+                    $device['last_connected_at'],
+                    $device['disconnected_at']
+                );
+            }
+            // return
             return $user;
         } else {
             return null;
@@ -676,6 +701,9 @@ class UserModels extends DataModel {
                     `created_at` = NOW(),
                     `updated_at` = NOW()"
         );
+        $this->query(
+            "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
+        );
         return intval($actResult);
     }
 
@@ -698,7 +726,8 @@ class UserModels extends DataModel {
         return $this->query(
             "UPDATE `users`
              SET    `encrypted_password` = '{$password}',
-                    `password_salt`      = '{$passwordSalt}'{$sqlName}
+                    `password_salt`      = '{$passwordSalt}'{$sqlName},
+                    `updated_at`         =  NOW()
              WHERE  `id`                 =  {$user_id}"
         );
     }
