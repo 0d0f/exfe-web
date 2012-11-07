@@ -6434,6 +6434,7 @@ img:-moz-broken {
 
 .panel {
   position: absolute;
+  z-index: 1060;
   border: 1px solid #ffffff;
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
@@ -10726,26 +10727,31 @@ body {
           box-shadow: 0 0 5px rgba(0, 133, 242, 0.35);
 }
 
+#date-panel .date-container {
+  position: relative;
+  max-height: 166px;
+  overflow: hidden;
+  background: #fafafa;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+     -moz-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+          box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
+}
+
 #date-panel #date-head {
+  position: relative;
+  z-index: 2;
   margin: 0;
   color: #ECF0F4;
   text-align: center;
   background: #65717E;
-  -webkit-border-top-right-radius: 3px;
-          border-top-right-radius: 3px;
-  -webkit-border-top-left-radius: 3px;
-          border-top-left-radius: 3px;
-  -moz-border-radius-topright: 3px;
-  -moz-border-radius-topleft: 3px;
 }
 
 #date-panel #date-head li {
   float: left;
   width: 44px;
-}
-
-#date-panel .date-container {
-  position: relative;
   background: #fafafa;
 }
 
@@ -10758,24 +10764,21 @@ body {
 }
 
 #date-panel #date-table {
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
+  position: relative;
+  z-index: 1;
+  margin: 0;
   -webkit-border-top-right-radius: 0;
           border-top-right-radius: 0;
   -webkit-border-top-left-radius: 0;
           border-top-left-radius: 0;
   -moz-border-radius-topright: 0;
   -moz-border-radius-topleft: 0;
-  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
-     -moz-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
-          box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
 #date-panel #date-table tbody td {
   position: relative;
-  width: 43px;
-  height: 43px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   text-align: center;
   background: transparent;

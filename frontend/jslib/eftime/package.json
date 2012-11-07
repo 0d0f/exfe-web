@@ -1,9 +1,9 @@
 {
   "name": "efTime",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "EXFE-Time, relative time",
   "homepage": "https://exfe.com/",
   "author": "cfd",
-  "date": "2012-10-10T12:44:29 UTC+0800",
+  "date": "2012-11-07T12:42:56 UTC+0800",
   "hint": true
 }
