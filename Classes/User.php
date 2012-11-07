@@ -34,8 +34,8 @@ class User extends EFObject {
                                 && $updated_at !== '0000-00-00 00:00:00'
                                  ? $updated_at : $created_at;
 
-        $this->name              = $name;
-        $this->bio               = $bio ?: '';
+        $this->name              = $name ?: '';
+        $this->bio               = $bio  ?: '';
         $this->avatar_filename   = $avatar_filename;
         $this->timezone          = $timezone ?: '';
         $this->identities        = $identities;
