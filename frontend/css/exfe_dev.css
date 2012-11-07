@@ -7713,9 +7713,20 @@ body {
 
 }
 
-.x-home .page-main .exfe-scaleOut {
+.x-home .page-main .shadow-scaleOut {
   opacity: 1;
   filter: alpha(opacity=100);
+  -webkit-animation-fill-mode: forwards;
+  -webkit-transition: opacity 144ms ease-in;
+     -moz-transition: opacity 144ms ease-in;
+      -ms-transition: opacity 144ms ease-in;
+       -o-transition: opacity 144ms ease-in;
+          transition: opacity 144ms ease-in;
+}
+
+.x-home .page-main .shadow-scaleOn {
+  opacity: 0;
+  filter: alpha(opacity=0);
   -webkit-animation-fill-mode: forwards;
   -webkit-transition: opacity 144ms ease-in;
      -moz-transition: opacity 144ms ease-in;
@@ -10752,7 +10763,7 @@ body {
 #date-panel #date-head li {
   float: left;
   width: 44px;
-  background: #fafafa;
+  line-height: 30px;
 }
 
 #date-panel .full-month {
