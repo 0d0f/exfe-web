@@ -2307,6 +2307,8 @@ define('xdialog', function (require, exports, module) {
             }
             , function (data) {
                 that.hide();
+                // TODO: 隐藏 merge
+                data.mergeable_user = null;
                 if (data.mergeable_user) {
                   var mergeable_user = data.mergeable_user;
                   var d = $('<div id="js-dialog-merge" data-destory="true" data-widget="dialog" data-dialog-type="mergeidentity">');
