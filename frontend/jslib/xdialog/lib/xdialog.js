@@ -1293,6 +1293,10 @@ define('xdialog', function (require, exports, module) {
                     + 'Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.'
                   + '</div>'
 
+                  + '<div class="authenticate d d3 hide">'
+                    + 'Please directly authenticate identity above.'
+                  + '</div>'
+
               + '</fieldset>'
             + '</form>',
 
@@ -1326,26 +1330,27 @@ define('xdialog', function (require, exports, module) {
           var registration_flag = data.registration_flag;
           // SIGN_IN
           if (registration_flag === 'SIGN_IN') {
-            that.$('.d1, .d2').addClass('hide');
+            that.$('.d1, .d2, .d3').addClass('hide');
             that.$('.d0').removeClass('hide');
             that.$('.xbtn-forgotpwd').removeClass('disabled').data('source', [that._identity]);
           }
           // SIGN_UP 新身份
           else if (registration_flag === 'SIGN_UP') {
             that._identity = Util.parseId(that.$('#identity').val());
-            that.$('.d0, .d1').addClass('hide');
+            that.$('.d0, .d1, .d3').addClass('hide');
             that.$('.d2').removeClass('hide');
           }
           // AUTHENTICATE
           else if (registration_flag === 'AUTHENTICATE') {
             that._identity = Util.parseId(that.$('#identity').val());
             that.$('.d1, .d2').addClass('hide');
-            that.$('.d0').removeClass('hide');
+            that.$('.d0, .d3').removeClass('hide');
             that.$('label[for="password"]').parent().addClass('hide');
+            that.$('.xbtn-add').addClass('hide');
           }
           // VERIFY
           else if (registration_flag === 'VERIFY') {
-            that.$('.d0, .d2').addClass('hide');
+            that.$('.d0, .d2, .d3').addClass('hide');
             that.$('.d1').removeClass('hide');
           }
 
