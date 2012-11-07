@@ -328,7 +328,7 @@ class IdentityModels extends DataModel {
                             $hlpGobus = $this->getHelperByName('gobus');
                             $hlpGobus->send('user', 'Welcome', [
                                 'To_identity' => $objIdentity,
-                                'User_name'   => $userInfo['name'],
+                                'User_name'   => $userInfo['name'] ?: $objIdentity->name,
                                 'Token'       => $vfyResult['token'],
                             ]);
                             // }
