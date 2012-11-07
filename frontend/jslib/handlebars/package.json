@@ -1,14 +1,15 @@
 {
   "name": "handlebars",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "homepage": "http://www.handlebarsjs.com/",
   "repository": {
     "type": "git",
     "url": "https://github.com/wycats/handlebars.js"
   },
   "pull": {
-    "url": "https://github.com/downloads/wycats/handlebars.js/handlebars-1.0.0.beta.6.js"
+    "url": "https://github.com/downloads/wycats/handlebars.js/handlebars-1.0.rc.1.js"
   },
+  "date": "2012-11-07T11:33:31 UTC+0800",
   "hint": false,
   "module": {
     "header": "define('handlebars', [], function (require, exports, module) {\n\n\n",
