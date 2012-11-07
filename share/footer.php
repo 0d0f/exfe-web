@@ -34,7 +34,7 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['eftime',        '0.0.3'],
+    ['eftime',        '0.0.4'],
     ['api',           '0.0.2'],
     ['dialog',        '0.0.3'],
     ['typeahead',     '0.0.2'],
