@@ -57,8 +57,7 @@ define('widget', function (require, exports, module) {
     },
 
     // 外部接口，方便子类初始化
-    init: function () {
-    },
+    init: function () {},
 
     // 外部接口，将 widget 渲染到页面上
     render: function () {
