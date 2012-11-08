@@ -1280,7 +1280,7 @@ define('xdialog', function (require, exports, module) {
           addIdentity(external_username, provider, that);
         },
         'click .xbtn-done': function (e) {
-          this.$('.xbtn-add').trigger('click');
+          this.hide();
         },
         'click .oauth > a': function (e) {
           e.preventDefault();
