@@ -158,7 +158,6 @@ class UsersActions extends ActionController {
         }
         // merge
         $mgResult = [];
-        $mgStatus = false;
         foreach ($bsIdentityIds as $bsIdentityId) {
             if (!($bsIdentityId = (int) $bsIdentityId)) {
                 continue;
@@ -171,12 +170,14 @@ class UsersActions extends ActionController {
                             $iItem->status, $modUser->arrUserIdentityStatus
                         )
                     )) {
-                        if ($iItem->status === 'VERIFYING') {
-                            $modUser->verifyIdentity($iItem, 'VERIFY', $user_id);
+                        switch ($iItem->status) {
+                            case 'VERIFYING':
+                                $modUser->verifyIdentity($iItem, 'VERIFY', $user_id);
+                                break;
+                            case 'CONNECTED':
+                                $iItem->connected_user_id = $user_id;
                         }
-                        $mgResult[$bsIdentityId] = $mgStatus = true;
-                    } else {
-                        $mgResult[$bsIdentityId] = false;
+                        $mgResult[$bsIdentityId] = $iItem;
                     }
                     unset($fromUser->identities[$iI]);
                 }
@@ -185,7 +186,7 @@ class UsersActions extends ActionController {
         // get other mergeable user identity
         $fromUser->identities = array_merge($fromUser->identities);
         // return
-        if ($mgStatus) {
+        if ($mgResult) {
             $rtResult = ['status' => $mgResult];
             if ($fromUser->identities) {
                 $rtResult['mergeable_user'] = $fromUser;
