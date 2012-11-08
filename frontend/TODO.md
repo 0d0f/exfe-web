@@ -86,3 +86,29 @@ TODO
 ## Helvetica Light 问题
 
 ## 前端 MVC
+
+## Grab TODO [2012-11-08T17:16:44 UTC+0800]:
+jslib/global/lib/global.js:121:    // TODO:后面再优化
+jslib/handlebars/lib/handlebars.js:650:    // TODO: disallow complex IDs
+jslib/home/lib/home.js:238:                // TODO: 删除 `popmenu` 元素，暂时先放着
+jslib/jquery/lib/jquery.js:2894:			// TODO: Stop taunting the data cache; remove global events and always attach to document
+jslib/less/lib/less.js:2109:    // TODO: Perform unit conversion before comparing
+jslib/modernizr/lib/modernizr.js:56:    // TODO :: make the prefixes more granular
+jslib/modernizr/lib/modernizr.js:216:    // TODO :: Add flag for hasownprop ? didn't last time
+jslib/modernizr/lib/modernizr.js:314:    // TODO :: add testDOMProps
+jslib/rex/lib/rex.js:315:  // TODO: 深拷贝/潜拷贝
+jslib/routes/lib/routes.js:354:  // TODO: 整合 cross 逻辑
+jslib/uploader/lib/uploader.js:730:                // TODO: 第二版再弄摄像头
+jslib/xdialog/lib/xdialog.js:17:  // TODO: js html 分离
+jslib/xdialog/lib/xdialog.js:78:        // TODO: 删除 `popmenu` 元素，暂时先放着
+jslib/xdialog/lib/xdialog.js:256:            // TODO: 后期移调
+jslib/xdialog/lib/xdialog.js:343:                // TODO
+jslib/xdialog/lib/xdialog.js:392:        // TODO: oAuth 地址设置
+jslib/xdialog/lib/xdialog.js:649:        // TODO: 临时处理 , 首页 登录窗口
+jslib/xdialog/lib/xdialog.js:722:          // TODO: 优化
+jslib/xdialog/lib/xdialog.js:733:            // TODO: 先简单处理，后面是否要保存 target 元素
+jslib/xdialog/lib/xdialog.js:1748:            // TODO: 先简单处理，后面是否要保存 target 元素
+jslib/xdialog/lib/xdialog.js:2420:                // TODO: 隐藏 merge
+jslib/xdialog/lib/xdialog.js:2796:          // TODO: 优化
+jslib/xdialog/lib/xdialog.js:2862:      // TODO: 后期优化掉
+jslib/xdialog/lib/xdialog.js:2940:      // TODO: 后期优化掉
