@@ -1,3 +1,6 @@
+* v0.0.8 2012-11-08T14:49:09 UTC+0800
+  * 修复 添加 Twitter Oauth 时，取消无法跳回到 Profile 时的bug
+
 * v0.0.7 2012-11-06T14:29:53 UTC+0800
   * [+] 修复 `Facebook` callback url
 
