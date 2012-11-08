@@ -36,7 +36,7 @@ echo "  </script>\n";
 addScript([
     ['eftime',        '0.0.4'],
     ['api',           '0.0.2'],
-    ['dialog',        '0.0.3'],
+    ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.4'],
@@ -52,7 +52,7 @@ addScript([
 
 // cross
 addScript([
-    ['placepanel',    '0.0.1'],
+    ['placepanel',    '0.0.2'],
     ['user',          '0.0.6'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
