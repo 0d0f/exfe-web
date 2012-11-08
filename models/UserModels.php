@@ -389,6 +389,7 @@ class UserModels extends DataModel {
         $curTokens = $hlpExfeAuth->findToken($resource);
         if ($curTokens && is_array($curTokens)) {
             foreach ($curTokens as $cI => $cItem) {
+                $cItem['data'] = (array) json_decode($cItem['data']);
                 if ($cItem['data']['token_type'] === 'verification_token'
                  && $cItem['data']['user_id']    === $user_id
                  && !$cItem['is_expire']) {
