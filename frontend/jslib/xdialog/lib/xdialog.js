@@ -1200,6 +1200,9 @@ define('xdialog', function (require, exports, module) {
             }
             addIdentity(external_username, provider, that);
           }
+          else if (flag === 'AUTHENTICATE') {
+            that.$('.oauth > a').eq(0).trigger('click');
+          }
         },
         'click .xbtn-verify': function (e) {
           e.preventDefault();
@@ -1394,10 +1397,6 @@ define('xdialog', function (require, exports, module) {
                     + 'Verification sent, it should arrive in minutes. Please check your mailbox and follow the instruction.'
                   + '</div>'
 
-                  + '<div class="authenticate d d3 hide">'
-                    + 'Please directly authenticate identity above.'
-                  + '</div>'
-
               + '</fieldset>'
             + '</form>',
 
@@ -1449,7 +1448,6 @@ define('xdialog', function (require, exports, module) {
             that.$('.d1, .d2').addClass('hide');
             that.$('.d0, .d3').removeClass('hide');
             that.$('label[for="password"]').parent().addClass('hide');
-            that.$('.xbtn-add').addClass('hide');
           }
           // VERIFY
           else if (registration_flag === 'VERIFY') {
