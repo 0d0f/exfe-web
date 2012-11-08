@@ -519,6 +519,10 @@ define(function (require, exports, module) {
               return crosses[this.__crossIndex]['exfee'].invitations[this.__identityIndex].id;
             } else if (prop === 'exfeeid') {
               return crosses[this.__crossIndex]['exfee'].id;
+            } else if (prop === 'identityid') {
+              return crosses[this.__crossIndex]['exfee'].invitations[this.__identityIndex].identity.id;
+            } else if (prop === 'name') {
+              return crosses[this.__crossIndex]['exfee'].invitations[this.__identityIndex].identity.name;
             }
             return crosses[this.__crossIndex][prop];
           });
@@ -785,12 +789,13 @@ define(function (require, exports, module) {
   $BODY.on('click.profile', '.xbtn-accept', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    var identity = Store.get('lastIdentity');
     var p = $(this).parent();
     var crossid = p.data('id');
     var invitationid = p.data('invitationid');
     var cross_box = $('.gr-a [data-id="' + crossid + '"]');
     var exfee_id = p.data('exfeeid');
+    var identity_id = p.data('identity-id');
+    var name = p.data('name');
     var authorization = Store.get('authorization')
       , token = authorization.token;
 
@@ -800,8 +805,8 @@ define(function (require, exports, module) {
         resources: {exfee_id: exfee_id},
         type: 'POST',
         data: {
-          rsvp: '[{"identity_id":' + identity.id + ', "rsvp_status": "ACCEPTED", "by_identity_id": ' + identity.id + '}]',
-          by_identity_id: identity.id
+          rsvp: '[{"identity_id":' + identity_id + ', "rsvp_status": "ACCEPTED", "by_identity_id": ' + identity_id + '}]',
+          by_identity_id: identity_id
         }
       }
       , function (data) {
@@ -810,8 +815,7 @@ define(function (require, exports, module) {
         fs.text(i + 1);
         var ls = cross_box.find('>div :last-child');
         var s = ls.text();
-        var identity = Store.get('lastIdentity');
-        ls.text(s + (s ? ', ' : '') + identity.name);
+        ls.text(s + (s ? ', ' : '') + name);
         var inv;
         if (!p.parent().prev().length && !p.parent().next().length) {
           inv = p.parents('.invitations');

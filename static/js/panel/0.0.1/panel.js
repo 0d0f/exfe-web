@@ -22,7 +22,7 @@ define('panel', function (request, exports, module) {
           // 开/关 拟态
         , backdrop: false
 
-        , templates: ''
+        , templates: '<div class="panel" tabindex="-1" role="panel"><div class="panel-header"></div><div class="panel-body"></div><div class="panel-footer"></div></div>'
 
         , parentNode: null
 
