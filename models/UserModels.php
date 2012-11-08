@@ -687,7 +687,7 @@ class UserModels extends DataModel {
              WHERE  `userid`     = {$user_id}
              AND    `identityid` = {$identity_id}"
         );
-        $actResult = $this->query(
+        $this->query(
             $rawStatus
           ? "UPDATE `user_identity`
              SET    `status`     = {$status},
@@ -704,7 +704,7 @@ class UserModels extends DataModel {
         $this->query(
             "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
         );
-        return intval($actResult);
+        return true;
     }
 
 
