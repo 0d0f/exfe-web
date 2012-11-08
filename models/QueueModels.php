@@ -69,8 +69,7 @@ class QueueModels extends DataModel {
              || $invitation->rsvp_status                 === 'DECLINED') {
                 continue;
             }
-            $gotInvitation = [];
-            $gotInvitation[] = $invitation;
+            $gotInvitation = [$invitation];
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -91,14 +90,14 @@ class QueueModels extends DataModel {
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
-            foreach ($gotInvitation as $invitation) {
-                switch ($invitation->identity->provider) {
+            foreach ($gotInvitation as $item) {
+                switch ($item->identity->provider) {
                     case 'email':
-                        $head10[]  = $invitation;
+                        $head10[]  = $item;
                         break;
                     case 'iOS':
                     case 'Android':
-                        $instant[] = $invitation;
+                        $instant[] = $item;
                 }
             }
         }
