@@ -40,7 +40,7 @@ define('dialog', function (require, exports, module) {
     , backdrop: false
 
       // 弹出窗口基础结构
-    , template: '<div class="modal"><div class="modal-header"><button class="close" data-dismiss="dialog">×</button><h3></h3></div><div class="modal-main"><div class="modal-body"></div><div class="modal-footer"></div></div></div>'
+    , template: '<div class="modal" tabindex="-1"><div class="modal-header"><button class="close" data-dismiss="dialog">×</button><h3></h3></div><div class="modal-main"><div class="modal-body"></div><div class="modal-footer"></div></div></div>'
 
       // 父节点，插入方式 appendTo
     , parentNode: $TMP
@@ -56,8 +56,7 @@ define('dialog', function (require, exports, module) {
 
     },
 
-    init: function () {
-    },
+    init: function () {},
 
     render: function () {
       var data;
@@ -71,7 +70,6 @@ define('dialog', function (require, exports, module) {
           , footer = data.footer
           , others = data.others
           , cls = data.cls;
-        this.element.attr('tabIndex', -1);
         if (cls) { this.element.addClass(cls); }
         if (title) { this.element.find('h3').eq(0).html(title); }
         if (body) { this.element.find('div.modal-body').html(body); }
@@ -155,10 +153,13 @@ define('dialog', function (require, exports, module) {
       var $e = this.element;
       var dataType = this.options.srcNode.data('dialog-type');
       this.offSrcNode();
+
+      // 删除所有 dialog 引用
       $BODY
         .find('[data-dialog-type="' + dataType + '"]')
         .not($e)
         .removeData('dialog');
+
       this._destory();
       $e.remove();
     }
