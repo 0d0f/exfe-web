@@ -36,10 +36,12 @@ echo "  </script>\n";
 addScript([
     ['eftime',        '0.0.4'],
     ['api',           '0.0.2'],
-    ['dialog',        '0.0.3'],
+    ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
+    ['panel',         '0.0.1'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.4'],
+    ['xdialog',       '0.0.5'],
+    ['datepanel',     '0.0.1'],
     ['global',        '0.0.5'],
 ]);
 
@@ -47,12 +49,12 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.8'],
+    ['profile',       '0.0.9'],
 ]);
 
 // cross
 addScript([
-    ['placepanel',    '0.0.1'],
+    ['placepanel',    '0.0.2'],
     ['user',          '0.0.6'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
@@ -60,7 +62,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.4'],
-    ['middleware',    '0.0.7'],
+    ['middleware',    '0.0.8'],
     ['routes',        '0.0.8'],
     ['app',           '0.0.4'],
 ]);
