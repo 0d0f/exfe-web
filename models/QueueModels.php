@@ -69,7 +69,8 @@ class QueueModels extends DataModel {
              || $invitation->rsvp_status                 === 'DECLINED') {
                 continue;
             }
-            $gotInvitation = [$invitation];
+            $gotInvitation = [];
+            $gotInvitation[] = $invitation;
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
