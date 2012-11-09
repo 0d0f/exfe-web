@@ -569,7 +569,6 @@ ExfeeWidget = {
             objIdentity.external_username = string;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
             objIdentity.provider          = 'email';
-
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');

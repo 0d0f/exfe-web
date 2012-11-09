@@ -278,6 +278,7 @@ class UsersActions extends ActionController {
                     apiResponse(['registration_flag' => 'SIGN_UP']);
                     break;
                 case 'twitter':
+                case 'facebook':
                     apiResponse(['registration_flag' => 'AUTHENTICATE']);
                     break;
                 default:
