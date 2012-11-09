@@ -389,6 +389,7 @@ class UserModels extends DataModel {
         $curTokens = $hlpExfeAuth->findToken($resource);
         if ($curTokens && is_array($curTokens)) {
             foreach ($curTokens as $cI => $cItem) {
+                $cItem['data'] = (array) json_decode($cItem['data']);
                 if ($cItem['data']['token_type'] === 'verification_token'
                  && $cItem['data']['user_id']    === $user_id
                  && !$cItem['is_expire']) {
@@ -687,7 +688,7 @@ class UserModels extends DataModel {
              WHERE  `userid`     = {$user_id}
              AND    `identityid` = {$identity_id}"
         );
-        $actResult = $this->query(
+        $this->query(
             $rawStatus
           ? "UPDATE `user_identity`
              SET    `status`     = {$status},
@@ -704,7 +705,7 @@ class UserModels extends DataModel {
         $this->query(
             "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
         );
-        return intval($actResult);
+        return true;
     }
 
 
