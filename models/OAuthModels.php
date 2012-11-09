@@ -136,6 +136,41 @@ class OAuthModels extends DataModel {
 		unset($_SESSION['oauth']);
 	}
 
+
+    public function getTwitterProfileByExternalUsername($external_username) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        if (!$external_username) {
+            return null;
+        }
+        $twitterConn = new tmhOAuth([
+            'consumer_key'    => TWITTER_CONSUMER_KEY,
+            'consumer_secret' => TWITTER_CONSUMER_SECRET,
+        ]);
+        $responseCode = $twitterConn->request(
+            'GET', $twitterConn->url('1/users/show'),
+            ['screen_name' => $external_username]
+        );
+        if ($responseCode === 200) {
+            $twitterUser = (array) json_decode(
+                $twitterConn->response['response'], true
+            );
+            return new Identity(
+                0,
+                $twitterUser['name'],
+                '',
+                $twitterUser['description'],
+                'twitter',
+                0,
+                $twitterUser['id'],
+                $twitterUser['screen_name'],
+                $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
+                    $twitterUser['profile_image_url']
+                )
+            );
+        }
+        return null;
+    }
+
     // }
 
 
@@ -198,6 +233,32 @@ class OAuthModels extends DataModel {
         $objCurl = curl_init(
             "https://graph.facebook.com/me?access_token={$oauthToken}"
         );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($rawIdentity = (array) json_decode($data))) {
+            return new Identity(
+                0,
+                $rawIdentity['name'],
+                '',
+                array_key_exists('bio', $rawIdentity) ? $rawIdentity['bio'] : '',
+                'facebook',
+                0,
+                $rawIdentity['id'],
+                $rawIdentity['username'],
+                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large"
+            );
+        }
+        return null;
+    }
+
+
+    public function getFacebookProfileByExternalUsername($external_username) {
+        if (!$external_username) {
+            return null;
+        }
+        $objCurl = curl_init("https://graph.facebook.com/{$external_username}");
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
         $data = curl_exec($objCurl);
