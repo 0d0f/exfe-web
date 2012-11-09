@@ -267,6 +267,7 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
+                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -288,6 +289,7 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
+                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -315,6 +317,7 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
+                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -330,6 +333,7 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
+                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -419,6 +423,7 @@ class UserModels extends DataModel {
                 }
                 break;
             case 'twitter':
+            case 'facebook':
                 $hlpOAuth = $this->getHelperByName('OAuth');
                 $workflow = ['user_id' => $user_id];
                 switch ($action) {
@@ -440,7 +445,14 @@ class UserModels extends DataModel {
                 if ($args) {
                     $workflow['callback'] = ['args' => $args];
                 }
-                $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
+                switch ($identity->provider) {
+                    case 'twitter':
+                        $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
+                        break;
+                    case 'facebook':
+                        $urlOauth = $hlpOAuth->facebookRedirect($workflow);
+                }
+
                 if ($urlOauth) {
                     $result['url'] = $urlOauth;
                     return $result;
