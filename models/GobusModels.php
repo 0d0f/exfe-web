@@ -37,10 +37,6 @@ class GobusModels extends DataModel {
                     return $httpBody;
                 }
             }
-            if (DEBUG) {
-                error_log(@$rawResult);
-                error_log(@$httpBody);
-            }
         }
         return null;
     }
