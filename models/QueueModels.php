@@ -65,10 +65,11 @@ class QueueModels extends DataModel {
         $instant = [];
         $chkUser = [];
         foreach ($cross->exfee->invitations as $invitation) {
-            if ($invitation->rsvp_status === 'DECLINED') {
+            if ($invitation->identity->connected_user_id === $by_user_id
+             || $invitation->rsvp_status                 === 'DECLINED') {
                 continue;
             }
-            $gotInvitation = [$invitation];
+            $gotInvitation = [(object) (array) $invitation];
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -82,31 +83,29 @@ class QueueModels extends DataModel {
                     $gotInvitation[] = $tmpInvitation;
                 }
                 // set conversation counter
-                if ($invitation->identity->connected_user_id !== $by_user_id) {
-                    $hlpConversation->addConversationCounter(
-                        $cross->exfee->id,
-                        $invitation->identity->connected_user_id
-                    );
-                }
+                $hlpConversation->addConversationCounter(
+                    $cross->exfee->id,
+                    $invitation->identity->connected_user_id
+                );
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
-            foreach ($gotInvitation as $invitation) {
-                switch ($invitation->identity->provider) {
+            foreach ($gotInvitation as $item) {
+                switch ($item->identity->provider) {
                     case 'email':
-                        $head10[]  = $invitation;
+                        $head10[]  = $item;
                         break;
                     case 'iOS':
                     case 'Android':
-                        $instant[] = $invitation;
+                        $instant[] = $item;
                 }
             }
         }
         $h10Result = $head10  ? $this->pushConversationToQueue(
-            'Head10',  $head10, $cross, $post
+            'Head10',  $head10,  $cross, $post
         ) : true;
         $insResult = $instant ? $this->pushConversationToQueue(
-            'Instant', $head10, $cross, $post
+            'Instant', $instant, $cross, $post
         ) : true;
         return $h10Result && $insResult;
     }
