@@ -50,7 +50,7 @@ ExfeUtilities = {
     parseTimestring : function(strTime) {
         var sptTime = strTime ? strTime.split(/[^0-9a-zA-Z]+/) : [],
             arrTime = [],
-            fmtFrom = 'YYYY MM DD hh mm ss a ZZ',
+            fmtFrom = 'YYYY MM DD hh mm a ZZ',
             rawTime = null,
             efeTime = {
                 begin_at : {
@@ -82,7 +82,7 @@ ExfeUtilities = {
             case 5:
                 arrTime.push(parseInt(arrTime[3], 10) === 12 ? 'pm' : 'am');
             default:
-                if (rawTime = moment(arrTime.join(' ') + ' 00 ' + efeTime.begin_at.timezone, fmtFrom)) {
+                if (rawTime = moment(arrTime.join(' ') + ' ' + efeTime.begin_at.timezone, fmtFrom)) {
                     var objTime = rawTime.toDate();
                     efeTime.begin_at.date =    objTime.getUTCFullYear()   + '-'
                                           + db(objTime.getUTCMonth() + 1) + '-'
@@ -569,7 +569,6 @@ ExfeeWidget = {
             objIdentity.external_username = string;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
             objIdentity.provider          = 'email';
-
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');
