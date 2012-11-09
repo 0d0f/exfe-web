@@ -67,7 +67,8 @@ class UsersActions extends ActionController {
         }
         // adding
         if (($adResult = $modIdentity->addIdentity(
-            ['provider' => $provider, 'external_username' => $external_username], $user_id, 2, true
+            ['provider' => $provider, 'external_username' => $external_username],
+            $user_id, 2, true, false
         ))) {
             $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
             if ($adResult['identity_id'] > 0) {
@@ -140,15 +141,23 @@ class UsersActions extends ActionController {
             apiError(400, 'error_user_status', '');
         }
         // check user identity status
+        $numIdentity = sizeof($fromUser->identities);
         foreach ($fromUser->identities as $iI => $iItem) {
-            if ($iItem->status !== 'CONNECTED'
-             && $iItem->status !== 'REVOKED') {
-                unset($fromUser->identities[$iI]);
+            switch ($iItem->status) {
+                case 'CONNECTED':
+                case 'REVOKED':
+                    break;
+                case 'VERIFYING':
+                    if ($numIdentity === 1) {
+                        break;
+                    }
+                case 'RELATED':
+                default:
+                    unset($fromUser->identities[$iI]);
             }
         }
         // merge
         $mgResult = [];
-        $mgStatus = false;
         foreach ($bsIdentityIds as $bsIdentityId) {
             if (!($bsIdentityId = (int) $bsIdentityId)) {
                 continue;
@@ -156,20 +165,19 @@ class UsersActions extends ActionController {
             // merge directly
             foreach ($fromUser->identities as $iI => $iItem) {
                 if ($iItem->id === $bsIdentityId) {
-                    $tarStatus = 0;
-                    switch ($iItem->status) {
-                        case 'CONNECTED':
-                            $tarStatus = 3;
-                            break;
-                        case 'REVOKED':
-                            $tarStatus = 4;
-                    }
                     if ($modUser->setUserIdentityStatus(
-                        $user_id, $bsIdentityId, $tarStatus
+                        $user_id, $bsIdentityId, array_search(
+                            $iItem->status, $modUser->arrUserIdentityStatus
+                        )
                     )) {
-                        $mgResult[$bsIdentityId] = $mgStatus = true;
-                    } else {
-                        $mgResult[$bsIdentityId] = false;
+                        switch ($iItem->status) {
+                            case 'VERIFYING':
+                                $modUser->verifyIdentity($iItem, 'VERIFY', $user_id);
+                                break;
+                            case 'CONNECTED':
+                                $iItem->connected_user_id = $user_id;
+                        }
+                        $mgResult[$bsIdentityId] = $iItem;
                     }
                     unset($fromUser->identities[$iI]);
                 }
@@ -178,7 +186,7 @@ class UsersActions extends ActionController {
         // get other mergeable user identity
         $fromUser->identities = array_merge($fromUser->identities);
         // return
-        if ($mgStatus) {
+        if ($mgResult) {
             $rtResult = ['status' => $mgResult];
             if ($fromUser->identities) {
                 $rtResult['mergeable_user'] = $fromUser;

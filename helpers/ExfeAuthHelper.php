@@ -23,7 +23,7 @@ class ExfeAuthHelper extends ActionController {
 
 
     public function findToken($resource) {
-        return $this->modExfeAuth->findToken($resource);
+        return $this->modExfeAuth->findToken(json_encode($resource));
     }
 
 
