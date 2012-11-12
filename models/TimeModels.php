@@ -146,7 +146,8 @@ class TimeModels extends DataModel {
             $time_word = $fuzzyTime[0];
         }
         // make CrossTime
-        if ((sizeof($actTimes) && sizeof($fuzzyTime)) || sizeof($fuzzyTime) > 1) {
+        if ((sizeof($actTimes) && sizeof($fuzzyTime)) || sizeof($fuzzyTime) > 1
+         || (!$date_word && !$date && !$time_word && !$time)) {
             $outputformat = 1;
         }
         return new CrossTime($date_word, $date, $time_word, $time, $timezone, $string, $outputformat);
