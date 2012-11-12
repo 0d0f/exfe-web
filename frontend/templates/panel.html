@@ -7,26 +7,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" dir="ltr"> <!--<![endif]-->
 <head>
   <meta charset="utf-8" />
-
-  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
-       More info: h5bp.com/i/378 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>Profile</title>
+  <title>Panel</title>
   <meta name="description" content="" />
-  <!-- Mobile viewport optimized: h5bp.com/viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
-  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
-  <!--<link rel="stylesheet" href="css/bootstrap.css" />-->
-  <!--<link rel="stylesheet/less" href="less/bootstrap.less" />-->
-  <!-- More ideas for your head here: h5bp.com/d/head-Tips -->
-
-  <!-- Want to try a different theme?
-    If not using LESS compiler: Uncomment below
-    and change to name of desired theme. (See docs) -->
-  <!--link type="text/css" rel="stylesheet" href="extras/css/amelia.css" /-->
-
   <link rel="stylesheet/less" href="../less/exfe/lib/exfe_dev.less" />
-
   <!-- Include less.js -->
   <script src="../jslib/less/lib/less.js"></script>
 </head>
@@ -39,7 +24,60 @@
     </div>
     <div class="panel-body">
 
-      <div class="date-container">
+      <div class="pull-right date-timeline">
+        <ul class="unstyled">
+          <li>00:00</li>
+          <li>00:30</li>
+          <li>01:00</li>
+          <li>01:30</li>
+          <li>02:00</li>
+          <li>02:30</li>
+          <li>03:00</li>
+          <li>03:30</li>
+          <li>04:00</li>
+          <li>04:30</li>
+          <li>05:00</li>
+          <li>05:30</li>
+          <li>06:00</li>
+          <li>06:30</li>
+          <li>07:00</li>
+          <li>07:30</li>
+          <li>08:00</li>
+          <li>08:30</li>
+          <li>09:00</li>
+          <li>09:30</li>
+          <li>10:00</li>
+          <li>10:30</li>
+          <li>11:00</li>
+          <li>11:30</li>
+          <li>12:00</li>
+          <li>12:30</li>
+          <li>13:00</li>
+          <li>13:30</li>
+          <li>14:00</li>
+          <li>14:30</li>
+          <li>15:00</li>
+          <li>15:30</li>
+          <li>16:00</li>
+          <li>16:30</li>
+          <li>17:00</li>
+          <li>17:30</li>
+          <li>18:00</li>
+          <li>18:30</li>
+          <li>19:00</li>
+          <li>19:30</li>
+          <li>20:00</li>
+          <li>20:30</li>
+          <li>21:00</li>
+          <li>21:30</li>
+          <li>22:00</li>
+          <li>22:30</li>
+          <li>23:00</li>
+          <li>23:30</li>
+        </ul>
+      </div>
+
+      <div class="pull-left date-container">
 
       <ul class="unstyled clearfix" id="date-head">
         <li>Sun</li>
@@ -64,7 +102,7 @@
               <span class="m">Sep</span>
               <span class="d">29</span>
             </td>
-            <td class="hover">
+            <td class="today selected">
               <span class="m">Sep</span>
               <span class="d">Today</span>
             </td>

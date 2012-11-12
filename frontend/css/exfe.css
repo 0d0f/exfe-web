@@ -10706,9 +10706,8 @@ body {
 }
 
 #date-panel {
-  width: 310px;
   min-width: 310px;
-  min-height: 210px;
+  min-height: 180px;
   padding: 15px 15px 15px 15px;
   background-color: #f4f4f4;
   background-image: -moz-linear-gradient(top, #eeeeee, #fcfcfc);
@@ -10722,7 +10721,7 @@ body {
 
 #date-panel #date-string {
   width: 300px;
-  margin: 0 0 9px 0;
+  margin: 0 0 15px 0;
   background: #fefefe;
   border: 1px dashed #80addf;
   -webkit-border-radius: 0;
@@ -10740,7 +10739,7 @@ body {
 
 #date-panel .date-container {
   position: relative;
-  max-height: 166px;
+  max-height: 135px;
   overflow: hidden;
   background: #fafafa;
   -webkit-border-radius: 3px;
@@ -10763,15 +10762,20 @@ body {
 #date-panel #date-head li {
   float: left;
   width: 44px;
-  line-height: 30px;
+  font-size: 13px;
+  line-height: 15px;
 }
 
 #date-panel .full-month {
   position: absolute;
   bottom: 3px;
+  z-index: 2;
+  width: 100%;
   font-size: 55px;
+  font-weight: bold;
   line-height: 1;
   color: rgba(127, 127, 127, 0.33);
+  text-align: center;
 }
 
 #date-panel #date-table {
@@ -10788,41 +10792,50 @@ body {
 
 #date-panel #date-table tbody td {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 43px;
+  height: 43px;
   padding: 0;
   text-align: center;
+  vertical-align: middle;
   background: transparent;
   border: 1px solid rgba(204, 204, 204, 0.35);
 }
 
 #date-panel #date-table tbody td .d {
   display: block;
-  margin-top: 15px;
   font-size: 16px;
   font-weight: 300;
+  font-weight: lighter;
+  line-height: 19px;
   color: #565E65;
 }
 
 #date-panel #date-table tbody td .m {
   position: absolute;
-  display: block;
-  font-size: 12px;
+  top: 1px;
+  left: 3px;
+  font-size: 9px;
+  line-height: 11px;
   color: #999999;
 }
 
-#date-panel #date-table tbody td.hover {
+#date-panel #date-table tbody td.hover,
+#date-panel #date-table tbody td.today {
   background: #eeeeee;
+}
+
+#date-panel #date-table tbody td.today .d {
+  font-size: 14px;
 }
 
 #date-panel #date-table tbody td.selected {
   position: relative;
-  background: #D6E9F4;
+  background: #DBEAF9;
 }
 
 #date-panel #date-table tbody td.selected .d {
   font-weight: bold;
-  color: #61686f;
+  color: #3A6EA5;
 }
 
 #date-panel #date-table tbody td.selected:before {
@@ -10831,6 +10844,17 @@ body {
   right: -1px;
   bottom: -1px;
   left: -1px;
-  border: 2px solid #386FA5;
+  border: 2px solid rgba(56, 111, 165, 0.66);
   content: '';
+}
+
+#date-panel .date-timeline {
+  position: relative;
+  z-index: 2;
+  height: 180px;
+  padding-left: 5px;
+  margin-top: -45px;
+  margin-left: 15px;
+  overflow-y: scroll;
+  border-left: 1px solid #cccccc;
 }
