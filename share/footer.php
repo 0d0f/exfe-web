@@ -17,7 +17,7 @@ addScript([
     ['bus',           '0.0.2'],
     ['rex',           '0.0.2'],
     ['util',          '0.0.3'],
-    ['widget',        '0.0.2'],
+    ['widget',        '0.0.3'],
     ['jquery',        '1.8.2'],
     ['moment',        '1.7.2'],
     ['store',         '1.3.5'],
@@ -35,11 +35,13 @@ echo "  </script>\n";
 
 addScript([
     ['eftime',        '0.0.4'],
-    ['api',           '0.0.2'],
+    ['api',           '0.0.3'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
+    ['panel',         '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.6'],
+    ['datepanel',     '0.0.1'],
     ['global',        '0.0.5'],
 ]);
 
@@ -62,7 +64,7 @@ addScript([
     ['lightsaber',    '0.0.4'],
     ['middleware',    '0.0.8'],
     ['routes',        '0.0.8'],
-    ['app',           '0.0.4'],
+    ['app',           '0.0.5'],
 ]);
 
 // Google Analytics
