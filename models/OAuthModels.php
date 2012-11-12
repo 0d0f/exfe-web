@@ -353,19 +353,9 @@ class OAuthModels extends DataModel {
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);
         // 使用该身份登录
         $rstSignin = $hlpUser->rawSignin($objIdentity->connected_user_id);
-        // call Gobus { @todo upgrading by @leaskh
-        if ($objIdentity->provider === 'twitter') {
-            $hlpGobus = $this->getHelperByName('gobus');
-            $hlpGobus->send('user', 'GetFriends', [
-                'user_id'       => $objIdentity->connected_user_id,
-                'provider'      => 'twitter',
-                'external_id'   => $objIdentity->external_id,
-                'client_token'  => TWITTER_CONSUMER_KEY,
-                'client_secret' => TWITTER_CONSUMER_SECRET,
-                'access_token'  => $oauthIfo['oauth_token'],
-                'access_secret' => $oauthIfo['oauth_token_secret'],
-            ]);
-        }
+        // call Gobus {
+        $hlpQueue = $this->getHelperByName('Queue');
+        $hlpQueue->updateFriends($objIdentity, $oAuthToken);
         // }
         // return
         $result = [

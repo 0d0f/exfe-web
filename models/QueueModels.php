@@ -33,7 +33,7 @@ class QueueModels extends DataModel {
     }
 
 
-    public function pushJobToQueue($queue, $service, $method, $invitations, $data) {
+    public function pushJobToQueue($queue, $service, $method, $invitations, $data = []) {
         $tos  = [];
         foreach ($invitations as $invitation) {
             $tos[] = $this->makeRecipientByInvitation($invitation);
@@ -198,6 +198,25 @@ class QueueModels extends DataModel {
             }
         }
         return $result;
+    }
+
+
+    public function updateFriends($identity, $oauth_info) {
+        $service   = 'Thirdpart';
+        $method    = 'Send';
+        $recipient = new Recipient(
+            $identity->id,
+            $identity->connected_user_id,
+            $identity->name,
+            '',
+            '',
+            json_encode($oauth_info),
+            '',
+            $identity->provider,
+            $identity->external_id,
+            $identity->external_username
+        );
+        return $this->pushJobToQueue('Instant', $service, $method, [$recipient]);
     }
 
 }
