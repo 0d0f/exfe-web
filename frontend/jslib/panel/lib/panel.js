@@ -1,4 +1,4 @@
-define('panel', function (request, exports, module) {
+define('panel', function(require, exports, module) {
 
   var $ = require('jquery');
   var Widget = require('widget');
@@ -32,21 +32,24 @@ define('panel', function (request, exports, module) {
       }
 
     , init: function () {
-      }
-
-    , sync: function () {
-        this.emit('sync');
-        return this;
+        this.render();
       }
 
     , render: function () {
         var options = this.options;
         this.parentNode = options.parentNode;
-        this.srcNode = options
+        this.srcNode = options.srcNode;
         delete options.parentNode;
         delete options.srcNode;
 
-        this.on('escape', $.proxy(this.escapable, this));
+        this.on('escape', $.proxy(this.hide, this));
+
+        this.on('showBefore', $.proxy(this.showBefore, this));
+        this.on('showAfter', $.proxy(this.showAfter, this));
+
+        this.element.on('destory.widget', $.proxy(this.destory, this));
+
+        return this;
       }
 
     , escapable: function () {
@@ -61,13 +64,18 @@ define('panel', function (request, exports, module) {
 
     , show: function () {
 
+
         this.emit('showBefore');
+
         this.escapable();
 
         this.element.appendTo(this.parentNode);
 
+        //this.element.css({ });
+
         this.emit('showAfter');
-        return self;
+
+        return this;
       }
 
     , hide: function (ms) {
@@ -98,15 +106,18 @@ define('panel', function (request, exports, module) {
         return this;
       }
 
-    , close: function () {}
+    , effect: function (type) {
+        this._effect = type;
+        this.element.addClass(type);
+        return this;
+      }
 
-    , effect: function () {}
-
-    , destory: function () {
+    , _destory: function () {
+        this.undelegateEvents();
+        Widget.superclass.destory.call(this);
       }
   });
 
 
   return Panel;
-
 });
