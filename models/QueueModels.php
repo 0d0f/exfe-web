@@ -41,7 +41,7 @@ class QueueModels extends DataModel {
         $jobData = [
             'service' => $service,
             'method'  => $method,
-            'key'     => (string) $data->cross->id,
+            'key'     => (string) $data['cross']->id,
             'tos'     => $tos,
             'data'    => $data,
         ];
