@@ -441,7 +441,6 @@ class ExfeeModels extends DataModel {
 
 
     public function getUpdatedExfeeByIdentityIds($identityids,$updated_at) {
-
         $join_identity_ids=implode($identityids,",");
         $sql="select cross_id from invitations where identity_id in ({$join_identity_ids}) and exfee_updated_at >'$updated_at'; ";
         $cross_ids=$this->getColumn($sql);
