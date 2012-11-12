@@ -111,7 +111,7 @@ class ExfeeActions extends ActionController {
             apiError(401, 'invalid_auth', '');
         }
         // do it
-        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id)) {
+        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'])) {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
