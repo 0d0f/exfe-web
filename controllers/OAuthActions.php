@@ -71,7 +71,7 @@ class OAuthActions extends ActionController {
                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
             } else {
                 $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
-                header("location: /");
+                header('location: /');
             }
             return;
         }
@@ -89,7 +89,7 @@ class OAuthActions extends ActionController {
                         header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                     } else {
                         $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'twitter']);
-                        header("location: /");
+                        header('location: /');
                     }
                     return;
                 }
@@ -116,7 +116,7 @@ class OAuthActions extends ActionController {
                     'identity_status'    => $result['identity_status'],
                     'twitter_following'  => $result['twitter_following'],
                 ]);
-                header("location: /");
+                header('location: /');
                 return;
             }
         }
@@ -142,7 +142,7 @@ class OAuthActions extends ActionController {
                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
             } else {
                 $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'facebook']);
-                header("location: /");
+                header('location: /');
             }
             return;
         }
@@ -159,7 +159,7 @@ class OAuthActions extends ActionController {
                         header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                     } else {
                         $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'facebook']);
-                        header("location: /");
+                        header('location: /');
                     }
                     return;
                 }
@@ -185,7 +185,7 @@ class OAuthActions extends ActionController {
                     'provider'           => $result['identity']->provider,
                     'identity_status'    => $result['identity_status'],
                 ]);
-                header("location: /");
+                header('location: /');
                 return;
             }
         }
