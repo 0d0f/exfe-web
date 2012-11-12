@@ -881,7 +881,7 @@ ExfeeWidget = {
 
 
 
-define('exfeepanel', [], function (require, exports, module) {
+define('exfeepanel', function (require, exports, module) {
 
     var objBody = $('body');
 
@@ -1429,6 +1429,21 @@ define(function (require, exports, module) {
             ],
             time : [
                 function() {
+                    var $dp = $('#date-panel');
+                    if ($dp.size()) {
+                      var cid = $dp.data('widget-id');
+                      var dp = App.widgetCaches[cid];
+                      var value = $('#date-string').val();
+                      if (oldEditing === 'date-panel') {
+                          //ChangeTime($('.cross-date .edit').val());
+                          ChangeTime(value);
+                          AutoSaveCross();
+                      }
+                      if (dp) {
+                        dp.hide();
+                      }
+                    }
+                    /*
                     $('.cross-date').removeAttr('editable');
                     $('.cross-date .show').show();
                     $('.cross-date .edit').hide();
@@ -1436,11 +1451,27 @@ define(function (require, exports, module) {
                         ChangeTime($('.cross-date .edit').val());
                         AutoSaveCross();
                     }
+                    */
                 },
                 function() {
+                    var $dp = $('#date-panel');
+                    if ($dp.size()) {
+                      return;
+                    }
+                    var DatePanel = require('datepanel');
+                    var datepanel = new DatePanel({
+                        options: {
+                            parentNode: $('#app-tmp')
+                          , srcNode: $('.cross-date')
+                          , eftime: Cross.time
+                        }
+                    });
+                    datepanel.show();
+                    /*
                     $('.cross-date').attr('editable', true);
                     $('.cross-date .show').hide();
                     $('.cross-date .edit').show().focus();
+                    */
                 }
             ],
             place : [
@@ -1531,6 +1562,8 @@ define(function (require, exports, module) {
             editMethod['background'][1]();
             Editing = oldEditing;
         } else if (Editing === 'placepanel') {
+          return;
+        } else if (Editing === 'date-panel') {
           return;
         } else {
             for (var i in editMethod) {
@@ -1844,25 +1877,6 @@ define(function (require, exports, module) {
                 strAbsTime = placeholder;
                 strRelTime = ExfeUtilities.escape(Cross.time.origin);
                 showGray   = true;
-                /*
-            } else if (Cross.time.begin_at.time) {
-                var objMon = moment((moment.utc(
-                    Cross.time.begin_at.date + ' '
-                  + Cross.time.begin_at.time, format + ' HH:mm:ss'
-                ).unix()   + (timevalid ? 0 : (crossOffset - timeOffset))) * 1000);
-                strAbsTime = objMon.format('h:mmA on ddd, MMM D')
-                           + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
-                strRelTime = objMon.fromNow();
-                strRelTime = strRelTime.indexOf('a few seconds') !== -1
-                           ? 'Now'   : strRelTime;
-            } else {
-                strAbsTime = Cross.time.begin_at.date
-                           + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));
-                var objRel = moment(strAbsTime, format);
-                strRelTime = Cross.time.begin_at.date === moment().format(format)
-                           ? 'Today' : (objRel ? objRel.fromNow() : '');
-            }
-            */
           } else if (bdate && btime) {
             var now = new Date()
               , matches = bdate.match(/^\d\d\d\d/m);
@@ -1872,7 +1886,6 @@ define(function (require, exports, module) {
             ).unix()   + (timevalid ? 0 : (crossOffset - timeOffset))) * 1000);
             strAbsTime = objMon.format('h:mmA on ddd, MMM D' + (matches && matches[0] == now.getFullYear() ? '' : ' YYYY'))
                         + (timevalid ? '' : (' ' + Cross.time.begin_at.timezone));;
-            //strRelTime = efTime.timeAgo(bdate + ' ' + btime +  ' ' + bzone[0] + bzone[1] + bzone[2]  + bzone[4] + bzone[5]);
             strRelTime = efTime.timeAgo(bdate + ' ' + btime + ' Z', undefined, 'X');
           } else if (bdate && !btime) {
             var now = new Date()
