@@ -244,9 +244,29 @@ define('datepanel', function (require, exports, module) {
             break;
           case 13: // enter
             var eftime = self.eftime;
-            var date = '';
-            date += eftime.begin_at.date + ' ' + eftime.begin_at.time;
-            self.el.data('date', date);
+            var date;
+            var s = '', sf = '', sf2 = '';
+            var tz = (eftime.begin_at.timezone && /(^[\+\-]\d\d:\d\d)/.exec(eftime.begin_at.timezone)[1]) || '';
+            if (eftime.begin_at.date) {
+              s += eftime.begin_at.date;
+              sf += 'YYYY-MM-DD';
+              sf2 += 'YYYY-MM-DD';
+            }
+
+            if (eftime.begin_at.time) {
+              s += ' ' + eftime.begin_at.time;
+              sf += ' HH:mm:ss';
+              sf2 += ' HH:mm:ss';
+            }
+
+            if ((eftime.begin_at.date || eftime.begin_at.time) && tz) {
+              s += ' +0000';
+              sf += ' ZZ'
+            }
+
+            d = Moment(s, sf);
+
+            self.el.data('date', date = d.format(sf2));
             self.component.emit('enter', date);
             break;
           case 27: // escape
