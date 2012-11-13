@@ -195,6 +195,7 @@ define('datepanel', function (require, exports, module) {
             }
           , function (data) {
               var eftime = data.cross_time, date;
+              self.eftime = data.cross_time;
               if (eftime.begin_at.date) {
                 date = eftime.begin_at.date;
               } else {
@@ -240,8 +241,11 @@ define('datepanel', function (require, exports, module) {
             self.el.parent().next().find('.date-container').focus();
             e.preventDefault();
             break;
-          case 13: // enete
-            var date = self.output();
+          case 13: // enter
+            var eftime = self.eftime;
+            var date = '';
+            date += eftime.begin_at.date + ' ' + eftime.begin_at.time;
+            self.el.data('date', date);
             self.component.emit('enter', date);
             break;
           case 27: // escape
