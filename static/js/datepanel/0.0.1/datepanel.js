@@ -365,11 +365,10 @@ define('datepanel', function (require, exports, module) {
                 self.component.emit('updateDate', date, '');
               break;
             case 13:
-                var date = '';
-                var td = self.getSelected()
-                if (td.size()) {
-                  date = td.data('date');
-                }
+                self.el.find('td.selected').removeClass('selected');
+                self.select();
+                var date = self.currentCursor.data('date');
+                self.component.emit('updateDate', date, '');
                 self.component.emit('enter', date);
               break;
             // left
