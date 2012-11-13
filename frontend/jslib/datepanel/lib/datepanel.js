@@ -168,7 +168,6 @@ define('datepanel', function (require, exports, module) {
           datestring = (this.component.element.find('table td.selected').data('date') || this.component.element.find('table td.today').data('date')) + ' ' + datestring;
         }
         this.el.val($.trim(datestring));
-        this.oldVal = datestring;
         this.el.data('date', datestring);
       }
 
@@ -184,7 +183,8 @@ define('datepanel', function (require, exports, module) {
         if (!date_string) {
           return;
         }
-        if (self.oldVal === date_string) {
+        var oldVal = self.el.data('date');
+        if (oldVal === date_string) {
           return;
         }
         self.befer = Api.request('recognize'
