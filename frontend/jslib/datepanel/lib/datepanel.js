@@ -199,7 +199,7 @@ define('datepanel', function (require, exports, module) {
               var eftime = data.cross_time, date;
               self.eftime = data.cross_time;
               if (eftime.begin_at.date) {
-                date = Moment.utc(eftime.begin_at.date);
+                date = Moment(eftime.begin_at.date + ' +0000', 'YYYY-MM-DD ZZ');
                 date = date.format('YYYY-MM-DD');
               } else {
                 var d = new Date();
@@ -260,7 +260,7 @@ define('datepanel', function (require, exports, module) {
             } else {
               m = false;
             }
-            ddd = Moment(ddd).utc();
+            ddd = Moment.utc(ddd);
             var eftime = self.eftime;
             eftime.begin_at.date = ddd.format('YYYY-MM-DD');
             m && (eftime.begin_at.time = ddd.format('HH:mm:ss'));
