@@ -3,7 +3,7 @@
   min-height: 180px;
   //width: 310px;
   padding: 15px 15px 15px 15px;
-  #gradient > .vertical(#eee, #fcfcfc);
+  #gradient > .vertical(#fcfcfc, #eee);
 
   #date-string {
     width: 300px;
@@ -104,6 +104,10 @@
         position: relative;
         background: #DBEAF9;
 
+        .m {
+          display: block;
+        }
+
         .d {
           color: #3A6EA5;
           font-weight: bold;
@@ -117,6 +121,7 @@
           right: -1px;
           bottom: -1px;
           left: -1px;
+          .box-shadow(inset 0 0 4px rgba(9, 31, 118, 0.46));
         }
       }
     }
