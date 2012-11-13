@@ -207,7 +207,7 @@ define('datepanel', function (require, exports, module) {
           default:
             self.lookup();
         }
-        e.stopPropagation();
+        //e.stopPropagation();
         e.preventDefault();
       }
 
@@ -233,8 +233,7 @@ define('datepanel', function (require, exports, module) {
           case 40: //down break
             break;
         }
-
-        e.stopPropagation();
+        //e.stopPropagation();
       }
 
   };
@@ -384,7 +383,7 @@ define('datepanel', function (require, exports, module) {
                   self.line = 2;
                 } else {
                   if (0 === self.line % 3) {
-                    self.scrollTop('+=135');
+                    self.scrollTop('+=132');
                   }
                   self.line--;
                 }
@@ -402,7 +401,7 @@ define('datepanel', function (require, exports, module) {
                 self.line = 2;
               } else {
                 if (0 === self.line % 3) {
-                  self.scrollTop('+=135');
+                  self.scrollTop('+=132');
                 }
                 self.line--;
               }
@@ -414,10 +413,10 @@ define('datepanel', function (require, exports, module) {
                 self.column = 0;
                 if (self.line === self.lines - 1) {
                   self.nextPage();
-                  self.scrollTop('-=135');
+                  self.scrollTop('-=132');
                 } else {
                   if (0 === (self.line + 1) % 3) {
-                    self.scrollTop('-=135');
+                    self.scrollTop('-=132');
                   }
                 }
                 self.line++;
@@ -430,10 +429,10 @@ define('datepanel', function (require, exports, module) {
               ltrb = true;
               if (self.line === self.lines - 1) {
                 self.nextPage();
-                self.scrollTop('-=135');
+                self.scrollTop('-=132');
               } else {
                 if (0 === (self.line + 1) % 3) {
-                  self.scrollTop('-=135');
+                  self.scrollTop('-=132');
                 }
               }
               self.line++;
