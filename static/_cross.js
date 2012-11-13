@@ -1435,7 +1435,7 @@ define(function (require, exports, module) {
                       var cid = $dp.data('widget-id');
                       var dp = App.widgetCaches[cid];
                       var value = $('#date-string').val();
-                      if (oldEditing === 'date-panel') {
+                      if (oldEditing === 'date-panel' || oldEditing === 'time') {
                           //ChangeTime($('.cross-date .edit').val());
                           ChangeTime(value);
                           AutoSaveCross();
