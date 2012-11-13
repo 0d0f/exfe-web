@@ -347,7 +347,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0, $args = null) {
+    public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '') {
         // basic check
         if (!$identity || !$action) {
             return null;
@@ -426,6 +426,12 @@ class UserModels extends DataModel {
             case 'facebook':
                 $hlpOAuth = $this->getHelperByName('OAuth');
                 $workflow = ['user_id' => $user_id];
+                if ($device && $device_callback) {
+                    $workflow['callback'] = [
+                        'oauth_device'          => $device,
+                        'oauth_device_callback' => $device_callback,
+                    ];
+                }
                 switch ($action) {
                     case 'SET_PASSWORD':
                         // update database
