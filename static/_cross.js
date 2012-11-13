@@ -1433,7 +1433,7 @@ define(function (require, exports, module) {
                     if ($dp.size()) {
                       var cid = $dp.data('widget-id');
                       var dp = App.widgetCaches[cid];
-                      var value = $('#date-string').val();
+                      var value = $('#date-string').data('date');
                       if (oldEditing === 'date-panel' || oldEditing === 'time') {
                           //ChangeTime($('.cross-date .edit').val());
                           ChangeTime(value);
