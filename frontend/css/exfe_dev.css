@@ -10833,6 +10833,10 @@ body {
   background: #DBEAF9;
 }
 
+#date-panel #date-table tbody td.selected .m {
+  display: block;
+}
+
 #date-panel #date-table tbody td.selected .d {
   font-weight: bold;
   color: #3A6EA5;
