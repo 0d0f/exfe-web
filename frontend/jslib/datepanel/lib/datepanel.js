@@ -87,8 +87,8 @@ define('datepanel', function (require, exports, module) {
 
         this.on('refresh', function (date) {
           this.calendarTable.clean();
-          var ds = date.split('-');
-          this.calendarTable.date = new Date(ds[0], (ds[1] - 1), ds[2]);
+          var ds = date.match(/(\d{4})\-(\d{2})\-(\d{2})/);
+          this.calendarTable.date = new Date(ds[1], (ds[2] - 1), ds[3]);
           this.calendarTable.refresh();
         });
 
@@ -198,9 +198,19 @@ define('datepanel', function (require, exports, module) {
           , function (data) {
               var eftime = data.cross_time, date;
               self.eftime = data.cross_time;
+              var s = '', s2, s3;
               if (eftime.begin_at.date) {
-                date = Moment(eftime.begin_at.date + ' +0000', 'YYYY-MM-DD ZZ');
-                date = date.format('YYYY-MM-DD');
+                s2 = eftime.begin_at.date;
+                s = 'YYYY-MM-DD';
+                s3 = s;
+                if (eftime.begin_at.time) {
+                  s2 += eftime.begin_at.time;
+                  s += ' HH:mm:ss'
+                  s3 = s;
+                }
+                s += ' ZZ';
+                date = Moment(s2, s);
+                date = date.format(s3);
               } else {
                 var d = new Date();
                 date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
