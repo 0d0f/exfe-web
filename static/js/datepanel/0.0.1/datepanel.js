@@ -263,7 +263,7 @@ define('datepanel', function (require, exports, module) {
             ddd = Moment(ddd).utc();
             var eftime = self.eftime;
             eftime.begin_at.date = ddd.format('YYYY-MM-DD');
-            m && (eftime.begin_at.time = ddd.format('HH:mm:ss'));
+            eftime.begin_at.time = ddd.format('HH:mm:ss');
             var date;
             var s = '', sf = '', sf2 = '';
             var tz = (eftime.begin_at.timezone && /(^[\+\-]\d\d:\d\d)/.exec(eftime.begin_at.timezone)[1]) || '';
