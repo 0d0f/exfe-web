@@ -155,10 +155,10 @@ define('datepanel', function (require, exports, module) {
       this.el.on('keydown.dateinput', $.proxy(this.keypress, this));
     }
     this.befer = null;
-    this.timezone = this.el.data('timezone');
-    if (!this.timezone) {
-      this.timezone = getTimezone();
-    }
+    //this.timezone = this.el.data('timezone');
+    //if (!this.timezone) {
+    this.timezone = getTimezone();
+    //}
   };
 
   DateInput.prototype = {
