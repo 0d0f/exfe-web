@@ -10709,14 +10709,14 @@ body {
   min-width: 310px;
   min-height: 180px;
   padding: 15px 15px 15px 15px;
-  background-color: #f4f4f4;
-  background-image: -moz-linear-gradient(top, #eeeeee, #fcfcfc);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#eeeeee), to(#fcfcfc));
-  background-image: -webkit-linear-gradient(top, #eeeeee, #fcfcfc);
-  background-image: -o-linear-gradient(top, #eeeeee, #fcfcfc);
-  background-image: linear-gradient(to bottom, #eeeeee, #fcfcfc);
+  background-color: #f6f6f6;
+  background-image: -moz-linear-gradient(top, #fcfcfc, #eeeeee);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fcfcfc), to(#eeeeee));
+  background-image: -webkit-linear-gradient(top, #fcfcfc, #eeeeee);
+  background-image: -o-linear-gradient(top, #fcfcfc, #eeeeee);
+  background-image: linear-gradient(to bottom, #fcfcfc, #eeeeee);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffeeeeee', endColorstr='#fffcfcfc', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcfcfc', endColorstr='#ffeeeeee', GradientType=0);
 }
 
 #date-panel #date-string {
@@ -10833,6 +10833,10 @@ body {
   background: #DBEAF9;
 }
 
+#date-panel #date-table tbody td.selected .m {
+  display: block;
+}
+
 #date-panel #date-table tbody td.selected .d {
   font-weight: bold;
   color: #3A6EA5;
@@ -10846,6 +10850,9 @@ body {
   left: -1px;
   border: 2px solid rgba(56, 111, 165, 0.66);
   content: '';
+  -webkit-box-shadow: inset 0 0 4px rgba(9, 31, 118, 0.46);
+     -moz-box-shadow: inset 0 0 4px rgba(9, 31, 118, 0.46);
+          box-shadow: inset 0 0 4px rgba(9, 31, 118, 0.46);
 }
 
 #date-panel .date-timeline {
