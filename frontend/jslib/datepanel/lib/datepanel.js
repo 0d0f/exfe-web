@@ -260,7 +260,7 @@ define('datepanel', function (require, exports, module) {
             } else {
               m = false;
             }
-            ddd = Moment.utc(ddd);
+            ddd = Moment(ddd).utc();
             var eftime = self.eftime;
             eftime.begin_at.date = ddd.format('YYYY-MM-DD');
             m && (eftime.begin_at.time = ddd.format('HH:mm:ss'));
