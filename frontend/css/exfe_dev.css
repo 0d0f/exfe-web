@@ -10852,6 +10852,7 @@ body {
   position: relative;
   z-index: 2;
   height: 180px;
+  padding-right: 5px;
   padding-left: 5px;
   margin-top: -45px;
   margin-left: 15px;
