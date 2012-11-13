@@ -199,11 +199,13 @@ define('datepanel', function (require, exports, module) {
               var eftime = data.cross_time, date;
               self.eftime = data.cross_time;
               if (eftime.begin_at.date) {
-                date = eftime.begin_at.date;
+                date = Moment(eftime.begin_at.date + ' +0000', 'YYYY-MM-DD ZZ');
+                date = date.format('YYYY-MM-DD');
               } else {
                 var d = new Date();
                 date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
               }
+              self.el.data('date', date);
               component.emit('refresh', date);
             }
           , function (data) {
@@ -244,7 +246,24 @@ define('datepanel', function (require, exports, module) {
             e.preventDefault();
             break;
           case 13: // enter
+            var ds = self.el.data('date'), m, ddd = [];
+            if (m = ds.match(/(\d{4})\-(\d{2})\-(\d{2})/)) {
+              ddd[0] = m[1];
+              ddd[1] = +m[2] - 1;
+              ddd[2] = m[3];
+              m = false;
+            }
+            if (m = ds.match(/(\d{2}):(\d{2}):?(\d{2})?/)) {
+              ddd[3] = +m[1];
+              ddd[4] = +m[2];
+              ddd[5] = +m[3] || 0;
+            } else {
+              m = false;
+            }
+            ddd = Moment.utc(ddd);
             var eftime = self.eftime;
+            eftime.begin_at.date = ddd.format('YYYY-MM-DD');
+            m && (eftime.begin_at.time = ddd.format('HH:mm:ss'));
             var date;
             var s = '', sf = '', sf2 = '';
             var tz = (eftime.begin_at.timezone && /(^[\+\-]\d\d:\d\d)/.exec(eftime.begin_at.timezone)[1]) || '';
