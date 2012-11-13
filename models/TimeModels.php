@@ -160,8 +160,7 @@ class TimeModels extends DataModel {
         }
         // fix timezone
         if ($date && sizeof($actTimes)) {
-            $strDate  = "{$date} {$time}";
-            $intDate  = strtotime($strDate);
+            $intDate  = strtotime("{$date} {$time}");
             $arrTzone = explode(':', $timezone);
             $diffHour = ((int) $arrTzone[0]) * 60 * 60;
             $diffMin  = ((int) $arrTzone[1]) * 60;
