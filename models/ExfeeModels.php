@@ -25,14 +25,16 @@ class ExfeeModels extends DataModel {
         $objExfee = new Exfee($id);
         $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
         foreach ($rawExfee as $ei => $eItem) {
-            $objIdentity   = $hlpIdentity->getIdentityById($eItem['identity_id']);
-            $oByIdentity   = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
+            $objIdentity  = $hlpIdentity->getIdentityById($eItem['identity_id']);
+            $oivIdentity  = $hlpIdentity->getIdentityById($eItem['invited_by']);
+            $oByIdentity  = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
             if (!$objIdentity || !$oByIdentity) {
                 continue;
             }
             $objExfee->invitations[] = new Invitation(
                 $eItem['id'],
                 $objIdentity,
+                $oivIdentity,
                 $oByIdentity,
                 $this->rsvp_status[$eItem['state']],
                 $eItem['via'],
@@ -108,10 +110,12 @@ class ExfeeModels extends DataModel {
             if ($rawInvitation) {
                 $hlpIdentity = $this->getHelperByName('identity');
                 $objIdentity = $hlpIdentity->getIdentityById($rawInvitation['identity_id']);
+                $oivIdentity = $hlpIdentity->getIdentityById($rawInvitation['invited_by']);
                 $oByIdentity = $hlpIdentity->getIdentityById($rawInvitation['by_identity_id']);
                 return new Invitation(
                     $rawInvitation['id'],
                     $objIdentity,
+                    $oivIdentity,
                     $oByIdentity,
                     $this->rsvp_status[$rawInvitation['state']],
                     $rawInvitation['via'],
@@ -189,6 +193,7 @@ class ExfeeModels extends DataModel {
                 `updated_at`       = NOW(),
                 `exfee_updated_at` = NOW(),
                 `token`            = '{$invToken}',
+                `invited_by`       =  {$by_identity_id},
                 `by_identity_id`   =  {$by_identity_id},
                 `host`             =  {$host},
                 `mates`            =  {$mates}";
