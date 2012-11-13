@@ -5,6 +5,7 @@
 define('datepanel', function (require, exports, module) {
   var $ = require('jquery');
   var Api = require('api');
+  var Moment = require('moment');
   var Panel = require('panel');
 
   var DatePanel = Panel.extend({
@@ -42,13 +43,33 @@ define('datepanel', function (require, exports, module) {
         this.dateInput = new DateInput(this.$('#date-string'), this);
         this.dateInput.eftime = eftime;
 
-        var sss = '',  d;
+        var d, sss;
         if (eftime.outputformat) {
-          sss = eftime.origin;
           d = new Date();
+          sss = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
         } else {
-          var d = parseISO8601(eftime.begin_at.date + '' + (eftime.begin_at.time ? ('T' + eftime.begin_at.time) : '') + 'Z');
-          sss = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + (eftime.begin_at.time ? ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() : '');
+          var s = '', sf = '', sf2 = '';
+          var tz = (eftime.begin_at.timezone && /(^[\+\-]\d\d:\d\d)/.exec(eftime.begin_at.timezone)[1]) || '';
+          if (eftime.begin_at.date) {
+            s += eftime.begin_at.date;
+            sf += 'YYYY-MM-DD';
+            sf2 += 'YYYY-MM-DD';
+          }
+
+          if (eftime.begin_at.time) {
+            s += ' ' + eftime.begin_at.time;
+            sf += ' HH:mm:ss';
+            sf2 += ' HH:mm:ss';
+          }
+
+          if ((eftime.begin_at.date || eftime.begin_at.time) && tz) {
+            s += ' +0000';
+            sf += ' ZZ'
+          }
+
+          d = Moment(s, sf);
+          sss = d.format(sf2);
+          d = parseISO8601(d.format(sf));
         }
 
         this.dateInput.input(sss);
@@ -61,7 +82,7 @@ define('datepanel', function (require, exports, module) {
         this.dataController = new DataController();
 
         this.on('updateDate', function (date, time) {
-          this.dateInput.input(date + (date ? ' ' : '') + time);
+          this.dateInput.input(time + (time ? ' ' : '') + date);
         });
 
         this.on('refresh', function (date) {
@@ -142,7 +163,7 @@ define('datepanel', function (require, exports, module) {
   DateInput.prototype = {
 
       input: function (datestring) {
-        if (/^\d\d:\d\d$/.test(datestring)) {
+        if (/^\d\d:\d\d$/.test($.trim(datestring))) {
           datestring = (this.component.element.find('table td.selected').data('date') || this.component.element.find('table td.today').data('date')) + ' ' + datestring;
         }
         this.el.val($.trim(datestring));
@@ -638,6 +659,75 @@ define('datepanel', function (require, exports, module) {
     }
     datestring = new Date(datestring);
     return datestring;
+  }
+
+  function printTime(time) {
+    // 终端时区
+    var c = Moment();
+    var cz = c.format('Z');
+    var b = time.begin_at;
+
+    // Cross 时区
+    var tz = (b.timezone && /(^[\+\-]\d\d:\d\d)/.exec(b.timezone)[1]) || '';
+    // 创建一个 moment date-object
+    var s = '', sf = '';
+    if (b.date) {
+      s += b.date;
+      sf += 'YYYY-MM-DD';
+    }
+
+    if (b.time) {
+      s += ' ' + b.time;
+      sf += ' HH:mm:ss';
+    }
+
+    if ((b.date || b.time) && tz) {
+      s += ' +0000';
+      sf += ' ZZ'
+    }
+
+    var d = Moment(s, sf);
+
+    var s = '', f, tt;
+
+    // 比对时区
+    var czEtz = cz === tz;
+
+    // 直接输出 origin 时间
+    if (time.outputformat) {
+      s = time.origin;
+      if (!czEtz) {
+        s += ' ' + tz;
+      }
+      return s || 'Sometime';
+    } else {
+
+      if (b.time_word) {
+        s += b.time_word + ' (at) ';
+      }
+
+      if (b.time) {
+        s += d.format('HH:mm:ss');
+      }
+
+      if (!czEtz && tz) {
+        s += ' (' + tz + ') ';
+      }
+
+      if (b.date_word) {
+        s += b.date_word + ' (on) ';
+      }
+
+      if (b.date) {
+        s += ' ' + d.format('YYYY-MM-DD');
+      }
+
+      if (d && d.year() !== 1900 && d.year() !== c.year()) {
+        s += ' ' + d.year();
+      }
+    }
+
+    return s || (sf ? d.format(sf) : 'Sometime')
   }
 
   return DatePanel;
