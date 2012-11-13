@@ -1436,6 +1436,7 @@ define(function (require, exports, module) {
                       var value = $('#date-string').data('date');
                       if (oldEditing === 'date-panel' || oldEditing === 'time') {
                           //ChangeTime($('.cross-date .edit').val());
+                          Cross.time.begin_at.timezone = ExfeUtilities.getTimezone();
                           ChangeTime(value);
                           AutoSaveCross();
                       }
@@ -2206,7 +2207,6 @@ define(function (require, exports, module) {
         $('.cross-opts .saving').show();
         var objCross   = ExfeUtilities.clone(Cross);
         objCross.by_identity = {id : curIdentity.id};
-        objCross.time.begin_at.timezone = ExfeUtilities.getTimezone();
         Api.request(
             'editCross',
             {type      : 'POST',
