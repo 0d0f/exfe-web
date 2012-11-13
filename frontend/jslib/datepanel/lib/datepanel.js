@@ -71,6 +71,10 @@ define('datepanel', function (require, exports, module) {
           this.calendarTable.refresh();
         });
         this.generateTimeLine();
+
+        this.on('enter', function (date) {
+          $('body').trigger('click');
+        });
       }
 
     , generateTimeLine: function () {
@@ -144,7 +148,9 @@ define('datepanel', function (require, exports, module) {
         this.oldVal = datestring;
       }
 
-    , output: function () {}
+    , output: function () {
+        return $.trim(this.el.val());
+      }
 
     , lookup: function () {
         var self = this
@@ -212,7 +218,10 @@ define('datepanel', function (require, exports, module) {
             self.el.parent().next().find('.date-container').focus();
             e.preventDefault();
             break;
-          case 13: // nete
+          case 13: // enete
+            var date = self.output();
+            self.component.emit('enter', date);
+            break;
           case 27: // escape
             e.preventDefault();
             break;
@@ -304,6 +313,13 @@ define('datepanel', function (require, exports, module) {
           , el = this.el
           , options = self.options;
 
+        el.on('mouseleave.calendar', 'table', function (e) {
+          var td = self.getSelected();
+          self.setCursor(td);
+          self.line = td.parent().index();
+          self.column = td.index();
+        });
+
         el.on('hover.calendar', 'table td', function (e) {
           el.find('.full-month').text('');
           e.preventDefault();
@@ -315,6 +331,10 @@ define('datepanel', function (require, exports, module) {
             self.setCursorClass();
             self.line = td.parent().index();
             self.column = td.index();
+          } else {
+            self.currentCursor
+              .removeClass('hover')
+              .find('.m').addClass('hide');
           }
         })
           .on('click.calendar', 'table td', function (e) {
@@ -337,12 +357,20 @@ define('datepanel', function (require, exports, module) {
           var ltrb = false;
           e.preventDefault();
           switch (kc) {
-            // enter
-            case 13:
+            // spacing
+            case 32:
                 self.el.find('td.selected').removeClass('selected');
                 self.select();
                 var date = self.currentCursor.data('date');
                 self.component.emit('updateDate', date, '');
+              break;
+            case 13:
+                var date = '';
+                var td = self.getSelected()
+                if (td.size()) {
+                  date = td.data('date');
+                }
+                self.component.emit('enter', date);
               break;
             // left
             case 37:
@@ -486,6 +514,10 @@ define('datepanel', function (require, exports, module) {
         this.length++;
 
         this.el.find('tbody').append(this.generateHTML(this.endOf));
+      }
+
+    , getSelected: function () {
+        return this.el.find('td.selected, td.today').eq(0);
       }
 
     , initCursor: function (datestring) {
