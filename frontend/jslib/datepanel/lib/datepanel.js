@@ -199,11 +199,13 @@ define('datepanel', function (require, exports, module) {
               var eftime = data.cross_time, date;
               self.eftime = data.cross_time;
               if (eftime.begin_at.date) {
-                date = eftime.begin_at.date;
+                date = Moment.utc(eftime.begin_at.date);
+                date = date.format('YYYY-MM-DD');
               } else {
                 var d = new Date();
                 date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
               }
+              self.el.data('date', date);
               component.emit('refresh', date);
             }
           , function (data) {
