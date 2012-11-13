@@ -48,7 +48,7 @@ define('datepanel', function (require, exports, module) {
           d = new Date();
         } else {
           var d = parseISO8601(eftime.begin_at.date + '' + (eftime.begin_at.time ? ('T' + eftime.begin_at.time) : '') + 'Z');
-          sss = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+          sss = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + (eftime.begin_at.time ? ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() : '');
         }
 
         this.dateInput.input(sss);
@@ -70,6 +70,7 @@ define('datepanel', function (require, exports, module) {
           this.calendarTable.date = new Date(ds[0], (ds[1] - 1), ds[2]);
           this.calendarTable.refresh();
         });
+
         this.generateTimeLine();
 
         this.on('enter', function (date) {
