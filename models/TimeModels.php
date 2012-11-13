@@ -34,6 +34,7 @@ class TimeModels extends DataModel {
             '/^.*[^\/\\\-](\b[0-9]{1,4}\ ?[ap]\.?m\.?\b).*$/i',
             '/^.*[^\/\\\-](\b[0-9]{3,4}\ ?([ap]\.?m\.?)?\b).*$/i',
             '/^.*[^\/\\\-](\b[0-9]{1,2}\:[0-9]{1,2}\ ?([ap]\.?m\.?)?\b).*$/i',
+            '/^.*[^\/\\\-](\b[0-9]{1,2}\:[0-9]{1,2}\:[0-9]{1,2}\ ?([ap]\.?m\.?)?\b).*$/i',
         ];
         $actTimes     = [];
         do {
@@ -50,19 +51,12 @@ class TimeModels extends DataModel {
                 }
             }
             if ($rawTime) {
-                // get am/pm
-                if (preg_match('/a\.?m\.?/i', $rawTime)) {
-                    $apm = 'am';
-                } else if (preg_match('/p\.?m\.?/i', $rawTime)) {
-                    $apm = 'pm';
-                } else {
-                    $apm = '';
-                }
                 // get digitals
                 if (preg_match('/\:/', $rawTime)) {
                     $arrATime = explode(':', $rawTime);
                     $rawHour  = $arrATime[0];
                     $rawMin   = $arrATime[1];
+                    $rawSec   = sizeof($arrATime) > 2 ? $arrATime[2] : 0;
                 } else {
                     $dgts = preg_replace('/^[^0-9]*([0-9]*)[^0-9]*$/', '$1', $rawTime);
                     switch (($lenDgts = mb_strlen($dgts, 'utf8'))) {
@@ -76,9 +70,19 @@ class TimeModels extends DataModel {
                             $rawHour = mb_substr($dgts, 0, $lenDgts - 2, 'utf8');
                             $rawMin  = mb_substr($dgts, $lenDgts - 2, 2, 'utf8');
                     }
+                    $rawSec = 0;
                 }
                 $rawHour = (int) $rawHour;
                 $rawMin  = (int) $rawMin;
+                $rawSec  = (int) $rawSec;
+                // get am/pm
+                if (preg_match('/a\.?m\.?/i', $rawTime)) {
+                    $apm = 'am';
+                } else if (preg_match('/p\.?m\.?/i', $rawTime)) {
+                    $apm = 'pm';
+                } else {
+                    $apm = $rawHour < 12 ? 'am' : 'pm';
+                }
                 // merge
                 switch ($apm) {
                     case 'pm':
@@ -92,6 +96,8 @@ class TimeModels extends DataModel {
                             $rawHour  =  0;
                         }
                 }
+                $rawMin     += (int) ($rawSec  / 60);
+                $rawSec      = $rawSec  % 60;
                 $rawHour    += (int) ($rawMin  / 60);
                 $rawMin      = $rawMin  % 60;
                 $intDayPlus += (int) ($rawHour / 24);
@@ -100,6 +106,7 @@ class TimeModels extends DataModel {
                     'raw'  => $rawTime,
                     'hour' => $rawHour,
                     'min'  => $rawMin,
+                    'sec'  => $rawSec,
                 ];
                 $untreated   = str_replace($rawTime, '', $untreated);
                 $dtUntreated = str_replace($rawTime, '', $dtUntreated);
@@ -107,7 +114,8 @@ class TimeModels extends DataModel {
         } while ($rawTime);
         if ($actTimes) {
             $time = sprintf('%02d', $actTimes[0]['hour']) . ':'
-                  . sprintf('%02d', $actTimes[0]['min']);
+                  . sprintf('%02d', $actTimes[0]['min'])  . ':'
+                  . sprintf('%02d', $actTimes[0]['sec']);
         }
         // get date
         $rawDate  = strtotime($dtUntreated);
@@ -146,8 +154,22 @@ class TimeModels extends DataModel {
             $time_word = $fuzzyTime[0];
         }
         // make CrossTime
-        if ((sizeof($actTimes) && sizeof($fuzzyTime)) || sizeof($fuzzyTime) > 1) {
+        if ((sizeof($actTimes) && sizeof($fuzzyTime)) || sizeof($fuzzyTime) > 1
+         || (!$date_word && !$date && !$time_word && !$time)) {
             $outputformat = 1;
+        }
+        // fix timezone
+        if ($date && sizeof($actTimes)) {
+            $intDate  = strtotime("{$date} {$time}");
+            $arrTzone = explode(':', $timezone);
+            $diffHour = ((int) $arrTzone[0]) * 60 * 60;
+            $diffMin  = ((int) $arrTzone[1]) * 60;
+            $timeDiff =  $diffHour > 0
+                      ? ($diffHour + $diffMin)
+                      : ($diffHour - $diffMin);
+            $fixTime  = explode(' ', date('Y-m-d H:i:s', $intDate - $timeDiff));
+            $date     = $fixTime[0];
+            $time     = $fixTime[1];
         }
         return new CrossTime($date_word, $date, $time_word, $time, $timezone, $string, $outputformat);
     }
