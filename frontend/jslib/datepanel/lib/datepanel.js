@@ -169,6 +169,7 @@ define('datepanel', function (require, exports, module) {
         }
         this.el.val($.trim(datestring));
         this.oldVal = datestring;
+        this.el.data('date', datestring);
       }
 
     , output: function () {
