@@ -95,6 +95,7 @@ define('datepanel', function (require, exports, module) {
         this.generateTimeLine();
 
         this.on('enter', function (date) {
+          this.dateInput.el.data('date', date);
           $('body').trigger('click');
         });
       }
