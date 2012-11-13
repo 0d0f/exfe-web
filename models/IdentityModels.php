@@ -339,7 +339,10 @@ class IdentityModels extends DataModel {
                     }
                     // verify identity
                     $objIdentity = $this->getIdentityById($id);
-                    $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
+                    $vfyResult   = $hlpUder->verifyIdentity(
+                        $objIdentity, 'VERIFY', $user_id, null,
+                        $device, $device_callback
+                    );
                     if ($vfyResult) {
                         if (isset($vfyResult['url']) && $withVerifyInfo) {
                             return [
