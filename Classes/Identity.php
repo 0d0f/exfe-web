@@ -24,8 +24,6 @@ class Identity extends EFObject {
 
     public $order             = null;
 
-    public $order             = null;
-
     public $unreachable       = false;
 
 
