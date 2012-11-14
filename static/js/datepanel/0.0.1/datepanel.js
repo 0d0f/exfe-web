@@ -87,8 +87,8 @@ define('datepanel', function (require, exports, module) {
 
         this.on('refresh', function (date) {
           this.calendarTable.clean();
-          var ds = date.split('-');
-          this.calendarTable.date = new Date(ds[0], (ds[1] - 1), ds[2]);
+          var ds = date.match(/(\d{4})\-(\d{2})\-(\d{2})/);
+          this.calendarTable.date = new Date(ds[1], (ds[2] - 1), ds[3]);
           this.calendarTable.refresh();
         });
 
@@ -155,10 +155,10 @@ define('datepanel', function (require, exports, module) {
       this.el.on('keydown.dateinput', $.proxy(this.keypress, this));
     }
     this.befer = null;
-    this.timezone = this.el.data('timezone');
-    if (!this.timezone) {
-      this.timezone = getTimezone();
-    }
+    //this.timezone = this.el.data('timezone');
+    //if (!this.timezone) {
+    this.timezone = getTimezone();
+    //}
   };
 
   DateInput.prototype = {
@@ -198,9 +198,19 @@ define('datepanel', function (require, exports, module) {
           , function (data) {
               var eftime = data.cross_time, date;
               self.eftime = data.cross_time;
+              var s = '', s2, s3;
               if (eftime.begin_at.date) {
-                date = Moment(eftime.begin_at.date + ' +0000', 'YYYY-MM-DD ZZ');
-                date = date.format('YYYY-MM-DD');
+                s2 = eftime.begin_at.date;
+                s = 'YYYY-MM-DD';
+                s3 = s;
+                if (eftime.begin_at.time) {
+                  s2 += eftime.begin_at.time;
+                  s += ' HH:mm:ss'
+                  s3 = s;
+                }
+                s += ' ZZ';
+                date = Moment(s2, s);
+                date = date.format(s3);
               } else {
                 var d = new Date();
                 date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
@@ -260,10 +270,10 @@ define('datepanel', function (require, exports, module) {
             } else {
               m = false;
             }
-            ddd = Moment.utc(ddd);
+            ddd = Moment(ddd).utc();
             var eftime = self.eftime;
             eftime.begin_at.date = ddd.format('YYYY-MM-DD');
-            m && (eftime.begin_at.time = ddd.format('HH:mm:ss'));
+            eftime.begin_at.time = ddd.format('HH:mm:ss');
             var date;
             var s = '', sf = '', sf2 = '';
             var tz = (eftime.begin_at.timezone && /(^[\+\-]\d\d:\d\d)/.exec(eftime.begin_at.timezone)[1]) || '';
