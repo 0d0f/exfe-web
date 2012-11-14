@@ -134,10 +134,13 @@ class IdentityModels extends DataModel {
         }
         $update_sql = '';
         if (isset($identity['name'])) {
-            $update_sql .= " `name` = '{$identity['name']}', ";
+            $update_sql .= " `name`        = '{$identity['name']}', ";
         }
         if (isset($identity['bio'])) {
-            $update_sql .= " `bio`  = '{$identity['bio']}', ";
+            $update_sql .= " `bio`         = '{$identity['bio']}', ";
+        }
+        if (isset($identity['unreachable'])) {
+            $update_sql .= " `unreachable` =  {$identity['unreachable']}, ";
         }
         return $update_sql
              ? $this->query("UPDATE `identities` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$identity_id}")
