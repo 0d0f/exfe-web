@@ -20,7 +20,7 @@
 
   <div class="panel date-panel" tabindex="-1" data-widget="panel" id="date-panel">
     <div class="panel-header">
-      <input type="text" name="date-string" id="date-string" />
+      <input type="text" name="date-string" id="date-string" autocomplete="off" />
     </div>
     <div class="panel-body">
 
@@ -205,17 +205,121 @@
     </div>
 
     </div>
-    <div class="panel-footer">
+    <!--<div class="panel-footer">-->
     </div>
   </div>
 
-  <div class="panel" tabindex="-1" data-widget="panel" id="map-panel">
-    <div class="panel-header">
-    </div>
+  <div class="panel map-panel" tabindex="-1" data-widget="panel" id="map-panel" style="left: 100px; top: 350px;">
+    <!--<div class="panel-header"></div>-->
     <div class="panel-body">
+
+      <div class="map-container">
+
+        <div class="map-box" id="gmap"></div>
+
+        <div class="map-place">
+          <div class="place-content">Enter place here.</div>
+          <div class="place-editor">
+            <i class="pointer icon24-enter place-submit"></i>
+            <!--<input type="text" name="place-title" id="place-title" autocomplete="off" />-->
+            <textarea name="place-text" id="place-text" placeholder="Enter place here."></textarea>
+          </div>
+
+          <div class="map-places" style="margin: 10px 0;">
+            <ul class="unstyled places-list">
+              <li class="place-item selected">
+                <span class="marker"></span>
+                <address>
+                  <div class="title">Yerba Buena Gardens</div>
+                  <div class="description">750 Howard street, San Francisco, California</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">2</div>
+                <address>
+                  <div class="title">Yerba Buena Gardens</div>
+                  <div class="description">750 Howard street, San Francisco, California</div>
+                </address>
+              </li>
+              <li class="place-item hover">
+                <div class="rank">3</div>
+                <address>
+                  <div class="title">The Westin San Francisco Market Street</div>
+                  <div class="description">50 3rd Street, San Francisco, CA · (415) 974-6400</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">4</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">5</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">6</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">7</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">8</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">9</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">10</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco 101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">11</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+              <li class="place-item">
+                <div class="rank">12</div>
+                <address>
+                  <div class="title">Metreon Entertainment Center Metreon Entertainment Center</div>
+                  <div class="description">101 4th Street, San Francisco, CA · (415) 369-6000 · westf 101 4th Street, San Francisco, CA · (415) 369-6000 · westf</div>
+                </address>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
-    <div class="panel-footer">
-    </div>
+    <!--<div class="panel-footer"></div>-->
   </div>
 
 </body>
