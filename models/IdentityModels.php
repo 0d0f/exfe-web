@@ -62,7 +62,9 @@ class IdentityModels extends DataModel {
                 $rawIdentity['external_username'],
                 getAvatarUrl($rawIdentity['avatar_file_name']) ?: getDefaultAvatarUrl($rawIdentity['name']),
                 $rawIdentity['created_at'],
-                $rawIdentity['updated_at']
+                $rawIdentity['updated_at'],
+                0,
+                $rawIdentity['unreachable']
             );
             if ($status !== null) {
                 $objIdentity->status = $status;

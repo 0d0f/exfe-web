@@ -74,7 +74,9 @@ class UserModels extends DataModel {
                             $item['external_username'],
                             $item['avatar_file_name'],
                             $item['updated_at'],
-                            $item['updated_at']
+                            $item['updated_at'],
+                            0,
+                            $item['unreachable']
                         );
                         $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
                                                   ?: ($user->avatar_filename
