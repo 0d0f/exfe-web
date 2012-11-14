@@ -15,6 +15,11 @@ class OAuthHelper extends ActionController {
     }
 
 
+    public function facebookRedirect($workflow = []) {
+        return $this->modOAuth->facebookRedirect($workflow);
+    }
+
+
     public function resetSession() {
         return $this->modOAuth->resetSession();
     }
