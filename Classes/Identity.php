@@ -24,6 +24,10 @@ class Identity extends EFObject {
 
     public $order             = null;
 
+    public $order             = null;
+
+    public $unreachable       = false;
+
 
     static function parseEmail($email) {
         $email = trim($email);
@@ -50,7 +54,8 @@ class Identity extends EFObject {
                                 $avatar_filename   = '',
                                 $created_at        = '',
                                 $updated_at        = '',
-                                $order             = 0) {
+                                $order             = 0,
+                                $unreachable       = false) {
         parent::__construct($id, 'identity');
 
         $created_at              = $created_at ?:  '0000-00-00 00:00:00';
@@ -62,13 +67,14 @@ class Identity extends EFObject {
         $this->nickname          = $nickname;
         $this->bio               = $bio ?: '';
         $this->provider          = $provider;
-        $this->connected_user_id = (int)    $connected_user_id;
-        $this->external_id       = (string) $external_id;
+        $this->connected_user_id = (int)     $connected_user_id;
+        $this->external_id       = (string)  $external_id;
         $this->external_username = $external_username;
         $this->avatar_filename   = $avatar_filename;
         $this->created_at        = $created_at . ' +0000';
         $this->updated_at        = $updated_at . ' +0000';
-        $this->order             = (int)    $order;
+        $this->order             = (int)     $order;
+        $this->unreachable       = (boolean) $unreachable;
 
         if (!$this->name) {
             switch ($this->provider) {
