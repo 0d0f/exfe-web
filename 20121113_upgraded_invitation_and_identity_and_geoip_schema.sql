@@ -3,10 +3,11 @@ ALTER TABLE `identities`  ADD COLUMN `unreachable` tinyint(1) default 0;
 ALTER TABLE `devices`     ADD COLUMN `unreachable` tinyint(1) default 0;
 UPDATE `invitations` SET `invited_by`=`by_identity_id`;
 CREATE TABLE `geoip_blocks` (
-    `loc_id`       int(7)       unsigned NOT NULL,
+    `id`           bigint(20)            NOT NULL AUTO_INCREMENT,
     `start_ip_num` int(11)      unsigned NOT NULL,
     `end_ip_num`   int(11)      unsigned NOT NULL,
-    PRIMARY KEY (`loc_id`)
+    `loc_id`       int(7)       unsigned NOT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE = MyISAM DEFAULT CHARSET = utf8;
 CREATE TABLE `geoip_locations` (
     `loc_id`       int(7)       unsigned NOT NULL,
