@@ -297,7 +297,7 @@ class ExfeeModels extends DataModel {
         $hlpQueue = $this->getHelperByName('Queue');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
         $cross    = $hlpCross->getCross($cross_id, true, true);
-        $hlpQueue->despatchInvitation($cross, $user_id ?: -$by_identity_id);
+        $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id);
         // }
         // return
         return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
@@ -319,8 +319,10 @@ class ExfeeModels extends DataModel {
         $over_quota = false;
         $changed    = false;
         // raw actions
-        $chkInvit = array();
-        $delExfee = array();
+        $chkInvit = [];
+        $newInvId = [];
+        $addExfee = [];
+        $delExfee = [];
         foreach ($invitations as $toI => $toItem) {
             // adding new identity
             if (!$hlpIdentity->checkIdentityById($toItem->identity->id)) {
@@ -375,7 +377,9 @@ class ExfeeModels extends DataModel {
                         continue;
                     }
                 }
-                $this->addInvitationIntoExfee($toItem, $exfee_id, $by_identity_id, $user_id);
+                $newInvId[] = $this->addInvitationIntoExfee(
+                    $toItem, $exfee_id, $by_identity_id, $user_id
+                );
                 $changed = true;
             }
         }
@@ -383,9 +387,22 @@ class ExfeeModels extends DataModel {
         // call Gobus {
         $hlpQueue = $this->getHelperByName('Queue');
         $cross    = $hlpCross->getCross($cross_id, true, true);
+        foreach ($cross->exfee->invitations as $eI => $eItem) {
+            if (in_array($eItem->id, $newInvId)) {
+                $addExfee[] = $eItem;
+            }
+        }
         $hlpQueue->despatchSummary(
-            $cross, $old_cross, $delExfee, $user_id ?: -$by_identity_id
+            $cross, $old_cross, $delExfee, $addExfee, $user_id ?: -$by_identity_id
         );
+        if ($addExfee) {
+            $to_exfee = new stdClass;
+            $to_exfee->id = $cross->exfee->id;
+            $to_exfee->invitations = $addExfee;
+            $hlpQueue->despatchInvitation(
+                $cross, $to_exfee, $user_id ?: -$by_identity_id
+            );
+        }
         // }
         // return
         return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota, 'changed' => $changed];
@@ -417,7 +434,7 @@ class ExfeeModels extends DataModel {
         $hlpQueue = $this->getHelperByName('Queue');
         $cross    = $hlpCross->getCross($cross_id, true, true);
         $hlpQueue->despatchSummary(
-            $cross, $old_cross, [], $by_user_id ?: -$by_identity_id
+            $cross, $old_cross, [], [], $by_user_id ?: -$by_identity_id
         );
         // }
         // return
