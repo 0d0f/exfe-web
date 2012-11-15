@@ -2002,15 +2002,14 @@ define(function (require, exports, module) {
 
 
     var ShowMessage = function(message) {
-        var strContent = ExfeUtilities.trim(message.content).replace(/\r\n|\n\r|\r|\n/g, '<br>'),
-            strMessage = '<div class="avatar-comment">'
+          var strMessage = '<div class="avatar-comment">'
                        +   '<span class="pull-left avatar">'
                        +     '<img alt="" src="' + message.by_identity.avatar_filename + '" width="40" height="40" />'
                        +   '</span>'
                        +   '<div class="comment">'
                        +     '<p>'
                        +       '<span class="author"><strong>' + message.by_identity.name + '</strong>:&nbsp;</span>'
-                       +          ExfeUtilities.escape(strContent)
+                       +          ExfeUtilities.escape(message.content).replace(/\r\n|\n\r|\r|\n/g, '<br>')
                        +       '<span class="pull-right date">'
                        +         '<time data-iso8601-time="' + efTime.printISO8601(message.created_at) + '"></time>'
                        +       '</span>'
