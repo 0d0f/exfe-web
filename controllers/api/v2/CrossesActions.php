@@ -269,7 +269,7 @@ class CrossesActions extends ActionController {
             // call Gobus {
             $modQueue = $this->getModelByName('Queue');
             $modQueue->despatchSummary(
-                $cross, $old_cross, [], $result['uid'] ?: -$by_identity_id
+                $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id
             );
             // }
             foreach ($cross->exfee->invitations as $i => $invitation) {
