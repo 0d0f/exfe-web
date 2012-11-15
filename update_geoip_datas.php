@@ -38,7 +38,7 @@ class UpgradeGeoipDatas extends DataModel {
                     $arrLine[$i] = (int) trim($item, '"');
                 }
                 printf(
-                    "loc_id = %06d, start_ip_num = %10d, end_ip_num = %10d\r\n",
+                    "loc_id = %6d, start_ip_num = %10d, end_ip_num = %10d\r\n",
                     $arrLine[2], $arrLine[0], $arrLine[1]
                 );
                 $this->query(
@@ -50,7 +50,7 @@ class UpgradeGeoipDatas extends DataModel {
             }
         }
         fclose($file_handle);
-        echo '😃Finished ' . ($i - 2) . ' items in ' . (time() - $start_time) . " seconds.\r\n\r\n";
+        echo '😃 Finished ' . ($i - 2) . ' items in ' . (time() - $start_time) . " seconds.\r\n\r\n";
 
        /*-------------+-----------------+------+-----+---------+-------+
         | Field       | Type            | Null | Key | Default | Extra |
@@ -82,57 +82,45 @@ class UpgradeGeoipDatas extends DataModel {
                 if (!$arrLine) {
                     continue;
                 }
-
-
-
-
                 $arrLine[$i] = (int) trim($item, '"');
                 foreach ($arrLine as $i => $item) {
-                    case 0:
-                        $arrLine[0] = (int) trim($item, '"');
-                        break;
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 8:
-                    case 9:
-                        $arrLine[0] = trim($item, '"');
-                        break;
-                    case 6:
-                    case 7:
-                        $arrLine[0] = (float) trim($item, '"');
+                    switch ($i) {
+                        case 0:
+                            $arrLine[$i] = (int) trim($item, '"');
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 7:
+                        case 8:
+                            $arrLine[$i] = mysql_real_escape_string(trim(trim($item, '"')));
+                            break;
+                        case 5:
+                        case 6:
+                            $arrLine[$i] = (float) trim($item, '"');
+                    }
                 }
-                printf("loc_id = , start_ip_num = %10d, end_ip_num = %10d\r\n", $arrLine[2], $arrLine[0], $arrLine[1]);
-                    "loc_id = %06d, country =, region =, city =, postal_code =, latitude =, longitude =, metro_code =, area_code =",
-                    $arrLine[0], $arrLine[1], $arrLine[2], $arrLine[3], $arrLine[4], $arrLine[5], $arrLine[6], $arrLine[7], $arrLine[8], $arrLine[9]
+                printf(
+                    "loc_id = %06d, country = %7s, region = %7s, city = %30s, postal_code = %10s, latitude = %13f, longitude = %13f, metro_code = %7s, area_code = %7s\r\n",
+                    $arrLine[0], $arrLine[1], $arrLine[2], $arrLine[3], $arrLine[4], $arrLine[5], $arrLine[6], $arrLine[7], $arrLine[8]
                 );
-
                 $this->query(
-                    "INSERT INTO `geoip_blocks` SET
-                     `loc_id`       = {$arrLine[2]},
-                     `start_ip_num` = {$arrLine[0]},
-                     `end_ip_num`   = {$arrLine[1]}"
+                    "INSERT INTO `geoip_locations` SET
+                     `loc_id`       =  {$arrLine[0]},
+                     `country`      = '{$arrLine[1]}',
+                     `region`       = '{$arrLine[2]}',
+                     `city`         = '{$arrLine[3]}',
+                     `postal_code`  = '{$arrLine[4]}',
+                     `latitude`     =  {$arrLine[5]},
+                     `longitude`    =  {$arrLine[6]},
+                     `metro_code`   = '{$arrLine[7]}',
+                     `area_code`    = '{$arrLine[8]}'"
                 );
             }
         }
         fclose($file_handle);
-        echo '😃Finished ' . ($i - 2) . ' items in ' . (time() - $start_time) . " seconds.\r\n\r\n";
-
-
-
-Copyright (c) 2012 MaxMind LLC.  All Rights Reserved.
-locId,country,region,city,postalCode,latitude,longitude,metroCode,areaCode
-1,"O1","","","",0.0000,0.0000,,
-2,"AP","","","",35.0000,105.0000,,
-
-1,"O1","","","",0.0000,0.0000,,
-
-
-
-
-
+        echo '😃 Finished ' . ($i - 2) . ' items in ' . (time() - $start_time) . " seconds.\r\n\r\n";
     }
 
 }
