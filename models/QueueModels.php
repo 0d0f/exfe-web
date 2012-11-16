@@ -39,11 +39,11 @@ class QueueModels extends DataModel {
             $tos[] = $this->makeRecipientByInvitation($invitation);
         }
         $jobData = [
-            'service' => $service,
-            'method'  => $method,
-            'key'     => (string) $data['cross']->id,
-            'tos'     => $tos,
-            'data'    => $data,
+            'service'   => $service,
+            'method'    => $method,
+            'merge_key' => (string) $data['cross']->id,
+            'tos'       => $tos,
+            'data'      => $data,
         ];
         if (DEBUG) {
             error_log('job: ' . json_encode($jobData));
@@ -52,7 +52,7 @@ class QueueModels extends DataModel {
     }
 
 
-    public function getToInvitationsByExfee($exfee, $by_user_id, $event, $incExfee = []) {
+    public function getToInvitationsByExfee($exfee, $by_user_id, $event, $incExfee = [], $excExfee = []) {
         $hlpDevice       = $this->getHelperByName('Device');
         $hlpConversation = $this->getHelperByName('Conversation');
         $head10  = [];
@@ -66,6 +66,18 @@ class QueueModels extends DataModel {
             ||  $invitation->rsvp_status                 === 'DECLINED'
             || (!isset($invitation->inc)
              && $invitation->rsvp_status                 === 'REMOVED')) {
+                continue;
+            }
+            // exclude {
+            $bolContinue = false;
+            foreach ($excExfee as $eI => $eItem) {
+                if ($invitation->id === $eItem->id) {
+                    $bolContinue = true;
+                    break;
+                }
+            }
+            // }
+            if ($bolContinue) {
                 continue;
             }
             $gotInvitation = [(object) (array) $invitation];
@@ -132,7 +144,6 @@ class QueueModels extends DataModel {
                         }
                     }
             }
-
         }
         return ['Head10' => $head10, 'Instant' => $instant];
     }
@@ -159,11 +170,11 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchInvitation($cross, $by_user_id) {
+    public function despatchInvitation($cross, $to_exfee, $by_user_id) {
         $service = 'Cross';
         $method  = 'Invite';
         $invitations = $this->getToInvitationsByExfee(
-            $cross->exfee, $by_user_id, "{$service}_{$method}"
+            $to_exfee, $by_user_id, "{$service}_{$method}"
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -180,11 +191,11 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchSummary($cross, $old_cross, $del_exfee, $by_user_id) {
+    public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id) {
         $service = 'Cross';
         $method  = 'Summary';
         $invitations = $this->getToInvitationsByExfee(
-            $cross->exfee, $by_user_id, "{$service}_{$method}", $del_exfee
+            $cross->exfee, $by_user_id, "{$service}_{$method}", $inc_exfee, $exc_exfee
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
