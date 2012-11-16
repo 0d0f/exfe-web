@@ -1,5 +1,6 @@
 <?php
 session_write_close();
+require_once dirname(dirname(__FILE__)).'/../../lib/tmhOAuth.php';
 
 
 class IdentitiesActions extends ActionController {
@@ -11,7 +12,7 @@ class IdentitiesActions extends ActionController {
             apiError(400, 'no_identity_id', 'identity_id must be provided');
         }
         if ($objIdentity = $modIdentity->getIdentityById($params['id'])) {
-            apiResponse(['identity' => $objIdentity]);
+            apiResponse(array('identity' => $objIdentity));
         }
         apiError(404, 'identity_not_found', 'identity not found');
     }
@@ -19,9 +20,8 @@ class IdentitiesActions extends ActionController {
 
     public function doGet() {
         // get models
-        $modUser       = $this->getModelByName('User');
-        $modIdentity   = $this->getModelByName('Identity');
-        $modOAuth      = $this->getModelByName('OAuth');
+        $modUser       = $this->getModelByName('user');
+        $modIdentity   = $this->getModelByName('identity');
         // get inputs
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : [];
         // ready
@@ -69,21 +69,30 @@ class IdentitiesActions extends ActionController {
                             break;
                         case 'twitter':
                             if ($identityItem->external_username) {
-                                $rawIdentity = $modOAuth->getTwitterProfileByExternalUsername(
-                                    $identityItem->external_username
+                                $twitterConn = new tmhOAuth([
+                                    'consumer_key'    => TWITTER_CONSUMER_KEY,
+                                    'consumer_secret' => TWITTER_CONSUMER_SECRET,
+                                ]);
+                                $responseCode = $twitterConn->request(
+                                    'GET',
+                                    $twitterConn->url('1/users/show'),
+                                    array('screen_name' => $identityItem->external_username)
                                 );
-                                if ($rawIdentity) {
-                                    $objIdentities[] = $rawIdentity;
-                                }
-                            }
-                            break;
-                        case 'facebook':
-                            if ($identityItem->external_username) {
-                                $rawIdentity = $modOAuth->getFacebookProfileByExternalUsername(
-                                    $identityItem->external_username
-                                );
-                                if ($rawIdentity) {
-                                    $objIdentities[] = $rawIdentity;
+                                if ($responseCode === 200) {
+                                    $twitterUser = (array) json_decode($twitterConn->response['response'], true);
+                                    $objIdentities[] = new Identity(
+                                        0,
+                                        $twitterUser['name'],
+                                        '',
+                                        $twitterUser['description'],
+                                        'twitter',
+                                        0,
+                                        $twitterUser['id'],
+                                        $twitterUser['screen_name'],
+                                        $modIdentity->getTwitterLargeAvatarBySmallAvatar(
+                                            $twitterUser['profile_image_url']
+                                        )
+                                    );
                                 }
                             }
                     }

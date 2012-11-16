@@ -239,8 +239,7 @@ class CrossesActions extends ActionController {
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
         $by_identity_id=$cross->by_identity->id;
-        $checkHelper = $this->getHelperByName('check');
-        $crossHelper = $this->getHelperByName('cross');
+        $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"],"by_identity_id"=>$by_identity_id));
         if($result["check"]!==true)
         {
@@ -257,28 +256,49 @@ class CrossesActions extends ActionController {
         $by_identity_id = (int) $result['by_identity_id'];
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
-        $old_cross = $crossHelper->getCross((int) $params['id']);
+        $crossHelper=$this->getHelperByName('cross');
+        $msgArg = array('old_cross' => $crossHelper->getCross(intval($params["id"])), 'to_identities' => array());
         $chkCross = $crossHelper->validateCross($cross);
         if ($chkCross['error']) {
             apiError(400, 'cross_error', $chkCross['error'][0]);
         }
-        $cross_id=$crossHelper->editCross($cross, $by_identity_id);
+        $cross_id=$crossHelper->editCross($cross,$by_identity_id);
 
-        if(intval($cross_id) > 0) {
-            $cross = $crossHelper->getCross($cross_id, true);
+        if(intval($cross_id)>0)
+        {
+            $crossHelper=$this->getHelperByName('cross');
+            $msgArg['cross'] = $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus {
-            $modQueue = $this->getModelByName('Queue');
-            $modQueue->despatchSummary(
-                $cross, $old_cross, [], $result['uid'] ?: -$by_identity_id
-            );
-            // }
+            $hlpGobus  = $this->getHelperByName('gobus');
+            $modDevice = $this->getModelByName('device');
+            $chkMobUs  = array();
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->id === $by_identity_id) {
+                    $msgArg['by_identity'] = $invitation->identity;
+                }
+                $msgArg['to_identities'][] = $invitation->identity;
+                // get mobile identities
+                if ($invitation->identity->connected_user_id > 0
+                && !$chkMobUs[$invitation->identity->connected_user_id]) {
+                    $mobIdentities = $modDevice->getDevicesByUserid(
+                        $invitation->identity->connected_user_id,
+                        $invitation->identity
+                    );
+                    foreach ($mobIdentities as $mI => $mItem) {
+                        $msgArg['to_identities'][] = $mItem;
+                    }
+                    $chkMobUs[$invitation->identity->connected_user_id] = true;
+                }
+            }
+            $hlpGobus->send('cross', 'Update', $msgArg);
             foreach ($cross->exfee->invitations as $i => $invitation) {
                 $cross->exfee->invitations[$i]->token = '';
             }
-            apiResponse(['cross' => $cross]);
-        } else {
-            apiError(500,"server_error","Can't Edit this Cross.");
+            // }
+            apiResponse(array("cross"=>$cross));
         }
+        else
+            apiError(500,"server_error","Can't Edit this Cross.");
     }
 
 }

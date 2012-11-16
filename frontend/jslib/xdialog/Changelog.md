@@ -1,6 +1,3 @@
-* v0.0.6 2012-11-09T14:37:42 UTC+0800
-  * 登录窗口显示 `Facebook` OAuth 按钮
-
 * v0.0.5 2012-11-08T15:00:05 UTC+0800
   * 添加身份，如果 `flag` === 'SIGN_IN' 时，走 `mergeIdentities` 接口
   * 添加 Twitter 身份时，显示添加按钮，点击走 `OAuth` 流程

@@ -396,7 +396,7 @@ define('xdialog', function (require, exports, module) {
               + '<div class="pull-left authorize">Authenticate with:</div>'
               + '<div class="pull-left oauth">'
                 + '<a href="#" class="oauth-twitter" data-oauth="twitter">twitter</a>'
-                + '<a href="#" class="oauth-facebook" data-oauth="facebook">facebook</a>'
+                //+ '<a href="#" class="oauth-facebook" data-oauth="facebook">facebook</a>'
               + '</div>'
             + '</div>'
             + '<div class="orspliter">or</div>'
@@ -442,6 +442,7 @@ define('xdialog', function (require, exports, module) {
                   + '</div>'
 
                   + '<div class="control-group d d01 hide">'
+                    //+ '<div class="controls">'
                     + '<div class="control-label">'
                       + '<label class="checkbox pointer">'
                         + '<input type="checkbox" id="auto-signin" value="1" checked />'
