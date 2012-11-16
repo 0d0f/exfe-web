@@ -4476,10 +4476,6 @@ img:-moz-broken {
   border: 0;
 }
 
-.ihide {
-  display: hide !important;
-}
-
 .modal {
   position: absolute;
   top: 150px;
@@ -10709,7 +10705,7 @@ body {
   resize: none;
 }
 
-.date-panel {
+#date-panel {
   min-width: 310px;
   min-height: 180px;
   padding: 15px 15px 15px 15px;
@@ -10723,7 +10719,7 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcfcfc', endColorstr='#ffeeeeee', GradientType=0);
 }
 
-.date-panel #date-string {
+#date-panel #date-string {
   width: 300px;
   margin: 0 0 15px 0;
   background: #fefefe;
@@ -10733,7 +10729,7 @@ body {
           border-radius: 0;
 }
 
-.date-panel #date-string:focus {
+#date-panel #date-string:focus {
   background: #ffffff;
   border: 1px solid rgba(90, 151, 214, 0.64);
   -webkit-box-shadow: 0 0 5px rgba(0, 133, 242, 0.35);
@@ -10741,7 +10737,7 @@ body {
           box-shadow: 0 0 5px rgba(0, 133, 242, 0.35);
 }
 
-.date-panel .date-container {
+#date-panel .date-container {
   position: relative;
   max-height: 135px;
   overflow: hidden;
@@ -10754,7 +10750,7 @@ body {
           box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.35);
 }
 
-.date-panel #date-head {
+#date-panel #date-head {
   position: relative;
   z-index: 2;
   margin: 0;
@@ -10763,14 +10759,14 @@ body {
   background: #65717E;
 }
 
-.date-panel #date-head li {
+#date-panel #date-head li {
   float: left;
   width: 44px;
   font-size: 13px;
   line-height: 15px;
 }
 
-.date-panel .full-month {
+#date-panel .full-month {
   position: absolute;
   bottom: 3px;
   z-index: 2;
@@ -10782,7 +10778,7 @@ body {
   text-align: center;
 }
 
-.date-panel #date-table {
+#date-panel #date-table {
   position: relative;
   z-index: 1;
   margin: 0;
@@ -10794,7 +10790,7 @@ body {
   -moz-border-radius-topleft: 0;
 }
 
-.date-panel #date-table tbody td {
+#date-panel #date-table tbody td {
   position: relative;
   width: 43px;
   height: 43px;
@@ -10805,7 +10801,7 @@ body {
   border: 1px solid rgba(204, 204, 204, 0.35);
 }
 
-.date-panel #date-table tbody td .d {
+#date-panel #date-table tbody td .d {
   display: block;
   font-size: 16px;
   font-weight: 300;
@@ -10814,7 +10810,7 @@ body {
   color: #565E65;
 }
 
-.date-panel #date-table tbody td .m {
+#date-panel #date-table tbody td .m {
   position: absolute;
   top: 1px;
   left: 3px;
@@ -10823,30 +10819,30 @@ body {
   color: #999999;
 }
 
-.date-panel #date-table tbody td.hover,
-.date-panel #date-table tbody td.today {
+#date-panel #date-table tbody td.hover,
+#date-panel #date-table tbody td.today {
   background: #eeeeee;
 }
 
-.date-panel #date-table tbody td.today .d {
+#date-panel #date-table tbody td.today .d {
   font-size: 14px;
 }
 
-.date-panel #date-table tbody td.selected {
+#date-panel #date-table tbody td.selected {
   position: relative;
   background: #DBEAF9;
 }
 
-.date-panel #date-table tbody td.selected .m {
+#date-panel #date-table tbody td.selected .m {
   display: block;
 }
 
-.date-panel #date-table tbody td.selected .d {
+#date-panel #date-table tbody td.selected .d {
   font-weight: bold;
   color: #3A6EA5;
 }
 
-.date-panel #date-table tbody td.selected:before {
+#date-panel #date-table tbody td.selected:before {
   position: absolute;
   top: -1px;
   right: -1px;
@@ -10854,12 +10850,15 @@ body {
   left: -1px;
   border: 2px solid rgba(56, 111, 165, 0.66);
   content: '';
+<<<<<<< HEAD
+=======
   -webkit-box-shadow: inset 0 0 4px rgba(9, 31, 118, 0.46);
      -moz-box-shadow: inset 0 0 4px rgba(9, 31, 118, 0.46);
           box-shadow: inset 0 0 4px rgba(9, 31, 118, 0.46);
+>>>>>>> ce0f928... Upgraded css
 }
 
-.date-panel .date-timeline {
+#date-panel .date-timeline {
   position: relative;
   z-index: 2;
   height: 180px;
@@ -10869,163 +10868,4 @@ body {
   margin-left: 15px;
   overflow-y: scroll;
   border-left: 1px solid #cccccc;
-}
-
-.map-panel {
-  max-width: 550px;
-  min-width: 360px;
-  min-height: 120px;
-  background-color: #f6f6f6;
-  background-image: -moz-linear-gradient(top, #fcfcfc, #eeeeee);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fcfcfc), to(#eeeeee));
-  background-image: -webkit-linear-gradient(top, #fcfcfc, #eeeeee);
-  background-image: -o-linear-gradient(top, #fcfcfc, #eeeeee);
-  background-image: linear-gradient(to bottom, #fcfcfc, #eeeeee);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcfcfc', endColorstr='#ffeeeeee', GradientType=0);
-}
-
-.map-panel .map-container {
-  position: relative;
-}
-
-.map-panel .map-place {
-  position: relative;
-  top: 20px;
-  left: 20px;
-  width: 320px;
-}
-
-.map-panel .map-place .place-content {
-  position: relative;
-  width: 96.875%;
-  height: 72px;
-  padding: 4px;
-  overflow-y: scroll;
-  font-size: 18px;
-  line-height: 24px;
-  color: #333333;
-  background-color: rgba(250, 250, 250, 0.6799999999999999);
-  background-image: -moz-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(250, 250, 250, 0.8)), to(rgba(250, 250, 250, 0.5)));
-  background-image: -webkit-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
-  background-image: -o-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
-  background-image: linear-gradient(to bottom, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
-  background-repeat: repeat-x;
-  border: 1px solid transparent;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ccfafafa', endColorstr='#80fafafa', GradientType=0);
-}
-
-.map-panel .map-place .place-editor {
-  position: relative;
-}
-
-.map-panel .map-place #place-text {
-  width: 96.875%;
-  min-height: 72px;
-  margin: 0;
-  font-size: 18px;
-  line-height: 24px;
-  color: #333333;
-}
-
-.map-panel .map-place .place-submit {
-  position: absolute;
-  top: 52px;
-  right: 3px;
-  z-index: 3;
-}
-
-.map-panel .map-place .map-places {
-  position: absolute;
-  width: 320px;
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
-}
-
-.map-panel .map-place .places-list {
-  position: relative;
-  padding: 2px 0;
-  margin: 0;
-  background-color: #fafafa;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.map-panel .map-place .places-list li.place-item {
-  height: 36px;
-  padding-left: 5px;
-}
-
-.map-panel .map-place .places-list li.place-item .rank {
-  display: inline-block;
-  float: left;
-  width: 20px;
-  height: 20px;
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #ffffff;
-  text-align: center;
-  background-color: #b2b2b2;
-  -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-          border-radius: 5px;
-}
-
-.map-panel .map-place .places-list li.place-item address {
-  margin-left: 25px;
-  overflow: hidden;
-  -webkit-hyphens: auto;
-     -moz-hyphens: auto;
-          hyphens: auto;
-  -ms-word-break: break-all;
-      word-break: break-all;
-  word-break: break-word;
-  white-space: nowrap;
-}
-
-.map-panel .map-place .places-list li.place-item .title {
-  color: #333333;
-}
-
-.map-panel .map-place .places-list li.place-item .description {
-  padding-bottom: 2px;
-  font-size: 11px;
-  line-height: 14px;
-  color: #7f7f7f;
-}
-
-.map-panel .map-place .places-list li.place-item.hover {
-  background-color: rgba(127, 127, 127, 0.05);
-}
-
-.map-panel .map-place .places-list li.place-item.selected {
-  height: 38px;
-  background-color: #fafafa;
-  border: 1px solid rgba(250, 250, 250, 0.8);
-  -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.25);
-     -moz-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.25);
-          box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.25);
-}
-
-.map-panel .map-place .places-list:after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 20px;
-  background-color: #fafafa;
-  background-color: transparent;
-  background-image: -moz-linear-gradient(left, rgba(250, 250, 250, 0), #fafafa);
-  background-image: -webkit-gradient(linear, 0 0, 100% 0, from(rgba(250, 250, 250, 0)), to(#fafafa));
-  background-image: -webkit-linear-gradient(left, rgba(250, 250, 250, 0), #fafafa);
-  background-image: -o-linear-gradient(left, rgba(250, 250, 250, 0), #fafafa);
-  background-image: linear-gradient(to right, rgba(250, 250, 250, 0), #fafafa);
-  background-repeat: repeat-x;
-  content: '';
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00fafafa', endColorstr='#fffafafa', GradientType=1);
 }

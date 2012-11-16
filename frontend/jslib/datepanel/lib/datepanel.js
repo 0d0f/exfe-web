@@ -14,7 +14,7 @@ define('datepanel', function (require, exports, module) {
 
           template: ''
           + '<div class="panel date-panel" tabindex="-1" data-widget="panel" id="date-panel">'
-            + '<div class="panel-header"><input type="text" name="date-string" id="date-string" autocomplete="off" /></div>'
+            + '<div class="panel-header"><input type="text" name="date-string" id="date-string" /></div>'
             + '<div class="panel-body">'
                 + '<div class="pull-right date-timeline"><ul class="unstyled"></ul></div>'
                 + '<div class="date-container" tabindex="-1">'
@@ -23,7 +23,7 @@ define('datepanel', function (require, exports, module) {
                   + '<table class="table" id="date-table"><tbody></tbody></table>'
               + '</div>'
             + '</div>'
-            //+ '<div class="panel-footer"></div>'
+            + '<div class="panel-footer"></div>'
           + '</div>'
 
         , parentNode: null

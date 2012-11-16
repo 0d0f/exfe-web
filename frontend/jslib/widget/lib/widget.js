@@ -28,7 +28,6 @@ define('widget', function (require, exports, module) {
 
       this.delegateEvents();
       this.init();
-      Widget.caches[this.cid] = this;
     },
 
     initOptions: function (params) {
@@ -95,13 +94,11 @@ define('widget', function (require, exports, module) {
     },
 
     _destory: function () {
-      delete Widget.caches[this.cid];
       this.undelegateEvents();
       Widget.superclass.destory.call(this);
     }
   });
 
-  Widget.caches = {};
 
   // Helpers
   // ------

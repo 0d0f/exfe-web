@@ -15,27 +15,8 @@ class OAuthHelper extends ActionController {
     }
 
 
-    public function facebookRedirect($workflow = []) {
-        return $this->modOAuth->facebookRedirect($workflow);
-    }
-
-
     public function resetSession() {
         return $this->modOAuth->resetSession();
-    }
-
-
-    public function getFacebookProfileByExternalUsername($external_username) {
-        return $this->modOAuth->getFacebookProfileByExternalUsername(
-            $external_username
-        );
-    }
-
-
-    public function getTwitterProfileByExternalUsername($external_username) {
-        return $this->modOAuth->getTwitterProfileByExternalUsername(
-            $external_username
-        );
     }
 
 }

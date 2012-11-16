@@ -20,8 +20,8 @@ class UserHelper extends ActionController {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '') {
-        return $this->modUser->verifyIdentity($identity, $action, $user_id, $args, $device, $device_callback);
+    public function verifyIdentity($identity, $action, $user_id = 0) {
+        return $this->modUser->verifyIdentity($identity, $action, $user_id);
     }
 
 
@@ -32,16 +32,6 @@ class UserHelper extends ActionController {
 
     public function getUserIdByIdentityId($identity_id) {
         return $this->modUser->getUserIdByIdentityId($identity_id);
-    }
-
-
-    public function rawSignin($user_id, $passwdInDb = null) {
-        return $this->modUser->rawSignin($user_id, $passwdInDb);
-    }
-
-
-    public function addUser($password = '', $name = '') {
-        return $this->modUser->addUser($password, $name);
     }
 
 }
