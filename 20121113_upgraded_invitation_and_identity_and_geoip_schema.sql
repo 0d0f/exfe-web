@@ -2,6 +2,7 @@ ALTER TABLE `invitations` ADD COLUMN `invited_by`  bigint(20) unsigned;
 ALTER TABLE `identities`  ADD COLUMN `unreachable` tinyint(1) default 0;
 ALTER TABLE `devices`     ADD COLUMN `unreachable` tinyint(1) default 0;
 UPDATE `invitations` SET `invited_by`=`by_identity_id`;
+DROP TABLE `ip_data`;
 CREATE TABLE `geoip_blocks` (
     `id`           bigint(20)            NOT NULL AUTO_INCREMENT,
     `start_ip_num` int(11)      unsigned NOT NULL,
