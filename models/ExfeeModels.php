@@ -424,7 +424,6 @@ class ExfeeModels extends DataModel {
                         // update exfee token
                         if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
                          && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
-                            $newInvId[]  = $fmItem->identity->id;
                             $updateToken = true;
                         } else {
                             $updateToken = false;
