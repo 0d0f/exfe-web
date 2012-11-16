@@ -33,10 +33,31 @@ class QueueModels extends DataModel {
     }
 
 
+    public function cleanInvitations($invitations) {
+        $clear_invitations = [];
+        foreach ($invitations as $invitation) {
+            if ($invitation->rsvp_status !== 'REMOVED') {
+                $clear_invitations[] = $invitation;
+            }
+        }
+        return $clear_invitations;
+    }
+
+
     public function pushJobToQueue($queue, $service, $method, $invitations, $data = []) {
         $tos  = [];
         foreach ($invitations as $invitation) {
             $tos[] = $this->makeRecipientByInvitation($invitation);
+        }
+        if (isset($data['cross'])) {
+            $data['cross']->exfee->invitations     = $this->cleanInvitations(
+                $data['cross']->exfee->invitations
+            );
+        }
+        if (isset($data['old_cross']) {
+            $data['old_cross']->exfee->invitations = $this->cleanInvitations(
+                $data['old_cross']->exfee->invitations
+            );
         }
         $jobData = [
             'service'   => $service,
