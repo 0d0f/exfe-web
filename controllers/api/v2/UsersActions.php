@@ -470,7 +470,8 @@ class UsersActions extends ActionController {
             case 'VERIFYING':
             case 'REVOKED':
                 $viResult = $modUser->verifyIdentity(
-                    $identity, 'VERIFY', $user_id
+                    $identity, 'VERIFY', $user_id, null,
+                    strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback'])
                 );
                 if ($viResult) {
                     if (isset($viResult['url'])) {
