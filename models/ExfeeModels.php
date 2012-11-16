@@ -349,11 +349,12 @@ class ExfeeModels extends DataModel {
                         // delete exfee
                         if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
                          && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
-                            $delExfee[]  = $fmItem->identity;
+                            $delExfee[]  = $fmItem;
                         }
                         // update exfee token
                         if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
                          && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
+                            $newInvId[]  = $fmItem->id;
                             $updateToken = true;
                         } else {
                             $updateToken = false;
