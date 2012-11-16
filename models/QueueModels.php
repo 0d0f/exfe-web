@@ -54,7 +54,7 @@ class QueueModels extends DataModel {
                 $data['cross']->exfee->invitations
             );
         }
-        if (isset($data['old_cross']) {
+        if (isset($data['old_cross'])) {
             $data['old_cross']->exfee->invitations = $this->cleanInvitations(
                 $data['old_cross']->exfee->invitations
             );
