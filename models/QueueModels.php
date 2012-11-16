@@ -77,6 +77,7 @@ class QueueModels extends DataModel {
         $hlpDevice       = $this->getHelperByName('Device');
         $hlpConversation = $this->getHelperByName('Conversation');
         $head10  = [];
+        $tail10  = [];
         $instant = [];
         $chkUser = [];
         foreach ($incExfee as $ieI => $ieItem) {
@@ -130,7 +131,6 @@ class QueueModels extends DataModel {
                                 $head10[]  = $item;
                                 break;
                             case 'twitter':
-                                break;
                             case 'iOS':
                             case 'Android':
                                 $instant[] = $item;
@@ -153,10 +153,9 @@ class QueueModels extends DataModel {
                     foreach ($gotInvitation as $item) {
                         switch ($item->identity->provider) {
                             case 'email':
-                            case 'facebook':
-                                $head10[]  = $item;
-                                break;
                             case 'twitter':
+                            case 'facebook':
+                                $tail10[]  = $item;
                                 break;
                             case 'iOS':
                             case 'Android':
@@ -165,7 +164,7 @@ class QueueModels extends DataModel {
                     }
             }
         }
-        return ['Head10' => $head10, 'Instant' => $instant];
+        return ['Head10' => $head10, 'Tail10' => $tail10, 'Instant' => $instant];
     }
 
 
