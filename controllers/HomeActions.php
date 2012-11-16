@@ -14,7 +14,8 @@ class HomeActions extends ActionController {
         }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
-        $modBackground = $this->getModelByName('background');
+        $modBackground = $this->getModelByName('Background');
+        $modMap        = $this->getModelByName('Map');
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
         $oauthRst      = null;
@@ -46,6 +47,7 @@ class HomeActions extends ActionController {
         // show page
         $this->setVar('backgrounds', $modBackground->getAllBackground());
         $this->setVar('oauth',       $oauthRst);
+        $this->setVar('location',    $modMap->getCurrentLocation());
         $this->displayView();
     }
 
