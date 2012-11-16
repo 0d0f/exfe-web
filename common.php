@@ -82,6 +82,24 @@ function buildICS($args)
 }
 
 
+function getRealIpAddr()
+{
+    if (!empty($_SERVER['HTTP_CLIENT_IP']))   //check ip from share internet
+    {
+      $ip=$_SERVER['HTTP_CLIENT_IP'];
+    }
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))   //to check ip is pass from proxy
+    {
+      $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    else
+    {
+      $ip=$_SERVER['REMOTE_ADDR'];
+    }
+    return $ip;
+}
+
+
 /**
  * 随机产生字符串。
  * @param: string length
@@ -214,6 +232,21 @@ function urlencodeAry($data)
     {
         return urlencode($data);
     }
+}
+
+
+/**
+ * convert ip to int number
+ *
+ */
+function ipToInt($IPAddress) {
+    $ipArr = explode('.', $IPAddress);
+    if (count($ipArr) != 4) return 0;
+    $intIP = 0;
+    foreach ($ipArr as $k => $v){
+        $intIP += (int)$v*pow(256, intval(3-$k));
+    }
+    return $intIP;
 }
 
 

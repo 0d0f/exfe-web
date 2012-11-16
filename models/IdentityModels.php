@@ -62,9 +62,7 @@ class IdentityModels extends DataModel {
                 $rawIdentity['external_username'],
                 getAvatarUrl($rawIdentity['avatar_file_name']) ?: getDefaultAvatarUrl($rawIdentity['name']),
                 $rawIdentity['created_at'],
-                $rawIdentity['updated_at'],
-                0,
-                $rawIdentity['unreachable']
+                $rawIdentity['updated_at']
             );
             if ($status !== null) {
                 $objIdentity->status = $status;
@@ -136,13 +134,10 @@ class IdentityModels extends DataModel {
         }
         $update_sql = '';
         if (isset($identity['name'])) {
-            $update_sql .= " `name`        = '{$identity['name']}', ";
+            $update_sql .= " `name` = '{$identity['name']}', ";
         }
         if (isset($identity['bio'])) {
-            $update_sql .= " `bio`         = '{$identity['bio']}', ";
-        }
-        if (isset($identity['unreachable'])) {
-            $update_sql .= " `unreachable` =  {$identity['unreachable']}, ";
+            $update_sql .= " `bio`  = '{$identity['bio']}', ";
         }
         return $update_sql
              ? $this->query("UPDATE `identities` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$identity_id}")
@@ -237,14 +232,14 @@ class IdentityModels extends DataModel {
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($identityDetail = [], $user_id = 0, $status = 2, $withVerifyInfo = false, $newUser = true, $device = '', $device_callback = '') {
+    public function addIdentity($identityDetail = array(), $user_id = 0, $status = 2, $withVerifyInfo = false, $newUser = true) {
         // load models
         $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
         $user_id           = (int) $user_id;
         $provider          = @mysql_real_escape_string(trim($identityDetail['provider']));
-        $external_id       = @mysql_real_escape_string(strtolower(trim($identityDetail['external_id'])));
-        $external_username = @mysql_real_escape_string(strtolower(trim($identityDetail['external_username'])));
+        $external_id       = @mysql_real_escape_string(trim($identityDetail['external_id']));
+        $external_username = @mysql_real_escape_string(trim($identityDetail['external_username']));
         $name              = @mysql_real_escape_string(trim($identityDetail['name']));
         $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
         $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
@@ -262,10 +257,7 @@ class IdentityModels extends DataModel {
                     if ($user_id && $status = 2 && $withVerifyInfo) {
                         $identity = new stdClass;
                         $identity->provider = $provider;
-                        $vfyResult = $hlpUder->verifyIdentity(
-                            $identity, 'VERIFY', $user_id, null,
-                            $device, $device_callback
-                        );
+                        $vfyResult = $hlpUder->verifyIdentity($identity, 'VERIFY', $user_id);
                         if ($vfyResult && isset($vfyResult['url'])) {
                             return [
                                 'identity_id'  => -1,
@@ -290,33 +282,13 @@ class IdentityModels extends DataModel {
         // add identity
         if (($id = intval($curIdentity['id'])) <= 0) {
             // fixed args
-            $hlpOAuth = $this->getHelperByName('OAuth');
             switch ($provider) {
                 case 'email':
                     $external_id = $external_username = $external_id ?: $external_username;
-                    $avatar_filename = $this->getGravatarByExternalUsername($external_username);
+                    $avatar_filename = $avatar_filename ?: $this->getGravatarByExternalUsername($external_username);
                     break;
                 case 'twitter':
-                    $rawIdentity = $hlpOAuth->getTwitterProfileByExternalUsername(
-                        $external_username
-                    );
-                    if ($rawIdentity) {
-                        $external_id     = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
-                        $name            = mysql_real_escape_string(trim($rawIdentity->name));
-                        $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
-                        $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
-                    }
-                    break;
                 case 'facebook':
-                    $rawIdentity = $hlpOAuth->getFacebookProfileByExternalUsername(
-                        $external_username
-                    );
-                    if ($rawIdentity) {
-                        $external_id     = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
-                        $name            = mysql_real_escape_string(trim($rawIdentity->name));
-                        $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
-                        $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
-                    }
                     break;
                 default:
                     return null;
@@ -344,10 +316,7 @@ class IdentityModels extends DataModel {
                     }
                     // verify identity
                     $objIdentity = $this->getIdentityById($id);
-                    $vfyResult   = $hlpUder->verifyIdentity(
-                        $objIdentity, 'VERIFY', $user_id, null,
-                        $device, $device_callback
-                    );
+                    $vfyResult   = $hlpUder->verifyIdentity($objIdentity, 'VERIFY', $user_id);
                     if ($vfyResult) {
                         if (isset($vfyResult['url']) && $withVerifyInfo) {
                             return [

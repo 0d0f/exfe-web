@@ -40,9 +40,8 @@ addScript([
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.6'],
+    ['xdialog',       '0.0.5'],
     ['datepanel',     '0.0.1'],
-    ['mappanel',      '0.0.1'],
     ['global',        '0.0.5'],
 ]);
 
@@ -55,7 +54,7 @@ addScript([
 
 // cross
 addScript([
-    //['placepanel',    '0.0.2'],
+    ['placepanel',    '0.0.2'],
     ['user',          '0.0.6'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";

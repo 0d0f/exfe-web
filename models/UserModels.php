@@ -74,9 +74,7 @@ class UserModels extends DataModel {
                             $item['external_username'],
                             $item['avatar_file_name'],
                             $item['updated_at'],
-                            $item['updated_at'],
-                            0,
-                            $item['unreachable']
+                            $item['updated_at']
                         );
                         $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
                                                   ?: ($user->avatar_filename
@@ -269,7 +267,6 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
-                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -291,7 +288,6 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
-                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -319,7 +315,6 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
-                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -335,7 +330,6 @@ class UserModels extends DataModel {
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
-                case 'facebook':
                     $rtResult['flag'] = 'AUTHENTICATE';
                     break;
                 default:
@@ -349,7 +343,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '') {
+    public function verifyIdentity($identity, $action, $user_id = 0, $args = null) {
         // basic check
         if (!$identity || !$action) {
             return null;
@@ -425,15 +419,8 @@ class UserModels extends DataModel {
                 }
                 break;
             case 'twitter':
-            case 'facebook':
                 $hlpOAuth = $this->getHelperByName('OAuth');
                 $workflow = ['user_id' => $user_id];
-                if ($device && $device_callback) {
-                    $workflow['callback'] = [
-                        'oauth_device'          => $device,
-                        'oauth_device_callback' => $device_callback,
-                    ];
-                }
                 switch ($action) {
                     case 'SET_PASSWORD':
                         // update database
@@ -453,14 +440,7 @@ class UserModels extends DataModel {
                 if ($args) {
                     $workflow['callback'] = ['args' => $args];
                 }
-                switch ($identity->provider) {
-                    case 'twitter':
-                        $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
-                        break;
-                    case 'facebook':
-                        $urlOauth = $hlpOAuth->facebookRedirect($workflow);
-                }
-
+                $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
                 if ($urlOauth) {
                     $result['url'] = $urlOauth;
                     return $result;
