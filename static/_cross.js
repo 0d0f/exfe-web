@@ -1492,14 +1492,11 @@ define(function (require, exports, module) {
                             parentNode: $('#app-tmp')
                           , srcNode: $('.cross-place')
                           , place: Cross.place
-                          , events: {
-                            'keyup #place-text': function (e) {
-                              ChangePlace($(e.currentTarget).val());
-                            },
-                            'keypress #place-text': function (e) {
-                              ChangePlace($(e.currentTarget).val());
-                            }
-                          }
+                        }
+                      , update: function (place) {
+                          Cross.place = place;
+                          ShowPlace();
+                          ShowGoogleMap();
                         }
                     });
                     mappanel.show();
@@ -2097,6 +2094,7 @@ define(function (require, exports, module) {
     };
 
     var ShowGoogleMap = function () {
+        $('.cross-map').empty();
         var hasLL = Cross.place.lat.length && Cross.place.lng.length;
         function getMap(position) {
           var coords = position.coords;
