@@ -575,7 +575,7 @@ define('mappanel', function (require, exports, module) {
               component.emit('search-completed', results);
             }
           };
-          // 避免重复搜索
+          // 避免多异步回调问题
           cb.id = ++self.cbid;
           service.textSearch(request, cb);
         } else {
