@@ -2,12 +2,34 @@
 
 class ConversationModels extends DataModel {
 
-    public function getConversationByExfeeId($exfee_id,$updated_at='') {
-        $update_cond="";
-        if($updated_at!='')
-            $update_cond="and updated_at>'$updated_at'";
-        $sql="select * from posts where postable_id=$exfee_id and (postable_type='exfee' or postable_type='cross') $update_cond order by updated_at desc;";
-        $posts=$this->getAll($sql);
+    public function getConversationByExfeeId($exfee_id, $updated_at = '', $direction = '', $quantity = 0) {
+        // get direction and order
+        switch (strtolower($direction)) {
+            case 'older':
+                $direction  = '<';
+                $order_cond = 'DESC';
+                break;
+            case 'newer':
+            default:
+                $direction  = '>';
+                $order_cond = '';
+        }
+        // get update condition
+        $update_cond = '';
+        if ($updated_at !== '') {
+            $update_cond = "AND `updated_at` {$direction} '{$updated_at}'";
+        }
+        // get limit condition
+        $quantity = (int) $quantity;
+        if ($quantity <= 0 || $quantity > 10000) {
+            $quantity  = 10000;
+        }
+        // query
+        $sql = "SELECT * FROM `posts` WHERE `postable_id` = {$exfee_id} AND (`postable_type` = 'exfee' OR `postable_type` = 'cross') {$update_cond} ORDER BY `updated_at` {$order_cond} LIMIT {$quantity}";
+        $posts = $this->getAll($sql);
+        if ($direction === '>') {
+            $posts = array_reverse($posts);
+        }
         return $posts;
     }
 
