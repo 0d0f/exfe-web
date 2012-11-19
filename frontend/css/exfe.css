@@ -9172,9 +9172,15 @@ body {
   overflow: hidden;
   font-size: 18px;
   font-weight: normal;
+  -webkit-hyphens: auto;
+     -moz-hyphens: auto;
+          hyphens: auto;
   line-height: 24px;
   color: #424242;
   text-shadow: 0 1px 1px #d5d5d5;
+  -ms-word-break: break-all;
+      word-break: break-all;
+  word-break: break-word;
   vertical-align: middle;
 }
 
@@ -9248,6 +9254,9 @@ body {
 }
 
 .exfeepanel .rsvp-info .by span {
+  display: inline-block;
+  max-width: 84px;
+  overflow: hidden;
   color: #212121;
 }
 
@@ -10868,9 +10877,6 @@ body {
   font-size: 18px;
   line-height: 24px;
   color: #333333;
-}
-
-.map-panel .map-place #place-text.normal {
   background-color: rgba(250, 250, 250, 0.6799999999999999);
   background-image: -moz-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
   background-image: -webkit-gradient(linear, 0 0, 0 100%, from(rgba(250, 250, 250, 0.8)), to(rgba(250, 250, 250, 0.5)));
@@ -10878,8 +10884,11 @@ body {
   background-image: -o-linear-gradient(top, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
   background-image: linear-gradient(to bottom, rgba(250, 250, 250, 0.8), rgba(250, 250, 250, 0.5));
   background-repeat: repeat-x;
-  border-color: transparent;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ccfafafa', endColorstr='#80fafafa', GradientType=0);
+}
+
+.map-panel .map-place #place-text.normal {
+  border-color: transparent;
   -webkit-box-shadow: none;
      -moz-box-shadow: none;
           box-shadow: none;
@@ -10953,7 +10962,7 @@ body {
 }
 
 .map-panel .map-place .places-list li.place-item.hover {
-  background-color: rgba(127, 127, 127, 0.05);
+  background-color: rgba(127, 127, 127, 0.6);
 }
 
 .map-panel .map-place .places-list li.place-item.selected {
