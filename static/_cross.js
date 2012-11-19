@@ -2106,7 +2106,8 @@ define(function (require, exports, module) {
 
         function getPositionError(msg) {
         }
-        var map_dom = '<a target="_blank" href="https://maps.google.com/maps?q={{title}}&hl=en&ie=UTF8&sll={{lat}},{{lng}}&t=m&z=16"><img style="border-radius: 3px; box-shadow: 2px 2px 4px rgba(0, 0, 0, .25);" src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&markers=size:mid%7Ccolor:blue%7C{{lat}},{{lng}}&zoom=13&size=280x140&maptype=road&sensor=false" alt="" width="280" height="140" /></a>'
+        var Config = require('config');
+        var map_dom = '<a target="_blank" href="https://maps.google.com/maps?key=' + Config.MAP_KEY + 'q={{title}}&hl=en&ie=UTF8&sll={{lat}},{{lng}}&t=m&z=16"><img style="border-radius: 3px; box-shadow: 2px 2px 4px rgba(0, 0, 0, .25);" src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&markers=size:mid%7Ccolor:blue%7C{{lat}},{{lng}}&zoom=13&size=280x140&maptype=road&sensor=false" alt="" width="280" height="140" /></a>'
 
         if (hasLL) {
           getMap({
