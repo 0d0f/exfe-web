@@ -3,24 +3,41 @@
 class ConversationActions extends ActionController {
 
     public function doIndex() {
-        $params=$this->params;
-        $exfee_id=$params["id"];
-        $updated_at=$params["updated_at"];
-        $clear=$params["clear"];
+        $params     = $this->params;
+        $exfee_id   = $params['id'];
+        $updated_at = $params['updated_at'];
+        $direction  = $params['direction'];
+        $quantity   = $params['quantity'];
+        $clear      = $params['clear'];
 
-        if($updated_at!='')
-            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
+        if ($updated_at) {
+            $raw_updated_at = strtotime($updated_at);
+            if ($raw_updated_at !== false) {
+                $updated_at = date('Y-m-d H:i:s', $raw_updated_at);
+            } else {
+                $updated_at = '';
+            }
+        } else {
+            $updated_at = '';
+        }
 
-        $checkHelper=$this->getHelperByName('check');
+        switch (strtolower($direction)) {
+            case 'newer':
+                $direction = 'newer';
+                break;
+            case 'older':
+                $direction = 'older';
+        }
+
+        $checkHelper = $this->getHelperByName('check');
         $result = $checkHelper->isAPIAllow(
             'conversation', $params['token'], ['exfee_id' => $exfee_id]
         );
-        if($result["check"]!==true)
-        {
-            if($result["uid"]===0)
-                apiError(401,"invalid_auth","");
+        if ($result['check'] !== true) {
+            if ($result['uid']===0)
+                apiError(401, 'invalid_auth', '');
             else
-                apiError(403,"not_authorized","The X you're requesting is private.");
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
         }
 
         $helperData=$this->getHelperByName('conversation');
