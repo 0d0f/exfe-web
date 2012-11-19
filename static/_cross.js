@@ -99,7 +99,7 @@ ExfeUtilities = {
 
 
     parsePlacestring : function(strPlace) {
-        var rawPlace = strPlace ? strPlace.split(/\r\n|\r|\n/) : [],
+        var rawPlace = strPlace ? strPlace.split(/\r\n|\r|\n/g) : [],
             arrPlace = [];
         for (var i = 0; i < rawPlace.length; i++) {
             if (rawPlace[i]) {
@@ -569,7 +569,6 @@ ExfeeWidget = {
             objIdentity.external_username = string;
             objIdentity.name              = ExfeUtilities.trim(this.cutLongName(string.split('@')[0]));
             objIdentity.provider          = 'email';
-
         } else if (/^@[a-z0-9_]{1,15}$|^@[a-z0-9_]{1,15}@twitter$|^[a-z0-9_]{1,15}@twitter$/i.test(string)) {
             objIdentity.external_id       = '';
             objIdentity.external_username = string.replace(/^@|@twitter$/ig, '');
@@ -1234,7 +1233,6 @@ define('exfeepanel', function (require, exports, module) {
 define(function (require, exports, module) {
 
     var $          = require('jquery'),
-        PlacePanel = require('placepanel'),
         Timeline   = [],
         rawCross   = {
             title : '', description : '', by_identity : {id : 0},
@@ -1387,10 +1385,6 @@ define(function (require, exports, module) {
         });
     };
 
-
-    // 地点实例
-    var placepanel = null;
-
     var EditCross = function(event) {
         // @todo by @Leask: 暂时确保在 Cross 页
         if (!$('.cross-container').length || readOnly) {
@@ -1445,15 +1439,7 @@ define(function (require, exports, module) {
                         dp.hide();
                       }
                     }
-                    /*
                     $('.cross-date').removeAttr('editable');
-                    $('.cross-date .show').show();
-                    $('.cross-date .edit').hide();
-                    if (oldEditing === 'time') {
-                        ChangeTime($('.cross-date .edit').val());
-                        AutoSaveCross();
-                    }
-                    */
                 },
                 function() {
                     var $dp = $('#date-panel');
@@ -1469,23 +1455,53 @@ define(function (require, exports, module) {
                         }
                     });
                     datepanel.show();
-                    /*
                     $('.cross-date').attr('editable', true);
-                    $('.cross-date .show').hide();
-                    $('.cross-date .edit').show().focus();
-                    */
                 }
             ],
             place : [
                 function() {
+                  var $mp = $('#map-panel');
+                  if ($mp.size()) {
+                    var cid = $mp.data('widget-id');
+                    var mp = App.widgetCaches[cid];
+                    if (mp) {
+                      mp.hide();
+                    }
+                    AutoSaveCross();
+                  }
+                  $('.cross-place').removeAttr('editable');
+                  /*
                   if (placepanel) {
                       $('.cross-place').removeAttr('editable');
                       AutoSaveCross();
                       placepanel.hide();
                       placepanel = null;
                     }
+                  */
                 },
                 function() {
+                    var $dp = $('#map-panel');
+                    if ($dp.size()) {
+                      return;
+                    }
+                    var MapPanel = require('mappanel');
+                    //Cross.place.title = 'Yerba Buena Gardens';
+                    //Cross.place.description = 'Near 47 Howard Street, San Francisco, CA 94103';
+                    var mappanel = new MapPanel({
+                        options: {
+                            parentNode: $('#app-tmp')
+                          , srcNode: $('.cross-place')
+                          , place: Cross.place
+                        }
+                      , update: function (place) {
+                          Cross.place = place;
+                          ShowPlace();
+                          ShowGoogleMap();
+                        }
+                    });
+                    mappanel.show();
+                    $('.cross-place').attr('editable', true);
+                    /*
                     if (!placepanel) {
                       $('.cross-place').attr('editable', true);
                       var offset = $('div.cross-place').offset();
@@ -1502,13 +1518,14 @@ define(function (require, exports, module) {
                         }
                       });
                       $('div.placepanel').attr('editarea', 'placepanel').css({
-                        left: offset.left - 320 - 20,
+                        left: offset.left - 320 - 15,
                         top: offset.top
                       })
                       .find('textarea')
                         .val((Cross.place.title ? Cross.place.title : '') + (Cross.place.description ? ('\n' + Cross.place.description) : ''))
                         .focusend();
                     }
+                    */
                 }
             ],
             rsvp : [
@@ -1563,7 +1580,7 @@ define(function (require, exports, module) {
         if (Editing === 'background') {
             editMethod['background'][1]();
             Editing = oldEditing;
-        } else if (Editing === 'placepanel') {
+        } else if (Editing === 'map-panel') {
           return;
         } else if (Editing === 'date-panel') {
           return;
@@ -2077,6 +2094,7 @@ define(function (require, exports, module) {
     };
 
     var ShowGoogleMap = function () {
+        $('.cross-map').empty();
         var hasLL = Cross.place.lat.length && Cross.place.lng.length;
         function getMap(position) {
           var coords = position.coords;
@@ -2088,7 +2106,8 @@ define(function (require, exports, module) {
 
         function getPositionError(msg) {
         }
-        var map_dom = '<a target="_blank" href="https://maps.google.com/maps?q={{title}}&hl=en&ie=UTF8&sll={{lat}},{{lng}}&t=m&z=16"><img style="border-radius: 3px; box-shadow: 2px 2px 4px rgba(0, 0, 0, .25);" src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&markers=size:mid%7Ccolor:blue%7C{{lat}},{{lng}}&zoom=13&size=280x140&maptype=road&sensor=false" alt="" width="280" height="140" /></a>'
+        var Config = require('config');
+        var map_dom = '<a target="_blank" href="https://maps.google.com/maps?key=' + Config.MAP_KEY + 'q={{title}}&hl=en&ie=UTF8&sll={{lat}},{{lng}}&t=m&z=16"><img style="border-radius: 3px; box-shadow: 2px 2px 4px rgba(0, 0, 0, .25);" src="http://maps.googleapis.com/maps/api/staticmap?center={{lat}},{{lng}}&markers=size:mid%7Ccolor:blue%7C{{lat}},{{lng}}&zoom=13&size=280x140&maptype=road&sensor=false" alt="" width="280" height="140" /></a>'
 
         if (hasLL) {
           getMap({
