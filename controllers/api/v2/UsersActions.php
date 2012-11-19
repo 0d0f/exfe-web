@@ -68,7 +68,8 @@ class UsersActions extends ActionController {
         // adding
         if (($adResult = $modIdentity->addIdentity(
             ['provider' => $provider, 'external_username' => $external_username],
-            $user_id, 2, true, false
+            $user_id, 2, true, false,
+            strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback'])
         ))) {
             $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
             if ($adResult['identity_id'] > 0) {
@@ -279,6 +280,7 @@ class UsersActions extends ActionController {
                     apiResponse(['registration_flag' => 'SIGN_UP']);
                     break;
                 case 'twitter':
+                case 'facebook':
                     apiResponse(['registration_flag' => 'AUTHENTICATE']);
                     break;
                 default:
@@ -469,7 +471,8 @@ class UsersActions extends ActionController {
             case 'VERIFYING':
             case 'REVOKED':
                 $viResult = $modUser->verifyIdentity(
-                    $identity, 'VERIFY', $user_id
+                    $identity, 'VERIFY', $user_id, null,
+                    strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback'])
                 );
                 if ($viResult) {
                     if (isset($viResult['url'])) {
