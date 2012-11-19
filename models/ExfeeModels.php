@@ -25,14 +25,16 @@ class ExfeeModels extends DataModel {
         $objExfee = new Exfee($id);
         $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
         foreach ($rawExfee as $ei => $eItem) {
-            $objIdentity   = $hlpIdentity->getIdentityById($eItem['identity_id']);
-            $oByIdentity   = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
+            $objIdentity  = $hlpIdentity->getIdentityById($eItem['identity_id']);
+            $oivIdentity  = $hlpIdentity->getIdentityById($eItem['invited_by']);
+            $oByIdentity  = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
             if (!$objIdentity || !$oByIdentity) {
                 continue;
             }
             $objExfee->invitations[] = new Invitation(
                 $eItem['id'],
                 $objIdentity,
+                $oivIdentity,
                 $oByIdentity,
                 $this->rsvp_status[$eItem['state']],
                 $eItem['via'],
@@ -108,10 +110,12 @@ class ExfeeModels extends DataModel {
             if ($rawInvitation) {
                 $hlpIdentity = $this->getHelperByName('identity');
                 $objIdentity = $hlpIdentity->getIdentityById($rawInvitation['identity_id']);
+                $oivIdentity = $hlpIdentity->getIdentityById($rawInvitation['invited_by']);
                 $oByIdentity = $hlpIdentity->getIdentityById($rawInvitation['by_identity_id']);
                 return new Invitation(
                     $rawInvitation['id'],
                     $objIdentity,
+                    $oivIdentity,
                     $oByIdentity,
                     $this->rsvp_status[$rawInvitation['state']],
                     $rawInvitation['via'],
@@ -161,22 +165,12 @@ class ExfeeModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('identity');
         // adding new identity
         if (!$hlpIdentity->checkIdentityById($invitation->identity->id)) {
-            switch ($invitation->identity->provider) {
-                case 'twitter':
-                    $avatar_filename = preg_match(
-                        '/\.twimg\.com\//',
-                        $invitation->identity->avatar_filename
-                    ) ? $invitation->identity->avatar_filename : '';
-                    break;
-                default:
-                    $avatar_filename = '';
-            }
             $invitation->identity->id = $hlpIdentity->addIdentity(
                 ['provider'          => $invitation->identity->provider,
                  'external_id'       => $invitation->identity->external_id,
                  'name'              => $invitation->identity->name,
                  'external_username' => $invitation->identity->external_username,
-                 'avatar_filename'   => $avatar_filename]
+                 'avatar_filename'   => $invitation->identity->avatar_filename]
             );
         }
         if (!$invitation->identity->id) {
@@ -199,6 +193,7 @@ class ExfeeModels extends DataModel {
                 `updated_at`       = NOW(),
                 `exfee_updated_at` = NOW(),
                 `token`            = '{$invToken}',
+                `invited_by`       =  {$by_identity_id},
                 `by_identity_id`   =  {$by_identity_id},
                 `host`             =  {$host},
                 `mates`            =  {$mates}";
@@ -270,69 +265,6 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function sendToGobus($exfee_id, $by_identity_id, $to_identities = null, $old_cross = null) {
-        // get helpers
-        $hlpCross  = $this->getHelperByName('cross');
-        $hlpGobus  = $this->getHelperByName('gobus');
-        $hlpDevice = $this->getHelperByName('device');
-        // get cross
-        $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
-        $cross     = $hlpCross->getCross($cross_id, true, true);
-        $msgArg    = array('cross' => $cross, 'to_identities' => array());
-        // get old cross
-        if ($old_cross) {
-            $msgArg['old_cross'] = $old_cross;
-        }
-        // raw action
-        $chkMobUs  = array();
-        foreach ($cross->exfee->invitations as $i => $invitation) {
-            if ($invitation->identity->id === $by_identity_id) {
-                $msgArg['by_identity'] = $invitation->identity;
-            }
-            if ($invitation->rsvp_status === 'REMOVED') {
-                unset($cross->exfee->invitations[$i]);
-            } else {
-                $msgArg['to_identities'][] = $invitation->identity;
-                // get mobile identities
-                if ($invitation->identity->connected_user_id > 0
-                && !$chkMobUs[$invitation->identity->connected_user_id]) {
-                    $mobIdentities = $hlpDevice->getDevicesByUserid(
-                        $invitation->identity->connected_user_id,
-                        $invitation->identity
-                    );
-                    if ($mobIdentities) {
-                        foreach ($mobIdentities as $mI => $mItem) {
-                            $msgArg['to_identities'][] = $mItem;
-                        }
-                    }
-                    $chkMobUs[$invitation->identity->connected_user_id] = true;
-                }
-            }
-        }
-        $cross->exfee->invitations = array_merge($cross->exfee->invitations);
-        if ($to_identities) {
-            foreach ($to_identities as $identity) {
-                $msgArg['to_identities'][] = $identity;
-                // get mobile identities
-                if ($identity->connected_user_id
-                && !$chkMobUs[$identity->connected_user_id]) {
-                    $mobIdentities = $hlpDevice->getDevicesByUserid(
-                        $identity->connected_user_id, $identity
-                    );
-                    foreach ($mobIdentities as $mI => $mItem) {
-                        $msgArg['to_identities'][] = $mItem;
-                    }
-                    $chkMobUs[$identity->connected_user_id] = true;
-                }
-            }
-        }
-        if (DEBUG) {
-            error_log(json_encode($msgArg));
-        }
-        $hlpGobus->send('cross', 'Update', $msgArg);
-    }
-
-
     public function getNewExfeeId() {
         $dbResult = $this->query("INSERT INTO `exfees` SET `id` = 0");
         $exfee_id = intval($dbResult['insert_id']);
@@ -360,8 +292,13 @@ class ExfeeModels extends DataModel {
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
         }
         $this->updateExfeeTime($exfee_id);
-        // call Gobus
-        $this->sendToGobus($exfee_id, $by_identity_id);
+        // call Gobus {
+        $hlpCross = $this->getHelperByName('cross');
+        $hlpQueue = $this->getHelperByName('Queue');
+        $cross_id = $this->getCrossIdByExfeeId($exfee_id);
+        $cross    = $hlpCross->getCross($cross_id, true, true);
+        $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id);
+        // }
         // return
         return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
     }
@@ -382,26 +319,19 @@ class ExfeeModels extends DataModel {
         $over_quota = false;
         $changed    = false;
         // raw actions
-        $chkInvit = array();
-        $delExfee = array();
+        $chkInvit = [];
+        $newInvId = [];
+        $addExfee = [];
+        $delExfee = [];
         foreach ($invitations as $toI => $toItem) {
             // adding new identity
             if (!$hlpIdentity->checkIdentityById($toItem->identity->id)) {
-                switch ($toItem->identity->provider) {
-                    case 'twitter':
-                        $avatar_filename = preg_match(
-                            '/\.twimg\.com\//',
-                            $toItem->identity->avatar_filename
-                        ) ? $toItem->identity->avatar_filename : '';
-                    default:
-                        $avatar_filename = '';
-                }
                 $toItem->identity->id = $hlpIdentity->addIdentity(
                     ['provider'          => $toItem->identity->provider,
                      'external_id'       => $toItem->identity->external_id,
                      'name'              => $toItem->identity->name,
                      'external_username' => $toItem->identity->external_username,
-                     'avatar_filename'   => $avatar_filename]
+                     'avatar_filename'   => $toItem->identity->avatar_filename]
                 );
             }
             // if no identity id, skip it
@@ -419,11 +349,12 @@ class ExfeeModels extends DataModel {
                         // delete exfee
                         if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
                          && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
-                            $delExfee[]  = $fmItem->identity;
+                            $delExfee[]  = $fmItem;
                         }
                         // update exfee token
                         if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
                          && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
+                            $newInvId[]  = $fmItem->id;
                             $updateToken = true;
                         } else {
                             $updateToken = false;
@@ -447,19 +378,39 @@ class ExfeeModels extends DataModel {
                         continue;
                     }
                 }
-                $this->addInvitationIntoExfee($toItem, $exfee_id, $by_identity_id, $user_id);
+                $newInvId[] = $this->addInvitationIntoExfee(
+                    $toItem, $exfee_id, $by_identity_id, $user_id
+                );
                 $changed = true;
             }
         }
         $this->updateExfeeTime($exfee_id);
-        // call Gobus
-        $this->sendToGobus($exfee_id, $by_identity_id, $delExfee, $old_cross);
+        // call Gobus {
+        $hlpQueue = $this->getHelperByName('Queue');
+        $cross    = $hlpCross->getCross($cross_id, true, true);
+        foreach ($cross->exfee->invitations as $eI => $eItem) {
+            if (in_array($eItem->id, $newInvId)) {
+                $addExfee[] = $eItem;
+            }
+        }
+        $hlpQueue->despatchSummary(
+            $cross, $old_cross, $delExfee, $addExfee, $user_id ?: -$by_identity_id
+        );
+        if ($addExfee) {
+            $to_exfee = new stdClass;
+            $to_exfee->id = $cross->exfee->id;
+            $to_exfee->invitations = $addExfee;
+            $hlpQueue->despatchInvitation(
+                $cross, $to_exfee, $user_id ?: -$by_identity_id
+            );
+        }
+        // }
         // return
         return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota, 'changed' => $changed];
     }
 
 
-    public function updateExfeeRsvpById($exfee_id, $rsvps, $by_identity_id) {
+    public function updateExfeeRsvpById($exfee_id, $rsvps, $by_identity_id, $by_user_id) {
         // base check
         if (!$exfee_id || !is_array($rsvps) || !$by_identity_id) {
             return null;
@@ -469,7 +420,7 @@ class ExfeeModels extends DataModel {
         $cross_id  = $this->getCrossIdByExfeeId($exfee_id);
         $old_cross = $hlpCross->getCross($cross_id, true, true);
         // raw actions
-        $arrResult = array();
+        $arrResult = [];
         $actResult = true;
         foreach ($rsvps as $rsvp) {
             $itm = $this->updateRsvpByExfeeId($exfee_id, $rsvp);
@@ -480,9 +431,14 @@ class ExfeeModels extends DataModel {
             }
         }
         $this->updateExfeeTime($exfee_id);
-        // call Gobus
-        $this->sendToGobus($exfee_id, $by_identity_id, $null, $old_cross);
-        //
+        // call Gobus {
+        $hlpQueue = $this->getHelperByName('Queue');
+        $cross    = $hlpCross->getCross($cross_id, true, true);
+        $hlpQueue->despatchSummary(
+            $cross, $old_cross, [], [], $by_user_id ?: -$by_identity_id
+        );
+        // }
+        // return
         return $actResult ? $arrResult : null;
     }
 
@@ -508,7 +464,6 @@ class ExfeeModels extends DataModel {
 
 
     public function getUpdatedExfeeByIdentityIds($identityids,$updated_at) {
-
         $join_identity_ids=implode($identityids,",");
         $sql="select cross_id from invitations where identity_id in ({$join_identity_ids}) and exfee_updated_at >'$updated_at'; ";
         $cross_ids=$this->getColumn($sql);
