@@ -519,6 +519,7 @@ define('mappanel', function (require, exports, module) {
     this.component = component;
     this.selector = selector;
     this.$element = this.component.$(selector);
+    this.cbid = 0;
   };
 
   XMap.prototype = {
@@ -564,14 +565,19 @@ define('mappanel', function (require, exports, module) {
         var self = this
           , component = self.component
           , service = self._service
-          , request = self._request;
+          , request = self._request
+          , cb;
         if (query && query !== request.query) {
           request.query = query;
-          service.textSearch(request, function (results, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
+          cb = function (results, status) {
+            if (cb.id === self.cbid && status === google.maps.places.PlacesServiceStatus.OK) {
+              self.cbid = 0;
               component.emit('search-completed', results);
             }
-          });
+          };
+          // 避免重复搜索
+          cb.id = ++self.cbid;
+          service.textSearch(request, cb);
         } else {
           component.emit('search-completed', []);
         }
