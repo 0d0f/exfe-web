@@ -2211,7 +2211,6 @@ define(function (require, exports, module) {
             {type : 'POST', data : JSON.stringify(objCross)},
             function(data) {
                 $('.cross-opts .saving').hide();
-                $('#cross-form-gather').toggleClass('disabled', false);
                 document.location = '/#!' + data.cross.id;
             },
             function(data) {
