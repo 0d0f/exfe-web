@@ -538,7 +538,7 @@ define('mappanel', function (require, exports, module) {
 
         this._map = new google.maps.Map(this.$element[0]
           , {
-              zoom: 10
+              zoom: 16
             , center: this._center
             , MapTypeId: google.maps.MapTypeId.ROADMAP
             , zoomControl: false
