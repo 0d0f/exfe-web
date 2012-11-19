@@ -103,6 +103,11 @@ define('mappanel', function (require, exports, module) {
         this.element.on('keydown.mappanel', $.proxy(this.keydown, this));
       }
 
+    , save: function () {
+        this.$('.place-submit')
+          .trigger('click.mappanel');
+      }
+
     , keydown: function (e) {
         var self = this;
         // escape
@@ -111,8 +116,7 @@ define('mappanel', function (require, exports, module) {
         }
         else if (e.ctrlKey && 13 === e.keyCode) {
           self.emit('update-place', self.place);
-          self.$('.place-submit')
-            .trigger('click.mappanel');
+          self.save();
           //self.hide();
         }
       }
@@ -349,7 +353,8 @@ define('mappanel', function (require, exports, module) {
           .on('keypress.mappanel', selector, $.proxy(this.keypress, this))
           .on('keyup.mappanel', selector, $.proxy(this.keyup, this))
           .on('keydown.mappanel', selector, $.proxy(this.keydown, this))
-          .on('focus.mappanel', selector, $.proxy(this.focus, this));
+          .on('focus.mappanel', selector, $.proxy(this.focus, this))
+          .on('click.mappanel', selector + ' > li', $.proxy(this.click, this));
       }
 
     , update: function (places) {
@@ -467,15 +472,20 @@ define('mappanel', function (require, exports, module) {
             break;
           case 38:
             self.scroll(-1);
-            e.preventDefault();
             self.prev();
+            e.preventDefault();
             break;
           case 40:
             self.scroll(1);
-            e.preventDefault();
             self.next();
+            e.preventDefault();
             break;
           case 13:
+            e.preventDefault();
+            self.setPlace();
+            self.component.save();
+            break;
+          case 32:
             e.preventDefault();
             self.setPlace();
             break;
@@ -490,8 +500,14 @@ define('mappanel', function (require, exports, module) {
       }
 
     , keydown: function (e) {
-        this.suppressKeyPressRepeat = !!~R.indexOf([9, 38, 40, 13], e.keyCode);
+        this.suppressKeyPressRepeat = !!~R.indexOf([9, 38, 40, 32, 13], e.keyCode);
         this.keyHandler(e);
+      }
+
+    , click: function (e) {
+        this.curr = $(e.currentTarget).index();
+        this.setPlace();
+        this.component.save();
       }
   };
 
