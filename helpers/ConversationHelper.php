@@ -10,9 +10,9 @@ class ConversationHelper extends ActionController {
     }
 
 
-    public function getConversationByExfeeId($exfee_id,$updated_at='') {
+    public function getConversationByExfeeId($exfee_id, $updated_at = '', $direction = '', $quantity = 50) {
         $identityHelper=$this->getHelperByName('identity');
-        $posts=$this->modConversation->getConversationByExfeeId($exfee_id,$updated_at) ;
+        $posts=$this->modConversation->getConversationByExfeeId($exfee_id, $updated_at, $direction, $quantity);
         $identities=array();
         $conversation=array();
         foreach($posts as $post)
