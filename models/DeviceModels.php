@@ -132,12 +132,27 @@ class DeviceModels extends DataModel {
                         $rItem['udid'],
                         '',
                         $rItem['first_connected_at'],
-                        $rItem['last_connected_at']
+                        $rItem['last_connected_at'],
+                        0,
+                        $rItem['unreachable']
                     );
                 }
             }
         }
         return $rawResult;
+    }
+
+
+    public function updateDeviceReachableByUdid($udid, $os_name, $error) {
+        $udid       = mysql_real_escape_string($udid);
+        $os_name    = mysql_real_escape_string($os_name);
+        $error      = strlen($error) ? 1 : 0;
+        return $udid && $os_name ? $this->query(
+            "UPDATE `devices`
+             SET    `unreachable`        =  {$error}
+             WHERE  `udid`               = '{$udid}'
+             AND    `os_name`            = '{$os_name}'"
+        ) : false;
     }
 
 }
