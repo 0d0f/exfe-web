@@ -14,7 +14,7 @@ class IdentityHelper extends ActionController {
     }
 
 
-    public function addIdentity($identityDetail = array(), $user_id = 0) {
+    public function addIdentity($identityDetail = [], $user_id = 0) {
         return $this->modIdentity->addIdentity($identityDetail, $user_id);
     }
 
@@ -41,6 +41,11 @@ class IdentityHelper extends ActionController {
 
     public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
         return $this->modIdentity->getTwitterLargeAvatarBySmallAvatar($strUrl);
+    }
+
+
+    public function updateOAuthTokenById($identity_id, $tokens) {
+        return $this->modIdentity->updateOAuthTokenById($identity_id, $tokens);
     }
 
 
