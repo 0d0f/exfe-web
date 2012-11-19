@@ -2,6 +2,7 @@
   define('config', function () {
     var config = {
       APP_ENV: '<?php echo JS_DEBUG ? 'development' : 'production'; ?>',
+      MAP_KEY: '<?php echo GOOGLE_MAP_KEY; ?>',
       api_url: '<?php echo API_URL; ?>/v2',
       img_url: '<?php echo IMG_URL; ?>',
       site_url: '<?php echo SITE_URL; ?>',
