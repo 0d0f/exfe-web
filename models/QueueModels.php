@@ -10,15 +10,10 @@ class QueueModels extends DataModel {
     }
 
 
-    public function rawPushToQueue($queue, $method, $data) {
+    public function pushToQueue($queue, $method, $data) {
         return $this->hlpGobus->useGobusApi(
             EXFE_GOBUS_SERVER, $queue, $method, $data
         );
-    }
-
-
-    public function pushToQueue($queue, $data) {
-        return $this->rawPushToQueue($queue, 'Push', $data);
     }
 
 
@@ -38,35 +33,72 @@ class QueueModels extends DataModel {
     }
 
 
-    public function pushConversationToQueue($queue, $invitations, $cross, $post) {
+    public function cleanInvitations($invitations) {
+        $clear_invitations = [];
+        foreach ($invitations as $invitation) {
+            if ($invitation->rsvp_status !== 'REMOVED') {
+                $clear_invitations[] = $invitation;
+            }
+        }
+        return $clear_invitations;
+    }
+
+
+    public function pushJobToQueue($queue, $service, $method, $invitations, $data = []) {
         $tos  = [];
         foreach ($invitations as $invitation) {
             $tos[] = $this->makeRecipientByInvitation($invitation);
         }
-        $data = [
-            'service' => 'Conversation',
-            'method'  => 'Update',
-            'key'     => (string) $cross->id,
-            'tos'     => $tos,
-            'data'    => ['cross' => $cross, 'post' => $post],
+        if (isset($data['cross'])) {
+            $data['cross']->exfee->invitations     = $this->cleanInvitations(
+                $data['cross']->exfee->invitations
+            );
+        }
+        if (isset($data['old_cross'])) {
+            $data['old_cross']->exfee->invitations = $this->cleanInvitations(
+                $data['old_cross']->exfee->invitations
+            );
+        }
+        $jobData = [
+            'service'   => $service,
+            'method'    => $method,
+            'merge_key' => (string) $data['cross']->id,
+            'tos'       => $tos,
+            'data'      => $data,
         ];
         if (DEBUG) {
-            error_log('tos: '  . json_encode($tos));
-            error_log('data: ' . json_encode($data));
+            error_log('job: ' . json_encode($jobData));
         }
-        return $this->pushToQueue($queue, $data);
+        return $this->pushToQueue($queue, 'Push', $jobData);
     }
 
 
-    public function despatchConversation($cross, $post, $by_user_id) {
+    public function getToInvitationsByExfee($exfee, $by_user_id, $event, $incExfee = [], $excExfee = []) {
         $hlpDevice       = $this->getHelperByName('Device');
         $hlpConversation = $this->getHelperByName('Conversation');
         $head10  = [];
+        $tail10  = [];
         $instant = [];
         $chkUser = [];
-        foreach ($cross->exfee->invitations as $invitation) {
-            if ($invitation->identity->connected_user_id === $by_user_id
-             || $invitation->rsvp_status                 === 'DECLINED') {
+        foreach ($incExfee as $ieI => $ieItem) {
+            $incExfee[$ieI]->inc = true;
+        }
+        foreach (array_merge($exfee->invitations, $incExfee) as $invitation) {
+            if (($invitation->identity->connected_user_id === $by_user_id && $event !== 'Cross_Invite')
+             ||  $invitation->rsvp_status                 === 'DECLINED'
+             || ($invitation->rsvp_status                 === 'REMOVED' && !isset($invitation->inc))) {
+                continue;
+            }
+            // exclude {
+            $bolContinue = false;
+            foreach ($excExfee as $eI => $eItem) {
+                if ($invitation->id === $eItem->id) {
+                    $bolContinue = true;
+                    break;
+                }
+            }
+            // }
+            if ($bolContinue) {
                 continue;
             }
             $gotInvitation = [(object) (array) $invitation];
@@ -84,30 +116,137 @@ class QueueModels extends DataModel {
                 }
                 // set conversation counter
                 $hlpConversation->addConversationCounter(
-                    $cross->exfee->id,
+                    $exfee->id,
                     $invitation->identity->connected_user_id
                 );
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
-            foreach ($gotInvitation as $item) {
-                switch ($item->identity->provider) {
-                    case 'email':
-                        $head10[]  = $item;
-                        break;
-                    case 'iOS':
-                    case 'Android':
-                        $instant[] = $item;
+            switch ($event) {
+                case 'Conversation_Update':
+                    foreach ($gotInvitation as $item) {
+                        switch ($item->identity->provider) {
+                            case 'email':
+                            case 'facebook':
+                                $head10[]  = $item;
+                                break;
+                            case 'twitter':
+                            case 'iOS':
+                            case 'Android':
+                                $instant[] = $item;
+                        }
+                    }
+                    break;
+                case 'Cross_Invite':
+                    foreach ($gotInvitation as $item) {
+                        switch ($item->identity->provider) {
+                            case 'email':
+                            case 'twitter':
+                            case 'facebook':
+                            case 'iOS':
+                            case 'Android':
+                                $instant[] = $item;
+                        }
+                    }
+                    break;
+                case 'Cross_Summary':
+                    foreach ($gotInvitation as $item) {
+                        switch ($item->identity->provider) {
+                            case 'email':
+                            case 'twitter':
+                            case 'facebook':
+                                $tail10[]  = $item;
+                                break;
+                            case 'iOS':
+                            case 'Android':
+                                $instant[] = $item;
+                        }
+                    }
+            }
+        }
+        return ['Head10' => $head10, 'Tail10' => $tail10, 'Instant' => $instant];
+    }
+
+
+    public function despatchConversation($cross, $post, $by_user_id) {
+        $service = 'Conversation';
+        $method  = 'Update';
+        $invitations = $this->getToInvitationsByExfee(
+            $cross->exfee, $by_user_id, "{$service}_{$method}"
+        );
+        $result = true;
+        foreach ($invitations as $invI => $invItems) {
+            if ($invItems) {
+                if ($this->pushJobToQueue(
+                    $invI, $service, $method, $invItems,
+                    ['cross' => $cross, 'post' => $post]
+                )) {
+                    $result = false;
                 }
             }
         }
-        $h10Result = $head10  ? $this->pushConversationToQueue(
-            'Head10',  $head10,  $cross, $post
-        ) : true;
-        $insResult = $instant ? $this->pushConversationToQueue(
-            'Instant', $instant, $cross, $post
-        ) : true;
-        return $h10Result && $insResult;
+        return $result;
+    }
+
+
+    public function despatchInvitation($cross, $to_exfee, $by_user_id) {
+        $service = 'Cross';
+        $method  = 'Invite';
+        $invitations = $this->getToInvitationsByExfee(
+            $to_exfee, $by_user_id, "{$service}_{$method}"
+        );
+        $result = true;
+        foreach ($invitations as $invI => $invItems) {
+            if ($invItems) {
+                if ($this->pushJobToQueue(
+                    $invI, $service, $method, $invItems,
+                    ['cross' => $cross]
+                )) {
+                    $result = false;
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id) {
+        $service = 'Cross';
+        $method  = 'Summary';
+        $invitations = $this->getToInvitationsByExfee(
+            $cross->exfee, $by_user_id, "{$service}_{$method}", $inc_exfee, $exc_exfee
+        );
+        $result = true;
+        foreach ($invitations as $invI => $invItems) {
+            if ($invItems) {
+                if ($this->pushJobToQueue(
+                    $invI, $service, $method, $invItems,
+                    ['cross' => $cross, 'old_cross' => $old_cross]
+                )) {
+                    $result = false;
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    public function updateFriends($identity, $oauth_info) {
+        $service   = 'Thirdpart';
+        $method    = 'Send';
+        $recipient = new Recipient(
+            $identity->id,
+            $identity->connected_user_id,
+            $identity->name,
+            '',
+            '',
+            json_encode($oauth_info),
+            '',
+            $identity->provider,
+            $identity->external_id,
+            $identity->external_username
+        );
+        return $this->pushJobToQueue('Instant', $service, $method, [$recipient]);
     }
 
 }

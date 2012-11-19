@@ -4,6 +4,8 @@ class Invitation extends EFObject {
 
     public $identity         = null;
 
+    public $invited_by       = null;
+
     public $by_identity      = null;
 
     public $rsvp_status      = null;
@@ -23,6 +25,7 @@ class Invitation extends EFObject {
 
     public function __construct($id               = 0,
                                 $identity         = null,
+                                $invited_by       = null,
                                 $by_identity      = null,
                                 $rsvp_status      = '',
                                 $via              = '',
@@ -38,6 +41,7 @@ class Invitation extends EFObject {
                                 ? $updated_at : $created_at;
 
         $this->identity         = $identity;
+        $this->invited_by       = $invited_by;
         $this->by_identity      = $by_identity;
         $this->rsvp_status      = $rsvp_status;
         $this->via              = $via;
