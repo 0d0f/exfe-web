@@ -170,9 +170,11 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchConversation($cross, $post, $by_user_id) {
-        $service = 'Conversation';
-        $method  = 'Update';
+    public function despatchConversation($cross, $post, $by_user_id, $by_identity_id) {
+        $service     = 'Conversation';
+        $method      = 'Update';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
             $cross->exfee, $by_user_id, "{$service}_{$method}"
         );
@@ -181,7 +183,7 @@ class QueueModels extends DataModel {
             if ($invItems) {
                 if ($this->pushJobToQueue(
                     $invI, $service, $method, $invItems,
-                    ['cross' => $cross, 'post' => $post]
+                    ['cross' => $cross, 'post' => $post, 'by' => $objIdentity]
                 )) {
                     $result = false;
                 }
@@ -191,9 +193,11 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchInvitation($cross, $to_exfee, $by_user_id) {
-        $service = 'Cross';
-        $method  = 'Invite';
+    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        $service     = 'Cross';
+        $method      = 'Invite';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
             $to_exfee, $by_user_id, "{$service}_{$method}"
         );
@@ -202,7 +206,7 @@ class QueueModels extends DataModel {
             if ($invItems) {
                 if ($this->pushJobToQueue(
                     $invI, $service, $method, $invItems,
-                    ['cross' => $cross]
+                    ['cross' => $cross, 'by' => $objIdentity]
                 )) {
                     $result = false;
                 }
@@ -212,9 +216,11 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id) {
-        $service = 'Cross';
-        $method  = 'Summary';
+    public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
+        $service     = 'Cross';
+        $method      = 'Summary';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
             $cross->exfee, $by_user_id, "{$service}_{$method}", $inc_exfee, $exc_exfee
         );
@@ -223,7 +229,7 @@ class QueueModels extends DataModel {
             if ($invItems) {
                 if ($this->pushJobToQueue(
                     $invI, $service, $method, $invItems,
-                    ['cross' => $cross, 'old_cross' => $old_cross]
+                    ['cross' => $cross, 'old_cross' => $old_cross, 'by' => $objIdentity]
                 )) {
                     $result = false;
                 }
