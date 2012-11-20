@@ -22,9 +22,9 @@ class QueueModels extends DataModel {
             $invitation->identity->id,
             $invitation->identity->connected_user_id,
             $invitation->identity->name,
+            $invitation->identity->auth_data ?: '',
             '',
-            '',
-            $invitation->token,
+            $invitation->token ?: '',
             '',
             $invitation->identity->provider,
             $invitation->identity->external_id,
@@ -234,10 +234,8 @@ class QueueModels extends DataModel {
     public function updateIdentity($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateIdentity';
-        $invitations = [(object) [
-            'identity' => $identity,
-            'token'    => json_encode($oauth_info),
-        ]];
+        $identity->auth_data = json_encode($oauth_info);
+        $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
     }
 
@@ -245,10 +243,8 @@ class QueueModels extends DataModel {
     public function updateFriends($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateFriends';
-        $invitations = [(object) [
-            'identity' => $identity,
-            'token'    => json_encode($oauth_info),
-        ]];
+        $identity->auth_data = json_encode($oauth_info);
+        $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
     }
 
