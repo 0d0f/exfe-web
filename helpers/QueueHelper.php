@@ -26,4 +26,9 @@ class QueueHelper extends ActionController {
         return $this->modQueue->updateFriends($identity, $oauth_info);
     }
 
+
+    public function updateIdentity($identity, $oauth_info) {
+        return $this->modQueue->updateIdentity($identity, $oauth_info);
+    }
+
 }
