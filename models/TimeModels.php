@@ -7,6 +7,12 @@ class TimeModels extends DataModel {
         if (!preg_match('/^[+-][0-9]{2}:[0-9]{2}(\ [a-z]{1,5})?$/i', $timezone)) {
             return null;
         }
+        switch (strtotime($timezone)) {
+            case 'z':
+            case 'utc':
+            case 'gmt':
+                $timezone = '+00:00 GMT';
+        }
         // init
         $date_word    = '';
         $date         = '';
