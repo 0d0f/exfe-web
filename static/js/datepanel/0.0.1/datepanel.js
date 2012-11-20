@@ -390,6 +390,13 @@ define('datepanel', function (require, exports, module) {
           , el = this.el
           , options = self.options;
 
+        el.on('fucosu.calendar', 'table', function (e) {
+            self.focuseable = true;
+          })
+          .on('blur.calendar', 'table', function (e) {
+            self.focuseable = false;
+          });
+
         el.on('mouseleave.calendar', 'table', function (e) {
           var td = self.getSelected();
           self.setCursor(td);
