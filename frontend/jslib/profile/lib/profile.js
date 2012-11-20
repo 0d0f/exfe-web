@@ -448,6 +448,7 @@ define(function (require, exports, module) {
 
           crossList['upcoming'].hasGatherAX = true;
           crossList['upcoming'].totalCrosses = data.crosses.length;
+          crossList['upcoming'].crosses || (crossList['upcoming'].crosses = []);
           crossList['upcoming'].crosses.reverse();
 
           var more = data.more.join(' ');
