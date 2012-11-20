@@ -1428,7 +1428,7 @@ define(function (require, exports, module) {
                     if ($dp.size()) {
                       var cid = $dp.data('widget-id');
                       var dp = App.widgetCaches[cid];
-                      var value = $('#date-string').data('date');
+                      var value = $.trim($('#date-string').data('date'));
                       if (oldEditing === 'date-panel' || oldEditing === 'time') {
                           //ChangeTime($('.cross-date .edit').val());
                           Cross.time.begin_at.timezone = ExfeUtilities.getTimezone();
