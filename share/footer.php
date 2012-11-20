@@ -26,6 +26,7 @@ addScript([
     ['handlebarsext', '0.0.1'],
     ['jqfocusend',    '0.0.2'],
     ['jqoffset',      '0.0.2'],
+    ['jqmousewheel',  '3.0.6'],
     ['jqdndsortable', '0.0.1'],
 ]);
 
@@ -50,7 +51,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.9'],
+    ['profile',       '0.0.10'],
 ]);
 
 // cross
