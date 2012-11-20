@@ -73,7 +73,7 @@ class ConversationActions extends ActionController {
         if (DEBUG) {
             error_log($post_str);
         }
-        $post->by_identity_id = $result['by_identity_id'];
+        $post->by_identity_id = (int) $result['by_identity_id'];
         // do post
         $rstPost = $modConv->addPost($post);
         if (!($post_id = $rstPost['post_id'])) {
@@ -90,7 +90,9 @@ class ConversationActions extends ActionController {
         $hlpCross = $this->getHelperByName('cross');
         $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
-        $modQueue->despatchConversation($cross, $post, $result['uid']);
+        $modQueue->despatchConversation(
+            $cross, $post, $result['uid'], $post->by_identity_id
+        );
         // }
         $modExfee->updateExfeeTime($cross->exfee->id);
         // return
