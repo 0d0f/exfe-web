@@ -21,33 +21,28 @@ class ConversationActions extends ActionController {
             $updated_at = '';
         }
 
-        switch (strtolower($direction)) {
-            case 'newer':
-                $direction = 'newer';
-                break;
-            case 'older':
-                $direction = 'older';
-        }
-
         $checkHelper = $this->getHelperByName('check');
         $result = $checkHelper->isAPIAllow(
             'conversation', $params['token'], ['exfee_id' => $exfee_id]
         );
-        if ($result['check'] !== true) {
-            if ($result['uid']===0)
-                apiError(401, 'invalid_auth', '');
-            else
+        if (!$result['check']) {
+            if ($result['uid']) {
                 apiError(403, 'not_authorized', "The X you're requesting is private.");
+            } else {
+                apiError(401, 'invalid_auth', '');
+            }
         }
 
-        $helperData=$this->getHelperByName('conversation');
-        $conversation=$helperData->getConversationByExfeeId($exfee_id,$updated_at);
-        if($clear!='false') {
+        $helperData   = $this->getHelperByName('conversation');
+        $conversation = $helperData->getConversationByExfeeId(
+            $exfee_id, $updated_at, $direction, $quantity
+        );
+        if ($clear !== 'false') {
             //clear counter
             $conversationData=$this->getModelByName('conversation');
-            $conversationData->clearConversationCounter($exfee_id,$result["uid"]);
+            $conversationData->clearConversationCounter($exfee_id, $result['uid']);
         }
-        apiResponse(array("conversation"=>$conversation));
+        apiResponse(['conversation' => $conversation]);
     }
 
 
