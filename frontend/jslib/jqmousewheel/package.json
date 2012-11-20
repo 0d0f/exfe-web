@@ -1,0 +1,13 @@
+{
+  "name": "jqmousewheel",
+  "version": "3.0.6",
+  "description": "jQuery Plugins Support offsetX/offsetY in Firefox",
+  "homepage": "https://github.com/brandonaaron/jquery-mousewheel",
+  "author": "brandonaaron",
+  "date": "2012-11-20T14:11:31 UTC+0800",
+  "pull": {
+    "url": "https://raw.github.com/brandonaaron/jquery-mousewheel/master/jquery.mousewheel.js",
+    "minurl": ""
+  },
+  "hint": false
+}
