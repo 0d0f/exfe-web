@@ -448,6 +448,7 @@ define(function (require, exports, module) {
 
           crossList['upcoming'].hasGatherAX = true;
           crossList['upcoming'].totalCrosses = data.crosses.length;
+          crossList['upcoming'].crosses || (crossList['upcoming'].crosses = []);
           crossList['upcoming'].crosses.reverse();
 
           var more = data.more.join(' ');
@@ -502,7 +503,6 @@ define(function (require, exports, module) {
 
                 R.each(v.exfee.invitations, function (e, j) {
                   identities_KV[e.id] = [i,j];
-                  console.log(user_id, e.identity.connected_user_id, e);
                   if (user_id === e.identity.connected_user_id && e.rsvp_status === 'NORESPONSE') {
                     e.__crossIndex = i;
                     e.__identityIndex = j;
