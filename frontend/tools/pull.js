@@ -14,7 +14,7 @@ function main(args, argv) {
       module = argv[0];
       path = jslib + '/' + module;
       config = path + '/package.json';
-      if (Path.existsSync(config)) {
+      if (Fs.existsSync(config)) {
         package = JSON.parse(Fs.readFileSync(config, 'utf-8'));
         pull = package.pull;
         console.log('Download ' + module, path + '/lib/' + module + '.js');
