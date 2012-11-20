@@ -22,9 +22,9 @@ class QueueModels extends DataModel {
             $invitation->identity->id,
             $invitation->identity->connected_user_id,
             $invitation->identity->name,
+            $invitation->identity->auth_data ?: '',
             '',
-            '',
-            $invitation->token,
+            $invitation->token ?: '',
             '',
             $invitation->identity->provider,
             $invitation->identity->external_id,
@@ -64,7 +64,7 @@ class QueueModels extends DataModel {
             'method'    => $method,
             'merge_key' => (string) $data['cross']->id,
             'tos'       => $tos,
-            'data'      => $data,
+            'data'      => $data ?: new stdClass,
         ];
         if (DEBUG) {
             error_log('job: ' . json_encode($jobData));
@@ -231,22 +231,21 @@ class QueueModels extends DataModel {
     }
 
 
+    public function updateIdentity($identity, $oauth_info) {
+        $service     = 'Thirdpart';
+        $method      = 'UpdateIdentity';
+        $identity->auth_data = json_encode($oauth_info);
+        $invitations = [(object) ['identity' => $identity]];
+        return $this->pushJobToQueue('Instant', $service, $method, $invitations);
+    }
+
+
     public function updateFriends($identity, $oauth_info) {
-        $service   = 'Thirdpart';
-        $method    = 'Send';
-        $recipient = new Recipient(
-            $identity->id,
-            $identity->connected_user_id,
-            $identity->name,
-            '',
-            '',
-            json_encode($oauth_info),
-            '',
-            $identity->provider,
-            $identity->external_id,
-            $identity->external_username
-        );
-        return $this->pushJobToQueue('Instant', $service, $method, [$recipient]);
+        $service     = 'Thirdpart';
+        $method      = 'UpdateFriends';
+        $identity->auth_data = json_encode($oauth_info);
+        $invitations = [(object) ['identity' => $identity]];
+        return $this->pushJobToQueue('Instant', $service, $method, $invitations);
     }
 
 }
