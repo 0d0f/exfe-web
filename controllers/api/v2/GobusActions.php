@@ -130,7 +130,9 @@ class GobusActions extends ActionController {
         $post     = $modCnvrstn->getPostById($post_id);
         // call Gobus {
         $modQueue = $this->getModelByName('Queue');
-        $modQueue->despatchConversation($cross, $post, $result['uid']);
+        $modQueue->despatchConversation(
+            $cross, $post, $result['uid'], $post->by_identity_id
+        );
         // }
         $modExfee = $this->getModelByName('exfee');
         $modExfee->updateExfeeTime($cross->exfee->id);
