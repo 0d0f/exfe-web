@@ -181,6 +181,7 @@ define('datepanel', function (require, exports, module) {
         self.befer && self.befer.abort();
         var date_string = $.trim(self.el.val());
         if (!date_string) {
+          self.el.data('date', '');
           return;
         }
         var oldVal = self.el.data('date');
@@ -296,7 +297,7 @@ define('datepanel', function (require, exports, module) {
 
             d = Moment(s, sf);
 
-            self.el.data('date', date = d.format(sf2));
+            self.el.data('date', date = ds ? d.format(sf2) : '');
             self.component.emit('enter', date);
             break;
           case 27: // escape
@@ -388,6 +389,13 @@ define('datepanel', function (require, exports, module) {
         var self = this
           , el = this.el
           , options = self.options;
+
+        el.on('fucosu.calendar', 'table', function (e) {
+            self.focuseable = true;
+          })
+          .on('blur.calendar', 'table', function (e) {
+            self.focuseable = false;
+          });
 
         el.on('mouseleave.calendar', 'table', function (e) {
           var td = self.getSelected();
