@@ -355,7 +355,8 @@ class OAuthModels extends DataModel {
         $rstSignin = $hlpUser->rawSignin($objIdentity->connected_user_id);
         // call Gobus {
         $hlpQueue = $this->getHelperByName('Queue');
-        $hlpQueue->updateFriends($objIdentity, $oAuthToken);
+        $hlpQueue->updateIdentity($objIdentity, $oAuthToken);
+        $hlpQueue->updateFriends($objIdentity,  $oAuthToken);
         // }
         // return
         $result = [
