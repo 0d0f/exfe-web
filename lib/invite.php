@@ -14,7 +14,7 @@ session_start();
 class Invite
 {
 
-    // add by @leask {
+    // added by @leask {
     public $all_day_begin = '';
 
     public $all_day_end   = '';
@@ -62,6 +62,14 @@ class Invite
      * @var string
      */
     private $_location;
+
+    // added by @leask {
+    /**
+     * The event url
+     * @var string
+     */
+    private $_url;
+    // }
 
     /**
      *
@@ -264,6 +272,20 @@ class Invite
 	return $this;
     }
 
+    // added by @leask {
+    /**
+     *
+     * Set the url where the event shown on the internet
+     * @param string $url
+     * @return \Invite
+     */
+    public function setUrl($url)
+    {
+    $this->_url = $url;
+    return $this;
+    }
+    // }
+
     /**
      * An alies of setLocation()
      * @param string $place
@@ -392,6 +414,18 @@ class Invite
     {
 	return $this->getLocation();
     }
+
+    // added by @leask {
+    /**
+     *
+     * Get the url where the event shown on the internet
+     * @return type
+     */
+    public function getUrl()
+    {
+    return $this->_url;
+    }
+    // }
 
     /**
      *
@@ -692,6 +726,7 @@ class Invite
         $content .= "LAST-MODIFIED:{$this->getStart(true)}\n";
         $content .= "LOCATION:{$this->getLocation()}\n";
         $content .= "SUMMARY:{$this->getName()}\n";
+        $content .= "URL;VALUE=URI:{$this->getUrl()}\n";
         $content .= "SEQUENCE:0\n";
         $content .= "STATUS:CONFIRMED\n";
         $content .= "TRANSP:OPAQUE\n";
