@@ -35,17 +35,18 @@ class IcsModels extends DataModel {
         && ($cross->place->title
         ||  $cross->place->description)) {
             $strPlace =  $cross->place->title
-                      . ($cross->place->title ? '\n' : '')
+                      . ($cross->place->title ? "\n" : '')
                       .  $cross->place->description;
         } else {
             $strPlace = '';
         }
         // make
-        $modInvite->setSubject($cross->title)
-                  ->setDescription($cross->description)
+        $modInvite->setSubject(mysql_real_escape_string($cross->title))
+                  ->setDescription(mysql_real_escape_string($cross->description))
                   ->setStart($begin_at)
                   ->setEnd($end_at)
-                  ->setLocation($strPlace)
+                  ->setLocation(mysql_real_escape_string($strPlace))
+                  ->setUrl(SITE_URL . "/#!{$cross->id}")
                   ->setOrganizer('', '');
         // parse invitations
         foreach ($cross->exfee->invitations as $invItem) {
