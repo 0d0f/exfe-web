@@ -242,6 +242,7 @@ class QueueModels extends DataModel {
     public function updateIdentity($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateIdentity';
+        $identity    = (object) (array) $identity;
         $identity->auth_data = json_encode($oauth_info);
         $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
@@ -251,6 +252,7 @@ class QueueModels extends DataModel {
     public function updateFriends($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateFriends';
+        $identity    = (object) (array) $identity;
         $identity->auth_data = json_encode($oauth_info);
         $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
