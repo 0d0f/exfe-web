@@ -16,7 +16,7 @@ addScript([
     ['base',          '0.0.2'],
     ['bus',           '0.0.2'],
     ['rex',           '0.0.2'],
-    ['util',          '0.0.3'],
+    ['util',          '0.0.4'],
     ['widget',        '0.0.3'],
     ['jquery',        '1.8.2'],
     ['moment',        '1.7.2'],
@@ -35,13 +35,13 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['eftime',        '0.0.4'],
+    ['eftime',        '0.0.5'],
     ['api',           '0.0.3'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.6'],
+    ['xdialog',       '0.0.7'],
     ['datepanel',     '0.0.1'],
     ['mappanel',      '0.0.1'],
     ['global',        '0.0.5'],
@@ -59,7 +59,7 @@ addScript([
     ['user',          '0.0.6'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
-echo "  <script src=\"http://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
+echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
 
 // lightsaber
 addScript([
