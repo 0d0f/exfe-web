@@ -43,7 +43,7 @@ class IdentitiesActions extends ActionController {
                     $id_str   = '';
                 }
                 if (!$identityItem->provider || !$id_str) {
-                    continue;
+                    apiError(400, 'error_identity_info', 'error identity information');
                 }
                 if ($identity) {
                     $objIdentities[] = $identity;
