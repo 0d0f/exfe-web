@@ -10,8 +10,8 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function validateCross($cross) {
-        return $this->modCross->validateCross($cross);
+    public function validateCross($cross, $old_cross = null) {
+        return $this->modCross->validateCross($cross, $old_cross);
     }
 
 

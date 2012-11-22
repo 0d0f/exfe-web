@@ -258,7 +258,7 @@ class CrossesActions extends ActionController {
         $cross->id=$params["id"];
         $cross->exfee_id=$result["exfee_id"];
         $old_cross = $crossHelper->getCross((int) $params['id']);
-        $chkCross = $crossHelper->validateCross($cross);
+        $chkCross = $crossHelper->validateCross($cross, $old_cross);
         if ($chkCross['error']) {
             apiError(400, 'cross_error', $chkCross['error'][0]);
         }
