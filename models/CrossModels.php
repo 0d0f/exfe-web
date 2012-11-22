@@ -178,7 +178,7 @@ class CrossModels extends DataModel {
     }
 
 
-    public function validateCross($cross) {
+    public function validateCross($cross, $old_cross = null) {
         // init
         $result = ['cross' => $cross, 'error' => []];
         // check structure
@@ -202,8 +202,24 @@ class CrossModels extends DataModel {
         }
         // check time
         if (isset($result['cross']->time)) {
-            $result['cross']->origin = formatTitle($result['cross']->origin);
-            // @todo by @leask ///////
+            $hlpTime = $this->getHelperByName('Time');
+            if ($old_cross
+             && $old_cross->time->origin === $result['cross']->time->origin) {
+                $cross_time = $old_cross->time;
+            } else {
+                $cross_time = $hlpTime->parseTimeString(
+                    $result['cross']->time->origin,
+                    $result['cross']->time->begin_at->timezone
+                );
+            }
+            switch ($cross_time) {
+                case 'timezone_error':
+                    $result['error'][] = 'timezone_error';
+                    break;
+                default:
+                    $cross_time->origin = formatTitle($cross_time->origin);
+                    $result['cross']->time = $cross_time;
+            }
         }
         // check place
         if (isset($result['cross']->place)) {
