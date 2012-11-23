@@ -65,9 +65,19 @@ class GobusActions extends ActionController {
             return;
         }
         if ($raw_by_identity->connected_user_id <= 0) {
-            header('HTTP/1.1 400 Internal Server Error');
-            echo json_encode(['code' => 233, 'error' => 'User not connected.']);
-            return;
+            $user_status = $modUser->getUserIdentityInfoByIdentityId($raw_by_identity->id);
+            if ($user_status) {
+                header('HTTP/1.1 400 Internal Server Error');
+                echo json_encode(['code' => 233, 'error' => 'User not connected.']);
+                return;
+            }
+            // add new user
+            $user_id = $modUser->addUser('', $raw_by_identity->name);
+            // connect identity to new user
+            $modUser->setUserIdentityStatus(
+                $user_id, $raw_by_identity->id, 3
+            );
+            $raw_by_identity->connected_user_id = $user_id;
         }
         // get user object
         $user = $modUser->getUserById($raw_by_identity->connected_user_id);
@@ -131,7 +141,7 @@ class GobusActions extends ActionController {
         // call Gobus {
         $modQueue = $this->getModelByName('Queue');
         $modQueue->despatchConversation(
-            $cross, $post, $result['uid'], $post->by_identity_id
+            $cross, $post, $by_identity->connected_user_id, $post->by_identity_id
         );
         // }
         $modExfee = $this->getModelByName('exfee');
