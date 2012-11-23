@@ -59,7 +59,6 @@ addScript([
     ['user',          '0.0.6'],
 ]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
-echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
 
 // lightsaber
 addScript([
@@ -68,6 +67,9 @@ addScript([
     ['routes',        '0.0.8'],
     ['app',           '0.0.5'],
 ]);
+
+// google map
+echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
