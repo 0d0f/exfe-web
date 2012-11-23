@@ -24,6 +24,8 @@ class UserModels extends DataModel {
 
 
     public function getUserById($id, $withCrossQuantity = false, $identityStatus = 3) {
+        $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+        $id = (int) $id;
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
             // build user object
@@ -51,11 +53,42 @@ class UserModels extends DataModel {
             if ($rawIdentityIds) {
                 $identity_infos = [];
                 foreach ($rawIdentityIds as $i => $item) {
+                    $intStatus  = (int) $item['status'];
+                    if ($intStatus === 2) {
+                        $timeout   = true;
+                        $curTokens = $hlpExfeAuth->findToken([
+                            'token_type'  => 'verification_token',
+                            'action'      => 'VERIFY',
+                            'identity_id' => (int) $item['identityid'],
+                        ]);
+                        if ($curTokens && is_array($curTokens)) {
+                            foreach ($curTokens as $cI => $cItem) {
+                                $cItem['data'] = (array) json_decode($cItem['data']);
+                                if ($cItem['data']['token_type'] === 'verification_token'
+                                 && $cItem['data']['user_id']    === $id
+                                 && !$cItem['is_expire']) {
+                                    $timeout    = false;
+                                    $expireTime = date(
+                                        'Y-m-d H:i:s',
+                                        isset($cItem['data']['expired_time'])
+                                      ? $cItem['data']['expired_time']
+                                      : (time() + 60 * 60 * 12)
+                                    ) . ' +0000';
+                                    break;
+                                }
+                            }
+                        }
+                        if ($timeout) {
+                            $this->setUserIdentityStatus($id, $item['identityid'], 1);
+                            unset($rawIdentityIds[$i]);
+                            contionue;
+                        }
+                    }
                     $identity_infos[(int) $item['identityid']] = [
-                        'status'     => $this->arrUserIdentityStatus[(int) $item['status']],
+                        'status'     => $this->arrUserIdentityStatus[$intStatus],
                         'order'      => (int) $item['order'],
                         'updated_at' => strtotime($item['updated_at']),
-                    ];
+                    ] + ($intStatus === 2 ? ['expired_time' => $expireTime] : []);
                 }
                 $identityIds = implode(array_keys($identity_infos), ', ');
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds}) ORDER BY `id`");
@@ -82,6 +115,9 @@ class UserModels extends DataModel {
                                                   ?: ($user->avatar_filename
                                                   ?: getDefaultAvatarUrl($identity->name));
                         $identity->status  = $identity_infos[$identity->id]['status'];
+                        if ($identity->status === 'VERIFYING') {
+                            $identity->expired_time = $identity_infos[$identity->id]['expired_time'];
+                        }
                         if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
                             $sorting_identities[$identity_infos[$identity->id]['order']] = [];
                         }
@@ -390,7 +426,7 @@ class UserModels extends DataModel {
             $data['args'] = $args;
         }
         // get current token
-        $expireSec = 60 * 24 * 2; // 2 days
+        $expireSec = 60 * 60 * 24 * 2; // 2 days
         $result['token'] = '';
         $curTokens = $hlpExfeAuth->findToken($resource);
         if ($curTokens && is_array($curTokens)) {
@@ -406,6 +442,7 @@ class UserModels extends DataModel {
             }
         }
         $data['updated_time'] = time();
+        $data['expired_time'] = time() + $expireSec;
         // case provider
         switch ($identity->provider) {
             case 'email':
