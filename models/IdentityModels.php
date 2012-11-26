@@ -398,9 +398,8 @@ class IdentityModels extends DataModel {
                 $data['need_verify'] = $need_verify;
                 break;
             case 'Verify':
-                $data['user_name']   = $user_name;
-                break;
             case 'ResetPassword':
+                $data['user_name']   = $user_name;
                 break;
             default:
                 return false;
