@@ -355,20 +355,13 @@ class IdentityModels extends DataModel {
                                 'verification' => ['url' => $vfyResult['url']],
                             ];
                         } else if (isset($vfyResult['token'])) {
-                            // welcome and verify user via Gobus {
-                            $hlpGobus = $this->getHelperByName('gobus');
-                            $method = 'Welcome';
-                            $data   = [
-                                'To_identity' => $objIdentity,
-                                'User_name'   => $userInfo['name'] ?: $objIdentity->name,
-                                'Token'       => $vfyResult['token'],
-                            ];
-                            if (!$newUser) {
-                                $method = 'Verify';
-                                $data['action'] = 'CONFIRM_IDENTITY';
-                            }
-                            $hlpGobus->send('user', $method, $data);
-                            // }
+                            $this->sendVerification(
+                                $newUser ? 'Welcome' : 'Verify',
+                                $objIdentity,
+                                $vfyResult['token'],
+                                true,
+                                $userInfo['name'] ?: $objIdentity->name
+                            );
                             if ($withVerifyInfo) {
                                 return [
                                     'identity_id'  => $id,
@@ -384,6 +377,36 @@ class IdentityModels extends DataModel {
             return $id;
         }
         return null;
+    }
+
+
+    public function sendVerification($method, $identity, $token, $need_verify = false, $user_name = '') {
+        $data = ['to' => new Recipient(
+            $identity->id,
+            $identity->connected_user_id,
+            $identity->name,
+            $identity->auth_data ?: '',
+            '',
+            $token,
+            '',
+            $identity->provider,
+            $identity->external_id,
+            $identity->external_username
+        )];
+        switch ($method) {
+            case 'Welcome':
+                $data['need_verify'] = $need_verify;
+                break;
+            case 'Verify':
+                $data['user_name']   = $user_name;
+                break;
+            case 'ResetPassword':
+                break;
+            default:
+                return false;
+        }
+        $modGobus = $this->getHelperByName('Gobus');
+        return $modGobus->useGobusApi(EXFE_AUTH_SERVER, 'User', $method, [$data]);
     }
 
 
