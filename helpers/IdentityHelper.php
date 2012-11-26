@@ -1,8 +1,4 @@
 <?php
-require 'lib/Resque.php';
-date_default_timezone_set('GMT');
-Resque::setBackend(RESQUE_SERVER);
-
 
 class IdentityHelper extends ActionController {
 
