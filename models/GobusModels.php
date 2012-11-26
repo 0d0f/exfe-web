@@ -36,6 +36,9 @@ class GobusModels extends DataModel {
                     }
                     return $httpBody;
                 }
+            } else if (!$httpCode) {
+                header('HTTP/1.1 500 Internal Server Error');
+                exit(1);
             }
         }
         return null;

@@ -580,6 +580,13 @@ class UsersActions extends ActionController {
                 $modUser->setUserIdentityStatus(
                     $user_id, $invitation['identity_id'], 3
                 );
+                // send welcome mail
+                $objIdentity = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $modIdentity->sendVerification(
+                    'Welcome', $objIdentity, '', false, $name ?: ''
+                );
                 // signin
                 apiResponse(['authorization' => $modUser->rawSignin($user_id)]);
             }
