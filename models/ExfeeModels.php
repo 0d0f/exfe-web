@@ -202,8 +202,8 @@ class ExfeeModels extends DataModel {
         if ($user_id) {
             $hlpRelation = $this->getHelperByName('Relation');
             $hlpRelation->saveRelations($user_id, $invitation->identity->id);
-            $hlpIdentity = $this->getHelperByName('Identity');
-            $rv_user_id  = $hlpIdentity->getUserIdByIdentityId(
+            $hlpUser     = $this->getHelperByName('User');
+            $rv_user_id  = $hlpUser->getUserIdByIdentityId(
                 $invitation->identity->id
             );
             if ($rv_user_id) {
