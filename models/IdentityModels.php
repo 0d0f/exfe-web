@@ -381,31 +381,39 @@ class IdentityModels extends DataModel {
 
 
     public function sendVerification($method, $identity, $token, $need_verify = false, $user_name = '') {
-        $data = ['to' => new Recipient(
-            $identity->id,
-            $identity->connected_user_id,
-            $identity->name,
-            $identity->auth_data ?: '',
-            '',
-            $token,
-            '',
-            $identity->provider,
-            $identity->external_id,
-            $identity->external_username
-        )];
+        $data = [
+            'service'   => 'User',
+            'method'    => $method,
+            'merge_key' => '',
+            'data'      => ['to' => new Recipient(
+                $identity->id,
+                $identity->connected_user_id,
+                $identity->name,
+                $identity->auth_data ?: '',
+                '',
+                $token,
+                '',
+                $identity->provider,
+                $identity->external_id,
+                $identity->external_username
+            )],
+        ];
         switch ($method) {
             case 'Welcome':
-                $data['need_verify'] = $need_verify;
+                $data['data']['need_verify'] = $need_verify;
                 break;
             case 'Verify':
             case 'ResetPassword':
-                $data['user_name']   = $user_name;
+                $data['data']['user_name']   = $user_name;
                 break;
             default:
                 return false;
         }
+        if (DEBUG) {
+            error_log('job: ' . json_encode($data));
+        }
         $modGobus = $this->getHelperByName('Gobus');
-        return $modGobus->useGobusApi(EXFE_AUTH_SERVER, 'User', $method, [$data]);
+        return $modGobus->useGobusApi(EXFE_GOBUS_SERVER, 'Instant', 'Push', $data);
     }
 
 
