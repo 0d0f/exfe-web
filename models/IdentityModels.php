@@ -380,6 +380,20 @@ class IdentityModels extends DataModel {
     }
 
 
+    public function revokeIdentity($identity_id) {
+        if (!($identity_id = (int) $identity_id)) {
+            return false;
+        }
+        return $this->query(
+            "UPDATE `user_identity`
+             SET    `status`     = 4,
+                    `updated_at` = NOW()
+             WHERE  `identityid` = {$identity_id}
+             AND    `status`     = 3"
+        );
+    }
+
+
     public function sendVerification($method, $identity, $token, $need_verify = false, $user_name = '') {
         $data = [
             'service'   => 'User',
