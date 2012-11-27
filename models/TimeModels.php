@@ -135,18 +135,21 @@ class TimeModels extends DataModel {
         // get fuzzy time
         $fuzzyTimeDic = [
             ['Daybreak'],
-            ['Morning'],
+            ['Dawn'],
             ['Breakfast'],
+            ['Morning'],
             ['Brunch'],
             ['Lunch'],
             ['Noon'],
             ['Afternoon'],
             ['Tea-break', 'tea break', 'teabreak'],
+            ['Coffee-break', 'coffee break']
             ['Off-work',  'off work',  'offwork'],
             ['Dinner'],
             ['Evening'],
             ['Night'],
             ['Midnight'],
+            ['Late-night', 'Late night'],
         ];
         $fuzzyTime = [];
         foreach ($fuzzyTimeDic as $fuzzyWord) {
