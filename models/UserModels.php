@@ -25,6 +25,7 @@ class UserModels extends DataModel {
 
     public function getUserById($id, $withCrossQuantity = false, $identityStatus = 3) {
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+        $hlpIdentity = $this->getHelperByName('Identity');
         $id = (int) $id;
         $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
         if ($rawUser) {
@@ -96,6 +97,16 @@ class UserModels extends DataModel {
                     $sorting_identities = [];
                     foreach ($identities as $i => $item) {
                         $item['id'] = (int) $item['id'];
+                        if ($item['provider'] === 'facebook') {
+                            if ($item['oauth_token']) {
+                                $item['oauth_token'] = json_decode($item['oauth_token']);
+                                if ($item['oauth_token']->oauth_expires < time()) {
+                                    $hlpIdentity->revokeIdentity($item['id']);
+                                }
+                            } else {
+                                $hlpIdentity->revokeIdentity($item['id']);
+                            }
+                        }
                         $identity = new Identity(
                             $item['id'],
                             $item['name'],

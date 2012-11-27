@@ -62,7 +62,7 @@ class QueueModels extends DataModel {
         $jobData = [
             'service'   => $service,
             'method'    => $method,
-            'merge_key' => (string) $data['cross']->id,
+            'merge_key' => "{$service}_{$method}" === 'Cross_Invite' ? '' : (string) $data['cross']->id,
             'tos'       => $tos,
             'data'      => $data ?: new stdClass,
         ];
