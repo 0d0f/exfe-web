@@ -69,7 +69,7 @@ addScript([
 ]);
 
 // google map
-//echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
+echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
