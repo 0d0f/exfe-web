@@ -143,7 +143,7 @@ class TimeModels extends DataModel {
             ['Noon'],
             ['Afternoon'],
             ['Tea-break', 'tea break', 'teabreak'],
-            ['Coffee-break', 'coffee break']
+            ['Coffee-break', 'coffee break'],
             ['Off-work',  'off work',  'offwork'],
             ['Dinner'],
             ['Evening'],
