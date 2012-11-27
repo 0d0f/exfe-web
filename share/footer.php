@@ -43,7 +43,7 @@ addScript([
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.7'],
     ['datepanel',     '0.0.1'],
-    ['mappanel',      '0.0.1'],
+    ['mappanel',      '0.0.2'],
     ['global',        '0.0.5'],
 ]);
 
@@ -69,7 +69,7 @@ addScript([
 ]);
 
 // google map
-echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
+//echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
