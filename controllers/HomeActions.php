@@ -12,6 +12,28 @@ class HomeActions extends ActionController {
             $this->displayViewByNameAction('matters', 'browser_matters');
             return;
         }
+        // rsvp
+        $modExfee = $this->getModelByName('Exfee');
+        $token = mysql_real_escape_string($_GET['token']);
+        $rsvp  = strtolower(mysql_real_escape_string($_GET['rsvp']));
+        if ($token && $rsvp) {
+            if (($objToken = $modExfee->getRawInvitationByToken($token))
+             && $objToken['valid']
+             && $rsvp === 'accept') {
+                $modUser = $this->getModelByName('User');
+                $user_id = $modUser->getUserIdByIdentityId($objToken['identity_id']);
+                $rsvp    = new stdClass;
+                $rsvp->identity_id    = $objToken['identity_id'];
+                $rsvp->rsvp_status    = 'ACCEPTED';
+                $rsvp->by_identity_id = $objToken['identity_id'];
+                $modExfee->updateExfeeRsvpById(
+                    $objToken['exfee_id'], [$rsvp], $objToken['identity_id'], $user_id
+                );
+                header("location: /#!token={$token}");
+            } else if ($rsvp === 'accept') {
+                header("location: /#!token={$token}/accept");
+            }
+        }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
         $modBackground = $this->getModelByName('Background');
