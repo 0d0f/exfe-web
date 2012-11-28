@@ -2,7 +2,7 @@
 
 class MuteActions extends ActionController {
 
-    public function doX() {
+    public function doCross() {
         // get token
         $token = mysql_real_escape_string(trim($_GET['token']));
         $modExfee = $this->getModelByName('Exfee');
