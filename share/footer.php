@@ -35,14 +35,14 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['eftime',        '0.0.5'],
+    ['eftime',        '0.0.6'],
     ['api',           '0.0.3'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.1'],
     ['xdialog',       '0.0.7'],
-    ['datepanel',     '0.0.1'],
+    ['datepanel',     '0.0.2'],
     ['mappanel',      '0.0.2'],
     ['global',        '0.0.5'],
 ]);
