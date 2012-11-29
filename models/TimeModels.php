@@ -30,6 +30,40 @@ class TimeModels extends DataModel {
         }
         $untreated    = trim($string, '"\'');
         $dtUntreated  = trim($string, '"\'');
+        // get fuzzy time
+        $fuzzyTimeDic = [
+            ['Daybreak'],
+            ['Dawn'],
+            ['Breakfast'],
+            ['Morning'],
+            ['Brunch'],
+            ['Lunch'],
+            ['Noon'],
+            ['Afternoon'],
+            ['Tea-break', 'tea break', 'teabreak'],
+            ['Coffee-break', 'coffee break'],
+            ['Off-work',  'off work',  'offwork'],
+            ['Dinner'],
+            ['Evening'],
+            ['Night'],
+            ['Midnight'],
+            ['Late-night', 'Late night'],
+        ];
+        $fuzzyTime = [];
+        foreach ($fuzzyTimeDic as $fuzzyWord) {
+            foreach ($fuzzyWord as $fuzzyWordItem) {
+                $pattern = "/^.*(\b{$fuzzyWordItem}\b).*$/i";
+                if (preg_match($pattern, $untreated)) {
+                    $fuzzyTime[] = $fuzzyWord[0];
+                    $rawTime     = preg_replace($pattern, '$1', $untreated);
+                    $untreated   = str_replace($rawTime, '', $untreated);
+                    $dtUntreated = str_replace($rawTime, '', $dtUntreated);
+                }
+            }
+        }
+        if ($fuzzyTime) {
+            $time_word = $fuzzyTime[0];
+        }
         // get raw date
         $rawDate  = strtotime($untreated);
         if ($rawDate !== false) {
@@ -132,39 +166,6 @@ class TimeModels extends DataModel {
             $rawDate += $intDayPlus * 60 * 60 * 24;
             $date = date('Y-m-d', $rawDate);
         }
-        // get fuzzy time
-        $fuzzyTimeDic = [
-            ['Daybreak'],
-            ['Dawn'],
-            ['Breakfast'],
-            ['Morning'],
-            ['Brunch'],
-            ['Lunch'],
-            ['Noon'],
-            ['Afternoon'],
-            ['Tea-break', 'tea break', 'teabreak'],
-            ['Coffee-break', 'coffee break'],
-            ['Off-work',  'off work',  'offwork'],
-            ['Dinner'],
-            ['Evening'],
-            ['Night'],
-            ['Midnight'],
-            ['Late-night', 'Late night'],
-        ];
-        $fuzzyTime = [];
-        foreach ($fuzzyTimeDic as $fuzzyWord) {
-            foreach ($fuzzyWord as $fuzzyWordItem) {
-                $pattern = "/^.*(\b{$fuzzyWordItem}\b).*$/i";
-                if (preg_match($pattern, $untreated)) {
-                    $fuzzyTime[] = $fuzzyWord[0];
-                    $rawTime = preg_replace($pattern, '$1', $untreated);
-                    $untreated = str_replace($rawTime, '', $untreated);
-                }
-            }
-        }
-        if ($fuzzyTime) {
-            $time_word = $fuzzyTime[0];
-        }
         // make CrossTime
         if ((sizeof($actTimes) && sizeof($fuzzyTime)) || sizeof($fuzzyTime) > 1
          || (!$date_word && !$date && !$time_word && !$time)) {
@@ -183,6 +184,7 @@ class TimeModels extends DataModel {
             $date     = $fixTime[0];
             $time     = $fixTime[1];
         }
+        // return
         return new CrossTime($date_word, $date, $time_word, $time, $timezone, $string, $outputformat);
     }
 
