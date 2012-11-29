@@ -73,9 +73,10 @@ class QueueModels extends DataModel {
     }
 
 
-    public function getToInvitationsByExfee($exfee, $by_user_id, $event, $incExfee = [], $excExfee = []) {
+    public function getToInvitationsByExfee($cross, $by_user_id, $event, $incExfee = [], $excExfee = []) {
         $hlpDevice       = $this->getHelperByName('Device');
         $hlpConversation = $this->getHelperByName('Conversation');
+        $hlpMute         = $this->getHelperByName('Mute');
         $head10  = [];
         $tail10  = [];
         $instant = [];
@@ -83,7 +84,7 @@ class QueueModels extends DataModel {
         foreach ($incExfee as $ieI => $ieItem) {
             $incExfee[$ieI]->inc = true;
         }
-        foreach (array_merge($exfee->invitations, $incExfee) as $invitation) {
+        foreach (array_merge($cross->exfee->invitations, $incExfee) as $invitation) {
             if (($invitation->identity->connected_user_id === $by_user_id && $event !== 'Cross_Invite')
              ||  $invitation->rsvp_status                 === 'DECLINED'
              || ($invitation->rsvp_status                 === 'REMOVED' && !isset($invitation->inc))) {
@@ -97,10 +98,15 @@ class QueueModels extends DataModel {
                     break;
                 }
             }
-            // }
             if ($bolContinue) {
                 continue;
             }
+            // }
+            // mute {
+            if ($hlpMute->getMute($cross->id, $invitation->identity->connected_user_id)) {
+                continue;
+            }
+            // }
             $gotInvitation = [(object) (array) $invitation];
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
@@ -117,7 +123,7 @@ class QueueModels extends DataModel {
                 // set conversation counter
                 if ($event === 'Conversation_Update') {
                     $hlpConversation->addConversationCounter(
-                        $exfee->id,
+                        $cross->exfee->id,
                         $invitation->identity->connected_user_id
                     );
                 }
@@ -176,7 +182,7 @@ class QueueModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
-            $cross->exfee, $by_user_id, "{$service}_{$method}"
+            $cross, $by_user_id, "{$service}_{$method}"
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -198,8 +204,11 @@ class QueueModels extends DataModel {
         $method      = 'Invite';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
+        $dpCross     = new stdClass;
+        $dpCross->id = $cross->id;
+        $dpCross->exfee = $to_exfee;
         $invitations = $this->getToInvitationsByExfee(
-            $to_exfee, $by_user_id, "{$service}_{$method}"
+            $dpCross, $by_user_id, "{$service}_{$method}"
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -222,7 +231,7 @@ class QueueModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
-            $cross->exfee, $by_user_id, "{$service}_{$method}", $inc_exfee, $exc_exfee
+            $cross, $by_user_id, "{$service}_{$method}", $inc_exfee, $exc_exfee
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
