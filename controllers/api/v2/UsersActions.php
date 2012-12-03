@@ -345,14 +345,14 @@ class UsersActions extends ActionController {
                         $user_id, $args
                     );
                     if ($viResult) {
-                        $hlpGobus = $this->getHelperByName('gobus');
-                        $user     = $modUser->getUserById($user_id);
-                        $hlpGobus->send('user', 'Verify', [
-                            'to_identity' => $identity,
-                            'user_name'   => $user->name ?: '',
-                            'action'      => 'CONFIRM_IDENTITY',
-                            'token'       => $viResult['token'],
-                        ]);
+                        $user = $modUser->getUserById($user_id);
+                        $modIdentity->sendVerification(
+                            'Verify',
+                            $identity,
+                            $viResult['token'],
+                            false,
+                            $user->name ?: ''
+                        );
                         $rtResult['action'] = 'VERIFYING';
                         apiResponse($rtResult);
                     }
@@ -416,20 +416,14 @@ class UsersActions extends ActionController {
                             $rtResult['action'] = 'REDIRECT';
                         } else {
                             $rtResult['action'] = 'VERIFYING';
-                            // call Gobus {
-                            $user     = $modUser->getUserById($raw_flag['user_id']);
-                            $hlpGobus = $this->getHelperByName('gobus');
-                            $msgs     = [
-                                'to_identity' => $identity,
-                                'user_name'   => $user->name ?: '',
-                                'action'      => 'SET_PASSWORD',
-                                'token'       => $viResult['token'],
-                            ];
-                            $hlpGobus->send('user', 'Verify', $msgs);
-                            if (DEBUG) {
-                                error_log(json_encode($msgs));
-                            }
-                            // }
+                            $user = $modUser->getUserById($raw_flag['user_id']);
+                            $modIdentity->sendVerification(
+                                'ResetPassword',
+                                $identity,
+                                $viResult['token'],
+                                false,
+                                $user->name ?: ''
+                            );
                         }
                         apiResponse($rtResult);
                     }
@@ -480,16 +474,14 @@ class UsersActions extends ActionController {
                         $rtResult['action'] = 'REDIRECT';
                     } else {
                         $rtResult['action'] = 'VERIFYING';
-                        // call Gobus {
-                        $user     = $modUser->getUserById($user_id);
-                        $hlpGobus = $this->getHelperByName('gobus');
-                        $hlpGobus->send('user', 'Verify', [
-                            'to_identity' => $identity,
-                            'user_name'   => $user->name ?: '',
-                            'action'      => 'CONFIRM_IDENTITY',
-                            'token'       => $viResult['token'],
-                        ]);
-                        // }
+                        $user = $modUser->getUserById($user_id);
+                        $modIdentity->sendVerification(
+                            'Verify',
+                            $identity,
+                            $viResult['token'],
+                            false,
+                            $user->name ?: ''
+                        );
                     }
                     apiResponse($rtResult);
                 }
@@ -587,6 +579,13 @@ class UsersActions extends ActionController {
                 // connect identity to new user
                 $modUser->setUserIdentityStatus(
                     $user_id, $invitation['identity_id'], 3
+                );
+                // send welcome mail
+                $objIdentity = $modIdentity->getIdentityById(
+                    $invitation['identity_id']
+                );
+                $modIdentity->sendVerification(
+                    'Welcome', $objIdentity, '', false, $name ?: ''
                 );
                 // signin
                 apiResponse(['authorization' => $modUser->rawSignin($user_id)]);

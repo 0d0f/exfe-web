@@ -1,8 +1,4 @@
 <?php
-require 'lib/Resque.php';
-date_default_timezone_set('GMT');
-Resque::setBackend(RESQUE_SERVER);
-
 
 class IdentityHelper extends ActionController {
 
@@ -46,6 +42,11 @@ class IdentityHelper extends ActionController {
 
     public function updateOAuthTokenById($identity_id, $tokens) {
         return $this->modIdentity->updateOAuthTokenById($identity_id, $tokens);
+    }
+
+
+    public function revokeIdentity($identity_id) {
+        return $this->modIdentity->revokeIdentity($identity_id);
     }
 
 
