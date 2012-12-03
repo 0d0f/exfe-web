@@ -472,7 +472,9 @@ class IdentityModels extends DataModel {
         );
         if (count($identities) > 1) {
             $upResult = $this->query(
-                "UPDATE `user_identity` SET `status` = 1
+                "UPDATE `user_identity`
+                    SET `status`     = 1,
+                        `order`      = 999
                  WHERE  `identityid` = {$identity_id}
                  AND    `userid`     = {$user_id}"
             );
