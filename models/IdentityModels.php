@@ -355,20 +355,13 @@ class IdentityModels extends DataModel {
                                 'verification' => ['url' => $vfyResult['url']],
                             ];
                         } else if (isset($vfyResult['token'])) {
-                            // welcome and verify user via Gobus {
-                            $hlpGobus = $this->getHelperByName('gobus');
-                            $method = 'Welcome';
-                            $data   = [
-                                'To_identity' => $objIdentity,
-                                'User_name'   => $userInfo['name'] ?: $objIdentity->name,
-                                'Token'       => $vfyResult['token'],
-                            ];
-                            if (!$newUser) {
-                                $method = 'Verify';
-                                $data['action'] = 'CONFIRM_IDENTITY';
-                            }
-                            $hlpGobus->send('user', $method, $data);
-                            // }
+                            $this->sendVerification(
+                                $newUser ? 'Welcome' : 'Verify',
+                                $objIdentity,
+                                $vfyResult['token'],
+                                true,
+                                $userInfo['name'] ?: $objIdentity->name
+                            );
                             if ($withVerifyInfo) {
                                 return [
                                     'identity_id'  => $id,
@@ -384,6 +377,58 @@ class IdentityModels extends DataModel {
             return $id;
         }
         return null;
+    }
+
+
+    public function revokeIdentity($identity_id) {
+        if (!($identity_id = (int) $identity_id)) {
+            return false;
+        }
+        return $this->query(
+            "UPDATE `user_identity`
+             SET    `status`     = 4,
+                    `updated_at` = NOW()
+             WHERE  `identityid` = {$identity_id}
+             AND    `status`     = 3"
+        );
+    }
+
+
+    public function sendVerification($method, $identity, $token, $need_verify = false, $user_name = '') {
+        $data = [
+            'tos'       => [new Recipient(
+                $identity->id,
+                $identity->connected_user_id,
+                $identity->name,
+                $identity->auth_data ?: '',
+                '',
+                $token,
+                '',
+                $identity->provider,
+                $identity->external_id,
+                $identity->external_username
+            )],
+            'service'   => 'User',
+            'method'    => $method,
+            'merge_key' => '',
+            'data'      => new stdClass,
+        ];
+        switch ($method) {
+            case 'Welcome':
+                $data['data']->need_verify = $need_verify;
+                break;
+            case 'Verify':
+            case 'ResetPassword':
+                $data['data']->user_name   = $user_name;
+                break;
+            default:
+                return false;
+        }
+        if (DEBUG) {
+            error_log('job: ' . json_encode($data));
+        }
+        $modGobus = $this->getHelperByName('Gobus');
+        return $modGobus->useGobusApi(EXFE_GOBUS_SERVER, 'Instant', 'Push', $data);
     }
 
 
@@ -427,7 +472,9 @@ class IdentityModels extends DataModel {
         );
         if (count($identities) > 1) {
             $upResult = $this->query(
-                "UPDATE `user_identity` SET `status` = 1
+                "UPDATE `user_identity`
+                    SET `status`     = 1,
+                        `order`      = 999
                  WHERE  `identityid` = {$identity_id}
                  AND    `userid`     = {$user_id}"
             );
