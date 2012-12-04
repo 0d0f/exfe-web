@@ -326,7 +326,6 @@ class ExfeeModels extends DataModel {
         $over_quota = false;
         $changed    = false;
         // raw actions
-        $chkInvit = [];
         $newInvId = [];
         $addExfee = [];
         $delExfee = [];
@@ -348,31 +347,28 @@ class ExfeeModels extends DataModel {
             // find out the existing invitation
             $exists = false;
             foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
-                if (!$chkInvit[$fmI]) {
-                    if ($toItem->identity->id === $fmItem->identity->id) {
-                        $exists = true;
-                        // update existing invitaion
-                        $toItem->id = $fmItem->id;
-                        // delete exfee
-                        if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
-                         && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
-                            $delExfee[]  = $fmItem;
-                        }
-                        // update exfee token
-                        if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
-                         && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
-                            $newInvId[]  = $fmItem->id;
-                            $updateToken = true;
-                        } else {
-                            $updateToken = false;
-                        }
-                        if ($fmItem->rsvp_status  !== $toItem->rsvp_status
-                         || (bool) $fmItem->host  !== (bool) $toItem->host
-                         || (int)  $fmItem->mates !== (int)  $toItem->mates) {
-                            $this->updateInvitation($toItem, $by_identity_id, $updateToken);
-                            $changed = true;
-                        }
-                        $chkInvit[$fmI] = true;
+                if ((int) $toItem->identity->id === $fmItem->identity->id) {
+                    $exists = true;
+                    // update existing invitaion
+                    $toItem->id = $fmItem->id;
+                    // delete exfee
+                    if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
+                     && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
+                        $delExfee[]  = $fmItem;
+                    }
+                    // update exfee token
+                    if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
+                     && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
+                        $newInvId[]  = $fmItem->id;
+                        $updateToken = true;
+                    } else {
+                        $updateToken = false;
+                    }
+                    if ($fmItem->rsvp_status  !== $toItem->rsvp_status
+                     || (bool) $fmItem->host  !== (bool) $toItem->host
+                     || (int)  $fmItem->mates !== (int)  $toItem->mates) {
+                        $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                        $changed = true;
                     }
                 }
             }
