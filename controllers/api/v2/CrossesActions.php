@@ -168,7 +168,7 @@ class CrossesActions extends ActionController {
             }
         }
         // 受邀 token 不存在 / 无效
-        apiError(403, 'invalid_invitation_token', 'Invalid Invitation Token');
+        apiError(404, 'invalid_invitation_token', 'Invalid Invitation Token');
     }
 
 
