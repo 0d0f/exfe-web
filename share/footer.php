@@ -52,12 +52,9 @@ addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
     ['profile',       '0.0.11'],
+    ['user',          '0.0.7'],
 ]);
 
-// cross
-addScript([
-    ['user',          '0.0.6'],
-]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
 // lightsaber
