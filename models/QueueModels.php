@@ -85,9 +85,8 @@ class QueueModels extends DataModel {
             $incExfee[$ieI]->inc = true;
         }
         foreach (array_merge($cross->exfee->invitations, $incExfee) as $invitation) {
-            if (($invitation->identity->connected_user_id === $by_user_id && $event !== 'Cross_Invite')
-             ||  $invitation->rsvp_status                 === 'DECLINED'
-             || ($invitation->rsvp_status                 === 'REMOVED' && !isset($invitation->inc))) {
+            if ($invitation->rsvp_status === 'DECLINED'
+            || ($invitation->rsvp_status === 'REMOVED' && !isset($invitation->inc))) {
                 continue;
             }
             // exclude {
