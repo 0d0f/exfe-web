@@ -2,7 +2,7 @@
 
 class ExfeeModels extends DataModel {
 
-    protected $rsvp_status = array('NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED', 'REMOVED', 'NOTIFICATION');
+    protected $rsvp_status = array('NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED', 'REMOVED', 'NOTIFICATION', 'IGNORED');
 
 
     protected function makeExfeeToken() {
