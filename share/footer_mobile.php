@@ -7,14 +7,19 @@ function addScript($scripts) {
     }
 }
 
-
 echo "\n";
 addScript([
     ['common',        '0.0.3'],
     ['zepto',         '1.0.0'],
-    ['mobile',        '0.0.1'],
 ]);
 
+echo "  <script>\n";
+include 'ftconfig.php';
+echo "  </script>\n";
+
+addScript([
+    ['mobile',        '0.0.1'],
+]);
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
