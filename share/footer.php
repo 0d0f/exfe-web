@@ -16,7 +16,7 @@ addScript([
     ['base',          '0.0.2'],
     ['bus',           '0.0.2'],
     ['rex',           '0.0.2'],
-    ['util',          '0.0.4'],
+    ['util',          '0.0.5'],
     ['widget',        '0.0.3'],
     ['jquery',        '1.8.2'],
     ['moment',        '1.7.2'],
@@ -27,7 +27,7 @@ addScript([
     ['jqfocusend',    '0.0.2'],
     ['jqoffset',      '0.0.2'],
     ['jqmousewheel',  '3.0.6'],
-    ['jqdndsortable', '0.0.1'],
+    ['jqdndsortable', '0.0.2'],
 ]);
 
 echo "  <script>\n";
@@ -35,14 +35,14 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['eftime',        '0.0.5'],
-    ['api',           '0.0.3'],
+    ['eftime',        '0.0.6'],
+    ['api',           '0.0.4'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
-    ['xidentity',     '0.0.1'],
-    ['xdialog',       '0.0.7'],
-    ['datepanel',     '0.0.1'],
+    ['xidentity',     '0.0.2'],
+    ['xdialog',       '0.0.9'],
+    ['datepanel',     '0.0.2'],
     ['mappanel',      '0.0.2'],
     ['global',        '0.0.5'],
 ]);
@@ -51,21 +51,18 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.10'],
+    ['profile',       '0.0.11'],
+    ['user',          '0.0.7'],
 ]);
 
-// cross
-addScript([
-    ['user',          '0.0.6'],
-]);
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
 
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.4'],
-    ['middleware',    '0.0.8'],
+    ['middleware',    '0.0.9'],
     ['routes',        '0.0.8'],
-    ['app',           '0.0.5'],
+    ['app',           '0.0.6'],
 ]);
 
 // google map
