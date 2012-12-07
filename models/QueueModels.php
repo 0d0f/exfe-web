@@ -116,7 +116,7 @@ class QueueModels extends DataModel {
                     $invitation->identity
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
-                    $tmpInvitation = $invitation;
+                    $tmpInvitation = (object) (array) $invitation;
                     $tmpInvitation->identity = $mItem;
                     $gotInvitation[] = $tmpInvitation;
                 }
