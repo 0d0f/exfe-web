@@ -77,6 +77,7 @@ class QueueModels extends DataModel {
         $hlpDevice       = $this->getHelperByName('Device');
         $hlpConversation = $this->getHelperByName('Conversation');
         $hlpMute         = $this->getHelperByName('Mute');
+        $head2   = [];
         $head10  = [];
         $tail10  = [];
         $instant = [];
@@ -166,12 +167,12 @@ class QueueModels extends DataModel {
                                 break;
                             case 'iOS':
                             case 'Android':
-                                $instant[] = $item;
+                                $head2[]   = $item;
                         }
                     }
             }
         }
-        return ['Head10' => $head10, 'Tail10' => $tail10, 'Instant' => $instant];
+        return ['Head2' => $head2, 'Head10' => $head10, 'Tail10' => $tail10, 'Instant' => $instant];
     }
 
 
