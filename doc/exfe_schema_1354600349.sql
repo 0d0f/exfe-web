@@ -66,7 +66,6 @@ CREATE TABLE `crosses` (
   `updated_at` datetime DEFAULT NULL,
   `state` tinyint(4) DEFAULT NULL COMMENT '1 published 0 draft',
   `place_id` int(11) DEFAULT NULL,
-  `time_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `origin_begin_at` varchar(233) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `background` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -78,7 +77,7 @@ CREATE TABLE `crosses` (
   `by_identity_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `exfee_id` (`exfee_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=100188 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=100333 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,8 +103,9 @@ CREATE TABLE `devices` (
   `disconnected_at` datetime NOT NULL,
   `udid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `push_token` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `unreachable` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=108 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,7 +120,44 @@ CREATE TABLE `exfees` (
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `update_at_exfeeid` (`id`,`updated_at`)
-) ENGINE=MyISAM AUTO_INCREMENT=110054 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=110199 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `geoip_blocks`
+--
+
+DROP TABLE IF EXISTS `geoip_blocks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `geoip_blocks` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `start_ip_num` int(11) unsigned NOT NULL,
+  `end_ip_num` int(11) unsigned NOT NULL,
+  `loc_id` int(7) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2124230 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `geoip_locations`
+--
+
+DROP TABLE IF EXISTS `geoip_locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `geoip_locations` (
+  `loc_id` int(7) unsigned NOT NULL,
+  `country` varchar(7) NOT NULL,
+  `region` varchar(7) NOT NULL,
+  `city` varchar(255) NOT NULL,
+  `postal_code` varchar(10) NOT NULL,
+  `latitude` float(10,6) NOT NULL,
+  `longitude` float(10,6) NOT NULL,
+  `metro_code` varchar(7) NOT NULL,
+  `area_code` varchar(7) NOT NULL,
+  PRIMARY KEY (`loc_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +175,7 @@ CREATE TABLE `gobus_tokens` (
   `expire_at` datetime NOT NULL,
   `data` text NOT NULL,
   UNIQUE KEY `id` (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=994 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,8 +196,9 @@ CREATE TABLE `identities` (
   `avatar_file_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `external_username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oauth_token` text COLLATE utf8_unicode_ci COMMENT 'oauth token',
+  `unreachable` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=324 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=567 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,25 +224,10 @@ CREATE TABLE `invitations` (
   `host` tinyint(1) NOT NULL,
   `mates` tinyint(4) NOT NULL DEFAULT '0',
   `token_used_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `invited_by` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `identity_id_idx` (`identity_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=566 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `ip_data`
---
-
-DROP TABLE IF EXISTS `ip_data`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ip_data` (
-  `start` int(11) unsigned NOT NULL,
-  `end` int(11) unsigned NOT NULL,
-  `region` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`start`,`end`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=1156 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +286,7 @@ CREATE TABLE `places` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=268 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -286,28 +309,7 @@ CREATE TABLE `posts` (
   PRIMARY KEY (`id`),
   KEY `index_comments_on_commentable_type` (`postable_type`),
   KEY `index_comments_on_commentable_id` (`postable_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1191 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `tokens`
---
-
-DROP TABLE IF EXISTS `tokens`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tokens` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `token` varchar(255) NOT NULL,
-  `action` varchar(255) NOT NULL,
-  `identity_id` bigint(20) NOT NULL,
-  `user_id` bigint(20) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `expiration_date` datetime NOT NULL,
-  `used_at` datetime NOT NULL,
-  `detail` text,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=2184 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -322,7 +324,8 @@ CREATE TABLE `user_identity` (
   `userid` bigint(20) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
-  `status` int(11) NOT NULL DEFAULT '2' COMMENT '3 connected 1 relatived/disconnected 2 veryifing'
+  `status` int(11) NOT NULL DEFAULT '2' COMMENT '3 connected 1 relatived/disconnected 2 veryifing',
+  `order` int(3) NOT NULL DEFAULT '999'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -343,7 +346,7 @@ CREATE TABLE `user_relations` (
   `external_username` varchar(255) DEFAULT NULL,
   `avatar_filename` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12836 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=54677 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -370,12 +373,9 @@ CREATE TABLE `users` (
   `avatar_file_name` varchar(255) CHARACTER SET utf8 NOT NULL,
   `cookie_logintoken` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `cookie_loginsequ` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `auth_token` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `timezone` varchar(10) COLLATE utf8_unicode_ci DEFAULT '+08:00',
-  `default_identity` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `auth_token` (`auth_token`)
-) ENGINE=MyISAM AUTO_INCREMENT=224 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=374 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -387,4 +387,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-09-21 15:30:12
+-- Dump completed on 2012-12-04  0:52:30
