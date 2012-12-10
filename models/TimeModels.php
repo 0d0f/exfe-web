@@ -2,7 +2,7 @@
 
 class TimeModels extends DataModel {
 
-    public function parseTimeString($string, $timezone = '') {
+    public function parseTimeString($origin_string, $timezone = '') {
         // check timezone
         if (preg_match('/^[+-][0-9]{2}:[0-9]{2}(\ [a-z]{1,5})?$/i', $timezone)) {
         } else if (preg_match('/^[a-z]{1,5}\ ([+-][0-9]{2}:[0-9]{2})$/i', $timezone)) {
@@ -23,6 +23,7 @@ class TimeModels extends DataModel {
         $time         = '';
         $outputformat = 0;
         $intDayPlus   = 0;
+        $string       = $origin_string;
         if (preg_match('/^[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$/', $string)) {
             $string = preg_replace('/\./', '-', $string);
         }
@@ -188,7 +189,7 @@ class TimeModels extends DataModel {
             $time     = $fixTime[1];
         }
         // return
-        return new CrossTime($date_word, $date, $time_word, $time, $timezone, $string, $outputformat);
+        return new CrossTime($date_word, $date, $time_word, $time, $timezone, $origin_string, $outputformat);
     }
 
 }
