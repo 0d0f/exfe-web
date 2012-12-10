@@ -4,6 +4,10 @@ class CrossesActions extends ActionController {
 
     public function doIndex() {
         $params=$this->params;
+        $updated_at=$params["updated_at"];
+        if ($updated_at) {
+            $updated_at = strtotime($updated_at);
+        }
         $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
         if($result["check"]!==true)
@@ -15,8 +19,12 @@ class CrossesActions extends ActionController {
         }
         $crossHelper=$this->getHelperByName('cross');
         $cross=$crossHelper->getCross($params["id"]);
-        if($cross===NULL)
+        if ($cross===NULL) {
             apiError(400,"param_error","The X you're requesting is not found.");
+        }
+        if ($updated_at && $updated_at > strtotime($cross->exfee->updated_at)) {
+            apiError(304, 'Cross Not Modified.');
+        }
         apiResponse(array("cross"=>$cross));
     }
 
