@@ -9,7 +9,7 @@ class CrossesActions extends ActionController {
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
-                apiError(403,"invalid_auth","");
+                apiError(401,"invalid_auth","");
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
