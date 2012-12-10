@@ -23,6 +23,9 @@ class TimeModels extends DataModel {
         $time         = '';
         $outputformat = 0;
         $intDayPlus   = 0;
+        if (preg_match('/^[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$/', $string)) {
+            $string = preg_replace('/\./', '-', $string);
+        }
         if (preg_match('/^\".*\"$|^\'.*\'$/', $string)) {
             return new CrossTime(
                 $date_word, $date, $time_word, $time, $timezone, $string, 1
