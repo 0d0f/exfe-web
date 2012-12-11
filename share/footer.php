@@ -41,7 +41,7 @@ addScript([
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.2'],
-    ['xdialog',       '0.0.9'],
+    ['xdialog',       '0.1.9'],
     ['datepanel',     '0.0.3'],
     ['mappanel',      '0.0.4'],
     ['global',        '0.0.5'],
@@ -61,8 +61,8 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 addScript([
     ['lightsaber',    '0.0.4'],
     ['middleware',    '0.0.9'],
-    ['routes',        '0.0.9'],
-    ['app',           '0.0.6'],
+    ['routes',        '0.1.9'],
+    ['app',           '0.1.6'],
 ]);
 
 // google map
