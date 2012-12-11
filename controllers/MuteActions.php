@@ -18,7 +18,7 @@ class MuteActions extends ActionController {
         // mute
         $modMute = $this->getModelByName('Mute');
         $modMute->setMute($objToken['cross_id'], $user_id);
-        header("location: /!token={$token}/#mute");
+        header("location: /#!token={$token}/mute");
     }
 
 }
