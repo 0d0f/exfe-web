@@ -26,9 +26,10 @@ class HomeActions extends ActionController {
             }
         }
         // case USER_AGENT
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod')) {
+        if (!isset($_GET['ipad'])
+         && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod'))) {
             $this->displayViewByAction('mobile');
             return;
         } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')
