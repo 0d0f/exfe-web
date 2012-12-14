@@ -9,6 +9,10 @@ class UsersActions extends ActionController {
         if (!$params['id']) {
             apiError(400, 'no_user_id', 'user_id must be provided');
         }
+        $updated_at=$params["updated_at"];
+        if ($updated_at) {
+            $updated_at = strtotime($updated_at);
+        }
         $result = $checkHelper->isAPIAllow('user_self', $params['token'], array('user_id' => $params['id']));
         if (!$result['check']) {
             if ($result['uid']) {
@@ -20,6 +24,9 @@ class UsersActions extends ActionController {
         if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
             $passwd  = $modUser->getUserPasswdByUserId($params['id']);
             $objUser->password = !!$passwd['encrypted_password'];
+            if ($updated_at && $updated_at >= strtotime($objUser->updated_at)) {
+                apiError(304, 'User Not Modified.');
+            }
             apiResponse(['user' => $objUser]);
         }
         apiError(404, 'user_not_found', 'user not found');
