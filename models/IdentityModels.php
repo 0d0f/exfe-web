@@ -144,9 +144,24 @@ class IdentityModels extends DataModel {
         if (isset($identity['unreachable'])) {
             $update_sql .= " `unreachable` =  {$identity['unreachable']}, ";
         }
-        return $update_sql
-             ? $this->query("UPDATE `identities` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$identity_id}")
-             : true;
+        if ($update_sql) {
+            $result = $this->query(
+                "UPDATE `identities`
+                 SET    {$update_sql} `updated_at` = NOW()
+                 WHERE  `id` = {$identity_id}"
+            );
+            $hlpUser = $this->getHelperByName('User');
+            $user_id = $hlpUser->getUserIdByIdentityId($identity_id);
+            if ($user_id) {
+                $this->query(
+                    "UPDATE `users`
+                     SET    `updated_at` = NOW()
+                     WHERE  `id` = {$user_id}"
+                );
+            }
+            return $result;
+        }
+        return true;
     }
 
 
