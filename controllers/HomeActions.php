@@ -3,20 +3,6 @@
 class HomeActions extends ActionController {
 
     public function doIndex() {
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod')) {
-            $this->displayViewByAction('mobile');
-            return;
-        } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')
-        && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.5')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0'))) {
-            $this->displayViewByNameAction('matters', 'browser_matters');
-            return;
-        }
         // rsvp
         $modExfee = $this->getModelByName('Exfee');
         $token = mysql_real_escape_string($_GET['token']);
@@ -38,6 +24,22 @@ class HomeActions extends ActionController {
             } else if ($rsvp === 'accept') {
                 header("location: /#!token={$token}/accept");
             }
+        }
+        // case USER_AGENT
+        if (!isset($_GET['ipad'])
+         && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod'))) {
+            $this->displayViewByAction('mobile');
+            return;
+        } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')
+        && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.5')
+         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0'))) {
+            $this->displayViewByNameAction('matters', 'browser_matters');
+            return;
         }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
