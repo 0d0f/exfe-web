@@ -25,6 +25,12 @@ class PlaceModels extends DataModel {
         $description = mysql_real_escape_string($place->description);
         $external_id = mysql_real_escape_string($place->external_id);
         $provider    = mysql_real_escape_string($place->provider);
+        // fixed data {
+        if (!strlen($title) && !floatval($place->lng) && !floatval($place->lat)) {
+            $place->external_id = '';
+            $place->provider    = '';
+        }
+        // }
         if ($place->id <= 0) {
             $sql = "INSERT INTO `places` (`place_line1`, `place_line2`, `provider`,
                     `external_id`, `lng`, `lat`, `created_at`, `updated_at`)
