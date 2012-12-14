@@ -22,7 +22,7 @@ class CrossesActions extends ActionController {
         if ($cross===NULL) {
             apiError(400,"param_error","The X you're requesting is not found.");
         }
-        if ($updated_at && $updated_at > strtotime($cross->exfee->updated_at)) {
+        if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
             apiError(304, 'Cross Not Modified.');
         }
         apiResponse(array("cross"=>$cross));
