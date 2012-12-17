@@ -24,6 +24,45 @@ class TimeModels extends DataModel {
         $outputformat = 0;
         $intDayPlus   = 0;
         $string       = $origin_string;
+        // special time
+        $specialTimeDic = [
+            [
+                'patterns' => [
+                    '/(the )?apocalypse/i',
+                    '/(the )?last day of (the )?world/i',
+                    '/(the )?doomsday/i',
+                    '/(the )?end of (the )?world/i',
+                    '/(the )?last judgement/i',
+                    '/(the )?judgment day/i',
+                    '/(the )?crack of doom/i',
+                    '/(the )?end of (the )?(day(s)?|world)/i',
+                    '/(the )?doom day/i',
+                    '/(the )?day of doom/i',
+                    '/(the )?day of (the )?last judgment/i',
+                ],
+                'date'     => '2012-12-21',
+                'time'     => '',
+            ],
+        ];
+        foreach ($specialTimeDic as $specialTime) {
+            $found = false;
+            foreach ($specialTime['patterns'] as $patterns) {
+                if (preg_match($patterns, $string)) {
+                    if ($specialTime['date']) {
+                        $date = $specialTime['date'];
+                    }
+                    if ($specialTime['time']) {
+                        $time = $specialTime['time'];
+                    }
+                    $found = true;
+                    break;
+                }
+            }
+            if ($found) {
+                break;
+            }
+        }
+        // fix time string
         if (preg_match('/^[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$/', $string)) {
             $string = preg_replace('/\./', '-', $string);
         }
