@@ -15,13 +15,28 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function getRawExfeeById($id) {
+        $key = "exfee:{$id}";
+        $rawExfee = getCache($key);
+        if (!$rawExfee) {
+            $rawExfee = $this->getAll(
+                "SELECT * FROM `invitations`
+                 WHERE `cross_id` = {$id} AND `state` <> 4"
+            );
+            setCache($key, $rawExfee);
+        }
+        return $rawExfee;
+    }
+
+
     public function getExfeeById($id, $withRemoved = false, $withToken = false) {
         // init
         $exfee_updated_at="";
         $hlpIdentity = $this->getHelperByName('identity');
         // get invitations
-        $withRemoved = $withRemoved ? '' : 'AND `state` <> 4' ;
-        $rawExfee = $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id} {$withRemoved}");
+        $rawExfee = $withRemoved
+                  ? $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id}")
+                  : $this->getRawExfeeById($id);
         $objExfee = new Exfee($id);
         $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
         foreach ($rawExfee as $ei => $eItem) {
