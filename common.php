@@ -215,6 +215,13 @@ function setCache($key, $value) {
     }
 }
 
+function delCache($key) {
+    global $redis_cache;
+    if ($key) {
+        $redis_cache->del($key);
+    }
+}
+
 // }
 
 
