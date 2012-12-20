@@ -476,8 +476,9 @@ class ExfeeModels extends DataModel {
 
 
     public function updateExfeeTime($exfee_id) {
-        $sql="update invitations set exfee_updated_at=NOW() where `cross_id`=$exfee_id;";
+        $sql="update invitations set exfee_updated_at=NOW() where `cross_id`={$exfee_id};";
         $this->query($sql);
+        delCache("exfee:{$exfee_id}");
     }
 
 
