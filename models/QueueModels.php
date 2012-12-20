@@ -107,7 +107,7 @@ class QueueModels extends DataModel {
                 continue;
             }
             // }
-            $gotInvitation = [(object) (array) $invitation];
+            $gotInvitation = [unserialize(serialize($invitation))];
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -116,7 +116,7 @@ class QueueModels extends DataModel {
                     $invitation->identity
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
-                    $tmpInvitation = (object) (array) $invitation;
+                    $tmpInvitation = unserialize(serialize($invitation));
                     $tmpInvitation->identity = $mItem;
                     $gotInvitation[] = $tmpInvitation;
                 }
@@ -251,7 +251,7 @@ class QueueModels extends DataModel {
     public function updateIdentity($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateIdentity';
-        $identity    = (object) (array) $identity;
+        $identity    = unserialize(serialize($identity));
         $identity->auth_data = json_encode($oauth_info);
         $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
@@ -261,7 +261,7 @@ class QueueModels extends DataModel {
     public function updateFriends($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateFriends';
-        $identity    = (object) (array) $identity;
+        $identity    = unserialize(serialize($identity));
         $identity->auth_data = json_encode($oauth_info);
         $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);

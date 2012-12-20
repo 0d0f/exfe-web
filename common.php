@@ -198,6 +198,31 @@ function mgetUpdate($cross_ids)
 }
 
 
+// common redis cache access by @leaskh {
+
+$redis_cache = new Redis();
+$redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
+
+function getCache($key) {
+    global $redis_cache;
+    return $key ? unserialize($redis_cache->get($key)) : null;
+}
+
+function setCache($key, $value) {
+    global $redis_cache;
+    if ($key && $value) {
+        $redis_cache->SET($key, serialize($value));
+    }
+}
+
+// }
+
+
+function deepClone($object) {
+    return unserialize(serialize($object));
+}
+
+
 function getUpdate($cross_id){
     if(intval($cross_id)>0)
     {

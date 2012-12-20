@@ -15,6 +15,11 @@ class UserHelper extends ActionController {
     }
 
 
+    public function getRawUserById($id) {
+        return $this->modUser->getRawUserById($id);
+    }
+
+
     public function getUserIdentityStatus($status_index) {
         return $this->modUser->arrUserIdentityStatus[$status_index];
     }
@@ -42,6 +47,11 @@ class UserHelper extends ActionController {
 
     public function addUser($password = '', $name = '') {
         return $this->modUser->addUser($password, $name);
+    }
+
+
+    public function getRawUserIdentityStatusByIdentityId($identity_id) {
+        return $this->modUser->getRawUserIdentityStatusByIdentityId($identity_id);
     }
 
 }
