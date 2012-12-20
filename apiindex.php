@@ -1,4 +1,14 @@
 <?php
+// start profiling by @leaskh
+// xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+xhprof_enable();
+
+
+
+
+
+
+
 error_reporting(E_ALL ^ E_NOTICE);
 session_start();
 #header('Content-Type: application/json; charset=UTF-8');
@@ -41,4 +51,17 @@ define("INVITATION_NO", 2);
 //print $_GET["class"];
 //print "<br/>";
 //print $_GET["path"];
-FrontController::createInstance()->dispatch();
+// FrontController::createInstance()->dispatch();
+
+
+
+
+
+
+
+
+
+// stop profiler by @leaskh
+$xhprof_data = xhprof_disable();
+// display raw xhprof data for the profiler run
+//print_r($xhprof_data);
