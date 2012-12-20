@@ -234,7 +234,9 @@ class UserModels extends DataModel {
             "INSERT INTO `users` SET {$passwordSql} {$nameSql}
              `created_at` = NOW(), `updated_at` = NOW()"
         );
-        return intval($dbResult['insert_id']);
+        $id = intval($dbResult['insert_id']);
+        delCache("users:{$id}");
+        return $id
     }
 
 
@@ -310,6 +312,7 @@ class UserModels extends DataModel {
                  WHERE  `userid`     = {$user_id}
                  AND    `identityid` = {$identity_id}"
             );
+            delCache("user_identity:identity_{$identity_id}");
             $orderd_ids[$identity_id] = true;
             $order++;
         }
@@ -321,6 +324,7 @@ class UserModels extends DataModel {
                      WHERE  `userid`     = {$user_id}
                      AND    `identityid` = {$identity['identityid']}"
                 );
+                delCache("user_identity:identity_{$identity['identityid']}");
                 $order++;
             }
         }
@@ -793,9 +797,11 @@ class UserModels extends DataModel {
                     `created_at` = NOW(),
                     `updated_at` = NOW()"
         );
+        delCache("user_identity:identity_{$identity_id}");
         $this->query(
             "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
         );
+        delCache("users:{$user_id}");
         return true;
     }
 
@@ -815,6 +821,7 @@ class UserModels extends DataModel {
             $password, $passwordSalt = md5(createToken())
         );
         $sqlName  = $name === '' ? '' : ", `name` = '{$name}'";
+        delCache("users:{$user_id}");
         return $this->query(
             "UPDATE `users`
              SET    `encrypted_password` = '{$password}',
@@ -833,6 +840,7 @@ class UserModels extends DataModel {
         if (isset($user['name'])) {
             $update_sql .= " `name` = '{$user['name']}', ";
         }
+        delCache("users:{$user_id}");
         return $update_sql
              ? $this->query("UPDATE `users` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$user_id}")
              : true;
@@ -878,12 +886,15 @@ class UserModels extends DataModel {
 
 
     public function updateAvatarById($user_id, $avatar_filename = '') {
-        return $user_id && $this->query(
-            "UPDATE `users`
-             SET    `avatar_file_name` = '{$avatar_filename}',
-                    `updated_at`       =  NOW()
-             WHERE  `id`               =  {$user_id}"
-        );
+        if ($user_id) {
+            delCache("users:{$user_id}");
+            return $this->query(
+                "UPDATE `users`
+                 SET    `avatar_file_name` = '{$avatar_filename}',
+                        `updated_at`       =  NOW()
+                 WHERE  `id`               =  {$user_id}"
+            );
+        }
     }
 
 
