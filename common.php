@@ -212,6 +212,7 @@ function setCache($key, $value) {
     global $redis_cache;
     if ($key && $value) {
         $redis_cache->SET($key, serialize($value));
+        $redis_cache->setTimeout($key, 604800); // 60*60*24*7
     }
 }
 
