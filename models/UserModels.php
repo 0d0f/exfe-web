@@ -205,7 +205,7 @@ class UserModels extends DataModel {
 
 
     public function getRawUserIdentityStatusByIdentityId($identity_id) {
-        $key = "user_identity:identity_{$id}";
+        $key = "user_identity:identity_{$identity_id}";
         $rawStatus = getCache($key);
         if (!$rawStatus) {
             $rawStatus = $this->getRow(
@@ -236,7 +236,7 @@ class UserModels extends DataModel {
         );
         $id = intval($dbResult['insert_id']);
         delCache("users:{$id}");
-        return $id
+        return $id;
     }
 
 
