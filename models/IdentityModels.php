@@ -156,6 +156,7 @@ class IdentityModels extends DataModel {
                  SET    {$update_sql} `updated_at` = NOW()
                  WHERE  `id` = {$identity_id}"
             );
+            delCache("identities:{$identity_id}");
             $hlpUser = $this->getHelperByName('User');
             $user_id = $hlpUser->getUserIdByIdentityId($identity_id);
             if ($user_id) {
@@ -202,6 +203,7 @@ class IdentityModels extends DataModel {
                  `updated_at`        = NOW()
              WHERE `id` = {$chgId}"////////////$nickname pending
         );
+        delCache("identities:{$chgId}");
         // merge identity
         if ($wasId > 0 && $wasId !== $id) {
             $this->query("UPDATE `invitations`
@@ -209,6 +211,7 @@ class IdentityModels extends DataModel {
                           WHERE  `identity_id` = {$id};");
             // @todo: 可能需要更新 log by @leaskh
             $this->query("DELETE FROM `identities` WHERE `id` = {$id};");
+            delCache("identities:{$id}");
         }
         // return
         return $chgId;
@@ -354,6 +357,7 @@ class IdentityModels extends DataModel {
                  `external_username` = '{$external_username}'"
             );
             $id = intval($dbResult['insert_id']);
+            delCache("identities:{$id}");
         }
         // update user information
         if ($id) {
@@ -405,6 +409,7 @@ class IdentityModels extends DataModel {
         if (!($identity_id = (int) $identity_id)) {
             return false;
         }
+        delCache("user_identity:identity_{$identity_id}");
         return $this->query(
             "UPDATE `user_identity`
              SET    `status`     = 4,
@@ -464,10 +469,11 @@ class IdentityModels extends DataModel {
 
     public function updateOAuthTokenById($identity_id, $tokens) {
         if ($identity_id && $tokens) {
+            delCache("identities:{$identity_id}");
             return $this->query(
                 "UPDATE `identities`
                  SET    `oauth_token` = '" . json_encode($tokens)
-            . "' WHERE  `id`          = $identity_id"
+            . "' WHERE  `id`          = {$identity_id}"
             );
         }
         return false;
@@ -475,12 +481,16 @@ class IdentityModels extends DataModel {
 
 
     public function updateAvatarById($identity_id, $avatar_filename = '') {
-        return $identity_id && $this->query(
-            "UPDATE `identities`
-             SET    `avatar_file_name` = '{$avatar_filename}',
-                    `updated_at`       =  NOW()
-             WHERE  `id`               =  {$identity_id}"
-        );
+        if ($identity_id) {
+            delCache("identities:{$identity_id}");
+            return $this->query(
+                "UPDATE `identities`
+                 SET    `avatar_file_name` = '{$avatar_filename}',
+                        `updated_at`       =  NOW()
+                 WHERE  `id`               =  {$identity_id}"
+            );
+        }
+        return false;
     }
 
 
@@ -499,6 +509,7 @@ class IdentityModels extends DataModel {
                  WHERE  `identityid` = {$identity_id}
                  AND    `userid`     = {$user_id}"
             );
+            delCache("user_identity:identity_{$identity_id}");
             if ($upResult) {
                 return true;
             }
