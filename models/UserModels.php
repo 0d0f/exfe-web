@@ -23,11 +23,22 @@ class UserModels extends DataModel {
     }
 
 
+    public function getRawUserById($id) {
+        $key = "users:{$id}";
+        $rawUser = getCache($key);
+        if (!$rawUser) {
+            $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
+            setCache($key, $rawUser);
+        }
+        return $rawUser;
+    }
+
+
     public function getUserById($id, $withCrossQuantity = false, $identityStatus = 3) {
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         $hlpIdentity = $this->getHelperByName('Identity');
         $id = (int) $id;
-        $rawUser = $this->getRow("SELECT * FROM `users` WHERE `id` = {$id}");
+        $rawUser = $this->getRawUserById($id);
         if ($rawUser) {
             // build user object
             $user = new User(
@@ -188,10 +199,22 @@ class UserModels extends DataModel {
 
 
     public function getUserIdByIdentityId($identity_id) {
-        $dbResult = $this->getRow(
-            "SELECT `userid` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `status` = 3"
-        );
+        $dbResult = $this->getRawUserIdentityStatusByIdentityId($identity_id);
         return $dbResult && ($user_id = (int) $dbResult['userid']) ? $user_id : null;
+    }
+
+
+    public function getRawUserIdentityStatusByIdentityId($identity_id) {
+        $key = "user_identity:identity_{$id}";
+        $rawStatus = getCache($key);
+        if (!$rawStatus) {
+            $rawStatus = $this->getRow(
+                "SELECT * FROM `user_identity`
+                 WHERE `identityid` = {$identity_id} AND `status` = 3"
+            );
+            setCache($key, $rawStatus);
+        }
+        return $rawStatus;
     }
 
 
