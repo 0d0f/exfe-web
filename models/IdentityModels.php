@@ -21,13 +21,9 @@ class IdentityModels extends DataModel {
                 }
                 $status = $hlpUser->getUserIdentityStatus($chkUserIdentity['status']);
             }
-            $rawUserIdentity = $rawUserIdentity ?: $this->getRow(
-                "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 3"
-            );
+            $rawUserIdentity = $rawUserIdentity ?: $hlpUser->getRawUserIdentityStatusByIdentityId($rawIdentity['id']);
             if ($rawUserIdentity && $rawUserIdentity['userid']) {
-                $rawUser = $this->getRow(
-                    "SELECT * FROM `users` WHERE `id` = {$rawUserIdentity['userid']}"
-                );
+                $rawUser = $hlpUser->getRawUserById($rawUserIdentity['userid']);
                 if ($rawUser) {
                     $rawIdentity['bio']              = $rawIdentity['bio']              ?: $rawUser['bio'];
                     $rawIdentity['avatar_file_name'] = $rawIdentity['avatar_file_name'] ?: $rawUser['avatar_file_name'];
@@ -79,18 +75,28 @@ class IdentityModels extends DataModel {
     }
 
 
+    public function getRawIdentityById($id) {
+        $key = "identities:{$id}";
+        $rawIdentity = getCache($key);
+        if (!$rawIdentity) {
+            $rawIdentity = $this->getRow(
+                "SELECT * FROM `identities` WHERE `id` = {$id}"
+            );
+            setCache($key, $rawIdentity);
+        }
+        return $rawIdentity;
+    }
+
+
     public function checkIdentityById($id) {
-        $rawIdentity = $this->getRow(
-            "SELECT `id` FROM `identities` WHERE `id` = {$id}"
-        );
+        $rawIdentity = $this->getRawIdentityById($id);
         return $rawIdentity ? (int) $rawIdentity['id'] : false;
     }
 
 
     public function getIdentityById($id, $user_id = null, $withRevoked = false) {
-        return $this->packageIdentity($this->getRow(
-            "SELECT * FROM `identities` WHERE `id` = {$id}"
-        ), $user_id, $withRevoked);
+        $rawIdentity = $this->getRawIdentityById($id);
+        return $this->packageIdentity($rawIdentity, $user_id, $withRevoked);
     }
 
 
