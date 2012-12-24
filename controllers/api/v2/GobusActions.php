@@ -309,4 +309,19 @@ class GobusActions extends ActionController {
         apiResponse([]);
     }
 
+
+    public function doGetCrossById() {
+        $params = $this->params;
+        $id = @ (int) $params['id'];
+        if ($id) {
+            $hlpCross = $this->getHelperByName('Cross');
+            $cross = $hlpCross->getCross($id, true);
+            if ($cross) {
+                echo json_encode($cross);
+                return;
+            }
+        }
+        header('HTTP/1.1 404 Not Found');
+    }
+
 }
