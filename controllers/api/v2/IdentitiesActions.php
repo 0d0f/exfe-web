@@ -29,20 +29,23 @@ class IdentitiesActions extends ActionController {
         // get
         if ($arrIdentities) {
             foreach ($arrIdentities as $identityI => $identityItem) {
-                if ($identityItem->external_id) {
+                $id_str   = '';
+                $identity = null;
+                if (@$identityItem->id) {
+                    $identity = $modIdentity->getIdentityById($identityItem->id);
+                } elseif (@$identityItem->provider
+                       && @$identityItem->external_id) {
                     $id_str   = $identityItem->external_id;
                     $identity = $modIdentity->getIdentityByProviderExternalId(
                         $identityItem->provider, $id_str
                     );
-                } elseif ($identityItem->external_username) {
+                } elseif (@$identityItem->provider
+                       && @$identityItem->external_username) {
                     $id_str   = $identityItem->external_username;
                     $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
                         $identityItem->provider, $id_str
                     );
                 } else {
-                    $id_str   = '';
-                }
-                if (!$identityItem->provider || !$id_str) {
                     apiError(400, 'error_identity_info', 'error identity information');
                 }
                 if ($identity) {
@@ -52,7 +55,6 @@ class IdentitiesActions extends ActionController {
                         case 'email':
                             $objEmail = Identity::parseEmail($id_str);
                             if ($objEmail) {
-                                ;
                                 $objIdentities[] = new Identity(
                                     0,
                                     $identityItem->name ?: $objEmail['name'],
@@ -89,10 +91,10 @@ class IdentitiesActions extends ActionController {
                     }
                 }
             }
-            if (DEBUG) {
-                error_log(json_encode($objIdentities));
+            if ($objIdentities) {
+                apiResponse(['identities' => $objIdentities]);
             }
-            apiResponse(['identities' => $objIdentities]);
+            apiError(404, 'identity_not_found', 'identity not found');
         } else {
             apiError(400, 'no_identities', 'identities must be provided');
         }
