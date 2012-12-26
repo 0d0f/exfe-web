@@ -138,6 +138,7 @@ class QueueModels extends DataModel {
                             case 'facebook':
                                 $head10[]  = $item;
                                 break;
+                            case 'mobile':
                             case 'twitter':
                             case 'iOS':
                             case 'Android':
@@ -149,6 +150,7 @@ class QueueModels extends DataModel {
                     foreach ($gotInvitation as $item) {
                         switch ($item->identity->provider) {
                             case 'email':
+                            case 'mobile':
                             case 'twitter':
                             case 'facebook':
                             case 'iOS':
@@ -165,6 +167,7 @@ class QueueModels extends DataModel {
                             case 'facebook':
                                 $tail10[]  = $item;
                                 break;
+                            case 'mobile':
                             case 'iOS':
                             case 'Android':
                                 $head2[]   = $item;
