@@ -42,7 +42,6 @@ class IdentityModels extends DataModel {
                         $objParsed = Identity::parseEmail($rawIdentity['external_username']);
                         $rawIdentity['name'] = $objParsed['name'];
                         break;
-                    case 'twitter':
                     default:
                         $rawIdentity['name'] = $rawIdentity['external_username'];
                 }
@@ -276,6 +275,7 @@ class IdentityModels extends DataModel {
         // basic check
         switch ($provider) {
             case 'email':
+            case 'mobile':
                 if (!$external_id && !$external_username) {
                     return null;
                 }
@@ -319,6 +319,9 @@ class IdentityModels extends DataModel {
                 case 'email':
                     $external_id = $external_username = $external_id ?: $external_username;
                     $avatar_filename = $this->getGravatarByExternalUsername($external_username);
+                    break;
+                case 'mobile':
+                    $external_id = $external_username = $external_id ?: $external_username;
                     break;
                 case 'twitter':
                     $rawIdentity = $hlpOAuth->getTwitterProfileByExternalUsername(
