@@ -340,6 +340,7 @@ class UserModels extends DataModel {
             $rtResult = ['reason' => 'NO_USER'];
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -362,6 +363,7 @@ class UserModels extends DataModel {
             $rtResult['reason'] = 'NO_PASSWORD';
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -390,6 +392,7 @@ class UserModels extends DataModel {
             $rtResult = array('reason'  => 'REVOKED');
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -406,6 +409,7 @@ class UserModels extends DataModel {
             $rtResult = ['reason' => 'RELATED'];
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -436,6 +440,7 @@ class UserModels extends DataModel {
                 $user_id = $user_id ?: $this->addUser();
                 switch ($identity->provider) {
                     case 'email':
+                    case 'mobile':
                         if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
                             return null;
                         }
@@ -484,6 +489,7 @@ class UserModels extends DataModel {
         // case provider
         switch ($identity->provider) {
             case 'email':
+            case 'mobile':
                 // update database
                 if ($result['token']) {
                     $hlpExfeAuth->updateToken($result['token'], $data);       // update
