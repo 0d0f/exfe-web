@@ -72,7 +72,7 @@ class UserModels extends DataModel {
                             'token_type'  => 'verification_token',
                             'action'      => 'VERIFY',
                             'identity_id' => (int) $item['identityid'],
-                        ]);
+                        ], $item['provider'] === 'mobile');
                         if ($curTokens && is_array($curTokens)) {
                             foreach ($curTokens as $cI => $cItem) {
                                 $cItem['data'] = (array) json_decode($cItem['data']);
@@ -471,7 +471,8 @@ class UserModels extends DataModel {
         // get current token
         $expireSec = 60 * 60 * 24 * 2; // 2 days
         $result['token'] = '';
-        $curTokens = $hlpExfeAuth->findToken($resource);
+        $short = $identity->provider === 'mobile';
+        $curTokens = $hlpExfeAuth->findToken($resource, $short);
         if ($curTokens && is_array($curTokens)) {
             foreach ($curTokens as $cI => $cItem) {
                 $cItem['data'] = (array) json_decode($cItem['data']);
@@ -490,14 +491,15 @@ class UserModels extends DataModel {
         switch ($identity->provider) {
             case 'email':
             case 'mobile':
-                // update database
+                // call token service
                 if ($result['token']) {
-                    $hlpExfeAuth->updateToken($result['token'], $data);       // update
-                    $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
+                    $hlpExfeAuth->updateToken($result['token'], $data, $short);       // update
+                    $hlpExfeAuth->refreshToken($result['token'], $expireSec, $short); // extension
                     $actResult = true;
                 } else {
-                    $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
-                        $resource, $data, $expireSec
+                    // make new token
+                    $actResult = $result['token'] = $hlpExfeAuth->generateToken(
+                        $resource, $data, $expireSec, $short
                     );
                 }
                 // return
