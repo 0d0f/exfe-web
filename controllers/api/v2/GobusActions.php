@@ -288,25 +288,29 @@ class GobusActions extends ActionController {
         }
         // decode json
         $identity = (array) json_decode($str_args);
-        $identity['provider']          = mysql_real_escape_string($identity['provider']);
-        $identity['external_username'] = mysql_real_escape_string($identity['external_username']);
-        if (!$identity['provider'] || !$identity['external_username']) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo 'Error input!';
-            return;
+        $identity['id']                = isset($identity['id'])                ? (int) $identity['id']                                    : 0;
+        $identity['provider']          = isset($identity['provider'])          ? mysql_real_escape_string($identity['provider'])          : '';
+        $identity['external_username'] = isset($identity['external_username']) ? mysql_real_escape_string($identity['external_username']) : '';
+        if (!$identity['id']) {
+            if ($identity['provider'] && $identity['external_username']) {
+                // get identity id
+                $identity['id'] = $modIdentity->getIdentityByProviderAndExternalUsername(
+                    $identity['provider'], $identity['external_username'], false, true
+                );
+            }
         }
-        // get identity id
-        $id = $modIdentity->getIdentityByProviderAndExternalUsername(
-            $identity['provider'], $identity['external_username'], false, true
-        );
-        if (!$id) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo 'Identity not found!';
-            return;
+        if ($identity['id']) {
+            // revoke
+            $modIdentity->revokeIdentity($identity['id']);
+            // get identity
+            $objIdentity = $modIdentity->getIdentityById($identity['id']);
+            if ($objIdentity) {
+                echo json_encode($objIdentity);
+                return;
+            }
         }
-        // revoke
-        $modIdentity->revokeIdentity($id);
-        apiResponse([]);
+        header('HTTP/1.1 500 Internal Server Error');
+        echo 'Identity not found!';
     }
 
 
