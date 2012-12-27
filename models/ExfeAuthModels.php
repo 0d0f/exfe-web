@@ -10,69 +10,65 @@ class ExfeAuthModels extends DataModel {
     }
 
 
-    protected function useTokenApi($method, $args) {
+    protected function useTokenApi($method, $args, $short = false) {
         return $this->hlpGobus->useGobusApi(
-            EXFE_AUTH_SERVER, 'TokenManager', $method, $args, true
+            EXFE_AUTH_SERVER,
+            $short ? 'ShortTokenManager' : 'TokenManager',
+            $method, $args, true
         );
     }
 
 
-    public function generateToken($resource, $data, $expireAfterSeconds) {
+    public function generateToken($resource, $data, $expireAfterSeconds, $short = false) {
         return $this->useTokenApi('Generate', [
             'resource'             => $resource,
             'data'                 => $data,
             'expire_after_seconds' => $expireAfterSeconds,
-        ]);
+        ], $short);
     }
 
 
-    public function getToken($token) {
-        return $this->useTokenApi('Get', $token);
+    public function getToken($token, $short = false) {
+        return $this->useTokenApi('Get', $token, $short);
     }
 
 
-    public function findToken($resource) {
-        return $this->useTokenApi('Find', $resource);
+    public function findToken($resource, $short = false) {
+        return $this->useTokenApi('Find', $resource, $short);
     }
 
 
-    public function updateToken($token, $data) {
+    public function updateToken($token, $data, $short = false) {
         return $this->useTokenApi('Update', [
             'Token'    => $token,
             'Data'     => $data,
-        ]);
+        ], $short);
     }
 
 
-    public function verifyToken($token, $resource) {
+    public function verifyToken($token, $resource, $short = false) {
         return $this->useTokenApi('Verify', [
             'token'    => $token,
             'resource' => $resource,
-        ]);
+        ], $short);
     }
 
 
-    public function deleteToken($token) {
-        return $this->useTokenApi('Delete', $token);
-    }
-
-
-    public function refreshToken($token, $expireAfterSeconds) {
+    public function refreshToken($token, $expireAfterSeconds, $short = false) {
         return $this->useTokenApi('Refresh', [
             'token'                => $token,
             'expire_after_seconds' => $expireAfterSeconds,
-        ]);
+        ], $short);
     }
 
 
-    public function expireToken($token) {
-        return $this->useTokenApi('Expire', $token);
+    public function expireToken($token, $short = false) {
+        return $this->useTokenApi('Expire', $token, $short);
     }
 
 
-    public function expireAllTokens($resource) {
-        return $this->useTokenApi('ExpireAll', $resource);
+    public function expireAllTokens($resource, $short = false) {
+        return $this->useTokenApi('ExpireResource', $resource, $short);
     }
-
 
 }
