@@ -555,9 +555,9 @@ class UserModels extends DataModel {
     }
 
 
-    public function resolveToken($token) {
+    public function resolveToken($token, $short = false) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
-        if (($curToken = $hlpExfeAuth->getToken($token))
+        if (($curToken = $hlpExfeAuth->getToken($token, $short))
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
@@ -614,17 +614,19 @@ class UserModels extends DataModel {
                                             'created_time'   => time(),
                                             'updated_time'   => time(),
                                         ];
-                                        $hlpExfeAuth->updateToken($token, $curToken['data']);
+                                        $hlpExfeAuth->updateToken(
+                                            $token, $curToken['data'], $short
+                                        );
                                         // }
                                     }
                                 }
                             }
                             // }
                             if ($siResult['password']) {
-                                $hlpExfeAuth->expireAllTokens($resource);
+                                $hlpExfeAuth->expireAllTokens($resource, $short);
                                 $rtResult['action'] = 'VERIFIED';
                             } else {
-                                $hlpExfeAuth->refreshToken($token, 233);
+                                $hlpExfeAuth->refreshToken($token, 233, $short);
                                 $rtResult['action'] = 'INPUT_NEW_PASSWORD';
                             }
                             return $rtResult;
@@ -637,7 +639,7 @@ class UserModels extends DataModel {
                         $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
-                        $hlpExfeAuth->refreshToken($token, 233);
+                        $hlpExfeAuth->refreshToken($token, 233, $short);
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );

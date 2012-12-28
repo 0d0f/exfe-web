@@ -5,13 +5,13 @@ class HomeActions extends ActionController {
     public function doIndex() {
         // rsvp
         $modExfee = $this->getModelByName('Exfee');
+        $modUser  = $this->getModelByName('User');
         $token = mysql_real_escape_string($_GET['token']);
         $rsvp  = strtolower(mysql_real_escape_string($_GET['rsvp']));
         if ($token && $rsvp) {
             if (($objToken = $modExfee->getRawInvitationByToken($token))
              && $objToken['valid']
              && $rsvp === 'accept') {
-                $modUser = $this->getModelByName('User');
                 $user_id = $modUser->getUserIdByIdentityId($objToken['identity_id']);
                 $rsvp    = new stdClass;
                 $rsvp->identity_id    = $objToken['identity_id'];
@@ -24,6 +24,15 @@ class HomeActions extends ActionController {
             } else if ($rsvp === 'accept') {
                 header("location: /#!token={$token}/accept");
             }
+        }
+        // get sms token
+        $this->setVar('sms_token', null);
+        if (isset($_GET['t'])) {
+            $t = mysql_real_escape_string($_GET['t']);
+            if (($objToken = $modUser->resolveToken($t, true))) {
+                $objToken['origin_token'] = $t;
+            }
+            $this->setVar('sms_token', $objToken ?: false);
         }
         // case USER_AGENT
         if (!isset($_GET['ipad'])
