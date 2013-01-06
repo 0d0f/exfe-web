@@ -42,13 +42,34 @@ class HomeActions extends ActionController {
             $this->displayViewByAction('mobile');
             return;
         } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')
-        && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.5')
-         || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0'))) {
+               && (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 8.0')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7.0')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6.0')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.5')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0'))) {
             $this->displayViewByNameAction('matters', 'browser_matters');
             return;
+        } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'Android')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'BlackBerry')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Nokia')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Symbian')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'SymbOS')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Series 60')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'S60')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Windows Phone')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Windows CE')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'IEMobile')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'SonyEricsson')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Kindle')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'NetFront')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Opera Mini')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Opera Mobi')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'J2ME')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'MIDP')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Skyfire')
+                || strpos($_SERVER['HTTP_USER_AGENT'], 'Fennec')) {
+            //
+            //return;
         }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
