@@ -2,7 +2,7 @@
 
 class GobusModels extends DataModel {
 
-    public function useGobusApi($server, $api, $method, $args, $encode_fields = false) {
+    public function useGobusApi($server, $api, $method, $args, $encode_fields = false, $get = false, $id = '') {
         if ($method && $args) {
             if ($encode_fields && is_array($args)) {
                 foreach ($args as $aI => $aItem) {
@@ -11,14 +11,25 @@ class GobusModels extends DataModel {
                     }
                 }
             }
-            $url       = "{$server}/{$api}?method={$method}";
+            $getArgs = '';
+            if ($get) {
+                foreach ($args as $aI => $aItem) {
+                    $getArgs .= ($getArgs ? '&' : '?') . "{$aI}=" . json_encode($aItem);
+                }
+            }
+            $url       = "{$server}/{$api}"
+                       . ($id     ? "/{$id}"            : '')
+                       . ($method ? "?method={$method}" : '')
+                       . $getArgs;
             $objCurl   = curl_init();
             curl_setopt($objCurl, CURLOPT_URL, $url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($objCurl, CURLOPT_HEADER, false);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
-            curl_setopt($objCurl, CURLOPT_POST, 1);
-            curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode($args));
+            if (!$get) {
+                curl_setopt($objCurl, CURLOPT_POST, 1);
+                curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode($args));
+            }
             $rawResult = @curl_exec($objCurl);
             $httpCode  = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
