@@ -7,11 +7,11 @@ class HomeActions extends ActionController {
         // shorttoken debuging {
         // $modAuth = $this->getModelByName('ExfeAuth');
         // $a = $modAuth->generateToken(['a' => 1, 'b' => 2], ['c' => 3, 'd' => 4], 1000, true);
-        // $a = $modAuth->getToken('2865', true);
-        // $a = $modAuth->updateToken('2865', ['e' => 5, 'f' => 6], true);
-        // $a = $modAuth->refreshToken('2865', 10000, true);
+        // $a = $modAuth->getToken('8439', true);
+        // $a = $modAuth->updateToken('8439', ['e' => 5, 'f' => 6], true);
+        // $a = $modAuth->refreshToken('8439', 10000, true);
         // $a = $modAuth->findToken(['a' => 1, 'b' => 2], true);
-        // $a = $modAuth->expireToken('2865', true);
+        // $a = $modAuth->expireToken('4456', true);
         // $a = $modAuth->expireAllTokens(['a' => 1, 'b' => 2], true);
         // var_dump($a);
         // return;
