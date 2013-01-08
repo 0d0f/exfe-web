@@ -3,7 +3,7 @@
 class GobusModels extends DataModel {
 
     public function useGobusApi($server, $api, $method, $args, $encode_fields = false, $get = false, $id = '') {
-        if ($method && $args) {
+        if ($args) {
             if ($encode_fields && is_array($args)) {
                 foreach ($args as $aI => $aItem) {
                     if (is_array($aItem)) {
@@ -14,7 +14,7 @@ class GobusModels extends DataModel {
             $getArgs = '';
             if ($get) {
                 foreach ($args as $aI => $aItem) {
-                    $getArgs .= ($getArgs ? '&' : '?') . "{$aI}=" . json_encode($aItem);
+                    $getArgs .= "&{$aI}=" . (is_array($aItem) ? json_encode($aItem) : $aItem);
                 }
             }
             $url       = "{$server}/{$api}"
@@ -26,17 +26,14 @@ class GobusModels extends DataModel {
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($objCurl, CURLOPT_HEADER, false);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
-            if (!$get) {
-                curl_setopt($objCurl, CURLOPT_POST, 1);
-                curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode($args));
-            }
+            curl_setopt($objCurl, CURLOPT_POST, 1);
+            curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode($get ? '' : $args));
             $rawResult = @curl_exec($objCurl);
             $httpCode  = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
             if ($rawResult !== false && $httpCode === 200) {
-                $httpBody = (
-                    $rtDecode = @json_decode($rawResult, true)
-                ) === null ? $rawResult : $rtDecode;
+                $httpBody = ($rtDecode = @json_decode($rawResult, true)) === null
+                          ? $rawResult : $rtDecode;
                 if ($httpBody) {
                     if (is_array($httpBody)) {
                         foreach ($httpBody as $hI => $hItem) {

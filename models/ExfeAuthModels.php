@@ -57,21 +57,21 @@ class ExfeAuthModels extends DataModel {
 
     public function refreshToken($token, $expireAfterSeconds, $short = false) {
         return $short
-             ? $this->useTokenApi('PUT', ['expire_after_second' => $expireAfterSeconds], true, false, $token)
+             ? $this->useTokenApi('PUT', ['expire_after_seconds' => $expireAfterSeconds], true, false, $token)
              : $this->useTokenApi('Refresh', ['token' => $token, 'expire_after_seconds' => $expireAfterSeconds]);
     }
 
 
     public function expireToken($token, $short = false) {
         return $short
-             ? $this->useTokenApi('PUT', ['expire_after_second' => 0], true, false, $token)
+             ? $this->useTokenApi('PUT', ['expire_after_seconds' => 0], true, false, $token)
              : $this->useTokenApi('Expire', $token);
     }
 
 
     public function expireAllTokens($resource, $short = false) {
         return $short
-             ? $this->useTokenApi('Expire', ['resource' => $resource, 'expire_after_second' => $expireAfterSeconds], true)
+             ? $this->useTokenApi('Expire', ['resource' => $resource, 'expire_after_seconds' => 0], true)
              : $this->useTokenApi('ExpireAll', $resource);
     }
 
