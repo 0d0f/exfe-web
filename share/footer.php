@@ -35,14 +35,14 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['eftime',        '0.0.6'],
+    ['humantime',     '0.0.1'],
     ['api',           '0.0.4'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.2'],
     ['xdialog',       '0.1.9'],
-    ['datepanel',     '0.1.0'],
+    ['datepanel',     '0.1.1'],
     ['mappanel',      '0.0.4'],
     ['global',        '0.0.5'],
 ]);
@@ -51,7 +51,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.0.12'],
+    ['profile',       '0.1.0'],
     ['user',          '0.0.7'],
 ]);
 
