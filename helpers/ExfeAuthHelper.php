@@ -32,11 +32,6 @@ class ExfeAuthHelper extends ActionController {
     }
 
 
-    public function verifyToken($token, $resource, $short = false) {
-        return $this->modExfeAuth->verifyToken($token, $resource, $short);
-    }
-
-
     public function refreshToken($token, $expireAfterSeconds, $short = false) {
         return $this->modExfeAuth->refreshToken($token, $expireAfterSeconds, $short);
     }
