@@ -18,6 +18,7 @@ addScript([
 
 echo "  <script>\n";
 include 'ftconfig.php';
+echo " var sms_token = " . json_encode($this->getVar('sms_token')) . ";\n";
 echo "  </script>\n";
 
 addScript([
