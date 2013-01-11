@@ -39,6 +39,7 @@ class ExfeeModels extends DataModel {
                   : $this->getRawExfeeById($id);
         $objExfee = new Exfee($id);
         $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
+        $users    = [];
         foreach ($rawExfee as $ei => $eItem) {
             $objIdentity  = $hlpIdentity->getIdentityById($eItem['identity_id']);
             $oivIdentity  = $hlpIdentity->getIdentityById($eItem['invited_by']);
