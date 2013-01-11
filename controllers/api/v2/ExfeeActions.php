@@ -123,4 +123,82 @@ class ExfeeActions extends ActionController {
         apiError(400, 'editing failed', '');
     }
 
+
+    public function doChangeIdentity() {
+        // get libs
+        $params      = $this->params;
+        $modIdentity = $this->getModelByName('identity');
+        $modExfee    = $this->getModelByName('exfee');
+        $hlpCheck    = $this->getHelperByName('check');
+        // basic check
+        if (!($exfee_id = intval($params['id']))) {
+            apiError(400, 'no_exfee_id', 'exfee_id must be provided');
+        }
+        $identity_id = @ (int) $_POST['identity_id'];
+        if (!$identity_id) {
+            apiError(400, 'input_error', 'identity_id input error');
+        }
+        // get cross id
+        $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
+        // check rights
+        $result   = $hlpCheck->isAPIAllow('cross', $params['token'], ['cross_id' => $cross_id]);
+        if (!$result['check']) {
+            if ($result['uid']) {
+                apiError(403, 'not_authorized', 'You are not a member of this exfee.');
+            }
+            apiError(401, 'invalid_auth', '');
+        }
+        $identity = $modIdentity->getIdentityById($identity_id);
+        if (!$identity || $identity->connected_user_id !== $result['uid']) {
+            apiError(403, 'not_authorized', 'This identity is not belongs to you.');
+        }
+        // getting current invitation
+        $exfee = $modExfee->getExfeeById($exfee_id);
+        $cur_invitation    = null;
+        $cur_invitation_id = 0;
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->connected_user_id === $result['uid']) {
+                switch ($invitation->rsvp_status) {
+                    case 'NORESPONSE':
+                    case 'ACCEPTED':
+                    case 'INTERESTED':
+                    case 'DECLINED':
+                    case 'IGNORED':
+                        $cur_invitation = $invitation;
+                }
+            }
+            if ($invitation->identity->id === $identity->id) {
+                $cur_invitation_id = $invitation->id;
+            }
+        }
+        if (!$cur_invitation) {
+            apiError(403, 'not_authorized', 'You are not authorized to edit this exfee.');
+        }
+        // adding new invitation
+        $new_invitation = deepclone($cur_invitation);
+        $new_invitation->identity = $identity;
+        if ($cur_invitation_id) {
+            $new_invitation->id = $cur_invitation_id;
+            $add_result = $modExfee->updateInvitation($new_invitation, $identity->id);
+        } else {
+            $add_result = $modExfee->addInvitationIntoExfee($new_invitation, $exfee_id, $identity->id);
+        }
+        // updating current invitation
+        $rmv_result = false;
+        if ($add_result) {
+            if ($cur_invitation->identity->id === $identity->id) {
+                $rmv_result = true;
+            } else {
+                $cur_invitation->rsvp_status = 'REMOVED';
+                $rmv_result = $modExfee->updateInvitation($cur_invitation, $identity->id);
+            }
+        }
+        // updating exfee cache
+        delCache("exfee:{$exfee_id}");
+        if ($add_result && $rmv_result && ($exfee = $modExfee->getExfeeById($exfee_id))) {
+            apiResponse(['exfee' => $exfee]);
+        }
+        apiError(400, 'changing failed', '');
+    }
+
 }
