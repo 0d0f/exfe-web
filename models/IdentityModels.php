@@ -121,7 +121,7 @@ class IdentityModels extends DataModel {
 
 
     public function isIdentityBelongsUser($identity_id, $user_id, $connected = true) {
-        $sql = "SELECT `identityid` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `userid` = {$user_id} "
+        $sql = "SELECT `identityid` FROM `user_identity` WHERE `identityid` = {$identity_id} AND `userid` = {$user_id} AND "
              . ($connected ? '`status` = 3' : '`status` > 1');
         $row = $this->getRow($sql);
         if(intval($row["identityid"])>0)
