@@ -10,11 +10,14 @@ class Exfee extends EFObject {
 
     public $accepted    = 0;
 
+    public $name        = '';
 
-    public function __construct($id = 0, $invitations = array()) {
+
+    public function __construct($id = 0, $invitations = [], $name = '') {
         parent::__construct($id, 'exfee');
 
         $this->invitations = $invitations;
+        $this->name        = $name;
     }
 
 
