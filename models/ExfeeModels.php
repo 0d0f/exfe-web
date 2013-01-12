@@ -40,6 +40,8 @@ class ExfeeModels extends DataModel {
         $objExfee = new Exfee($id);
         $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
         $users    = [];
+        $weights  = ['ACCEPTED' => 0, 'INTERESTED'   => 1, 'DECLINED'   => 2, 'IGNORED' => 3,
+                     'REMOVED'  => 4, 'NOTIFICATION' => 5, 'NORESPONSE' => 6];
         foreach ($rawExfee as $ei => $eItem) {
             $objIdentity  = $hlpIdentity->getIdentityById($eItem['identity_id']);
             $oivIdentity  = $hlpIdentity->getIdentityById($eItem['invited_by']);
@@ -60,10 +62,35 @@ class ExfeeModels extends DataModel {
                 $eItem['host'],
                 $eItem['mates']
             );
+            // getting litest rsvp status
+            if (($user_id = $objIdentity->connected_user_id) > 0) {
+                $idx = sizeof($objExfee->invitations) - 1;
+                if (isset($users[$user_id])) {
+                    $logW = $weights[$users[$user_id]->rsvp_status];
+                    $curW = $weights[$objExfee->invitations[$idx]->rsvp_status];
+                    $logO = $users[$user_id]->identity->order;
+                    $curO = $objExfee->invitations[$idx]->identity->order;
+                    if ($curW < $logW || ($curW === $logW && $curO < $logO)) {
+                        $users[$user_id] = $objExfee->invitations[$idx];
+                    }
+                } else {
+                    $users[$user_id] = $objExfee->invitations[$idx];
+                }
+            }
         }
+        // clean invitations
+        foreach ($users as $user_inv) {
+            foreach ($objExfee->invitations as $i => $invitation) {
+                if ($user_inv->id                          !== $invitation->id
+                 && $user_inv->identity->connected_user_id === $invitation->identity->connected_user_id
+                 && $invitation->rsvp_status               !== 'REMOVED') {
+                    $objExfee->invitations[$i]->rsvp_status = 'NOTIFICATION';
+                }
+            }
+        }
+        // return
         $objExfee->updated_at = $exfee_updated_at . ' +0000';
         $objExfee->summary();
-        // return
         return $objExfee;
     }
 
