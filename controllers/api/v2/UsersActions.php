@@ -720,20 +720,22 @@ class UsersActions extends ActionController {
 
         $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
-        if($result["check"]!==true)
-        {
-            if($result["uid"]===0)
+        if ($result["check"] !== true) {
+            if ($result["uid"] === 0)
                 apiError(401,"invalid_auth","");
         }
 
-        $exfeeHelper= $this->getHelperByName('exfee');
-        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
-        $crossHelper= $this->getHelperByName('cross');
-        if($updated_at!='')
-            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,true,$uid);
-        else
-            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,false,$uid);
-        apiResponse(array("crosses"=>$cross_list));
+        $exfeeHelper = $this->getHelperByName('exfee');
+        $exfee_id_list = $exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
+        $crossHelper = $this->getHelperByName('cross');
+        $cross_list = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, !!$updated_at, $uid);
+        foreach ($cross_list as $i => $cross) {
+            if ($cross->attribute['deleted']) {
+                unset($cross_list[$i]);
+            }
+        }
+        sort($cross_list);
+        apiResponse(['crosses' => $cross_list]);
     }
 
 
@@ -923,8 +925,15 @@ class UsersActions extends ActionController {
         }
         // release memory
         unset($rawCrosses);
+        // clean deleted
+        foreach ($crosses as $i => $cross) {
+            if ($cross->attribute['deleted']) {
+                unset($crosses[$i]);
+            }
+        }
+        sort($crosses);
         // return
-        apiResponse(array('crosses' => $crosses, 'more' => $more));
+        apiResponse(['crosses' => $crosses, 'more' => $more]);
     }
 
 
