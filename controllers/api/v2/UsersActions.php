@@ -739,6 +739,43 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doArchivedCrosses() {
+        // @todo: 此处为临时方案，应该直接从 invitations 开始筛选，才能取得更完整的结果。 by @leaskh
+        $params = $this->params;
+        $uid    = (int) $params['id'];
+
+        $checkHelper = $this->getHelperByName('check');
+        $result = $checkHelper->isAPIAllow('user_crosses', $params['token'], ['user_id' => $uid]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0)
+                apiError(401, 'invalid_auth', '');
+        }
+
+        $exfeeHelper = $this->getHelperByName('exfee');
+        $exfee_id_list = $exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
+        $crossHelper = $this->getHelperByName('cross');
+        $cross_list  = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, false, $uid);
+        foreach ($cross_list as $i => $cross) {
+            $archived = false;
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $uid
+                 && $invitation->rsvp_status                 !== 'REMOVED'
+                 && $invitation->rsvp_status                 !== 'NOTIFICATION') {
+                    if (in_array('ARCHIVED', $invitation->remark)) {
+                        $archived = true;
+                        break;
+                    }
+                }
+            }
+            if ($cross->attribute['deleted'] || !$archived) {
+                unset($cross_list[$i]);
+            }
+        }
+        sort($cross_list);
+        apiResponse(['crosses' => $cross_list]);
+    }
+
+
     public function doCrossList() {
         // init helpers
         $hlpCheck   = $this->getHelperByName('check');
