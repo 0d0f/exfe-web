@@ -82,8 +82,8 @@ class HomeActions extends ActionController {
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'MIDP')
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'Skyfire')
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'Fennec')) {
-            //
-            //return;
+            // @todo
+            // return;
         }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
