@@ -107,7 +107,7 @@ class CrossModels extends DataModel {
                 $cross_updated['title']       = $updated;
             }
 
-            if ($cross->description && $old_cross && mysql_real_escape_string($old_cross->description) !== $cross->description) {
+            if (isset($cross->description) && $old_cross && mysql_real_escape_string($old_cross->description) !== $cross->description) {
                 array_push($updatefields, "`description`     = '{$cross->description}'");
                 $cross_updated['description'] = $updated;
             }
