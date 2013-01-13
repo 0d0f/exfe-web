@@ -133,7 +133,24 @@ class CrossModels extends DataModel {
                 $cross_updated['background']  = $updated;
             }
 
-            $updatesql=implode($updatefields, ',');
+            $helpExfee = $this->getHelperByName('Exfee');
+            $host_ids  = $this->getHostIdentityIdsByExfeeId($exfee_id);
+            if ($host_ids && is_array($host_ids) && in_array($by_identity_id, $host_ids)) {
+                if ($cross->attribute && is_array($cross->attribute)) {
+                    $status = ['draft' => 0, 'published' => 1, 'deleted' => 2];
+                    if (isset($cross->attribute['state'])
+                     && isset($status[$cross->attribute['state']])) {
+                        array_push($updatefields, '`state`  = ' . $status[$cross->attribute['state']]);
+                    }
+                    if (isset($cross->attribute['closed'])) {
+                        array_push($updatefields, '`closed` = ' . !!$cross->attribute['closed']);
+                    }
+                }
+            } else if ($old_cross->attribute['state'] !== 'published' || $old_cross->attribute['closed']) {
+                return 0;
+            }
+
+            $updatesql = implode($updatefields, ',');
             if ($updatesql) {
                 $sql    = "UPDATE `crosses` SET `updated_at` = NOW(), {$updatesql} WHERE `id` = {$cross->id}";
                 $result = $this->query($sql);
