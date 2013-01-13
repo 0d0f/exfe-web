@@ -42,8 +42,8 @@ addScript([
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.2'],
     ['xdialog',       '0.1.9'],
-    ['datepanel',     '0.1.1'],
-    ['mappanel',      '0.0.4'],
+    ['datepanel',     '0.1.2'],
+    ['mappanel',      '0.0.5'],
     ['global',        '0.0.5'],
 ]);
 
