@@ -780,63 +780,22 @@ class UsersActions extends ActionController {
         $rawCrosses = [];
         if ($fetchIncl['upcoming'] || $fetchIncl['sevendays'] || $fetchIncl['later']) {
             $rawCrosses['future']   = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future', $today);
-            // clean archived {
             foreach ($rawCrosses['future'] as $cI => $cross) {
-                $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
-                     && in_array('ARCHIVED', $invitation->remark)) {
-                        $archived = true;
-                        break;
+                     && $invitation->rsvp_status                !== 'REMOVED'
+                     && $invitation->rsvp_status                !== 'NOTIFICATION'
+                     && in_array('')) {
+
                     }
                 }
-                if ($archived) {
-                    unset($rawCrosses['future'][$cI]);
-                }
             }
-            // }
         }
         if ($fetchIncl['past']) {
             $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',   $today);
-            // clean archived {
-            foreach ($rawCrosses['past'] as $cI => $cross) {
-                $archived = false;
-                foreach ($cross->exfee->invitations as $iI => $invitation) {
-                    if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
-                     && in_array('ARCHIVED', $invitation->remark)) {
-                        $archived = true;
-                        break;
-                    }
-                }
-                if ($archived) {
-                    unset($rawCrosses['past'][$cI]);
-                }
-            }
-            // }
         }
         if ($fetchIncl['sometime']) {
             $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime');
-            // clean archived {
-            foreach ($rawCrosses['sometime'] as $cI => $cross) {
-                $archived = false;
-                foreach ($cross->exfee->invitations as $iI => $invitation) {
-                    if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
-                     && in_array('ARCHIVED', $invitation->remark)) {
-                        $archived = true;
-                        break;
-                    }
-                }
-                if ($archived) {
-                    unset($rawCrosses['sometime'][$cI]);
-                }
-            }
-            // }
         }
         // sort crosses
         $crosses   = [];
