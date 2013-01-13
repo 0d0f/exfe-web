@@ -195,6 +195,40 @@ class CrossModels extends DataModel {
     }
 
 
+    public function archiveCrossByCrossIdAndUserId($cross_id, $user_id, $archive = true) {
+        if (!$cross_id || !$user_id) {
+            return null;
+        }
+        $hlpCross = $this->getHelperByName('Cross');
+        $hlpExfee = $this->getHelperByName('Exfee');
+        $cross    = $hlpCross->getCross($cross_id);
+        if ($cross) {
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $user_id
+                 && $invitation->rsvp_status                 !== 'REMOVED'
+                 && $invitation->rsvp_status                 !== 'NOTIFICATION') {
+                    $key = array_search('ARCHIVED', $invitation->remark);
+                    if ($key === false && $archive) {
+                        $invitation->remark[] = 'ARCHIVED';
+                        $hlpExfee->updateInvitationRemarkById(
+                            $invitation->id, $invitation->remark
+                        );
+                    } else if ($key !== false && !$archive) {
+                        unset($invitation->remark[$key]);
+                        $invitation->remark = array_values($invitation->remark);
+                        $hlpExfee->updateInvitationRemarkById(
+                            $invitation->id, $invitation->remark
+                        );
+                    }
+                }
+            }
+            delCache("exfee:{$cross->exfee->id}");
+            return true;
+        }
+        return null;
+    }
+
+
     public function validateCross($cross, $old_cross = null) {
         // init
         $result = ['cross' => $cross, 'error' => []];
