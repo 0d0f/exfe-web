@@ -60,7 +60,8 @@ class ExfeeModels extends DataModel {
                 $eItem['created_at'],
                 $eItem['updated_at'],
                 $eItem['host'],
-                $eItem['mates']
+                $eItem['mates'],
+                $eItem['remark'] ? explode(';', $eItem['remark']) : []
             );
             // getting litest rsvp status
             if (($user_id = $objIdentity->connected_user_id) > 0) {
@@ -174,7 +175,8 @@ class ExfeeModels extends DataModel {
                     $rawInvitation['created_at'],
                     $rawInvitation['updated_at'],
                     $rawInvitation['host'],
-                    $rawInvitation['mates']
+                    $rawInvitation['mates'],
+                    $rawInvitation['remark'] ? explode(';', $rawInvitation['remark']) : []
                 );
             }
         }
