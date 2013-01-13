@@ -24,4 +24,9 @@ class ExfeeHelper extends ActionController {
         return $this->modExfee->getHostIdentityIdsByExfeeId($exfee_id);
     }
 
+
+    public function updateInvitationRemarkById($id, $remark) {
+        return $this->modExfee->updateInvitationRemarkById($id, $remark);
+    }
+
 }

@@ -291,9 +291,39 @@ class CrossesActions extends ActionController {
                 $cross->exfee->invitations[$i]->token = '';
             }
             apiResponse(['cross' => $cross]);
-        } else {
-            apiError(500,"server_error","Can't Edit this Cross.");
         }
+        apiError(500, 'server_error', "Can't Edit this Cross.");
+    }
+
+
+    public function doArchive() {
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        $archive  = isset($_POST['archive']) && strtolower($_POST['archive']) === 'false' ? false : true;
+        if (!$cross_id) {
+            apiError(403, 'not_authorized', "The X you're requesting is private.");
+        }
+
+        $checkHelper = $this->getHelperByName('check');
+        $hlpCross    = $this->getHelperByName('Cross');
+        $modCross    = $this->getModelByName('Cross');
+
+        $result = $checkHelper->isAPIAllow('user', $params['token']);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+        }
+
+        if ($modCross->archiveCrossByCrossIdAndUserId($cross_id, $result['uid'], $archive)) {
+            $cross = $hlpCross->getCross($cross_id);
+            if ($cross) {
+                apiResponse(['cross' => $cross]);
+            }
+        }
+        apiError(500, 'server_error', "Can't Edit this Cross.");
     }
 
 }

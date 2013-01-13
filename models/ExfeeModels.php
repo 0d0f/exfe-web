@@ -297,6 +297,14 @@ class ExfeeModels extends DataModel {
     }
 
 
+    public function updateInvitationRemarkById($id, $remark) {
+        $remark = strtoupper(implode(';', $remark));
+        return $this->query(
+            "UPDATE `invitations` SET `remark` = '{$remark}' WHERE `id` = $id"
+        );
+    }
+
+
     public function updateRsvpByExfeeId($exfee_id, $rsvp) {
         // base check
         $identity_id    = (int)$rsvp->identity_id;
