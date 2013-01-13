@@ -561,4 +561,16 @@ class ExfeeModels extends DataModel {
         return intval($result['exfee_id']);
     }
 
+
+    public function getHostIdentityIdsByExfeeId($exfee_id) {
+        $hosts   = [];
+        $rawInvs = $this->getRawExfeeById($exfee_id);
+        foreach (($rawInvs && is_array($rawInvs)) ? $rawInvs : [] as $rawInv) {
+            if ($rawInv['state'] !== 4 && $rawInv['host']) {
+                $hosts[] = $rawInv['identity_id'];
+            }
+        }
+        return $hosts ?: null;
+    }
+
 }
