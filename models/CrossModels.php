@@ -107,7 +107,7 @@ class CrossModels extends DataModel {
                 $cross_updated['title']       = $updated;
             }
 
-            if ($cross->description && $old_cross && mysql_real_escape_string($old_cross->description) !== $cross->description) {
+            if (isset($cross->description) && $old_cross && mysql_real_escape_string($old_cross->description) !== $cross->description) {
                 array_push($updatefields, "`description`     = '{$cross->description}'");
                 $cross_updated['description'] = $updated;
             }
@@ -133,7 +133,24 @@ class CrossModels extends DataModel {
                 $cross_updated['background']  = $updated;
             }
 
-            $updatesql=implode($updatefields, ',');
+            $helpExfee = $this->getHelperByName('Exfee');
+            $host_ids  = $this->getHostIdentityIdsByExfeeId($exfee_id);
+            if ($host_ids && is_array($host_ids) && in_array($by_identity_id, $host_ids)) {
+                if ($cross->attribute && is_array($cross->attribute)) {
+                    $status = ['draft' => 0, 'published' => 1, 'deleted' => 2];
+                    if (isset($cross->attribute['state'])
+                     && isset($status[$cross->attribute['state']])) {
+                        array_push($updatefields, '`state`  = ' . $status[$cross->attribute['state']]);
+                    }
+                    if (isset($cross->attribute['closed'])) {
+                        array_push($updatefields, '`closed` = ' . !!$cross->attribute['closed']);
+                    }
+                }
+            } else if ($old_cross->attribute['state'] !== 'published' || $old_cross->attribute['closed']) {
+                return 0;
+            }
+
+            $updatesql = implode($updatefields, ',');
             if ($updatesql) {
                 $sql    = "UPDATE `crosses` SET `updated_at` = NOW(), {$updatesql} WHERE `id` = {$cross->id}";
                 $result = $this->query($sql);
@@ -175,6 +192,40 @@ class CrossModels extends DataModel {
         $sql = "select exfee_id from crosses where `id` = $cross_id;";
         $result = $this->getRow($sql);
         return $result["exfee_id"];
+    }
+
+
+    public function archiveCrossByCrossIdAndUserId($cross_id, $user_id, $archive = true) {
+        if (!$cross_id || !$user_id) {
+            return null;
+        }
+        $hlpCross = $this->getHelperByName('Cross');
+        $hlpExfee = $this->getHelperByName('Exfee');
+        $cross    = $hlpCross->getCross($cross_id);
+        if ($cross) {
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $user_id
+                 && $invitation->rsvp_status                 !== 'REMOVED'
+                 && $invitation->rsvp_status                 !== 'NOTIFICATION') {
+                    $key = array_search('ARCHIVED', $invitation->remark);
+                    if ($key === false && $archive) {
+                        $invitation->remark[] = 'ARCHIVED';
+                        $hlpExfee->updateInvitationRemarkById(
+                            $invitation->id, $invitation->remark
+                        );
+                    } else if ($key !== false && !$archive) {
+                        unset($invitation->remark[$key]);
+                        $invitation->remark = array_values($invitation->remark);
+                        $hlpExfee->updateInvitationRemarkById(
+                            $invitation->id, $invitation->remark
+                        );
+                    }
+                }
+            }
+            delCache("exfee:{$cross->exfee->id}");
+            return true;
+        }
+        return null;
     }
 
 
