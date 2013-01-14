@@ -9,7 +9,7 @@ class CrossesActions extends ActionController {
             $updated_at = strtotime($updated_at);
         }
         $checkHelper=$this->getHelperByName('check');
-        $result=$checkHelper->isAPIAllow("cross",$params["token"],array("cross_id"=>$params["id"]));
+        $result=$checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
@@ -17,15 +17,18 @@ class CrossesActions extends ActionController {
             else
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
-        $crossHelper=$this->getHelperByName('cross');
-        $cross=$crossHelper->getCross($params["id"]);
-        if ($cross===NULL) {
-            apiError(400,"param_error","The X you're requesting is not found.");
+        $crossHelper = $this->getHelperByName('cross');
+        $cross = $crossHelper->getCross($params["id"]);
+        if ($cross) {
+            if ($cross->attribute['deleted']) {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+            if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
+                apiError(304, 'Cross Not Modified.');
+            }
+            apiResponse(['cross' => $cross]);
         }
-        if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
-            apiError(304, 'Cross Not Modified.');
-        }
-        apiResponse(array("cross"=>$cross));
+        apiError(400, 'param_error', "The X you're requesting is not found.");
     }
 
 
@@ -70,6 +73,10 @@ class CrossesActions extends ActionController {
                 'cross'     => $hlpCross->getCross($invitation['cross_id']),
                 'read_only' => true,
             ];
+            // check cross status
+            if ($result['cross']->attribute['deleted']) {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
             // used token
             if ($invitation['valid']) {
                 $modExfee->usedToken($invToken);
@@ -249,13 +256,13 @@ class CrossesActions extends ActionController {
         $by_identity_id=$cross->by_identity->id;
         $checkHelper = $this->getHelperByName('check');
         $crossHelper = $this->getHelperByName('cross');
-        $result=$checkHelper->isAPIAllow("cross_edit",$params["token"],array("cross_id"=>$params["id"],"by_identity_id"=>$by_identity_id));
+        $result=$checkHelper->isAPIAllow("cross_edit",$params["token"], ["cross_id" => $params["id"], "by_identity_id" => $by_identity_id]);
         if($result["check"]!==true)
         {
             if($result["uid"]===0)
-                apiError(401,"invalid_auth","");
+                apiError(401, "invalid_auth", '');
             else
-                apiError(403,"not_authorized","The X you're requesting is private.");
+                apiError(403, "not_authorized", "The X you're requesting is private.");
         }
 
         if (DEBUG) {
@@ -284,9 +291,39 @@ class CrossesActions extends ActionController {
                 $cross->exfee->invitations[$i]->token = '';
             }
             apiResponse(['cross' => $cross]);
-        } else {
-            apiError(500,"server_error","Can't Edit this Cross.");
         }
+        apiError(500, 'server_error', "Can't Edit this Cross.");
+    }
+
+
+    public function doArchive() {
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        $archive  = isset($_POST['archive']) && strtolower($_POST['archive']) === 'false' ? false : true;
+        if (!$cross_id) {
+            apiError(403, 'not_authorized', "The X you're requesting is private.");
+        }
+
+        $checkHelper = $this->getHelperByName('check');
+        $hlpCross    = $this->getHelperByName('Cross');
+        $modCross    = $this->getModelByName('Cross');
+
+        $result = $checkHelper->isAPIAllow('user', $params['token']);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+        }
+
+        if ($modCross->archiveCrossByCrossIdAndUserId($cross_id, $result['uid'], $archive)) {
+            $cross = $hlpCross->getCross($cross_id);
+            if ($cross) {
+                apiResponse(['cross' => $cross]);
+            }
+        }
+        apiError(500, 'server_error', "Can't Edit this Cross.");
     }
 
 }
