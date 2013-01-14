@@ -36,7 +36,7 @@ echo "  </script>\n";
 
 addScript([
     ['humantime',     '0.0.3'],
-    ['api',           '0.0.5'],
+    ['api',           '0.0.6'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
@@ -66,7 +66,11 @@ addScript([
 ]);
 
 // google map
-echo "  <script src=\"https://maps.googleapis.com/maps/api/js?v=3.9&key=" . GOOGLE_MAP_KEY . "&sensor=false&libraries=places\"></script>\n";
+echo <<<EOT
+<script type="text/javascript">
+document.write('<' + 'script src="' + 'https://maps.googleapis.com/maps/api/js?v=3.9&key=AIzaSyAyf8GhrvOBDT8iMjZ9eKaV4H-5u7R1rN0&sensor=false&libraries=places' + '"' + ' type="text/javascript"><' + '/script>');
+</script>
+EOT;
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
