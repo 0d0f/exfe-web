@@ -66,11 +66,13 @@ addScript([
 ]);
 
 // google map
+$GOOGLE_MAP_KEY = GOOGLE_MAP_KEY;
 echo <<<EOT
 <script type="text/javascript">
-document.write('<' + 'script src="' + 'https://maps.googleapis.com/maps/api/js?v=3.9&key=AIzaSyAyf8GhrvOBDT8iMjZ9eKaV4H-5u7R1rN0&sensor=false&libraries=places' + '"' + ' type="text/javascript"><' + '/script>');
+document.write('<' + 'script src="' + 'https://maps.googleapis.com/maps/api/js?v=3.9&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places' + '"' + ' type="text/javascript"><' + '/script>');
 </script>
 EOT;
+unset($GOOGLE_MAP_KEY);
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
