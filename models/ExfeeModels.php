@@ -60,7 +60,8 @@ class ExfeeModels extends DataModel {
                 $eItem['created_at'],
                 $eItem['updated_at'],
                 $eItem['host'],
-                $eItem['mates']
+                $eItem['mates'],
+                $eItem['remark'] ? explode(';', $eItem['remark']) : []
             );
             // getting litest rsvp status
             if (($user_id = $objIdentity->connected_user_id) > 0) {
@@ -174,7 +175,8 @@ class ExfeeModels extends DataModel {
                     $rawInvitation['created_at'],
                     $rawInvitation['updated_at'],
                     $rawInvitation['host'],
-                    $rawInvitation['mates']
+                    $rawInvitation['mates'],
+                    $rawInvitation['remark'] ? explode(';', $rawInvitation['remark']) : []
                 );
             }
         }
@@ -291,6 +293,14 @@ class ExfeeModels extends DataModel {
              `host`             = {$host},
              `mates`            = {$mates}{$sqlToken}
              WHERE `id`         = {$invitation->id}"
+        );
+    }
+
+
+    public function updateInvitationRemarkById($id, $remark) {
+        $remark = strtoupper(implode(';', $remark));
+        return $this->query(
+            "UPDATE `invitations` SET `remark` = '{$remark}' WHERE `id` = $id"
         );
     }
 
@@ -559,6 +569,18 @@ class ExfeeModels extends DataModel {
             "SELECT `exfee_id` FROM `crosses` WHERE `id` = $cross_id"
         );
         return intval($result['exfee_id']);
+    }
+
+
+    public function getHostIdentityIdsByExfeeId($exfee_id) {
+        $hosts   = [];
+        $rawInvs = $this->getRawExfeeById($exfee_id);
+        foreach (($rawInvs && is_array($rawInvs)) ? $rawInvs : [] as $rawInv) {
+            if ($rawInv['state'] !== 4 && $rawInv['host']) {
+                $hosts[] = $rawInv['identity_id'];
+            }
+        }
+        return $hosts ?: null;
     }
 
 }
