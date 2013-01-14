@@ -3,6 +3,7 @@
 require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/facebook.php';
+require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
 require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
 
@@ -277,6 +278,55 @@ class OAuthModels extends DataModel {
             );
         }
         return null;
+    }
+
+    // }
+
+    // instagram {
+
+    public function instagramRedirect($workflow) {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
+        );
+        $this->setSession('instagram', '', '', $workflow);
+        return $instagram->authorizeUrl(
+            INSTAGRAM_REDIRECT_URI,
+            ['basic', 'comments', 'likes', 'relationships']
+        );
+    }
+
+
+    public function getInstagramProfile() {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
+        );
+        $profile = $instagram->getAccessToken(
+            $_GET['code'], INSTAGRAM_REDIRECT_URI
+        );
+        if ($profile && isset($profile->access_token) && isset($profile->user)) {
+            return [
+                'identity'    => new Identity(
+                    0,
+                    $profile->user->full_name,
+                    '',
+                    $profile->user->bio,
+                    'instagram',
+                    0,
+                    $profile->user->id,
+                    $profile->user->username,
+                    $profile->user->profile_picture
+                ),
+                'oauth_token' => ['oauth_token' => $profile->access_token],
+            ];
+        }
+    }
+
+
+    public function getInstagramUsersSelfFeed($oauth_token) {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, $oauth_token['oauth_token']
+        );
+        return $instagram->get('users/self/feed');
     }
 
     // }
