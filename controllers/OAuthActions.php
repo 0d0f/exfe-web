@@ -33,11 +33,16 @@ class OAuthActions extends ActionController {
             case 'facebook':
                 $urlOauth = $modOauth->facebookRedirect($workflow);
                 break;
+            case 'instagram':
+                $urlOauth = $modOauth->instagramRedirect($workflow);
+                break;
             default:
                 apiError(400, 'no_provider', '');
         }
         if ($urlOauth) {
-            if ($webResponse) {
+            // if ($webResponse) {
+            // @todo: recovery this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if ($webResponse || $provider === 'instagram') {
                 header("Location: {$urlOauth}");
                 return;
             }
@@ -195,6 +200,84 @@ class OAuthActions extends ActionController {
           ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
           : '/'
         ));
+    }
+
+
+    public function doInstagramCallBack() {
+        $modOauth = $this->getModelByName('OAuth');
+        $oauthIfo = $modOauth->getSession();
+        $workflow = $oauthIfo ?  $oauthIfo['workflow'] : null;
+        $isMobile = $workflow ? ($workflow['callback']
+                 && $workflow['callback']['oauth_device']
+                 && $workflow['callback']['oauth_device_callback']) : false;
+        if (!$oauthIfo || $oauthIfo['external_service'] !== 'instagram') {
+            if ($isMobile) {
+                $modOauth->resetSession();
+                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+            } else {
+                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'facebook']);
+                header('location: /');
+            }
+            return;
+        }
+        $profile = $modOauth->getInstagramProfile();
+        $oauthToken = $profile['oauth_token'];
+        if ($oauthToken) {
+            //////////////////////////
+            $feed = $modOauth->getInstagramUsersSelfFeed($oauthToken);
+            echo json_encode($feed);
+            return;
+            //////////////////////////
+            $rawIdentity = $modOauth->getFacebookProfile($oauthToken['oauth_token']);
+            if ($rawIdentity) {
+                $result = $modOauth->handleCallback($rawIdentity, $oauthIfo, $oauthToken);
+                if (!$result) {
+                    if ($isMobile) {
+                        $modOauth->resetSession();
+                        header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                    } else {
+                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'facebook']);
+                        header('location: /');
+                    }
+                    return;
+                }
+                if ($isMobile) {
+                    header(
+                        "location: {$workflow['callback']['oauth_device_callback']}"
+                      . "?token={$result['oauth_signin']['token']}"
+                      . "&name={$result['identity']->name}"
+                      . "&userid={$result['oauth_signin']['user_id']}"
+                      . "&external_id={$result['identity']->external_id}"
+                      . "&provider={$result['identity']->provider}"
+                      . "&identity_status={$result['identity_status']}"
+                      . "&twitter_following={$result['twitter_following']}"
+                      . (isset($workflow['verification_token'])
+                      ? "&verification_token={$workflow['verification_token']}"
+                      : '')
+                    );
+                    return;
+                }
+                $modOauth->addtoSession([
+                    'oauth_signin'       => $result['oauth_signin'],
+                    'identity'           => (array) $result['identity'],
+                    'provider'           => $result['identity']->provider,
+                    'identity_status'    => $result['identity_status'],
+                ]);
+                header('location: /');
+                return;
+            }
+        }
+        $modOauth->resetSession();
+        header('location: ' . (
+            $isMobile
+          ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
+          : '/'
+        ));
+
+
+
+
+
     }
 
 
