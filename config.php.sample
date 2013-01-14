@@ -53,6 +53,12 @@ define('FACEBOOK_APP_ID', '210626042352165');
 define('FACEBOOK_SECRET_KEY', 'd6aa2f4e5f19dfbbd933304033f28db2');
 define('FACEBOOK_OAUTH_CALLBACK', SITE_URL.'/OAuth/facebookCallBack');
 
+define('INSTAGRAM_CLIENT_ID', '821a4ee86a0a4f80a5d0390a8180e08e');
+define('INSTAGRAM_CLIENT_SECRET', 'c63497820adf443c80e570a0d61fe163');
+define('INSTAGRAM_REDIRECT_URI', SITE_URL.'/OAuth/InstagramCallBack');
+
+define('GOOGLE_MAP_KEY', 'AIzaSyAgYKtU2lpDg_HYH_rP2MIna0DFyIoEGMs');
+
 define('GOOGLE_CLIENT_ID', '968124746422.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET', 'Z8POTJnYqNOVciDHNmjBsxLs');
 define('GOOGLE_REDIRECT_URIS', SITE_URL.'/OAuth/googleOAuthCallback');
