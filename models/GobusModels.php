@@ -19,6 +19,9 @@ class GobusModels extends DataModel {
                        . ($id     ? "/{$id}"            : '')
                        . ($method ? "?method={$method}" : '')
                        . $strArgs;
+            if (DEBUG) {
+                error_log("URL: {$url}");
+            }
             $objCurl   = curl_init();
             curl_setopt($objCurl, CURLOPT_URL, $url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
