@@ -179,9 +179,11 @@ class OAuthModels extends DataModel {
 
     public function facebookRedirect($workflow) {
         $this->setSession('facebook', '', '', $workflow);
-        return 'https://graph.facebook.com/oauth/authorize?client_id='
-             . FACEBOOK_APP_ID         . '&redirect_uri='
-             . FACEBOOK_OAUTH_CALLBACK . '&type=web_server';
+        return 'https://graph.facebook.com/oauth/authorize'
+             . '?client_id='    . FACEBOOK_APP_ID
+             . '&redirect_uri=' . FACEBOOK_OAUTH_CALLBACK
+             . '&type=web_server'
+             . '&scope=user_photos,email,user_birthday,user_online_presence,status_update,photo_upload,video_upload,create_note,share_item,publish_stream';
     }
 
 
@@ -195,10 +197,11 @@ class OAuthModels extends DataModel {
             return null;
         }
         $objCurl = curl_init(
-            'https://graph.facebook.com/oauth/access_token?client_id='
-          . FACEBOOK_APP_ID         . '&redirect_uri='
-          . FACEBOOK_OAUTH_CALLBACK . '&client_secret='
-          . FACEBOOK_SECRET_KEY     . "&code={$oauthCode}"
+            'https://graph.facebook.com/oauth/access_token'
+          . '?client_id='     . FACEBOOK_APP_ID
+          . '&redirect_uri='  . FACEBOOK_OAUTH_CALLBACK
+          . '&client_secret=' . FACEBOOK_SECRET_KEY
+          . "&code={$oauthCode}"
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
