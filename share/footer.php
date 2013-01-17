@@ -36,7 +36,7 @@ echo "  </script>\n";
 
 addScript([
     ['humantime',     '0.0.3'],
-    ['api',           '0.0.6'],
+    ['api',           '0.0.7'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
