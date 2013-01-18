@@ -83,7 +83,7 @@ class TimeModels extends DataModel {
             ['Lunch'],
             ['Noon'],
             ['Afternoon'],
-            ['Tea-break', 'tea break', 'teabreak'],
+            ['Tea-break', 'tea break', 'teabreak', 'Tea-time', 'tea time', 'teatime'],
             ['Coffee-break', 'coffee break'],
             ['Off-work',  'off work',  'offwork'],
             ['Dinner'],
@@ -108,8 +108,14 @@ class TimeModels extends DataModel {
             $time_word = $fuzzyTime[0];
         }
         // get raw date
-        $rawDate  = strtotime($untreated);
-        if ($rawDate !== false) {
+        $pattern = '/^.*([0-9]{4}\-[0-9]{1,4}\-[0-9]{1,4}).*$/';
+        if (preg_match($pattern, $untreated)
+         && ($rawDStr = preg_replace($pattern, '$1', $untreated))
+         && ($rawDate = strtotime($rawDStr)) !== false) {
+            $date = date('Y-m-d', $rawDate);
+            $untreated = str_replace($rawDStr, '', $untreated);
+        } else if (($rawDate = strtotime($untreated)) && $rawDate !== false) {
+            $date = date('Y-m-d', $rawDate);
             $year = date('Y', $rawDate);
             if (mb_substr_count($untreated, $year, 'utf8') === 1) {
                 $untreated = str_replace($year, '', $untreated);
@@ -205,7 +211,7 @@ class TimeModels extends DataModel {
         }
         // get date
         $rawDate  = strtotime($dtUntreated);
-        if ($rawDate !== false) {
+        if (!$date && $rawDate !== false) {
             $rawDate += $intDayPlus * 60 * 60 * 24;
             $date = date('Y-m-d', $rawDate);
         }
