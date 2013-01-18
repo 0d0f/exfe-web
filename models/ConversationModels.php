@@ -54,7 +54,7 @@ class ConversationModels extends DataModel {
         $post->postable_type  = mysql_real_escape_string($post->postable_type);
         $time                 = $timestamp ? "FROM_UNIXTIME({$timestamp})" : 'NOW()';
         $sql                  = "insert into posts (identity_id,content,postable_id,postable_type,created_at,updated_at)
-                                 values ({$post->by_identity_id}, '{$post->content}', {$post->postable_id}, '{$post->postable_type}', {$time}, NOW());";
+                                 values ({$post->by_identity_id}, '{$post->content}', {$post->postable_id}, '{$post->postable_type}', {$time}, {$time});";
         $result               = $this->query($sql);
         $post_id              = intval($result['insert_id']);
         if ($post_id) {
