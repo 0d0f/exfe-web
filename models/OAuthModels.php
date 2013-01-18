@@ -192,6 +192,27 @@ class OAuthModels extends DataModel {
     }
 
 
+    public function getFacebookPermissions($oauthToken) {
+        if (!$oauthToken) {
+            return null;
+        }
+        $objCurl = curl_init(
+            "https://graph.facebook.com/me/permissions?access_token={$oauthToken}"
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
+            $data = $data['data'];
+            if (sizeof($data) > 0) {
+                return array_keys((array) $data[0]);
+            }
+        }
+        return null;
+    }
+
+
     public function getFacebookOAuthToken($oauthCode) {
         if (!$oauthCode) {
             return null;
