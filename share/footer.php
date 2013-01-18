@@ -36,12 +36,12 @@ echo "  </script>\n";
 
 addScript([
     ['humantime',     '0.0.3'],
-    ['api',           '0.0.6'],
+    ['api',           '0.0.7'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.2'],
-    ['xdialog',       '0.1.9'],
+    ['xdialog',       '0.1.10'],
     ['datepanel',     '0.1.2'],
     ['mappanel',      '0.0.5'],
     ['global',        '0.0.5'],
@@ -51,7 +51,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.1'],
+    ['profile',       '0.1.2'],
     ['user',          '0.0.7'],
 ]);
 
