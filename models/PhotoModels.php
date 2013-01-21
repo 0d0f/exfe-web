@@ -32,7 +32,19 @@ class PhotoModels extends DataModel {
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
-                    return $data['data'];
+                    $albums = [];
+                    foreach ($data['data'] as $album) {
+                        $albums[] = [
+                            'external_id' => $album->id,
+                            'provider'    => 'facebook',
+                            'caption'     => $album->name,
+                            'count'       => $album->count,
+                            'by_identity' => $identity,
+                            'created_at'  => date('Y-m-d H:i:s', strtotime($album->created_time)),
+                            'updated_at'  => date('Y-m-d H:i:s', strtotime($album->updated_time)),
+                        ];
+                    }
+                    return $albums;
                 }
             }
         }
