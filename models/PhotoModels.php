@@ -2,13 +2,44 @@
 
 class PhotoModels extends DataModel {
 
-    public function packPhoto() {
-
+    public function packPhoto($rawPhoto) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $identity = $hlpIdentity->getIdentityById($rawPhoto['by_identity_id']);
+        $location = $rawPhoto['location_lng'] &&  $rawPhoto['location_lat'] ? new Place(
+            0, '', '', $rawPhoto['location_lng'], $rawPhoto['location_lat'],
+            $rawPhoto['provider'],   $rawPhoto['external_id'],
+            $rawPhoto['created_at'], $rawPhoto['updated_at']
+        ) : null;
+        $images   = [
+            'fullsize'  => [
+                'height' => $rawPhoto['fullsize_height'],
+                'width'  => $rawPhoto['fullsize_width'],
+                'url'    => $rawPhoto['fullsize_url'],
+            ],
+            'thumbnail' => [
+                'height' => $rawPhoto['thumbnail_height'],
+                'width'  => $rawPhoto['thumbnail_width'],
+                'url'    => $rawPhoto['thumbnail_url'],
+            ],
+        ];
+        return new Photo(
+            $rawPhoto['id'], $rawPhoto['caption'], $identity,
+            $rawPhoto['created_at'], $rawPhoto['updated_at'],
+            $rawPhoto['provider'],   $rawPhoto['external_id'],
+            $location, $images
+        );
     }
 
 
     public function getPhotosByCrossId($cross_id) {
-
+        $photos = [];
+        $rawPhotos = $this->getAll(
+            "SELECT * FROM `photos` WHERE `cross_id` = {$cross_id}"
+        );
+        foreach ($rawPhotos ?: [] as $rawPhoto) {
+            $photos[] = $this->packPhoto($rawPhoto);
+        }
+        return $photos;
     }
 
 
@@ -54,11 +85,11 @@ class PhotoModels extends DataModel {
 
     public function getPhotosFromFacebook($identity_id, $album_id) {
         $hlpIdentity = $this->getHelperByName('Identity');
-        $identity = $hlpIdentity->getIdentityById($identity_id);
+        $identity    = $hlpIdentity->getIdentityById($identity_id);
         if ($identity
          && $identity->connected_user_id > 0
          && $identity->provider === 'facebook') {
-            $token = $hlpIdentity->getOAuthTokenById($identity_id);
+            $token   = $hlpIdentity->getOAuthTokenById($identity_id);
             if ($token
              && $token['oauth_token']
              && $token['oauth_expires'] > time()) {
@@ -70,14 +101,102 @@ class PhotoModels extends DataModel {
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
-                    return $data['data'];
+                    $albums = [];
+                    foreach ($data['data'] as $photo) {
+                        $created_at = date('Y-m-d H:i:s', strtotime($photo->created_time));
+                        $updated_at = date('Y-m-d H:i:s', strtotime($photo->updated_time));
+                        $albums[]   = $this->packPhoto([
+                            'id'                  => 0,
+                            'cross_id'            => 0,
+                            'caption'             => $photo->name,
+                            'by_identity_id'      => $identity_id,
+                            'created_at'          => $created_at,
+                            'updated_at'          => $updated_at,
+                            'external_created_at' => $created_at,
+                            'external_updated_at' => $updated_at,
+                            'provider'            => 'facebook',
+                            'external_id'         => $photo->id,
+                            'location_lng'        => '',
+                            'location_lat'        => '',
+                            'fullsize_url'        => $photo->images[0]->source,
+                            'fullsize_width'      => $photo->images[0]->width,
+                            'fullsize_height'     => $photo->images[0]->height,
+                            'thumbnail_url'       => $photo->source,
+                            'thumbnail_width'     => $photo->width,
+                            'thumbnail_height'    => $photo->height,
+                        ]);
+                    }
+                    return $albums;
                 }
             }
         }
         return null;
     }
 
+
+    public function addFacebookAlbumToCross($album_id, $cross_id, $identity_id) {
+        if ($album_id && $cross_id && $identity_id) {
+            $photos = $this->getPhotosFromFacebook($identity_id, $album_id);
+            if ($photos !== null) {
+                return $this->addPhotosToCross($cross_id, $photos, $identity_id);
+            }
+        }
+        return null;
+    }
+
     // }
+
+
+    public function addPhotosToCross($cross_id, $photos, $identity_id) {
+        if ($cross_id && is_array($photos) && $identity_id) {
+            foreach ($photos as $photo) {
+                $strSql = "
+                    `caption`             = '{$photo->caption}',
+                    `by_identity_id`      =  {$identity_id},
+                    `updated_at`          =  NOW(),
+                    `external_created_at` = '" . date('Y-m-d H:i:s', strtotime($photo->created_at)) . "',
+                    `external_updated_at` = '" . date('Y-m-d H:i:s', strtotime($photo->updated_at)) . "',
+                    `location_lng`        = '" . ($photo->location ? $photo->location->lng  :  '')  . "',
+                    `location_lat`        = '" . ($photo->location ? $photo->location->lat  :  '')  . "',
+                    `fullsize_url`        = '{$photo->images['fullsize']['url']}',
+                    `fullsize_width`      =  {$photo->images['fullsize']['width']},
+                    `fullsize_height`     =  {$photo->images['fullsize']['height']},
+                    `thumbnail_url`       = '{$photo->images['thumbnail']['url']}',
+                    `thumbnail_width`     =  {$photo->images['thumbnail']['width']},
+                    `thumbnail_height`    =  {$photo->images['thumbnail']['height']}
+                ";
+                $curImg = $this->getRow(
+                    "SELECT * FROM `photos`
+                     WHERE `cross_id`     =  {$cross_id}
+                     AND   `provider`     = 'facebook'
+                     AND   `external_id`  = '{$photo->external_id}'"
+                );
+                if ($curImg) {
+                    $this->query(
+                        "UPDATE `photos` SET     {$strSql}
+                         WHERE  `cross_id`    =  {$cross_id}
+                         AND    `provider`    = 'facebook'
+                         AND    `external_id` = '{$photo->external_id}'"
+                    );
+                } else {
+                    print_r("INSERT INTO `photos` SET
+                         `cross_id`           =  {$cross_id},
+                         `provider`           = 'facebook',
+                         `external_id`        = '{$photo->external_id}',
+                         `created_at`         =  NOW(), {$strSql}");
+                    $this->query(
+                        "INSERT INTO `photos` SET
+                         `cross_id`           =  {$cross_id},
+                         `provider`           = 'facebook',
+                         `external_id`        = '{$photo->external_id}',
+                         `created_at`         =  NOW(), {$strSql}"
+                    );
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 
 
     // instagram {

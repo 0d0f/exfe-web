@@ -18,7 +18,7 @@ class Photo extends EFObject {
 
     public $location    = null;
 
-    public $image       = null;
+    public $images      = null;
 
     public $siblings    = null;
 
@@ -31,7 +31,7 @@ class Photo extends EFObject {
                                 $provider    = '',
                                 $external_id = '',
                                 $location    = null,
-                                $image       = [],
+                                $images      = [],
                                 $siblings    = []) {
         parent::__construct(intval($id), 'Photo');
 
@@ -44,7 +44,7 @@ class Photo extends EFObject {
         $this->provider    = $provider;
         $this->external_id = $external_id;
         $this->location    = $location ?: null;
-        $this->image       = $image    ?: [];
+        $this->images      = $images   ?: [];
         $this->siblings    = $siblings ?: [];
         $this->created_at  = $created_at . ' +0000';
         $this->updated_at  = $updated_at . ' +0000';
