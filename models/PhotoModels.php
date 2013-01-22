@@ -179,11 +179,6 @@ class PhotoModels extends DataModel {
                          AND    `external_id` = '{$photo->external_id}'"
                     );
                 } else {
-                    print_r("INSERT INTO `photos` SET
-                         `cross_id`           =  {$cross_id},
-                         `provider`           = 'facebook',
-                         `external_id`        = '{$photo->external_id}',
-                         `created_at`         =  NOW(), {$strSql}");
                     $this->query(
                         "INSERT INTO `photos` SET
                          `cross_id`           =  {$cross_id},
