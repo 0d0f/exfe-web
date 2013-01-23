@@ -109,17 +109,18 @@ class PhotoModels extends DataModel {
                 curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
-                if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
+                if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
                     $albums = [];
                     foreach ($data['data'] as $album) {
                         $albums[] = [
-                            'external_id' => $album->id,
+                            'external_id' => $album['id'],
                             'provider'    => 'facebook',
-                            'caption'     => $album->name,
-                            'count'       => $album->count,
+                            'caption'     => $album['name'],
+                            'count'       => $album['count'],
+                            'size'        => -1,
                             'by_identity' => $identity,
-                            'created_at'  => date('Y-m-d H:i:s', strtotime($album->created_time)),
-                            'updated_at'  => date('Y-m-d H:i:s', strtotime($album->updated_time)),
+                            'created_at'  => date('Y-m-d H:i:s', strtotime($album['created_time'])),
+                            'updated_at'  => date('Y-m-d H:i:s', strtotime($album['updated_time'])),
                         ];
                     }
                     return $albums;
@@ -147,30 +148,30 @@ class PhotoModels extends DataModel {
                 curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
-                if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
+                if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
                     $albums = [];
                     foreach ($data['data'] as $photo) {
-                        $created_at = date('Y-m-d H:i:s', strtotime($photo->created_time));
-                        $updated_at = date('Y-m-d H:i:s', strtotime($photo->updated_time));
+                        $created_at = date('Y-m-d H:i:s', strtotime($photo['created_time']));
+                        $updated_at = date('Y-m-d H:i:s', strtotime($photo['updated_time']));
                         $albums[]   = $this->packPhoto([
                             'id'                  => 0,
                             'cross_id'            => 0,
-                            'caption'             => $photo->name,
+                            'caption'             => $photo['name'],
                             'by_identity_id'      => $identity_id,
                             'created_at'          => $created_at,
                             'updated_at'          => $updated_at,
                             'external_created_at' => $created_at,
                             'external_updated_at' => $updated_at,
                             'provider'            => 'facebook',
-                            'external_id'         => $photo->id,
+                            'external_id'         => $photo['id'],
                             'location_lng'        => '',
                             'location_lat'        => '',
-                            'fullsize_url'        => $photo->images[0]->source,
-                            'fullsize_width'      => $photo->images[0]->width,
-                            'fullsize_height'     => $photo->images[0]->height,
-                            'thumbnail_url'       => $photo->source,
-                            'thumbnail_width'     => $photo->width,
-                            'thumbnail_height'    => $photo->height,
+                            'fullsize_url'        => $photo['images'][0]['source'],
+                            'fullsize_width'      => $photo['images'][0]['width'],
+                            'fullsize_height'     => $photo['images'][0]['height'],
+                            'thumbnail_url'       => $photo['source'],
+                            'thumbnail_width'     => $photo['width'],
+                            'thumbnail_height'    => $photo['height'],
                         ]);
                     }
                     return $albums;
@@ -196,8 +197,54 @@ class PhotoModels extends DataModel {
 
     // dropbox {
 
-    public function getPhotosFromDropbox() {
-
+    public function getAlbumsFromDropbox($identity_id, $album_id = '') {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $identity = $hlpIdentity->getIdentityById($identity_id);
+        if ($identity
+         && $identity->connected_user_id > 0
+         && $identity->provider === 'dropbox') {
+            $token = $hlpIdentity->getOAuthTokenById($identity_id);
+            if ($token
+             && $token['oauth_token']
+             && $token['oauth_token_secret']) {
+                $objCurl = curl_init(
+                    "https://api.dropbox.com/1/metadata/dropbox{$album_id}"
+                );
+                curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                    'Authorization: '
+                  . 'OAuth oauth_version="1.0", '
+                  . 'oauth_signature_method="PLAINTEXT", '
+                  . 'oauth_consumer_key="' . DROPBOX_APP_KEY              . '", '
+                  . 'oauth_token="'        . $token['oauth_token']        . '", '
+                  . 'oauth_signature="'    . DROPBOX_APP_SECRET           . '&'
+                                           . $token['oauth_token_secret'] . '"'
+                ]);
+                $data = curl_exec($objCurl);
+                curl_close($objCurl);
+                if ($data && ($data = json_decode($data, true)) && isset($data['contents'])) {
+                    $albums = [];
+                    foreach ($data['contents'] as $album) {
+                        if ($album['is_dir']) {
+                            $path = explode('/', $album['path']);
+                            $albums[] = [
+                                'external_id' => implode('/', array_map('rawurlencode', explode('/', $album['path']))),
+                                'provider'    => 'dropbox',
+                                'caption'     => array_pop($path),
+                                'count'       => -1,
+                                'size'        => $album['size'],
+                                'by_identity' => $identity,
+                                'created_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])),
+                                'updated_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])),
+                            ];
+                        }
+                    }
+                    return $albums;
+                }
+            }
+        }
+        return null;
     }
 
     // }
