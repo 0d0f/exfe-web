@@ -68,16 +68,24 @@ addScript([
 // google map
 $GOOGLE_MAP_KEY = GOOGLE_MAP_KEY;
 echo <<<EOT
-<script type="text/javascript">
-document.write('<' + 'script src="' + 'https://maps.googleapis.com/maps/api/js?v=3.9&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places' + '"' + ' type="text/javascript"><' + '/script>');
-</script>
+  <script>
+    // https://developers.google.com/maps/documentation/javascript/tutorial#asynch
+    !function () {
+      var b = document.getElementsByTagName('body')[0], g = document.createElement('script');
+      window._gmap = function () { delete window._gmap; };
+      g.async = 'async';
+      //g.src = 'https://maps.googleapis.com/maps/api/js?v=3.10&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places';
+      g.src = 'https://maps.googleapis.com/maps/api/js?v=3.10&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places&callback=_gmap';
+      b.appendChild(g);
+    }();
+  </script>
 EOT;
 unset($GOOGLE_MAP_KEY);
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
 echo <<<EOT
-<script type="text/javascript">
+<script>
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-31794223-2']);
   _gaq.push(['_trackPageview']);
