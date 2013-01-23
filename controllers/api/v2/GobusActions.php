@@ -328,4 +328,9 @@ class GobusActions extends ActionController {
         header('HTTP/1.1 404 Not Found');
     }
 
+
+    public function doAddPhotosToCross() {
+
+    }
+
 }

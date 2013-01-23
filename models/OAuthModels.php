@@ -262,7 +262,7 @@ class OAuthModels extends DataModel {
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
         $data = curl_exec($objCurl);
         curl_close($objCurl);
-        if ($data && ($rawIdentity = (array) json_decode($data))) {
+        if ($data && ($rawIdentity = json_decode($data, true))) {
             return new Identity(
                 0,
                 $rawIdentity['name'],
@@ -306,13 +306,140 @@ class OAuthModels extends DataModel {
 
     // }
 
+
+    // dropbox {
+
+    public function dropboxRedirect($workflow) {
+        // get oauth token
+        $objCurl = curl_init('https://api.dropbox.com/1/oauth/request_token');
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+            'Authorization: '
+          . 'OAuth oauth_version="1.0", '
+          . 'oauth_signature_method="PLAINTEXT", '
+          . 'oauth_consumer_key="' . DROPBOX_APP_KEY    . '", '
+          . 'oauth_signature="'    . DROPBOX_APP_SECRET . '&"'
+        ]);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        // oauth_token=<request-token>&oauth_token_secret=<request-token-secret>
+        if ($data) {
+            $data        = explode('&', $data);
+            $oauth_token = [];
+            if (sizeof($data) > 1) {
+                foreach ($data as $item) {
+                    $item = explode('=', $item);
+                    if (sizeof($item) === 2) {
+                        $oauth_token[$item[0]] = $item[1];
+                    } else {
+                        return false;
+                    }
+                }
+                // get oauth url
+                $this->setSession(
+                    'dropbox',
+                    $oauth_token['oauth_token'],
+                    $oauth_token['oauth_token_secret'],
+                    $workflow
+                );
+                return "https://www.dropbox.com/1/oauth/authorize?oauth_token={$oauth_token['oauth_token']}&oauth_callback=" . urlencode(DROPBOX_OAUTH_CALLBACK);
+            }
+        }
+        return false;
+    }
+
+
+    public function getDropboxOAuthToken() {
+        $requestToken = $this->getSession();
+        if ($requestToken
+         && $requestToken['external_service'] === 'dropbox'
+         && $requestToken['oauth_token']
+         && $requestToken['oauth_token_secret']) {
+            // get oauth token
+            $objCurl = curl_init('https://api.dropbox.com/1/oauth/access_token');
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                'Authorization: '
+              . 'OAuth oauth_version="1.0", '
+              . 'oauth_signature_method="PLAINTEXT", '
+              . 'oauth_consumer_key="' . DROPBOX_APP_KEY                     . '", '
+              . 'oauth_token="'        . $requestToken['oauth_token']        . '", '
+              . 'oauth_signature="'    . DROPBOX_APP_SECRET                  . '&'
+                                       . $requestToken['oauth_token_secret'] . '"'
+            ]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            // oauth_token=<access-token>&oauth_token_secret=<access-token-secret>&uid=<user-id>
+            if ($data) {
+                $data        = explode('&', $data);
+                $oauth_token = [];
+                if (sizeof($data) > 1) {
+                    foreach ($data as $item) {
+                        $item = explode('=', $item);
+                        if (sizeof($item) === 2) {
+                            $oauth_token[$item[0]] = $item[1];
+                        } else {
+                            return false;
+                        }
+                    }
+                    $this->addtoSession([
+                        'oauth_token'        => $oauth_token['oauth_token'],
+                        'oauth_token_secret' => $oauth_token['oauth_token_secret'],
+                    ]);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function getDropboxProfile($oauthToken, $oauthTokenSecret) {
+        if ($oauthToken && $oauthTokenSecret) {
+            // get oauth token
+            $objCurl = curl_init('https://api.dropbox.com/1/account/info');
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                'Authorization: '
+              . 'OAuth oauth_version="1.0", '
+              . 'oauth_signature_method="PLAINTEXT", '
+              . 'oauth_consumer_key="' . DROPBOX_APP_KEY    . '", '
+              . 'oauth_token="'        . $oauthToken        . '", '
+              . 'oauth_signature="'    . DROPBOX_APP_SECRET . '&'
+                                       . $oauthTokenSecret  . '"'
+            ]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            // pack identity
+            if ($data && ($data = json_decode($data, true))) {
+                return new Identity(
+                    0,
+                    $data['display_name'],
+                    '',
+                    '',
+                    'dropbox',
+                    0,
+                    $data['uid'],
+                    $data['email'],
+                    ''
+                );
+            }
+        }
+        return false;
+    }
+
+    // }
+
+
     // instagram {
 
     public function instagramRedirect($workflow) {
+        $this->setSession('instagram', '', '', $workflow);
         $instagram = new Instagram(
             INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
         );
-        $this->setSession('instagram', '', '', $workflow);
         return $instagram->authorizeUrl(
             INSTAGRAM_REDIRECT_URI,
             ['basic', 'comments', 'likes', 'relationships']
@@ -413,6 +540,7 @@ class OAuthModels extends DataModel {
         // 更新 OAuth Token
         switch ($objIdentity->provider) {
             case 'twitter':
+            case 'dropbox':
                 $oAuthToken = [
                     'oauth_token'        => $oauthIfo['oauth_token'],
                     'oauth_token_secret' => $oauthIfo['oauth_token_secret'],

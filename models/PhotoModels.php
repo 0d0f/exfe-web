@@ -43,6 +43,53 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function addPhotosToCross($cross_id, $photos, $identity_id) {
+        if ($cross_id && is_array($photos) && $identity_id) {
+            foreach ($photos as $photo) {
+                $strSql = "
+                    `caption`             = '{$photo->caption}',
+                    `by_identity_id`      =  {$identity_id},
+                    `updated_at`          =  NOW(),
+                    `external_created_at` = '" . date('Y-m-d H:i:s', strtotime($photo->created_at)) . "',
+                    `external_updated_at` = '" . date('Y-m-d H:i:s', strtotime($photo->updated_at)) . "',
+                    `location_lng`        = '" . ($photo->location ? $photo->location->lng  :  '')  . "',
+                    `location_lat`        = '" . ($photo->location ? $photo->location->lat  :  '')  . "',
+                    `fullsize_url`        = '{$photo->images['fullsize']['url']}',
+                    `fullsize_width`      =  {$photo->images['fullsize']['width']},
+                    `fullsize_height`     =  {$photo->images['fullsize']['height']},
+                    `thumbnail_url`       = '{$photo->images['thumbnail']['url']}',
+                    `thumbnail_width`     =  {$photo->images['thumbnail']['width']},
+                    `thumbnail_height`    =  {$photo->images['thumbnail']['height']}
+                ";
+                $curImg = $this->getRow(
+                    "SELECT * FROM `photos`
+                     WHERE `cross_id`     =  {$cross_id}
+                     AND   `provider`     = 'facebook'
+                     AND   `external_id`  = '{$photo->external_id}'"
+                );
+                if ($curImg) {
+                    $this->query(
+                        "UPDATE `photos` SET     {$strSql}
+                         WHERE  `cross_id`    =  {$cross_id}
+                         AND    `provider`    = 'facebook'
+                         AND    `external_id` = '{$photo->external_id}'"
+                    );
+                } else {
+                    $this->query(
+                        "INSERT INTO `photos` SET
+                         `cross_id`           =  {$cross_id},
+                         `provider`           = 'facebook',
+                         `external_id`        = '{$photo->external_id}',
+                         `created_at`         =  NOW(), {$strSql}"
+                    );
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+
     // facebook {
 
     public function getAlbumsFromFacebook($identity_id) {
@@ -147,51 +194,13 @@ class PhotoModels extends DataModel {
     // }
 
 
-    public function addPhotosToCross($cross_id, $photos, $identity_id) {
-        if ($cross_id && is_array($photos) && $identity_id) {
-            foreach ($photos as $photo) {
-                $strSql = "
-                    `caption`             = '{$photo->caption}',
-                    `by_identity_id`      =  {$identity_id},
-                    `updated_at`          =  NOW(),
-                    `external_created_at` = '" . date('Y-m-d H:i:s', strtotime($photo->created_at)) . "',
-                    `external_updated_at` = '" . date('Y-m-d H:i:s', strtotime($photo->updated_at)) . "',
-                    `location_lng`        = '" . ($photo->location ? $photo->location->lng  :  '')  . "',
-                    `location_lat`        = '" . ($photo->location ? $photo->location->lat  :  '')  . "',
-                    `fullsize_url`        = '{$photo->images['fullsize']['url']}',
-                    `fullsize_width`      =  {$photo->images['fullsize']['width']},
-                    `fullsize_height`     =  {$photo->images['fullsize']['height']},
-                    `thumbnail_url`       = '{$photo->images['thumbnail']['url']}',
-                    `thumbnail_width`     =  {$photo->images['thumbnail']['width']},
-                    `thumbnail_height`    =  {$photo->images['thumbnail']['height']}
-                ";
-                $curImg = $this->getRow(
-                    "SELECT * FROM `photos`
-                     WHERE `cross_id`     =  {$cross_id}
-                     AND   `provider`     = 'facebook'
-                     AND   `external_id`  = '{$photo->external_id}'"
-                );
-                if ($curImg) {
-                    $this->query(
-                        "UPDATE `photos` SET     {$strSql}
-                         WHERE  `cross_id`    =  {$cross_id}
-                         AND    `provider`    = 'facebook'
-                         AND    `external_id` = '{$photo->external_id}'"
-                    );
-                } else {
-                    $this->query(
-                        "INSERT INTO `photos` SET
-                         `cross_id`           =  {$cross_id},
-                         `provider`           = 'facebook',
-                         `external_id`        = '{$photo->external_id}',
-                         `created_at`         =  NOW(), {$strSql}"
-                    );
-                }
-            }
-            return true;
-        }
-        return false;
+    // dropbox {
+
+    public function getPhotosFromDropbox() {
+
     }
+
+    // }
 
 
     // instagram {
