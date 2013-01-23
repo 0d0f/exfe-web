@@ -330,7 +330,29 @@ class GobusActions extends ActionController {
 
 
     public function doAddPhotosToCross() {
-
+        // get model
+        $modPhoto = $this->getModelByName('Photo');
+        // get raw data
+        if (!($str_args = @file_get_contents('php://input'))) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'No input!';
+            return;
+        }
+        // decode json
+        $args = json_decode($str_args);
+        if (isset($args['cross_id'])
+         && isset($args['photos'])
+         && is_array($args['photos'])
+         && isset($args['identity_id'])) {
+            $result = $modPhoto->addPhotosToCross(
+                (int) $args['cross_id'], $args['photos'], (int) $args['identity_id']
+            );
+            if ($result) {
+                return;
+            }
+        }
+        header('HTTP/1.1 500 Internal Server Error');
+        echo 'Error input!';
     }
 
 }
