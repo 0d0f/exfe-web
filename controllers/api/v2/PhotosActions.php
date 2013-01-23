@@ -67,9 +67,11 @@ class PhotosActions extends ActionController {
             case 'facebook':
                 $albums = $modPhoto->getAlbumsFromFacebook($identity_id);
                 break;
-            case 'instagram':
-                break;
             case 'dropbox':
+                $album_id = isset($_POST['album_id']) && $_POST['album_id'] ? $_POST['album_id'] : '';
+                $albums = $modPhoto->getAlbumsFromDropbox($identity_id, $album_id);
+                break;
+            case 'instagram':
                 break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
