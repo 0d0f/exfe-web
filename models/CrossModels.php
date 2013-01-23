@@ -134,7 +134,7 @@ class CrossModels extends DataModel {
             }
 
             $helpExfee = $this->getHelperByName('Exfee');
-            $host_ids  = $this->getHostIdentityIdsByExfeeId($exfee_id);
+            $host_ids  = $helpExfee->getHostIdentityIdsByExfeeId($exfee_id);
             if ($host_ids && is_array($host_ids) && in_array($by_identity_id, $host_ids)) {
                 if ($cross->attribute && is_array($cross->attribute)) {
                     $status = ['draft' => 0, 'published' => 1, 'deleted' => 2];
