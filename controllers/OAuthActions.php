@@ -33,6 +33,9 @@ class OAuthActions extends ActionController {
             case 'facebook':
                 $urlOauth = $modOauth->facebookRedirect($workflow);
                 break;
+            case 'dropbox':
+                $urlOauth = $modOauth->dropboxRedirect($workflow);
+                break;
             case 'instagram':
                 $urlOauth = $modOauth->instagramRedirect($workflow);
                 break;
@@ -42,7 +45,7 @@ class OAuthActions extends ActionController {
         if ($urlOauth) {
             // if ($webResponse) {
             // @todo: recovery this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if ($webResponse || $provider === 'instagram') {
+            if ($webResponse || $provider === 'dropbox' || $provider === 'instagram') {
                 header("Location: {$urlOauth}");
                 return;
             }
@@ -203,6 +206,78 @@ class OAuthActions extends ActionController {
     }
 
 
+    public function doDropboxCallBack() {
+        $modOauth = $this->getModelByName('OAuth');
+        $oauthIfo = $modOauth->getSession();
+        $workflow = $oauthIfo ?  $oauthIfo['workflow'] : null;
+        $isMobile = $workflow ? ($workflow['callback']
+                 && $workflow['callback']['oauth_device']
+                 && $workflow['callback']['oauth_device_callback']) : false;
+        if (!$oauthIfo
+         || $oauthIfo['external_service'] !== 'dropbox'
+         || (isset($oauthIfo['oauth_token'])
+          && $oauthIfo['oauth_token'] !== $_REQUEST['oauth_token'])) {
+            if ($isMobile) {
+                $modOauth->resetSession();
+                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+            } else {
+                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'dropbox']);
+                header('location: /');
+            }
+            return;
+        }
+        if ($modOauth->getDropboxOAuthToken()) {
+            $oauthIfo = $modOauth->getSession();
+            $rawIdentity = $modOauth->getDropboxProfile(
+                $oauthIfo['oauth_token'],
+                $oauthIfo['oauth_token_secret']
+            );
+            if ($rawIdentity) {
+                $result = $modOauth->handleCallback($rawIdentity, $oauthIfo);
+                if (!$result) {
+                    if ($isMobile) {
+                        $modOauth->resetSession();
+                        header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                    } else {
+                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'dropbox']);
+                        header('location: /');
+                    }
+                    return;
+                }
+                if ($isMobile) {
+                    header(
+                        "location: {$workflow['callback']['oauth_device_callback']}"
+                      . "?token={$result['oauth_signin']['token']}"
+                      . "&name={$result['identity']->name}"
+                      . "&userid={$result['oauth_signin']['user_id']}"
+                      . "&external_id={$result['identity']->external_id}"
+                      . "&provider={$result['identity']->provider}"
+                      . "&identity_status={$result['identity_status']}"
+                      . (isset($workflow['verification_token'])
+                      ? "&verification_token={$workflow['verification_token']}"
+                      : '')
+                    );
+                    return;
+                }
+                $modOauth->addtoSession([
+                    'oauth_signin'       => $result['oauth_signin'],
+                    'identity'           => (array) $result['identity'],
+                    'provider'           => $result['identity']->provider,
+                    'identity_status'    => $result['identity_status'],
+                ]);
+                header('location: /');
+                return;
+            }
+        }
+        $modOauth->resetSession();
+        header('location: ' . (
+            $isMobile
+          ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
+          : '/'
+        ));
+    }
+
+
     public function doInstagramCallBack() {
         $modOauth = $this->getModelByName('OAuth');
         $oauthIfo = $modOauth->getSession();
@@ -273,11 +348,6 @@ class OAuthActions extends ActionController {
           ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
           : '/'
         ));
-
-
-
-
-
     }
 
 
