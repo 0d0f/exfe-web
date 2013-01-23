@@ -284,6 +284,7 @@ class IdentityModels extends DataModel {
                 break;
             case 'twitter':
             case 'facebook':
+            case 'dropbox':
                 if (!$external_id && !$external_username) {
                     if ($user_id && $status = 2 && $withVerifyInfo) {
                         $identity = new stdClass;
@@ -346,6 +347,9 @@ class IdentityModels extends DataModel {
                         $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
                         $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
                     }
+                    break;
+                case 'dropbox':
+                    //
                     break;
                 default:
                     return null;
