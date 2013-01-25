@@ -156,12 +156,16 @@ class PhotosActions extends ActionController {
             apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
         }
         // check args
-        $album_id = @ $_POST['album_id'] ?: '';
-        $min_id   = @ $_POST['min_id']   ?: '';
-        $max_id   = @ $_POST['max_id']   ?: '';
+        $album_id  = @ $_POST['album_id']       ?: '';
+        $min_id    = @ $_POST['min_id']         ?: '';
+        $max_id    = @ $_POST['max_id']         ?: '';
+        $stream_id = @ $_POST['photostream_id'] ?: '';
         // add album to cross
-        $modPhoto = $this->getModelByName('Photo');
-        $result   = null;
+        $modPhoto  = $this->getModelByName('Photo');
+        $result    = null;
+        if ($stream_id) {
+            $identity->provider = 'photostream';
+        }
         switch ($identity->provider) {
             case 'facebook':
                 if (!$album_id) {
@@ -196,6 +200,9 @@ class PhotosActions extends ActionController {
                         $cross_id, $photos['photos'], $identity_id
                     );
                 }
+                break;
+            case 'photostream':
+                $modPhoto->getPhotosFromPhotoStream($stream_id);
                 break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
