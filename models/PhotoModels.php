@@ -338,4 +338,27 @@ class PhotoModels extends DataModel {
 
     // }
 
+
+    // Photo Stream {
+
+    public function getPhotosFromPhotoStream($strId) {
+        if ($strId) {
+            $objCurl = curl_init(
+                "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webstream"
+            );
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_POST, 1);
+            curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['streamCtag' => null]));
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            print_r($data);
+            exit();
+            // if ($data && ($data = json_decode($data, true)) && isset($data['contents'])) {
+        }
+        return null;
+    }
+
+    // }
+
 }
