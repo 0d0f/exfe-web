@@ -341,8 +341,8 @@ class PhotoModels extends DataModel {
 
     // Photo Stream {
 
-    public function getPhotosFromPhotoStream($strId) {
-        if ($strId) {
+    public function getPhotosFromPhotoStream($strId, $identity_id) {
+        if ($strId && $identity_id) {
             $objCurl = curl_init(
                 "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webstream"
             );
@@ -352,9 +352,59 @@ class PhotoModels extends DataModel {
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['streamCtag' => null]));
             $data = curl_exec($objCurl);
             curl_close($objCurl);
-            print_r($data);
+            if ($data && ($data = json_decode($data, true)) && isset($data['photos'])) {
+                $photos = [];
+                $photoGuids = [];
+                foreach ($data['photos'] as $photo) {
+                    $updated_at = $created_at = date(
+                        'Y-m-d H:i:s', $photo['dateCreated']
+                    );
+                    $catched = [];
+                    foreach ($photo['derivatives'] as $di => $derivative) {
+                        if (!isset($catched['fullsize'])) {
+                            $catched['fullsize']  = $di;
+                        } else if (!isset($catched['thumbnail'])) {
+                            $catched['thumbnail'] = $di;
+                        }
+                    }
+                    $photos[] = $this->packPhoto([
+                        'id'                   => 0,
+                        'cross_id'             => 0,
+                        'caption'              => $photo['caption'],
+                        'by_identity_id'       => $identity_id,
+                        'created_at'           => $created_at,
+                        'updated_at'           => $updated_at,
+                        'external_created_at'  => $created_at,
+                        'external_updated_at'  => $updated_at,
+                        'provider'             => 'photostream',
+                        'external_id'          => $photo['photoGuid'],
+                        'location_title'       => '',
+                        'location_description' => '',
+                        'location_external_id' => '',
+                        'location_lng'         => '',
+                        'location_lat'         => '',
+                        'fullsize_url'         => $photo['derivatives'][$catched['fullsize']]['checksum'],
+                        'fullsize_width'       => $photo['derivatives'][$catched['fullsize']]['width'],
+                        'fullsize_height'      => $photo['derivatives'][$catched['fullsize']]['height'],
+                        'thumbnail_url'        => $photo['derivatives'][$catched['thumbnail']]['checksum'],
+                        'thumbnail_width'      => $photo['derivatives'][$catched['thumbnail']]['width'],
+                        'thumbnail_height'     => $photo['derivatives'][$catched['thumbnail']]['height'],
+                    ]);
+                    $photoGuids[] = $photo['photoGuid'];
+                }
+                $objCurl = curl_init(
+                    "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webasseturls"
+                );
+                curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_POST, 1);
+                curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photoGuids]));
+                $data = curl_exec($objCurl);
+                curl_close($objCurl);
+                print_r($data);
+            }
             exit();
-            // if ($data && ($data = json_decode($data, true)) && isset($data['contents'])) {
+            //
         }
         return null;
     }
