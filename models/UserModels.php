@@ -510,6 +510,7 @@ class UserModels extends DataModel {
             case 'twitter':
             case 'facebook':
             case 'dropbox':
+            case 'instagram':
                 $hlpOAuth = $this->getHelperByName('OAuth');
                 $workflow = ['user_id' => $user_id];
                 if ($device && $device_callback) {
@@ -546,6 +547,9 @@ class UserModels extends DataModel {
                         break;
                     case 'dropbox':
                         $urlOauth = $hlpOAuth->dropboxRedirect($workflow);
+                        break;
+                    case 'instagram':
+                        $urlOauth = $hlpOAuth->instagramRedirect($workflow);
                 }
 
                 if ($urlOauth) {
