@@ -202,7 +202,7 @@ class PhotosActions extends ActionController {
                 }
                 break;
             case 'photostream':
-                $modPhoto->getPhotosFromPhotoStream($stream_id);
+                $modPhoto->getPhotosFromPhotoStream($stream_id, $identity_id);
                 break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
